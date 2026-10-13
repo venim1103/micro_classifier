@@ -1,0 +1,152 @@
+{
+  "model": {
+    "repo": "vllm-sr/Vela-2.0-9B",
+    "revision": "068425bb145c05884a98b870c219047da22d9aea",
+    "group_size": 128,
+    "token_budget": 2048,
+    "gib": {
+      "int8_weights": 6.438,
+      "bf16_scales": 0.101,
+      "fp32_parameters": 0.076,
+      "host_fp32_embeddings": 3.789
+    }
+  },
+  "environment": {
+    "gpu": "NVIDIA RTX A3000 12GB Laptop GPU",
+    "gpu_total_gib": 12.0,
+    "platform": "Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "allocator": "default",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.19.0",
+    "python": "3.12.3",
+    "gated_delta_rule_kernel": "transformers torch reference"
+  },
+  "load": {
+    "seconds": 8.1,
+    "gpu_allocated_gib": 6.61,
+    "gpu_device_used_gib": 7.69,
+    "host_peak_rss_gib": 5.1
+  },
+  "latency": {
+    "requests": 21,
+    "median_seconds": 0.85,
+    "max_seconds": 2.066,
+    "input_tokens_per_second": 477,
+    "peak_allocated_gib": 7.1,
+    "peak_reserved_gib": 7.29
+  },
+  "card_examples": {
+    "int8_vs_recorded": {
+      "compared_values": 35,
+      "max_abs_delta": 0.008846276596070624,
+      "mean_abs_delta": 0.0010659770151107211,
+      "largest": [
+        "systemone/router/answers/urgency/score: 0.0088",
+        "systemone/router/answers/urgency/confidence: 0.0080",
+        "systemone/router/answers/urgency/probabilities/0: 0.0079",
+        "systemone/router/answers/urgency/probabilities/1: 0.0069",
+        "systemone/router/answers/urgency/probabilities/2: 0.0010"
+      ],
+      "mismatches": []
+    },
+    "reference_vs_recorded": {
+      "compared_values": 35,
+      "max_abs_delta": 0.0016588062124364145,
+      "mean_abs_delta": 0.0002905311918813148,
+      "largest": [
+        "systemone/router/answers/urgency/confidence: 0.0017",
+        "systemone/router/answers/urgency/score: 0.0016",
+        "systemone/router/answers/urgency/probabilities/0: 0.0014",
+        "systemone/router/answers/urgency/probabilities/1: 0.0012",
+        "systemone/set/sets/issues/probabilities/billing: 0.0007"
+      ],
+      "mismatches": []
+    }
+  },
+  "batched": {
+    "rows": 72,
+    "seconds": 35.8,
+    "rows_per_second": 2.01,
+    "peak_allocated_gib": 7.61,
+    "peak_reserved_gib": 8.71
+  },
+  "long_inputs": [
+    {
+      "requested_tokens": 1024,
+      "status": "ok",
+      "input_tokens": 1206,
+      "seconds": 1.29,
+      "tokens_per_second": 936,
+      "peak_allocated_gib": 6.94,
+      "peak_reserved_gib": 7.08
+    },
+    {
+      "requested_tokens": 4096,
+      "status": "ok",
+      "input_tokens": 4242,
+      "seconds": 3.7,
+      "tokens_per_second": 1148,
+      "peak_allocated_gib": 7.8,
+      "peak_reserved_gib": 8.11
+    },
+    {
+      "requested_tokens": 8192,
+      "status": "ok",
+      "input_tokens": 8246,
+      "seconds": 6.75,
+      "tokens_per_second": 1221,
+      "peak_allocated_gib": 8.94,
+      "peak_reserved_gib": 9.56
+    },
+    {
+      "requested_tokens": 12288,
+      "status": "ok",
+      "input_tokens": 12250,
+      "seconds": 9.85,
+      "tokens_per_second": 1244,
+      "peak_allocated_gib": 10.06,
+      "peak_reserved_gib": 10.94
+    },
+    {
+      "requested_tokens": 16384,
+      "status": "ok",
+      "input_tokens": 16254,
+      "seconds": 84.79,
+      "tokens_per_second": 192,
+      "peak_allocated_gib": 11.21,
+      "peak_reserved_gib": 12.39
+    }
+  ],
+  "reference_seconds": 49.4,
+  "parity": {
+    "requests": 25,
+    "questions": 52,
+    "int8_vs_reference": {
+      "compared_values": 273,
+      "max_abs_delta": 0.013436249059024297,
+      "mean_abs_delta": 0.0009264969797251569,
+      "largest": [
+        "parity/09/answers/domain/confidence: 0.0134",
+        "parity/08/spans/entities/3/probability: 0.0074",
+        "systemone/router/answers/urgency/score: 0.0072",
+        "parity/09/answers/domain/probabilities/coding: 0.0068",
+        "parity/09/answers/domain/probabilities/other: 0.0066"
+      ],
+      "mismatches": []
+    },
+    "int8_vs_reference_logits": {
+      "question_logits": {
+        "count": 212,
+        "max": 0.12529945373535156,
+        "mean": 0.0154231532986434,
+        "p99": 0.06671837806701655
+      },
+      "span_logits": {
+        "count": 1628,
+        "max": 0.5109314918518066,
+        "mean": 0.06283364634896818,
+        "p99": 0.2754616546630861
+      }
+    }
+  }
+}

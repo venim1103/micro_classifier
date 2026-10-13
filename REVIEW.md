@@ -1,0 +1,864 @@
+# Research Review: Jev-like Classifier on STM32N6
+
+Status: Independent review of [DESIGN.md](DESIGN.md) and the repository state.
+Review date: 2026-10-13.
+Scope: feasibility, verification of design claims, landscape changes, design
+gaps, alternatives, risks, and concrete next steps.
+
+Method:
+
+- Read DESIGN.md, README.md, and the `.devcontainer` setup.
+- Re-checked hardware and compiler claims against ST Edge AI Core 4.0.1
+  documentation, ST product pages, and ST example projects.
+- Re-checked teacher claims against Hugging Face model cards, usage documents,
+  configurations, and the published custom model source.
+- Established what "Jev" is from TypeSafe's documentation, API reference, and
+  customer agreement.
+- Surveyed recent open "Jev-style" models, tiny-NLP research, and published
+  STM32N6 measurements.
+- Ran local arithmetic and an ONNX export/INT8 QDQ check inside the devcontainer.
+- After the review, with your approval, implemented and measured an INT8 Vela
+  2.0 9B teacher loader on the devcontainer's 12 GB GPU (F2).
+
+Not done, and why:
+
+- No NPU compilation: ST Edge AI Core is not installed (`/opt/st-tools` is empty).
+- No board measurement: no hardware attached.
+- Teachers other than the INT8 Vela 2.0 9B were not executed: Vela and Decision
+  models require `trust_remote_code`, i.e. running third-party Python, which
+  needs code review and your approval per release.
+- The PDF (Idea0.pdf) is not in the workspace, so PDF-derived statements in the
+  design could not be rechecked against their source.
+
+Estimates in this document are labelled as estimates. Everything else is cited.
+
+## 1. Executive Summary
+
+**Verdict.** The design's direction is correct and the document is careful. The
+new evidence strengthens its central conclusion:
+
+- **Feasible:** Jev's *interface and decision semantics* (choice, yes/no, score,
+  with calibrated probability distributions) over a **fixed, trained question
+  catalogue**, served by a small task-specific student (roughly 0.1–1 M
+  parameters) entirely from STM32N6 internal SRAM, at sub-millisecond to tens of
+  milliseconds per decision.
+- **Not feasible:** general Jev behaviour (arbitrary runtime questions, zero-shot)
+  inside the N6. The smallest open general "Jev-style" models found are 32 M–150 M
+  parameters ([Crivo-32M][crivo-32m], [Crivo-150M][crivo-150m]), at least ~30x the
+  design's 1 MiB constant budget even at INT8, and they still degrade sharply on
+  unseen domains.
+
+Key findings, by priority:
+
+| # | Severity | Finding | Action |
+| --- | --- | --- | --- |
+| F1 | High | TypeSafe's [customer agreement][typesafe-mca] §2.3(b) forbids using Jev outputs to "perform model distillation" or "train a model to imitate" the service | Never use the Jev API as teacher or label source; use open Apache-2.0 teachers; add a licensing gate |
+| F2 | High | Teacher landscape changed: Vela 2.0 0.8B was omitted, and the multimodal [Decision 3.0][d3-collection] family (0.6B–26B, Apache-2.0) was published days before this review; the 9B runs on a 12 GB GPU with INT8 weights (measured: 6.6 GiB, no decision changes in a 25-request parity check) | Replace the fixed teacher table with a teacher bake-off; use the INT8 loader in `teacher/` for the 9B |
+| F3 | High | Vela 0.3B reads all questions in one bidirectional sequence (no isolation), so a label can depend on the co-asked questions; the decoder teachers isolate questions | Add labeling-contract tests; align teacher input with what the student sees |
+| F4 | High | Jev and Vela define `confidence` differently; the design's "top-two margin" statement is Vela-specific | Choose and document the on-device contract explicitly |
+| F5 | Medium | NPU efficiency rules matter for 1-D text (line buffer `W x C_in <= 2048`, pooling windows <= 3, Gather in software) | Put embedding, pooling, and heads on the M55; compile two tensor layouts and compare |
+| F6 | Medium | 800 MHz CPU / 1 GHz NPU are *overdrive* clocks; nominal is 600 / 800 MHz | Budget latency and energy at nominal clocks |
+| F7 | Medium | The question catalogue can be data, not firmware | Freeze a shared NPU trunk; ship per-question heads as versioned blobs |
+| F8 | Medium | Boot details missing: signed FSBL/application, weight copy cost, update path | Add to M5; consider ST's runtime-loadable models |
+| F9 | Medium | ST's validation projects target the STM32N6570-DK, not the Nucleo | Start M1 on the DK with external memories disabled |
+| F10 | Low | DESIGN §11 says no devcontainer exists; it does and passes its smoke tests | Update the design |
+| F11 | Strategic | If the target is robotics with a camera, vision is the N6's strength, and decision models fail on direct multi-way motor choices | Revisit modality in M0; decompose control into atomic questions |
+
+Recommended path in one paragraph: resolve M0 (one task, modality, latency,
+error costs). Install ST Edge AI Core in the devcontainer and run compile-only
+mapping experiments, which need no board. Build M55-only baselines (rules,
+hashed n-grams, pruned static embeddings). Then train a convolutional student on
+an NPU-friendly trunk with heads on the M55, distilled from an open teacher
+selected by a measured bake-off.
+
+## 2. What "Jev-like" Means
+
+### TypeSafe Jev (the reference)
+
+[Jev][typesafe-models] is TypeSafe's hosted, closed "System One" decision model
+(`jev-1.13.0`, alias `jev-latest`). The [API][typesafe-api] takes a `state`
+(string, object, or array) and a map of named typed questions:
+
+| Type | Input | Output |
+| --- | --- | --- |
+| `noul` | yes/no instructions, optional true/false criteria | `noul` = P(yes) |
+| `choice` | up to 255 options with descriptions | `choice`, `probabilities` (sum to 1), `confidence` |
+| `score` | 2–10 ordered levels | expected level `score`, `legend`, `probabilities`, `confidence` |
+
+Documented properties: text only; 64 k tokens per request; English is the primary
+language; the same weights serve every account; "trained with RLCD to return
+calibrated decisions"; "Jev ingests the `state` once and evaluates every question
+against it in parallel." That last property maps naturally onto a shared encoder
+with multiple heads on a microcontroller.
+
+### The open "Jev-style" ecosystem
+
+Several open models implement the SystemOne request/response shape:
+
+- [Vela 2.0][vela-blog] (vLLM Semantic Router and KR Labs): 0.3B encoder, 0.8B,
+  4B, 9B hybrids; adds `span` and `set` questions.
+- [Decision 3.0][d3-collection] (vLLM Semantic Router): d3-edge 0.6B, d3-lite
+  0.9B, d3-nano 2B, d3-mini 5B, d3-flash 8B, d3 26B; text, JSON, images, video.
+- [Crivo-150M][crivo-150m] and [Crivo-32M][crivo-32m]: small ModernBERT/Ettin
+  encoders with an `[OPT]` readout.
+- [autotrust/JEV-35B][jev-35b]: an independent open model; its card states it is
+  not affiliated with TypeSafe.
+- The [Decision Index][decision-index] leaderboard and open kit benchmark these
+  models.
+
+### Size ladder: why general Jev cannot fit
+
+| Model | Parameters | Generality evidence | INT8 weights alone |
+| --- | --- | --- | --- |
+| Crivo-32M | 32 M (12.5 M transformer core) | Decision Index 0.3 public index 25.06 | ~32 MB |
+| Crivo-150M | 149 M | Full score 22.21; private new-domain tasks only 9.77 | ~149 MB |
+| Vela 2.0 0.3B | ~307 M (196.6 M are embeddings) | Router and safety tasks | ~307 MB |
+| d3-edge | 0.59 B | Decision Index 0.3.2 text board 20.2 | ~590 MB |
+| Vela 2.0 0.8B | 756 M | Router + broad extraction | ~756 MB |
+| d3-flash | 8.39 B | Decision Index 0.3.2 text board 55.8 | ~8.4 GB |
+| **STM32N6 design budget** | — | — | **≤ 1 MiB constants, ≤ 3 MiB total SRAM** |
+
+Conclusion: on the N6, "Jev-like" must mean the Jev *contract* (typed questions
+in, calibrated distributions out) over a question catalogue trained in advance,
+not Jev's open-ended capability. The design already says this; the size ladder
+quantifies it.
+
+## 3. Hardware and Toolchain Reality Check
+
+### STM32N657 facts relevant to this project
+
+| Item | Verified value | Source |
+| --- | --- | --- |
+| CPU | Cortex-M55 up to 800 MHz, Helium, FPU (half/single/double), 32 KB I-cache, 32 KB D-cache, 128 KB DTCM, 64 KB ITCM | [ST product page][st-n657] |
+| NPU | Neural-ART up to 1 GHz, "600 GOPS", 288 MAC/cycle | [ST product page][st-n657] |
+| NPU units | 4 CONV_ACC (72 8x8 MAC/cycle each, or 18 16x16), 2 POOL, 2 ACTIV, 4 ARITH, 2x5 stream engines, 2 weight-decompression units, epoch controller | [ST NPU concepts][st-concepts] |
+| Arithmetic | Integer only, 8/16/24-bit datapaths, no floating point | [ST NPU concepts][st-concepts] |
+| SRAM | 4.2 MB contiguous; NPU sees 4 x 448 KB fast NPU RAMs, plus 400 KB FlexMEM, 624 KB, and 1 MB system SRAM; 256 KB NPU-cache RAM usable as normal RAM when the NPU cache is unused | [ST NPU concepts][st-concepts] |
+| Flash | None internal; boot from external flash or development mode | [ST getting-started][st-gs-ic] |
+
+Clock modes from [ST's project guide][st-projects]:
+
+| Domain | Normal (VDDCORE 0.8 V) | Overdrive (0.9 V) |
+| --- | --- | --- |
+| CPU | 600 MHz | 800 MHz |
+| NPU | 800 MHz | 1000 MHz |
+| NPU RAMs | 800 MHz | 900 MHz |
+| CPU RAMs and AXI | 400 MHz | 400 MHz |
+
+### Internal memory map in ST's default memory-pool example
+
+From the [compiler documentation][st-compiler]:
+
+| Region | Base address | Size | Use in ST's example |
+| --- | --- | --- | --- |
+| FLEXMEM | `0x34000000` | 400 KiB | Firmware; pool size set to 0 |
+| AXISRAM1 | `0x34064000` | 624 KiB | Firmware; pool size set to 0 |
+| AXISRAM2 | `0x34100000` | 1,024 KiB | NPU pool `cpuRAM2` |
+| AXISRAM3–6 | `0x34200000`, `0x34270000`, `0x342E0000`, `0x34350000` | 4 x 448 KiB | NPU pools `npuRAM3–6`, fastest for the NPU |
+| xSPI1 (DK) | `0x90000000` | 32 MiB | External RAM; excluded for internal-only |
+| xSPI2 | `0x70000000` | 64 MiB | External flash; excluded for internal-only |
+
+Implication: with ST's default split the NPU gets about 2.75 MiB of contiguous
+SRAM and the firmware about 1 MiB. The design's budgets (≤ 1 MiB constants,
+≤ 512 KiB activations) fit with margin. **For a sub-million-parameter student,
+memory is not the binding constraint; task quality is.**
+
+### Operator mapping relevant to text
+
+From the [operator table][st-operators]:
+
+| Operator | Mapping | Consequence |
+| --- | --- | --- |
+| Conv (1-D/2-D), constant weights | Hardware | Main building block |
+| Gemm / MatMul | Hardware only if the second input is constant | Dense layers fine; attention products fall back |
+| Gather | Software integer | Embedding lookup belongs on the M55 |
+| Softmax | Hardware only with `--expand-softmax`; otherwise software | Keep final probabilities on the M55 |
+| GELU, Sigmoid, Tanh | Hardware | Usable activations |
+| ReduceMean / ReduceMax | Hardware only if convertible to global pooling | Masked pooling is better done on the M55 |
+| GlobalAveragePool / GlobalMaxPool | "Limited window", software fallback | Pooling over long sequences may fall back |
+| Div | Software unless the divisor is constant | LayerNorm-style normalization partly falls back |
+| InstanceNormalization | Software float | Avoid |
+| MaxPool | Decomposed if a window dimension exceeds 3 | Use small windows |
+
+Efficiency rules from the same page: maximum kernel width 6 (stride 1) and height
+3; kernels with a dimension of 1 run efficiently; for INT8, feature width times
+input channels should be at most 2,048 or the compiler splits work; pooling line
+buffers have the same 2,048 limit; avoid prime channel counts; 1x1 convolutions
+are most efficient with input channels in multiples of 72–128 and output
+channels in multiples of 16–24 (best 24).
+
+### Runtime facts
+
+- Software scheduling of hardware epochs costs roughly 10–15% MCU load; the epoch
+  controller reduces it ([concepts][st-concepts]).
+- There is no host NPU emulator and bit-exactness is not expected
+  ([concepts][st-concepts]).
+- Copying about 2 MB of weights from flash to internal RAM took 17–18 ms in ST's
+  measurement, i.e. roughly 9 ms/MB ([runtime-loadable models][st-reloc]).
+- A tiny model in that ST example ran in 0.218 ms in total, a useful floor for
+  fixed overhead.
+
+### Published STM32N6 measurements
+
+| Workload | Result | Source |
+| --- | --- | --- |
+| Event-camera eye tracking CNN | 385 µs end-to-end, 52 MAC/cycle (≈18% of peak), 155 µJ | [arXiv 2508.13244][eye-tracking] |
+| CubeSat image classifiers, pruned INT8 | 3.2–30.4 ms, 0.68–6.45 mJ per inference | [arXiv 2603.20174][cubesat] |
+| Speech enhancement split into several NPU graphs | Splitting adds 2.2% latency; M55 policy 26 µs/frame | [arXiv 2609.29867][speech] |
+| Line-segment detection | Attention, grid sampling, and normalization lack NPU primitives; decoder attention would need a 39 MB score tensor | [arXiv 2609.25022][nplsd] |
+| YOLOv11 with attention | Needed a head-wise attention refactor for the NPU; 2.48 MB footprint, 10 FPS | [arXiv 2607.16222][argo] |
+| Learned feature extractor | 9.0 ms, < 1.5 MB; replacing BatchNorm with affine layers improved INT8 robustness | [arXiv 2605.04282][gideon] |
+| M55-only small INT8 CNN (ST example) | 1.08 M MAC in 0.986 ms, 0.73 cycles/MAC | [ST project guide][st-projects] |
+| GAP9 vs STM32N6 vs IMX500 | N6 had the lowest latency but higher energy than GAP9 | [arXiv 2603.08725][edge-review] |
+
+Derived (not reported directly): 155 µJ over 385 µs and 0.68 mJ over 3.22 ms
+imply roughly 0.2–0.4 W while inferring. Treat this as an order of magnitude for
+power planning, not a project measurement.
+
+## 4. Verification of DESIGN.md Claims
+
+Legend: ✓ verified, ⚠ correct but incomplete or needs qualification,
+✗ incorrect or outdated, ? not verifiable here.
+
+| Claim in DESIGN.md | Status | Evidence and notes |
+| --- | --- | --- |
+| N6x7 has Neural-ART, N6x5 does not | ✓ | Product page lists the NPU as "STM32N6x7 only" |
+| CPU up to 800 MHz, NPU up to 1 GHz, ~600 GOPS | ⚠ | True, but only in overdrive; nominal is 600 / 800 MHz (F6) |
+| About 4.2 MB banked SRAM | ✓ | See §3 for the bank map |
+| No internal flash; SRAM development load is temporary | ✓ | ST getting-started boot modes |
+| Static shapes; INT8 ss/sa per-channel; ONNX QDQ or TFLite | ✓ | [Quantization guide][st-quant] recommends static QDQ, QInt8, per-channel |
+| MatMul in hardware needs a constant second input; Gather in software | ✓ | Operator table |
+| Profile `--st-neural-art profile-internal-memories-only--default` | ✓ | Built-in profile list and `profile-<tool_profile>` syntax |
+| `--expand-softmax` keeps the argmax but not exact probabilities | ✓ | Compiler guide; `--expand-softmax-full` is the more precise option |
+| Application must copy SRAM-resident weights | ✓ | [Memory initializers][st-initializers] |
+| No host NPU emulator | ✓ | NPU concepts |
+| CM55 validation example assumes external-flash weights | ✓ | Project guide: "Weights are necessarily stored in the external flash" |
+| `USE_EXTERNAL_MEMORY_DEVICES=0` | ✓ | Project guide (NPU validation project) |
+| Vela 0.3B: 22 layers, width 768, intermediate 1,152, 12 heads, vocabulary 256,008 | ✓ | [config.json][vela-03b-config]; total ≈ 306.9 M parameters recomputed |
+| Embeddings 196,614,144 parameters (187.5 MiB at 1 byte) | ✓ | Recomputed |
+| ≈ 28.2 GOP linear projections for 128 tokens | ✓ | Recomputed: 28.24 GOP |
+| Ternary 60.8 MB, 2-bit 76.75 MB for 307 M parameters | ✓ | Arithmetic correct |
+| Vela 0.3B Torch path is FP32 only | ⚠ | Correct; also note the official ONNX FP16-encoder path (≤ 0.006 choice-probability difference, no decision changes on 230 rows) |
+| Vela 4B ≈ 17 GB FP32 | ✓ | 4.2 B parameters x 4 bytes |
+| Vela 9B ≈ 32 GB; loader rejects lower precision; `device_map="auto"` only moves to CUDA | ✓ | [Source][vela-9b-code]; F2 measures the INT8 route on a 12 GB GPU |
+| Choice `confidence` is the top-two margin | ⚠ | True for Vela; Jev uses a different formula (F4) |
+| Extra span questions and long inputs add sequences | ✓ | Vela usage documents |
+| PDF student is ≈ 1.894 M parameters, not 4 M | ? | PDF unavailable; result depends on FFN width (see below) |
+| No devcontainer examples in the workspace (DESIGN §11) | ✗ | `.devcontainer` exists with CPU, CUDA/Docker, and Podman/WSL profiles, CA handling, and passing smoke tests |
+| Teacher table: 0.3B, 4B, 9B | ⚠ | Missing Vela 0.8B and Decision 3.0 (F2) |
+| Task-specific distillation has published support | ✓ | [Tang et al.][tang]: single-layer BiLSTM comparable to ELMo with ~100x fewer parameters and 15x less inference time |
+
+PDF student parameter count, recomputed with PyTorch modules for width 256,
+3 layers, vocabulary 1,024, 64 positions, and 5 classes:
+
+| `dim_feedforward` | Parameters |
+| --- | --- |
+| 512 | 1,861,125 |
+| 1,024 | 2,649,093 |
+| 2,048 (PyTorch default) | 4,225,029 |
+
+The design's 1.894 M is close to the 512-wide result; the remaining ~33 k could
+come from a small extra head or normalization layer. If the PDF code relied on
+the `nn.TransformerEncoderLayer` default, its "four million" was correct.
+Re-derive from the PDF's actual code before keeping the correction.
+
+## 5. Findings in Detail
+
+### F1 (High): Jev's terms prohibit distillation from Jev
+
+TypeSafe's [Master Customer Agreement][typesafe-mca] (last updated 2026-09-23),
+§2.3(b): the customer will not "use the Services or any Output … to perform model
+distillation, train a model to imitate the output of the Services, or develop (or
+to facilitate the development of) a similar or competing product or service."
+
+Consequences:
+
+- The hosted Jev API cannot be a teacher, label source, or imitation target.
+- Even using Jev outputs to select or tune the student is a legal grey area;
+  get legal review before any Jev-in-the-loop evaluation.
+- Open alternatives exist and are licensed for this use: Vela 2.0 and Decision
+  3.0 are Apache-2.0; autotrust/JEV-35B is Apache-2.0.
+- Crivo models are CC BY-NC 4.0 and therefore unsuitable for commercial use.
+- Vela's training data includes CC-BY-SA sources, and the Vela 0.3B tokenizer
+  carries Gemma terms. Do not reuse that tokenizer in the student: it is also a
+  256 k vocabulary, far too large for the MCU.
+
+Add a licensing gate to M0 and M3 that records the license of each teacher,
+dataset, tokenizer, and generated label set.
+
+### F2 (High): Teacher landscape update and selection
+
+| Teacher | Parameters | Inputs | Question isolation | Documented memory | Documented speed | Host fit |
+| --- | --- | --- | --- | --- | --- | --- |
+| [Vela 2.0 0.3B][vela-03b] | 307 M | Text, 17 languages | No; one bidirectional sequence | ≈ 1.2 GB FP32 parameters (derived) | 0.09 s per full router request (A40) | Laptop GPU or CPU; ONNX path |
+| [Vela 2.0 0.8B][vela-08b] | 756 M | Text, 17 languages | Yes ("bundled == single") | ≈ 3 GB FP32 parameters | 0.13 s (A40) | Fits the 12 GB laptop GPU in the devcontainer README |
+| Vela 2.0 4B | 4.2 B | Text | Yes | ≈ 17 GB FP32 | 0.40–0.49 s (A40) | One 24 GB GPU, tight |
+| Vela 2.0 9B | 7.9 B | Text | Yes | ≈ 32 GB FP32 | 0.60–0.71 s (A40) | 12 GB GPU with the INT8 loader in `teacher/` (measured below); 24 GB GPU with BF16 weights and a similar loader |
+| [d3-edge][d3-edge] | 0.59 B | Text, JSON, images, video | Per-question forward passes | 5.2 GiB peak (one request) | 6.6 ms text, 58.6 ms image (MI325X) | Laptop GPU |
+| d3-lite / d3-nano / d3-mini | 0.9 / 2 / 5 B | Multimodal | Same | Not checked | Not checked | — |
+| [d3-flash][d3-flash] | 8.39 B | Multimodal | Same | 23.8 GiB peak (one request) | 19.2 ms text, 166 ms image (MI325X) | 24 GB GPU, borderline |
+| [JEV-35B][jev-35b] | 35 B MoE, ~3 B active | Text, images | Not stated | 66.5 GiB BF16; 23.3 GiB NVFP4 | 204 ms median (B200) | Needs a 32–48 GB+ GPU |
+
+Notes:
+
+- Decision 3.0 model cards were still being updated on the review date. Pin
+  revisions and expect churn.
+- Prefer teachers with question isolation: labels then do not depend on which
+  other questions were asked in the same call.
+
+#### Running the 9B teacher on a 12 GB GPU
+
+An 8-bit 9B fits a 12 GB GPU; it is just not plug-and-play. Update after the
+review: the loader below is implemented and measured, with full tables in
+[DESIGN.md](DESIGN.md) §4 and the raw
+[report](teacher/reports/vela-2.0-9b-int8-g128-rtx-a3000.json).
+
+Why the published path does not fit: the custom `from_pretrained` refuses any
+dtype other than FP32, builds and loads the model itself (so Transformers
+quantization options such as 8-bit loading never apply), casts every tensor to
+FP32, and then moves the whole model to CUDA ([source][vela-9b-code]). That needs
+about 32 GB of GPU memory and about as much CPU RAM while loading. No quantized
+Vela 2.0 9B was published on Hugging Face as of the review date.
+
+Weight memory, computed from the published [config][vela-9b-config] (hidden size
+4,096, 32 layers of which 8 use full attention and 24 Gated DeltaNet, MLP width
+12,288, vocabulary 248,320). The config states that backbone Linear and conv1d
+weights are stored in BF16 and everything else, including the embedding table,
+in FP32.
+
+| Weight format | GPU weight memory |
+| --- | --- |
+| Official load, all FP32 | 31.8 GB |
+| As stored (Linear BF16, rest FP32) | 18.0 GB |
+| All BF16 | 15.9 GB |
+| INT8 Linear, BF16 embeddings | 9.0 GB |
+| INT8 Linear, INT8 embeddings | 8.0 GB |
+| INT8 Linear, embeddings kept on the CPU | 7.0 GB |
+| GGUF-style Q8_0 (8.5 bits per weight) | 8.5 GB |
+| About 4.5 bits per weight, INT8 embeddings | 5.0 GB |
+
+Of the 7.95 B parameters, 6.91 B sit in large backbone projections and 1.02 B in
+the embedding table; heads, norms, gates, and convolutions total about 20 M.
+Activations are small at teacher-sized inputs: the largest transient (the MLP)
+is about 0.04 GiB at 512 tokens and 1.1 GiB at the 16,384-token maximum. The
+measured run needed more: about 1.1 GiB for the CUDA context and workspaces, and
+peak allocations of 7.1 GiB for short requests, 10.1 GiB at 12.3 k tokens, and
+11.2 GiB at 16.3 k tokens. That is 4.6 GiB above the weights, several times the
+MLP-only estimate; the FP32 PyTorch Gated DeltaNet kernel is the likely cause
+but was not profiled. F3 already requires the teacher to see the student's
+short, truncated view, so long-context activations should not arise during
+labeling.
+
+Implemented recipe ([teacher/vela_int8.py](teacher/vela_int8.py), weight-only
+INT8 with BF16 compute):
+
+1. Build the model skeleton on PyTorch's meta device, then stream tensors one at
+   a time from the safetensors files. Peak host memory was 5.1 GiB.
+2. Quantize only the large projections: MLP gate/up/down, attention q/k/v/o, and
+   Gated DeltaNet `in_proj_qkv`, `in_proj_z`, and `out_proj`, as symmetric INT8
+   with one BF16 scale per 128 input columns. Keep conv1d, the
+   `in_proj_a`/`in_proj_b` gates, `A_log`, `dt_bias`, norms, and all heads FP32
+   as released. Per-row scales doubled the largest probability change (0.029
+   versus 0.013) and saved only 0.1 GiB.
+3. Dequantize to BF16 right before each matmul in a small custom Linear. FP16
+   compute is avoided: Vela states FP16 is not supported, and older bitsandbytes
+   LLM.int8() releases cast BF16 activations to FP16.
+4. Keep the FP32 embedding table in host RAM and copy only gathered rows to the
+   GPU.
+5. Leave Vela's tokenizer, rendering, windowing, calibration, and SystemOne
+   engine unchanged; only backbone storage changes.
+
+Measured on the devcontainer's RTX A3000 12 GB laptop GPU under WSL2, with
+Transformers' PyTorch Gated DeltaNet kernel (flash-linear-attention is not
+installed):
+
+| Measurement | Result |
+| --- | --- |
+| GPU memory after load | 6.6 GiB of parameters (6.44 INT8, 0.10 scales, 0.08 FP32); 7.7 GiB in use with the CUDA context |
+| Short SystemOne requests | Median 0.85 s each; 2.0 rows/s batched at a 2,048-token budget |
+| Long single inputs | About 1,240 tokens/s up to 12.3 k tokens; 16.3 k tokens exceeded GPU memory and took 85 s |
+| INT8 vs streamed BF16 reference, 25 requests, 273 probabilities | Max abs difference 0.013, mean 0.0009; no decision, label, or span changes |
+| INT8 and BF16 reference vs the release's recorded outputs | Max abs difference 0.009 and 0.002 |
+
+Validation, revised: instead of a 24 GB GPU or 32 GB of host RAM, the BF16
+reference streams the release's stored BF16 projection weights from the
+safetensors shards into the same kernels, which is exactly the evaluated
+computation. Its 0.002 agreement with the recorded outputs also shows that the
+fallback Gated DeltaNet kernel, which the source calls not parity-tested on GPU,
+reproduces the release on these examples. Still required before using INT8
+labels:
+
+- The same comparison on the project's 300–500-row reviewed set, adding KL
+  divergence per question type.
+- A calibration re-check: Vela's temperatures and thresholds were fitted on the
+  BF16-autocast path.
+- The bake-off: judge the INT8 9B like any other teacher, by accuracy, NLL, and
+  calibration error against human labels. Parity explains differences; task
+  quality decides.
+
+Throughput: the earlier estimate (13.8 GFLOP per token, roughly 0.35–0.7 s per
+512-token sequence) matched. Long inputs ran at about 1,240 tokens/s, and short
+requests took a median 0.85 s including fixed overheads. At 2 short rows per
+second, a 20,000-example pilot takes about 3 hours. Keep the batch budget at
+2,048 tokens: at 4,096 the allocator reserved 13.6 GiB, WSL2 spilled to system
+memory instead of failing, and throughput fell to 0.63 rows/s.
+
+Why not a GGUF Q8_0 file: llama.cpp could at most run the Qwen3.5 backbone (if
+it supports that hybrid architecture). Vela's readout heads, prefix-sharing tree
+forward, rendering, and calibration would have to be rebuilt around per-token
+hidden states. That is possible, because each question is documented to equal
+the single sequence of the shared prefix plus its own block, but it is far more
+work than a PyTorch loader for the same roughly 8.5 GB of memory.
+
+4-bit weights (about 5 GB) carry more quality risk; use them only if 8-bit does
+not fit, for example with large batches. Teachers that fit 12 GB without
+quantization: Vela 0.8B (about 3 GB FP32), d3-edge (5.2 GiB peak), and Vela 4B in
+BF16 (about 8.4 GB, also needing a custom loader).
+
+Recommendation: replace the fixed teacher table with a bake-off on the reviewed
+evaluation set. Measure accuracy or macro-F1 against human labels, NLL, Brier
+score, calibration error, per-class recall, and cost. A larger teacher is not
+automatically better for a specific domain, as the design already notes.
+
+### F3 (High): Labeling contract details
+
+1. **Cross-question dependence in Vela 0.3B.** The published
+   [layout][vela-03b-config] places all questions before the state in one
+   sequence (`<bos> ([Q] q ([O] name: desc)* …)* … [SEP_SCHEMA] ([SEG_role] part)* <eos>`),
+   and the [model source][vela-03b-code] calls the encoder with a plain padding
+   mask. Every question can therefore attend to every other question. Test single
+   versus bundled versus permuted questions; if results differ materially, label
+   one question per call or fix and record the bundle.
+2. **Teacher-student view alignment.** If the student sees only the first T
+   tokens, the teacher must label exactly that truncated text. Otherwise the
+   student is trained to predict information it never receives. Crivo-32M's
+   recipe does exactly this: "Teacher logits were precomputed once on exactly the
+   tokens the student sees (same rendering and truncation)."
+3. **Rendering provenance.** Record state serialization (JSON key order),
+   question text, option descriptions and order, model revision, calibration
+   flags (for example Vela's optional `noul_calibration`), and thresholds.
+4. **Store logits where available.** The Vela 0.3B ONNX path returns
+   `opt_logits`; logits allow consistent temperature handling during
+   distillation.
+5. **Option order.** Permute options during labeling and training so neither
+   model learns position.
+6. **Loss reference.** [Crivo-32M][crivo-32m] used
+   `L = 0.5·[CE(gold) + 0.5·Brier(gold)] + 0.5·τ²·KL(teacher_τ ‖ student_τ)`
+   with τ = 2 for three or more options and τ = 1 for binary questions, and
+   gold-only loss where the teacher is weak. This is a reasonable second
+   experiment after the design's temperature-1 baseline.
+7. **Transfer set.** [Tang et al.][tang] build distillation data with simple
+   augmentation (masking, part-of-speech-guided word replacement, n-gram
+   sampling). Label in-domain unlabeled and augmented text with the teacher, not
+   only the human-labeled set.
+
+### F4 (High): Define the on-device Jev-compatible contract
+
+The two reference systems compute `confidence` differently:
+
+| Answer type | TypeSafe Jev ([docs][typesafe-confidence]) | Vela 2.0 ([usage][vela-03b-usage]) |
+| --- | --- | --- |
+| Choice | (p_max − 1/n) / (1 − 1/n) | p_1 − p_2 (top-two margin) |
+| Score | max(0, 1 − Σ p_i·\|i − m\| / MAD_uniform), m = mode | "One minus the normalised variance"; 1 − Var(p) / Var(uniform) reproduces Vela's example |
+| Noul | None returned; suggests \|2p − 1\| | None returned |
+
+Worked example from Vela's own output, choice probabilities (0.727, 0.217,
+0.056): Vela reports 0.51; Jev's formula gives 0.59. Score probabilities
+(0.469, 0.336, 0.194): Vela reports 0.118; Jev's formula gives 0.
+
+Recommendation: state in the design which semantics the device implements. If the
+goal is drop-in Jev API compatibility, implement TypeSafe's formulas on host and
+device. Always return the full `probabilities`, keep Jev's limits (≤ 255 options,
+2–10 score levels), report the versioned model ID, and keep the design's rule that
+`confidence` is a distribution statistic, not a probability of being correct.
+
+### F5 (Medium): NPU-friendly text trunk
+
+Recommended data path:
+
+```mermaid
+flowchart LR
+  A["Text or typed state"] --> B["M55: validate, normalize, tokenize"]
+  B --> C["M55: INT8 embedding gather into the NPU input buffer"]
+  C --> D["Neural-ART: static INT8 conv trunk (Conv + ReLU)"]
+  D --> E["M55: masked max/mean pooling over true length"]
+  E --> F["M55: per-question heads (versioned blobs)"]
+  F --> G["M55: softmax/sigmoid, temperature, confidence, rejection"]
+  G --> H["Typed Jev-shaped result"]
+```
+
+Why this split:
+
+- Gather is software on the NPU anyway; writing INT8 embeddings straight into the
+  input buffer costs only T x d bytes (12 KiB for T = 128, d = 96).
+- Masked pooling on the M55 removes padding artifacts exactly and avoids
+  global-pooling window limits. Reading a 128 x 128 INT8 feature map is 16 KiB.
+- Heads on the M55 cost K x C MACs, microseconds, and make the question catalogue
+  replaceable data (F7).
+- The NPU graph becomes Conv + ReLU only: static, fully mappable, and simple to
+  validate.
+
+Layout experiment. ST's line-buffer rule (`feature width x input channels <= 2048`
+for INT8) suggests that `[1, C, 1, T]` with 1x3 kernels splits work when
+`T x C > 2048` (for example 128 x 128 = 16,384), while `[1, C, T, 1]` with 3x1
+kernels keeps the width at 1. Both kernel shapes have a dimension of 1, which ST
+says is efficient. This is a hypothesis; compare epoch counts and estimated
+cycles in the compiler reports (`--mapping-recap`, `--csv-file`).
+
+Local check run for this review: both layouts exported from PyTorch at opset 13
+and quantized with ONNX Runtime static QDQ (QInt8, per-channel, asymmetric
+activations) produce only `Conv`, `QuantizeLinear`, and `DequantizeLinear` nodes,
+static input shapes, and per-channel axis 0, which matches ST's documented
+requirement. Whether the ST compiler maps them efficiently still needs the tool.
+
+Other trunk guidance: prefer channel counts aligned with the conv units (for
+example 96 or 128 inputs and 24, 48, or 96 outputs), avoid prime channel counts,
+use kernel widths of 3 or 6 and small dilations, fold BatchNorm, and avoid
+LayerNorm and attention in the first version.
+
+### F6 (Medium): Clocks, power, and energy
+
+The headline 800 MHz / 1 GHz figures require overdrive at VDDCORE 0.9 V. Budget
+latency at nominal clocks (600 MHz CPU, 800 MHz NPU) and treat overdrive as an
+optional gain measured separately for energy and thermals. ST also notes that in
+the recommended asynchronous runtime mode the core executes `WFE`; the NPU, NPU
+RAMs, and any memories used must stay clocked in low-power modes or inference
+never completes.
+
+### F7 (Medium): Make the question catalogue data, not firmware
+
+Freeze a shared trunk on the NPU and store per-question heads as small versioned
+blobs evaluated on the M55. To add or change a question:
+
+1. Label in-domain data for the new question with the chosen teacher.
+2. Train only the head on frozen trunk features.
+3. Calibrate it on held-out data through the deployed numeric path.
+4. Pass the same gates as any other release, then ship the blob.
+
+No NPU recompilation is needed. Trunk updates can use ST's
+[runtime-loadable model][st-reloc] support (relocatable binaries installed without
+reflashing the application) or a normal firmware update.
+
+The limit: frozen features must contain the information a new question needs.
+Train the trunk multi-task on a diverse set of in-domain questions. This gives
+runtime configurability *within a domain*; it is not zero-shot.
+
+### F8 (Medium): Boot and persistence specifics
+
+- ST's flash boot uses an FSBL, a signed application
+  (`STM32_SigningTool_CLI … -t ssbl -hv 2.3`, programmed at `0x70100000` in ST's
+  example), and separately programmed network parameters ([ST
+  getting-started][st-gs-ic]).
+- Copying weights into internal SRAM costs about 9 ms/MB (§3), negligible at
+  boot.
+- Memory initializers can be C arrays copied by startup code, provided the target
+  RAM is enabled and clocked first, or raw images placed by a loader
+  ([initializers][st-initializers]).
+- The NPU is not TrustZone-aware; isolation uses RIF compartment IDs, and RISAF
+  defaults block accesses that are not secure, privileged, CID 1
+  ([project guide][st-projects]). Plan RIF/RISAF configuration as part of M5.
+
+### F9 (Medium): Board choice for M1
+
+ST's NPU validation and CM55 validation projects live under
+`Projects/STM32N6570-DK/Applications/`, and the runtime-loadable evaluation
+environment supports only the STM32N6570-DK ([project guide][st-projects],
+[runtime-loadable models][st-reloc]). The NUCLEO-N657X0-Q is supported by ST's
+image-classification application but will need porting for the validation
+tooling. Start M1 on the DK with `USE_EXTERNAL_MEMORY_DEVICES=0`, then move to the
+Nucleo if its form factor is preferred.
+
+### F10 (Low): Housekeeping and numerical parity
+
+- DESIGN §11 is outdated: the devcontainer exists and its README records passing
+  CPU and Podman/WSL GPU smoke tests.
+- Pin one ST Edge AI Core release. ST's image-classification example uses 4.0.0,
+  the design cites 4.0.1 documentation, and mismatched generated code fails with
+  "Possible mismatch in ll_aton library used".
+- The distro Arm compiler is GCC 13.2.1. The relocatable-model flow builds with
+  `arm-none-eabi-gcc` from `PATH`; pin the toolchain ST tests against.
+- ST's [quantization guide][st-quant] warns that ONNX Runtime on x86-64 with AVX2
+  or AVX-512 can saturate in U8S8 kernels. Treat the host INT8 reference as an
+  approximation and check for saturation before attributing mismatches to the
+  NPU.
+- EmbBERT's reported 8-bit result used weight-only block quantization with FP16
+  activations; it is not evidence for full-INT8 NPU deployment.
+
+### F11 (Strategic): Modality and task decomposition
+
+The STM32N6 is a vision-first MCU: its ISP output can be DMA'd into the NPU, and
+ST's image-classification examples run in 1–44 ms. Decision 3.0 now offers open
+multimodal Jev-style teachers. If the robotics application in the PDF uses a
+camera, a vision student answering fixed questions about frames may be a better
+fit than text.
+
+The [JEV-35B card][jev-35b] adds a design lesson: in a simulated pick-and-place
+task, a binary-decision servo (two binary questions per step: left or right,
+above or below) reached 75% success, while "direct choice among 8 motor actions"
+scored 0%; the card advises to "decompose control into simple visual questions."
+Atomic binary and small choice questions are also the easiest to distill into
+tiny heads.
+
+## 6. Feasibility Analysis
+
+### 6.1 Capability tiers
+
+| Tier | Delivers | N6 internal SRAM | Notes |
+| --- | --- | --- | --- |
+| T0: one fixed question | Jev-shaped answer for one trained question | Credible | Design milestones M1–M4 |
+| T1: fixed catalogue, shared trunk, K heads | Many questions per encoder pass, like Jev's "state once" | Credible | Head cost K x C MACs on the M55 |
+| T2: host-compiled heads | New in-domain questions without firmware or NPU changes | Credible if trunk features transfer | Each head passes the same gates (F7) |
+| T3: fixed-label span tagging | Per-token labels, for example fixed PII types | Credible for lexical labels | Grounded hallucination spans need pairwise reasoning: not credible |
+| T4: on-device option scoring | Runtime option text scored on the device | Research | Crivo's `[OPT]` readout is the reference design, but at 32 M+ parameters |
+| T5: general zero-shot Jev | Arbitrary questions | Not credible internally | See the external-memory estimate below |
+
+External-memory estimate for T5 (order of magnitude, not measured): a Crivo-32M-
+class encoder (12.5 M-parameter core) at 256 tokens needs about 3.2 G MAC of
+projections plus about 0.5 G MAC of attention products per question. With
+attention on the M55 at ~1.1 G MAC/s, projections on the NPU, and weights streamed
+from external flash, this is roughly 0.5–1 s per question, and Crivo-style models
+need one sequence per question. Combined with weak new-domain quality, this is a
+research stretch only.
+
+### 6.2 Compute and memory for candidate students
+
+Estimates computed for this review. Assumptions: INT8; M55 at 800 MHz and 0.73
+cycles/MAC (ST's measured CM55 example; real kernels vary roughly 0.5–2); NPU at
+1 GHz with 30–100 effective MAC/cycle (published N6 work reached ~52). Excludes
+epoch overhead, preprocessing, and I/O.
+
+| Candidate | Parameters (INT8) | MACs | Peak activations | M55 only | NPU compute |
+| --- | --- | --- | --- | --- | --- |
+| A: hashed n-gram bag 16 k x 64 + MLP | 1.06 M (≈ 1.0 MiB) | 0.03 M | ≈ 16 KiB | ≈ 0.02 ms | Not needed |
+| B: byte CNN, T = 512, 4 conv blocks with pooling | 155 k | 18.9 M | ≈ 48 KiB | ≈ 17 ms | ≈ 0.19–0.63 ms |
+| C: subword CNN, vocabulary 4,096, d = 96, T = 128 | 587 k | 23.6 M | ≈ 32 KiB | ≈ 22 ms | ≈ 0.24–0.79 ms |
+| D: transformer d = 128, 2 layers, T = 128 | 937 k | 50.3 M dense + 8.4 M attention | ≈ 112 KiB | ≈ 54 ms | Dense ≈ 0.5–1.7 ms; attention on M55 ≈ 8 ms |
+| E: numeric-state MLP 64-256-256-8 | 85 k | 0.08 M | < 1 KiB | ≈ 0.08 ms | Not needed |
+| [EmbBERT][embbert] (paper, 256 tokens) | 357 k | ≈ 136 M | ≈ 128 KiB | ≈ 124 ms | Attention-bound |
+
+Observations:
+
+- Memory is comfortable for every candidate. Embedding tables, not layers,
+  dominate parameter counts.
+- Small CNN students would run in tens of milliseconds on the M55 alone. The NPU
+  gives roughly 25–90x on the trunk (compute only), which matters for tight
+  deadlines, battery life, or larger trunks, but an M55-only fallback is viable
+  for first baselines.
+- For transformer students, the software-fallback attention dominates latency
+  (Amdahl's law), yet ≈ 10 ms total may still be acceptable. The design's
+  "CNN/MLP first, profile transformers" stance is quantitatively sound.
+
+### 6.3 Expected task quality
+
+- [EmbBERT][embbert] (2 MB total memory, FP32 accounting) on narrow tasks
+  (TinyNLP): EmbBERT 87.19%, a 10x larger BERT-Tiny 86.99%, an embedder-only model
+  86.41%. On pairwise and reasoning tasks (GLUE): EmbBERT 63.50, BERT-Tiny 63.16,
+  embedder-only 56.92. Simple models suffice for routing and intent-style
+  questions; questions comparing two text parts benefit from token interaction.
+- [pQRNN][pqrnn]: 1.3 M INT8 parameters reached AUC 0.963 on civil_comments
+  versus 0.976 for a 110 M-parameter BERT, without pretraining. Its projection
+  layer hashes tokens to ternary features and has no embedding table.
+- [Crivo-150M][crivo-150m]: 27.74 on private same-skill tests, but 9.77 on
+  private new-domain tasks. Small decision models do not generalize across
+  domains; validate per task.
+
+## 7. Alternatives
+
+### 7.1 Model alternatives
+
+| Option | Runs on | Strengths | Weaknesses | Recommendation |
+| --- | --- | --- | --- | --- |
+| Rules and keyword logic | M55 | Deterministic, auditable | Brittle with paraphrase | Mandatory baseline (design already requires it) |
+| Hashed n-gram linear model (fastText-like) | M55 | No vocabulary file, tiny compute, robust baseline | No word order beyond n-grams | First learned baseline |
+| [Model2Vec][model2vec]-style static embeddings, pruned vocabulary and reduced dimension + linear head | M55 | Distilled from sentence encoders; trivial compute | Smallest listed model is 7.5 M parameters; needs vocabulary pruning; inherits the source tokenizer (WordPiece for the listed English models) | Strong baseline after pruning |
+| Projection network ([PRADO/pQRNN][pqrnn]) | M55, conv parts on NPU | No embedding table, < 200 k–1.3 M parameters | QRNN recurrence is not NPU-friendly; replace with convolutions | Good fit for the memory budget |
+| 1-D CNN student (design's choice) | NPU trunk, M55 rest | Fully mappable, fast | Limited long-range interaction | Primary candidate |
+| Tiny transformer / [EmbBERT][embbert] | NPU dense, M55 attention | Better pairwise reasoning | Attention falls back to software | Second candidate if CNN quality fails |
+| Ternary / BitNet | — | Smaller storage at rest | The NPU computes INT8: weights occupy INT8 SRAM during inference regardless of storage format | Do not pursue for SRAM savings |
+| Binary (ST DQNN) | M55 only | Very small | No NPU path | Not recommended |
+
+The ternary point deserves emphasis: for NPU execution, SRAM holds INT8 weights.
+Ternary training could only reduce flash storage, unless ST's hardware weight
+decompression (present in the silicon, not exposed in the 4.0.1 documentation
+reviewed) becomes usable.
+
+### 7.2 Hardware alternatives
+
+| Option | Relevant facts | When to consider |
+| --- | --- | --- |
+| STM32N6, internal only (current plan) | §3 | Default |
+| STM32N6 with external memory (DK) | External NOR flash and PSRAM; NPU cache for external regions | Larger trunks or T5 research; breaks the internal-only constraint |
+| [Alif Ensemble E4][alif-e4] / [E8][alif-e8] | Cortex-M55 up to 400 MHz; three NPUs (E8: Ethos-U85 plus two Ethos-U55; Ethos-U85 has native transformer support per [Arm][ethos-u85]); E4 has "over 15 MB of on-die memory"; E8 adds dual Cortex-A32 | If attention-based students become necessary or more on-die memory is needed |
+| [NXP i.MX RT700][nxp-rt700] | Cortex-M33 325 MHz, eIQ Neutron NPU, up to 7.5 MB SRAM | Larger SRAM; European vendor; no Helium |
+| Linux-class MPU with NPU and DRAM | Runs 100 M+ parameter decision encoders | If general Jev behaviour is a hard requirement |
+
+### 7.3 System alternatives
+
+- **Cascade with explicit deferral.** The MCU answers confident cases; uncertain
+  cases defer to a larger open Jev-style model when a link exists, otherwise to a
+  safe fallback. This keeps the primary path on-device while being honest about
+  the boundary, consistent with the design's rule against hidden host inference.
+- **Feature producer.** The MCU computes typed features or embeddings, and a host
+  makes final decisions. This is not on-device classification and must be labeled
+  as such.
+
+## 8. Risk Register
+
+| Risk | Likelihood | Impact | Mitigation | Earliest test |
+| --- | --- | --- | --- | --- |
+| Task and ground truth stay undefined | High | Blocks everything | M0 template (§10) | M0 |
+| Licensing breach (Jev MCA, share-alike data, Gemma tokenizer, NC models) | Medium | High | Licensing gate; open teachers; own tokenizer | M0 |
+| Teacher weak on the domain | Medium | High | Bake-off against human labels (F2) | M3 |
+| Label artifacts (bundles, truncation mismatch, option order) | Medium | Medium | Contract tests (F3) | M3 |
+| NPU mapping surprises (fallbacks, column splits) | Medium | Medium | Compile-only experiments before training | M1a |
+| INT8 hurts rare classes or calibration | Medium | Medium | Per-class checks; QAT fallback; calibrate the deployed path | M4 |
+| Hard to debug numerics without an emulator | Medium | Medium | Golden vectors; NPU validation intermediates; host saturation check | M1b |
+| Boot, signing, RIF complexity | Medium | Medium | Cold-boot a dummy model early | M1b |
+| ST tool or runtime version drift | High | Low–Medium | Pin versions; vendor tools in `.devcontainer/tools` | M1a |
+| Overdrive power or thermal limits | Low | Medium | Budget at nominal clocks | M4 |
+| Confident wrong answers on out-of-domain inputs | High | High | OOD sets, rejection, deferral, interlocks | M4 |
+| Fresh teacher releases change | High | Low | Pin revisions and hashes | M3 |
+| INT8 teacher shifts labels or calibration | Low (smoke check found no changes) | Medium | Parity on the reviewed set against the streamed BF16 reference; calibration re-check | M3 |
+| Teacher host limits (12 GB GPU, WSL2 memory spill) | Medium | Low | 2,048-token batch budget; flash-linear-attention or a larger GPU for inputs above about 12 k tokens | M3 |
+
+## 9. Recommended Next Steps
+
+1. **M0 decisions** using the template in §10.
+2. **M1a, compile-only (no board):** install the Linux ST Edge AI Core under
+   `.devcontainer/tools/stedgeai`, then compile with
+   `profile-internal-memories-only--default`:
+   - Layout `[1, C, 1, T]` with 1x3 kernels versus `[1, C, T, 1]` with 3x1.
+   - Global pooling inside the graph versus returning feature maps.
+   - Gather inside the graph versus M55 embeddings.
+   - One transformer block, to quantify software fallback.
+   - Record epochs, software operators, pool usage, and estimated cycles.
+3. **M1b, board:** STM32N6570-DK, NPU validation project with
+   `USE_EXTERNAL_MEMORY_DEVICES=0`, golden vectors, latency at nominal and
+   overdrive clocks, and a cold boot with a signed FSBL and application.
+4. **Teacher work:** the Vela 2.0 9B release code is pinned and reviewed, and
+   the INT8 loader is implemented and smoke-tested (F2). Next: run it on the
+   reviewed set, then the bake-off and the question-isolation and truncation
+   tests. Other teachers' remote code still needs review and your approval.
+5. **Baselines (M55 only):** rules, hashed n-gram linear model, pruned static
+   embeddings, evaluated on the locked test set.
+6. **Student:** CNN trunk with heads on the M55; supervised versus distilled
+   comparison; PTQ; board parity; calibration; rejection curves.
+
+## 10. M0 Decision Template
+
+| Decision | Example answer to replace |
+| --- | --- |
+| First question(s) in Jev form | `choice`: "Which subsystem does this operator note refer to?" (5 options + `other`) |
+| Input modality and source | Text from a BLE companion app, ≤ 256 UTF-8 bytes |
+| Languages | English and German |
+| Ground-truth owner and policy | Maintenance lead reviews ambiguous cases |
+| Error costs | Misrouting to the wrong subsystem 5x worse than rejecting |
+| Required metrics | Macro-F1 ≥ 0.90 at ≥ 80% coverage; reject below |
+| Latency and power | Decision within 50 ms at nominal clocks; < 1 mJ per decision |
+| Memory policy | No external RAM during inference; external flash allowed for boot |
+| Update policy | Heads updatable over the air; trunk via firmware release |
+| Commercial use and licensing | Commercial product; Apache-2.0 teachers only |
+
+## 11. Suggested Edits to DESIGN.md
+
+Status: applied to DESIGN.md on 2026-10-13, together with the measured INT8
+teacher results (DESIGN §4).
+
+- DESIGN §1: add "Hosted Jev as teacher or label source: not permitted by
+  TypeSafe's customer agreement" to the capability table.
+- DESIGN §3: note nominal versus overdrive clocks; add the memory-pool map; add
+  ST's feature-width and pooling rules for 1-D sequences.
+- DESIGN §4: add Vela 0.8B and Decision 3.0; replace the teacher table with a
+  bake-off plan; add question-isolation and teacher-view alignment requirements;
+  note the official Vela 0.3B ONNX FP16 path, the BF16-stored 9B backbone, and
+  the INT8 weight-only route that fits the 9B on a 12 GB GPU.
+- DESIGN §5: re-derive the PDF student's parameter count from its actual code.
+- DESIGN §6: move embedding gather, pooling, and heads to the M55; define the
+  confidence formulas explicitly; add the host-compiled heads mechanism.
+- DESIGN §8: add the AVX2 saturation caveat to numerical parity; prefer the DK
+  for M1.
+- DESIGN §9: add EmbBERT, pQRNN/PRADO, Model2Vec, Crivo, and hardware
+  alternatives; state that ternary weights do not reduce NPU SRAM use.
+- DESIGN §10: add the licensing gate, including Crivo's non-commercial license.
+- DESIGN §11: replace with a description of the existing devcontainer.
+- DESIGN §12: split M1 into compile-only M1a and board M1b; add modality and
+  task decomposition to M0.
+
+## Sources
+
+Hardware and tools:
+
+- [STM32N657 product page][st-n657]
+- [ST Neural-ART NPU concepts][st-concepts]
+- [Neural-ART operators][st-operators] and [compiler][st-compiler]
+- [Memory initializers][st-initializers] and [runtime-loadable models][st-reloc]
+- [STM32N6 example projects][st-projects] and [quantization guide][st-quant]
+- [STM32N6 image-classification getting started][st-gs-ic]
+
+Jev and Jev-style models:
+
+- TypeSafe [API][typesafe-api], [models][typesafe-models],
+  [confidence][typesafe-confidence], [customer agreement][typesafe-mca]
+- [Vela 2.0 overview][vela-blog]; Vela 0.3B [card][vela-03b],
+  [usage][vela-03b-usage], [config][vela-03b-config], [code][vela-03b-code];
+  [Vela 0.8B][vela-08b]; Vela 9B [usage][vela-9b-usage], [config][vela-9b-config],
+  and [code][vela-9b-code]
+- [Decision 3.0 collection][d3-collection], [d3-edge][d3-edge],
+  [d3-flash][d3-flash]
+- [Crivo-150M][crivo-150m], [Crivo-32M][crivo-32m], [JEV-35B][jev-35b],
+  [Decision Index][decision-index]
+
+Methods and measurements:
+
+- [EmbBERT][embbert], [pQRNN/PRADO][pqrnn], [Model2Vec][model2vec],
+  [Tang et al.][tang]
+- STM32N6 studies: [eye tracking][eye-tracking], [CubeSat][cubesat],
+  [speech enhancement][speech], [line segments][nplsd], [ARGO][argo],
+  [Gideon][gideon], [edge processor review][edge-review]
+- Alternatives: [Arm Ethos-U85][ethos-u85], [Alif E4][alif-e4],
+  [Alif E8][alif-e8], [NXP i.MX RT700][nxp-rt700]
+
+[st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
+[st-concepts]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-programming-model.html
+[st-operators]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-operators.html
+[st-compiler]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
+[st-initializers]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-memory-initializers.html
+[st-reloc]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-reloc-mode.html
+[st-projects]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-stm32n6-projects.html
+[st-quant]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-quantization.html
+[st-gs-ic]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification
+[typesafe-api]: https://docs.typesafe.ai/api
+[typesafe-models]: https://docs.typesafe.ai/models
+[typesafe-confidence]: https://docs.typesafe.ai/confidence
+[typesafe-mca]: https://typesafe.ai/legal/mca
+[vela-blog]: https://vllm-sr.ai/blog/vela-2-0-open-foundation-routing-models/
+[vela-03b]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B
+[vela-03b-usage]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/USAGE.md
+[vela-03b-config]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/config.json
+[vela-03b-code]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/modeling_vela2.py
+[vela-08b]: https://huggingface.co/vllm-sr/Vela-2.0-0.8B
+[vela-9b-usage]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/USAGE.md
+[vela-9b-config]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/config.json
+[vela-9b-code]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/modeling_vela2.py
+[d3-collection]: https://huggingface.co/collections/vllm-sr/decision-30
+[d3-edge]: https://huggingface.co/vllm-sr/d3-edge
+[d3-flash]: https://huggingface.co/vllm-sr/d3-flash
+[jev-35b]: https://huggingface.co/autotrust/JEV-35B
+[crivo-150m]: https://huggingface.co/tardellirs/crivo-150m
+[crivo-32m]: https://huggingface.co/tardellirs/crivo-32m
+[decision-index]: https://huggingface.co/spaces/multimodalart/jev-decision-index
+[embbert]: https://arxiv.org/abs/2502.10001
+[pqrnn]: https://research.google/blog/advancing-nlp-with-efficient-projection-based-model-architectures/
+[model2vec]: https://github.com/MinishLab/model2vec
+[tang]: https://arxiv.org/abs/1903.12136
+[eye-tracking]: https://arxiv.org/abs/2508.13244
+[cubesat]: https://arxiv.org/abs/2603.20174
+[speech]: https://arxiv.org/abs/2609.29867
+[nplsd]: https://arxiv.org/abs/2609.25022
+[argo]: https://arxiv.org/abs/2607.16222
+[gideon]: https://arxiv.org/abs/2605.04282
+[edge-review]: https://arxiv.org/abs/2603.08725
+[ethos-u85]: https://www.arm.com/products/silicon-ip-cpu/ethos/ethos-u85
+[alif-e4]: https://alifsemi.com/ensemble-e4-series/
+[alif-e8]: https://alifsemi.com/ensemble-e8-series/
+[nxp-rt700]: https://www.nxp.com/products/i.MX-RT700

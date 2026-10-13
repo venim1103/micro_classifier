@@ -1,0 +1,37 @@
+{
+  "name": "Micro Classifier (CPU)",
+  "initializeCommand": ["bash", "${localWorkspaceFolder}/.devcontainer/prepare-build.sh"],
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "options": ["--platform=linux/amd64"]
+  },
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true,
+  "init": true,
+  "runArgs": ["--shm-size=2g"],
+  "mounts": [
+    "source=micro-classifier-cache-${devcontainerId},target=/home/vscode/.cache,type=volume",
+    "source=${localWorkspaceFolder}/.devcontainer/tools,target=/opt/st-tools,type=bind,readonly"
+  ],
+  "postCreateCommand": ["/opt/venv/bin/python", "${containerWorkspaceFolder}/.devcontainer/smoke.py"],
+  "waitFor": "postCreateCommand",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "marus25.cortex-debug"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "cmake.configureOnOpen": false,
+        "cortex-debug.armToolchainPath": "/usr/bin",
+        "cortex-debug.gdbPath": "/usr/bin/gdb-multiarch"
+      }
+    }
+  }
+}

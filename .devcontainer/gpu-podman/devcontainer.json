@@ -13,7 +13,6 @@
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
   "init": true,
-  "hostRequirements": {"gpu": true},
   "runArgs": [
     "--shm-size=2g",
     "--device", "nvidia.com/gpu=all",

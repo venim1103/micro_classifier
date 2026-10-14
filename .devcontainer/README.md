@@ -33,6 +33,12 @@ device. Host `nvidia-smi` must work before container GPU access can work. The
 standard Docker profile uses `--gpus all` instead of WSL-specific device mounts.
 Neither profile uses `--privileged`.
 
+The Podman profile intentionally omits `hostRequirements.gpu`: Dev Containers
+uses that setting to probe `podman info -f {{.Runtimes.nvidia}}`, which fails on
+Podman 4.9.3. GPU access is required through the explicit CDI device arguments
+and verified by the CUDA smoke test instead. Keep this setting omitted when
+updating the profile; VS Code's default GPU auto-detection works without it.
+
 ## Start the Environment
 
 Open the project folder in VS Code and use **Dev Containers: Reopen in
@@ -51,7 +57,7 @@ For this WSL/Podman host:
 ```sh
 devcontainer up --workspace-folder "$PWD" \
   --config "$PWD/.devcontainer/gpu-podman/devcontainer.json" \
-  --docker-path podman --buildkit never --gpu-availability all
+  --docker-path podman --buildkit never --gpu-availability detect
 ```
 
 For an NVIDIA-enabled Docker host:

@@ -304,8 +304,8 @@ dataset, tokenizer, and generated label set.
 | Vela 2.0 4B | 4.2 B | Text | Yes | ≈ 17 GB FP32 | 0.40–0.49 s (A40) | One 24 GB GPU, tight |
 | Vela 2.0 9B | 7.9 B | Text | Yes | ≈ 32 GB FP32 | 0.60–0.71 s (A40) | 12 GB GPU with the INT8 loader in `teacher/` (measured below); 24 GB GPU with BF16 weights and a similar loader |
 | [d3-edge][d3-edge] | 0.59 B | Text, JSON, images, video | Per-question forward passes | 5.2 GiB peak (one request) | 6.6 ms text, 58.6 ms image (MI325X) | Laptop GPU |
-| [d3-lite][d3-lite] / [d3-nano][d3-nano] / [d3-mini][d3-mini] | 0.85 / 2.21 / 4.54 B | Multimodal | Same | 5.7 / 9.1 / 14.8 GiB peak (one request) | Not stated | Laptop GPU for lite and nano; mini needs more than 12 GB as released |
-| [d3-flash][d3-flash] | 8.39 B | Multimodal | Same | 23.8 GiB peak (one request) | 19.2 ms text, 166 ms image (MI325X) | 24 GB GPU, borderline as released; about 13.7 GiB of BF16 weights with host-side embeddings, 7.4 GiB with INT8 projections (estimates) |
+| [d3-lite][d3-lite] / [d3-nano][d3-nano] / [d3-mini][d3-mini] | 0.85 / 2.21 / 4.54 B | Multimodal | Same | 5.7 / 9.1 / 14.8 GiB peak (one request) | Not stated | Laptop GPU for lite and nano; mini needs more than 12 GB as released, but about 7.3 GiB of BF16 weights with host-side embeddings (estimate) |
+| [d3-flash][d3-flash] | 8.39 B | Multimodal | Same | 23.8 GiB peak (one request) | 19.2 ms text, 166 ms image (MI325X) | 24 GB GPU, borderline as released; about 13.7 GiB of BF16 weights with host-side embeddings, 7.4 GiB with INT8 projections (estimates); planned first teacher on the 12 GB GPU |
 | [d3][d3] | 26.09 B | Multimodal | Same | 61.8 GiB peak (one request) | 54.4 ms text, 290 ms image (MI325X) | Two 24 GB GPUs with INT8 projections (planned, §12) |
 | [JEV-35B][jev-35b] | 35 B MoE, ~3 B active | Text, images | Not stated | 66.5 GiB BF16; 23.3 GiB NVFP4 | 204 ms median (B200) | Excluded (F15) |
 
@@ -824,9 +824,11 @@ arithmetic from published configurations.
   rest of the robot is a separate concern that the module must support.
 - The wire format is open. JSON or text is not required on the device, so the
   design's typed decisions stay.
-- Any suitable open teacher is acceptable. The teacher host has two NVLinked
-  RTX 3090s and an optional GTX 1080 Ti; the first choice is d3 in INT8, split
-  across the 3090s.
+- Any suitable open teacher is acceptable. Most of the time the teacher host is
+  the 12 GB RTX A3000 laptop GPU; a host with two NVLinked RTX 3090s (and an
+  unused GTX 1080 Ti) is only occasionally available. The first teacher is
+  therefore d3-flash in INT8 on the 12 GB GPU (clarified after the first draft
+  of this update), with d3 in INT8 across the 3090s when that host is free.
 - Out of scope: a custom flight controller or ESC on an STM32L4R5. The drone
   should run an established flight stack such as PX4 or ArduPilot.
 
@@ -857,7 +859,7 @@ Corrected:
 | Vela 9B (41.09) compared directly with d3-mini (54.90) | Different Index editions (0.2.1 versus the 0.3 public suite); not comparable | [Vela 9B evaluation][vela-9b-eval]; [d3-mini card][d3-mini] |
 | d3 board score 65.45, vision 69.9, new-domain 56.6, and "64.7 / 71.6" | 65.45 is the public-suite score; on the Index 0.3.2 boards d3 has 66.3 (text), 71.3 (vision), and 60.5 (new-domain) | [d3 card][d3] |
 | d3-mini "65.87 raw"; d3-flash "57.8-59.0" | Not found on the cards | d3-mini and d3-flash cards |
-| d3-mini fits a 12 GB GPU in BF16 | Its one-request peak is 14.8 GiB | [d3-mini card][d3-mini] |
+| d3-mini fits a 12 GB GPU in BF16 | As released, its one-request peak is 14.8 GiB; it fits only with host-side embeddings (about 7.3 GiB of weights, estimate) | [d3-mini card][d3-mini]; config arithmetic |
 | d3-flash fits a 3090 comfortably in BF16 | Its peak is 23.8 GiB of 24 GB; it fits with host-side embeddings (about 13.7 GiB of weights) or INT8 (7.4 GiB), estimates | [d3-flash card][d3-flash]; config arithmetic |
 | INT8 Vela 9B needs about 9.5 GB | Measured: 6.6 GiB of parameters, 7.7 GiB in use | F2 |
 | Keep the CandidateHead in FP32 | Already the case in `teacher/vela_int8.py` | F2 |
@@ -941,16 +943,21 @@ cards:
 | [d3-edge][d3-edge] | 0.59 B | 20.2 | 36.6 | 46.6 | 5.2 GiB |
 
 On ERQA (embodied reasoning), autotrust measured d3 at 58.8 in one pass
-([JEV-27B-VL card][jev-27b-vl]). Starting with d3 in INT8 is sound: all-BF16
-weights (46.2 GiB even with host-side embeddings) leave no room for activations
-on 2 x 24 GB, whereas the INT8 split needs about 12 GiB per card (estimate,
-DESIGN §4). The sharding corrections are in §12.2. Two more points from the
-release code: d3 defines `confidence` as one minus the normalized entropy, a
-third formula next to Jev's and Vela's (DESIGN §6), and its runtime downloads
-`http(s)` media URLs, so label from local files. Leaderboards do not measure
-robot-state questions; the bake-off on reviewed robot states decides, and
-d3-flash or d3-mini would relabel DAgger rounds faster (about 0.4-0.5 s per
-question is estimated for d3).
+([JEV-27B-VL card][jev-27b-vl]). On the 12 GB GPU, d3-flash in INT8 (about
+7.4 GiB) is the strongest member that fits. Its text backbone has the same
+dimensions as Vela 2.0 9B, whose INT8 conversion changed no decisions in the
+smoke check (F2). d3-mini fits unquantized in BF16 with host-side embeddings
+(about 7.3 GiB), an exact-precision comparison. On the 3090s, d3 needs INT8 as
+well: all-BF16 weights (46.2 GiB even with host-side embeddings) leave no room
+for activations on 2 x 24 GB, whereas the INT8 split needs about 12 GiB per
+card (estimates, DESIGN §4). The sharding corrections are in §12.2. Two more
+points from the release code: d3 defines `confidence` as one minus the
+normalized entropy, a third formula next to Jev's and Vela's (DESIGN §6), and
+its runtime downloads `http(s)` media URLs, so label from local files.
+Leaderboards do not measure robot-state questions; the bake-off on reviewed
+robot states decides. Estimated labeling cost: about 1.3 s per five-question
+state for d3-flash in INT8 on the 12 GB GPU, and 0.4-0.5 s per question for d3
+on the 3090s.
 
 #### F17 (Medium): Define "European sourced"
 
@@ -976,9 +983,10 @@ Drone flights also fall under aviation rules (in the EU, the
 1. M0 with the updated template (§10): rover first, interface contract v0,
    sensors, label source per question, simulator, and the European-sourcing
    definition.
-2. Teacher host: port the INT8 loader to d3 on the two 3090s (DESIGN §4) with
-   flash-linear-attention, `verify="full"`, and a streamed BF16 reference; then
-   the bake-off against d3-flash and d3-mini on reviewed robot states.
+2. Teacher: port the INT8 loader to d3-flash on the 12 GB GPU (DESIGN §4) with
+   `verify="full"` and a streamed BF16 reference, and compare it with d3-mini in
+   BF16. Add d3 on the two 3090s when that host is available, then run the
+   bake-off on reviewed robot states.
 3. Ask the vLLM Semantic Router team for a training-data statement on Decision
    3.0 (F15).
 4. Simulation: a rover scenario in PX4 software-in-the-loop with Gazebo, or an

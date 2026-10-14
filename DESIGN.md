@@ -27,12 +27,13 @@ Build a modular decision module: an STM32N6 board that attaches to a host robot
 typed questions about the robot's state and surroundings on every tick. Train
 its micro-student on reviewed examples, on deterministic or simulator labels
 where the answer is computable, and on genuine decision distributions from an
-open teacher for perceptual and semantic questions (Decision 3.0 first, chosen
-by a measured bake-off). Start with static INT8 inference and shared trunks of
-operators that map efficiently to Neural-ART: convolution and ReLU. Use the
-Cortex-M55 for bounded preprocessing, the per-question heads, probability
-calculation, calibration, and rejection. The host's own controller keeps
-actuation, inner control loops, interlocks, and fail-safe behaviour.
+open teacher for perceptual and semantic questions (Decision 3.0 d3-flash in
+INT8 on the 12 GB development GPU first, confirmed by a measured bake-off).
+Start with static INT8 inference and shared trunks of operators that map
+efficiently to Neural-ART: convolution and ReLU. Use the Cortex-M55 for bounded
+preprocessing, the per-question heads, probability calculation, calibration,
+and rejection. The host's own controller keeps actuation, inner control loops,
+interlocks, and fail-safe behaviour.
 
 Do not start by compressing an existing Vela model into ternary weights or by
 assuming the PDF's small transformer will execute entirely on the NPU. First
@@ -330,7 +331,7 @@ model distillation" or "train a model to imitate" the service.
 | [Vela 2.0 0.8B][vela-08b] | About 3 GB FP32 parameter memory; isolated questions | Fits the 12 GB laptop GPU unmodified; bake-off candidate |
 | Vela 2.0 4B | About 17 GB FP32 parameter memory, plus runtime allocations | One 24 GB GPU with bounded context and batch size |
 | Vela 2.0 9B | About 32 GB FP32 with the published loader; backbone projections are stored in BF16; text only | INT8 weight-only loader in `teacher/` fits the 12 GB laptop GPU (measured below); text and operator-command questions |
-| [Decision 3.0][d3-collection]: d3-edge 0.59B, d3-lite 0.85B, d3-nano 2.21B, d3-mini 4.54B, d3-flash 8.39B, [d3][d3-card] 26.09B | Apache-2.0; text, JSON, images, and video; one question per sequence; Index 0.3.2 text board 20.2, 32.3, 38.9, 52.6, 55.8, and 66.3; one-request GPU peaks 5.2, 5.7, 9.1, 14.8, 23.8, and 61.8 GiB; training data not disclosed | Primary candidates for the robot module: d3 in INT8 on two RTX 3090s first (below), then d3-flash and d3-mini in the bake-off |
+| [Decision 3.0][d3-collection]: d3-edge 0.59B, d3-lite 0.85B, d3-nano 2.21B, d3-mini 4.54B, d3-flash 8.39B, [d3][d3-card] 26.09B | Apache-2.0; text, JSON, images, and video; one question per sequence; Index 0.3.2 text board 20.2, 32.3, 38.9, 52.6, 55.8, and 66.3; one-request GPU peaks 5.2, 5.7, 9.1, 14.8, 23.8, and 61.8 GiB; training data not disclosed | Primary candidates for the robot module: d3-flash in INT8 on the 12 GB GPU first and d3-mini in BF16 as an exact-precision comparison (below); d3 in INT8 on two RTX 3090s when that host is available |
 | autotrust JEV models (JEV-27B, JEV-27B-VL, JEV-35B) | Apache-2.0 weights, but [JEV-27B-VL][jev-27b-vl] trains on a [corpus][jev-corpus] whose main stream holds labels distilled from TypeSafe Jev 1.13; JEV-35B names no training data | Excluded as teachers and label sources (§10) |
 
 The [4B][vela-medium-usage] and [9B][vela-large-usage] GPU paths use BF16
@@ -399,11 +400,42 @@ Operating limits and open items:
   calibration (Vela fitted its temperatures on the BF16 path), and judge the
   INT8 9B in the bake-off like any other teacher.
 
-#### Decision 3.0 d3 on Two RTX 3090s (planned)
+#### Decision 3.0 d3-flash on the 12 GB GPU (planned, first teacher)
 
-The second teacher host has two NVLinked RTX 3090s (2 x 24 GB). Leave its GTX
-1080 Ti out: the d3 runtime accepts only BF16, which Pascal lacks in hardware.
-The first target is the flagship d3 in INT8, split by layers across both cards.
+The two RTX 3090s below are rarely available, so the 12 GB RTX A3000 is the
+default teacher host. d3-flash (revision `b92769d`) is the strongest Decision
+3.0 member that fits it: its text backbone has exactly the dimensions of the
+measured Vela 2.0 9B (32 layers, 8 attention and 24 Gated DeltaNet; hidden size
+4,096; MLP width 12,288; vocabulary 248,320), plus a 0.46B vision encoder.
+Computed from the published configurations:
+
+| Configuration | GPU weights | Host RAM |
+| --- | --- | --- |
+| d3-flash, INT8 group-128 projections, other tensors BF16, FP32 readout | 7.4 GiB | 1.9 GiB BF16 embeddings |
+| d3-flash, all BF16 | 13.7 GiB: does not fit | 1.9 GiB |
+| d3-mini (revision `6d8971f`), all BF16 as evaluated | 7.3 GiB | 1.2 GiB |
+| d3-mini, INT8 projections | 4.0 GiB | 1.2 GiB |
+
+INT8 Vela 9B on the same backbone held 6.6 GiB of parameters and peaked at
+8.7 GiB reserved with a 2,048-token batch budget, so d3-flash in INT8 should
+leave room for activations below the WSL2 spill point; measure it. Port
+[teacher/vela_int8.py](teacher/vela_int8.py) as in the two-GPU list below,
+without the split: one device, no hooks. d3-flash and d3-mini ship the same
+`d3_runtime.py`, which differs from the reviewed d3 copy in one docstring line.
+Compare d3-flash in INT8 with d3-mini in BF16 in the bake-off: if the smaller
+model labels robot states as well, it avoids quantization altogether.
+
+Throughput estimate, not measured: INT8 Vela 9B processed about 1,200 tokens/s
+on this GPU for long inputs, and d3 encodes every question as its own sequence,
+so five 300-token questions take about 1.3 s per state, or about 7 hours for
+20,000 states, before images.
+
+#### Decision 3.0 d3 on Two RTX 3090s (when available)
+
+When it is available, a second host with two NVLinked RTX 3090s (2 x 24 GB) can
+run the flagship d3 for the bake-off and for relabeling hard cases. Leave its
+GTX 1080 Ti out: the d3 runtime accepts only BF16, which Pascal lacks in
+hardware. Run d3 in INT8, split by layers across both cards.
 All-BF16 weights do not fit (46.2 GiB even with the embedding table on the
 host), so the reference for validation must stream weights as the Vela
 validator does.
@@ -832,7 +864,7 @@ external flash, instead of confusing development loading with cold boot.
 
 | Responsibility | Initial tooling or component |
 | --- | --- |
-| Teacher adapter | Pinned open-teacher revision and its published decision interface; [teacher/vela_int8.py](teacher/vela_int8.py) for Vela 2.0 9B on a 12 GB GPU; a two-GPU INT8 d3 loader is planned (§4) |
+| Teacher adapter | Pinned open-teacher revision and its published decision interface; [teacher/vela_int8.py](teacher/vela_int8.py) for Vela 2.0 9B on a 12 GB GPU; an INT8 d3-flash loader for the same GPU is planned, with a two-GPU d3 variant later (§4) |
 | Dataset and evaluation | Versioned examples, split manifests, reviewed policy labels, metrics |
 | Simulation and closed-loop tests | PX4 software-in-the-loop with Gazebo or an equivalent rover simulator; scenario suites and episode logging |
 | Module protocol | One packet definition shared by firmware and host tools; MAVLink or DroneCAN adapters for PX4 or ArduPilot hosts |
@@ -968,8 +1000,8 @@ The `.devcontainer` directory provides the host environment; its
 
 Remaining direction: split teacher and student/export environments only if
 framework requirements conflict, grant only the device access board work needs
-(ST-LINK, serial), and add flash-linear-attention to the locks for the d3
-teacher host (§4) or if the Vela teacher needs inputs above about 12 k tokens.
+(ST-LINK, serial), and add flash-linear-attention to the locks if a teacher
+needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
@@ -979,7 +1011,7 @@ teacher host (§4) or if the Vela teacher needs inputs above about 12 k tokens.
 | M1a: Compile-only proof, no board | ST Edge AI Core installed; minimal CNN/MLP export, INT8 QDQ, and NPU generation for both 1-D layouts, pooling and Gather placements, and one transformer block | Reports record epochs, software fallback, pool usage, and estimated cycles |
 | M1b: Board proof | STM32N6570-DK NPU validation with external memories disabled, golden vectors, timing at nominal and overdrive clocks, signed cold boot of a dummy model | Mapping and complete memory fit proven; target output comparison recorded |
 | M2: Task-quality proof | Reviewed evaluation set, representative simulated and real pilot data, deterministic and supervised baselines | Bounded task has measurable value against simpler alternatives |
-| M3: Distillation proof | Teacher bake-off on reviewed robot states (d3 INT8 on two RTX 3090s, d3-flash, d3-mini), genuine cached teacher distributions, controlled student comparison, one closed-loop data round in simulation | Teacher supervision improves the chosen task or has a documented reason to retain it |
+| M3: Distillation proof | Teacher bake-off on reviewed robot states (d3-flash in INT8 and d3-mini in BF16 on the 12 GB GPU; d3 in INT8 on two RTX 3090s when available), genuine cached teacher distributions, controlled student comparison, one closed-loop data round in simulation | Teacher supervision improves the chosen task or has a documented reason to retain it |
 | M4: Quantized validation | PTQ/QAT decision, target parity, calibration, locked test, closed-loop scenario suite | Agreed quality, rejection, memory, timing, and energy gates met |
 | M5: Host integration | Rover host integration over the interface contract, boot loading, fail-safe mapping, arena tests | Cold boot, interface robustness, and closed-loop arena gates verified |
 | M6: Second embodiment | Mini-drone profile on an established flight stack (PX4 offboard or equivalent), or more tasks or bounded runtime-option scoring | Each profile or capability independently meets the same gates |

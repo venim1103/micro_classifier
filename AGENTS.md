@@ -21,6 +21,8 @@ Documents of record:
 
 ## Current State (2026-10-14)
 
+Keep this section and the Task List current; a new session resumes from them.
+
 - Design only, plus an INT8 Vela 2.0 9B teacher loader
   ([teacher/vela_int8.py](teacher/vela_int8.py)) and its validator. No student,
   dataset, firmware, ST compiler report, or board measurement exists yet.
@@ -29,14 +31,77 @@ Documents of record:
 - ST Edge AI Core and STM32CubeProgrammer are not installed, so NPU compilation
   (M1a) waits until the user places them in `.devcontainer/tools`. No board is
   attached.
+- Approved by the user: running the Vela 2.0 9B release code at revision
+  `068425bb145c05884a98b870c219047da22d9aea` (2026-10-13).
 
-Priorities, in order:
+## Task List
 
-1. The d3-flash INT8 teacher on the 12 GB GPU (DESIGN.md §4).
-2. M0 decisions with the user.
-3. A robot-state request format, a small reviewed evaluation seed, and a
-   simulator scenario (DESIGN.md §7).
-4. M1a compile-only experiments once the ST tools are installed.
+Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
+a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
+on missing tools, and continue with the next unblocked task.
+
+1. [ ] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
+   a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
+   §10. Use the defaults for unanswered items, marked as provisional.
+2. [ ] d3-flash INT8 loader `teacher/d3_int8.py`, with unit tests that need no
+   download or GPU. Exit: it loads on the 12 GB GPU and answers `system_one`
+   requests.
+3. [ ] `teacher/validate_d3_int8.py`: INT8 against a streamed BF16 reference on
+   about 25 requests covering every question type, text and small local
+   images, and synthetic rover states. Exit: a JSON report in
+   `teacher/reports/` and measured results in DESIGN.md §4.
+4. [ ] d3-mini in BF16 with host-side embeddings, validated the same way. Exit:
+   a report and a d3-flash versus d3-mini comparison in DESIGN.md §4.
+5. [ ] Interface contract v0 (DESIGN.md §2): one packet definition with Python
+   encoding and decoding, a C header, a CRC, golden byte vectors, and
+   round-trip tests.
+6. [ ] Rover question catalogue v0 as data (types, options, and label source per
+   question) and deterministic labelers for the computable questions.
+7. [ ] The simulator chosen in M0 (proposed default: a minimal Python/NumPy 2-D
+   rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
+   dropouts, latency, a scripted expert, and episode logs in the contract
+   format.
+8. [ ] Teacher labeling pipeline: deterministic rendering of state packets for
+   the teacher, cached and resumable labeling, and provenance (revision,
+   settings, and hashes).
+9. [ ] Baselines (rules and a classical model) and the evaluation suite
+   (macro-F1, per-class recall, NLL, Brier score, calibration error, and
+   coverage curves) on locked splits.
+10. [ ] Student: a small convolutional or MLP trunk over the state history and
+    the ToF grid with per-question heads; supervised versus distilled
+    comparison (M3).
+11. [ ] Closed-loop evaluation in the simulator and one DAgger round.
+12. [ ] Static ONNX export, INT8 QDQ PTQ, float versus INT8 parity, calibration
+    on the deployed path, and golden vectors for the firmware (M4, host side).
+13. [ ] Firmware library in C for the Cortex-M55 without the ST HAL: packet
+    parsing, history buffer, heads, softmax, confidence, and rejection; host
+    unit tests against the golden vectors and an `arm-none-eabi-gcc` build.
+14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
+    (DESIGN.md §12); prepare the scripts so they run once the tools exist.
+15. [blocked: no board] M1b board bring-up and measurements.
+16. [ ] Draft a request to the vLLM Semantic Router team for a Decision 3.0
+    training-data statement (REVIEW.md F15) for the user to send.
+
+## Autonomy and Escalation
+
+Work through the Task List autonomously. Do not stop for status updates or
+routine confirmations: finish a task, verify it, commit it, and start the next.
+
+Ask the user first, batching questions and proposing a default, for:
+
+- Product decisions: requirements, M0 items, metric thresholds, safety
+  behaviour, and changes to accepted decisions in DESIGN.md or to a frozen
+  interface contract.
+- Running third-party model code at a revision the user has not approved; new
+  or upgraded dependencies; changes to `.devcontainer`.
+- Downloads other than approved model revisions, and any download that would
+  leave less than about 20 GB of free disk space.
+- Deleting files or data you did not create, pushing or rewriting git history,
+  and anything involving accounts, licences, payments, or contacting people.
+
+When a task is blocked, record the question in the Task List and continue with
+the next unblocked task. After three failed approaches to the same problem,
+record what was tried and move on.
 
 ## Hardware
 
@@ -90,9 +155,9 @@ Priorities, in order:
 - Evidence: cite primary sources and label estimates as estimates. Never present
   unmeasured fit, latency, or accuracy as fact. Scores from different Decision
   Index editions are not comparable.
-- Third-party model code: pin the full revision, read the code before running
-  it, and ask the user before executing a newly downloaded release for the first
-  time. Tell the user before downloads above about 5 GB.
+- Third-party model code: pin the full revision and read the code before running
+  it. Running a release needs the user's approval for that exact revision;
+  record approvals in Current State.
 - Dependencies: ask first, add them to `.devcontainer/requirements.in`, and
   regenerate both hash locks with the commands in
   [.devcontainer/README.md](.devcontainer/README.md). Never disable TLS
@@ -127,8 +192,15 @@ Priorities, in order:
 
 ## Way of Working
 
-- Work milestone by milestone (DESIGN.md §12). Before a task, state its
-  milestone and exit condition and propose a short plan; for larger changes,
-  wait for the user's go-ahead.
-- After a task, report what changed, how it was verified (commands and
-  results), open questions, and the next step.
+- Loop: take the first unblocked task, restate its exit condition, implement
+  it, verify it (tests, lint, and a real run where possible), record
+  measurements and decisions in DESIGN.md, commit locally, and update the Task
+  List and Current State. Then continue with the next task.
+- Run jobs longer than about 10 minutes in the background with logs in an
+  ignored directory, and work on CPU tasks meanwhile. Run one GPU job at a time.
+- Put new Python code in top-level packages by area (for example `interface/`,
+  `sim/`, `student/`, and `export/`), C code in `firmware/`, and generated data
+  in ignored directories.
+- When only blocked tasks remain, or at the end of a session, report what
+  changed, how it was verified (commands and results), open questions with
+  proposed defaults, and the next step.

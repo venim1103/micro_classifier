@@ -1,7 +1,9 @@
 # Research Review: Jev-like Classifier on STM32N6
 
 Status: Independent review of [DESIGN.md](DESIGN.md) and the repository state.
-Review date: 2026-10-13.
+Review date: 2026-10-13. Update 2 (2026-10-14, §12) covers the robot
+decision-module clarification and an external AI analysis; it corrects F1, F2,
+and §7.2 in place.
 Scope: feasibility, verification of design claims, landscape changes, design
 gaps, alternatives, risks, and concrete next steps.
 
@@ -64,6 +66,10 @@ Key findings, by priority:
 | F10 | Low | DESIGN §11 says no devcontainer exists; it does and passes its smoke tests | Update the design |
 | F11 | Strategic | If the target is robotics with a camera, vision is the N6's strength, and decision models fail on direct multi-way motor choices | Revisit modality in M0; decompose control into atomic questions |
 
+Update 2 adds F12-F17 for the robot decision module: the module contract, label
+sources per question, closed-loop data, exclusion of Jev-derived teachers, the
+two-GPU d3 teacher, and the definition of European sourcing (§12).
+
 Recommended path in one paragraph: resolve M0 (one task, modality, latency,
 error costs). Install ST Edge AI Core in the devcontainer and run compile-only
 mapping experiments, which need no board. Build M55-only baselines (rules,
@@ -102,7 +108,8 @@ Several open models implement the SystemOne request/response shape:
 - [Crivo-150M][crivo-150m] and [Crivo-32M][crivo-32m]: small ModernBERT/Ettin
   encoders with an `[OPT]` readout.
 - [autotrust/JEV-35B][jev-35b]: an independent open model; its card states it is
-  not affiliated with TypeSafe.
+  not affiliated with TypeSafe. Its sibling JEV-27B describes itself as a
+  student of TypeSafe Jev 1.13 (Update 2, F15).
 - The [Decision Index][decision-index] leaderboard and open kit benchmark these
   models.
 
@@ -277,7 +284,9 @@ Consequences:
 - Even using Jev outputs to select or tune the student is a legal grey area;
   get legal review before any Jev-in-the-loop evaluation.
 - Open alternatives exist and are licensed for this use: Vela 2.0 and Decision
-  3.0 are Apache-2.0; autotrust/JEV-35B is Apache-2.0.
+  3.0 are Apache-2.0. Corrected in Update 2: this review also listed
+  autotrust/JEV-35B, whose weights are Apache-2.0, but the JEV family trains on
+  Jev-distilled labels (F15), so it is excluded.
 - Crivo models are CC BY-NC 4.0 and therefore unsuitable for commercial use.
 - Vela's training data includes CC-BY-SA sources, and the Vela 0.3B tokenizer
   carries Gemma terms. Do not reuse that tokenizer in the student: it is also a
@@ -295,9 +304,10 @@ dataset, tokenizer, and generated label set.
 | Vela 2.0 4B | 4.2 B | Text | Yes | ≈ 17 GB FP32 | 0.40–0.49 s (A40) | One 24 GB GPU, tight |
 | Vela 2.0 9B | 7.9 B | Text | Yes | ≈ 32 GB FP32 | 0.60–0.71 s (A40) | 12 GB GPU with the INT8 loader in `teacher/` (measured below); 24 GB GPU with BF16 weights and a similar loader |
 | [d3-edge][d3-edge] | 0.59 B | Text, JSON, images, video | Per-question forward passes | 5.2 GiB peak (one request) | 6.6 ms text, 58.6 ms image (MI325X) | Laptop GPU |
-| d3-lite / d3-nano / d3-mini | 0.9 / 2 / 5 B | Multimodal | Same | Not checked | Not checked | — |
-| [d3-flash][d3-flash] | 8.39 B | Multimodal | Same | 23.8 GiB peak (one request) | 19.2 ms text, 166 ms image (MI325X) | 24 GB GPU, borderline |
-| [JEV-35B][jev-35b] | 35 B MoE, ~3 B active | Text, images | Not stated | 66.5 GiB BF16; 23.3 GiB NVFP4 | 204 ms median (B200) | Needs a 32–48 GB+ GPU |
+| [d3-lite][d3-lite] / [d3-nano][d3-nano] / [d3-mini][d3-mini] | 0.85 / 2.21 / 4.54 B | Multimodal | Same | 5.7 / 9.1 / 14.8 GiB peak (one request) | Not stated | Laptop GPU for lite and nano; mini needs more than 12 GB as released |
+| [d3-flash][d3-flash] | 8.39 B | Multimodal | Same | 23.8 GiB peak (one request) | 19.2 ms text, 166 ms image (MI325X) | 24 GB GPU, borderline as released; about 13.7 GiB of BF16 weights with host-side embeddings, 7.4 GiB with INT8 projections (estimates) |
+| [d3][d3] | 26.09 B | Multimodal | Same | 61.8 GiB peak (one request) | 54.4 ms text, 290 ms image (MI325X) | Two 24 GB GPUs with INT8 projections (planned, §12) |
+| [JEV-35B][jev-35b] | 35 B MoE, ~3 B active | Text, images | Not stated | 66.5 GiB BF16; 23.3 GiB NVFP4 | 204 ms median (B200) | Excluded (F15) |
 
 Notes:
 
@@ -688,7 +698,8 @@ reviewed) becomes usable.
 | --- | --- | --- |
 | STM32N6, internal only (current plan) | §3 | Default |
 | STM32N6 with external memory (DK) | External NOR flash and PSRAM; NPU cache for external regions | Larger trunks or T5 research; breaks the internal-only constraint |
-| [Alif Ensemble E4][alif-e4] / [E8][alif-e8] | Cortex-M55 up to 400 MHz; three NPUs (E8: Ethos-U85 plus two Ethos-U55; Ethos-U85 has native transformer support per [Arm][ethos-u85]); E4 has "over 15 MB of on-die memory"; E8 adds dual Cortex-A32 | If attention-based students become necessary or more on-die memory is needed |
+| [Alif Ensemble E4][alif-e4] / [E8][alif-e8] | Cortex-M55 up to 400 MHz; three NPUs (E8: Ethos-U85 plus two Ethos-U55; Ethos-U85 has native transformer support per [Arm][ethos-u85]); E4 has "over 15 MB of on-die memory"; E8 adds dual Cortex-A32 | If attention-based students become necessary or more on-die memory is needed; US company, so not a European-sourcing option (corrected in Update 2) |
+| [Infineon PSoC Edge E84][psoc-edge-e84] | Cortex-M55 at 400 MHz, Ethos-U55 NPU, up to 6 MB SRAM, CAN-FD | European vendor (Germany); smaller NPU than the N6 |
 | [NXP i.MX RT700][nxp-rt700] | Cortex-M33 325 MHz, eIQ Neutron NPU, up to 7.5 MB SRAM | Larger SRAM; European vendor; no Helium |
 | Linux-class MPU with NPU and DRAM | Runs 100 M+ parameter decision encoders | If general Jev behaviour is a hard requirement |
 
@@ -720,8 +731,14 @@ reviewed) becomes usable.
 | Fresh teacher releases change | High | Low | Pin revisions and hashes | M3 |
 | INT8 teacher shifts labels or calibration | Low (smoke check found no changes) | Medium | Parity on the reviewed set against the streamed BF16 reference; calibration re-check | M3 |
 | Teacher host limits (12 GB GPU, WSL2 memory spill) | Medium | Low | 2,048-token batch budget; flash-linear-attention or a larger GPU for inputs above about 12 k tokens | M3 |
+| Teacher trained on Jev outputs | Medium | High | Exclude the JEV family; written data statement for Decision 3.0 (F15) | M0 |
+| Student drifts into unseen states in closed loop | High | High | DAgger rounds in simulation, then arena (F14) | M3 |
+| Sensor pose or frame differences break transfer between robots | Medium | Medium | Embodiment profiles validated per frame; fixed sensor mounting (F12) | M6 |
+| Interface faults (stale, lost, or malformed packets) | Medium | High | Versioned contract, liveness checks, host fail-safes (F12) | M5 |
 
 ## 9. Recommended Next Steps
+
+For the robot decision module, §12.5 updates steps 1 and 4.
 
 1. **M0 decisions** using the template in §10.
 2. **M1a, compile-only (no board):** install the Linux ST Edge AI Core under
@@ -746,18 +763,22 @@ reviewed) becomes usable.
 
 ## 10. M0 Decision Template
 
+Updated in Update 2 for the robot pilot.
+
 | Decision | Example answer to replace |
 | --- | --- |
-| First question(s) in Jev form | `choice`: "Which subsystem does this operator note refer to?" (5 options + `other`) |
-| Input modality and source | Text from a BLE companion app, ≤ 256 UTF-8 bytes |
-| Languages | English and German |
-| Ground-truth owner and policy | Maintenance lead reviews ambiguous cases |
-| Error costs | Misrouting to the wrong subsystem 5x worse than rejecting |
-| Required metrics | Macro-F1 ≥ 0.90 at ≥ 80% coverage; reject below |
-| Latency and power | Decision within 50 ms at nominal clocks; < 1 mJ per decision |
+| First frame and question bundle in Jev form | Ground rover; per tick: `path_blocked` (noul), `clear_sector` (choice: left, centre, right, none), `mode` (choice: explore, approach, avoid, dock, halt) |
+| Inputs and sensors | Ego-state from the host; 8x8 ToF on the module; camera in a later profile |
+| Label source per question | `path_blocked` and `clear_sector` deterministic from ToF range and speed; `mode` from reviewed human labels plus d3 distributions |
+| Ground-truth owner and policy | Project lead reviews ambiguous episodes |
+| Error costs | A missed obstacle is 20x worse than a false stop |
+| Required metrics | `mode` macro-F1 ≥ 0.85 at ≥ 80% coverage; no collisions in the arena scenario suite |
+| Decision rate, latency, and power | 20 Hz; decision within 20 ms of the state packet at nominal clocks; module below 1 W |
+| Host interface and fail-safe | UART at 1 Mbaud with interface contract v0; the rover brakes on rejection or after 150 ms without a decision |
 | Memory policy | No external RAM during inference; external flash allowed for boot |
-| Update policy | Heads updatable over the air; trunk via firmware release |
-| Commercial use and licensing | Commercial product; Apache-2.0 teachers only |
+| Update policy | Heads as signed blobs; trunk via firmware release |
+| European sourcing | Vendor and wafer-fab level for the MCU and sensors; country of origin recorded per part |
+| Commercial use and licensing | Commercial product; Apache-2.0 teachers without Jev-derived labels |
 
 ## 11. Suggested Edits to DESIGN.md
 
@@ -784,6 +805,187 @@ teacher results (DESIGN §4).
 - DESIGN §12: split M1 into compile-only M1a and board M1b; add modality and
   task decomposition to M0.
 
+## 12. Review Update 2 (2026-10-14): Robot Decision Module
+
+Status: applied to DESIGN.md on 2026-10-14.
+
+Inputs: your clarifications and an external AI analysis ("STM32N6x7 Robot
+Project Architecture Review", a Gemini conversation provided as a PDF). Every
+claim used here was rechecked against primary sources: model and dataset cards,
+the d3 release code (read at revision `fc2d74b`, not executed), and ST,
+Infineon, and PX4 documentation. No new measurements were made; estimates are
+arithmetic from published configurations.
+
+### 12.1 Clarified scope
+
+- The product is a decision module: an independent "mini-brain" on a
+  European-sourced STM32N6x7 that attaches to different robot frames (first a
+  land rover, later a mini-drone) and makes the robot's tactical decisions. The
+  rest of the robot is a separate concern that the module must support.
+- The wire format is open. JSON or text is not required on the device, so the
+  design's typed decisions stay.
+- Any suitable open teacher is acceptable. The teacher host has two NVLinked
+  RTX 3090s and an optional GTX 1080 Ti; the first choice is d3 in INT8, split
+  across the 3090s.
+- Out of scope: a custom flight controller or ESC on an STM32L4R5. The drone
+  should run an established flight stack such as PX4 or ArduPilot.
+
+### 12.2 Assessment of the external analysis
+
+Sound and adopted:
+
+- The module decides and the host acts: the host controller keeps inner loops,
+  interlocks, and fail-safes, which differ per frame (a rover brakes; a drone
+  holds position or lands and never cuts its motors).
+- A versioned binary state and decision protocol with an embodiment ID and a
+  validity bitmask.
+- Information equivalence between teacher and student inputs; numeric and
+  spatial student inputs, with text only for optional tags.
+- Atomic question bundles per tick, per-embodiment heads on a shared trunk, and
+  relocatable trunks per frame.
+- DAgger-style closed-loop data collection.
+- Decision 3.0 rather than Vela for visual robot decisions (Vela is text only),
+  d3's architecture facts, and its two-GPU INT8 memory map.
+- The warning about Jev-derived labels in the JEV family (confirmed in F15) and
+  leaving the GTX 1080 Ti out of the teacher host.
+- Infineon PSoC Edge E84 as a European MCU alternative.
+
+Corrected:
+
+| Claim in the external analysis | Finding | Evidence |
+| --- | --- | --- |
+| Vela 9B (41.09) compared directly with d3-mini (54.90) | Different Index editions (0.2.1 versus the 0.3 public suite); not comparable | [Vela 9B evaluation][vela-9b-eval]; [d3-mini card][d3-mini] |
+| d3 board score 65.45, vision 69.9, new-domain 56.6, and "64.7 / 71.6" | 65.45 is the public-suite score; on the Index 0.3.2 boards d3 has 66.3 (text), 71.3 (vision), and 60.5 (new-domain) | [d3 card][d3] |
+| d3-mini "65.87 raw"; d3-flash "57.8-59.0" | Not found on the cards | d3-mini and d3-flash cards |
+| d3-mini fits a 12 GB GPU in BF16 | Its one-request peak is 14.8 GiB | [d3-mini card][d3-mini] |
+| d3-flash fits a 3090 comfortably in BF16 | Its peak is 23.8 GiB of 24 GB; it fits with host-side embeddings (about 13.7 GiB of weights) or INT8 (7.4 GiB), estimates | [d3-flash card][d3-flash]; config arithmetic |
+| INT8 Vela 9B needs about 9.5 GB | Measured: 6.6 GiB of parameters, 7.7 GiB in use | F2 |
+| Keep the CandidateHead in FP32 | Already the case in `teacher/vela_int8.py` | F2 |
+| Rent hardware to run JEV-35B in NVFP4 | Contradicts its own note that NVFP4 needs Blackwell (SM100); moot given F15 | [JEV-35B card][jev-35b] |
+| NVLink moves split activations in under 50 µs and is needed | A split moves about 25 MB for 8 x 300 tokens: about 1 ms over PCIe 4.0 and less over NVLink, against seconds of compute per pass; NVLink is optional | Estimate |
+| A pre-hook on layer 32 places the second stage | d3's `PromptEncoder` passes rotary embeddings and masks built on GPU 0 to every layer; all second-stage layers need the move, and the output must return to the readout's GPU | d3 `d3_runtime.py` |
+| Make `backbone.to` a no-op | The runtime calls it only from `D3.to()`; a silent no-op hides placement errors | d3 `d3_runtime.py` |
+| Normalize weight names heuristically; inject with `patch.object` | Keys are exactly `language_model.*` and `visual.*`: map them explicitly and fail on leftovers. `backbone_class()` imports `Qwen3_5Model` inside the function, so patch what `D3.__init__` resolves, only during construction, and test it | d3 weight index and runtime |
+| Four robot states validate the INT8 teacher | Too few and without a reference; compare with the streamed BF16 reference and recorded outputs on the reviewed set, as for Vela | F2 |
+| NPU-friendly operators guarantee 100% NPU offload; about 3 TOPS/W | Only the compiler report establishes mapping (F5); ST's page gives 600 GOPS and no TOPS/W figure | [STM32N657][st-n657] |
+| A 128-byte state packet carrying history, a ToF grid, and a mission tag | Its own fields add up to about 600 bytes; keep the history and the ToF sensor on the module | Arithmetic (F12) |
+| Teacher labels from high-resolution frames while the student sees 64 x 64 | Privileged information, contrary to its own equivalence rule; label at the student's crop or measure the benefit | F13 |
+| Teacher labels for geometric questions | Computable; use deterministic code or simulator ground truth | F13 |
+| Hugging Face as a Paris-based European source | Hugging Face is a French-American company based in New York; hosting says nothing about a model's origin | F17 |
+| European origin asserted for parts | Needs country-of-origin data per part | F17 |
+| PSoC Edge E84 with 5 MB SRAM | Up to 6 MB | [Infineon][psoc-edge-e84] |
+
+### 12.3 New findings
+
+#### F12 (High): Define the module contract before training
+
+The host interface is now part of the model's input definition. Specify module
+and host duties, the state and decision packets (versions, embodiment profile,
+sequence, timestamps, validity bits, sensor ages, SI units in one body frame,
+status codes), liveness, and frame-specific fail-safes in M0. Keep the history
+buffer and the perception sensors on the module, so the per-tick packet stays
+small. PX4's offboard mode already expects a proof-of-life stream of at least
+2 Hz and otherwise runs its configured fail-safe ([PX4][px4-offboard]); a rover
+host needs an equivalent watchdog. Applied: DESIGN §2, §6, §8, §12.
+
+#### F13 (High): Choose the label source per question
+
+Geometric questions (an obstacle inside the braking distance, the clearest
+sector) are computable from ToF range and speed: label them deterministically
+or from simulator ground truth, and often compute them at run time instead of
+learning them. Use the teacher for perceptual and semantic questions and
+reviewed human labels for policy. Information equivalence covers images too:
+d3's processor upscales images below 65,536 pixels, and each 32 x 32-pixel
+patch is one token, so teacher accuracy at the student's resolution must be
+measured. Applied: DESIGN §4, §6.
+
+#### F14 (High): Collect data in closed loop
+
+A student trained only on expert trajectories drifts into states it never saw
+once it steers ([DAgger][dagger]). Plan rounds: seed data, run the student in
+simulation, label the visited states, retrain, and then repeat in a safe arena.
+PX4 software-in-the-loop with [Gazebo][px4-gazebo] covers rovers and
+multicopters. Applied: DESIGN §7, §8, §12.
+
+#### F15 (High): Exclude Jev-derived teachers; get Decision 3.0's data statement
+
+- [JEV-27B-VL][jev-27b-vl] and JEV-27B list [jev-distill-corpus-v3][jev-corpus]
+  as training data. Its largest stream, `yuri_v3` (498,010 of 740,957 rows), was
+  labeled by "Jev 1.13 via the OpenRouter Decisions API". The JEV-27B card calls
+  the model a "student of TypeSafe Jev 1.13", and the JEV-27B-VL card reports a
+  KL divergence of about 0.017 from Jev's distributions.
+- [JEV-35B][jev-35b] names no training data. It comes from the same publisher
+  and family, so its provenance is unresolved.
+- Apache-2.0 weights do not settle whether a model trained on Jev outputs
+  carries the restriction in TypeSafe's terms (F1). Exclude the family as
+  teacher and label source.
+- The [Decision paper][decision-paper] states that its documented Sol, Nox, and
+  Lux mixtures do not use official Jev predictions as labels, but the Decision
+  3.0 cards do not disclose training data. Ask the vLLM Semantic Router team for
+  the same statement on Decision 3.0 before commercial use.
+
+Applied: DESIGN §4, §10.
+
+#### F16 (Medium): Teacher selection and the two-3090 plan
+
+Decision 3.0 on the Index 0.3.2 boards (dated 2026-10-12), from the model
+cards:
+
+| Model | Parameters | Text board | Vision board | Perception Test | One-request GPU peak |
+| --- | --- | --- | --- | --- | --- |
+| [d3][d3] | 26.09 B | 66.3 (first of 149) | 71.3 (first of 33) | 77.4 | 61.8 GiB |
+| [d3-flash][d3-flash] | 8.39 B | 55.8 | 66.9 | 73.3 | 23.8 GiB |
+| [d3-mini][d3-mini] | 4.54 B | 52.6 | 63.2 | 70.3 | 14.8 GiB |
+| [d3-nano][d3-nano] | 2.21 B | 38.9 | 54.7 | 63.5 | 9.1 GiB |
+| [d3-lite][d3-lite] | 0.85 B | 32.3 | 42.1 | 59.3 | 5.7 GiB |
+| [d3-edge][d3-edge] | 0.59 B | 20.2 | 36.6 | 46.6 | 5.2 GiB |
+
+On ERQA (embodied reasoning), autotrust measured d3 at 58.8 in one pass
+([JEV-27B-VL card][jev-27b-vl]). Starting with d3 in INT8 is sound: all-BF16
+weights (46.2 GiB even with host-side embeddings) leave no room for activations
+on 2 x 24 GB, whereas the INT8 split needs about 12 GiB per card (estimate,
+DESIGN §4). The sharding corrections are in §12.2. Two more points from the
+release code: d3 defines `confidence` as one minus the normalized entropy, a
+third formula next to Jev's and Vela's (DESIGN §6), and its runtime downloads
+`http(s)` media URLs, so label from local files. Leaderboards do not measure
+robot-state questions; the bake-off on reviewed robot states decides, and
+d3-flash or d3-mini would relabel DAgger rounds faster (about 0.4-0.5 s per
+question is estimated for d3).
+
+#### F17 (Medium): Define "European sourced"
+
+A headquarters location does not establish origin. Define the levels that
+matter (vendor, chip design, wafer fab, assembly and test, board components,
+software and IP) and collect country-of-origin data per part. Context:
+STMicroelectronics, Infineon, and NXP are European vendors; Alif Semiconductor
+is a US company; the Cortex-M55 and Ethos NPUs are Arm IP; the Decision 3.0
+teachers build on Qwen backbones; and [Mistral Small 3.1][mistral-small]
+(Apache-2.0, from France) is an option if a European teacher is ever required.
+Drone flights also fall under aviation rules (in the EU, the
+[EASA framework][easa-drones]). Applied: DESIGN §9, §10.
+
+### 12.4 Corrections to the first review
+
+- F1 and §2 presented autotrust/JEV-35B as a clean open alternative; see F15.
+- §7.2 listed Alif without noting that it is a US company.
+- F2 left d3-lite, d3-nano, and d3-mini unchecked; filled in.
+- §10's M0 example was a text task; replaced with a rover pilot.
+
+### 12.5 Next steps
+
+1. M0 with the updated template (§10): rover first, interface contract v0,
+   sensors, label source per question, simulator, and the European-sourcing
+   definition.
+2. Teacher host: port the INT8 loader to d3 on the two 3090s (DESIGN §4) with
+   flash-linear-attention, `verify="full"`, and a streamed BF16 reference; then
+   the bake-off against d3-flash and d3-mini on reviewed robot states.
+3. Ask the vLLM Semantic Router team for a training-data statement on Decision
+   3.0 (F15).
+4. Simulation: a rover scenario in PX4 software-in-the-loop with Gazebo, or an
+   equivalent, that logs state packets in the contract format.
+5. M1a as before, adding a depth-grid CNN and a small camera CNN to the
+   compile-only experiments.
+
 ## Sources
 
 Hardware and tools:
@@ -803,10 +1005,19 @@ Jev and Jev-style models:
   [usage][vela-03b-usage], [config][vela-03b-config], [code][vela-03b-code];
   [Vela 0.8B][vela-08b]; Vela 9B [usage][vela-9b-usage], [config][vela-9b-config],
   and [code][vela-9b-code]
-- [Decision 3.0 collection][d3-collection], [d3-edge][d3-edge],
-  [d3-flash][d3-flash]
+- [Decision 3.0 collection][d3-collection], [d3][d3], [d3-flash][d3-flash],
+  [d3-mini][d3-mini], [d3-nano][d3-nano], [d3-lite][d3-lite], [d3-edge][d3-edge],
+  and the [Decision paper][decision-paper]
 - [Crivo-150M][crivo-150m], [Crivo-32M][crivo-32m], [JEV-35B][jev-35b],
-  [Decision Index][decision-index]
+  [JEV-27B-VL][jev-27b-vl], [jev-distill-corpus-v3][jev-corpus],
+  [Decision Index][decision-index], [Vela 9B evaluation][vela-9b-eval], and
+  [Mistral Small 3.1][mistral-small]
+
+Robot integration (Update 2):
+
+- [PX4 offboard mode][px4-offboard], [PX4 Gazebo simulation][px4-gazebo],
+  [DAgger][dagger], [Infineon PSoC Edge E84][psoc-edge-e84], and the
+  [EASA drone framework][easa-drones]
 
 Methods and measurements:
 
@@ -843,6 +1054,20 @@ Methods and measurements:
 [d3-collection]: https://huggingface.co/collections/vllm-sr/decision-30
 [d3-edge]: https://huggingface.co/vllm-sr/d3-edge
 [d3-flash]: https://huggingface.co/vllm-sr/d3-flash
+[d3]: https://huggingface.co/vllm-sr/d3
+[d3-mini]: https://huggingface.co/vllm-sr/d3-mini
+[d3-nano]: https://huggingface.co/vllm-sr/d3-nano
+[d3-lite]: https://huggingface.co/vllm-sr/d3-lite
+[decision-paper]: https://vllm-sr.ai/decision-paper
+[jev-27b-vl]: https://huggingface.co/autotrust/JEV-27B-VL
+[jev-corpus]: https://huggingface.co/datasets/SargeDev/jev-distill-corpus-v3
+[vela-9b-eval]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/EVALUATION.md
+[mistral-small]: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503
+[px4-offboard]: https://docs.px4.io/main/en/flight_modes/offboard.html
+[px4-gazebo]: https://docs.px4.io/main/en/sim_gazebo_gz/
+[dagger]: https://arxiv.org/abs/1011.0686
+[psoc-edge-e84]: https://www.infineon.com/products/microcontroller/32-bit-psoc-arm-cortex/32-bit-psoc-edge-arm/psoc-edge-e84
+[easa-drones]: https://www.easa.europa.eu/en/the-agency/faqs/drones-uas
 [jev-35b]: https://huggingface.co/autotrust/JEV-35B
 [crivo-150m]: https://huggingface.co/tardellirs/crivo-150m
 [crivo-32m]: https://huggingface.co/tardellirs/crivo-32m

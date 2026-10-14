@@ -1,6 +1,8 @@
 # micro_classifier
 
-Design and feasibility findings: [DESIGN.md](DESIGN.md).
+A Jev-like decision module for robots on an STM32N6: typed decisions from a
+small student model distilled from open teachers. Design and feasibility
+findings: [DESIGN.md](DESIGN.md).
 
 Independent research review of the design: [REVIEW.md](REVIEW.md).
 

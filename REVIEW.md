@@ -1209,6 +1209,51 @@ left for human review; that proposal has **not** been approved.
 [st-compile-script]: export/st_compile.py
 [st-cli-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-cli.html
 
+## 18. Simulation Label Policy Draft (2026-10-15)
+
+The user explicitly selected **Approve a policy draft and tests**, not the
+alternative allowing simulator label generation, and confirmed that ST tools
+remain unavailable. This authorizes a narrow Task 6 preparation increment;
+it does not approve reviewed labels, teacher labeling, training, physical
+thresholds, deployment or actual ST compilation. §17's historical blocker
+statement is superseded only for implementing this draft and its tests.
+
+[Catalogue data][sim-catalogue-draft] preserves the four wire identities and
+option order. [Draft code][sim-label-draft] proposes an envelope of radius
+plus speed times (ToF age plus one tick), plus squared speed over twice the
+Config acceleration. Left/centre/right columns are 0-2/3-4/5-7, with minima
+over valid returns and coverage required in every column. Centre clearance
+defines the blocked proxy and the four Config-relative speed ceilings;
+clearest qualifying sector wins with centre/left/right tie priority.
+DESIGN.md §7 records exact formulas, boundaries and limitations for review.
+
+Unavailable/stale samples, missing coverage and beyond-range envelopes cause
+explicit abstention, never fabricated clear observations or `none` from
+missing data. `mode` always requires human review. Non-finite/malformed or
+timestamp-inconsistent observations are rejected. Records are marked
+`unreviewed_draft`, `tooling_and_unit_tests_only`, training-disabled and not
+physical safety evidence. Canonical policy/config/input hashes and source
+hashes track identity. No world truth, future frames, expert actions or
+history are read; the simulator CLI, episode logs and wire codecs are unchanged.
+
+Verification: 37 draft tests and all 67 simulator tests pass; full suite:
+188 passed plus the existing transformer numerical expected failure. Ruff,
+changed-file formatting, editor diagnostics and documentation references pass.
+The tests exercise arithmetic, boundaries, sensor masks/ages, orientation,
+provenance and no input mutation/leakage. Only unit fixtures were evaluated;
+no labeled episode dataset, smoke labeling run, teacher call, training job,
+dependency change, ST execution or board action occurred.
+
+Task 6 remains blocked on review of the proposed policy, including its sector
+partition, one-tick reaction assumption, freshness/tie rules and tier meanings.
+Radial noisy rays do not certify collision-free swept motion, especially when
+turning. Proposed next approval is a simulation-only reviewed-policy smoke
+suite with `mode` left for human review; it has not been granted. Task 8 still
+requires a reviewed catalogue/policy; training and firmware remain out of scope.
+
+[sim-catalogue-draft]: sim/catalogue.json
+[sim-label-draft]: sim/labels.py
+
 ## Sources
 
 Hardware and tools:

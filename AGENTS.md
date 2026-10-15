@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §17 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §18 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-15)
@@ -112,6 +112,15 @@ Keep this section and the Task List current; a new session resumes from them.
   and M1a are unverified. No install, licence action, firmware integration or
   board command. REVIEW.md §17 records limits; the 4.0.1 CLI example is not an
   installation approval.
+- User approved a simulation-only policy **draft and tests** on 2026-10-15,
+  not episode label generation, teacher labeling or training; ST tools remain
+  unavailable. `sim/catalogue.json` and `sim/labels.py` implement unreviewed
+  observation-only proxies with Config-derived envelopes, explicit abstention,
+  option parity and provenance. `mode` is always left for human review. The
+  simulator CLI and wire contract are unchanged; no dataset was generated.
+  All 67 simulator tests pass (37 draft-policy tests); full suite: 188 passed
+  plus the known transformer expected failure. DESIGN.md §7 and REVIEW.md §18
+  record the exact proposed formulas and limitations. Task 6 awaits review.
 
 ## Task List
 
@@ -145,13 +154,16 @@ on missing tools, and continue with the next unblocked task.
    round-trip tests.
   Result (2026-10-15): approved provisional host-side contract, 62 focused
   tests, generated C offsets and five golden frames; no hardware freeze.
-6. [blocked: physical thresholds and reviewed label policy unspecified]
+6. [blocked: draft simulation label policy awaits review]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
-  Open decision: approve simulation-only computable label definitions derived
-  from Config, leaving `mode` for human review; recommended default is yes,
-  with no physical safety or production-label claim. Wire identities already
-  exist, but they do not satisfy reviewed catalogue/label-policy requirements.
+  Partial result (2026-10-15): approved draft/test-only tooling now includes
+  a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
+  explicit unreviewed/training-disabled metadata and no generated dataset.
+  Open decision: review the exact envelope, sector, tier and abstention rules
+  in DESIGN.md §7 before approving simulation-only label generation. Proposed
+  next step: a reviewed simulation smoke suite only, with `mode` human-reviewed;
+  physical safety and production labels remain unfrozen and unapproved.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
@@ -163,7 +175,7 @@ on missing tools, and continue with the next unblocked task.
   Result (2026-10-15): provisional state frames exported with `--wire`, 30
   simulator tests, four successful scene runs and 566 verified frames. JSONL
   embeds wire bytes as hex; no model decisions, reviewed labels or board claim.
-8. [blocked: catalogue and reviewed labeling policy pending]
+8. [blocked: draft catalogue and label policy not reviewed]
   Teacher labeling pipeline: deterministic rendering of state packets for
    the teacher, cached and resumable labeling, and provenance (revision,
    settings, and hashes).

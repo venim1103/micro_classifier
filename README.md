@@ -58,6 +58,22 @@ python -m teacher.validate_vela_int8 --output teacher/reports/<name>.json
 
 CPU unit tests: `python -m pytest tests`.
 
+## Simulation Label Policy Draft
+
+The [catalogue][sim-catalogue-draft] and [labeler][sim-label-draft] are approved
+for **draft tooling and unit tests only**. They propose deterministic
+observation-only proxies for `path_blocked`, `clear_sector` and `speed_tier`,
+with explicit abstention; `mode` always awaits human review. Every result is
+unreviewed and training-disabled, with catalogue/config/input/source hashes.
+The formulas and limitations await review in [DESIGN.md](DESIGN.md) §7.
+
+```sh
+python -m pytest -q tests/test_sim.py -k draft
+```
+
+No episode labeling CLI, dataset, teacher-labeling run or training is supplied
+or approved by this draft. Simulator logging and wire export are unchanged.
+
 ## M1a Host Probes
 
 [CPU preparation tooling][m1a-script] exports nine **untrained** fixed-shape
@@ -172,5 +188,7 @@ The simulation JSONL container remains separately versioned. See
 [wire-header]: firmware/include/micro_classifier_protocol.h
 [wire-golden]: interface/golden_vectors.json
 [m1a-script]: export/m1a.py
+[sim-catalogue-draft]: sim/catalogue.json
+[sim-label-draft]: sim/labels.py
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

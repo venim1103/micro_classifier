@@ -1031,6 +1031,71 @@ rovers and multicopters. Model sensor noise, latency, and dropouts, and keep
 real-world episodes for the locked test set; simulator success alone passes no
 gate.
 
+### Simulation Label Policy Draft (2026-10-15)
+
+The user approved **a policy draft and tests only**, not generation of labeled
+episodes, teacher labeling, student training or deployment. The [catalogue
+data][sim-catalogue-draft] and [draft implementation][sim-label-draft] retain
+`unreviewed_draft`, `tooling_and_unit_tests_only`, no training approval and no
+physical safety claim. Wire catalogue version 0 and its ordered option identities
+are unchanged. This does not complete Task 6's reviewed-policy requirement.
+
+The draft consumes only current observation ego-state, ToF ranges/masks, tick,
+sample tick and age. It never reads world geometry, collision/success truth,
+expert actions, future frames or history. Its proposed stopping-envelope proxy is
+
+$$
+d(v,\tau)=r+v(\tau+\Delta t)+\frac{v^2}{2a},
+$$
+
+where radius, tick duration and acceleration/deceleration come from `Config`,
+speed is the observed forward speed, and age is the observed ToF age. The
+extra one-tick reaction term is a **draft assumption**, not measured latency.
+At the default maximum speed 0.6 m/s and age 0.1 s, this gives 0.45 m.
+Freshness follows the existing simulation baseline's Config-derived limit:
+age at most `(latency_ticks + 1) * dt`. Sample age must agree with its ticks.
+Float32 roundoff at configured motion/range limits is accepted; the envelope
+uses at most the nominal Config speed, not a larger invented speed limit.
+
+Columns 0-2 are left, 3-4 centre and 5-7 right; columns run from positive to
+negative body bearing. Each column needs at least one valid row; its minimum
+valid return is used. A sector minimum exists only with coverage in every
+column. Missing masked cells must be zero, as in the simulator schema.
+
+| Question | Proposed sensor-proxy rule |
+| --- | --- |
+| `path_blocked` | Centre minimum at or below the current-speed envelope gives true; strictly above gives false |
+| `clear_sector` | Among sector minima strictly above that envelope, pick the greatest; exact ties prefer centre, left, right; `none` means all sectors are observed but none qualifies |
+| `speed_tier` | Greatest tier whose candidate-speed envelope is strictly below centre minimum; tiers map to 0, 1/3, 2/3 and full Config.max_speed; fallback is tier 0 |
+| `mode` | Always absent with `human_review_required`; never infer policy mode from expert actions or deterministic proxies |
+
+Unknown is distinct from `none`, false or tier 0. Warmup without a sample,
+staleness or a current envelope reaching/exceeding sensor range causes all
+three computable questions to abstain. Missing centre coverage abstains for
+`path_blocked`/`speed_tier`; any missing sector coverage abstains for
+`clear_sector`. Malformed, non-finite, out-of-range or inconsistent observations
+are rejected. Returned option indices match the catalogue, not model outputs.
+
+The record includes canonical catalogue/config/input SHA-256 and labeler-source
+SHA-256, full Config, explicit reasons and measured sector minima. Extra
+privileged fields do not change it; inputs are not mutated. No probabilities,
+model decision frames or automatic episode-export integration are added.
+
+These are radial sensor proxies, **not collision ground truth**. Sparse planar
+rays, a limited field of view, censored maximum-range returns, unbounded Gaussian
+noise, turning motion and stale geometry preclude a free swept-footprint or
+physical safety claim. Tier zero is a draft label, not an interlock or a motor
+command. The host's independent fail-safes are untouched. Review these exact
+assumptions before any labeled dataset or teacher-labeling pipeline uses them.
+
+Verification: 37 new draft tests; all 67 simulator tests and 188 repository
+tests pass, plus the previously known transformer numerical expected failure.
+Checks cover wire-option parity, hand arithmetic, strict/inclusive boundaries,
+left/right orientation, masking, warmup/staleness, out-of-range abstention,
+provenance changes, no privileged-data leakage and input immutability. Lint,
+changed-file formatting and editor diagnostics pass. No labeling run, training,
+new dependency, ST execution, firmware or hardware work occurred.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following
@@ -1430,6 +1495,8 @@ for this project.
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py
 [st-cli-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-cli.html
+[sim-catalogue-draft]: sim/catalogue.json
+[sim-label-draft]: sim/labels.py
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

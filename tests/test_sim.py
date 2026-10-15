@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from sim.labels import draft_catalogue, draft_labels, stopping_envelope
 from sim.rover import (
     Config,
     RoverEnv,
@@ -21,6 +22,232 @@ from sim.rover import (
     with_wire_frames,
     write_episode,
 )
+
+
+def test_draft_catalogue_matches_wire_types_options_and_review_gate():
+    from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
+
+    catalogue = draft_catalogue()
+    assert catalogue["catalogue_version"] == CATALOGUE_VERSION
+    assert catalogue["review_status"] == "unreviewed_draft"
+    assert catalogue["allowed_use"] == "tooling_and_unit_tests_only"
+    assert not catalogue["physical_safety_claim"]
+    assert len(catalogue["questions"]) == len(QUESTIONS)
+    for row in catalogue["questions"]:
+        identity = QuestionId(row["id"])
+        kind, options = QUESTIONS[identity]
+        assert (row["name"], row["type"], row["options"]) == (
+            identity.name.lower(),
+            kind.name.lower(),
+            list(options),
+        )
+
+
+def test_draft_envelope_matches_config_arithmetic_and_age_monotonicity():
+    config = Config()
+    assert stopping_envelope(0.6, 0.1, config) == pytest.approx(0.45)
+    assert stopping_envelope(0, 0.1, config) == config.radius
+    assert stopping_envelope(0.6, 0.15, config) > stopping_envelope(0.6, 0.1, config)
+    assert stopping_envelope(0.3, 0.1, config) < stopping_envelope(0.6, 0.1, config)
+
+
+@pytest.mark.parametrize(
+    "speed,age",
+    [(-1, 0), (1, 0), (0, -1), (float("nan"), 0), (0, float("inf")), (True, 0)],
+)
+def test_draft_envelope_rejects_invalid_values(speed, age):
+    with pytest.raises((TypeError, ValueError)):
+        stopping_envelope(speed, age, Config())
+
+
+@pytest.fixture
+def draft_observation():
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset(seed=5)
+    observation["tof_m"] = np.full((8, 8), 2.0)
+    return config, observation
+
+
+def test_draft_clear_observation_is_serializable_and_unreviewed(draft_observation):
+    config, observation = draft_observation
+    result = draft_labels(observation, config)
+    assert result["review_status"] == "unreviewed_draft"
+    assert not result["training_approved"] and not result["physical_safety_claim"]
+    assert result["answers"]["path_blocked"]["value"] == "false"
+    assert result["answers"]["clear_sector"]["value"] == "centre"
+    assert result["answers"]["speed_tier"]["value"] == "3"
+    assert result["answers"]["mode"]["value"] is None
+    assert result["answers"]["mode"]["reason"] == "human_review_required"
+    assert json.loads(json.dumps(result, allow_nan=False)) == result
+    assert draft_labels(observation, config) == result
+
+
+@pytest.mark.parametrize(
+    "offset,blocked", [(0, "true"), (-1e-6, "true"), (1e-6, "false")]
+)
+def test_draft_obstacle_boundary_is_inclusive(draft_observation, offset, blocked):
+    config, observation = draft_observation
+    observation["ego"] = np.array([0.3, 0, 4, 0])
+    boundary = stopping_envelope(0.3, 0, config)
+    observation["tof_m"][:, 3:5] = boundary + offset
+    assert (
+        draft_labels(observation, config)["answers"]["path_blocked"]["value"] == blocked
+    )
+
+
+@pytest.mark.parametrize("tier", [0, 1, 2, 3])
+def test_draft_speed_tiers_have_config_relative_meanings(draft_observation, tier):
+    config, observation = draft_observation
+    boundary = stopping_envelope(config.max_speed * tier / 3, 0, config)
+    observation["tof_m"][:, 3:5] = boundary + 1e-6
+    assert draft_labels(observation, config)["answers"]["speed_tier"]["value"] == str(
+        tier
+    )
+
+
+def test_draft_sector_orientation_ties_and_none_are_distinct(draft_observation):
+    config, observation = draft_observation
+    observation["tof_m"][:, 3:] = 1
+    assert (
+        draft_labels(observation, config)["answers"]["clear_sector"]["value"] == "left"
+    )
+    observation["tof_m"][:, 5:] = 3
+    assert (
+        draft_labels(observation, config)["answers"]["clear_sector"]["value"] == "right"
+    )
+    observation["tof_m"][:] = 0.1
+    assert (
+        draft_labels(observation, config)["answers"]["clear_sector"]["value"] == "none"
+    )
+
+
+def test_draft_partial_masks_do_not_invent_clearance(draft_observation):
+    config, observation = draft_observation
+    observation["tof_valid"][0, 0] = False
+    observation["tof_m"][0, 0] = 0
+    assert (
+        draft_labels(observation, config)["answers"]["clear_sector"]["value"]
+        == "centre"
+    )
+    observation["tof_valid"][:, 0] = False
+    observation["tof_m"][:, 0] = 0
+    answers = draft_labels(observation, config)["answers"]
+    assert answers["clear_sector"]["value"] is None
+    assert answers["path_blocked"]["value"] == "false"
+    assert answers["speed_tier"]["value"] == "3"
+    observation["tof_valid"][:, 3] = False
+    observation["tof_m"][:, 3] = 0
+    answers = draft_labels(observation, config)["answers"]
+    assert answers["path_blocked"]["value"] is None
+    assert answers["speed_tier"]["value"] is None
+
+
+def test_draft_warmup_and_stale_samples_abstain(draft_observation):
+    warmup, _ = RoverEnv().reset()
+    result = draft_labels(warmup)
+    assert all(answer["value"] is None for answer in result["answers"].values())
+    config, observation = draft_observation
+    observation["tick"] = 2
+    observation["tof_age_s"] = 2 * config.dt
+    result = draft_labels(observation, config)
+    assert result["answers"]["path_blocked"]["reason"] == "stale_tof"
+
+
+def test_draft_ignores_privileged_fields_and_never_mutates_inputs(draft_observation):
+    config, observation = draft_observation
+    original = deepcopy(observation)
+    first = draft_labels(observation, config)
+    np.testing.assert_equal(observation, original)
+    observation.update(
+        ground_truth={"collision": True}, expert_action=[0, 1], future=[42]
+    )
+    observation["history_ego"][:] = 1000
+    assert draft_labels(observation, config) == first
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("schema", "unknown"),
+        ("tick", True),
+        ("tof_sample_tick", 1),
+        ("tof_age_s", 0.1),
+        ("ego", [float("nan"), 0, 0, 0]),
+        ("ego", [1, 0, 0, 0]),
+        ("tof_m", np.full((8, 8), -1)),
+        ("tof_m", np.full((8, 8), float("inf"))),
+        ("tof_valid", np.ones((8, 8))),
+    ],
+)
+def test_draft_rejects_malformed_observations(draft_observation, field, value):
+    config, observation = draft_observation
+    observation[field] = value
+    with pytest.raises(ValueError):
+        draft_labels(observation, config)
+
+
+def test_draft_accepts_simulator_float32_speed_limit(draft_observation):
+    config, observation = draft_observation
+    observation["ego"][0] = config.max_speed
+    assert float(observation["ego"][0]) > config.max_speed
+    assert draft_labels(observation, config)["answers"]["speed_tier"]["value"] == "3"
+
+
+@pytest.mark.parametrize("tier", [1, 2, 3])
+def test_draft_speed_boundary_requires_strict_clearance(draft_observation, tier):
+    config, observation = draft_observation
+    fraction = draft_catalogue()["rules"]["speed_fractions"][tier]
+    observation["tof_m"][:, 3:5] = stopping_envelope(
+        config.max_speed * fraction, 0, config
+    )
+    assert draft_labels(observation, config)["answers"]["speed_tier"]["value"] == str(
+        tier - 1
+    )
+
+
+def test_draft_freshness_boundary_is_inclusive(draft_observation):
+    config, observation = draft_observation
+    observation["tick"] = 1
+    observation["tof_age_s"] = config.dt
+    assert (
+        draft_labels(observation, config)["answers"]["path_blocked"]["value"] == "false"
+    )
+
+
+def test_draft_beyond_sensor_envelope_abstains_instead_of_claiming_blocked():
+    config = Config(max_range=0.2, noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset()
+    observation["ego"][0] = config.max_speed
+    result = draft_labels(observation, config)
+    for name in ("path_blocked", "clear_sector", "speed_tier"):
+        assert result["answers"][name]["value"] is None
+        assert result["answers"][name]["reason"] == "envelope_outside_sensor_range"
+
+
+def test_draft_config_and_input_provenance_change_independently(draft_observation):
+    from dataclasses import replace
+
+    config, observation = draft_observation
+    first = draft_labels(observation, config)
+    changed = draft_labels(observation, replace(config, radius=0.2))
+    assert changed["config_sha256"] != first["config_sha256"]
+    assert changed["input_sha256"] == first["input_sha256"]
+    observation["tof_m"][0, 0] = 1
+    changed = draft_labels(observation, config)
+    assert changed["config_sha256"] == first["config_sha256"]
+    assert changed["input_sha256"] != first["input_sha256"]
+    assert changed["catalogue_sha256"] == first["catalogue_sha256"]
+    assert changed["labeler_sha256"] == first["labeler_sha256"]
+
+
+def test_draft_rejects_nonzero_invalid_cells_and_missing_fields(draft_observation):
+    config, observation = draft_observation
+    observation["tof_valid"][0, 0] = False
+    with pytest.raises(ValueError, match="must contain zero"):
+        draft_labels(observation, config)
+    del observation["tof_m"]
+    with pytest.raises(ValueError, match="missing required"):
+        draft_labels(observation, config)
 
 
 def test_rays_hit_nearest_obstacle_and_wall():

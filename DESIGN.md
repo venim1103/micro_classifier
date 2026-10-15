@@ -126,22 +126,25 @@ Interface contract, fixed in M0 and versioned with every release:
 
 ### Decisions Required Before Scaffolding
 
+Recorded as provisional defaults on 2026-10-14 ([REVIEW.md](REVIEW.md) §10) so
+host-side scaffolding can proceed; confirm or revise before freezing M0.
+
 | Requirement | Current status |
 | --- | --- |
-| First robot frame, task, question bundle, and ground-truth policy | Proposed: ground rover with atomic per-tick questions ([REVIEW.md](REVIEW.md) §10); unconfirmed |
-| Input modality and sensor set: ego-state, multizone ToF, camera, text | Proposed: ego-state and an 8x8 ToF grid first, camera next; text only for operator commands |
-| Languages and maximum input length (text branch only) | Unspecified |
-| Fixed task catalogue versus runtime-defined questions | Unspecified |
-| Whether external RAM is forbidden | Unspecified; internal-memory inference proposed |
-| Whether external flash for boot/storage is allowed | Unspecified; separate from inference memory |
-| Decision rate, end-to-end latency, and power, derived from the frame's speed and stopping distance (§8) | Unspecified |
-| Required per-class recall, error costs, and rejection coverage | Unspecified |
-| Host interface: bus, protocol, and host stack (custom MCU, PX4, ArduPilot) | Unspecified; UART first proposed |
-| Simulator for closed-loop data and tests (§7) | Unspecified; PX4 software-in-the-loop with Gazebo is one candidate |
-| Board selection and any component-origin requirements | Unspecified; STM32N6570-DK proposed for M1b (§12) |
-| European sourcing: vendor, design, fab, assembly, components, or software provenance (§10) | Unspecified; each level needs its own evidence |
-| Confidence semantics: TypeSafe Jev or Vela formulas (§6) | Unspecified |
-| Commercial use and licence constraints (§10) | Unspecified |
+| First robot frame, task, question bundle, and ground-truth policy | Provisional default: ground rover with four per-tick questions (`path_blocked` noul, `clear_sector` choice, `speed_tier` score 0-3, `mode` choice); deterministic labels for geometry/speed ceiling, reviewed human labels plus Decision 3.0 distributions for `mode` ([REVIEW.md](REVIEW.md) §10) |
+| Input modality and sensor set: ego-state, multizone ToF, camera, text | Provisional default: FLU ego-state from the host plus an on-module 8x8 ToF grid (`VL53L8CX` model) and an 8-tick history window first; camera in a later profile; text only for optional operator commands |
+| Languages and maximum input length (text branch only) | Provisional default: English only for optional operator command strings, at most 128 UTF-8 bytes; enumerated task IDs preferred in v0 |
+| Fixed task catalogue versus runtime-defined questions | Provisional default: fixed per-profile question catalogue stored as versioned head blobs (§6) |
+| Whether external RAM is forbidden | Provisional default: no external RAM during inference (`internal-memories-only--default`) |
+| Whether external flash for boot/storage is allowed | Provisional default: external flash allowed for cold boot and weight/head initializers; separate from inference memory |
+| Decision rate, end-to-end latency, and power, derived from the frame's speed and stopping distance (§8) | Provisional default: 20 Hz decision rate, at most 20 ms end-to-end latency from state packet to decision packet at nominal clocks (600 MHz CPU / 800 MHz NPU), below 1 W module power |
+| Required per-class recall, error costs, and rejection coverage | Provisional default: missed obstacle 20x worse than a false stop; `mode` macro-F1 ≥ 0.85 at ≥ 80% coverage; zero collisions in simulator and arena scenario suites |
+| Host interface: bus, protocol, and host stack (custom MCU, PX4, ArduPilot) | Provisional default: UART at 1 Mbaud with CRC-protected binary interface contract v0; rover brakes on rejection or after 150 ms without a decision |
+| Simulator for closed-loop data and tests (§7) | Provisional default: minimal Python/NumPy 2-D rover simulator with an 8x8 ToF model, noise, dropouts, latency, and a scripted expert first; PX4 software-in-the-loop with Gazebo later |
+| Board selection and any component-origin requirements | Provisional default: STM32N6570-DK for M1b (§12), with `USE_EXTERNAL_MEMORY_DEVICES=0` |
+| European sourcing: vendor, design, fab, assembly, components, or software provenance (§10) | Provisional default: vendor and wafer-fab level for the primary MCU (`STM32N657`) and ToF sensor (`VL53L8CX`), with country of origin recorded per part |
+| Confidence semantics: TypeSafe Jev or Vela formulas (§6) | Provisional default: TypeSafe Jev formulas on host and device, alongside full probability distributions |
+| Commercial use and licence constraints (§10) | Provisional default: commercial product; Apache-2.0 teachers without Jev-derived labels |
 | Devcontainer and certificate trust | Resolved: `.devcontainer` (§11) |
 
 The target application is now a robot decision module (clarified on

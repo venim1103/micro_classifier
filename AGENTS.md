@@ -26,8 +26,11 @@ Keep this section and the Task List current; a new session resumes from them.
 - Design only, plus an INT8 Vela 2.0 9B teacher loader
   ([teacher/vela_int8.py](teacher/vela_int8.py)) and its validator. No student,
   dataset, firmware, ST compiler report, or board measurement exists yet.
-- M0 decisions are open; REVIEW.md §10 holds a rover example to confirm or
-  replace with the user.
+- M0 scope defaults are recorded as provisional for the ground-rover pilot in
+  DESIGN.md §2 and REVIEW.md §10 (2026-10-14): four per-tick questions
+  (`path_blocked`, `clear_sector`, `speed_tier`, `mode`), ego-state plus an
+  on-module 8x8 ToF grid and an 8-tick history window, TypeSafe Jev confidence
+  formulas, a minimal 2-D Python/NumPy simulator first, and UART at 1 Mbaud.
 - ST Edge AI Core and STM32CubeProgrammer are not installed, so NPU compilation
   (M1a) waits until the user places them in `.devcontainer/tools`. No board is
   attached.
@@ -40,9 +43,11 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-1. [ ] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
+1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
    §10. Use the defaults for unanswered items, marked as provisional.
+   Result: Recorded provisional M0 defaults for the ground-rover pilot in
+   DESIGN.md §2 and REVIEW.md §10 (2026-10-14).
 2. [ ] d3-flash INT8 loader `teacher/d3_int8.py`, with unit tests that need no
    download or GPU. Exit: it loads on the 12 GB GPU and answers `system_one`
    requests.

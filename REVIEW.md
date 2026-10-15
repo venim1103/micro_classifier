@@ -72,7 +72,7 @@ two-GPU d3 teacher, and the definition of European sourcing (§12).
 
 Recommended path in one paragraph: resolve M0 (one task, modality, latency,
 error costs). Install ST Edge AI Core in the devcontainer and run compile-only
-mapping experiments, which need no board. Build M55-only baselines (rules,
+nmapping experiments, which need no board. Build M55-only baselines (rules,
 hashed n-grams, pruned static embeddings). Then train a convolutional student on
 an NPU-friendly trunk with heads on the M55, distilled from an open teacher
 selected by a measured bake-off.
@@ -635,7 +635,7 @@ research stretch only.
 Estimates computed for this review. Assumptions: INT8; M55 at 800 MHz and 0.73
 cycles/MAC (ST's measured CM55 example; real kernels vary roughly 0.5–2); NPU at
 1 GHz with 30–100 effective MAC/cycle (published N6 work reached ~52). Excludes
-epoch overhead, preprocessing, and I/O.
+nepoch overhead, preprocessing, and I/O.
 
 | Candidate | Parameters (INT8) | MACs | Peak activations | M55 only | NPU compute |
 | --- | --- | --- | --- | --- | --- |
@@ -763,21 +763,24 @@ For the robot decision module, §12.5 updates steps 1 and 4.
 
 ## 10. M0 Decision Template
 
-Updated in Update 2 for the robot pilot.
+Updated in Update 2 for the robot pilot; recorded as provisional defaults on
+2026-10-14 pending final user confirmation.
 
-| Decision | Example answer to replace |
+| Decision | Provisional default (2026-10-14) |
 | --- | --- |
-| First frame and question bundle in Jev form | Ground rover; per tick: `path_blocked` (noul), `clear_sector` (choice: left, centre, right, none), `mode` (choice: explore, approach, avoid, dock, halt) |
-| Inputs and sensors | Ego-state from the host; 8x8 ToF on the module; camera in a later profile |
-| Label source per question | `path_blocked` and `clear_sector` deterministic from ToF range and speed; `mode` from reviewed human labels plus d3 distributions |
+| First frame and question bundle in Jev form | Ground rover; per tick: `path_blocked` (noul), `clear_sector` (choice: left, centre, right, none), `speed_tier` (score 0-3), `mode` (choice: explore, approach, avoid, dock, halt) |
+| Inputs and sensors | Ego-state from the host (FLU body axes, SI units); 8x8 ToF (`VL53L8CX` model) and an 8-tick history window on the module; camera in a later profile; text only for optional operator commands (English, ≤ 128 UTF-8 bytes) |
+| Label source per question | `path_blocked`, `clear_sector`, and `speed_tier` ceiling deterministic from ToF range and speed; `mode` (and perceptual/policy refinements) from reviewed human labels plus Decision 3.0 distributions |
+| Confidence semantics | TypeSafe Jev formulas on host and device (`(p_max − 1/n)/(1 − 1/n)` for choice, MAD-based for score, `\|2p − 1\|` for noul), alongside full probabilities |
+| Simulator | Minimal Python/NumPy 2-D rover simulator with an 8x8 ToF model, noise, dropouts, latency, and a scripted expert first; PX4 software-in-the-loop with Gazebo later |
 | Ground-truth owner and policy | Project lead reviews ambiguous episodes |
 | Error costs | A missed obstacle is 20x worse than a false stop |
-| Required metrics | `mode` macro-F1 ≥ 0.85 at ≥ 80% coverage; no collisions in the arena scenario suite |
-| Decision rate, latency, and power | 20 Hz; decision within 20 ms of the state packet at nominal clocks; module below 1 W |
-| Host interface and fail-safe | UART at 1 Mbaud with interface contract v0; the rover brakes on rejection or after 150 ms without a decision |
-| Memory policy | No external RAM during inference; external flash allowed for boot |
-| Update policy | Heads as signed blobs; trunk via firmware release |
-| European sourcing | Vendor and wafer-fab level for the MCU and sensors; country of origin recorded per part |
+| Required metrics | `mode` macro-F1 ≥ 0.85 at ≥ 80% coverage; no collisions in the simulator and arena scenario suites |
+| Decision rate, latency, and power | 20 Hz; decision within 20 ms of the state packet at nominal clocks (600 MHz CPU / 800 MHz NPU); module below 1 W |
+| Host interface and fail-safe | UART at 1 Mbaud with interface contract v0 (CRC-protected binary packets); the rover brakes on rejection or after 150 ms without a decision |
+| Memory policy | No external RAM during inference; external flash allowed for boot and initializers |
+| Update policy | Heads as signed versioned blobs; trunk via firmware release or ST relocatable model |
+| Board and European sourcing | STM32N6570-DK for M1b; vendor and wafer-fab level for the MCU (`STM32N657`) and ToF sensor (`VL53L8CX`), with country of origin recorded per part |
 | Commercial use and licensing | Commercial product; Apache-2.0 teachers without Jev-derived labels |
 
 ## 11. Suggested Edits to DESIGN.md

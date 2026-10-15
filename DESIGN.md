@@ -15,8 +15,9 @@ Decision implementations and ST tooling, and the corrections from
 
 Hardware and software constraints below are source-verified. Architecture,
 memory budgets, and milestone gates are proposals, not measured results or
-approved product requirements. The only project measurement so far is a
-precision and resource check of the INT8 Vela 2.0 9B teacher loader (§4). No
+approved product requirements unless explicitly confirmed in §2. Project
+measurements cover teacher precision/resources (§4) and synthetic simulator
+smoke episodes (§7). No
 student training, ST compiler execution, firmware build, or physical-board
 benchmark has been performed.
 
@@ -430,6 +431,48 @@ The adapter excludes remote media, all video inputs, and the optional server.
 All consumed model files must be covered by the required manifest, and every
 listed file is SHA-256 checked before the release runtime is imported.
 
+#### d3-flash and d3-mini validation (measured 2026-10-15)
+
+[teacher/validate_d3_int8.py](teacher/validate_d3_int8.py) now compares both
+teachers with stored BF16 projections and GPU lookup of the used embedding
+rows. The INT8 path reuses `stored_bf16_weights` with a one-weight GPU cache;
+the mini reference streams the same projections from disk. Other computation
+and release prompts/readout are unchanged. Approved snapshot manifest digests
+are pinned in the loader, including when a local directory is supplied.
+The approved torchvision 0.25.0 dependency resolved the initial image blocker.
+
+Both runs used the identical hashed suite of 25 requests: ten text, eleven
+synthetic rover JSON states and four local 64x64 images, covering 31 questions
+(12 choice, 12 noul, 7 score). Noul probabilities are expanded into both
+Bernoulli outcomes, giving 85 compared values. These are diagnostic fixtures,
+not reviewed labels. The processor upscales the small images as released.
+
+| Measurement | d3-flash INT8 group-128 | d3-mini BF16 |
+| --- | --- | --- |
+| GPU allocated after load | 7.416 GiB | 7.368 GiB |
+| Candidate pass peak reserved, excluding load | 7.623 GiB | 7.568 GiB |
+| Candidate pass wall time, including first-call overhead | 74.84 s | 43.62 s |
+| Median request latency | 3.292 s | 1.845 s |
+| Candidate questions per second, batch size 1 | 0.414 | 0.711 |
+| Maximum / mean absolute probability delta vs own BF16 reference | 0.019836 / 0.002114 | 0 / 0 |
+| Changed argmax levels/choices or noul decisions at 0.5 | 0 of 31 | 0 of 31 |
+
+Full reports: [d3-flash](teacher/reports/d3-flash-int8-g128-rtx-a3000.json)
+and [d3-mini](teacher/reports/d3-mini-bf16-rtx-a3000.json). Flash maximum
+deltas by type were 0.002598 (choice), 0.014132 (noul), and 0.019836 (score).
+The largest score shift was `rover-02`, level 0: INT8 0.417293 versus BF16
+0.397457; level 1 remained the winner (0.476685 versus 0.492474). This
+exceeds Vela's earlier 0.013 smoke maximum on a different suite and is not a
+universal quantization tolerance. Investigate on the reviewed task set before
+using production labels or relying on calibration. No teacher quality winner
+can be selected from numerical parity or this synthetic suite.
+
+Streamed-reference throughput includes disk and host/device transfer overhead
+and must not be presented as resident BF16 inference speed. The mini result
+checks this host-embedding/streamed-projection adapter, not an independently
+reimplemented model. Neither test measures board fit, task accuracy, energy,
+or commercial training-data provenance.
+
 The two RTX 3090s below are rarely available, so the 12 GB RTX A3000 is the
 default teacher host. d3-flash (revision `b92769d`) is the strongest Decision
 3.0 member that fits it: its text backbone has exactly the dimensions of the
@@ -799,6 +842,51 @@ the projection parameters in the optimizer and any distributed training state.
 
 ### Closed-Loop Data and Simulation
 
+#### Hardware-Free Trainer Environment (2026-10-15)
+
+The user explicitly confirmed simulation-first development without hardware.
+[sim/rover.py](sim/rover.py) implements the accepted minimal Python/NumPy
+planar rover environment, with a SciPy Dijkstra scripted reference. Its
+`reset(seed=...)` returns an observation and diagnostic info; `step` takes
+desired forward speed and yaw rate, returning observation, scalar reward,
+termination, time-limit truncation and info. Observation tensors include
+ego-state and body-frame goal, delayed noisy ToF with validity and age, and
+eight masked history ticks. True pose and world geometry are not model inputs.
+
+User-approved, configurable **simulation-only assumptions**, not measured
+physical specifications: 20 Hz, 0.18 m circular rover radius, 0.6 m/s forward
+speed limit, 1 m/s² acceleration/deceleration, 1.5 rad/s turn limit; 45-degree
+planar ToF, 4 m range, 0.02 m independent Gaussian noise, 2% independent
+zone dropout, two-tick delivery latency, eight history ticks, and 400-tick
+episode limit. The eight vertical rows repeat planar rays before noise and
+dropouts; this is not VL53L8CX emulation. Constant-twist motion is checked
+against swept inflated obstacles, including a conservative curved-path margin.
+Invalid commands are rejected, bounded commands are reported, and collision
+terminates the simulation instead of permitting tunneling through obstacles.
+
+The approved prototype objective is goal reaching without collision: reward
+is decrease in goal distance in meters, minus 0.01 per tick, plus 10 for
+success (within 0.25 m) or minus 10 for collision. These are adjustable trainer
+signals, not validated robot policy, firmware interlocks, or label definitions.
+
+The map-aware scripted expert intentionally has privileged map/pose access;
+episode metadata marks this. It is a simulator reference, not a source of
+reviewed student targets. A sensor-only reactive baseline remains selectable
+and collided in the initial obstacle and slalom rollouts. The map reference
+subsequently completed all four scene families over seeds 0-7: 32 successes,
+zero collisions and zero timeouts. For seed 0, clear/obstacle/corridor/slalom
+finished in 133/141/133/156 ticks. These smoke results validate tooling only,
+not safety, robustness to the real world, or the eventual student's quality.
+
+The CLI writes new JSONL episodes and optional headless PNG trajectories under
+ignored `sim/episodes/`. It never overwrites existing logs. Logs carry seed,
+full scenario/configuration, policy privilege, rewards, input observations and
+separate diagnostic truth under `micro-classifier/sim-episode/1`. Repeated
+seed/configuration episodes are tested for deterministic equality in this
+environment. This is an interim simulation schema, **not interface contract
+v0**. Task 7's binary-contract log export remains blocked on Task 5; no wire
+format, question thresholds or physical safety policy is frozen by this work.
+
 A student trained only on logged or scripted trajectories meets states it never
 saw once its own decisions steer the robot. Collect data in rounds, as in
 [DAgger][dagger]:
@@ -1071,7 +1159,8 @@ evidence.
 
 Research is dated 2026-10-13 and 2026-10-14. Some upstream URLs follow mutable
 `main` branches; pin tested revisions and tool deliveries during
-implementation. The only project measurement is the INT8 teacher check in §4.
+implementation. Project measurements are the teacher checks in §4 and synthetic
+simulation smoke episodes in §7.
 No compiler report, hardware timing, energy measurement, training result,
 calibration result, closed-loop test, or supply-chain audit currently exists
 for this project.

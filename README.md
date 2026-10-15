@@ -8,6 +8,35 @@ Independent research review of the design: [REVIEW.md](REVIEW.md).
 
 ## Teacher tooling
 
+[teacher/d3_int8.py](teacher/d3_int8.py) loads the approved Decision 3.0
+d3-flash revision with INT8 text projections, or d3-mini in BF16. Both keep
+BF16 embeddings in host RAM, fully authenticate the package manifest, and
+restrict requests to text/JSON and local images. A native BF16-capable CUDA
+GPU is required for the measured validation path. Videos, the release HTTP
+server, and remote media are excluded.
+
+```python
+from teacher import d3_int8
+
+teacher = d3_int8.load_engine()  # pinned d3-flash; downloads only if needed
+result = teacher.system_one(
+		state="The path ahead is clear.",
+		questions={"blocked": {"type": "noul", "instructions": "Is the path blocked?"}},
+)
+```
+
+Run the fixed 25-request text, rover-state and local-image diagnostic suite:
+
+```sh
+python -m teacher.validate_d3_int8 --output teacher/reports/d3-flash-local.json
+python -m teacher.validate_d3_int8 --repo-id vllm-sr/d3-mini \
+	--output teacher/reports/d3-mini-local.json
+```
+
+These checks establish numerical parity and resource use, not task accuracy
+or commercial training-data clearance. See [DESIGN.md](DESIGN.md) §4 for the
+measured results and [REVIEW.md](REVIEW.md) F15 for the provenance question.
+
 [teacher/vela_int8.py](teacher/vela_int8.py) runs the Vela 2.0 9B teacher on a
 12 GB CUDA GPU with INT8 weight-only projections (DESIGN §4). It downloads a
 pinned, reviewed revision (about 18 GB) into the Hugging Face cache and imports
@@ -28,3 +57,40 @@ python -m teacher.validate_vela_int8 --output teacher/reports/<name>.json
 ```
 
 CPU unit tests: `python -m pytest tests`.
+
+## Hardware-Free Simulation
+
+[sim/rover.py](sim/rover.py) provides a CPU-only, seeded `RoverEnv` with
+`reset`/`step`, bounded rover dynamics, 8x8 ToF noise/dropouts/latency, eight
+ticks of masked history, rewards and explicit episode termination. It uses
+the existing NumPy and SciPy dependencies; no board or teacher is needed.
+
+```sh
+python -m sim.rover --scenario obstacle --seed 0 --episodes 4 --render
+```
+
+This writes new JSONL episodes and trajectory PNGs under the ignored
+`sim/episodes/` directory, refusing to overwrite existing logs. Scenarios are
+`clear`, `obstacle`, `corridor`, and `slalom`. Use a new seed or output
+directory for another run. If the container's Matplotlib cache is read-only,
+set `MPLCONFIGDIR=/tmp/micro-classifier-matplotlib` for rendering.
+
+```python
+from sim.rover import RoverEnv
+
+env = RoverEnv()
+observation, info = env.reset(seed=7)
+observation, reward, terminated, truncated, info = env.step([0.3, 0.0])
+```
+
+Actions are desired forward speed in m/s and turn rate in rad/s. Observations
+exclude true pose and world geometry; those appear separately in `info`.
+The default scripted expert is deliberately map-aware and privileged. Its
+actions are not reviewed training labels. `--policy reactive` selects a
+sensor-only baseline known to collide in obstacle scenes.
+
+Physics, sensor and reward defaults are configurable simulation assumptions,
+not hardware measurements or physical safety limits. The ToF grid repeats
+2-D rays vertically, not a full VL53L8CX model. The simulation JSONL schema
+is versioned separately from the still-unfrozen binary interface. See
+[DESIGN.md](DESIGN.md) §7 for limits and the recorded smoke results.

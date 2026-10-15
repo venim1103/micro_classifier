@@ -25,8 +25,10 @@ Keep this section and the Task List current; a new session resumes from them.
 
 - Design plus INT8 Vela 2.0 9B and d3-flash teacher loaders
   ([teacher/vela_int8.py](teacher/vela_int8.py),
-  [teacher/d3_int8.py](teacher/d3_int8.py)) and the Vela validator. No student,
-  dataset, firmware, ST compiler report, or board measurement exists yet.
+  [teacher/d3_int8.py](teacher/d3_int8.py)) and both validators, plus d3-mini
+  BF16 support and a working CPU-only rover trainer environment in
+  [sim/rover.py](sim/rover.py). No student, reviewed dataset, firmware,
+  ST compiler report, or board measurement exists yet.
 - M0 scope defaults for the ground-rover pilot were confirmed by the user on
   2026-10-15 (DESIGN.md §2 and REVIEW.md §10): four per-tick questions
   (`path_blocked`, `clear_sector`, `speed_tier`, `mode`), ego-state plus an
@@ -44,18 +46,40 @@ Keep this section and the Task List current; a new session resumes from them.
   review finds subprocesses, pickle/`torch.load`, or network access beyond the
   Hugging Face Hub and the documented media URLs.
 - d3-flash GPU smoke passed on the RTX A3000: 7.416 GiB allocated after load,
-  8.438 GiB peak reserved, two text questions answered in 7.12 s. Package
-  fully hashed before import. Image processing currently needs torchvision;
-  no image parity or teacher-quality claim has been established.
+  8.438 GiB peak reserved, two text questions answered in 7.12 s. Full
+  25-request text/state/local-image validation subsequently passed: maximum
+  probability delta 0.019836, mean 0.002114, zero flips over 31 questions;
+  d3-mini BF16 matched its streamed reference exactly. Reports are in
+  `teacher/reports/`; this is parity evidence, not teacher-quality clearance.
 - User confirmation after restart (2026-10-15): the recorded M0 defaults are
-  accepted, but current work is restricted to tooling only. Do not implement
-  the interface, simulator, training labels, student, or firmware yet; the
-  detailed interface contract remains unfrozen.
+  accepted. Current work covers teacher tooling and, per the latest
+  clarification, a working simulation environment for trainer development
+  without hardware. Do not claim board validation or freeze the detailed
+  interface or physical safety parameters. Student training and firmware
+  remain outside this tooling-first scope.
 - Approved after source review (2026-10-15): in-process inference at the two
   pinned d3 revisions only. Exclude the optional HTTP server, all videos
   (including their temporary-file decoder), and remote image URLs. Require
   full manifest hashing. No subprocess, pickle, or `torch.load` calls were
   found in the reviewed inference path.
+- Approved by the user (2026-10-15): add torchvision 0.25.0 to match PyTorch
+  2.10.0 for d3 image processing; update both dependency hash locks and install
+  the matching official wheel with TLS and hash verification enabled.
+- Installed matching torchvision 0.25.0+cu128 with hashes and TLS; both locks
+  regenerated without upgrading existing packages. `pip check`, compiled
+  operator check and both teachers' local-image inference passed. A complete
+  container rebuild has not been performed after this change.
+- User approved configurable simulation-only defaults on 2026-10-15: 20 Hz,
+  radius 0.18 m, max speed 0.6 m/s, acceleration 1 m/s², turn rate 1.5 rad/s;
+  planar 45-degree 8x8 ToF, 4 m range, 0.02 m noise, 2% zone dropout,
+  two-tick latency and eight history ticks. Reward: goal-distance progress
+  minus 0.01/tick, plus 10 for success, minus 10 for collision, 400-tick limit.
+  These are not physical safety specifications. Interim versioned JSONL logs
+  are approved until the wire contract exists. DESIGN.md §7 records limits.
+- Simulator tooling passes 21 focused tests and a 32-episode seeded smoke
+  suite (32 successes, no collisions/timeouts) with the privileged map-aware
+  expert. The sensor-only reactive baseline collided in obstacle/slalom
+  scenes and is not an expert or deployment candidate. No training was run.
 
 ## Task List
 
@@ -73,41 +97,55 @@ on missing tools, and continue with the next unblocked task.
    requests.
   Result (2026-10-15): 10 d3 tests (13 total), lint and format passed;
   fully verified offline GPU load and two-question text inference succeeded.
-3. [ ] `teacher/validate_d3_int8.py`: INT8 against a streamed BF16 reference on
+3. [x] `teacher/validate_d3_int8.py`: INT8 against a streamed BF16 reference on
    about 25 requests covering every question type, text and small local
    images, and synthetic rover states. Exit: a JSON report in
    `teacher/reports/` and measured results in DESIGN.md §4.
-4. [ ] d3-mini in BF16 with host-side embeddings, validated the same way. Exit:
+  Result (2026-10-15): 25 requests, 31 questions, 85 probabilities; max/mean
+  delta 0.019836/0.002114, no flips; JSON report and measured limits recorded.
+4. [x] d3-mini in BF16 with host-side embeddings, validated the same way. Exit:
    a report and a d3-flash versus d3-mini comparison in DESIGN.md §4.
-5. [ ] Interface contract v0 (DESIGN.md §2): one packet definition with Python
+  Result (2026-10-15): identical 25-request suite; exact BF16-reference parity,
+  7.368 GiB after load, 1.845 s median request; report and comparison recorded.
+5. [blocked: detailed wire contract outside current tooling-first scope]
+  Interface contract v0 (DESIGN.md §2): one packet definition with Python
    encoding and decoding, a C header, a CRC, golden byte vectors, and
    round-trip tests.
-6. [ ] Rover question catalogue v0 as data (types, options, and label source per
+6. [blocked: physical thresholds and reviewed label policy unspecified]
+  Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
-7. [ ] The simulator chosen in M0 (proposed default: a minimal Python/NumPy 2-D
+7. [blocked: contract-format log export awaits Task 5] The simulator chosen
+  in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
    dropouts, latency, a scripted expert, and episode logs in the contract
    format.
-8. [ ] Teacher labeling pipeline: deterministic rendering of state packets for
+  Partial result (2026-10-15): working reset/step environment, seeded scenes,
+  sensor faults/latency/history, reward, two controllers, exclusive JSONL logs,
+  PNG rendering, 21 tests and 32 smoke episodes. No binary contract claim.
+8. [blocked: input contract, catalogue and reviewed labeling policy pending]
+  Teacher labeling pipeline: deterministic rendering of state packets for
    the teacher, cached and resumable labeling, and provenance (revision,
    settings, and hashes).
-9. [ ] Baselines (rules and a classical model) and the evaluation suite
+9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.
-10. [ ] Student: a small convolutional or MLP trunk over the state history and
+10. [blocked: training outside current tooling scope; dataset pending]
+  Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled
     comparison (M3).
-11. [ ] Closed-loop evaluation in the simulator and one DAgger round.
-12. [ ] Static ONNX export, INT8 QDQ PTQ, float versus INT8 parity, calibration
+11. [blocked: no trained student] Closed-loop evaluation in the simulator and one DAgger round.
+12. [blocked: no trained student] Static ONNX export, INT8 QDQ PTQ, float versus INT8 parity, calibration
     on the deployed path, and golden vectors for the firmware (M4, host side).
-13. [ ] Firmware library in C for the Cortex-M55 without the ST HAL: packet
+13. [blocked: firmware outside current tooling scope; contract pending]
+  Firmware library in C for the Cortex-M55 without the ST HAL: packet
     parsing, history buffer, heads, softmax, confidence, and rejection; host
     unit tests against the golden vectors and an `arm-none-eabi-gcc` build.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
 15. [blocked: no board] M1b board bring-up and measurements.
-16. [ ] Draft a request to the vLLM Semantic Router team for a Decision 3.0
+16. [x] Draft a request to the vLLM Semantic Router team for a Decision 3.0
     training-data statement (REVIEW.md F15) for the user to send.
+  Result (2026-10-15): draft in REVIEW.md §14; nothing sent, no account used.
 
 ## Autonomy and Escalation
 

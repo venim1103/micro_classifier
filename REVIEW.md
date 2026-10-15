@@ -1012,9 +1012,73 @@ The d3-flash INT8 loader passed 10 CPU-only tests (13 repository tests), Ruff
 lint and formatting, and a fully hashed offline load plus a two-question
 `system_one` call on the RTX A3000. It used 7.416 GiB allocated after load
 and peaked at 8.438 GiB reserved. DESIGN §4 records the timing and limits.
-Image processing needs the missing torchvision dependency; image parity and
-INT8-versus-BF16 validation are still pending. No student, board, compiler,
+Image processing initially needed the missing torchvision dependency; image
+parity and INT8-versus-BF16 validation were pending at that smoke checkpoint.
+The subsequent results are recorded below. No student, board, compiler,
 task-accuracy or safety evidence follows from this teacher smoke test.
+
+### Subsequent Teacher and Simulator Checks (2026-10-15)
+
+The user approved torchvision 0.25.0 with PyTorch 2.10.0. Both hash locks
+were regenerated without upgrading existing dependencies. The matching
+official CUDA wheel passed TLS/hash verification, `pip check`, an operator
+test, and both teachers' actual local-image inference.
+
+The 25-request d3 suite covers text, synthetic rover states and local 64x64
+images, with 31 questions and 85 probability values. Flash INT8 versus
+streamed BF16: maximum absolute delta 0.019836, mean 0.002114, zero decision
+flips. The largest difference was an ambiguous rover score distribution;
+its winning level was unchanged. Mini BF16 matched its streamed projection
+and GPU-lookup reference exactly. DESIGN §4 and the two JSON reports record
+resources and throughput. These smoke fixtures do not establish label quality,
+calibration, commercial data clearance or deployability.
+
+The user clarified that a working trainer simulation is needed without
+hardware, and approved configurable toy physics, sensor faults/latency,
+goal-progress reward and an interim JSONL schema. The implemented CPU-only
+environment passes 21 focused tests. A privileged SciPy map-planning expert
+completed 32 seeded smoke episodes without collision or timeout. The separate
+sensor-only reactive baseline collided in obstacle and slalom scenes. Ground
+truth is kept separate from model inputs; neither controller's outputs are
+reviewed policy labels. DESIGN §7 records assumptions and limitations. Binary
+contract export remains blocked on the unfrozen interface, and no board gate
+is satisfied by this work.
+
+Final verification: `python -m pytest -q` passed all 39 CPU tests; `ruff
+check .`, changed-file `ruff format --check`, `pip check`, Markdown reference
+and local-target checks, and `git diff --check` passed. The two real GPU
+validation commands are recorded in README.md and their JSON reports. A fresh
+container rebuild, ST compilation and physical-board run were not performed.
+
+## 14. Decision 3.0 Training-Data Statement Request (Draft, 2026-10-15)
+
+Draft for the project lead to send; no contact has been made.
+
+Subject: Decision 3.0 training-data provenance for commercial distillation
+
+Hello vLLM Semantic Router team,
+
+We are evaluating Decision 3.0 as a teacher for a small commercial embedded
+robot decision module. Our current candidates are `vllm-sr/d3-flash` revision
+`b92769d85908bb3ee737ef9c765e1c08b887aca6` and `vllm-sr/d3-mini` revision
+`6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59`.
+
+The [Decision paper][decision-paper] says the documented Sol, Nox and Lux
+mixtures do not use official Jev predictions as labels. Could you confirm
+whether the same statement applies to these specific Decision 3.0 releases,
+including any upstream models, synthetic labels or intermediate teachers
+used to produce them?
+
+In particular, we would appreciate a written statement about any training or
+distillation inputs derived directly or indirectly from TypeSafe Jev hosted
+outputs, including the autotrust JEV family and Jev-distilled datasets, and
+any additional restrictions affecting commercial use of generated teacher
+distributions to train and redistribute a separate student. An applicable
+data/model provenance document or release-specific statement would help us
+complete our review. We understand Apache-2.0 weight licensing alone does
+not answer third-party training-data restrictions.
+
+Thank you.
 
 ## Sources
 

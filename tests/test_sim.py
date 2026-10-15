@@ -1,5 +1,7 @@
 import json
 import math
+from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -14,7 +16,9 @@ from sim.rover import (
     make_scenario,
     ray_ranges,
     rollout,
+    state_from_observation,
     swept_collision,
+    with_wire_frames,
     write_episode,
 )
 
@@ -165,3 +169,111 @@ def test_map_expert_completes_obstacle_scenarios_without_collision(name):
     records, summary = rollout(RoverEnv(scenario=make_scenario(name, 0)))
     assert records[0]["privileged_expert"]
     assert summary["success"] and not summary["collision"]
+
+
+def test_wire_export_encodes_current_host_inputs_and_unknown_health():
+    from interface.protocol import UINT32_MAX, decode_state, encode_state
+
+    records, _ = rollout(RoverEnv(Config(max_ticks=3)))
+    exported = with_wire_frames(records)
+    assert exported[0]["wire_contract"]["state_frame_bytes"] == 92
+    assert not exported[0]["wire_contract"]["decision_frames"]
+    assert exported[0]["privileged_expert"]
+    for original, entry in zip(records, exported, strict=True):
+        assert "state_frame_hex" not in original
+        assert "decision_frame_hex" not in entry
+        if "observation" not in entry:
+            assert "state_frame_hex" not in entry
+            continue
+        frame = bytes.fromhex(entry["state_frame_hex"])
+        packet = decode_state(frame)
+        observation = entry["observation"]
+        assert packet.sequence == observation["tick"]
+        assert packet.timestamp_us == round(observation["time_s"] * 1_000_000)
+        assert packet.velocity_m_s == pytest.approx((observation["ego"][0], 0, 0))
+        assert packet.angular_velocity_rad_s == pytest.approx(
+            (0, 0, observation["ego"][1])
+        )
+        assert packet.goal_m == pytest.approx((*observation["goal_body_m"], 0))
+        assert packet.validity == 7
+        assert packet.ages_us == (0, 0, 0, UINT32_MAX, UINT32_MAX)
+        assert packet.battery_fraction == packet.faults == 0
+        assert encode_state(packet) == frame
+
+
+def test_wire_state_excludes_truth_action_tof_and_history():
+    records, _ = rollout(RoverEnv(Config(max_ticks=2)))
+    changed = deepcopy(records)
+    for record in changed:
+        if "observation" in record:
+            record["info"]["ground_truth"] = {"unrelated": 12345}
+            observation = record["observation"]
+            observation["tof_m"][:] = 99
+            observation["history_ego"][:] = 99
+            observation["tof_age_s"] = 99
+        if "action" in record:
+            record["action"][:] = 99
+    original = with_wire_frames(records)
+    altered = with_wire_frames(changed)
+    assert [entry.get("state_frame_hex") for entry in original] == [
+        entry.get("state_frame_hex") for entry in altered
+    ]
+
+
+def test_wire_log_export_is_reproducible_and_json_round_trips(tmp_path):
+    from interface.protocol import decode_state
+
+    records, _ = rollout(RoverEnv(Config(max_ticks=3)))
+    first = with_wire_frames(records)
+    second = with_wire_frames(records)
+    assert json.dumps(first, default=json_value) == json.dumps(
+        second, default=json_value
+    )
+    path = tmp_path / "wire.jsonl"
+    write_episode(path, first)
+    decoded = [json.loads(line) for line in path.read_text().splitlines()]
+    assert decoded[0]["wire_contract"]["provisional"]
+    assert len([row for row in decoded if "state_frame_hex" in row]) == 4
+    for row in decoded:
+        if "state_frame_hex" in row:
+            decode_state(bytes.fromhex(row["state_frame_hex"]))
+    with pytest.raises(FileExistsError):
+        write_episode(path, second)
+
+
+def test_wire_counters_wrap_without_losing_observation_timing():
+    from interface.protocol import UINT32_MAX
+
+    observation, _ = RoverEnv().reset()
+    observation["tick"] = UINT32_MAX + 3
+    observation["time_s"] = (UINT32_MAX + 101) / 1_000_000
+    packet = state_from_observation(observation)
+    assert packet.sequence == 2
+    assert packet.timestamp_us == 100
+
+
+@pytest.mark.parametrize(
+    "changes", [{"tick": -1}, {"tick": True}, {"time_s": float("nan")}, {"ego": [0, 0]}]
+)
+def test_wire_export_rejects_invalid_observation(changes):
+    observation, _ = RoverEnv().reset()
+    observation.update(changes)
+    with pytest.raises(ValueError):
+        state_from_observation(observation)
+
+
+def test_wire_cli_exports_real_frames(tmp_path, monkeypatch, capsys):
+    from sim.rover import main
+
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"max_ticks": 3}))
+    monkeypatch.setattr(
+        "sys.argv",
+        ["sim.rover", "--wire", "--output", str(tmp_path), "--config", str(config)],
+    )
+    main()
+    summary = json.loads(capsys.readouterr().out)
+    assert summary["ticks"] == 3 and summary["timeout"]
+    rows = [json.loads(line) for line in Path(summary["path"]).read_text().splitlines()]
+    assert rows[0]["wire_contract"]["protocol_version"] == 0
+    assert len(bytes.fromhex(rows[0]["state_frame_hex"])) == 92

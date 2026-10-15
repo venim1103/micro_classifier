@@ -1109,6 +1109,32 @@ bytes. Ruff lint/format and editor diagnostics passed. No dependencies,
 board, UART hardware or ST compiler measurement was added. DESIGN.md §2
 records the draft and application duties.
 
+### Simulator Contract Export
+
+The approved export is now available via `python -m sim.rover --wire`.
+Versioned JSONL logs contain exact state-frame bytes as hex and an explicit
+provisional contract manifest, while module-side ToF/history and diagnostic
+truth remain separate. FLU planar ego-state/goal and timestamps map to the
+same bytes tested by the codecs. Health is invalid/unknown, not fabricated
+healthy state. There is no trained model, so no decisions or reviewed labels
+are invented. Default logging and exclusive creation remain supported.
+
+Nine new export tests cover input equivalence, isolation from truth/actions/
+ToF/history, wraparound, reproducibility, JSONL round trips, invalid samples
+and the CLI. Four real wire-enabled episodes at seed 20261015 completed with
+the privileged map expert: clear/obstacle/corridor/slalom in 133/140/133/156
+ticks, no collision or timeout. All 566 state frames (52,072 bytes) passed
+CRC, byte equivalence and stream decoding. DESIGN.md §7 records JSONL hashes.
+
+Final verification: `python -m pytest -q` passed 110 tests; `ruff check .`,
+changed-file `ruff format --check`, editor diagnostics and `git diff --check`
+passed. No packages were installed, no weights downloaded, no teacher/GPU
+inference or student training run, and no ST compilation, physical UART,
+firmware integration or board validation performed. Tasks 5 and 7 meet their
+approved tooling exits; Task 6 still needs approved computable label
+definitions and reviewed mode policy, with simulation-only rules proposed
+as the next default rather than physical safety specifications.
+
 [wire-python]: interface/protocol.py
 [wire-header]: firmware/include/micro_classifier_protocol.h
 [wire-golden]: interface/golden_vectors.json

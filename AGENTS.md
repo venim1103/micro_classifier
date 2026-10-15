@@ -90,6 +90,12 @@ Keep this section and the Task List current; a new session resumes from them.
   header parity, host/Arm GCC syntax checks and independent C state encoding.
   State/full-decision frames are 92/128 bytes. DESIGN.md §2 specifies this
   unfrozen draft; synthetic golden decisions are not labels or model outputs.
+- Simulator `--wire` exports exact host state frames alongside module-side
+  observations, with unknown health and no fabricated decisions/labels.
+  All 110 repository tests pass (30 simulator, 62 interface, 18 teacher).
+  Four seeded wire smoke scenes succeeded without collision/timeout; all
+  566 emitted frames were verified. No new dependencies, training or hardware
+  run. DESIGN.md §7 and REVIEW.md §15 record hashes and limits.
 
 ## Task List
 
@@ -101,7 +107,7 @@ on missing tools, and continue with the next unblocked task.
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
    §10. Use the defaults for unanswered items, marked as provisional.
   Result: Recorded defaults on 2026-10-14; user confirmed them on 2026-10-15.
-  Current implementation remains restricted to teacher tooling.
+  Tooling now includes teachers, simulation and provisional host codecs.
 2. [x] d3-flash INT8 loader `teacher/d3_int8.py`, with unit tests that need no
    download or GPU. Exit: it loads on the 12 GB GPU and answers `system_one`
    requests.
@@ -126,7 +132,11 @@ on missing tools, and continue with the next unblocked task.
 6. [blocked: physical thresholds and reviewed label policy unspecified]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
-7. [ ] The simulator chosen
+  Open decision: approve simulation-only computable label definitions derived
+  from Config, leaving `mode` for human review; recommended default is yes,
+  with no physical safety or production-label claim. Wire identities already
+  exist, but they do not satisfy reviewed catalogue/label-policy requirements.
+7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
    dropouts, latency, a scripted expert, and episode logs in the contract
@@ -134,7 +144,10 @@ on missing tools, and continue with the next unblocked task.
   Partial result (2026-10-15): working reset/step environment, seeded scenes,
   sensor faults/latency/history, reward, two controllers, exclusive JSONL logs,
   PNG rendering, 21 tests and 32 smoke episodes. No binary contract claim.
-8. [blocked: input contract, catalogue and reviewed labeling policy pending]
+  Result (2026-10-15): provisional state frames exported with `--wire`, 30
+  simulator tests, four successful scene runs and 566 verified frames. JSONL
+  embeds wire bytes as hex; no model decisions, reviewed labels or board claim.
+8. [blocked: catalogue and reviewed labeling policy pending]
   Teacher labeling pipeline: deterministic rendering of state packets for
    the teacher, cached and resumable labeling, and provenance (revision,
    settings, and hashes).

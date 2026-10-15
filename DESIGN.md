@@ -981,9 +981,38 @@ ignored `sim/episodes/`. It never overwrites existing logs. Logs carry seed,
 full scenario/configuration, policy privilege, rewards, input observations and
 separate diagnostic truth under `micro-classifier/sim-episode/1`. Repeated
 seed/configuration episodes are tested for deterministic equality in this
-environment. This is an interim simulation schema, **not interface contract
-v0**. Task 7's binary-contract log export remains blocked on Task 5; no wire
-format, question thresholds or physical safety policy is frozen by this work.
+environment. The JSONL container remains a simulation schema, not UART bytes.
+The user subsequently approved provisional contract export (§2). `--wire`
+adds a `micro-classifier/sim-wire/0` manifest and exact CRC-protected state
+frame bytes, hex-encoded, for every observation including reset. Default
+logging remains available without wire fields. No existing episode is
+rewritten or overwritten.
+
+The exporter maps current planar forward velocity to FLU X, yaw rate to
+angular FLU Z, and body-frame goal to FLU X/Y, with constrained planar axes
+zero. Sample sequence is tick modulo 2^32; sample timestamp is rounded
+microseconds modulo 2^32. The three simulated groups have age zero. Battery
+and host fault state are **unknown**, not healthy: invalid bits, zero values,
+unknown ages. ToF/dropout/age/history remain separately logged module-side
+inputs. True pose, actions and privileged map information never enter the
+host state frame. With no model, the exporter does not invent decision frames,
+rejection results or reviewed labels. No physical safety policy is frozen.
+
+Wire-export checks add nine tests, giving 30 simulator tests and 62 contract
+tests. Four real wire-enabled map-expert episodes at seed 20261015 succeeded
+with no collisions/timeouts. Every frame passed CRC/decode, byte equivalence
+to current inputs and concatenated stream decoding; 566 frames, 52,072 bytes.
+Recorded logs remain ignored under `sim/episodes/wire-v0-smoke/`:
+
+| Scenario | Ticks | State frames | Episode JSONL SHA-256 |
+| --- | --- | --- | --- |
+| clear | 133 | 134 | `6d574743a4ac4fb4ee01338631735941b0a07486b0ec1031bf6c58f47755d731` |
+| obstacle | 140 | 141 | `f07626df0211e6d3444d23ac0cb5cb1b7d3d41381a2a5ad1ac2b6282cf72a872` |
+| corridor | 133 | 134 | `b4d066d2ffc0c0eab1c9e543835c3614dbf91bbc51966089e6a0c2a93ca5f1fa` |
+| slalom | 156 | 157 | `8264ea5f83235608ecb059fedc9b3129ffdb01856c1021f6a47eff550a962b97` |
+
+These are simulator/codec tooling checks, not closed-loop student evaluation,
+reviewed supervision, safety evidence or physical UART measurements.
 
 A student trained only on logged or scripted trajectories meets states it never
 saw once its own decisions steer the robot. Collect data in rounds, as in

@@ -504,7 +504,7 @@ def rollout(env, policy=None):
             "limitations": [
                 "Planar rays repeated vertically, not VL53L8CX emulation.",
                 "Simulation-only physics and rewards, not measured hardware limits.",
-                "No wire contract, teacher labels, student or safety validation.",
+                "No teacher labels, student or hardware safety validation.",
             ],
             "observation": observation,
             "info": info,
@@ -538,6 +538,61 @@ def rollout(env, policy=None):
     }
     records.append(summary)
     return records, summary
+
+
+def state_from_observation(observation):
+    """Map the current planar sample to host FLU state; no truth or ToF payload."""
+    from interface.protocol import UINT32_MAX, State
+
+    tick, seconds = observation["tick"], observation["time_s"]
+    if isinstance(tick, bool) or not isinstance(tick, int) or tick < 0:
+        raise ValueError("observation tick must be a nonnegative integer")
+    if not math.isfinite(seconds) or seconds < 0:
+        raise ValueError("observation time must be finite and nonnegative")
+    ego = np.asarray(observation["ego"])
+    goal = np.asarray(observation["goal_body_m"])
+    if ego.shape != (4,) or goal.shape != (2,):
+        raise ValueError("observation requires planar ego and goal vectors")
+    return State(
+        sequence=tick & UINT32_MAX,
+        timestamp_us=round(seconds * 1_000_000) & UINT32_MAX,
+        velocity_m_s=(float(ego[0]), 0.0, 0.0),
+        angular_velocity_rad_s=(0.0, 0.0, float(ego[1])),
+        goal_m=(float(goal[0]), float(goal[1]), 0.0),
+    )
+
+
+def with_wire_frames(records):
+    """Return logs with exact state bytes; never fabricate model decisions."""
+    from interface.protocol import (
+        PROFILE_ID,
+        PROFILE_VERSION,
+        PROTOCOL_VERSION,
+        SCHEMA_VERSION,
+        encode_state,
+    )
+
+    exported = []
+    for record in records:
+        entry = dict(record)
+        if "observation" in record:
+            frame = encode_state(state_from_observation(record["observation"]))
+            entry["state_frame_hex"] = frame.hex()
+        if record["kind"] == "metadata":
+            entry["wire_contract"] = {
+                "schema": "micro-classifier/sim-wire/0",
+                "protocol_version": PROTOCOL_VERSION,
+                "schema_version": SCHEMA_VERSION,
+                "profile_id": PROFILE_ID,
+                "profile_version": PROFILE_VERSION,
+                "state_frame_bytes": len(frame),
+                "decision_frames": False,
+                "health": "unknown, not simulated",
+                "tof_history": "module-side observation only",
+                "provisional": True,
+            }
+        exported.append(entry)
+    return exported
 
 
 def write_episode(path, records):
@@ -609,6 +664,11 @@ def main():
     parser.add_argument(
         "--render", action="store_true", help="save a PNG trajectory for each episode"
     )
+    parser.add_argument(
+        "--wire",
+        action="store_true",
+        help="include exact provisional v0 state-frame bytes",
+    )
     args = parser.parse_args()
     if args.seed < 0 or args.episodes < 1:
         parser.error("seed must be nonnegative and episodes positive")
@@ -618,6 +678,8 @@ def main():
         env.reset(seed=seed)
         policy = ReactivePolicy(config) if args.policy == "reactive" else None
         records, summary = rollout(env, policy)
+        if args.wire:
+            records = with_wire_frames(records)
         path = args.output / f"{args.scenario}-{seed:06}.jsonl"
         write_episode(path, records)
         if args.render:

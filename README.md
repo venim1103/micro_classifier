@@ -93,6 +93,7 @@ the existing NumPy and SciPy dependencies; no board or teacher is needed.
 
 ```sh
 python -m sim.rover --scenario obstacle --seed 0 --episodes 4 --render
+python -m sim.rover --scenario slalom --seed 7 --wire
 ```
 
 This writes new JSONL episodes and trajectory PNGs under the ignored
@@ -117,8 +118,13 @@ sensor-only baseline known to collide in obstacle scenes.
 
 Physics, sensor and reward defaults are configurable simulation assumptions,
 not hardware measurements or physical safety limits. The ToF grid repeats
-2-D rays vertically, not a full VL53L8CX model. The simulation JSONL schema
-is versioned separately from the still-unfrozen binary interface. See
+2-D rays vertically, not a full VL53L8CX model. `--wire` adds a provisional
+contract manifest and exact CRC-protected `state_frame_hex` for every current
+observation, including reset. Decode with `decode_state(bytes.fromhex(...))`.
+The wire fields use FLU velocity/yaw rate and goal; battery/fault health remains
+unknown. ToF/history stay in separate module-side observation fields, not the
+host packet. No decision frames or reviewed labels are fabricated.
+The simulation JSONL container remains separately versioned. See
 [DESIGN.md](DESIGN.md) §7 for limits and the recorded smoke results.
 
 [wire-python]: interface/protocol.py

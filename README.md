@@ -80,6 +80,25 @@ failure, not a loosened tolerance. Synthetic inputs are not deployment
 calibration or task data. ST compilation, memory fit, latency and board gates
 remain unmeasured; see [DESIGN.md](DESIGN.md) §12 and [REVIEW.md](REVIEW.md) §16.
 
+[Compiler orchestration][st-compile-script] is **dry-run by default**:
+
+```sh
+python -m export.st_compile \
+	--manifest export/artifacts/my-run/manifest.json \
+	--output export/artifacts/my-st-run --expected-version 4.0.1
+```
+
+Planning verifies input hashes but invokes nothing and creates no output.
+The version is a documented CLI example, not an installed-tool claim. Once
+the approved licensed toolchain is supplied, select it with
+`--executable /actual/path/to/stedgeai` and add `--execute`. The runner checks
+the exact release, uses the built-in internal-only profile, and retains raw
+logs/reports and a hashed `result.json` inventory in a fresh output directory.
+Timeout/interruption kills the POSIX process group (`--timeout`, default 600
+seconds per command). No board command is invoked. Success is only
+`generated_reports_pending_review`, not M1a acceptance or full firmware fit.
+See [REVIEW.md](REVIEW.md) §17 for unverified vendor/toolchain limitations.
+
 ## Provisional Interface Tooling
 
 [Python codecs][wire-python] provide little-endian, CRC-protected state and
@@ -154,3 +173,4 @@ The simulation JSONL container remains separately versioned. See
 [wire-golden]: interface/golden_vectors.json
 [m1a-script]: export/m1a.py
 [m1a-report]: export/reports/m1a-cpu-20261015.json
+[st-compile-script]: export/st_compile.py

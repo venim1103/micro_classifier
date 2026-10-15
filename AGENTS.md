@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §16 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §17 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-15)
@@ -104,6 +104,14 @@ Keep this section and the Task List current; a new session resumes from them.
   numerical failure (max error 0.207 in the real run, versus the diagnostic
   0.15 bound). Do not describe that transformer as numerically qualified.
   No training/GPU job; actual ST tools and board gates remain blocked.
+- `export/st_compile.py` prepares read-only ST plans and opt-in exact-version
+  execution, with fresh outputs, hash rechecks, raw logs/reports and process-
+  group cleanup. A real nine-case dry plan invoked no ST or output creation.
+  Eighteen mocked runner checks pass; 151 repository tests pass plus the known
+  transformer expected failure. Actual vendor compatibility, mapping metrics
+  and M1a are unverified. No install, licence action, firmware integration or
+  board command. REVIEW.md §17 records limits; the 4.0.1 CLI example is not an
+  installation approval.
 
 ## Task List
 
@@ -178,6 +186,10 @@ on missing tools, and continue with the next unblocked task.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed
   report ready; 23 focused tests pass plus one expected transformer numerical
   failure. Actual ST mapping/epochs/memory/cycles and M1a exit remain blocked.
+  Preparation result (2026-10-15): dry-run/default and opt-in ST orchestration
+  ready; 18 mocked runner tests and a real nine-case no-process plan verified.
+  Supply an approved licensed ST release next; inspect actual reports before
+  release-specific metric parsing or custom CSV instrumentation.
 15. [blocked: no board] M1b board bring-up and measurements.
 16. [x] Draft a request to the vLLM Semantic Router team for a Decision 3.0
     training-data statement (REVIEW.md F15) for the user to send.

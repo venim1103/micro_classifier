@@ -1172,6 +1172,43 @@ documentation requires QDQ through `stedgeai generate`, not directly `atonn`.
 [m1a-script]: export/m1a.py
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 
+## 17. ST Compiler Orchestration Preparation (2026-10-15)
+
+[Compile tooling][st-compile-script] consumes the host manifest without model
+framework imports. Default planning verifies all three ONNX hashes per case,
+without processes or output creation. Opt-in `--execute` rechecks inputs and
+requires an explicit expected release and available executable. Unknown banners
+and prereleases fail closed. Executable SHA-256 and full version/module logs
+are retained; hashing the complete vendor installation remains open.
+
+The [ST CLI][st-cli-401] and [compiler primer][st-compiler] route QDQ through
+`stedgeai generate` for STM32N6 with the built-in internal-only memory profile.
+No direct `atonn`, validation, firmware build, loader or board command is used.
+Default pools do not establish the final firmware/NPU partition. Custom
+profile/CSV instrumentation and metric parsing await the real release/reports.
+
+Exclusive fresh outputs preserve raw vendor files, logs and a hashed inventory.
+A zero exit without the documented generation report and C-info file fails.
+Case failures allow independent cases to continue; interruption stops the
+matrix. Timeout/interruption kills the POSIX process group and descendants.
+Even full generation is only `generated_reports_pending_review`, with M1a,
+board and metric acceptance false. Transformer numerical flags remain visible.
+
+Verification: a real nine-case CLI dry plan started no ST process and created
+no compiler output. Eighteen mocked runner tests pass; full-suite results are
+151 passes plus the known transformer expected failure. Lint/format, editor
+diagnostics and doc references pass. Mocks prove no actual vendor compatibility,
+NPU mapping, SRAM fit or cycle estimates. No tools, dependencies or licences
+were installed/accepted, and no training or board work occurred.
+
+All remaining task-list work is blocked on label-policy approval, data/models,
+tooling-only scope, ST software or a board. Task 6's proposed next decision
+remains simulation-only computable labels derived from Config, with `mode`
+left for human review; that proposal has **not** been approved.
+
+[st-compile-script]: export/st_compile.py
+[st-cli-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-cli.html
+
 ## Sources
 
 Hardware and tools:

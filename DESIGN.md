@@ -1316,6 +1316,39 @@ generation, epoch/fallback/pool/cycle reports and full memory fit are blocked
 on the absent pinned ST toolchain; M1a is **not passed**. No target parity,
 latency, energy, firmware or board validation follows from host export.
 
+#### ST Compile Runner Preparation (2026-10-15)
+
+[The runner][st-compile-script] consumes the host manifest. Read-only planning
+checks schema, safe unique case names and all artifact hashes. Execution is
+opt-in, rechecks plan/input identity, requires an exact ST release and fresh
+output root, and records executable SHA-256 and `--version`/`--tools-version`
+logs. This hashes the executable, **not the complete vendor installation**.
+It does not download tools, accept licences or assume unknown versions work.
+
+Commands follow the [ST 4.0.1 CLI][st-cli-401] and [compiler primer][st-npu-primer-401]:
+`stedgeai generate --model <QDQ> --target stm32n6 --st-neural-art
+profile-internal-memories-only--default`, with separate output/workspace paths
+and verbosity 2. QDQ never goes directly to `atonn`. Vendor internal-only pools
+are not our final SRAM/linker partition. No validation, loader, flashing or
+board command is used; generated probe code is not firmware integration.
+
+Case failures preserve logs and allow other cases to proceed; interruption
+stops the matrix. A POSIX process-group timeout prevents orphaned compiler
+descendants. Raw files are retained and hashed; symlinks are recorded without
+following them. A zero exit also requires the documented generation report
+and C-info JSON. Success is only `generated_reports_pending_review`, with M1a,
+board and metric-review flags false. Actual epoch/fallback/pool/cycle fields
+must be reviewed from real reports; no parser fabricates them. Custom profile/
+CSV instrumentation waits for the supplied release and its actual output.
+
+Verification: a real nine-case CLI dry plan invoked no ST process and created
+no compiler output. Eighteen mocked runner tests cover tampering, reuse,
+version rejection, launch failure, missing reports, nonzero exits, timeouts,
+interruption and matrix continuation. The full suite has 151 passes plus
+the known transformer expected failure; lint/format and editor checks pass.
+Mocks are not vendor compatibility or compilation evidence. ST tools and
+Task 14's actual M1a exit remain blocked.
+
 Start M1b on the [STM32N6570-DK][st-dk]: ST's NPU and CM55 validation projects
 and its runtime-loadable model environment target that board. The discovery kit
 includes external flash and PSRAM, so verify that examples are not silently
@@ -1395,6 +1428,9 @@ for this project.
 [wire-golden]: interface/golden_vectors.json
 [m1a-script]: export/m1a.py
 [m1a-report]: export/reports/m1a-cpu-20261015.json
+[st-compile-script]: export/st_compile.py
+[st-cli-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-cli.html
+[st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes
 [st-operators]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-operators.html

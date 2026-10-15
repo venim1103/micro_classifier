@@ -259,3 +259,227 @@ def test_invalid_suite_configuration_does_not_create_output(tmp_path, kwargs):
     with pytest.raises(ValueError):
         prepare_suite(output, **kwargs)
     assert not output.exists()
+
+
+@pytest.fixture
+def compiler_manifest(tmp_path):
+    output = tmp_path / "probes"
+    prepare_suite(output, ["state_mlp"], calibration_count=2, evaluation_count=1)
+    return output / "manifest.json"
+
+
+def test_st_plan_is_read_only_and_invokes_no_compiler(
+    compiler_manifest, tmp_path, monkeypatch
+):
+    import subprocess
+
+    from export.st_compile import PROFILE, build_plan
+
+    def unexpected_process(*args, **kwargs):
+        pytest.fail("planning must not invoke any subprocess")
+
+    monkeypatch.setattr(subprocess, "run", unexpected_process)
+    output = tmp_path / "compiled"
+    plan = build_plan(compiler_manifest, output, expected_version="4.0.1")
+    assert not output.exists()
+    assert plan["status"] == "planned_not_executed"
+    assert not plan["compiler_executed"]
+    assert not plan["milestone_passed"] and not plan["board_measured"]
+    command = plan["jobs"][0]["argv"]
+    assert command[:2] == ["stedgeai", "generate"]
+    assert command[command.index("--target") + 1] == "stm32n6"
+    assert command[command.index("--st-neural-art") + 1] == PROFILE
+    assert command[command.index("--model") + 1].endswith("state_mlp/int8.onnx")
+    assert "validate" not in command and "atonn" not in command
+
+
+def test_st_plan_rejects_tampering_and_output_reuse(compiler_manifest, tmp_path):
+    from export.st_compile import build_plan
+
+    with pytest.raises(FileExistsError):
+        build_plan(compiler_manifest, tmp_path, expected_version="4.0.1")
+    path = compiler_manifest.parent / "state_mlp" / "int8.onnx"
+    path.write_bytes(path.read_bytes() + b"tampered")
+    with pytest.raises(ValueError, match="hash/size mismatch"):
+        build_plan(compiler_manifest, tmp_path / "compiled", expected_version="4.0.1")
+    assert not (tmp_path / "compiled").exists()
+
+
+@pytest.mark.parametrize("defect", ["version", "schema", "duplicate", "traversal"])
+def test_st_plan_rejects_invalid_inputs(compiler_manifest, tmp_path, defect):
+    import json
+
+    from export.st_compile import build_plan
+
+    report = json.loads(compiler_manifest.read_text())
+    if defect == "schema":
+        report["schema"] = "unknown"
+    elif defect == "duplicate":
+        report["cases"] *= 2
+    elif defect == "traversal":
+        report["cases"][0]["case"] = "../outside"
+    compiler_manifest.write_text(json.dumps(report))
+    with pytest.raises(ValueError):
+        build_plan(
+            compiler_manifest,
+            tmp_path / "compiled",
+            expected_version="latest" if defect == "version" else "4.0.1",
+        )
+    assert not (tmp_path / "compiled").exists()
+
+
+def mock_st_process(monkeypatch, tmp_path, *, version="4.0.1", failure=None):
+    import json
+    import subprocess
+    from pathlib import Path
+    from types import SimpleNamespace
+
+    executable = tmp_path / "mock_stedgeai"
+    executable.write_bytes(b"mock executable identity; never run")
+    calls = []
+    killed = []
+    monkeypatch.setattr("export.st_compile.shutil.which", lambda name: str(executable))
+    monkeypatch.setattr(
+        "export.st_compile.os.killpg", lambda *args: killed.append(args)
+    )
+
+    def popen(argv, **kwargs):
+        calls.append(argv)
+        assert kwargs["stdin"] == subprocess.DEVNULL
+        assert kwargs["start_new_session"]
+        if "--version" in argv:
+            kwargs["stdout"].write(f"stedgeai - ST Edge AI Core v{version}\n".encode())
+        elif "generate" in argv and failure is None:
+            output = Path(argv[argv.index("--output") + 1])
+            output.mkdir(parents=True)
+            (output / "network_generate_report.txt").write_text("mock compiler report")
+            (output / "network_c_info.json").write_text(json.dumps({"mock": True}))
+
+        def wait(timeout=None):
+            if "generate" in argv:
+                if failure == "timeout" and timeout is not None:
+                    raise subprocess.TimeoutExpired(argv, timeout)
+                if failure == "interrupt" and timeout is not None:
+                    raise KeyboardInterrupt
+                if failure in ("timeout", "interrupt"):
+                    return -9
+                if failure == "exit":
+                    return 2
+            return 0
+
+        return SimpleNamespace(wait=wait, pid=123456)
+
+    monkeypatch.setattr("export.st_compile.subprocess.Popen", popen)
+    return calls, killed
+
+
+@pytest.mark.parametrize("failure", [None, "exit", "timeout", "interrupt", "missing"])
+def test_st_execution_preserves_reports_and_never_passes_m1a(
+    compiler_manifest, tmp_path, monkeypatch, failure
+):
+    import json
+
+    from export.st_compile import build_plan, execute_plan, file_info
+
+    calls, killed = mock_st_process(monkeypatch, tmp_path, failure=failure)
+    output = tmp_path / "compiled"
+    plan = build_plan(compiler_manifest, output, expected_version="4.0.1")
+    report = execute_plan(plan, timeout=1)
+    assert len(calls) == 3 and report["generate_attempted"]
+    assert not report["milestone_passed"] and not report["board_measured"]
+    assert not report["metrics_reviewed"]
+    assert json.loads((output / "result.json").read_text()) == report
+    assert (output / "state_mlp" / "compiler.log").exists()
+    assert report["files"]["version.log"] == file_info(output / "version.log")
+    if failure is None:
+        assert report["status"] == "generated_reports_pending_review"
+        assert report["cases"][0]["required_reports_present"]
+    else:
+        assert report["status"] == "compile_failures"
+        expected = {
+            "exit": "failed",
+            "missing": "missing_reports",
+            "interrupt": "interrupted",
+        }.get(failure, failure)
+        assert report["cases"][0]["command"]["status"] == expected
+    assert bool(killed) == (failure in ("timeout", "interrupt"))
+    with pytest.raises(FileExistsError):
+        execute_plan(plan)
+
+
+@pytest.mark.parametrize("version", ["4.0.0", "4.0.1-rc1", "unknown"])
+def test_st_version_mismatch_stops_before_generate(
+    compiler_manifest, tmp_path, monkeypatch, version
+):
+    from export.st_compile import build_plan, execute_plan
+
+    calls, _ = mock_st_process(monkeypatch, tmp_path, version=version)
+    output = tmp_path / "compiled"
+    plan = build_plan(compiler_manifest, output, expected_version="4.0.1")
+    report = execute_plan(plan)
+    assert len(calls) == 1
+    assert report["status"] == "version_check_failed"
+    assert not report["generate_attempted"]
+    assert (output / "result.json").exists()
+
+
+def test_st_preflight_rechecks_hashes_and_missing_tools(
+    compiler_manifest, tmp_path, monkeypatch
+):
+    import json
+
+    from export.st_compile import build_plan, execute_plan
+
+    output = tmp_path / "compiled"
+    plan = build_plan(compiler_manifest, output, expected_version="4.0.1")
+    monkeypatch.setattr("export.st_compile.shutil.which", lambda name: None)
+    with pytest.raises(FileNotFoundError, match="nothing was executed"):
+        execute_plan(plan)
+    assert not output.exists()
+    with pytest.raises(ValueError, match="positive integer"):
+        execute_plan(plan, timeout=0)
+    changed = json.loads(compiler_manifest.read_text())
+    changed["created_utc"] = "changed after planning"
+    compiler_manifest.write_text(json.dumps(changed))
+    with pytest.raises(ValueError, match="inputs changed"):
+        execute_plan(plan)
+    assert not output.exists()
+
+
+def test_st_launch_failure_is_retained_without_execution_claim(
+    compiler_manifest, tmp_path, monkeypatch
+):
+    from export.st_compile import build_plan, execute_plan
+
+    mock_st_process(monkeypatch, tmp_path)
+
+    def launch_failed(*args, **kwargs):
+        raise OSError("mock loader failure")
+
+    monkeypatch.setattr("export.st_compile.subprocess.Popen", launch_failed)
+    output = tmp_path / "compiled"
+    plan = build_plan(compiler_manifest, output, expected_version="4.0.1")
+    report = execute_plan(plan)
+    assert report["status"] == "version_check_failed"
+    assert not report["compiler_executed"] and not report["generate_attempted"]
+    assert report["commands"][0]["status"] == "launch_failed"
+    assert (output / "result.json").exists()
+
+
+@pytest.mark.parametrize("failure", ["exit", "interrupt"])
+def test_st_matrix_continues_after_failure_but_stops_after_interrupt(
+    tmp_path, monkeypatch, failure
+):
+    from export.st_compile import build_plan, execute_plan
+
+    probes = tmp_path / "probes"
+    prepare_suite(probes, ["state_mlp", "tof"], calibration_count=2, evaluation_count=1)
+    calls, _ = mock_st_process(monkeypatch, tmp_path, failure=failure)
+    plan = build_plan(
+        probes / "manifest.json", tmp_path / "compiled", expected_version="4.0.1"
+    )
+    report = execute_plan(plan)
+    expected_count = 1 if failure == "interrupt" else 2
+    assert len(report["cases"]) == expected_count
+    assert len(calls) == expected_count + 2
+    assert report["status"] == "compile_failures"

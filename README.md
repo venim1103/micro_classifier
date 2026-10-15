@@ -58,6 +58,32 @@ python -m teacher.validate_vela_int8 --output teacher/reports/<name>.json
 
 CPU unit tests: `python -m pytest tests`.
 
+## Provisional Interface Tooling
+
+[Python codecs][wire-python] provide little-endian, CRC-protected state and
+decision frames with explicit validity, ages, versions, statuses and full
+probability distributions. State frames are 92 bytes; full decision frames
+are 128 bytes. ToF and history stay on the module, not in host UART frames.
+
+```python
+from interface.protocol import State, decode_state, encode_state
+
+packet = State(sequence=42, timestamp_us=50000, goal_m=(4.0, 0.0, 0.0))
+assert decode_state(encode_state(packet)) == packet
+```
+
+Regenerate the [C byte-offset header][wire-header] from the Python definitions:
+
+```sh
+python -m interface.protocol --write-header firmware/include/micro_classifier_protocol.h
+python -m pytest -q tests/test_interface.py
+```
+
+[Golden vectors][wire-golden] are synthetic codec fixtures, not model outputs
+or reviewed labels. This is a host-side draft: no physical safety thresholds,
+trained student, firmware integration or board validation. See
+[DESIGN.md](DESIGN.md) §2 for the byte specification and application duties.
+
 ## Hardware-Free Simulation
 
 [sim/rover.py](sim/rover.py) provides a CPU-only, seeded `RoverEnv` with
@@ -94,3 +120,7 @@ not hardware measurements or physical safety limits. The ToF grid repeats
 2-D rays vertically, not a full VL53L8CX model. The simulation JSONL schema
 is versioned separately from the still-unfrozen binary interface. See
 [DESIGN.md](DESIGN.md) §7 for limits and the recorded smoke results.
+
+[wire-python]: interface/protocol.py
+[wire-header]: firmware/include/micro_classifier_protocol.h
+[wire-golden]: interface/golden_vectors.json

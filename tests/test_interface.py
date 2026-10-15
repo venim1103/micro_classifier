@@ -1,0 +1,376 @@
+import json
+import shutil
+import struct
+import subprocess
+import zlib
+from dataclasses import replace
+from pathlib import Path
+
+import pytest
+
+from interface.protocol import (
+    CRC,
+    HEADER,
+    STATE,
+    UINT32_MAX,
+    Answer,
+    Decision,
+    FrameDecoder,
+    ProtocolError,
+    QuestionId,
+    State,
+    Status,
+    c_header,
+    decode_decision,
+    decode_state,
+    encode_decision,
+    encode_state,
+)
+
+
+def with_crc(frame):
+    return frame[:-4] + CRC.pack(zlib.crc32(frame[:-4]))
+
+
+def test_crc_and_state_layout():
+    assert zlib.crc32(b"123456789") == 0xCBF43926
+    assert HEADER.size == 20
+    assert STATE.size == 68
+    state = State(sequence=UINT32_MAX, timestamp_us=UINT32_MAX, goal_m=(4.0, 1.0, 0.0))
+    frame = encode_state(state)
+    assert len(frame) == 92
+    assert frame[:4] == b"MC\x00\x01"
+    assert decode_state(frame) == state
+    assert encode_state(decode_state(frame)) == frame
+
+
+def test_crc_rejects_every_single_byte_corruption():
+    frame = encode_state(State())
+    for index in range(len(frame)):
+        changed = bytearray(frame)
+        changed[index] ^= 1
+        with pytest.raises(ProtocolError, match="CRC"):
+            decode_state(changed)
+
+
+@pytest.mark.parametrize("length", [0, 1, 19, 20, 91, 93, 184])
+def test_partial_or_concatenated_frames_are_not_silently_accepted(length):
+    frame = (encode_state(State()) * 2)[:length]
+    with pytest.raises(ProtocolError, match="length"):
+        decode_state(frame)
+
+
+@pytest.mark.parametrize("offset", [0, 2, 3, 4, 6, 8, 10])
+def test_unsupported_header_rejected_even_with_valid_crc(offset):
+    frame = bytearray(encode_state(State()))
+    frame[offset] ^= 0x80
+    with pytest.raises(ProtocolError):
+        decode_state(with_crc(frame))
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"sequence": -1},
+        {"sequence": True},
+        {"timestamp_us": 2**32},
+        {"task_id": 2},
+        {"validity": 32},
+        {"ages_us": (0, 0, 0, 0, 0)},
+        {"ages_us": (UINT32_MAX,) * 5},
+        {"goal_m": (float("nan"), 0, 0)},
+        {"velocity_m_s": (1e100, 0, 0)},
+        {"goal_m": (0, 0)},
+        {"battery_fraction": 0.5},
+        {"faults": 1},
+    ],
+)
+def test_invalid_state_rejected_before_encoding(changes):
+    with pytest.raises(ProtocolError):
+        encode_state(replace(State(), **changes))
+
+
+def test_nonfinite_received_values_rejected_after_crc_check():
+    frame = bytearray(encode_state(State()))
+    struct.pack_into("<f", frame, HEADER.size + 24, float("inf"))
+    with pytest.raises(ProtocolError, match="non-finite"):
+        decode_state(with_crc(frame))
+
+
+def test_unknown_fields_are_explicit_and_valid_health_round_trips():
+    unknown = decode_state(encode_state(State()))
+    assert unknown.validity == 7
+    assert unknown.ages_us[3:] == (UINT32_MAX, UINT32_MAX)
+    healthy = State(
+        validity=31, ages_us=(0, 1, 2, 3, 4), battery_fraction=0.5, faults=4
+    )
+    assert decode_state(encode_state(healthy)) == healthy
+
+
+def full_decision():
+    return Decision(
+        sequence=42,
+        timestamp_us=50000,
+        latency_us=2000,
+        status=Status.OK,
+        model_version=1,
+        answers=(
+            Answer(QuestionId.PATH_BLOCKED, (0.75, 0.25), 0),
+            Answer(QuestionId.CLEAR_SECTOR, (0.25, 0.5, 0.125, 0.125), 0),
+            Answer(QuestionId.SPEED_TIER, (0.125, 0.125, 0.5, 0.25), 2),
+            Answer(QuestionId.MODE, (0.125, 0.5, 0.125, 0.125, 0.125), 1),
+        ),
+    )
+
+
+def test_decision_round_trip_preserves_distributions_and_separate_selections():
+    decision = full_decision()
+    frame = encode_decision(decision)
+    assert len(frame) == 128
+    assert decode_decision(frame) == decision
+    assert encode_decision(decode_decision(frame)) == frame
+    assert decision.answers[1].selected == 0
+    assert decision.answers[1].probabilities.index(0.5) == 1
+
+
+def test_jev_confidence_is_not_entropy_or_top_two_margin():
+    assert Answer(1, (0.75, 0.25), 0).confidence == -1
+    assert Answer(2, (0.25, 0.5, 0.125, 0.125), 1).confidence == pytest.approx(1 / 3)
+    assert Answer(3, (0.125, 0.125, 0.5, 0.25), 2).confidence == 0.375
+    assert Answer(3, (0.25,) * 4, 0).confidence == 0
+    assert Answer(3, (0, 0, 0, 1), 3).confidence == 1
+
+
+@pytest.mark.parametrize("status", list(Status))
+def test_status_packets_are_explicit_and_default_is_fault(status):
+    packet = replace(full_decision(), status=status)
+    assert decode_decision(encode_decision(packet)).status == status
+    if status != Status.OK:
+        empty = Decision(status=status)
+        assert len(encode_decision(empty)) == 36
+        assert decode_decision(encode_decision(empty)) == empty
+    assert Decision().status == Status.FAULT
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"answers": ()},
+        {"answers": full_decision().answers[::-1]},
+        {"answers": (full_decision().answers[0],) * 4},
+        {"answers": (Answer(1, (0.75, 0.75), 0),)},
+        {"answers": (Answer(1, (float("nan"), 0), 0),)},
+        {"answers": (Answer(2, (0.25,) * 4, 4),)},
+        {"answers": (Answer(2, (0.5, 0.5), 1),)},
+        {"model_version": 0},
+        {"status": 6},
+        {"catalogue_version": 1},
+        {"latency_us": -1},
+    ],
+)
+def test_invalid_decisions_are_rejected(changes):
+    with pytest.raises(ProtocolError):
+        encode_decision(replace(full_decision(), **changes))
+
+
+def test_received_answers_are_checked_even_if_crc_is_valid():
+    frame = bytearray(encode_decision(full_decision()))
+    for offset in (30, 32, 33, 34, 35, 36, 40):
+        changed = frame.copy()
+        changed[offset] ^= 0x80
+        with pytest.raises(ProtocolError):
+            decode_decision(with_crc(changed))
+    for index in range(len(frame)):
+        changed = frame.copy()
+        changed[index] ^= 1
+        with pytest.raises(ProtocolError, match="CRC"):
+            decode_decision(changed)
+
+
+def test_stream_handles_all_chunk_boundaries_noise_and_consecutive_packets():
+    packets = (State(), full_decision(), Decision())
+    wire = (
+        encode_state(packets[0])
+        + encode_decision(packets[1])
+        + encode_decision(packets[2])
+    )
+    for boundary in range(len(wire) + 1):
+        stream = FrameDecoder()
+        decoded = stream.feed(b"noiseM" + wire[:boundary]) + stream.feed(
+            wire[boundary:]
+        )
+        assert decoded == list(packets)
+        assert not stream.buffer
+
+
+def test_stream_recovers_after_corruption_and_impossible_length():
+    broken = bytearray(encode_state(State()))
+    broken[-1] ^= 1
+    oversized = bytearray(encode_state(State()))
+    struct.pack_into("<H", oversized, 4, 65535)
+    stream = FrameDecoder()
+    assert stream.feed(broken + oversized + encode_state(State(sequence=2))) == [
+        State(sequence=2)
+    ]
+    assert stream.rejected_frames >= 2
+    assert stream.feed(b"M" * 100000) == []
+    assert len(stream.buffer) <= 1
+
+
+def test_wire_round_trip_is_exact_for_non_binary_fractions():
+    packet = replace(
+        full_decision(),
+        answers=(
+            Answer(1, (0.9, 0.1), 0),
+            Answer(2, (0.1, 0.2, 0.3, 0.4), 3),
+            Answer(3, (0.1, 0.2, 0.3, 0.4), 3),
+            Answer(4, (0.1, 0.2, 0.3, 0.1, 0.3), 2),
+        ),
+    )
+    frame = encode_decision(packet)
+    assert encode_decision(decode_decision(frame)) == frame
+
+
+ROOT = Path(__file__).resolve().parents[1]
+HEADER_PATH = ROOT / "firmware/include/micro_classifier_protocol.h"
+GOLDEN = json.loads((ROOT / "interface/golden_vectors.json").read_text())["vectors"]
+
+
+@pytest.mark.parametrize("vector", GOLDEN, ids=lambda vector: vector["name"])
+def test_golden_byte_vectors(vector):
+    fields = vector["fields"].copy()
+    if vector["kind"] == "state":
+        for name, value in fields.items():
+            if isinstance(value, list):
+                fields[name] = tuple(value)
+        packet = State(**fields)
+        encode, decode = encode_state, decode_state
+    else:
+        if "answers" in fields:
+            fields["answers"] = tuple(
+                Answer(
+                    answer["question_id"],
+                    tuple(answer["probabilities"]),
+                    answer["selected"],
+                )
+                for answer in fields["answers"]
+            )
+        packet = Decision(**fields)
+        encode, decode = encode_decision, decode_decision
+    frame = bytes.fromhex(vector["hex"])
+    assert encode(packet) == frame
+    assert decode(frame) == packet
+
+
+def test_generated_header_matches_single_source_definition():
+    assert HEADER_PATH.read_text() == c_header()
+
+
+@pytest.mark.parametrize("compiler", ["cc", "arm-none-eabi-gcc"])
+def test_header_compiles_without_packed_structs_or_hal(compiler):
+    if shutil.which(compiler) is None:
+        pytest.skip(f"{compiler} unavailable")
+    subprocess.run(
+        [
+            compiler,
+            "-std=c11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-pedantic",
+            "-fsyntax-only",
+            "-x",
+            "c",
+            "-",
+        ],
+        input=f'#include "{HEADER_PATH}"\n_Static_assert(MC_V0_MAX_FRAME_SIZE == 128, "frame bound");\n',
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+
+
+def test_independent_c_encoding_matches_state_golden(tmp_path):
+    if shutil.which("cc") is None:
+        pytest.skip("host C compiler unavailable")
+    source = r"""
+#include "micro_classifier_protocol.h"
+#include <stdio.h>
+#include <string.h>
+_Static_assert(sizeof(float) == 4, "binary32 required by fixture");
+static void put16(uint8_t *target, uint16_t value) {
+    target[0] = (uint8_t)value;
+    target[1] = (uint8_t)(value >> 8);
+}
+static void put32(uint8_t *target, uint32_t value) {
+    for (unsigned index = 0; index < 4; ++index) {
+        target[index] = (uint8_t)(value >> (8 * index));
+    }
+}
+static void put_float(uint8_t *target, float value) {
+    uint32_t bits;
+    memcpy(&bits, &value, sizeof(bits));
+    put32(target, bits);
+}
+static uint32_t crc32(const uint8_t *data, unsigned length) {
+    uint32_t crc = MC_V0_CRC_INITIAL;
+    for (unsigned index = 0; index < length; ++index) {
+        crc ^= data[index];
+        for (unsigned bit = 0; bit < 8; ++bit) {
+            crc = (crc >> 1) ^ ((crc & 1) ? MC_V0_CRC_POLYNOMIAL_REFLECTED : 0);
+        }
+    }
+    return crc ^ MC_V0_CRC_XOR_OUT;
+}
+int main(void) {
+    uint8_t frame[MC_V0_STATE_FRAME_SIZE] = {0};
+    uint8_t *payload = frame + MC_V0_HEADER_SIZE;
+    frame[0] = MC_V0_MAGIC_0;
+    frame[1] = MC_V0_MAGIC_1;
+    frame[MC_V0_HEADER_PROTOCOL_VERSION_OFFSET] = MC_V0_PROTOCOL_VERSION;
+    frame[MC_V0_HEADER_KIND_OFFSET] = MC_V0_KIND_STATE;
+    put16(frame + MC_V0_HEADER_PAYLOAD_SIZE_OFFSET, MC_V0_STATE_PAYLOAD_SIZE);
+    put16(frame + MC_V0_HEADER_PROFILE_ID_OFFSET, MC_V0_PROFILE_ID);
+    put32(frame + MC_V0_HEADER_SEQUENCE_OFFSET, 42);
+    put32(frame + MC_V0_HEADER_TIMESTAMP_US_OFFSET, 50000);
+    put16(payload + MC_V0_STATE_VALIDITY_OFFSET, MC_V0_VALID_VELOCITY | MC_V0_VALID_ANGULAR_VELOCITY | MC_V0_VALID_GOAL);
+    put16(payload + MC_V0_STATE_TASK_ID_OFFSET, MC_V0_TASK_GOAL_REACHING);
+    put32(payload + MC_V0_STATE_AGES_US_OFFSET + 12, MC_V0_UNKNOWN_AGE_US);
+    put32(payload + MC_V0_STATE_AGES_US_OFFSET + 16, MC_V0_UNKNOWN_AGE_US);
+    put_float(payload + MC_V0_STATE_VELOCITY_M_S_OFFSET, 0.5f);
+    put_float(payload + MC_V0_STATE_ANGULAR_VELOCITY_RAD_S_OFFSET + 8, 0.25f);
+    put_float(payload + MC_V0_STATE_GOAL_M_OFFSET, 4.0f);
+    put_float(payload + MC_V0_STATE_GOAL_M_OFFSET + 4, 1.0f);
+    put32(frame + MC_V0_STATE_FRAME_SIZE - MC_V0_CRC_SIZE, crc32(frame, MC_V0_STATE_FRAME_SIZE - MC_V0_CRC_SIZE));
+    for (unsigned index = 0; index < sizeof(frame); ++index) {
+        printf("%02x", (unsigned)frame[index]);
+    }
+    return 0;
+}
+"""
+    executable = tmp_path / "encode_golden"
+    subprocess.run(
+        [
+            "cc",
+            "-std=c11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-pedantic",
+            "-I",
+            str(HEADER_PATH.parent),
+            "-x",
+            "c",
+            "-",
+            "-o",
+            str(executable),
+        ],
+        input=source,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    result = subprocess.run(
+        [str(executable)], text=True, capture_output=True, check=True
+    )
+    assert result.stdout == GOLDEN[0]["hex"]

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §12 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §15 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-15)
@@ -80,6 +80,16 @@ Keep this section and the Task List current; a new session resumes from them.
   suite (32 successes, no collisions/timeouts) with the privileged map-aware
   expert. The sensor-only reactive baseline collided in obstacle/slalom
   scenes and is not an expert or deployment candidate. No training was run.
+- Approved by the user (2026-10-15): provisional host-side interface contract
+  v0, including Python codecs, CRC, C header, golden vectors and simulator
+  export. This expands tooling scope only; do not freeze physical safety,
+  labeling policy or hardware integration. Student training and firmware
+  implementation remain outside scope; the C header alone is not firmware.
+- Contract tooling in `interface/protocol.py` passes 62 focused tests: strict
+  state/decision codecs, five golden frames, bounded stream recovery, generated
+  header parity, host/Arm GCC syntax checks and independent C state encoding.
+  State/full-decision frames are 92/128 bytes. DESIGN.md §2 specifies this
+  unfrozen draft; synthetic golden decisions are not labels or model outputs.
 
 ## Task List
 
@@ -107,14 +117,16 @@ on missing tools, and continue with the next unblocked task.
    a report and a d3-flash versus d3-mini comparison in DESIGN.md §4.
   Result (2026-10-15): identical 25-request suite; exact BF16-reference parity,
   7.368 GiB after load, 1.845 s median request; report and comparison recorded.
-5. [blocked: detailed wire contract outside current tooling-first scope]
+5. [x]
   Interface contract v0 (DESIGN.md §2): one packet definition with Python
    encoding and decoding, a C header, a CRC, golden byte vectors, and
    round-trip tests.
+  Result (2026-10-15): approved provisional host-side contract, 62 focused
+  tests, generated C offsets and five golden frames; no hardware freeze.
 6. [blocked: physical thresholds and reviewed label policy unspecified]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
-7. [blocked: contract-format log export awaits Task 5] The simulator chosen
+7. [ ] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
    dropouts, latency, a scripted expert, and episode logs in the contract

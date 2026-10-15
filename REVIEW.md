@@ -1080,6 +1080,39 @@ not answer third-party training-data restrictions.
 
 Thank you.
 
+## 15. Provisional Interface Tooling (2026-10-15)
+
+The user requested Conventional Commit subjects for all new commits. The rule
+is persisted in AGENTS.md; earlier commits were not rewritten. The user then
+approved a provisional host-side contract and simulator export without
+freezing physical safety, labeling policy or hardware integration. Student
+training and firmware implementation remain outside current scope.
+
+[Python definitions][wire-python] are the single source for little-endian
+state/decision codecs and the generated [C offset header][wire-header]. State
+frames are 92 bytes; full decisions are 128 bytes; empty rejection/fault is
+36 bytes. Versions, sequence, timestamp, validity, ages and CRC are explicit.
+Host state excludes module-side ToF/history. Status gates recommendation
+usability, while raw distributions and selections remain separate.
+
+The codec validates values, layouts, identities, order and Jev statistics.
+It does not enforce physical bounds, staleness, calibration, smoothing,
+liveness or actuator fail-safes. Wire options are not reviewed labels. The
+[five golden frames][wire-golden] are synthetic fixtures; dummy model ID 1
+in the `OK` fixture is not an actual student or deployment claim.
+
+Verification: 62 focused tests passed, including single-byte corruptions,
+valid-CRC malformed frames, arbitrary stream boundaries/recovery, golden
+round trips and generated-header equality. Host GCC and `arm-none-eabi-gcc`
+compile the header; independent host C encoding matches the state golden
+bytes. Ruff lint/format and editor diagnostics passed. No dependencies,
+board, UART hardware or ST compiler measurement was added. DESIGN.md §2
+records the draft and application duties.
+
+[wire-python]: interface/protocol.py
+[wire-header]: firmware/include/micro_classifier_protocol.h
+[wire-golden]: interface/golden_vectors.json
+
 ## Sources
 
 Hardware and tools:

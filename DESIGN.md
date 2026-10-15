@@ -125,13 +125,111 @@ Interface contract, fixed in M0 and versioned with every release:
   because their placement changes the input distribution. The host supplies
   ego-state over the bus.
 
+### Provisional Host-Side Contract v0 (2026-10-15)
+
+The user approved this **draft** as host-side tooling, including codecs, a C
+header, CRC, golden vectors and simulator export. It does not freeze hardware,
+physical thresholds, label policy, calibration, smoothing or fail-safes.
+[Python definitions][wire-python] are the single source of truth. The generated
+[C header][wire-header] contains byte offsets, not packed structs. [Golden
+frames][wire-golden] are synthetic fixtures, not predictions or reviewed labels.
+
+All integers are unsigned little-endian; floats are little-endian IEEE-754
+binary32. No implicit alignment or padding. The 20-byte header is:
+
+| Offset | Field | Encoding |
+| --- | --- | --- |
+| 0 | Magic | Two bytes `MC` |
+| 2 | Protocol version | u8, 0 |
+| 3 | Kind | u8, state=1 or decision=2 |
+| 4 | Payload length | u16, excludes header/CRC |
+| 6 | Schema version | u16, 0 |
+| 8 | Embodiment profile ID | u16, ground rover=1 |
+| 10 | Profile version | u16, 0 |
+| 12 | Sequence | u32, echoed by decision |
+| 16 | Host sample timestamp | u32 microseconds, echoed by decision |
+
+The four-byte trailer is CRC-32/ISO-HDLC over header and payload, including
+magic/length, serialized as little-endian u32. Reflected polynomial
+`0xedb88320`, initial/final XOR `0xffffffff`; ASCII `123456789` has check value
+`0xcbf43926`. CRC detects corruption, not authentication or malicious forgery.
+
+State payload offsets are relative to payload start:
+
+| Offset | Field | Encoding and meaning |
+| --- | --- | --- |
+| 0 | Validity | u16, bits 0-4: velocity, angular velocity, goal, battery, faults |
+| 2 | Task ID | u16, goal reaching=1; others rejected |
+| 4 | Sensor ages | Five u32 microsecond ages, validity-group order |
+| 24 | Linear velocity | Three f32, FLU body X/Y/Z, m/s |
+| 36 | Angular velocity | Three f32, FLU body X/Y/Z, rad/s |
+| 48 | Goal displacement | Three f32, FLU body X/Y/Z, m |
+| 60 | Battery fraction | f32 in [0,1], not volts |
+| 64 | Host fault flags | u32; physical bit meanings still pending |
+
+State payload is 68 bytes; full frame is **92 bytes**. Invalid groups must
+carry zero values and age `0xffffffff` (unknown); valid groups require known
+ages. Values must be finite and representable as binary32. Unknown validity
+bits and unsupported task/schema/profile versions are rejected. Physical
+range and stale-data limits remain profile-policy work. ToF, its ages/masks,
+and the history window stay on the module, not in host UART frames.
+
+Decision payload starts with u32 processing latency in microseconds, u16
+status, u16 model version, u16 catalogue version, and u16 answer mask: a
+12-byte prefix. Latency is complete input receipt to response framing, not
+host-to-host elapsed time. Model version 0 means no model and cannot accompany
+`OK`. Catalogue version is 0. Status values 0-5 are `OK`,
+`REJECT_LOW_CONFIDENCE`, `REJECT_STALE_INPUT`, `REJECT_OUT_OF_DOMAIN`,
+`REJECT_UNSUPPORTED_SCHEMA`, `FAULT`. Default construction yields `FAULT`.
+
+Answer-mask bit `question_id - 1` indicates an answer; present answers occur
+in ascending ID order. Each answer has an eight-byte prefix: u8 question ID,
+u8 type (`noul`=1, `choice`=2, `score`=3), u8 selected option index, u8 option
+count, f32 confidence; followed by count f32 probabilities. Wire identities
+follow the existing §6 bundle, not a reviewed training-label catalogue:
+
+| ID | Question | Ordered options |
+| --- | --- | --- |
+| 1 | `path_blocked` | false, true |
+| 2 | `clear_sector` | left, centre, right, none |
+| 3 | `speed_tier` | 0, 1, 2, 3 |
+| 4 | `mode` | explore, approach, avoid, dock, halt |
+
+Probabilities are not renormalized by the codec: finite, in [0,1], sum within
+1e-6 of one. Choice/score confidence uses the TypeSafe Jev formulas (§6) on
+serialized probabilities; ties choose the first raw mode. Noul confidence is
+absent, represented by -1, not NaN. Received confidence must match within
+2e-6. Expected score is the probability-weighted level. A selected option may
+differ from raw argmax for future smoothing; no smoothing policy is implemented.
+
+`OK` requires all four answers and a nonzero model version. Rejection/fault
+may contain a subset or none for diagnostics; **its selections are not usable
+recommendations**. Full decisions are **128 bytes**; empty rejection/fault
+frames are 36 bytes. Golden model ID 1 is synthetic, not an installed model.
+
+`FrameDecoder.feed` accepts byte chunks, bounds retained framing data, rejects
+corrupt/unsupported frames and resynchronizes on magic. The transport owner
+must discard a partial decoder on inter-byte timeout; no timing threshold is
+imposed here. Missing/late decisions, duplicate/out-of-order packets and gaps
+remain application duties. Sequence and timestamp wrap modulo 2^32; compare
+time differences modularly within less than half that range and use sequence
+echo plus host receipt time. Timestamp wrap is about 71.6 minutes, not a
+wall-clock timestamp. Independent frame-specific host fail-safes still apply.
+
+At 1 Mbaud **assuming 8N1**, 92+128 bytes cost a calculated 2.2 ms of line
+time, excluding inference, buffering, scheduling and host handling. This is
+not measured latency. All 62 focused tests pass, including header equality,
+host/Arm GCC compilation and independent C state serialization matching a
+golden frame. Header syntax checks are not firmware or ST NPU validation.
+
 ### Decisions Required Before Scaffolding
 
 Recorded as provisional defaults on 2026-10-14 ([REVIEW.md](REVIEW.md) §10) so
 host-side scaffolding can proceed. The user confirmed these defaults on
 2026-10-15, while restricting current implementation to teacher tooling.
 The original proposal wording below is retained for traceability; detailed
-interface bytes and physical safety parameters remain unspecified.
+hardware interface and physical safety parameters remain unfrozen. The
+provisional host-side byte contract above was subsequently approved as tooling.
 
 | Requirement | Current status |
 | --- | --- |
@@ -1210,6 +1308,9 @@ for this project.
   [LiteRT Micro][litert-micro], [BitNet][bitnet], and [ST DQNN support][st-dqnn].
 
 [st-family]: https://www.st.com/en/microcontrollers-microprocessors/stm32n6-series.html
+[wire-python]: interface/protocol.py
+[wire-header]: firmware/include/micro_classifier_protocol.h
+[wire-golden]: interface/golden_vectors.json
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes
 [st-operators]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-operators.html

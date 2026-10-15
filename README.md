@@ -58,6 +58,28 @@ python -m teacher.validate_vela_int8 --output teacher/reports/<name>.json
 
 CPU unit tests: `python -m pytest tests`.
 
+## M1a Host Probes
+
+[CPU preparation tooling][m1a-script] exports nine **untrained** fixed-shape
+probes: equivalent temporal Conv layouts, in/out-of-graph pooling and Gather,
+a numeric MLP, 8x8 ToF and 64x64 camera Conv probes, and a transformer block.
+It checks float ONNX against PyTorch and runs signed INT8 QDQ on separate
+seeded synthetic evaluation inputs. No training, teacher or board is needed.
+
+```sh
+python -m export.m1a --output export/artifacts/my-run \
+	--report export/reports/my-run.json
+python -m pytest -q tests/test_export.py
+```
+
+Output directories/reports must be new. ONNX artifacts are ignored; JSON
+reports include hashes, shapes, operators and numerical error. The [recorded
+CPU run][m1a-report] prepared nine cases; the transformer exceeds the diagnostic
+INT8 error bound and is explicitly unqualified. Its test remains an expected
+failure, not a loosened tolerance. Synthetic inputs are not deployment
+calibration or task data. ST compilation, memory fit, latency and board gates
+remain unmeasured; see [DESIGN.md](DESIGN.md) §12 and [REVIEW.md](REVIEW.md) §16.
+
 ## Provisional Interface Tooling
 
 [Python codecs][wire-python] provide little-endian, CRC-protected state and
@@ -130,3 +152,5 @@ The simulation JSONL container remains separately versioned. See
 [wire-python]: interface/protocol.py
 [wire-header]: firmware/include/micro_classifier_protocol.h
 [wire-golden]: interface/golden_vectors.json
+[m1a-script]: export/m1a.py
+[m1a-report]: export/reports/m1a-cpu-20261015.json

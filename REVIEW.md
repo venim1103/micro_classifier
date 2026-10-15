@@ -1139,6 +1139,39 @@ as the next default rather than physical safety specifications.
 [wire-header]: firmware/include/micro_classifier_protocol.h
 [wire-golden]: interface/golden_vectors.json
 
+## 16. M1a Host Preparation (2026-10-15)
+
+The user requested continued autonomous work with periodic local commits.
+Task 6 still requires approved label policy, and student training/firmware
+remain outside scope. Task 14 explicitly permits script preparation while
+ST tools are missing. [CPU tooling][m1a-script] uses existing dependencies,
+without package changes, downloads, training or GPU work.
+
+Nine untrained probes cover both 1-D Conv layouts, fixed pooling, Gather,
+a numeric MLP, ToF/camera convolutions and a standard transformer block.
+Float ONNX and signed per-channel QDQ use fixed shapes and distinct synthetic
+calibration/evaluation seeds. Float outputs agree with PyTorch within
+4.77e-7 in the [real report][m1a-report]. All 27 artifacts were independently
+hash-checked. DESIGN.md §12 records numerical results and the report digest.
+
+Transformer limitations remain explicit. A wrapper keeps the legacy exporter's
+optional causal boolean from becoming a tensor; standard shape inference
+avoids an ORT symbolic-Reshape assertion. Both float/QDQ execute, but INT8
+error exceeds the diagnostic-only 0.15 bound: 0.264466 then 0.245311 in the
+unit fixture using 3 then 16 calibration samples, and 0.206992 in the full
+16-calibration/8-evaluation run. Stop this tuning path for now. Its numerical
+test is explicitly expected to fail; no bound was raised or quality claimed.
+
+Verification: 133 passed plus one expected failure; Ruff lint/format and
+editor diagnostics passed. Legacy-exporter deprecation/tracing warnings
+remain for a future approved framework upgrade. This is not reviewed
+calibration, task accuracy, target parity, SRAM fit, NPU mapping, board latency
+or safety evidence. Task 14 and M1a still await real ST compilation. ST primary
+documentation requires QDQ through `stedgeai generate`, not directly `atonn`.
+
+[m1a-script]: export/m1a.py
+[m1a-report]: export/reports/m1a-cpu-20261015.json
+
 ## Sources
 
 Hardware and tools:

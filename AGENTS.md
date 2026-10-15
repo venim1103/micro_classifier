@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §15 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §16 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-15)
@@ -96,6 +96,14 @@ Keep this section and the Task List current; a new session resumes from them.
   Four seeded wire smoke scenes succeeded without collision/timeout; all
   566 emitted frames were verified. No new dependencies, training or hardware
   run. DESIGN.md §7 and REVIEW.md §15 record hashes and limits.
+- Task 14 host preparation in `export/m1a.py` now exports nine untrained
+  static-shape probes, signed per-channel INT8 QDQ and CPU comparisons.
+  The real nine-case run and 27 artifact hashes are recorded in
+  `export/reports/m1a-cpu-20261015.json` and DESIGN.md §12. Generated ONNX is
+  ignored. There are 133 passing tests plus one expected transformer INT8
+  numerical failure (max error 0.207 in the real run, versus the diagnostic
+  0.15 bound). Do not describe that transformer as numerically qualified.
+  No training/GPU job; actual ST tools and board gates remain blocked.
 
 ## Task List
 
@@ -167,6 +175,9 @@ on missing tools, and continue with the next unblocked task.
     unit tests against the golden vectors and an `arm-none-eabi-gcc` build.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
+  Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed
+  report ready; 23 focused tests pass plus one expected transformer numerical
+  failure. Actual ST mapping/epochs/memory/cycles and M1a exit remain blocked.
 15. [blocked: no board] M1b board bring-up and measurements.
 16. [x] Draft a request to the vLLM Semantic Router team for a Decision 3.0
     training-data statement (REVIEW.md F15) for the user to send.

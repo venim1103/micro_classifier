@@ -1,0 +1,1035 @@
+{
+  "cases": [
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 42373,
+          "sha256": "05425e498bc39fb8c905af63b0ec3083ce7cd1990d27dc1011a49f9a358bb674"
+        },
+        "int8.onnx": {
+          "bytes": 15016,
+          "sha256": "1e4f1e80cc7a70aa2ab2e4b86f39c058d0a4d03c18f29d637c72702ae535c3ce"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 42553,
+          "sha256": "63259f3571b10d5786c82198911d1c7326861f798258b5dedd62950943db9043"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "dca7fa338451d68b37afccacd5e26e647e281d91e10f0f5f9b82964661bbafc4",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "temporal_height",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "695d7ab24f54b9c7538c48150ab7bc8f8122bcda5828a0ab7297a1b435800725",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 41760,
+        "operators": [
+          "Conv",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            128,
+            1
+          ],
+          "output": [
+            1,
+            48,
+            128,
+            1
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 1.7881393432617188e-07,
+        "mean_abs_error": 1.4937801514255018e-08,
+        "rmse": 2.6905992686556765e-08,
+        "values": 49152
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 10440,
+      "purpose": "3x1 Conv, temporal height; pool/Gather outside the graph",
+      "qdq_graph": {
+        "initializer_bytes": 11232,
+        "operators": [
+          "Conv",
+          "DequantizeLinear",
+          "QuantizeLinear",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            128,
+            1
+          ],
+          "output": [
+            1,
+            48,
+            128,
+            1
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.05948370695114136,
+        "mean_abs_error": 0.0009268552175096071,
+        "rmse": 0.001649501238438733,
+        "values": 49152
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 42373,
+          "sha256": "5fa9d2329ea9c937a19db32f108571b92fbdc112b1b4f11d0a71abe42e8164e6"
+        },
+        "int8.onnx": {
+          "bytes": 15016,
+          "sha256": "095c88fea4537209b5586189861622ff23bf62aeddaa31e4e63ab4ce24e55634"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 42553,
+          "sha256": "cb08cf40237c3d84e331cf9b6c36c65afca3d9b72400b4b70d0e8a06c5c2303c"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "151207558b80290c683cf24cc456ae1e87a5da7037c95862ca719a6999d3c079",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "temporal_width",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "720814e3ec81109043e12122ad71826c04648594c34a7b4625520fa310d876a0",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 41760,
+        "operators": [
+          "Conv",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            1,
+            128
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            128
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 1.7881393432617188e-07,
+        "mean_abs_error": 1.4937801514255018e-08,
+        "rmse": 2.6905992686556765e-08,
+        "values": 49152
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 10440,
+      "purpose": "1x3 Conv, temporal width; equivalent weights and logical data",
+      "qdq_graph": {
+        "initializer_bytes": 11232,
+        "operators": [
+          "Conv",
+          "DequantizeLinear",
+          "QuantizeLinear",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            1,
+            128
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            128
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.05948370695114136,
+        "mean_abs_error": 0.0009268552175096071,
+        "rmse": 0.001649501238438733,
+        "values": 49152
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 42610,
+          "sha256": "72dc0818376ed22204bcab2b76ff8f39f0d8a4582e902b3d384d45cb7dbdb47d"
+        },
+        "int8.onnx": {
+          "bytes": 15515,
+          "sha256": "ee563aae0255438e5647102ecfcfa2b3168ab2faf7bcbe67e223aef3bee2b64c"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 42851,
+          "sha256": "b4f3142779b412601791b9d1532736efee4ad83321ffa8a9c95d350d8fc7e8e5"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "dca7fa338451d68b37afccacd5e26e647e281d91e10f0f5f9b82964661bbafc4",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "temporal_height_pool",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "695d7ab24f54b9c7538c48150ab7bc8f8122bcda5828a0ab7297a1b435800725",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 41760,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            128,
+            1
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 4.470348358154297e-08,
+        "mean_abs_error": 5.513849525110952e-09,
+        "rmse": 9.37418717203907e-09,
+        "values": 384
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 10440,
+      "purpose": "Temporal height with fixed average pooling in graph",
+      "qdq_graph": {
+        "initializer_bytes": 11232,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "DequantizeLinear",
+          "QuantizeLinear",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            128,
+            1
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.001654595136642456,
+        "mean_abs_error": 0.00019509747315282766,
+        "rmse": 0.0003090558970300092,
+        "values": 384
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 42610,
+          "sha256": "2b089e6264788dc8e9ea0a80f7b3d64ef93a6128b3e140f55955ee3149fdd0a4"
+        },
+        "int8.onnx": {
+          "bytes": 15515,
+          "sha256": "e64008a132eea44579477ac9dc0ededd1d20d7edd9dfaed3ab2abe6e513bd314"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 42851,
+          "sha256": "d85a0a705542ff18968d7f79bd70ffc5c80d6a2b001273dfb9c5e1cac5d4660a"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "151207558b80290c683cf24cc456ae1e87a5da7037c95862ca719a6999d3c079",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "temporal_width_pool",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "720814e3ec81109043e12122ad71826c04648594c34a7b4625520fa310d876a0",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 41760,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            1,
+            128
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 4.470348358154297e-08,
+        "mean_abs_error": 5.513849525110952e-09,
+        "rmse": 9.37418717203907e-09,
+        "values": 384
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 10440,
+      "purpose": "Temporal width with fixed average pooling in graph",
+      "qdq_graph": {
+        "initializer_bytes": 11232,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "DequantizeLinear",
+          "QuantizeLinear",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            96,
+            1,
+            128
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.001654595136642456,
+        "mean_abs_error": 0.00019509747315282766,
+        "rmse": 0.0003090558970300092,
+        "values": 384
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 9909,
+          "sha256": "81efdd244e70d68537e827f1879008f87d186f64742d913e5aa5a81f4270c17f"
+        },
+        "int8.onnx": {
+          "bytes": 6463,
+          "sha256": "b9efc0c4e02458295c755d6c12a291ef47eb0445f1538ab66c5cf6f6c4b139c8"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 10026,
+          "sha256": "6d499f28e530dea8635ad4ea75efe4cda6b988666bc6ff72d11f51db242b466d"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "6d2282d31e0461653a536da0d7adb6ca80a89b1ddd5dae145db8dc003140de32",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "state_mlp",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "e9b7ad55f36ca714993cc93b05a2a74bdf2cdf144aa417b1c3f014cca58fa347",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 9472,
+        "operators": [
+          "Gemm",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            32
+          ],
+          "output": [
+            1,
+            16
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 7.450580596923828e-08,
+        "mean_abs_error": 1.613807398825884e-08,
+        "rmse": 2.272753880265979e-08,
+        "values": 128
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 2368,
+      "purpose": "Small numeric MLP, synthetic state-history-sized input",
+      "qdq_graph": {
+        "initializer_bytes": 3072,
+        "operators": [
+          "DequantizeLinear",
+          "Gemm",
+          "QuantizeLinear",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            32
+          ],
+          "output": [
+            1,
+            16
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.07137155532836914,
+        "mean_abs_error": 0.002298124789376743,
+        "rmse": 0.007669523354529592,
+        "values": 128
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 44271,
+          "sha256": "4da94eeadf18051468390af1f513f52ce83dcfb7ea92381a29788765addef0a2"
+        },
+        "int8.onnx": {
+          "bytes": 15659,
+          "sha256": "e0448b8a8fdda7198475f09ba67e29abb4209b5e3c731ef411c52b70160039a4"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 44492,
+          "sha256": "b773c62f2213b17a455f66236af4ea7743740a2b8755f323a16bc7016bc30a2f"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "627076bad9c44b7cebef4fcf712fb5ca3af5467c2dd3346a6d1fd77bef3a1387",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "tof",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "82f704a5c4ada64c16dd950f18a8d4fe601d2ef6451551b0d6315643f09a3e19",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 43488,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            2,
+            8,
+            8
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 2.2351741790771484e-08,
+        "mean_abs_error": 3.6869399385371557e-09,
+        "rmse": 5.601291111873569e-09,
+        "values": 384
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 10872,
+      "purpose": "Two-channel 8x8 spatial Conv probe, not a sensor normalization contract",
+      "qdq_graph": {
+        "initializer_bytes": 11664,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "DequantizeLinear",
+          "QuantizeLinear",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            2,
+            8,
+            8
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.0014341473579406738,
+        "mean_abs_error": 0.00026154721285820415,
+        "rmse": 0.00036412080519771694,
+        "values": 384
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 45135,
+          "sha256": "c00b693b64b0af28ccd3dc1b6d03955ef13817be77b2a6f4830b8eeecb1dab9d"
+        },
+        "int8.onnx": {
+          "bytes": 15884,
+          "sha256": "dd6bc0611c9a084fa2d6d0ac0f95c86d128188daae0522aff621e4e6c99c48ee"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 45356,
+          "sha256": "3eba2219eb673be25328bc678edf8dc063bb6ec2affb1e65bd33c232d1b63a16"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "00556dd273e52cc3bc88d6c9e3c9e8d753655346afb1f2ca820854736053eba3",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "camera",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "68707ec1a5845c59bf6f0bcfac1a67c18a36b1a28903ecdd941d5d1db3263259",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 44352,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            3,
+            64,
+            64
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 2.9802322387695312e-08,
+        "mean_abs_error": 5.026511947410957e-09,
+        "rmse": 8.05009747525126e-09,
+        "values": 384
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 11088,
+      "purpose": "RGB 64x64 Conv probe, not an approved camera input profile",
+      "qdq_graph": {
+        "initializer_bytes": 11880,
+        "operators": [
+          "AveragePool",
+          "Conv",
+          "DequantizeLinear",
+          "QuantizeLinear",
+          "Relu"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            3,
+            64,
+            64
+          ],
+          "output": [
+            1,
+            48,
+            1,
+            1
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.0019639432430267334,
+        "mean_abs_error": 0.0002341583578981954,
+        "rmse": 0.0003716195598503883,
+        "values": 384
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 141215,
+          "sha256": "de4607a74911899e1a0f5aaec5eef244d125e87c697ee8e72642af2dc3b78151"
+        },
+        "int8.onnx": {
+          "bytes": 114842,
+          "sha256": "7353e79ec5703637f86c5a669bdea40218b55071d7a407e6f0b4d06a5ea6e9db"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 141608,
+          "sha256": "1b9753bea70c53a64fba7d8b2667e2a8f6730c06d36d94242d9d44ef0dcf428f"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "b7192578bffc96e41ee04b4ac93ccb9de0618bac8c32e6cfee7e502ded069626",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "gather_inside",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "704c15b0c56faa691af43dc69fc9ac969c8e66ad6a2a109930785f6dd7e45414",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 140064,
+        "operators": [
+          "Constant",
+          "Conv",
+          "Gather",
+          "Relu",
+          "Transpose",
+          "Unsqueeze"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            128
+          ],
+          "output": [
+            1,
+            48,
+            128,
+            1
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 4.172325134277344e-07,
+        "mean_abs_error": 2.6309100083684218e-08,
+        "rmse": 4.697835798294279e-08,
+        "values": 49152
+      },
+      "input_dtype": "int64",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": true
+      },
+      "parameter_count": 35016,
+      "purpose": "Embedding Gather before the height Conv; compare with temporal_height",
+      "qdq_graph": {
+        "initializer_bytes": 109536,
+        "operators": [
+          "Constant",
+          "Conv",
+          "DequantizeLinear",
+          "Gather",
+          "QuantizeLinear",
+          "Relu",
+          "Transpose",
+          "Unsqueeze"
+        ],
+        "opsets": {
+          "": 13
+        },
+        "shapes": {
+          "input": [
+            1,
+            128
+          ],
+          "output": [
+            1,
+            48,
+            128,
+            1
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.01814168691635132,
+        "mean_abs_error": 0.0018843614418765735,
+        "rmse": 0.003246147024583692,
+        "values": 49152
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    },
+    {
+      "artifacts": {
+        "float.onnx": {
+          "bytes": 43815,
+          "sha256": "84d53ee3898adcb4bdb292566d821a61861d72d6175d6b7f94c2c2af51f49ac0"
+        },
+        "int8.onnx": {
+          "bytes": 34593,
+          "sha256": "c5da2bbb60fbcf721cb4ed4eb1d3748eb82ba397fa92f8ebe30996ec1ea864b3"
+        },
+        "int8.prepared.onnx": {
+          "bytes": 47752,
+          "sha256": "930e7457c5f4eed36412990cb04a0a1c464c1a563de702c8b0dbfdd2b315a820"
+        }
+      },
+      "board_measured": false,
+      "calibration": {
+        "samples": 16,
+        "seed": 1,
+        "sha256": "6843b5e9d99e5e30c5e01dec5345be5a326c7e53161b36334444cc5c800efe44",
+        "source": "synthetic_uniform_smoke_only"
+      },
+      "case": "transformer",
+      "evaluation": {
+        "samples": 8,
+        "seed": 2,
+        "sha256": "dbb1e773cdf74e04088b7ca9b46a04beae3fd76329baa4ed6147ac0f9d7c9685",
+        "source": "separate_synthetic_seed_not_a_task_split"
+      },
+      "float_graph": {
+        "initializer_bytes": 33792,
+        "operators": [
+          "Add",
+          "Cast",
+          "Concat",
+          "Constant",
+          "Div",
+          "Gather",
+          "Gemm",
+          "Identity",
+          "LayerNormalization",
+          "MatMul",
+          "Mod",
+          "Mul",
+          "Relu",
+          "Reshape",
+          "Shape",
+          "Slice",
+          "Softmax",
+          "Sqrt",
+          "Squeeze",
+          "Transpose",
+          "Unsqueeze"
+        ],
+        "opsets": {
+          "": 17
+        },
+        "shapes": {
+          "input": [
+            1,
+            8,
+            32
+          ],
+          "output": [
+            1,
+            8,
+            32
+          ]
+        }
+      },
+      "float_vs_pytorch": {
+        "max_abs_error": 4.76837158203125e-07,
+        "mean_abs_error": 7.531150458817137e-08,
+        "rmse": 1.0839408313566403e-07,
+        "values": 2048
+      },
+      "input_dtype": "float32",
+      "npu_mapping": null,
+      "numerical_smoke": {
+        "not_a_task_quality_gate": true,
+        "test_only_max_abs_bound": 0.15,
+        "within_test_bound": false
+      },
+      "parameter_count": 8544,
+      "purpose": "One small transformer block; mapping/fallback deliberately unknown",
+      "qdq_graph": {
+        "initializer_bytes": 9472,
+        "operators": [
+          "Add",
+          "Cast",
+          "Concat",
+          "Constant",
+          "DequantizeLinear",
+          "Div",
+          "Gather",
+          "Gemm",
+          "Identity",
+          "LayerNormalization",
+          "MatMul",
+          "Mod",
+          "Mul",
+          "QuantizeLinear",
+          "Relu",
+          "Reshape",
+          "Shape",
+          "Slice",
+          "Softmax",
+          "Sqrt",
+          "Squeeze",
+          "Transpose",
+          "Unsqueeze"
+        ],
+        "opsets": {
+          "": 17
+        },
+        "shapes": {
+          "input": [
+            1,
+            8,
+            32
+          ],
+          "output": [
+            1,
+            8,
+            32
+          ]
+        }
+      },
+      "qdq_vs_float": {
+        "max_abs_error": 0.20699167251586914,
+        "mean_abs_error": 0.006799038445436167,
+        "rmse": 0.010153113495626124,
+        "values": 2048
+      },
+      "schema": "micro-classifier/m1a-case/1",
+      "seed": 0,
+      "st_compiler_executed": false,
+      "status": "host_artifacts_prepared",
+      "untrained": true
+    }
+  ],
+  "created_utc": "2026-10-15T11:26:35.909865+00:00",
+  "environment": {
+    "execution_provider": "CPUExecutionProvider",
+    "numpy": "2.2.6",
+    "onnx": "1.23.2",
+    "onnxruntime": "1.31.0",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "torch": "2.10.0+cu128"
+  },
+  "limitations": [
+    "Untrained random probes and synthetic calibration, not task models or datasets.",
+    "CPU float/QDQ execution is not ST mapping, SRAM fit, target parity or latency.",
+    "Numerical smoke bounds are diagnostic only, not approved quality thresholds.",
+    "No training, board access, firmware integration or teacher inference.",
+    "Compile through the ST front end, not atonn directly; pin its release first."
+  ],
+  "quantization": {
+    "activation_symmetric": false,
+    "activation_type": "QInt8",
+    "format": "QDQ",
+    "other_operators_may_remain_float": true,
+    "selected_operators": [
+      "Conv",
+      "Gemm",
+      "MatMul"
+    ],
+    "standard_static_shape_inference": true,
+    "weight_per_channel": true,
+    "weight_symmetric": true,
+    "weight_type": "QInt8"
+  },
+  "schema": "micro-classifier/m1a-host/1",
+  "source_sha256": "1844c50ed04fa7f65391c2e64d426cf385f207a8509f12cadf3123b17d759cee",
+  "st_compiler": {
+    "milestone_passed": false,
+    "status": "not_run"
+  },
+  "status": "host_artifacts_prepared"
+}

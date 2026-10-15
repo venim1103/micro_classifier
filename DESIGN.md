@@ -1263,6 +1263,59 @@ Use an untrained model and synthetic tensors only for export, mapping, and
 timing smoke tests in M1a and M1b; they say nothing about classification
 accuracy. Do not commit to a large labeling job before this deployment proof.
 
+### M1a Host Preparation (Measured 2026-10-15)
+
+Task 14's script preparation can proceed without ST tools. [Host tooling][m1a-script]
+exports nine untrained CPU probes, not a student: temporal Conv in
+`[1,96,128,1]`/`[1,96,1,128]` layouts, matching average-pooling variants, an
+MLP over 32 synthetic values, 2x8x8 ToF and 3x64x64 camera probes, embedding
+Gather before the height Conv, and one PyTorch transformer block (width 32,
+four heads, eight positions). These are compiler experiments, not frozen
+architecture/input profiles. Equivalent layouts share weights and logical
+data. Pool/Gather outside the graph is for eventual M55 preprocessing, not
+a hidden deployed host encoder.
+
+All models are CPU-resident, eval-only and gradients disabled. ONNX checker
+and fixed positive input/output shapes gate opset 13 exports; the transformer
+uses opset 17. The legacy exporter is intentionally selected for compatibility
+and emits deprecation warnings. Signed INT8 QDQ uses symmetric per-channel
+weights and asymmetric activations on Conv/Gemm/MatMul; other operators may
+stay floating point. This is not a fully integer transformer claim. Standard
+ONNX shape inference avoids an ORT symbolic-Reshape assertion.
+
+The [real report][m1a-report] uses weight seed 0, 16 synthetic calibration
+samples at seed 1 and eight evaluation samples at seed 2. These are not
+representative calibration, reviewed labels or locked task splits. Software
+versions, source/array/artifact hashes, shapes and operators are preserved.
+All 27 ONNX artifacts were hash-verified under ignored
+`export/artifacts/m1a-cpu-20261015/`. Report SHA-256:
+`5b5b37e51c92e7ea26de7f75a6a10d094753ad9c46925f26f47f047071207804`.
+Maximum float ONNX versus PyTorch difference was 4.77e-7.
+
+| Probe | Parameters | QDQ vs Float Max Abs Error | RMSE |
+| --- | --- | --- | --- |
+| temporal height / width | 10,440 each | 0.059484 | 0.001650 |
+| height / width plus pool | 10,440 each | 0.001655 | 0.000309 |
+| state MLP | 2,368 | 0.071372 | 0.007670 |
+| ToF | 10,872 | 0.001434 | 0.000364 |
+| camera | 11,088 | 0.001964 | 0.000372 |
+| Gather inside | 35,016 | 0.018142 | 0.003246 |
+| transformer | 8,544 | **0.206992** | 0.010153 |
+
+The 0.15 maximum-error diagnostic is a test-only plumbing bound, **not an
+approved task-quality threshold**. The transformer exceeds it; no INT8
+numerical qualification follows. Another seeded fixture also failed at
+0.264466 with three calibration samples and 0.245311 with 16. Stop this tuning
+path for now: retain the expected numerical failure rather than increasing
+the bound. Float export and QDQ execution do succeed.
+
+Verification: 133 repository tests passed plus one explicit transformer
+expected failure; Ruff lint/changed-file formatting and editor diagnostics
+passed. No new dependencies, downloads, training or GPU job. Actual ST
+generation, epoch/fallback/pool/cycle reports and full memory fit are blocked
+on the absent pinned ST toolchain; M1a is **not passed**. No target parity,
+latency, energy, firmware or board validation follows from host export.
+
 Start M1b on the [STM32N6570-DK][st-dk]: ST's NPU and CM55 validation projects
 and its runtime-loadable model environment target that board. The discovery kit
 includes external flash and PSRAM, so verify that examples are not silently
@@ -1340,6 +1393,8 @@ for this project.
 [wire-python]: interface/protocol.py
 [wire-header]: firmware/include/micro_classifier_protocol.h
 [wire-golden]: interface/golden_vectors.json
+[m1a-script]: export/m1a.py
+[m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes
 [st-operators]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-operators.html

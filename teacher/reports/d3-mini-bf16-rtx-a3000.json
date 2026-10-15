@@ -1,0 +1,1198 @@
+{
+  "schema": "micro-classifier/d3-validation/1",
+  "provenance": {
+    "kind": "d3-code-readout",
+    "runtime": "d3-runtime/1",
+    "model_name": "vllm-sr/d3-mini",
+    "repo_id": "vllm-sr/d3-mini",
+    "model_sha256": "9ac186bb30b30c129d7aae03d73932600424963bd4644c2041a9d7120f029af5",
+    "format_id": "d3-code-readout-v1",
+    "prompt": "d3",
+    "attention_mode": "noncausal_full_attention",
+    "pooling": "last",
+    "temperature": 1.0,
+    "max_length": 2048,
+    "readout_dtype": "float32",
+    "backbone_dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "batch_size": 1,
+    "files_sha256": {
+      "decision_config.json": "588bc0ac7644479b9adde0498d80b6fb7c576388992564ac67599c05d29add07",
+      "readout.safetensors": "d570665c1da72cb9fca7ad7b23a25720eb691362694dd69d4c80c17d7656ed55",
+      "config.json": "8f5f404a71ecc53c4ff26fc42cb4c778ffacfb4c9623f5e2d51245166d6b5057",
+      "MODEL_MANIFEST.json": "7adae8e93f8e8e7d90108e88a1121530ede64de79eff8fd8f1af3f4528824fca"
+    },
+    "kernels": {
+      "torch_chunk_gated_delta_rule": "torch-reference",
+      "causal_conv1d_fn": "torch-reference",
+      "fla": "missing (ModuleNotFoundError)"
+    },
+    "policy": "One forward pass per question; options under single-token answer codes; last-token readout over the question's codes only; argmax choice; no truncation (over-limit questions are refused); no option filtering; one fixed prompt for every request.",
+    "images": {
+      "supported": true,
+      "min_pixels": 65536,
+      "max_pixels": 1638400,
+      "placement": "before the text of the user turn, one placeholder per image, request order",
+      "patch_embedding": "matrix product (equal to the Conv3d with kernel = stride)",
+      "image_processor": "Qwen2VLImageProcessor",
+      "torchvision": "0.25.0+cu128"
+    },
+    "videos": {
+      "supported": true,
+      "fps": 2.0,
+      "min_frames": 4,
+      "max_frames": 32,
+      "max_pixels_per_frame": 200704,
+      "max_tokens_per_request": 16384,
+      "placement": "after the images, before the text of the user turn, one placeholder per video, request order; every two frames are one token group after their timestamp",
+      "sampling": "source frames spread evenly over the whole video (frame arrays: frames at 2 per second)",
+      "video_processor": "Qwen3VLVideoProcessor",
+      "opencv": null
+    },
+    "revision": "6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59",
+    "storage": "bfloat16",
+    "embedding_storage": "host-bfloat16",
+    "token_budget": 2048,
+    "local_media_only": true,
+    "videos_enabled": false
+  },
+  "environment": {
+    "torch": "2.10.0+cu128",
+    "transformers": "5.19.0",
+    "device": "cuda:0",
+    "cuda": "12.8",
+    "hip": null,
+    "loaded_seconds": 4.55,
+    "gpu": "NVIDIA RTX A3000 12GB Laptop GPU",
+    "fast_path": {
+      "active": false,
+      "reason": "not a ROCm GPU"
+    },
+    "python": "3.12.3",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+  },
+  "fixtures": {
+    "sha256": "f96ba0f4a4f8935332259759cf4a4c547664390ea88379f20f6f48c2e39f7a78",
+    "requests": 25,
+    "reviewed_labels": false
+  },
+  "load": {
+    "seconds": 81.01524020700026,
+    "allocated_gib": 7.3681440353393555
+  },
+  "limitations": [
+    "Synthetic parity fixtures, not task accuracy or commercial provenance clearance.",
+    "Reference streams stored BF16 text projections and used embedding rows.",
+    "Reference speed includes disk and transfer overhead, not resident BF16 speed.",
+    "One question per forward pass, 2048-token ceiling, no video or remote media."
+  ],
+  "candidate": {
+    "responses": {
+      "text-00": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q0": {
+            "type": "noul",
+            "noul": 0.009584624713029235
+          },
+          "q1": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9934703113961663,
+              "battery": 0.001886535203523593,
+              "delivery": 0.004643153400310118
+            },
+            "confidence": 0.9605982171097761
+          },
+          "q2": {
+            "type": "score",
+            "score": 0.13413108935255963,
+            "probabilities": {
+              "0": 0.8704943689349829,
+              "1": 0.12488017277747457,
+              "2": 0.00462545828754253
+            },
+            "confidence": 0.6309886349081801,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 308,
+          "output_tokens": 0
+        }
+      },
+      "text-01": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9969697877835282,
+              "battery": 0.0006878604376499945,
+              "delivery": 0.0023423517788217674
+            },
+            "confidence": 0.9797733450561853
+          }
+        },
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 0
+        }
+      },
+      "text-02": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.943222575994144,
+            "probabilities": {
+              "0": 0.0011618458249316884,
+              "1": 0.054453732355992594,
+              "2": 0.9443844218190757
+            },
+            "confidence": 0.7994075334864114,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-03": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8877531355435502
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "text-04": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "delivery",
+            "probabilities": {
+              "navigation": 0.0002793640585012947,
+              "battery": 5.9075329523808955e-05,
+              "delivery": 0.9996615606119749
+            },
+            "confidence": 0.9970875846163938
+          }
+        },
+        "usage": {
+          "input_tokens": 98,
+          "output_tokens": 0
+        }
+      },
+      "text-05": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.0046831936181809045,
+            "probabilities": {
+              "0": 0.9957988824024718,
+              "1": 0.0037190415768754057,
+              "2": 0.00048207602065274927
+            },
+            "confidence": 0.9738948063213708,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 106,
+          "output_tokens": 0
+        }
+      },
+      "text-06": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.1085437204146281
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-07": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9539967322220715,
+              "battery": 0.008320982172740538,
+              "delivery": 0.03768228560518793
+            },
+            "confidence": 0.8103777699493642
+          }
+        },
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 0
+        }
+      },
+      "text-08": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.717027037898079,
+            "probabilities": {
+              "0": 0.008148725425361507,
+              "1": 0.26667551125119804,
+              "2": 0.7251757633234405
+            },
+            "confidence": 0.431378617294656,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 102,
+          "output_tokens": 0
+        }
+      },
+      "text-09": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.012957768150619327
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "rover-00": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9898586045897977
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-01": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9801331474954393,
+              "battery": 0.0007303627578663704,
+              "delivery": 0.019136489746694255
+            },
+            "confidence": 0.908384579461204
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-02": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.8277244059165983,
+            "probabilities": {
+              "0": 0.2831615486505512,
+              "1": 0.6059524967822991,
+              "2": 0.11088595456714961
+            },
+            "confidence": 0.1765102035501941,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-03": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.633683700373283
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-04": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9877232497708851,
+              "battery": 0.0004939138399522253,
+              "delivery": 0.011782836389162723
+            },
+            "confidence": 0.9378395730259573
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-05": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.05335397304322136,
+            "probabilities": {
+              "0": 0.9519649633210506,
+              "1": 0.04271610031467746,
+              "2": 0.0053189363642719535
+            },
+            "confidence": 0.809390020699078,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-06": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9922523193582409
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-07": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9816086708902659,
+              "battery": 0.0006550472342825476,
+              "delivery": 0.01773628187545153
+            },
+            "confidence": 0.9139474327563779
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-08": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.107606695705752,
+            "probabilities": {
+              "0": 0.14238253447983465,
+              "1": 0.6076282353345787,
+              "2": 0.24998923018558666
+            },
+            "confidence": 0.15636987965799476,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-09": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.5860245649211239
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-10": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.993253952603546,
+              "battery": 0.00031577526294016326,
+              "delivery": 0.006430272133513883
+            },
+            "confidence": 0.9620244162066434
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "image-00": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "red",
+            "probabilities": {
+              "red": 0.9998002218975975,
+              "green": 5.3445111440234394e-05,
+              "blue": 6.316469536374196e-05,
+              "white": 8.316829559843707e-05
+            },
+            "confidence": 0.9984724641768431
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9959615540953094
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-01": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "green",
+            "probabilities": {
+              "red": 0.00015640001841261473,
+              "green": 0.9994092384497025,
+              "blue": 0.00025434793051849557,
+              "white": 0.00018001360136633038
+            },
+            "confidence": 0.9959471181882793
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9954696870514432
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-02": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "blue",
+            "probabilities": {
+              "red": 7.66229769439215e-05,
+              "green": 5.174695863387317e-05,
+              "blue": 0.9998002423425907,
+              "white": 7.138772183148223e-05
+            },
+            "confidence": 0.998472093387751
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9962601285907112
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-03": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "white",
+            "probabilities": {
+              "red": 0.00016075790906453825,
+              "green": 0.00012926184448980549,
+              "blue": 0.0004888582798932526,
+              "white": 0.9992211219665524
+            },
+            "confidence": 0.9949022068551893
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9910611574886629
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      }
+    },
+    "request_seconds": {
+      "text-00": 9.929232626000157,
+      "text-01": 0.4780225699996663,
+      "text-02": 0.4827200980002999,
+      "text-03": 0.4775584849999177,
+      "text-04": 0.4682789569997112,
+      "text-05": 0.47985477900010665,
+      "text-06": 0.4857632060002288,
+      "text-07": 0.47530017200006114,
+      "text-08": 0.4749324920003346,
+      "text-09": 0.4760187209999458,
+      "rover-00": 1.8837960219998422,
+      "rover-01": 1.8696898939997482,
+      "rover-02": 1.8474249079999936,
+      "rover-03": 1.8681681590001062,
+      "rover-04": 1.8827345980002974,
+      "rover-05": 1.8559732480002822,
+      "rover-06": 1.8711168270001508,
+      "rover-07": 1.8702620809999644,
+      "rover-08": 1.8448035999999775,
+      "rover-09": 1.8676463430001604,
+      "rover-10": 1.8521327189996555,
+      "image-00": 3.796837898999911,
+      "image-01": 1.6875465250000161,
+      "image-02": 1.7004937400001836,
+      "image-03": 1.694986486000289
+    },
+    "seconds": 43.62129515500101,
+    "requests_per_second": 0.5731145742272591,
+    "questions_per_second": 0.7106620720418012,
+    "median_request_seconds": 1.8448035999999775,
+    "peak_allocated_gib": 7.5104079246521,
+    "peak_reserved_gib": 7.568359375,
+    "host_peak_rss_gib": 8.2591552734375
+  },
+  "reference": {
+    "responses": {
+      "text-00": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q0": {
+            "type": "noul",
+            "noul": 0.009584624713029235
+          },
+          "q1": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9934703113961663,
+              "battery": 0.001886535203523593,
+              "delivery": 0.004643153400310118
+            },
+            "confidence": 0.9605982171097761
+          },
+          "q2": {
+            "type": "score",
+            "score": 0.13413108935255963,
+            "probabilities": {
+              "0": 0.8704943689349829,
+              "1": 0.12488017277747457,
+              "2": 0.00462545828754253
+            },
+            "confidence": 0.6309886349081801,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 308,
+          "output_tokens": 0
+        }
+      },
+      "text-01": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9969697877835282,
+              "battery": 0.0006878604376499945,
+              "delivery": 0.0023423517788217674
+            },
+            "confidence": 0.9797733450561853
+          }
+        },
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 0
+        }
+      },
+      "text-02": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.943222575994144,
+            "probabilities": {
+              "0": 0.0011618458249316884,
+              "1": 0.054453732355992594,
+              "2": 0.9443844218190757
+            },
+            "confidence": 0.7994075334864114,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-03": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8877531355435502
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "text-04": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "delivery",
+            "probabilities": {
+              "navigation": 0.0002793640585012947,
+              "battery": 5.9075329523808955e-05,
+              "delivery": 0.9996615606119749
+            },
+            "confidence": 0.9970875846163938
+          }
+        },
+        "usage": {
+          "input_tokens": 98,
+          "output_tokens": 0
+        }
+      },
+      "text-05": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.0046831936181809045,
+            "probabilities": {
+              "0": 0.9957988824024718,
+              "1": 0.0037190415768754057,
+              "2": 0.00048207602065274927
+            },
+            "confidence": 0.9738948063213708,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 106,
+          "output_tokens": 0
+        }
+      },
+      "text-06": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.1085437204146281
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-07": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9539967322220715,
+              "battery": 0.008320982172740538,
+              "delivery": 0.03768228560518793
+            },
+            "confidence": 0.8103777699493642
+          }
+        },
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 0
+        }
+      },
+      "text-08": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.717027037898079,
+            "probabilities": {
+              "0": 0.008148725425361507,
+              "1": 0.26667551125119804,
+              "2": 0.7251757633234405
+            },
+            "confidence": 0.431378617294656,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 102,
+          "output_tokens": 0
+        }
+      },
+      "text-09": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.012957768150619327
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "rover-00": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9898586045897977
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-01": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9801331474954393,
+              "battery": 0.0007303627578663704,
+              "delivery": 0.019136489746694255
+            },
+            "confidence": 0.908384579461204
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-02": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.8277244059165983,
+            "probabilities": {
+              "0": 0.2831615486505512,
+              "1": 0.6059524967822991,
+              "2": 0.11088595456714961
+            },
+            "confidence": 0.1765102035501941,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-03": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.633683700373283
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-04": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9877232497708851,
+              "battery": 0.0004939138399522253,
+              "delivery": 0.011782836389162723
+            },
+            "confidence": 0.9378395730259573
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-05": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.05335397304322136,
+            "probabilities": {
+              "0": 0.9519649633210506,
+              "1": 0.04271610031467746,
+              "2": 0.0053189363642719535
+            },
+            "confidence": 0.809390020699078,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-06": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9922523193582409
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-07": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9816086708902659,
+              "battery": 0.0006550472342825476,
+              "delivery": 0.01773628187545153
+            },
+            "confidence": 0.9139474327563779
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-08": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.107606695705752,
+            "probabilities": {
+              "0": 0.14238253447983465,
+              "1": 0.6076282353345787,
+              "2": 0.24998923018558666
+            },
+            "confidence": 0.15636987965799476,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-09": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.5860245649211239
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-10": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.993253952603546,
+              "battery": 0.00031577526294016326,
+              "delivery": 0.006430272133513883
+            },
+            "confidence": 0.9620244162066434
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "image-00": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "red",
+            "probabilities": {
+              "red": 0.9998002218975975,
+              "green": 5.3445111440234394e-05,
+              "blue": 6.316469536374196e-05,
+              "white": 8.316829559843707e-05
+            },
+            "confidence": 0.9984724641768431
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9959615540953094
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-01": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "green",
+            "probabilities": {
+              "red": 0.00015640001841261473,
+              "green": 0.9994092384497025,
+              "blue": 0.00025434793051849557,
+              "white": 0.00018001360136633038
+            },
+            "confidence": 0.9959471181882793
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9954696870514432
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-02": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "blue",
+            "probabilities": {
+              "red": 7.66229769439215e-05,
+              "green": 5.174695863387317e-05,
+              "blue": 0.9998002423425907,
+              "white": 7.138772183148223e-05
+            },
+            "confidence": 0.998472093387751
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9962601285907112
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-03": {
+        "model": "vllm-sr/d3-mini",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "white",
+            "probabilities": {
+              "red": 0.00016075790906453825,
+              "green": 0.00012926184448980549,
+              "blue": 0.0004888582798932526,
+              "white": 0.9992211219665524
+            },
+            "confidence": 0.9949022068551893
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9910611574886629
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      }
+    },
+    "request_seconds": {
+      "text-00": 16.715616008000325,
+      "text-01": 3.189898322999852,
+      "text-02": 3.0094067790000736,
+      "text-03": 3.1647776529998737,
+      "text-04": 3.0287555660002,
+      "text-05": 3.077629483000237,
+      "text-06": 3.0500288010002805,
+      "text-07": 2.996215864000078,
+      "text-08": 3.1083552929999314,
+      "text-09": 3.1460039600001437,
+      "rover-00": 4.398320581999997,
+      "rover-01": 4.445169123999676,
+      "rover-02": 4.442578094000055,
+      "rover-03": 4.455064987999776,
+      "rover-04": 4.500884966000285,
+      "rover-05": 4.441375650000282,
+      "rover-06": 4.3802475530001175,
+      "rover-07": 4.554634687000089,
+      "rover-08": 4.495053743999961,
+      "rover-09": 4.467535358000077,
+      "rover-10": 4.39536544900011,
+      "image-00": 7.062928909999755,
+      "image-01": 6.949134474999937,
+      "image-02": 6.871756969999751,
+      "image-03": 6.924674755000069
+    },
+    "seconds": 121.27141303500093,
+    "requests_per_second": 0.20614916058399177,
+    "questions_per_second": 0.2556249591241498,
+    "median_request_seconds": 4.441375650000282,
+    "peak_allocated_gib": 7.531892776489258,
+    "peak_reserved_gib": 7.58203125,
+    "host_peak_rss_gib": 12.190662384033203
+  },
+  "parity": {
+    "compared_values": 85,
+    "max_abs_delta": 0.0,
+    "mean_abs_delta": 0.0,
+    "decision_flips": 0,
+    "by_type": {
+      "choice": {
+        "questions": 12,
+        "decision_flips": 0,
+        "compared_values": 40,
+        "max_abs_delta": 0.0,
+        "mean_abs_delta": 0.0
+      },
+      "noul": {
+        "questions": 12,
+        "decision_flips": 0,
+        "compared_values": 24,
+        "max_abs_delta": 0.0,
+        "mean_abs_delta": 0.0
+      },
+      "score": {
+        "questions": 7,
+        "decision_flips": 0,
+        "compared_values": 21,
+        "max_abs_delta": 0.0,
+        "mean_abs_delta": 0.0
+      }
+    }
+  }
+}

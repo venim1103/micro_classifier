@@ -1,0 +1,1198 @@
+{
+  "schema": "micro-classifier/d3-validation/1",
+  "provenance": {
+    "kind": "d3-code-readout",
+    "runtime": "d3-runtime/1",
+    "model_name": "vllm-sr/d3-flash",
+    "repo_id": "vllm-sr/d3-flash",
+    "model_sha256": "74b71d370f3d9e5731c603dafcb8af4e9134fd2c769c89c5169b031a0418799b",
+    "format_id": "d3-code-readout-v1",
+    "prompt": "d3",
+    "attention_mode": "noncausal_full_attention",
+    "pooling": "last",
+    "temperature": 1.0,
+    "max_length": 2048,
+    "readout_dtype": "float32",
+    "backbone_dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "batch_size": 1,
+    "files_sha256": {
+      "decision_config.json": "0269c72ac055d8149a7a778c477780af361f4c1cde3fd0e5ba9af791453ece18",
+      "readout.safetensors": "8bbc9a9df4e1b7df85a80a1091977092b938d8d2d2869dfaeb8fd36063cf322f",
+      "config.json": "9c3e6eea217964096c7b032285bab6757720a847fbb9d0a04e551d2b1606c0eb",
+      "MODEL_MANIFEST.json": "0be31669e11877df13bb99aa3b0c088bed2e01f0ca44d2ff10dbbb1441272629"
+    },
+    "kernels": {
+      "torch_chunk_gated_delta_rule": "torch-reference",
+      "causal_conv1d_fn": "torch-reference",
+      "fla": "missing (ModuleNotFoundError)"
+    },
+    "policy": "One forward pass per question; options under single-token answer codes; last-token readout over the question's codes only; argmax choice; no truncation (over-limit questions are refused); no option filtering; one fixed prompt for every request.",
+    "images": {
+      "supported": true,
+      "min_pixels": 65536,
+      "max_pixels": 1638400,
+      "placement": "before the text of the user turn, one placeholder per image, request order",
+      "patch_embedding": "matrix product (equal to the Conv3d with kernel = stride)",
+      "image_processor": "Qwen2VLImageProcessor",
+      "torchvision": "0.25.0+cu128"
+    },
+    "videos": {
+      "supported": true,
+      "fps": 2.0,
+      "min_frames": 4,
+      "max_frames": 32,
+      "max_pixels_per_frame": 200704,
+      "max_tokens_per_request": 16384,
+      "placement": "after the images, before the text of the user turn, one placeholder per video, request order; every two frames are one token group after their timestamp",
+      "sampling": "source frames spread evenly over the whole video (frame arrays: frames at 2 per second)",
+      "video_processor": "Qwen3VLVideoProcessor",
+      "opencv": null
+    },
+    "revision": "b92769d85908bb3ee737ef9c765e1c08b887aca6",
+    "storage": "int8-group128",
+    "embedding_storage": "host-bfloat16",
+    "token_budget": 2048,
+    "local_media_only": true,
+    "videos_enabled": false
+  },
+  "environment": {
+    "torch": "2.10.0+cu128",
+    "transformers": "5.19.0",
+    "device": "cuda:0",
+    "cuda": "12.8",
+    "hip": null,
+    "loaded_seconds": 2.96,
+    "gpu": "NVIDIA RTX A3000 12GB Laptop GPU",
+    "fast_path": {
+      "active": false,
+      "reason": "not a ROCm GPU"
+    },
+    "python": "3.12.3",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+  },
+  "fixtures": {
+    "sha256": "f96ba0f4a4f8935332259759cf4a4c547664390ea88379f20f6f48c2e39f7a78",
+    "requests": 25,
+    "reviewed_labels": false
+  },
+  "load": {
+    "seconds": 289.14440244100024,
+    "allocated_gib": 7.4157609939575195
+  },
+  "limitations": [
+    "Synthetic parity fixtures, not task accuracy or commercial provenance clearance.",
+    "Reference streams stored BF16 text projections and used embedding rows.",
+    "Reference speed includes disk and transfer overhead, not resident BF16 speed.",
+    "One question per forward pass, 2048-token ceiling, no video or remote media."
+  ],
+  "candidate": {
+    "responses": {
+      "text-00": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q0": {
+            "type": "noul",
+            "noul": 0.008487104863697
+          },
+          "q1": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9923053989149664,
+              "battery": 0.0024567699627191133,
+              "delivery": 0.0052378311223145
+            },
+            "confidence": 0.9545465512396872
+          },
+          "q2": {
+            "type": "score",
+            "score": 0.1474980169185973,
+            "probabilities": {
+              "0": 0.8617635136552696,
+              "1": 0.1289749557708635,
+              "2": 0.0092615305738669
+            },
+            "confidence": 0.6033831400449274,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 308,
+          "output_tokens": 0
+        }
+      },
+      "text-01": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9950987449898346,
+              "battery": 0.0014508982062058852,
+              "delivery": 0.0034503568039594684
+            },
+            "confidence": 0.9691131206611554
+          }
+        },
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 0
+        }
+      },
+      "text-02": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.9498427270563348,
+            "probabilities": {
+              "0": 0.0010058058001371378,
+              "1": 0.04814566134339091,
+              "2": 0.950848532856472
+            },
+            "confidence": 0.8171180924301197,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-03": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8351471548549407
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "text-04": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "delivery",
+            "probabilities": {
+              "navigation": 0.00022395352590829753,
+              "battery": 2.608057931108304e-05,
+              "delivery": 0.9997499658947806
+            },
+            "confidence": 0.9978087017638466
+          }
+        },
+        "usage": {
+          "input_tokens": 98,
+          "output_tokens": 0
+        }
+      },
+      "text-05": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.009915425351579837,
+            "probabilities": {
+              "0": 0.9909166225465225,
+              "1": 0.008251329555375187,
+              "2": 0.0008320478981023254
+            },
+            "confidence": 0.9503670787953459,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 106,
+          "output_tokens": 0
+        }
+      },
+      "text-06": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.330791175365448
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-07": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9061005064876722,
+              "battery": 0.014318650508381516,
+              "delivery": 0.0795808430039463
+            },
+            "confidence": 0.6799931142710516
+          }
+        },
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 0
+        }
+      },
+      "text-08": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.4908543970441461,
+            "probabilities": {
+              "0": 0.013685147137812693,
+              "1": 0.4817753086802285,
+              "2": 0.5045395441819588
+            },
+            "confidence": 0.31211514373880633,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 102,
+          "output_tokens": 0
+        }
+      },
+      "text-09": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.014368047153622394
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "rover-00": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9963391587792235
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-01": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9686667505162836,
+              "battery": 0.0024504195538802877,
+              "delivery": 0.02888282992983617
+            },
+            "confidence": 0.8653362387717424
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-02": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.6887285621546204,
+            "probabilities": {
+              "0": 0.41729345113824423,
+              "1": 0.47668453556889107,
+              "2": 0.10602201329286466
+            },
+            "confidence": 0.1299926527506584,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-03": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8505463346676131
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-04": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9704872671907508,
+              "battery": 0.0013961314817337003,
+              "delivery": 0.028116601327515447
+            },
+            "confidence": 0.8737802089745045
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-05": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.03379856752715117,
+            "probabilities": {
+              "0": 0.968897496004259,
+              "1": 0.02840644046433089,
+              "2": 0.00269606353141014
+            },
+            "confidence": 0.8655368838908852,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-06": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9966524224790699
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-07": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9592957447198056,
+              "battery": 0.003055654493373784,
+              "delivery": 0.037648600786820606
+            },
+            "confidence": 0.8352230429114579
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-08": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.0588984752357915,
+            "probabilities": {
+              "0": 0.19008314966659845,
+              "1": 0.5609352254310116,
+              "2": 0.24898162490238995
+            },
+            "confidence": 0.10243441294789224,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-09": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8420850383613993
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-10": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.974242382623947,
+              "battery": 0.001285036318640678,
+              "delivery": 0.024472581057412353
+            },
+            "confidence": 0.8864242924623883
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "image-00": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "red",
+            "probabilities": {
+              "red": 0.9996574813007615,
+              "green": 9.223945100054593e-05,
+              "blue": 0.0001155809333195511,
+              "white": 0.00013469831491839682
+            },
+            "confidence": 0.9975129620404795
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9976067119761887
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-01": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "green",
+            "probabilities": {
+              "red": 0.00023272869324735131,
+              "green": 0.9993132366207548,
+              "blue": 0.00030675312195993737,
+              "white": 0.00014728156403798353
+            },
+            "confidence": 0.9953729811679152
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9965561716512624
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-02": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "blue",
+            "probabilities": {
+              "red": 0.00017652398093148864,
+              "green": 8.730483099712626e-05,
+              "blue": 0.9996127157410295,
+              "white": 0.00012345544704190923
+            },
+            "confidence": 0.9972302040786895
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9967808742016198
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-03": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "white",
+            "probabilities": {
+              "red": 0.0006412050933165015,
+              "green": 0.00043528860226901866,
+              "blue": 0.0010472539221366357,
+              "white": 0.9978762523822778
+            },
+            "confidence": 0.9874554265947778
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9913965404134669
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      }
+    },
+    "request_seconds": {
+      "text-00": 7.6365165029997115,
+      "text-01": 1.3757923769999252,
+      "text-02": 1.3795498039999075,
+      "text-03": 1.3792695699999058,
+      "text-04": 1.3691887230002067,
+      "text-05": 1.4067758569999569,
+      "text-06": 1.3853914280002755,
+      "text-07": 1.4082366190000357,
+      "text-08": 1.3832699730000968,
+      "text-09": 1.370204916000148,
+      "rover-00": 3.3750331229998665,
+      "rover-01": 3.3517928490000486,
+      "rover-02": 3.291546770000423,
+      "rover-03": 3.379761011000028,
+      "rover-04": 3.375480611999592,
+      "rover-05": 3.2873640289999457,
+      "rover-06": 3.3675490999999056,
+      "rover-07": 3.3758134769996104,
+      "rover-08": 3.2918281590000333,
+      "rover-09": 3.38588728600007,
+      "rover-10": 3.28964136400009,
+      "image-00": 5.72616992400026,
+      "image-01": 4.05961550999973,
+      "image-02": 4.100061479000033,
+      "image-03": 4.088464621999719
+    },
+    "seconds": 74.84020508499952,
+    "requests_per_second": 0.3340450493368682,
+    "questions_per_second": 0.4142158611777166,
+    "median_request_seconds": 3.2918281590000333,
+    "peak_allocated_gib": 7.563945293426514,
+    "peak_reserved_gib": 7.623046875,
+    "host_peak_rss_gib": 8.357227325439453
+  },
+  "reference": {
+    "responses": {
+      "text-00": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q0": {
+            "type": "noul",
+            "noul": 0.00857985389016623
+          },
+          "q1": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9923756817989411,
+              "battery": 0.0024750333061503323,
+              "delivery": 0.0051492848949086035
+            },
+            "confidence": 0.9548702037013495
+          },
+          "q2": {
+            "type": "score",
+            "score": 0.1452128196031118,
+            "probabilities": {
+              "0": 0.8642242913483601,
+              "1": 0.12633859770016806,
+              "2": 0.00943711095147187
+            },
+            "confidence": 0.6072459848295533,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 308,
+          "output_tokens": 0
+        }
+      },
+      "text-01": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9952427750140196,
+              "battery": 0.0014270972158600874,
+              "delivery": 0.0033301277701203143
+            },
+            "confidence": 0.9698766142160435
+          }
+        },
+        "usage": {
+          "input_tokens": 100,
+          "output_tokens": 0
+        }
+      },
+      "text-02": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.951232030941783,
+            "probabilities": {
+              "0": 0.0009947466478795349,
+              "1": 0.04677847576245785,
+              "2": 0.9522267775896626
+            },
+            "confidence": 0.8209182629142208,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-03": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8210155245510411
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "text-04": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "delivery",
+            "probabilities": {
+              "navigation": 0.00023985489420530972,
+              "battery": 2.7599823947771256e-05,
+              "delivery": 0.999732545281847
+            },
+            "confidence": 0.9976730112202833
+          }
+        },
+        "usage": {
+          "input_tokens": 98,
+          "output_tokens": 0
+        }
+      },
+      "text-05": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.010878353094536997,
+            "probabilities": {
+              "0": 0.9900348311145504,
+              "1": 0.00905198467636228,
+              "2": 0.0009131842090873581
+            },
+            "confidence": 0.9463925035818075,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 106,
+          "output_tokens": 0
+        }
+      },
+      "text-06": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.3195019554795
+          }
+        },
+        "usage": {
+          "input_tokens": 103,
+          "output_tokens": 0
+        }
+      },
+      "text-07": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9036543421273905,
+              "battery": 0.014167171056263307,
+              "delivery": 0.08217848681634617
+            },
+            "confidence": 0.6748556114703756
+          }
+        },
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 0
+        }
+      },
+      "text-08": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.4992351252272218,
+            "probabilities": {
+              "0": 0.01334064135978764,
+              "1": 0.47408359205320294,
+              "2": 0.5125757665870094
+            },
+            "confidence": 0.3136876981338834,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 102,
+          "output_tokens": 0
+        }
+      },
+      "text-09": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.013968440162998814
+          }
+        },
+        "usage": {
+          "input_tokens": 101,
+          "output_tokens": 0
+        }
+      },
+      "rover-00": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9963830811532344
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-01": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9684500083932891,
+              "battery": 0.002424183912910393,
+              "delivery": 0.029125807693800514
+            },
+            "confidence": 0.8647032248359292
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-02": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.7126118167361819,
+            "probabilities": {
+              "0": 0.3974571137294158,
+              "1": 0.49247395580498643,
+              "2": 0.11006893046559776
+            },
+            "confidence": 0.12759892355664537,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-03": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8486192099955796
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-04": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9711273475617899,
+              "battery": 0.0013798473486116233,
+              "delivery": 0.02749280508959848
+            },
+            "confidence": 0.8758946751707313
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-05": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 0.033772335861290886,
+            "probabilities": {
+              "0": 0.9688677193990135,
+              "1": 0.028492225340682135,
+              "2": 0.0026400552603043745
+            },
+            "confidence": 0.865561922256667,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-06": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.9962043903637536
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-07": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9601197563226103,
+              "battery": 0.0029919164317393993,
+              "delivery": 0.03688832724565039
+            },
+            "confidence": 0.8378052892565903
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-08": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "score",
+            "score": 1.0915434197851506,
+            "probabilities": {
+              "0": 0.17198870819823878,
+              "1": 0.5644791638183718,
+              "2": 0.2635321279833894
+            },
+            "confidence": 0.11070002990846006,
+            "legend": {
+              "0": "Routine",
+              "1": "Needs attention",
+              "2": "Immediate attention"
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "rover-09": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "noul",
+            "noul": 0.8453035228654218
+          }
+        },
+        "usage": {
+          "input_tokens": 574,
+          "output_tokens": 0
+        }
+      },
+      "rover-10": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "q": {
+            "type": "choice",
+            "choice": "navigation",
+            "probabilities": {
+              "navigation": 0.9757121546093428,
+              "battery": 0.0011918940997645527,
+              "delivery": 0.023095951290892598
+            },
+            "confidence": 0.8916429668410393
+          }
+        },
+        "usage": {
+          "input_tokens": 576,
+          "output_tokens": 0
+        }
+      },
+      "image-00": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "red",
+            "probabilities": {
+              "red": 0.9996413761334176,
+              "green": 9.711167102000899e-05,
+              "blue": 0.00012011995787195312,
+              "white": 0.0001413922376904416
+            },
+            "confidence": 0.9974078669258852
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9973667659571392
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-01": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "green",
+            "probabilities": {
+              "red": 0.00023789101405205222,
+              "green": 0.9993056643274267,
+              "blue": 0.00030394039247524197,
+              "white": 0.0001525042660459392
+            },
+            "confidence": 0.9953251220309438
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9964046144200804
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-02": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "blue",
+            "probabilities": {
+              "red": 0.0001858487482884395,
+              "green": 9.115118693072805e-05,
+              "blue": 0.9995888859788462,
+              "white": 0.00013411408593457557
+            },
+            "confidence": 0.9970775129187851
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9964584726774292
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      },
+      "image-03": {
+        "model": "vllm-sr/d3-flash",
+        "answers": {
+          "color": {
+            "type": "choice",
+            "choice": "white",
+            "probabilities": {
+              "red": 0.0006885640974256895,
+              "green": 0.0004547026612949833,
+              "blue": 0.0010823359339413423,
+              "white": 0.997774397307338
+            },
+            "confidence": 0.9869243508009926
+          },
+          "square": {
+            "type": "noul",
+            "noul": 0.9909360108058456
+          }
+        },
+        "usage": {
+          "input_tokens": 324,
+          "output_tokens": 0
+        }
+      }
+    },
+    "request_seconds": {
+      "text-00": 43.53442519000009,
+      "text-01": 5.328842277000149,
+      "text-02": 5.3248613060000025,
+      "text-03": 5.357602424999641,
+      "text-04": 5.3134681360002105,
+      "text-05": 5.356775166999796,
+      "text-06": 5.315394111999922,
+      "text-07": 5.265446038999926,
+      "text-08": 5.314206556000045,
+      "text-09": 5.356066580000061,
+      "rover-00": 7.487944425000023,
+      "rover-01": 7.2661894709999615,
+      "rover-02": 7.2739026999997805,
+      "rover-03": 7.290976112999942,
+      "rover-04": 7.2595496099997945,
+      "rover-05": 7.25495801399984,
+      "rover-06": 7.248854784999821,
+      "rover-07": 7.269131383000058,
+      "rover-08": 7.47101146399973,
+      "rover-09": 7.530553435999991,
+      "rover-10": 7.44693135100033,
+      "image-00": 12.271505817999696,
+      "image-01": 11.801714477999667,
+      "image-02": 11.796948041000178,
+      "image-03": 12.22225770599971
+    },
+    "seconds": 220.35951658299837,
+    "requests_per_second": 0.11345096589274715,
+    "questions_per_second": 0.1406791977070065,
+    "median_request_seconds": 7.2661894709999615,
+    "peak_allocated_gib": 7.643573760986328,
+    "peak_reserved_gib": 7.75,
+    "host_peak_rss_gib": 15.239669799804688
+  },
+  "parity": {
+    "compared_values": 85,
+    "max_abs_delta": 0.019836337408828453,
+    "mean_abs_delta": 0.0021141421664993667,
+    "decision_flips": 0,
+    "by_type": {
+      "choice": {
+        "questions": 12,
+        "decision_flips": 0,
+        "compared_values": 40,
+        "max_abs_delta": 0.0025976438123998663,
+        "mean_abs_delta": 0.00030883287137039754
+      },
+      "noul": {
+        "questions": 12,
+        "decision_flips": 0,
+        "compared_values": 24,
+        "max_abs_delta": 0.014131630303899634,
+        "mean_abs_delta": 0.00272710035453058
+      },
+      "score": {
+        "questions": 7,
+        "decision_flips": 0,
+        "compared_values": 21,
+        "max_abs_delta": 0.019836337408828453,
+        "mean_abs_delta": 0.004852302894709351
+      }
+    }
+  }
+}

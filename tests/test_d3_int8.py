@@ -8,7 +8,13 @@ import torch
 from safetensors.torch import save_file
 from transformers import Qwen3_5Config, Qwen3_5Model
 
-from teacher.d3_int8 import REPO_ID, Teacher, load_backbone, verify_package
+from teacher.d3_int8 import REPO_ID, Teacher, load_backbone, load_engine, verify_package
+from teacher.validate_d3_int8 import (
+    compare,
+    diagnostic_requests,
+    fixture_digest,
+    stored_reference,
+)
 from teacher.vela_int8 import HostEmbedding, Int8Linear
 
 
@@ -177,3 +183,63 @@ def test_token_budget_is_checked_before_inference():
     with pytest.raises(ValueError, match="token budget"):
         teacher.system_one(state="test", questions={"q": {"type": "noul"}})
     engine.run.assert_not_called()
+
+
+def test_unapproved_local_manifest_is_rejected_before_import(tmp_path, monkeypatch):
+    release_import = Mock()
+    monkeypatch.setattr("teacher.d3_int8.release_module", release_import)
+    (tmp_path / "MODEL_MANIFEST.json").write_text("{}")
+    with pytest.raises(ValueError, match="approved model revision"):
+        load_engine(tmp_path, device="cpu")
+    release_import.assert_not_called()
+
+
+def test_diagnostic_suite_is_fixed_and_covers_types_and_images():
+    rows = diagnostic_requests()
+    assert len(rows) == len({row["id"] for row in rows}) == 25
+    assert sum("images" in row for row in rows) == 4
+    assert {
+        question["type"] for row in rows for question in row["questions"].values()
+    } == {"choice", "noul", "score"}
+    assert fixture_digest(rows) == fixture_digest(diagnostic_requests())
+    rows[0]["state"] += "changed"
+    assert fixture_digest(rows) != fixture_digest(diagnostic_requests())
+
+
+def test_parity_reports_deltas_and_flips():
+    response = {
+        "answers": {
+            "binary": {"type": "noul", "noul": 0.5},
+            "choice": {"type": "choice", "probabilities": {"a": 0.6, "b": 0.4}},
+            "score": {"type": "score", "probabilities": {"0": 0.2, "1": 0.8}},
+        },
+        "usage": {"input_tokens": 4},
+    }
+    reference = json.loads(json.dumps(response))
+    reference["answers"]["binary"]["noul"] = 0.49
+    result = compare({"row": response}, {"row": reference})
+    assert result["compared_values"] == 6
+    assert result["decision_flips"] == result["by_type"]["noul"]["decision_flips"] == 1
+    assert result["max_abs_delta"] == pytest.approx(0.01)
+    response["answers"]["choice"] = {"type": "choice", "error": "max_length_exceeded"}
+    with pytest.raises(ValueError, match="rejected"):
+        compare({"row": response}, {"row": reference})
+
+
+@pytest.mark.parametrize("quantized", [True, False])
+def test_stored_reference_is_exact_and_restores_modules(checkpoint, quantized):
+    path, original = checkpoint
+    model = load_backbone(path, device="cpu", group_size=8, quantized=quantized)
+    teacher = Teacher(SimpleNamespace(backbone=model), REPO_ID, quantized, 2048)
+    projection = model.language_model.layers[0].mlp.up_proj
+    inputs = torch.randn(2, 3, projection.in_features).bfloat16()
+    before = projection(inputs)
+    ids = torch.tensor([[1, 3, 3]])
+    embeddings = model.language_model.embed_tokens(ids)
+    with stored_reference(teacher, path):
+        assert torch.equal(
+            projection(inputs), original.language_model.layers[0].mlp.up_proj(inputs)
+        )
+        assert torch.equal(model.language_model.embed_tokens(ids), embeddings)
+    assert torch.equal(projection(inputs), before)
+    assert torch.equal(model.language_model.embed_tokens(ids), embeddings)

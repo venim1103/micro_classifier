@@ -24,6 +24,10 @@ APPROVED_REVISIONS = {
     REPO_ID: REVISION,
     "vllm-sr/d3-mini": "6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59",
 }
+APPROVED_MANIFESTS = {
+    REPO_ID: "0be31669e11877df13bb99aa3b0c088bed2e01f0ca44d2ff10dbbb1441272629",
+    "vllm-sr/d3-mini": "7adae8e93f8e8e7d90108e88a1121530ede64de79eff8fd8f1af3f4528824fca",
+}
 EMBEDDING_KEY = "language_model.embed_tokens.weight"
 CONSTRUCTION_LOCK = threading.Lock()
 
@@ -211,6 +215,10 @@ def load_engine(path=None, device="cuda", repo_id=REPO_ID, token_budget=2048):
     if not 1 <= token_budget <= 2048:
         raise ValueError("token_budget must be between 1 and 2048")
     path = Path(path) if path is not None else download(repo_id)
+    with (path / "MODEL_MANIFEST.json").open("rb") as stream:
+        manifest_digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    if manifest_digest != APPROVED_MANIFESTS[repo_id]:
+        raise ValueError("manifest does not match the approved model revision")
     manifest = verify_package(path)
     quantized = repo_id == REPO_ID
     with CONSTRUCTION_LOCK:

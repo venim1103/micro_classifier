@@ -2,3 +2,4 @@ __pycache__/
 commit_msg
 COMMIT.sh
 .runs/
+sim/episodes/

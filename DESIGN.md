@@ -127,7 +127,10 @@ Interface contract, fixed in M0 and versioned with every release:
 ### Decisions Required Before Scaffolding
 
 Recorded as provisional defaults on 2026-10-14 ([REVIEW.md](REVIEW.md) §10) so
-host-side scaffolding can proceed; confirm or revise before freezing M0.
+host-side scaffolding can proceed. The user confirmed these defaults on
+2026-10-15, while restricting current implementation to teacher tooling.
+The original proposal wording below is retained for traceability; detailed
+interface bytes and physical safety parameters remain unspecified.
 
 | Requirement | Current status |
 | --- | --- |
@@ -403,7 +406,29 @@ Operating limits and open items:
   calibration (Vela fitted its temperatures on the BF16 path), and judge the
   INT8 9B in the bake-off like any other teacher.
 
-#### Decision 3.0 d3-flash on the 12 GB GPU (planned, first teacher)
+#### Decision 3.0 d3-flash on the 12 GB GPU (loader measured; parity pending)
+
+Measured on 2026-10-15 with the fully hashed approved revision
+`b92769d85908bb3ee737ef9c765e1c08b887aca6`, using
+[teacher/d3_int8.py](teacher/d3_int8.py), PyTorch reference Gated DeltaNet,
+SDPA, batch size 1 and a 2,048-token per-question ceiling:
+
+| Measurement | Result |
+| --- | --- |
+| Full manifest hashing plus INT8 load | 190.46 s |
+| GPU allocated / reserved after load | 7.416 / 7.436 GiB |
+| Two short text questions, noul and choice | 207 total input tokens in 7.12 s, including first-call overhead |
+| Peak GPU reserved through that request | 8.438 GiB |
+| Download-free CPU regression tests | 10 d3 tests; 13 repository tests passed; Ruff lint and changed-file formatting passed |
+
+The text smoke call returned obstacle probability 0.000760 and selected
+`advance` with probability 0.997250 for a synthetic clear-path sentence.
+These are functional checks, not accuracy or quantization-parity evidence.
+Image processing failed to initialize because torchvision is absent; image
+support and the INT8-versus-streamed-BF16 comparison remain unverified.
+The adapter excludes remote media, all video inputs, and the optional server.
+All consumed model files must be covered by the required manifest, and every
+listed file is SHA-256 checked before the release runtime is imported.
 
 The two RTX 3090s below are rarely available, so the 12 GB RTX A3000 is the
 default teacher host. d3-flash (revision `b92769d`) is the strongest Decision

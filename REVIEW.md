@@ -764,7 +764,9 @@ For the robot decision module, §12.5 updates steps 1 and 4.
 ## 10. M0 Decision Template
 
 Updated in Update 2 for the robot pilot; recorded as provisional defaults on
-2026-10-14 pending final user confirmation.
+2026-10-14. The user confirmed the recorded defaults on 2026-10-15, with
+current implementation restricted to teacher tooling. The original dated
+proposal table is retained below; interface contract v0 is not yet frozen.
 
 | Decision | Provisional default (2026-10-14) |
 | --- | --- |
@@ -996,6 +998,23 @@ Drone flights also fall under aviation rules (in the EU, the
    equivalent, that logs state packets in the contract format.
 5. M1a as before, adding a depth-grid CNN and a small camera CNN to the
    compile-only experiments.
+
+## 13. Tooling Restart Check (2026-10-15)
+
+The user confirmed the recorded M0 defaults, then restricted current work to
+teacher tooling. The interface and product implementation remain unfrozen.
+After source review, restricted in-process execution of the two approved d3
+revisions was approved: no optional HTTP server, video decoding or remote
+image URLs. The reviewed inference path contains no subprocess, pickle or
+`torch.load` calls. The encoded-video temporary-file path is not used.
+
+The d3-flash INT8 loader passed 10 CPU-only tests (13 repository tests), Ruff
+lint and formatting, and a fully hashed offline load plus a two-question
+`system_one` call on the RTX A3000. It used 7.416 GiB allocated after load
+and peaked at 8.438 GiB reserved. DESIGN §4 records the timing and limits.
+Image processing needs the missing torchvision dependency; image parity and
+INT8-versus-BF16 validation are still pending. No student, board, compiler,
+task-accuracy or safety evidence follows from this teacher smoke test.
 
 ## Sources
 

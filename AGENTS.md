@@ -19,15 +19,16 @@ Documents of record:
 - [REVIEW.md](REVIEW.md): evidence and findings. §12 is the latest update, and
   §10 is the M0 decision template.
 
-## Current State (2026-10-14)
+## Current State (2026-10-15)
 
 Keep this section and the Task List current; a new session resumes from them.
 
-- Design only, plus an INT8 Vela 2.0 9B teacher loader
-  ([teacher/vela_int8.py](teacher/vela_int8.py)) and its validator. No student,
+- Design plus INT8 Vela 2.0 9B and d3-flash teacher loaders
+  ([teacher/vela_int8.py](teacher/vela_int8.py),
+  [teacher/d3_int8.py](teacher/d3_int8.py)) and the Vela validator. No student,
   dataset, firmware, ST compiler report, or board measurement exists yet.
-- M0 scope defaults are recorded as provisional for the ground-rover pilot in
-  DESIGN.md §2 and REVIEW.md §10 (2026-10-14): four per-tick questions
+- M0 scope defaults for the ground-rover pilot were confirmed by the user on
+  2026-10-15 (DESIGN.md §2 and REVIEW.md §10): four per-tick questions
   (`path_blocked`, `clear_sector`, `speed_tier`, `mode`), ego-state plus an
   on-module 8x8 ToF grid and an 8-tick history window, TypeSafe Jev confidence
   formulas, a minimal 2-D Python/NumPy simulator first, and UART at 1 Mbaud.
@@ -36,6 +37,25 @@ Keep this section and the Task List current; a new session resumes from them.
   attached.
 - Approved by the user: running the Vela 2.0 9B release code at revision
   `068425bb145c05884a98b870c219047da22d9aea` (2026-10-13).
+- Approved by the user (2026-10-15): download `vllm-sr/d3-flash` at
+  `b92769d85908bb3ee737ef9c765e1c08b887aca6` and `vllm-sr/d3-mini` at
+  `6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59` (about 26 GB together), and run
+  their release code after reading it. Stop and ask before execution if the
+  review finds subprocesses, pickle/`torch.load`, or network access beyond the
+  Hugging Face Hub and the documented media URLs.
+- d3-flash GPU smoke passed on the RTX A3000: 7.416 GiB allocated after load,
+  8.438 GiB peak reserved, two text questions answered in 7.12 s. Package
+  fully hashed before import. Image processing currently needs torchvision;
+  no image parity or teacher-quality claim has been established.
+- User confirmation after restart (2026-10-15): the recorded M0 defaults are
+  accepted, but current work is restricted to tooling only. Do not implement
+  the interface, simulator, training labels, student, or firmware yet; the
+  detailed interface contract remains unfrozen.
+- Approved after source review (2026-10-15): in-process inference at the two
+  pinned d3 revisions only. Exclude the optional HTTP server, all videos
+  (including their temporary-file decoder), and remote image URLs. Require
+  full manifest hashing. No subprocess, pickle, or `torch.load` calls were
+  found in the reviewed inference path.
 
 ## Task List
 
@@ -46,11 +66,13 @@ on missing tools, and continue with the next unblocked task.
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
    §10. Use the defaults for unanswered items, marked as provisional.
-   Result: Recorded provisional M0 defaults for the ground-rover pilot in
-   DESIGN.md §2 and REVIEW.md §10 (2026-10-14).
-2. [ ] d3-flash INT8 loader `teacher/d3_int8.py`, with unit tests that need no
+  Result: Recorded defaults on 2026-10-14; user confirmed them on 2026-10-15.
+  Current implementation remains restricted to teacher tooling.
+2. [x] d3-flash INT8 loader `teacher/d3_int8.py`, with unit tests that need no
    download or GPU. Exit: it loads on the 12 GB GPU and answers `system_one`
    requests.
+  Result (2026-10-15): 10 d3 tests (13 total), lint and format passed;
+  fully verified offline GPU load and two-question text inference succeeded.
 3. [ ] `teacher/validate_d3_int8.py`: INT8 against a streamed BF16 reference on
    about 25 requests covering every question type, text and small local
    images, and synthetic rover states. Exit: a JSON report in

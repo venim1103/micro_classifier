@@ -241,6 +241,12 @@ record what was tried and move on.
   inventing requirements.
 - Git: small, focused commits with a one-line summary and a bullet body. Never
   push, force-push, or rewrite history without the user's approval.
+  Use Conventional Commit subjects from now on:
+  `<type>(optional-scope): imperative summary`, for example
+  `feat(sim): add seeded episode replay`. Choose an appropriate standard type:
+  `feat`, `fix`, `test`, `docs`, `refactor`, `perf`, `build`, `ci`, `chore`,
+  `style`, or `revert`. Keep the existing bullet body convention. Do not
+  rewrite older commits merely to add a type prefix.
 
 ## Commands
 

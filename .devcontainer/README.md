@@ -109,7 +109,8 @@ for the engine and build environment; do not put credentials in these files.
 
 ## Installed Tools and Dependencies
 
-- PyTorch, Transformers, Hugging Face Hub, Datasets, Accelerate, and safetensors.
+- PyTorch, matching torchvision, Transformers, Hugging Face Hub, Datasets,
+  Accelerate, and safetensors.
 - NumPy, SciPy, scikit-learn, and Matplotlib for data and evaluation.
 - ONNX, ONNX Runtime, and ONNX Script for static export and INT8 QDQ work.
 - `arm-none-eabi-gcc`, binutils, Newlib, `gdb-multiarch`, CMake, Ninja, and ccache.
@@ -228,3 +229,10 @@ Tested Python package versions: PyTorch 2.10.0+cpu or 2.10.0+cu128,
 Transformers 5.19.0, ONNX 1.23.2, ONNX Runtime 1.31.0, and NumPy 2.2.6.
 The GPU runtime reports CUDA 12.8. These checks establish the development
 environment, not Vela teacher parity or STM32N6 task accuracy/performance.
+
+On 2026-10-15 the user approved torchvision 0.25.0 for PyTorch 2.10.0 so the
+pinned d3 image processor can initialize. Both hash locks were regenerated;
+no existing package version changed. The official CUDA 12.8 wheel was
+installed with TLS and `--require-hashes`, without dependency changes.
+`pip check`, the compiled NMS operator, and real local-image d3 inference
+passed. This was an in-container update, not a fresh container rebuild.

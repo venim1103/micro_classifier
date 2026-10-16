@@ -163,6 +163,44 @@ def test_cache_reuse_preserves_full_precision_and_fake_scope(
     assert teacher.calls == 1
 
 
+@pytest.mark.parametrize("first_cached", [False, True])
+def test_returned_records_cannot_mutate_batch_identity(
+    sample, fake_identity, tmp_path, first_cached
+):
+    config, observation = sample
+    request = prepare_request(observation, config=config)
+    following = deepcopy(request)
+    following["state"] += " "
+    expected_identity = deepcopy(fake_identity)
+    teacher = FakeTeacher()
+    with LabelCache(tmp_path / "cache.sqlite3") as cache:
+        if first_cached:
+            list(
+                label_requests(
+                    [request], teacher=teacher, identity=fake_identity, cache=cache
+                )
+            )
+        batch = label_requests(
+            [request, following, following],
+            teacher=teacher,
+            identity=fake_identity,
+            cache=cache,
+        )
+        first = next(batch)
+        assert first["cache_hit"] is first_cached
+        first["record"]["teacher"]["settings"]["temperature"] = 0.25
+        second = next(batch)
+        assert second["record"]["teacher"] == expected_identity
+        second["record"]["teacher"]["settings"]["token_budget"] = 1
+        third = next(batch)
+        assert third["cache_hit"]
+        assert third["record"]["teacher"] == expected_identity
+        assert cache.get(first["record"]["cache_key"])["teacher"] == expected_identity
+        assert cache.get(second["record"]["cache_key"])["teacher"] == expected_identity
+    assert teacher.calls == 2
+    assert fake_identity == expected_identity
+
+
 @pytest.mark.parametrize(
     "change", ["revision", "weights", "settings", "state", "options"]
 )

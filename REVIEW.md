@@ -1326,6 +1326,26 @@ from the fake-teacher tests.
 [teacher-label-pipeline]: teacher/label_pipeline.py
 [teacher-pipeline-tests]: tests/test_label_pipeline.py
 
+## 21. Pipeline Provenance Isolation (2026-10-16)
+
+A focused check found that newly emitted fake-teacher records shared nested
+teacher identity/settings with the running batch. Mutating a returned record
+therefore changed later provenance/cache keys without changing the teacher.
+Two regression cases reproduced this: a fresh start changed later settings;
+a cached start lost an expected later cache hit after editing a fresh result.
+
+Each new record now receives an independent identity copy. The same regressions
+pass and verify original caller identity, stored provenance and expected cache
+hits. All 32 pipeline tests and 224 repository tests pass plus the existing
+transformer numerical expected failure; Ruff lint/format and editor diagnostics
+are clean. Source-bound keys invalidate when this module changes, as designed.
+No model, dataset, policy, dependency, training or hardware scope was expanded.
+
+Only blocked tasks remain under the current approvals. Proposed next scope is
+synthetic-fixture CPU evaluation metrics and split-validation tooling, pending
+user approval. This would not approve real labels, training, dataset generation,
+new metric thresholds or a claim of locked task splits.
+
 ## Sources
 
 Hardware and tools:

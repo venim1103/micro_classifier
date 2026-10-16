@@ -299,7 +299,7 @@ def label_requests(requests, *, teacher, identity, cache):
                 "schema": "micro-classifier/fake-teacher-record/1",
                 "cache_key": key,
                 "request": request,
-                "teacher": identity,
+                "teacher": deepcopy(identity),
                 "answers": normalize_response(request, response),
                 "raw_response": deepcopy(response),
                 "synthetic": True,

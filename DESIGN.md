@@ -1190,6 +1190,16 @@ GPU job, download, dependency change, training or hardware action occurred.
 Prompt quality, live adapter provenance, token-budget fit, reviewed mode labels
 and training-dataset quality remain gated; Task 6 remains blocked.
 
+Follow-up provenance check (2026-10-16): a returned fresh record shared the
+batch's nested teacher identity, so consumer edits to that record's settings
+changed later provenance/cache keys. Each new record now receives an independent
+identity copy. Two regressions first reproduced the defect with fresh/cached
+starts, then passed after the one-line fix. All 32 pipeline tests and 224
+repository tests pass plus the known transformer expected failure; lint,
+changed-file format and editor diagnostics pass. Existing plan hashes above
+describe the earlier artifacts; source-bound keys invalidate on this code change.
+No real teacher, training, new dependency or change to approval gates occurred.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following

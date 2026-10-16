@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §20 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §21 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -142,6 +142,11 @@ Keep this section and the Task List current; a new session resumes from them.
   plans are ignored. Live adapters/labeling, prompt-budget fit, reviewed human
   mode labels and training remain unapproved/unverified. DESIGN.md §7 and
   REVIEW.md §20 record the tooling-only exit and limits.
+- Follow-up provenance fix (2026-10-16): returned fake-teacher records no
+  longer share nested identity/settings with the running batch. Two reproduced
+  regressions now pass for both fresh and cached starts; 32 pipeline tests,
+  224 repository passes plus the known transformer expected failure. Lint,
+  format and editor diagnostics pass. No approval boundary or label rule changed.
 
 ## Task List
 
@@ -210,6 +215,9 @@ on missing tools, and continue with the next unblocked task.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.
+  Proposed next scope (pending approval): CPU-only metric and split-validation
+  tooling with synthetic fixtures only; no real labeling, training, dataset
+  generation, metric-threshold changes or claim of locked task splits.
 10. [blocked: training outside current tooling scope; dataset pending]
   Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled

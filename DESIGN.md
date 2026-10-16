@@ -1137,6 +1137,59 @@ changed-file format and editor diagnostics clean. Task 6 still needs review
 for training data, coverage and human mode labels. Task 8 preparation is
 approved only with fake teachers; real labeling remains gated.
 
+### Teacher-Pipeline Host Preparation (2026-10-16)
+
+The [host pipeline][teacher-label-pipeline] completes Task 8's approved
+**fake-teacher tooling portion**, not live teacher integration or dataset
+approval. Its only question is the catalogue's `mode` choice supplement;
+the three sensor proxies stay separate and every mode output requires human
+review. No proxy formulas, wire identities or simulator CLI were changed.
+
+Rendering reconstructs the exact simulated host state and checks any embedded
+CRC-protected frame against it. Plain episode logs instead synthesize that
+frame explicitly. The deterministic JSON state preserves decoded FLU fields,
+current ToF/masks/age and all eight masked history slots without rounding or
+silent truncation. Shape, finiteness, masking, padding and current-slot parity
+are checked. Ground truth, actions, scenario geometry and existing labels are
+excluded. Catalogue/config/renderer/frame hashes accompany the request; episode
+requests also carry source-byte hashes, line numbers, ticks and frame origin.
+
+`python -m teacher.label_pipeline --episode ... --output ... --limit 8` writes
+an exclusive request plan for a bounded observation prefix. It never loads
+a model, invokes an adapter or emits teacher labels. Persistent plans/cache
+data belong under ignored `teacher/cache/`. Planning reads a snapshot of the
+whole source file for hashing; the limit bounds rendered observations, not
+input-file memory or a complete episode audit.
+
+The Python `label_requests` API accepts an injected test double only under an
+explicit `fake_test_only`, `test/` identity with full revision/artifact hash
+strings and JSON settings. These are caller-supplied test identifiers, not
+attestation of third-party weights or a sandbox. No live adapter is wired in.
+SQLite commits each validated response independently. Keys bind the full
+request, explicit option order, teacher identity/settings and pipeline source
+hash. Stored JSON preserves criteria order, raw response values and unrounded
+probabilities; reload checks checksums, identity, scope and normalized answers.
+Invalid/error responses never become cache successes. Changed identities or
+inputs miss the cache; interrupted batches reuse completed records. Unknown
+database schemas and conflicting writes are refused rather than migrated.
+All records are synthetic and training-disabled, with human review required.
+
+Two model-free runs selected eight observations each from the recorded clear
+wire-v0 and label-smoke logs. Maximum state-string lengths were 9,689 and 9,842
+characters, respectively. These are **not token counts**: full-history prompt
+fit within the accepted teacher budget is unverified and must be checked before
+any separately approved live use. Ignored request-plan SHA-256 values:
+
+- Wire prefix: `a602dfe5adc26a5b691f338ed604ff98b68bdf54f32d7736459506bfc64b810f`.
+- Label-smoke prefix: `4284f0697ae969d677e61e29959461bb1228631166def67ceefe693a2d6d3696`.
+
+Verification: 30 [focused CPU tests][teacher-pipeline-tests], 222 repository
+passes plus the existing transformer numerical expected failure, Ruff lint,
+changed-file formatting and clean editor diagnostics. No real teacher call,
+GPU job, download, dependency change, training or hardware action occurred.
+Prompt quality, live adapter provenance, token-budget fit, reviewed mode labels
+and training-dataset quality remain gated; Task 6 remains blocked.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following
@@ -1539,6 +1592,8 @@ for this project.
 [sim-catalogue-draft]: sim/catalogue.json
 [sim-label-draft]: sim/labels.py
 [sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
+[teacher-label-pipeline]: teacher/label_pipeline.py
+[teacher-pipeline-tests]: tests/test_label_pipeline.py
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

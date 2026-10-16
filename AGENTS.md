@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §19 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §20 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -131,6 +131,17 @@ Keep this section and the Task List current; a new session resumes from them.
   or low-speed coverage claim. Report: `sim/reports/label-smoke-20261016.json`;
   all four log hashes verified. Full suite: 192 passed plus the known expected
   transformer failure; 71 simulator tests. DESIGN.md §7 and REVIEW.md §19.
+- Task 8 host tooling in `teacher/label_pipeline.py` renders matching simulated
+  host frames, current ToF and full masked history without truth/actions/labels.
+  A model-free CLI plans bounded episode prefixes; fake-only injected mode
+  responses use transactional SQLite caching, full-request/identity/source
+  hashes, strict validation and interruption-safe resume. Thirty focused tests
+  pass; full suite: 222 passed plus the known transformer expected failure.
+  Two real-log eight-observation plans invoked no teacher; maximum state text
+  lengths were 9,689/9,842 characters, not measured token counts. Cache data and
+  plans are ignored. Live adapters/labeling, prompt-budget fit, reviewed human
+  mode labels and training remain unapproved/unverified. DESIGN.md §7 and
+  REVIEW.md §20 record the tooling-only exit and limits.
 
 ## Task List
 
@@ -185,12 +196,17 @@ on missing tools, and continue with the next unblocked task.
   Result (2026-10-15): provisional state frames exported with `--wire`, 30
   simulator tests, four successful scene runs and 566 verified frames. JSONL
   embeds wire bytes as hex; no model decisions, reviewed labels or board claim.
-8. [ ]
-  Teacher labeling pipeline: deterministic rendering of state packets for
+8. [x]
+  Teacher labeling pipeline host tooling: deterministic rendering of state packets for
    the teacher, cached and resumable labeling, and provenance (revision,
    settings, and hashes).
   Approved (2026-10-16): implement host tooling with fake-teacher CPU tests
   only. Do not call real teachers or claim a reviewed training dataset.
+  Result (2026-10-16): deterministic full-history requests, bounded model-free
+  plans and mode-only fake response/cache/resume API; 30 focused tests, 222
+  repository passes plus the known expected failure. Live labeling remains
+  blocked on approval, reviewed labels, adapter provenance and token-budget
+  validation; this completes only the approved host-tooling portion.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

@@ -4,3 +4,4 @@ COMMIT.sh
 .runs/
 sim/episodes/
 export/artifacts/
+teacher/cache/

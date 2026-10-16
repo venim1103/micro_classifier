@@ -84,6 +84,33 @@ remain training-disabled, not a reviewed dataset or safety evidence. `mode`
 is always unlabeled; real teacher labeling and training remain unapproved.
 The original simulator CLI and wire export are unchanged.
 
+## Teacher-Pipeline Host Tooling
+
+The [request planner and cache API][teacher-label-pipeline] are approved for
+**fake-teacher tests only**. The planner preserves host state, current ToF and
+full masked history, checking any embedded wire frames. Truth, actions and
+proxy labels are excluded. Its only question is the human-review `mode`
+supplement, not teacher replacement of the three deterministic sensor proxies.
+
+Prepare a bounded plan from an existing simulator episode, without loading or
+calling any teacher:
+
+```sh
+python -m teacher.label_pipeline \
+	--episode sim/episodes/wire-v0-smoke/clear-20261015.jsonl \
+	--output teacher/cache/my-request-plan.json --limit 8
+python -m pytest -q tests/test_label_pipeline.py
+```
+
+The input may be a plain simulator log or a `--wire` log. Outputs must be new;
+plans/cache data under `teacher/cache/` are ignored. The Python `LabelCache`
+and `label_requests` APIs support injected test doubles, strict probability
+validation and transactional resume with source/revision/settings hashes.
+The [tests][teacher-pipeline-tests] show fake-only use. There is no live-model
+CLI path. Every cached answer is synthetic, training-disabled and requires
+human review. Token-budget fit and genuine label quality remain unverified;
+full history is not silently truncated. See DESIGN.md §7 and REVIEW.md §20.
+
 ## M1a Host Probes
 
 [CPU preparation tooling][m1a-script] exports nine **untrained** fixed-shape
@@ -201,5 +228,7 @@ The simulation JSONL container remains separately versioned. See
 [sim-catalogue-draft]: sim/catalogue.json
 [sim-label-draft]: sim/labels.py
 [sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
+[teacher-label-pipeline]: teacher/label_pipeline.py
+[teacher-pipeline-tests]: tests/test_label_pipeline.py
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

@@ -1285,6 +1285,47 @@ with fake teachers but cannot generate genuine teacher labels yet.
 
 [sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
 
+## 20. Fake-Teacher Pipeline Host Tooling (2026-10-16)
+
+The §19 approval now has a [host implementation][teacher-label-pipeline] and
+30 [CPU-only tests][teacher-pipeline-tests]. This completes Task 8's approved
+tooling portion only. No real adapter, teacher invocation, training dataset,
+new dependency, firmware, ST execution or hardware work was added.
+
+Requests deterministically combine the exact simulated host state, current
+ToF and complete masked history. Supplied wire frames must match reconstructed
+observations; plain logs explicitly synthesize frames. Privileged truth,
+expert actions and proxy labels never enter the rendered state. Source-byte,
+renderer, catalogue, config and frame hashes retain provenance. The only
+question is the ordered `mode` supplement; outputs remain synthetic and require
+human review, not a replacement for approved human mode labels.
+
+An exclusive, model-free CLI prepares bounded observation prefixes without
+inference. The injected fake-only API validates complete named choice results,
+option identities and finite normalized probabilities. SQLite commits each
+successful record separately, preserving original probabilities/raw responses
+and criteria order. Full request, option order, source and teacher revision,
+artifact hash/settings determine cache identity. Reopening revalidates checksums
+and answer consistency; interrupted runs reuse committed records. Test identity
+metadata is caller-supplied, not verified real-model provenance or a sandbox.
+Caches/plans remain ignored; unrelated database schemas are refused.
+
+Two eight-observation prefixes of existing wire-v0 and label-smoke clear logs
+were planned without calling a teacher. Maximum state strings were 9,689 and
+9,842 characters; DESIGN.md §7 records artifact hashes. Token counts and fit
+within the teacher budget remain unverified. The CLI's limit bounds rendered
+requests, not source-file memory, and does not audit unselected observations.
+
+Full verification: 222 passed plus the known transformer numerical expected
+failure, Ruff lint/changed-file format and clean editor diagnostics. Live
+labeling still requires explicit approval, prompt/token-budget checks and
+adapter provenance; policy/coverage/human-mode review and locked splits still
+block training and evaluation. No quality or physical safety claim follows
+from the fake-teacher tests.
+
+[teacher-label-pipeline]: teacher/label_pipeline.py
+[teacher-pipeline-tests]: tests/test_label_pipeline.py
+
 ## Sources
 
 Hardware and tools:

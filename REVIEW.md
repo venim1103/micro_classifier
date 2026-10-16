@@ -1688,6 +1688,51 @@ expected failure. Ruff, format and editor diagnostics pass.
 
 [mini-int8-parity]: teacher/reports/d3-mini-int8-parity-capped-20261016.json
 
+## 30. Full-Input Mini Context Resource Probe (2026-10-16)
+
+The §29 parity review supported the already-approved, separately opt-in
+resource experiment. Full cached package verification preceded inference at the
+same mini revision; the 10 GiB PyTorch allocator cap was read back and checked.
+The runner requires an explicit reviewed-parity report, validates its identity
+and recomputed diagnostic comparison, and records its SHA256. This is operator
+acknowledgement/provenance, not a signed attestation or automatic quality gate.
+
+The [resource report][mini-context-resource] has SHA256
+`07b9522e945bacbad9534d835c684e8c4fcde505cb279e5c9c26bf64109224e7`.
+Three selected unchanged full inputs were wire-clear ticks 0/15 and existing
+label-smoke slalom tick 15: 3,421/7,616/10,705 tokens and one/eight/eight valid
+history ticks. Each was considered at 4,096/8,192/12,288 ceilings. Six admitted
+cases completed, three were over-budget and skipped; no input was truncated.
+All request/source/state/frame/renderer and complete token-ID hashes were
+independently checked with the cached approved tokenizer/formatter on CPU.
+
+The startup request took 6.935/2.519/2.087 s across the ceilings. Warm clear
+took 5.301/4.847 s at 8,192/12,288; warm slalom took 7.328 s at 12,288.
+Peak allocated/reserved across admitted cases: 6.478/7.313 GiB. No OOM or cap
+failure occurred; cap configuration/readback and measured allocation were
+checked. The cap excludes driver/native allocations. These are cold/cache-
+sensitive individual observations on an RTX A3000, not a representative or
+worst-case benchmark. In particular, no actual 12,288-token sequence was tested.
+
+**Finding:** selected warm full-history inputs can run within the approved
+experimental mini INT8 resource envelope. That removes neither the normal
+2,048-token blocker nor target/data/quality gates. No larger-context BF16 parity,
+comprehension or task-label accuracy is established. Original mode questions
+were resource workloads only; numeric response checks ran, but all answer values
+were discarded and zero mode labels were written. Mode remains unlabeled.
+No new episode, dataset, training, dependency/download or hardware work occurred.
+
+Both approved experimental stages are complete. Keep normal defaults and both
+draft representations unchanged. Proposed next default: retain the 2,048 ceiling
+and mode abstention pending a reviewed live-use/input strategy and observable
+task/evaluation policy, rather than treating resource fit as labeling clearance.
+ST/board gates remain blocked. Ten new tests cover input preservation, budget
+admission, answer discard, whole-probe OOM abort and CLI/output admission.
+37 focused d3 checks and 336 repository passes plus the known transformer
+expected failure; Ruff/format/editor diagnostics pass.
+
+[mini-context-resource]: teacher/reports/d3-mini-context-resource-capped-20261016.json
+
 ## Sources
 
 Hardware and tools:

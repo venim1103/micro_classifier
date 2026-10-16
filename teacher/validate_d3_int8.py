@@ -284,6 +284,8 @@ def mini_experiment_memory_limit(device="cuda:0"):
     torch.cuda.set_per_process_memory_fraction(fraction, device)
     torch.cuda.reset_peak_memory_stats(device)
     try:
+        if torch.cuda.get_per_process_memory_fraction(device) * total > limit + 1:
+            raise RuntimeError("PyTorch allocator cap configuration failed")
         yield {
             "requested_cap_gib": 10,
             "enforced_cap_bytes": limit,
@@ -367,6 +369,179 @@ def validate_mini_int8_experiment(path):
     return report
 
 
+def context_probe_inputs():
+    from teacher.label_pipeline import episode_requests
+
+    root = Path(__file__).resolve().parents[1]
+    result = []
+    for name, relative, tick in (
+        ("startup-clear", "sim/episodes/wire-v0-smoke/clear-20261015.jsonl", 0),
+        ("warm-clear", "sim/episodes/wire-v0-smoke/clear-20261015.jsonl", 15),
+        ("warm-slalom", "sim/episodes/label-smoke-20261016/slalom.jsonl", 15),
+    ):
+        requests = list(episode_requests(root / relative, limit=tick + 1))
+        if len(requests) != tick + 1:
+            raise ValueError(f"missing existing probe observation: {name}")
+        result.append((name, requests[tick]))
+    return result
+
+
+def validate_mini_context_probe(path, parity_path):
+    from teacher.label_pipeline import digest
+
+    report = {
+        "schema": "micro-classifier/d3-mini-context-resource-probe/1",
+        "repo_id": d3_int8.MINI_REPO_ID,
+        "revision": d3_int8.APPROVED_REVISIONS[d3_int8.MINI_REPO_ID],
+        "manifest_sha256": d3_int8.APPROVED_MANIFESTS[d3_int8.MINI_REPO_ID],
+        "status": "running",
+        "budgets": [4096, 8192, 12288],
+        "cases": [],
+        "review_acknowledged_by_explicit_cli": True,
+        "training_approved": False,
+        "live_labeling_approved": False,
+        "task_quality_claim": False,
+        "mode_labels_written": 0,
+        "responses_discarded": True,
+        "truncation_enabled": False,
+        "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "adapter_source_sha256": hashlib.sha256(
+            Path(d3_int8.__file__).read_bytes()
+        ).hexdigest(),
+        "limitations": [
+            "Three selected existing full states, not representative task coverage.",
+            "Original mode question is only a resource workload; answer values are discarded.",
+            "No BF16 parity or task-quality measurement at larger contexts.",
+            "Normal defaults, full input/history and draft representations unchanged.",
+            "Abort the whole probe on OOM/cap failure, without retry or larger allocation.",
+        ],
+    }
+    try:
+        raw = Path(parity_path).read_bytes()
+        parity = json.loads(raw)
+        if (
+            parity.get("schema") != "micro-classifier/d3-mini-int8-experiment/1"
+            or parity.get("repo_id") != report["repo_id"]
+            or parity.get("revision") != report["revision"]
+            or parity.get("manifest_sha256") != report["manifest_sha256"]
+            or parity.get("status") != "complete_requires_parity_review"
+            or parity.get("token_budget") != 2048
+            or parity.get("fixtures", {}).get("sha256")
+            != fixture_digest(diagnostic_requests())
+            or parity.get("parity")
+            != compare(
+                parity["candidate"]["responses"], parity["reference"]["responses"]
+            )
+        ):
+            raise ValueError(
+                "reviewed parity report does not match the pinned completed experiment"
+            )
+        report["reviewed_parity_sha256"] = hashlib.sha256(raw).hexdigest()
+        inputs = context_probe_inputs()
+        with mini_experiment_memory_limit() as limit:
+            report["memory_limit"] = limit
+            started = time.perf_counter()
+            teacher = d3_int8.load_engine(
+                path=path,
+                device="cuda:0",
+                repo_id=d3_int8.MINI_REPO_ID,
+                token_budget=12288,
+                experimental_mini_int8=True,
+            )
+            report["load"] = {
+                "seconds": time.perf_counter() - started,
+                "allocated_gib": torch.cuda.memory_allocated() / 2**30,
+                "peak_reserved_gib": torch.cuda.max_memory_reserved() / 2**30,
+            }
+            report["provenance"] = teacher.provenance()
+            report["environment"] = teacher.engine.runtime_info()
+            plans = []
+            for name, request in inputs:
+                prepared = teacher.engine.prepare(
+                    request["state"], request["questions"]
+                )
+                if prepared.errors or set(prepared.sequences) != set(
+                    request["questions"]
+                ):
+                    raise ValueError(f"complete prompt preparation failed: {name}")
+                observation = json.loads(request["state"])["module_observation"]
+                plans.append(
+                    (
+                        request,
+                        {
+                            "id": name,
+                            "source": request["source"],
+                            "request_sha256": digest(request),
+                            "input_provenance": request["provenance"],
+                            "state_sha256": hashlib.sha256(
+                                request["state"].encode()
+                            ).hexdigest(),
+                            "token_ids_sha256": digest(prepared.sequences),
+                            "tokens": max(map(len, prepared.sequences.values())),
+                            "history_ticks": sum(observation["history_valid"]),
+                            "truncated": False,
+                        },
+                    )
+                )
+            report["inputs"] = [metadata for _, metadata in plans]
+            for budget in report["budgets"]:
+                teacher.token_budget = budget
+                teacher.engine.max_length = budget
+                for request, metadata in plans:
+                    case = {
+                        "id": metadata["id"],
+                        "budget": budget,
+                        "tokens": metadata["tokens"],
+                        "status": "budget_rejected"
+                        if metadata["tokens"] > budget
+                        else "running",
+                    }
+                    report["cases"].append(case)
+                    if case["status"] == "budget_rejected":
+                        continue
+                    torch.cuda.empty_cache()
+                    torch.cuda.reset_peak_memory_stats()
+                    torch.cuda.synchronize()
+                    started = time.perf_counter()
+                    response = teacher.system_one(
+                        state=request["state"], questions=request["questions"]
+                    )
+                    torch.cuda.synchronize()
+                    case["seconds"] = time.perf_counter() - started
+                    if set(response["answers"]) != set(request["questions"]):
+                        raise ValueError("resource response question mismatch")
+                    for answer in response["answers"].values():
+                        distribution(answer)
+                    del response
+                    case.update(
+                        peak_allocated_gib=torch.cuda.max_memory_allocated() / 2**30,
+                        peak_reserved_gib=torch.cuda.max_memory_reserved() / 2**30,
+                    )
+                    if (
+                        case["peak_allocated_gib"] * 2**30 > limit["enforced_cap_bytes"]
+                        or case["peak_reserved_gib"] > 11
+                    ):
+                        raise RuntimeError("measured memory cap exceeded")
+                    case["status"] = "complete_answers_discarded"
+                    print(
+                        f"{case['id']} budget={budget} tokens={case['tokens']}: {case['seconds']:.3f}s",
+                        flush=True,
+                    )
+            report["status"] = "complete_resource_only"
+    except (RuntimeError, ValueError, OSError, KeyError, TypeError) as error:
+        report.update(
+            status="aborted", error_type=type(error).__name__, error=str(error)
+        )
+        if report["cases"] and report["cases"][-1]["status"] == "running":
+            report["cases"][-1]["status"] = "aborted"
+        if torch.cuda.is_initialized():
+            report["abort_peak_allocated_gib"] = (
+                torch.cuda.max_memory_allocated() / 2**30
+            )
+            report["abort_peak_reserved_gib"] = torch.cuda.max_memory_reserved() / 2**30
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -374,17 +549,32 @@ def main():
     )
     parser.add_argument("--snapshot", type=Path)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--mini-int8-experiment", action="store_true")
+    experiment = parser.add_mutually_exclusive_group()
+    experiment.add_argument("--mini-int8-experiment", action="store_true")
+    experiment.add_argument("--mini-int8-context-probe", action="store_true")
+    parser.add_argument("--reviewed-parity-report", type=Path)
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
-    if args.mini_int8_experiment:
+    if args.reviewed_parity_report is not None and not args.mini_int8_context_probe:
+        parser.error(
+            "--reviewed-parity-report is only valid with --mini-int8-context-probe"
+        )
+    if args.mini_int8_experiment or args.mini_int8_context_probe:
         if args.repo_id != d3_int8.MINI_REPO_ID or args.snapshot is None:
             parser.error(
                 "mini INT8 experiment requires d3-mini and an already-cached --snapshot"
             )
+        if args.mini_int8_context_probe and args.reviewed_parity_report is None:
+            parser.error(
+                "context probe requires --reviewed-parity-report after result review"
+            )
         torch.set_num_threads(4)
-        report = validate_mini_int8_experiment(args.snapshot)
+        report = (
+            validate_mini_context_probe(args.snapshot, args.reviewed_parity_report)
+            if args.mini_int8_context_probe
+            else validate_mini_int8_experiment(args.snapshot)
+        )
         args.output.parent.mkdir(parents=True, exist_ok=True)
         with args.output.open("x") as stream:
             json.dump(report, stream, indent=2, allow_nan=False)

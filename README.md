@@ -70,6 +70,24 @@ This phase stays at 2,048 tokens. Normal mini remains BF16; this opt-in is not
 live-labeling approval or a change to normal token limits. The cap excludes
 driver/native allocations. See [REVIEW.md](REVIEW.md) §29 for measured results.
 
+After reviewing that parity report, the separately approved resource-only phase
+uses three fixed existing full inputs at 4,096/8,192/12,288 ceilings. It writes
+resource and input/token hashes only, discards answers, and stops on OOM/cap
+failure without retry. The existing ignored simulation logs must be present:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m teacher.validate_d3_int8 \
+	--repo-id vllm-sr/d3-mini --snapshot /path/to/already-cached/mini/snapshot \
+	--mini-int8-context-probe \
+	--reviewed-parity-report teacher/reports/d3-mini-int8-parity-capped-20261016.json \
+	--output teacher/reports/mini-context-local.json
+```
+
+Selected warm inputs ran within the experimental resource envelope, not the
+normal 2,048-token limit. Neither longer-context quality nor mode labels are
+approved; normal defaults/input/history are unchanged. See
+[REVIEW.md](REVIEW.md) §30 for measured limits and exclusions.
+
 CPU unit tests: `python -m pytest tests`.
 
 ## Simulation Label Policy Draft

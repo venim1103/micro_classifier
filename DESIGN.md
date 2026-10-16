@@ -628,6 +628,44 @@ the known transformer expected failure; lint, format and diagnostics pass.
 
 [mini-int8-parity-report]: teacher/reports/d3-mini-int8-parity-capped-20261016.json
 
+#### Bounded Full-Input Context Resources (2026-10-16)
+
+After reviewing the parity above, the approved resource-only continuation used
+the same pinned/full-verified mini INT8 package and 10 GiB PyTorch cap. Three
+unchanged full-renderer inputs came from existing logs: wire-clear ticks 0/15
+and label-smoke slalom tick 15. They contain 3,421/7,616/10,705 tokens, with
+one/eight/eight valid history ticks. Original state, question, source, renderer,
+frame and complete token-sequence hashes are in the [resource report][mini-context-report],
+SHA256 `07b9522e945bacbad9534d835c684e8c4fcde505cb279e5c9c26bf64109224e7`.
+An independent CPU-only cached-tokenizer audit reproduced every token ID and
+input/provenance hash. No field, history slot or precision was removed.
+
+| Explicit ceiling | Startup clear | Warm clear | Warm slalom |
+| --- | --- | --- | --- |
+| 4,096 | 6.935 s | rejected | rejected |
+| 8,192 | 2.519 s | 5.301 s | rejected |
+| 12,288 | 2.087 s | 4.847 s | 7.328 s |
+
+All six admitted cases completed; three over-budget cases were skipped without
+truncation. Largest measured peaks were 6.478 GiB allocated/7.313 GiB reserved
+on the RTX A3000. Loading used 4.006 GiB afterward/4.699 GiB peak reserved.
+No OOM/cap failure occurred. These single observations include cold-start and
+cache effects, not controlled throughput or worst-case measurements. The largest
+actual sequence was 10,705 tokens; a 12,288 ceiling is not evidence that an
+actual 12,288-token sequence fits or that every future input fits.
+
+Response distributions were checked for valid numeric shape/range, then discarded;
+the report contains no answer values or mode labels. This is resource evidence,
+not longer-context BF16 parity, teacher comprehension, mode semantics, task
+accuracy, latency qualification or live-labeling approval. No dataset, training,
+new episode, dependency/download or hardware action occurred. Normal mini stays
+BF16/2,048, full inputs/history and both exact drafts are unchanged. Live-use
+strategy and task targets/data still require review; the normal budget gate is
+not cleared. Ten additional tests pass; 37 d3 checks, 336 repository passes plus
+the known transformer expected failure; Ruff/format/editor diagnostics clean.
+
+[mini-context-report]: teacher/reports/d3-mini-context-resource-capped-20261016.json
+
 #### Decision 3.0 d3 on Two RTX 3090s (when available)
 
 When it is available, a second host with two NVLinked RTX 3090s (2 x 24 GB) can

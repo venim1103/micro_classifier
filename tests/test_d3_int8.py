@@ -1,6 +1,7 @@
 import contextlib
 import hashlib
 import json
+import sys
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -275,9 +276,12 @@ def test_mini_memory_cap_is_enforced_and_restored_without_gpu(monkeypatch, fail)
         lambda device: SimpleNamespace(total_memory=12 * 2**30),
     )
     monkeypatch.setattr(cuda, "mem_get_info", lambda device: (11 * 2**30, 12 * 2**30))
-    monkeypatch.setattr(cuda, "get_per_process_memory_fraction", lambda device: 1.0)
+    fractions = [1.0]
+    monkeypatch.setattr(
+        cuda, "get_per_process_memory_fraction", lambda device: fractions[-1]
+    )
     monkeypatch.setattr(cuda, "memory_reserved", lambda device: 0)
-    setter = Mock()
+    setter = Mock(side_effect=lambda fraction, device: fractions.append(fraction))
     monkeypatch.setattr(cuda, "set_per_process_memory_fraction", setter)
     monkeypatch.setattr(cuda, "reset_peak_memory_stats", Mock())
     try:
@@ -341,6 +345,168 @@ def test_mini_parity_experiment_is_capped_and_requires_review(
     assert not report["context_probe_approved_by_parity"]
     assert report["status"] == ("aborted" if oom else "complete_requires_parity_review")
     assert runner.call_count == (0 if oom else 2)
+
+
+@pytest.mark.parametrize("oom", [False, True])
+def test_mini_context_probe_preserves_full_inputs_and_aborts_without_retry(
+    monkeypatch, oom, tmp_path
+):
+    from teacher import validate_d3_int8 as validation
+
+    parity = {
+        "schema": "micro-classifier/d3-mini-int8-experiment/1",
+        "repo_id": validation.d3_int8.MINI_REPO_ID,
+        "revision": validation.d3_int8.APPROVED_REVISIONS[
+            validation.d3_int8.MINI_REPO_ID
+        ],
+        "manifest_sha256": validation.d3_int8.APPROVED_MANIFESTS[
+            validation.d3_int8.MINI_REPO_ID
+        ],
+        "status": "complete_requires_parity_review",
+        "token_budget": 2048,
+        "fixtures": {"sha256": fixture_digest(diagnostic_requests())},
+        "candidate": {"responses": {}},
+        "reference": {"responses": {}},
+        "parity": {"fixture": True},
+    }
+    parity_path = tmp_path / "parity.json"
+    parity_path.write_text(json.dumps(parity))
+    monkeypatch.setattr(validation, "compare", lambda *args: {"fixture": True})
+    inputs = [
+        (
+            str(tokens),
+            {
+                "state": json.dumps(
+                    {
+                        "module_observation": {"history_valid": [True] * 8},
+                        "tokens": tokens,
+                    }
+                ),
+                "questions": {"mode": {"type": "choice"}},
+                "source": {"tick": 15},
+                "provenance": {},
+            },
+        )
+        for tokens in (3500, 7000, 11000)
+    ]
+    monkeypatch.setattr(validation, "context_probe_inputs", lambda: inputs)
+    monkeypatch.setattr(
+        validation,
+        "mini_experiment_memory_limit",
+        lambda: contextlib.nullcontext({"enforced_cap_bytes": 10 * 2**30}),
+    )
+    engine = SimpleNamespace(
+        prepare=lambda state, questions: SimpleNamespace(
+            errors={}, sequences={"mode": [0] * json.loads(state)["tokens"]}
+        ),
+        max_length=12288,
+        runtime_info=lambda: {"fixture": True},
+    )
+    calls = []
+    teacher = SimpleNamespace(
+        engine=engine, token_budget=12288, provenance=lambda: {"fixture": True}
+    )
+
+    def infer(*, state, questions):
+        calls.append((state, questions, teacher.token_budget, engine.max_length))
+        assert json.loads(state)["tokens"] <= teacher.token_budget == engine.max_length
+        if oom and len(calls) == 2:
+            raise torch.OutOfMemoryError("capped fixture OOM")
+        return {"answers": {"mode": {"secret_probability": 0.75}}}
+
+    teacher.system_one = infer
+    loader = Mock(return_value=teacher)
+    monkeypatch.setattr(validation.d3_int8, "load_engine", loader)
+    monkeypatch.setattr(validation, "distribution", lambda answer: [0.25, 0.75])
+    monkeypatch.setattr(torch.cuda, "empty_cache", Mock())
+    monkeypatch.setattr(torch.cuda, "reset_peak_memory_stats", Mock())
+    monkeypatch.setattr(torch.cuda, "synchronize", Mock())
+    monkeypatch.setattr(torch.cuda, "memory_allocated", lambda: 4 * 2**30)
+    monkeypatch.setattr(torch.cuda, "max_memory_allocated", lambda: 5 * 2**30)
+    monkeypatch.setattr(torch.cuda, "max_memory_reserved", lambda: 6 * 2**30)
+    monkeypatch.setattr(torch.cuda, "is_initialized", lambda: False)
+    report = validation.validate_mini_context_probe(tmp_path, parity_path)
+    assert report["status"] == ("aborted" if oom else "complete_resource_only")
+    assert report["responses_discarded"] and report["mode_labels_written"] == 0
+    assert "secret_probability" not in json.dumps(report)
+    assert len(calls) == (2 if oom else 6)
+    assert len(report["cases"]) == (4 if oom else 9)
+    assert all(
+        state in [request["state"] for _, request in inputs] for state, _, _, _ in calls
+    )
+    assert loader.call_args.kwargs["token_budget"] == 12288
+    assert [row["tokens"] for row in report["inputs"]] == [3500, 7000, 11000]
+    assert (
+        report["reviewed_parity_sha256"]
+        == hashlib.sha256(parity_path.read_bytes()).hexdigest()
+    )
+
+
+def test_mini_context_probe_rejects_unreviewed_report_before_gpu(monkeypatch, tmp_path):
+    from teacher import validate_d3_int8 as validation
+
+    parity_path = tmp_path / "wrong.json"
+    parity_path.write_text("{}")
+    loader = Mock()
+    monkeypatch.setattr(validation.d3_int8, "load_engine", loader)
+    monkeypatch.setattr(torch.cuda, "is_initialized", lambda: False)
+    report = validation.validate_mini_context_probe(tmp_path, parity_path)
+    assert report["status"] == "aborted"
+    loader.assert_not_called()
+    assert report["cases"] == []
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        ["--mini-int8-experiment"],
+        ["--mini-int8-experiment", "--snapshot", "cached"],
+        ["--mini-int8-experiment", "--repo-id", "vllm-sr/d3-mini"],
+        [
+            "--mini-int8-context-probe",
+            "--repo-id",
+            "vllm-sr/d3-mini",
+            "--snapshot",
+            "cached",
+        ],
+        ["--reviewed-parity-report", "review.json"],
+        ["--mini-int8-experiment", "--mini-int8-context-probe"],
+    ],
+)
+def test_mini_experiment_cli_rejects_incomplete_scope_before_execution(
+    monkeypatch, tmp_path, arguments
+):
+    from teacher import validate_d3_int8 as validation
+
+    parity = Mock()
+    context = Mock()
+    monkeypatch.setattr(validation, "validate_mini_int8_experiment", parity)
+    monkeypatch.setattr(validation, "validate_mini_context_probe", context)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["validate_d3_int8", "--output", str(tmp_path / "fresh.json"), *arguments],
+    )
+    with pytest.raises(SystemExit) as error:
+        validation.main()
+    assert error.value.code == 2
+    parity.assert_not_called()
+    context.assert_not_called()
+
+
+def test_mini_cli_preserves_existing_output_before_execution(monkeypatch, tmp_path):
+    from teacher import validate_d3_int8 as validation
+
+    output = tmp_path / "existing.json"
+    output.write_text("must remain unchanged")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["validate_d3_int8", "--output", str(output), "--mini-int8-experiment"],
+    )
+    with pytest.raises(FileExistsError):
+        validation.main()
+    assert output.read_text() == "must remain unchanged"
 
 
 def test_diagnostic_suite_is_fixed_and_covers_types_and_images():

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §29 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §30 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -275,7 +275,23 @@ Keep this section and the Task List current; a new session resumes from them.
   labels or a new quality threshold. Normal mini stays BF16/2,048; INT8 is
   explicit opt-in. Twelve new CPU tests; 27 d3 checks, full suite 326 passes
   plus known transformer expected failure; lint/format/diagnostics clean.
-  DESIGN.md §4 and REVIEW.md §29 record limits. No context probe has run yet.
+  DESIGN.md §4 and REVIEW.md §29 record limits. Resource continuation is below.
+
+- Approved resource-only continuation completed (2026-10-16): three existing
+  unchanged full inputs (startup clear, warm clear, warm slalom), 3,421/7,616/
+  10,705 tokens with one/eight/eight valid history ticks, tested against
+  4,096/8,192/12,288 ceilings. Six admitted cases completed; three budget
+  rejections, no truncation/OOM/cap failure. Largest peaks: 6.478 GiB allocated,
+  7.313 GiB reserved under the 10 GiB PyTorch cap. All answer values discarded;
+  zero mode labels. Report: `teacher/reports/d3-mini-context-resource-capped-20261016.json`;
+  complete input/token/provenance hashes independently checked on CPU. No actual
+  12,288-token sequence, longer-context BF16 parity or task quality was tested.
+  Both approved stages are complete; normal BF16/2,048 and inputs/history/drafts
+  unchanged. No live labeling, dataset, training, new episode, dependency/download
+  or hardware work. Ten new tests; 37 d3 checks, full suite 336 passes plus the
+  known transformer expected failure; lint/format/diagnostics clean. DESIGN.md
+  §4 and REVIEW.md §30 record limits. Live-use strategy/targets/data still need
+  review, mode stays unlabeled, and ST tools/board remain unavailable.
 
 ## Task List
 
@@ -368,6 +384,11 @@ on missing tools, and continue with the next unblocked task.
   80 states; no sampled full-history request fits. Numeric payload dominates
   the isolated diagnostics, which are not additive or removal estimates.
   REVIEW.md §28 documents the decision options; live use remains blocked.
+  Resource-only follow-up (2026-10-16): capped mini INT8 parity and three full-
+  input context probes are complete (DESIGN.md §4, REVIEW.md §§29–30). Selected
+  warm inputs run under experimental ceilings, not the normal 2,048 limit.
+  Answers were discarded; mode and real labeling remain unapproved. No normal
+  budget, input-strategy or teacher-quality gate is cleared by resource fit.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

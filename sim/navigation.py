@@ -48,14 +48,17 @@ def register_synthetic_points(
     ):
         if value is None:
             continue
-        if (
-            isinstance(value, bool)
-            or not isinstance(value, Real)
-            or not math.isfinite(value)
-            or value < 0
-        ):
+        if isinstance(value, bool) or not isinstance(value, Real) or value < 0:
             raise ValueError(f"{name} must be finite nonnegative numeric data")
-        result[name] = float(value)
+        try:
+            timestamp = float(value)
+        except OverflowError as error:
+            raise ValueError(
+                f"{name} must be finite nonnegative numeric data"
+            ) from error
+        if not math.isfinite(timestamp):
+            raise ValueError(f"{name} must be finite nonnegative numeric data")
+        result[name] = timestamp
     if acquisition_time_s is None or reference_time_s is None:
         return result
     if reference_time_s < acquisition_time_s:
@@ -78,13 +81,17 @@ def register_synthetic_points(
             else raw.shape == (3,)
         )
         if not shape_valid or any(
-            isinstance(number, bool)
-            or not isinstance(number, Real)
-            or not math.isfinite(number)
+            isinstance(number, bool) or not isinstance(number, Real)
             for number in raw.flat
         ):
             raise ValueError(f"{name} requires finite numeric planar data")
-        arrays[name] = np.asarray(raw, dtype=float)
+        try:
+            numeric = np.asarray(raw, dtype=float)
+        except OverflowError as error:
+            raise ValueError(f"{name} requires finite numeric planar data") from error
+        if not np.isfinite(numeric).all():
+            raise ValueError(f"{name} requires finite numeric planar data")
+        arrays[name] = numeric
     rotations = {}
     for name in ("sensor_pose", "acquisition_pose", "reference_pose"):
         yaw = arrays[name][2]

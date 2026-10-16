@@ -1907,6 +1907,16 @@ stay unchanged. Physical uncertainty/registration, target evidence, negative/cle
 evidence, mode and actual family/cohort/task data remain unqualified; Tasks 6/9
 and the independent ST/board gates are not cleared.
 
+Registration validation follow-up (2026-10-16): seven oversized-integer
+point/pose/timestamp cases reproduced an `OverflowError` escaping the documented
+`ValueError` rejection contract. Scalar and array conversions now reject
+unrepresentable numeric inputs as `ValueError` and check finiteness after
+binary64 conversion. Representable-input geometry, signatures, missing-evidence
+behavior and witness guards are unchanged. All 22 numeric-rejection cases,
+215 simulator tests and 531 repository tests pass plus the known transformer
+expected failure; lint/format/editor/doc checks pass. No scope, policy, input,
+default, data, dependency or hardware change accompanies this repair.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

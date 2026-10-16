@@ -986,6 +986,13 @@ def test_registration_reference_missing_evidence_stays_unknown(
         ("reference_time_s", float("inf")),
         ("reference_time_s", "1.1"),
         ("reference_time_s", 0.5),
+        ("points", [[10**400, 0]]),
+        ("points", [[-(10**400), 0]]),
+        ("sensor_pose", [0, 0, 10**400]),
+        ("acquisition_pose", [10**400, 0, 0]),
+        ("reference_pose", [-(10**400), 0, 0]),
+        ("acquisition_time_s", 10**400),
+        ("reference_time_s", 10**400),
     ],
 )
 def test_registration_reference_rejects_invalid_evidence(

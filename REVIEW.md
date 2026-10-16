@@ -2265,6 +2265,25 @@ accepted families/cohort and reviewed task data/splits. ST tools and board remai
 independent blockers. The proposed qualification plan's physical claim/domain,
 references, collection scope and numeric conventions still need review.
 
+## 43. Registration Numeric Rejection Repair (2026-10-16)
+
+Seven new regressions reproduced `OverflowError` for oversized integers in
+artificial points, each pose and both timestamps. `math.isfinite` attempted an
+unrepresentable integer-to-float conversion before the reference could issue its
+documented `ValueError`. Numeric conversion boundaries now translate overflow
+to `ValueError` and validate finiteness on the converted scalar/array. Shape,
+boolean/type, sign, time-order, scope and missing-evidence checks remain intact;
+no signature, transform, witness integration or approval boundary changed.
+
+The exact failing check now passes all 22 cases. Full gate: 215 simulator tests,
+531 repository passes plus the known transformer numerical expected failure,
+Ruff lint/changed-file format, editor diagnostics and documentation reference/
+local-target/whitespace checks. No existing logs, study episodes, artifacts,
+labels/data/splits, live teacher/training, dependency/download or hardware action
+occurred. Inputs/history/defaults/token ceiling and quarantine stay unchanged.
+This is a synthetic-reference validation repair, not uncertainty/registration
+qualification; all target, mode, cohort/data and ST/board gates remain blocked.
+
 ## Sources
 
 Hardware and tools:

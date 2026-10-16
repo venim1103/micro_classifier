@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §42 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §43 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -529,6 +529,15 @@ Keep this section and the Task List current; a new session resumes from them.
   or hardware action; inputs/history/defaults/token ceiling/quarantine unchanged.
   Tasks 6/9 still require reviewed real uncertainty/registration/target evidence,
   mode and actual accepted family/cohort/task data; ST/board gates remain blocked.
+
+- Registration validation repair (2026-10-16): seven oversized-integer point,
+  pose and timestamp regressions reproduced escaped `OverflowError`; conversion
+  boundaries now consistently reject unrepresentable evidence with `ValueError`.
+  All 22 rejection cases, 215 simulator tests and 531 repository tests pass plus
+  the known transformer expected failure; lint/format/editor/doc checks pass.
+  DESIGN.md §7 and REVIEW.md §43 record the repair. No signature, transform,
+  witness guard, scope/policy, data, input/default, dependency or hardware change;
+  Tasks 6/9 and ST/board gates remain blocked.
 
 ## Task List
 

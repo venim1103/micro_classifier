@@ -2003,6 +2003,56 @@ data/splits remain missing. Human review remains observation-only with abstentio
 current logs remain diagnostic-only. No integration, labeling, inference,
 training or physical deployment permission follows from this reference.
 
+## 37. Bounded Diagnostic Source-Provenance Audit (2026-10-16)
+
+The user approved bounded CPU-only provenance tooling/tests and a read-only
+audit of at most 16 existing diagnostic logs, producing non-label evidence.
+Current quarantine remains adopted; privileged source metadata is diagnostic
+audit material, not reviewer input. No accepted family/cohort/split assignment,
+episode generation, annotation/data, inference/training, download/dependency,
+hardware or default/input change is approved by this increment.
+
+`teacher/provenance.py` hashes complete source bytes in bounded-memory chunks
+and parses only the first metadata record. It validates complete declared
+Config/Scenario fields without silently filling defaults, rejects duplicate
+keys/nonfinite JSON and caps the metadata header at 1 MiB. Admission allows
+1-16 explicit files; total I/O remains dependent on their size. Body records,
+observations, actions, existing diagnostic labels and truth are not validated
+or reproduced. Output is exclusive/fresh. Metadata/file identities are not
+attested source genealogy, and text lines are not reviewed task samples.
+
+The report compares exact file/config/declared-geometry/name matches separately,
+without transitive family assignment. Geometry excludes the scenario name but
+retains exact JSON values and obstacle order. Rotation, reflection, reordered
+obstacles and other variants are not normalized; different hashes therefore
+do not establish independence. Every source/template family and partition is
+unresolved and unreviewed. No source is promoted from diagnostic-only use.
+
+Real run: eight coverage logs plus four label-smoke and four wire-smoke logs,
+all pre-existing. Sixteen distinct file hashes cover 22,245,926 bytes and 1,413
+lines. No byte-duplicate group; two config-match groups, three exact geometry
+groups and four scene-name groups. Geometry repeats for open-hold/clear smoke/
+clear wire, corridor smoke/wire and slalom smoke/wire. Obstacle smoke/wire have
+matching names but not exact geometry. This is a concrete leakage-review
+warning, not a complete family graph or a task leakage measurement.
+
+All 16 file/metadata/config/scenario/geometry hashes and comparison memberships
+were independently recomputed on CPU, along with strict quarantine/no-promotion
+and no-payload-leakage checks. Report:
+`teacher/reports/provenance-audit-20261016.json`, SHA256
+`67527a5a2de38726dd3539467ba9f8f95b3b11634f7c14f20907ea63aa1d2ef3`;
+tool SHA256 `d530cc49cb6ebc08ca072851c8a636d23028cc4cee01781cf416c41db3fceb09`.
+Zero actual annotations/mode labels/teacher calls and accepted family assignments.
+
+Eighteen synthetic checks pass, with 54 evaluation/provenance tests and 431
+repository passes plus the known transformer numerical expected failure.
+Lint, changed-file format, editor diagnostics and doc/reference/whitespace
+checks pass. No existing log, review packet or historical report was modified;
+runtime simulation/proxies/interface/renderer/review/oracle paths are unchanged.
+Tasks 6/9 remain blocked on reviewed target evidence/labels, mode semantics and
+actual family/cohort/task-data review. Candidate identity matches do not replace
+those decisions, accept a cohort or lock any split. ST/board gates remain separate.
+
 ## Sources
 
 Hardware and tools:

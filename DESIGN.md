@@ -1637,6 +1637,62 @@ simulator, existing labeler, teacher pipeline or review ingestion.
 
 [navigation-reference]: sim/navigation.py
 
+#### Diagnostic Source-Provenance Audit (2026-10-16)
+
+The user approved CPU-only audit tooling, synthetic tests and a read-only run
+over at most 16 existing diagnostic logs, producing a non-label evidence report.
+This is preparation for source/template-family review, not that review's
+acceptance or a task cohort/split. Current-log quarantine remains controlling;
+privileged scene metadata remains separate audit evidence, never reviewer input.
+
+The [audit tool][provenance-audit] accepts 1-16 explicit source paths before
+opening any source. It requires the simulator metadata header and complete
+declared Config/Scenario fields; missing fields are rejected rather than filled
+from defaults. The header must fit within 1 MiB and contain finite JSON without
+duplicate object keys. All file bytes are hashed in bounded-memory chunks;
+source count does not bound total I/O. Observation/action/label bodies are not
+parsed or validated, and text-line counts are not reviewed sample counts.
+No input source is written, and CLI output must be fresh.
+
+Each row records file/metadata/config/scenario identities, exact declared
+geometry identity excluding its name, optional declared seed/policy and source
+size/line count. Raw observation, truth, action and label contents are not
+reproduced. The tool separately compares file, config, geometry and scene-name
+equality. These are **candidate comparisons**, not accepted groups, and are not
+merged transitively. Geometry preserves JSON values/types and obstacle ordering;
+mirrors, rotations, reordering and near variants are not normalized. Inequality
+therefore establishes neither independence nor different lineage. Declared
+metadata is not authenticated parent/template provenance. Source/template
+families and partitions stay null and unreviewed in every row.
+
+The real offline/GPU-hidden run read eight existing coverage probes, four
+label-smoke logs and four wire-smoke logs: 16 distinct file hashes, 22,245,926
+bytes and 1,413 text lines. It found no byte-duplicate group, two config-match
+groups, three geometry-match groups and four scene-name-match groups. Exact
+geometry repeats across open-hold/clear smoke/clear wire, corridor smoke/wire
+and slalom smoke/wire. The obstacle smoke/wire names match without an exact
+geometry match. These findings demonstrate why distinct file hashes or seeds
+cannot be treated as independent evaluation groups; they do not determine the
+complete family graph. All file/metadata/config/scenario/geometry identities
+and comparison memberships were independently recomputed on CPU.
+
+The [evidence report][provenance-audit-report] has SHA256
+`67527a5a2de38726dd3539467ba9f8f95b3b11634f7c14f20907ea63aa1d2ef3`;
+tool SHA256 `d530cc49cb6ebc08ca072851c8a636d23028cc4cee01781cf416c41db3fceb09`.
+It records zero accepted family assignments, annotations, mode labels or teacher
+calls. Every source remains diagnostic-only, with no accepted task cohort,
+reviewed dataset, partition or split lock. Eighteen new synthetic cases pass;
+54 evaluation/provenance tests and 431 repository passes plus the known
+transformer expected failure, with clean lint/format/editor/doc checks.
+Existing simulation, proxies, geometry oracle, input/defaults, review packets
+and renderer paths are unchanged. No episode, task data, annotation, inference,
+training, download/dependency or hardware action occurred. Task 9 still needs
+actual family/cohort review and reviewed task data; this audit alone cannot
+promote any quarantined log into an accepted purpose.
+
+[provenance-audit]: teacher/provenance.py
+[provenance-audit-report]: teacher/reports/provenance-audit-20261016.json
+
 ### Teacher-Pipeline Host Preparation (2026-10-16)
 
 The [host pipeline][teacher-label-pipeline] completes Task 8's approved

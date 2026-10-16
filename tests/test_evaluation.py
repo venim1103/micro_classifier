@@ -23,6 +23,189 @@ def arithmetic_fixture():
     ]
 
 
+@pytest.fixture
+def provenance_header():
+    from dataclasses import asdict
+
+    from sim.rover import Config, Scenario
+
+    return {
+        "schema": "micro-classifier/sim-episode/1",
+        "kind": "metadata",
+        "config": asdict(Config()),
+        "scenario": asdict(Scenario()),
+        "observation": "SECRET_INPUT",
+        "action": "SECRET_ACTION",
+        "simulation_label": "SECRET_LABEL",
+    }
+
+
+def test_diagnostic_provenance_distinguishes_bytes_name_and_geometry(
+    tmp_path, provenance_header
+):
+    from teacher.provenance import audit_source
+
+    metadata = deepcopy(provenance_header)
+    first, second = tmp_path / "first.jsonl", tmp_path / "second.jsonl"
+    first.write_text(json.dumps(metadata) + "\n")
+    metadata["scenario"]["name"] = "renamed"
+    second.write_text(json.dumps(metadata) + "\n")
+    before = first.read_bytes()
+    original, renamed = audit_source(first), audit_source(second)
+    assert original["episode_sha256"] == hashlib.sha256(before).hexdigest()
+    assert original["episode_sha256"] != renamed["episode_sha256"]
+    assert original["scenario_sha256"] != renamed["scenario_sha256"]
+    assert original["geometry_sha256"] == renamed["geometry_sha256"]
+    assert original["config_sha256"] == renamed["config_sha256"]
+    assert original["source_family"] is original["template_family"] is None
+    assert original["partition"] is None and original["reviewed"] is False
+    assert "SECRET" not in json.dumps(original)
+    assert first.read_bytes() == before
+
+
+@pytest.mark.parametrize("count", [0, 17])
+def test_diagnostic_provenance_bounds_apply_before_source_reads(count):
+    from teacher.provenance import audit_sources
+
+    with pytest.raises(ValueError, match="1-16"):
+        audit_sources(["not-opened"] * count)
+
+
+def test_diagnostic_provenance_matches_do_not_assign_groups(
+    tmp_path, provenance_header
+):
+    from teacher.provenance import audit_sources
+
+    source, renamed = tmp_path / "source.jsonl", tmp_path / "renamed.jsonl"
+    source.write_text(json.dumps(provenance_header) + "\n")
+    changed = deepcopy(provenance_header)
+    changed["scenario"]["name"] = "renamed"
+    renamed.write_text(json.dumps(changed) + "\n")
+    report = audit_sources([source, source, renamed])
+    assert report["source_count"] == 3 and report["distinct_episode_count"] == 2
+    assert (
+        report["accepted_family_assignments"]
+        == report["actual_annotations"]
+        == report["teacher_calls"]
+        == 0
+    )
+    assert report["all_sources_quarantined"] and not report["body_validation_performed"]
+    assert (
+        not report["reviewer_input"]
+        and not report["reviewed_dataset"]
+        and not report["training_approved"]
+    )
+    assert not report["split_locked"] and not report["task_cohort_accepted"]
+    geometry = [
+        row
+        for row in report["candidate_comparisons"]
+        if row["criterion"] == "geometry_sha256"
+    ]
+    assert len(geometry) == 1 and geometry[0]["source_indices"] == [0, 1, 2]
+    assert all(
+        row["source_family"] is row["template_family"] is row["partition"] is None
+        and row["reviewed"] is False
+        for row in report["sources"]
+    )
+    assert "SECRET" not in json.dumps(report)
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "schema",
+        "missing",
+        "partial_config",
+        "partial_scenario",
+        "config",
+        "scenario",
+        "name",
+        "seed",
+        "policy",
+        "duplicate",
+        "nan",
+        "large",
+    ],
+)
+def test_diagnostic_provenance_rejects_invalid_metadata(
+    tmp_path, provenance_header, defect
+):
+    from teacher.provenance import CHUNK_BYTES, audit_source
+
+    metadata = deepcopy(provenance_header)
+    if defect == "schema":
+        metadata["schema"] = "unknown"
+    elif defect == "missing":
+        del metadata["config"]
+    elif defect == "partial_config":
+        del metadata["config"]["radius"]
+    elif defect == "partial_scenario":
+        del metadata["scenario"]["obstacles"]
+    elif defect == "config":
+        metadata["config"]["dt"] = -1
+    elif defect == "scenario":
+        metadata["scenario"]["goal"] = [0, 0]
+    elif defect == "name":
+        metadata["scenario"]["name"] = False
+    elif defect == "seed":
+        metadata["seed"] = True
+    elif defect == "policy":
+        metadata["policy"] = 1
+    elif defect == "nan":
+        metadata["ignored"] = float("nan")
+    elif defect == "large":
+        metadata["ignored"] = "x" * CHUNK_BYTES
+    raw = json.dumps(metadata)
+    if defect == "duplicate":
+        raw = raw[:-1] + ', "kind": "metadata"}'
+    source = tmp_path / "invalid.jsonl"
+    source.write_text(raw + "\n")
+    with pytest.raises(ValueError):
+        audit_source(source)
+
+
+def test_diagnostic_provenance_hashes_unparsed_body_with_bounded_chunks(
+    tmp_path, provenance_header
+):
+    from teacher.provenance import CHUNK_BYTES, audit_source
+
+    source = tmp_path / "body.jsonl"
+    raw = (
+        (json.dumps(provenance_header) + "\n").encode()
+        + b"x" * (CHUNK_BYTES + 3)
+        + b"\nnot-json"
+    )
+    source.write_bytes(raw)
+    report = audit_source(source)
+    assert report["episode_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert report["byte_count"] == len(raw) and report["line_count"] == 3
+
+
+def test_diagnostic_provenance_cli_is_fresh_and_read_only(
+    tmp_path, monkeypatch, provenance_header
+):
+    import sys
+
+    from teacher.provenance import main as provenance_main
+
+    source, output = tmp_path / "source.jsonl", tmp_path / "audit.json"
+    source.write_text(json.dumps(provenance_header) + "\n")
+    before = source.read_bytes()
+    monkeypatch.setattr(
+        sys, "argv", ["provenance", "--episode", str(source), "--output", str(output)]
+    )
+    provenance_main()
+    assert source.read_bytes() == before
+    assert json.loads(output.read_text())["source_count"] == 1
+    with pytest.raises(FileExistsError):
+        provenance_main()
+    monkeypatch.setattr(
+        sys, "argv", ["provenance", "--episode", "not-opened", "--output", str(output)]
+    )
+    with pytest.raises(FileExistsError):
+        provenance_main()
+
+
 def test_metrics_match_hand_computed_multiclass_values(arithmetic_fixture):
     labels, probabilities = arithmetic_fixture
     report = evaluate_synthetic(

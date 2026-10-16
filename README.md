@@ -174,6 +174,28 @@ reviewed observation-to-target evidence is still missing. See REVIEW.md §36.
 
 [navigation-reference]: sim/navigation.py
 
+## Diagnostic Source-Provenance Audit
+
+The [bounded audit][provenance-audit] compares identities and declared metadata
+from 1-16 existing diagnostic logs without changing them:
+
+```sh
+CUDA_VISIBLE_DEVICES="" HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m teacher.provenance \
+	--episode sim/episodes/label-smoke-20261016/clear.jsonl \
+	--episode sim/episodes/wire-v0-smoke/clear-20261015.jsonl \
+	--output teacher/reports/my-provenance-audit.json
+```
+
+Output must be fresh. Only metadata is parsed; all bytes are hashed, but body
+observations/actions/labels are not validated or reproduced. Similarity matches
+are candidate evidence, never accepted families, cohorts or splits. All logs
+remain diagnostic-only, with unresolved lineage. The [16-source report][provenance-audit-report]
+found three repeated-geometry groups despite distinct file hashes. It does not
+establish independence or promote a task dataset. See REVIEW.md §37 for limits.
+
+[provenance-audit]: teacher/provenance.py
+[provenance-audit-report]: teacher/reports/provenance-audit-20261016.json
+
 ## Blind Human-Review Preparation
 
 The [CPU-only review tooling][blind-review-tool] exports blank packets from

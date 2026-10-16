@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §36 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §37 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -414,6 +414,31 @@ Keep this section and the Task List current; a new session resumes from them.
   and actual reviewed cohort/data. Do not re-ask first-three simulation adoption
   or the already-adopted reviewer-evidence/quarantine policy questions.
 
+- Approved (2026-10-16): bounded CPU-only provenance-audit tooling and a read-only
+  run over at most 16 existing diagnostic logs, plus synthetic tests and a
+  non-label evidence report. Compare file/metadata/config and declared
+  scene/template evidence only; unknown lineage stays unresolved and all logs
+  remain quarantined. Privileged metadata is separate diagnostic evidence, not
+  reviewer input. No accepted family/cohort/split assignments, episodes,
+  annotations/dataset, inference, training, downloads/dependencies, hardware or
+  default/input changes.
+
+- Diagnostic provenance audit completed (2026-10-16) in `teacher/provenance.py`:
+  bounded metadata-only tooling and 18 synthetic cases, then an approved
+  read-only run on 16 existing logs (22,245,926 bytes; 1,413 lines). All file,
+  metadata/config/scenario/geometry hashes and comparisons independently audited.
+  Distinct file hashes still share three exact declared-geometry match groups
+  and four scene-name groups; these are candidate evidence, not family acceptance
+  or independence proof. Two config-match groups; no byte-duplicate group.
+  Report: `teacher/reports/provenance-audit-20261016.json`. All source/template
+  families/partitions remain unresolved, logs quarantined, zero annotations or
+  accepted family assignments. Body observations/actions/labels are neither
+  validated nor reproduced. All 54 evaluation/provenance tests and 431 repository
+  tests pass plus the known transformer expected failure; lint/format/editor/doc
+  checks pass. DESIGN.md §7 and REVIEW.md §37. No dataset, episode, inference,
+  training, dependency/download, hardware or accepted-input/default change.
+  Tasks 6/9 still await reviewed target evidence/mode and actual family/cohort/data.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -550,6 +575,10 @@ on missing tools, and continue with the next unblocked task.
   quarantine are adopted; source/template families must be reviewed before task
   cohort/split acceptance. Actual family reviews, targets, reviewed task data and
   all split assignments remain pending. No cohort or split was locked.
+  Provenance-audit result (2026-10-16, REVIEW.md §37): 16 current diagnostic logs
+  now have independently checked identity/declared-geometry evidence, including
+  repeated geometry across differently hashed files. No family was accepted or
+  cohort/split assigned; body validity and task truth are not established.
 10. [blocked: training outside current tooling scope; dataset pending]
   Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled

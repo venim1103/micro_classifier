@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §32 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §33 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -340,6 +340,17 @@ Keep this section and the Task List current; a new session resumes from them.
   format/editor diagnostics and audits pass. DESIGN.md §7 and REVIEW.md §32.
   Tasks 6/9 still await target/evidence/cohort review and actual reviewed data;
   no training, inference, download/dependency, hardware or accepted-default change.
+
+- Review-validator follow-up (2026-10-16): four reproduced regressions showed
+  Python equality accepting boolean/float question IDs and numeric unreviewed
+  flags after packet rehashing. Fixed metadata now uses existing canonical JSON
+  comparisons to preserve JSON types. All 81 pipeline tests and 378 repository
+  tests pass plus the known transformer expected failure; lint, changed-file
+  format and editor diagnostics pass. All 32 unchanged historical blank packets
+  pass the stricter validator and their recorded file hash matches. No packet or
+  report was regenerated; old tool hashes describe the original export version.
+  DESIGN.md §7 and REVIEW.md §33 record the repair. No policy, labels, dataset,
+  splits, inputs/defaults, inference, training, dependency or hardware change.
 
 ## Task List
 

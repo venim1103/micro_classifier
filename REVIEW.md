@@ -1845,6 +1845,33 @@ those decisions and ST/board gates remain pending.
 [blind-review-tool]: teacher/review.py
 [blind-review-report]: teacher/reports/review-preparation-20261016.json
 
+## 33. Review Metadata Type Parity Fix (2026-10-16)
+
+Continuing within the approved CPU-only review tooling, four regression cases
+reproduced a strict-format defect: Python structural equality accepted boolean
+`true` or float `1.0` as catalogue question ID `1`, and integer `0` or float
+`0.0` as the grouping's unreviewed boolean `false`. Recomputing the packet ID
+did not reject those unsupported metadata types. Every regression failed with
+"DID NOT RAISE" before the repair; this was format permissiveness, not evidence
+of an actual annotation, scope promotion or dataset acceptance.
+
+Fixed question/blank-assessment/grouping comparisons now use the existing
+canonical JSON helper rather than Python numeric equality. No new dependency,
+schema, option, policy or output value is introduced. All four reproductions
+now reject; 81 pipeline tests and 378 repository tests pass plus the known
+transformer numerical expected failure. Ruff lint, changed-file format and
+editor diagnostics pass. Test discovery remains disabled; repository `pytest`
+was used with CUDA hidden and Hugging Face/Transformers offline settings.
+
+A read-only compatibility audit accepts all 32 previously prepared packets and
+verifies their file hash against the unchanged evidence report. No packet or
+report was regenerated or modified; the stored tool hash remains the original
+export-version record, not an assertion that current validator source is
+byte-identical. The full renderer and its request/cache provenance remain
+unchanged. No actual labels/annotations, reviewed data, split lock, teacher
+inference, training, new study episode, download/dependency or hardware action.
+Tasks 6/9 and the remaining target/reviewer-evidence/cohort decisions stay blocked.
+
 ## Sources
 
 Hardware and tools:

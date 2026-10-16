@@ -110,10 +110,9 @@ def validate_review_packet(packet):
         )
     ):
         raise ValueError("review preparation scope cannot be promoted")
-    if (
-        packet["questions"] != review_questions()
-        or packet["assessments"] != blank_assessments()
-    ):
+    if canonical(packet["questions"]) != canonical(review_questions()) or canonical(
+        packet["assessments"]
+    ) != canonical(blank_assessments()):
         raise ValueError("review packets must contain only blank catalogue assessments")
     state = packet["state"]
     if (
@@ -142,13 +141,15 @@ def validate_review_packet(packet):
         or source["frame_origin"] not in ("embedded", "synthesized_from_observation")
     ):
         raise ValueError("review source provenance is invalid")
-    if packet["grouping"] != {
-        "episode_sha256": source["episode_sha256"],
-        "source_family": None,
-        "template_family": None,
-        "reviewed": False,
-        "partition": None,
-    }:
+    if canonical(packet["grouping"]) != canonical(
+        {
+            "episode_sha256": source["episode_sha256"],
+            "source_family": None,
+            "template_family": None,
+            "reviewed": False,
+            "partition": None,
+        }
+    ):
         raise ValueError("family/grouping review and split assignments remain pending")
     provenance = packet["input_provenance"]
     hashes = {

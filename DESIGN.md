@@ -1548,6 +1548,17 @@ fixtures are not study episodes or a task cohort. Tasks 6/9 still require target
 definitions, permitted review evidence, family/cohort review and actual reviewed
 data. Neither a target policy nor a representative evaluation set is adopted.
 
+Follow-up (2026-10-16, REVIEW.md §33): four failing regressions reproduced
+Python equality accepting `true`/`1.0` for question ID `1` and `0`/`0.0` for
+grouping `reviewed: false`, even with recomputed packet IDs. Fixed metadata
+comparisons now use existing canonical JSON encoding, rejecting those JSON-type
+aliases without changing valid packet output or policy. The 81 pipeline tests
+and 378 repository tests pass plus the known transformer expected failure;
+lint/format/editor diagnostics pass. All 32 existing blank packets validate
+unchanged and their recorded file hash still matches. Neither artifact was
+regenerated; the earlier tool hash identifies the exporter at generation time,
+not the current validator. No target/data/annotation/training gate is cleared.
+
 [blind-review-tool]: teacher/review.py
 [blind-review-report]: teacher/reports/review-preparation-20261016.json
 

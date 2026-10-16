@@ -96,6 +96,26 @@ def test_review_packet_rejects_tampering_even_with_recomputed_id(sample, defect)
         validate_review_packet(packet)
 
 
+@pytest.mark.parametrize(
+    "field,value",
+    [("question_id", True), ("question_id", 1.0), ("reviewed", 0), ("reviewed", 0.0)],
+)
+def test_review_packet_rejects_numeric_metadata_aliases(sample, field, value):
+    from teacher.label_pipeline import digest
+    from teacher.review import make_review_packet, validate_review_packet
+
+    packet = make_review_packet(review_request(sample))
+    if field == "question_id":
+        packet["questions"][0]["id"] = value
+    else:
+        packet["grouping"]["reviewed"] = value
+    packet["packet_id"] = digest(
+        {key: item for key, item in packet.items() if key != "packet_id"}
+    )
+    with pytest.raises(ValueError):
+        validate_review_packet(packet)
+
+
 @pytest.mark.parametrize("defect", ["padding", "range_shape", "motion"])
 def test_review_rehashing_does_not_bypass_renderer_validation(sample, defect):
     import hashlib

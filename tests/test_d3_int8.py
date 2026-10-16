@@ -1,3 +1,4 @@
+import contextlib
 import hashlib
 import json
 from types import SimpleNamespace
@@ -13,7 +14,9 @@ from teacher.validate_d3_int8 import (
     compare,
     diagnostic_requests,
     fixture_digest,
+    mini_experiment_memory_limit,
     stored_reference,
+    validate_mini_int8_experiment,
 )
 from teacher.vela_int8 import HostEmbedding, Int8Linear
 
@@ -192,6 +195,152 @@ def test_unapproved_local_manifest_is_rejected_before_import(tmp_path, monkeypat
     with pytest.raises(ValueError, match="approved model revision"):
         load_engine(tmp_path, device="cpu")
     release_import.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "repo_id,experiment,budget,quantized",
+    [
+        (REPO_ID, False, 2048, True),
+        ("vllm-sr/d3-mini", False, 2048, False),
+        ("vllm-sr/d3-mini", True, 12288, True),
+    ],
+)
+def test_loader_mini_experiment_is_explicit_and_defaults_unchanged(
+    tmp_path, monkeypatch, repo_id, experiment, budget, quantized
+):
+    from teacher import d3_int8
+
+    raw = b'{"fixture":true}'
+    (tmp_path / "MODEL_MANIFEST.json").write_bytes(raw)
+    monkeypatch.setitem(
+        d3_int8.APPROVED_MANIFESTS, repo_id, hashlib.sha256(raw).hexdigest()
+    )
+    manifest = {"fixture": True}
+    verification = Mock(return_value=manifest)
+    backbone = Mock(return_value=object())
+    runtime = SimpleNamespace(backbone_class=Mock(), D3=Mock(return_value=object()))
+    monkeypatch.setattr(d3_int8, "verify_package", verification)
+    monkeypatch.setattr(d3_int8, "load_backbone", backbone)
+    monkeypatch.setattr(d3_int8, "release_module", Mock(return_value=runtime))
+    options = {"experimental_mini_int8": True} if experiment else {}
+    teacher = load_engine(
+        tmp_path, device="cpu", repo_id=repo_id, token_budget=budget, **options
+    )
+    assert teacher.quantized is quantized and teacher.token_budget == budget
+    verification.assert_called_once_with(tmp_path)
+    backbone.assert_called_once_with(tmp_path, "cpu", quantized=quantized)
+    assert runtime.D3.call_args.kwargs["max_length"] == budget
+    assert runtime.D3.call_args.kwargs["manifest"] == manifest
+
+
+@pytest.mark.parametrize(
+    "options,error,match",
+    [
+        ({"token_budget": 2049}, ValueError, "2048"),
+        ({"experimental_mini_int8": True}, ValueError, "only approved for d3-mini"),
+        (
+            {"repo_id": "vllm-sr/d3-mini", "experimental_mini_int8": "yes"},
+            TypeError,
+            "boolean",
+        ),
+        (
+            {
+                "repo_id": "vllm-sr/d3-mini",
+                "experimental_mini_int8": True,
+                "token_budget": 12289,
+            },
+            ValueError,
+            "12288",
+        ),
+    ],
+)
+def test_loader_experiment_rejects_invalid_scope_before_release_import(
+    tmp_path, monkeypatch, options, error, match
+):
+    release = Mock()
+    monkeypatch.setattr("teacher.d3_int8.release_module", release)
+    with pytest.raises(error, match=match):
+        load_engine(tmp_path, **options)
+    release.assert_not_called()
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_mini_memory_cap_is_enforced_and_restored_without_gpu(monkeypatch, fail):
+    cuda = torch.cuda
+    monkeypatch.setattr(cuda, "is_available", lambda: True)
+    monkeypatch.setattr(cuda, "get_device_capability", lambda device: (8, 6))
+    monkeypatch.setattr(
+        cuda,
+        "get_device_properties",
+        lambda device: SimpleNamespace(total_memory=12 * 2**30),
+    )
+    monkeypatch.setattr(cuda, "mem_get_info", lambda device: (11 * 2**30, 12 * 2**30))
+    monkeypatch.setattr(cuda, "get_per_process_memory_fraction", lambda device: 1.0)
+    monkeypatch.setattr(cuda, "memory_reserved", lambda device: 0)
+    setter = Mock()
+    monkeypatch.setattr(cuda, "set_per_process_memory_fraction", setter)
+    monkeypatch.setattr(cuda, "reset_peak_memory_stats", Mock())
+    try:
+        with mini_experiment_memory_limit() as limit:
+            assert limit["enforced_cap_bytes"] == 10 * 2**30
+            assert setter.call_args.args == (10 / 12, "cuda:0")
+            if fail:
+                raise RuntimeError("simulated OOM")
+    except RuntimeError:
+        assert fail
+    assert setter.call_args.args == (1.0, "cuda:0")
+    assert setter.call_count == 2
+
+
+def test_mini_memory_cap_rejects_incompatible_gpu_before_allocation(monkeypatch):
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "get_device_capability", lambda device: (6, 1))
+    setter = Mock()
+    monkeypatch.setattr(torch.cuda, "set_per_process_memory_fraction", setter)
+    with pytest.raises(ValueError, match="native BF16"), mini_experiment_memory_limit():
+        pytest.fail("incompatible GPU must not enter experiment")
+    setter.assert_not_called()
+
+
+@pytest.mark.parametrize("oom", [False, True])
+def test_mini_parity_experiment_is_capped_and_requires_review(
+    monkeypatch, oom, tmp_path
+):
+    from teacher import validate_d3_int8 as validation
+
+    limit = {"enforced_cap_bytes": 10 * 2**30}
+    monkeypatch.setattr(
+        validation,
+        "mini_experiment_memory_limit",
+        lambda: contextlib.nullcontext(limit),
+    )
+    engine = SimpleNamespace(
+        image_unavailable=None, runtime_info=lambda: {"fixture": True}
+    )
+    teacher = SimpleNamespace(
+        engine=engine, provenance=lambda: {"storage": "int8-group128"}
+    )
+    loader = Mock(
+        side_effect=torch.OutOfMemoryError("capped OOM") if oom else None,
+        return_value=teacher,
+    )
+    monkeypatch.setattr(validation.d3_int8, "load_engine", loader)
+    monkeypatch.setattr(torch.cuda, "memory_allocated", lambda: 4 * 2**30)
+    monkeypatch.setattr(torch.cuda, "max_memory_reserved", lambda: 5 * 2**30)
+    monkeypatch.setattr(torch.cuda, "is_initialized", lambda: False)
+    runner = Mock(return_value={"responses": {"fixture": True}})
+    monkeypatch.setattr(validation, "run_requests", runner)
+    monkeypatch.setattr(
+        validation, "stored_reference", lambda *args: contextlib.nullcontext()
+    )
+    monkeypatch.setattr(validation, "compare", lambda *args: {"decision_flips": 0})
+    report = validate_mini_int8_experiment(tmp_path)
+    assert report["memory_limit"] == limit
+    assert loader.call_args.kwargs["experimental_mini_int8"] is True
+    assert not report["training_approved"] and not report["live_labeling_approved"]
+    assert not report["context_probe_approved_by_parity"]
+    assert report["status"] == ("aborted" if oom else "complete_requires_parity_review")
+    assert runner.call_count == (0 if oom else 2)
 
 
 def test_diagnostic_suite_is_fixed_and_covers_types_and_images():

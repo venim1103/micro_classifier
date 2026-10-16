@@ -270,6 +270,103 @@ def run_requests(teacher, rows):
     }
 
 
+@contextlib.contextmanager
+def mini_experiment_memory_limit(device="cuda:0"):
+    if not torch.cuda.is_available() or torch.cuda.get_device_capability(device)[0] < 8:
+        raise ValueError("experiment requires native BF16-capable CUDA")
+    total = torch.cuda.get_device_properties(device).total_memory
+    free, _ = torch.cuda.mem_get_info(device)
+    previous = torch.cuda.get_per_process_memory_fraction(device)
+    fraction = min(previous, 10 * 2**30 / total)
+    limit = int(fraction * total)
+    if free < limit or torch.cuda.memory_reserved(device) > limit:
+        raise ValueError("insufficient free memory for the capped experiment")
+    torch.cuda.set_per_process_memory_fraction(fraction, device)
+    torch.cuda.reset_peak_memory_stats(device)
+    try:
+        yield {
+            "requested_cap_gib": 10,
+            "enforced_cap_bytes": limit,
+            "allocator_fraction": fraction,
+            "device_total_bytes": total,
+            "device_free_before_bytes": free,
+            "scope": "PyTorch caching allocator, not all driver allocations",
+        }
+    finally:
+        torch.cuda.set_per_process_memory_fraction(previous, device)
+
+
+def validate_mini_int8_experiment(path):
+    report = {
+        "schema": "micro-classifier/d3-mini-int8-experiment/1",
+        "repo_id": d3_int8.MINI_REPO_ID,
+        "revision": d3_int8.APPROVED_REVISIONS[d3_int8.MINI_REPO_ID],
+        "manifest_sha256": d3_int8.APPROVED_MANIFESTS[d3_int8.MINI_REPO_ID],
+        "status": "running",
+        "token_budget": 2048,
+        "training_approved": False,
+        "live_labeling_approved": False,
+        "task_quality_claim": False,
+        "context_probe_approved_by_parity": False,
+        "adapter_source_sha256": hashlib.sha256(
+            Path(d3_int8.__file__).read_bytes()
+        ).hexdigest(),
+        "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "limitations": [
+            "Synthetic parity/resource experiment, not task quality or training labels.",
+            "Normal adapter ceilings remain 2048; no larger-context inference in this phase.",
+            "Allocator cap excludes driver/native allocations; OOM aborts without retry.",
+            "Full manifest verification precedes approved cached release imports.",
+        ],
+    }
+    try:
+        with mini_experiment_memory_limit() as limit:
+            report["memory_limit"] = limit
+            started = time.perf_counter()
+            teacher = d3_int8.load_engine(
+                path=path,
+                device="cuda:0",
+                repo_id=d3_int8.MINI_REPO_ID,
+                experimental_mini_int8=True,
+            )
+            report["load"] = {
+                "seconds": time.perf_counter() - started,
+                "allocated_gib": torch.cuda.memory_allocated() / 2**30,
+                "peak_reserved_gib": torch.cuda.max_memory_reserved() / 2**30,
+            }
+            report["provenance"] = teacher.provenance()
+            report["environment"] = {
+                **teacher.engine.runtime_info(),
+                "python": platform.python_version(),
+            }
+            if teacher.engine.image_unavailable is not None:
+                raise RuntimeError(
+                    f"image validation unavailable: {teacher.engine.image_unavailable}"
+                )
+            rows = diagnostic_requests()
+            report["fixtures"] = {
+                "sha256": fixture_digest(rows),
+                "requests": len(rows),
+                "reviewed_labels": False,
+            }
+            print("Capped mini INT8 candidate pass", flush=True)
+            report["candidate"] = run_requests(teacher, rows)
+            print("Capped stored BF16 reference pass", flush=True)
+            with stored_reference(teacher, path):
+                report["reference"] = run_requests(teacher, rows)
+            report["parity"] = compare(
+                report["candidate"]["responses"], report["reference"]["responses"]
+            )
+            report["status"] = "complete_requires_parity_review"
+    except (RuntimeError, ValueError, OSError) as error:
+        report.update(
+            status="aborted", error_type=type(error).__name__, error=str(error)
+        )
+        if torch.cuda.is_initialized():
+            report["abort_peak_reserved_gib"] = torch.cuda.max_memory_reserved() / 2**30
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -277,7 +374,34 @@ def main():
     )
     parser.add_argument("--snapshot", type=Path)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--mini-int8-experiment", action="store_true")
     args = parser.parse_args()
+    if args.output.exists():
+        raise FileExistsError(args.output)
+    if args.mini_int8_experiment:
+        if args.repo_id != d3_int8.MINI_REPO_ID or args.snapshot is None:
+            parser.error(
+                "mini INT8 experiment requires d3-mini and an already-cached --snapshot"
+            )
+        torch.set_num_threads(4)
+        report = validate_mini_int8_experiment(args.snapshot)
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        with args.output.open("x") as stream:
+            json.dump(report, stream, indent=2, allow_nan=False)
+            stream.write("\n")
+        print(
+            json.dumps(
+                {
+                    "status": report["status"],
+                    "parity": report.get("parity"),
+                    "error": report.get("error"),
+                }
+            ),
+            flush=True,
+        )
+        if report["status"] == "aborted":
+            raise SystemExit(1)
+        return
     if not torch.cuda.is_available() or torch.cuda.get_device_capability()[0] < 8:
         parser.error(
             "a native BF16-capable CUDA GPU is required; never use the GTX 1080 Ti"
@@ -325,7 +449,9 @@ def main():
         report["candidate"]["responses"], report["reference"]["responses"]
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
+    with args.output.open("x") as stream:
+        json.dump(report, stream, indent=2, allow_nan=False)
+        stream.write("\n")
     print(json.dumps(report["parity"], indent=2), flush=True)
     print(f"Report: {args.output}", flush=True)
 

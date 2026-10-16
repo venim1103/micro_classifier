@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §28 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §29 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -254,6 +254,28 @@ Keep this section and the Task List current; a new session resumes from them.
   training, dependency/download or hardware action. Both approved preparation
   tasks are complete; mode/target, representative-data and input-strategy review
   remain pending. ST tools are still absent; full inputs/history/ceiling unchanged.
+
+- Approved (2026-10-16): a bounded d3-mini INT8 experiment at pinned revision
+  `6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59`, cached files/full manifest
+  verification only. First compare INT8 with streamed BF16 on the existing
+  diagnostic suite at 2,048 tokens. Continue only after reviewing those results
+  to an opt-in full-input resource probe at 4,096/8,192/12,288, with a 10 GiB
+  PyTorch allocation cap and abort on OOM/cap failure. Keep normal 2,048 limits,
+  inputs/history and all draft representations unchanged. No live labeling,
+  dataset, training, dependency/download or hardware-integration approval.
+  User reconfirmed `mode` remains unlabeled pending observable semantics.
+
+- Bounded mini INT8 parity completed (2026-10-16): full cached package verified;
+  unchanged 25 requests/31 questions/85 probabilities, maximum/mean delta
+  0.0154966/0.00157733 versus streamed BF16, zero flips. Allocated after load:
+  4.006 GiB; peak reserved load/candidate/reference: 4.699/4.334/4.406 GiB under
+  the 10 GiB PyTorch cap, with no OOM. Report:
+  `teacher/reports/d3-mini-int8-parity-capped-20261016.json`. The parity review
+  supports the already-approved resource-only continuation, not task accuracy,
+  labels or a new quality threshold. Normal mini stays BF16/2,048; INT8 is
+  explicit opt-in. Twelve new CPU tests; 27 d3 checks, full suite 326 passes
+  plus known transformer expected failure; lint/format/diagnostics clean.
+  DESIGN.md §4 and REVIEW.md §29 record limits. No context probe has run yet.
 
 ## Task List
 

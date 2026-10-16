@@ -19,6 +19,8 @@ from safetensors import safe_open
 from teacher.vela_int8 import QUANTIZED_LINEARS, HostEmbedding, Int8Linear
 
 REPO_ID = "vllm-sr/d3-flash"
+MINI_REPO_ID = "vllm-sr/d3-mini"
+MINI_EXPERIMENT_MAX_TOKENS = 12288
 REVISION = "b92769d85908bb3ee737ef9c765e1c08b887aca6"
 APPROVED_REVISIONS = {
     REPO_ID: REVISION,
@@ -208,19 +210,31 @@ class Teacher:
         }
 
 
-def load_engine(path=None, device="cuda", repo_id=REPO_ID, token_budget=2048):
+def load_engine(
+    path=None,
+    device="cuda",
+    repo_id=REPO_ID,
+    token_budget=2048,
+    *,
+    experimental_mini_int8=False,
+):
     """Keep the release prompts/readout unchanged; inject only its backbone load."""
     if repo_id not in APPROVED_REVISIONS:
         raise ValueError(f"unapproved model: {repo_id}")
-    if not 1 <= token_budget <= 2048:
-        raise ValueError("token_budget must be between 1 and 2048")
+    if type(experimental_mini_int8) is not bool:
+        raise TypeError("experimental_mini_int8 must be a boolean")
+    if experimental_mini_int8 and repo_id != MINI_REPO_ID:
+        raise ValueError("INT8 context experiment is only approved for d3-mini")
+    limit = MINI_EXPERIMENT_MAX_TOKENS if experimental_mini_int8 else 2048
+    if type(token_budget) is not int or not 1 <= token_budget <= limit:
+        raise ValueError(f"token_budget must be between 1 and {limit}")
     path = Path(path) if path is not None else download(repo_id)
     with (path / "MODEL_MANIFEST.json").open("rb") as stream:
         manifest_digest = hashlib.file_digest(stream, "sha256").hexdigest()
     if manifest_digest != APPROVED_MANIFESTS[repo_id]:
         raise ValueError("manifest does not match the approved model revision")
     manifest = verify_package(path)
-    quantized = repo_id == REPO_ID
+    quantized = repo_id == REPO_ID or experimental_mini_int8
     with CONSTRUCTION_LOCK:
         runtime = release_module(path)
         backbone = load_backbone(path, device, quantized=quantized)

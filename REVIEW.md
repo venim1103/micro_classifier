@@ -1653,6 +1653,41 @@ remain open, not silently cleared by the reports.
 [input-cost-flash]: teacher/reports/input-cost-d3-flash-20261016.json
 [input-cost-mini]: teacher/reports/input-cost-d3-mini-20261016.json
 
+## 29. Capped d3-mini INT8 Parity (2026-10-16)
+
+**Scope:** the user approved cached/full-verified mini inference at revision
+`6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59`, first on the existing diagnostic
+suite at 2,048 tokens, then conditionally a full-input resource probe at
+4,096/8,192/12,288 under a 10 GiB PyTorch allocation cap. Mode remains unlabeled;
+live labeling, datasets, training, dependencies/downloads and hardware remain
+outside approval. Normal input/history, representations and limits are unchanged.
+
+The [parity report][mini-int8-parity] records the same 25 requests, 31 questions
+and 85 probabilities as earlier validators; its fixture hash was independently
+rechecked. SHA256:
+`7d6e9d9480de5077aa93911f310bcb4bfd499fb3b7fb62c707ae59f882beabe7`.
+Maximum/mean absolute delta versus streamed BF16: 0.0154966/0.00157733; zero
+decision flips across 12 choice, 12 noul and seven score questions. These are
+synthetic numerical diagnostics, not real task labels or teacher-quality proof.
+
+Resident allocation fell to 4.006 GiB (earlier mini BF16: 7.368 GiB). Loading
+peaked at 4.699 GiB reserved; candidate/reference peaks were 4.334/4.406 GiB.
+Candidate requests took 20.42 s total/0.522 s median; streamed reference
+84.31 s/2.104 s. Cold starts and streaming preclude interpreting these as a
+controlled end-to-end speed comparison. No OOM/cap failure occurred. The cap is
+configured from actual visible GPU bytes, restored afterward, and applies to
+PyTorch's caching allocator, not all driver/native allocations.
+
+**Review outcome:** zero flips and these measured deltas support continuing only
+to the approved resource experiment; no new numerical acceptance threshold or
+live-label approval is implied. Larger-context resource use remains unmeasured
+at this checkpoint. The explicit cached-mini CLI writes fresh success/abort
+reports and does not retry OOMs. Twelve new loader/cap/control tests pass;
+27 focused d3 checks and 326 repository passes plus the known transformer
+expected failure. Ruff, format and editor diagnostics pass.
+
+[mini-int8-parity]: teacher/reports/d3-mini-int8-parity-capped-20261016.json
+
 ## Sources
 
 Hardware and tools:

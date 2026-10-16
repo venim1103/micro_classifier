@@ -599,6 +599,35 @@ on this GPU for long inputs, and d3 encodes every question as its own sequence,
 so five 300-token questions take about 1.3 s per state, or about 7 hours for
 20,000 states, before images.
 
+#### Bounded d3-mini INT8 Parity (2026-10-16)
+
+The user approved cached-only inference at the pinned mini revision, first on
+the unchanged 25-request/31-question diagnostic suite at 2,048 tokens, with a
+10 GiB PyTorch allocator cap. Full manifest hashing preceded release imports.
+The [measured report][mini-int8-parity-report] has SHA256
+`7d6e9d9480de5077aa93911f310bcb4bfd499fb3b7fb62c707ae59f882beabe7`.
+INT8 group-128 versus streamed BF16 produced maximum/mean probability deltas
+0.0154966/0.00157733 across 85 values, with zero decision flips. Maximum deltas
+by question type were choice 0.0007394, noul 0.0068570 and score 0.0154966.
+
+On the RTX A3000, load took 52.58 s with 4.006 GiB allocated afterward and
+4.699 GiB peak reserved during loading. Candidate requests took 20.42 s total,
+0.522 s median, with 4.149 GiB peak allocated/4.334 GiB reserved. The streamed
+reference took 84.31 s, 2.104 s median, with 4.170/4.406 GiB peak
+allocated/reserved. Timings include cold-start effects and reference streaming;
+they are not task throughput forecasts. The allocator cap excludes driver and
+other native allocations. No OOM or cap failure occurred.
+
+This parity review supports the separately approved resource-only continuation
+at 4,096/8,192/12,288 tokens; no new quality threshold is adopted. It does not
+qualify task labels, longer contexts or teacher accuracy. Normal d3-mini remains
+BF16/2,048; mini INT8 is an explicit experimental opt-in. Inputs, history,
+representations and normal preflight limits are unchanged. No dataset, training,
+download, dependency or hardware action occurred. Full suite: 326 passes plus
+the known transformer expected failure; lint, format and diagnostics pass.
+
+[mini-int8-parity-report]: teacher/reports/d3-mini-int8-parity-capped-20261016.json
+
 #### Decision 3.0 d3 on Two RTX 3090s (when available)
 
 When it is available, a second host with two NVLinked RTX 3090s (2 x 24 GB) can

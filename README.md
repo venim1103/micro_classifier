@@ -56,6 +56,20 @@ memory and speed (writes a JSON report):
 python -m teacher.validate_vela_int8 --output teacher/reports/<name>.json
 ```
 
+The separately approved mini INT8 parity experiment requires an already-cached
+pinned snapshot and enforces a 10 GiB PyTorch allocator cap. It aborts rather
+than retrying OOM, and requires a fresh output path:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m teacher.validate_d3_int8 \
+	--repo-id vllm-sr/d3-mini --snapshot /path/to/already-cached/mini/snapshot \
+	--mini-int8-experiment --output teacher/reports/mini-int8-local.json
+```
+
+This phase stays at 2,048 tokens. Normal mini remains BF16; this opt-in is not
+live-labeling approval or a change to normal token limits. The cap excludes
+driver/native allocations. See [REVIEW.md](REVIEW.md) §29 for measured results.
+
 CPU unit tests: `python -m pytest tests`.
 
 ## Simulation Label Policy Draft

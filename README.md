@@ -172,6 +172,13 @@ certificates or physical limits. Existing proxies/defaults are unchanged. Real
 annotations, task datasets/splits, inference and training remain unapproved;
 reviewed observation-to-target evidence is still missing. See REVIEW.md §36.
 
+The separate `probe_synthetic_ray_witness` API tests eight artificial exact rays
+for a positive straight-braking witness only. Missing hits never mean clear;
+normal noisy/delayed defaults, curves and numeric ambiguity abstain. It is not
+a real-input model, log labeler or observation adapter; exactness/registration
+are fixture assumptions. No existing logs or annotations were used. See
+REVIEW.md §39 for the feasibility study and its limits.
+
 [navigation-reference]: sim/navigation.py
 
 ## Diagnostic Source-Provenance Audit

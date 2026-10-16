@@ -1,4 +1,4 @@
-"""Ideal-geometry reference for synthetic tests, never an observation labeler."""
+"""Synthetic navigation diagnostics, never an observation or episode labeler."""
 
 import math
 from numbers import Real
@@ -8,6 +8,101 @@ import numpy as np
 from sim.rover import Config, Scenario, swept_collision
 
 NUMERICAL_TOLERANCE_M = 1e-5
+
+
+def probe_synthetic_ray_witness(
+    ranges,
+    valid,
+    *,
+    speed,
+    tof_age_s=0.0,
+    turn_rate=0.0,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Probe eight artificial exact rays; a positive witness never certifies free space."""
+    if synthetic_test_only is not True:
+        raise ValueError("explicit synthetic-test-only use is required")
+    config = Config() if config is None else config
+    if not isinstance(config, Config):
+        raise TypeError("synthetic ray probe requires Config")
+    for name, value in (
+        ("speed", speed),
+        ("tof_age_s", tof_age_s),
+        ("turn_rate", turn_rate),
+    ):
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not math.isfinite(value)
+        ):
+            raise ValueError(f"{name} must be finite numeric data")
+    if (
+        not 0 <= speed <= config.max_speed
+        or tof_age_s < 0
+        or abs(turn_rate) > config.max_turn_rate
+    ):
+        raise ValueError("ray probe motion/age exceeds synthetic limits")
+    ranges, valid = np.asarray(ranges), np.asarray(valid)
+    if (
+        ranges.shape != (8,)
+        or ranges.dtype.kind not in "iuf"
+        or not np.isfinite(ranges).all()
+        or (ranges < 0).any()
+        or (ranges > config.max_range).any()
+    ):
+        raise ValueError("synthetic ranges require eight finite values within range")
+    if valid.shape != (8,) or valid.dtype.kind != "b" or (ranges[~valid] != 0).any():
+        raise ValueError(
+            "synthetic masks require eight booleans and zero invalid ranges"
+        )
+    result = {
+        "schema": "micro-classifier/synthetic-ray-witness/1",
+        "allowed_use": "artificial_ray_feasibility_tests_only",
+        "synthetic": True,
+        "training_approved": False,
+        "real_input_qualified": False,
+        "physical_safety_claim": False,
+        "status": "unknown",
+        "reason": "no_positive_witness",
+        "witness_columns": [],
+    }
+    if config.noise_std != 0:
+        result["reason"] = "noise_model_unqualified"
+        return result
+    if tof_age_s != 0 or config.latency_ticks != 0:
+        result["reason"] = "registration_unqualified"
+        return result
+    if turn_rate != 0:
+        result["reason"] = "curved_reference_not_supported"
+        return result
+    distance = float(speed) * config.dt + float(speed) * float(speed) / (
+        2 * config.acceleration
+    )
+    allowance = (
+        128 * np.finfo(float).eps * max(1.0, config.max_range, distance, config.radius)
+    )
+    if (
+        not math.isfinite(distance)
+        or not math.isfinite(allowance)
+        or allowance >= config.radius
+    ):
+        result["reason"] = "numerical_unknown"
+        return result
+    angles = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)
+    points = ranges[:, None] * np.stack((np.cos(angles), np.sin(angles)), axis=1)
+    distances = np.hypot(
+        points[:, 0] - np.clip(points[:, 0], 0, distance), points[:, 1]
+    )
+    witnesses = (
+        valid & (ranges < config.max_range) & (distances < config.radius - allowance)
+    )
+    result["witness_columns"] = np.flatnonzero(witnesses).tolist()
+    if result["witness_columns"]:
+        result.update(
+            status="blocked_witness", reason="strictly_inside_braking_footprint"
+        )
+    return result
 
 
 def _touches(start, end, radius, obstacles, bounds):

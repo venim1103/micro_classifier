@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §38 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §39 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -449,6 +449,29 @@ Keep this section and the Task List current; a new session resumes from them.
   DESIGN.md §7 and REVIEW.md §38 record the repair. No label/data, inference,
   training, dependency/download or hardware action; Tasks 6/9 remain blocked.
 
+- Approved (2026-10-16): CPU-only synthetic ray-witness feasibility prototype
+  and artificial checks only, with no use on existing logs or annotations.
+  Exact current-frame hits may support a straight-braking blocked witness;
+  missing hits never imply clear. Noise, unregistered delay, unsupported curves
+  and numerical ambiguity abstain. Zero noise/current-frame assumptions are
+  artificial fixtures, not accepted-default changes or real-input qualification.
+  Keep proxies, inputs/history/token limits unchanged; no episodes, datasets,
+  splits, inference, training, downloads/dependencies or hardware work.
+
+- Synthetic ray-witness study completed (2026-10-16) in `sim/navigation.py`:
+  explicit artificial-only opt-in, eight exact current-frame rays, straight
+  braking footprint and positive-only witnesses. Missing/masked/saturated hits
+  never imply clear; noise, delay/latency, curves and numerical ambiguity
+  abstain. Normal defaults remain unqualified and unchanged. Twenty-nine new
+  checks include visible blocked, clear-but-unknown and hidden-blocked-but-unknown
+  geometry comparisons; no existing logs, rollout or data artifact used.
+  All 146 simulator tests and 462 repository passes plus known transformer
+  expected failure; lint/format/editor/doc checks pass. DESIGN.md §7 and
+  REVIEW.md §39 record limitations: no real-input qualification, negative labels,
+  calibration or physical claim. No task labels/dataset/splits, inference,
+  training, dependency/download or hardware action. Tasks 6/9 remain blocked on
+  reviewed uncertainty/registration/target evidence, mode and actual cohort/data.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -517,6 +540,11 @@ on missing tools, and continue with the next unblocked task.
   oracle and 25 new checks complete. Existing proxies remain diagnostic-only;
   sparse real-input evidence is unqualified, mode unlabeled, no annotation or
   dataset approval. Task 6 is not complete merely because a geometry oracle exists.
+  Evidence-study result (2026-10-16, REVIEW.md §39): synthetic exact current-frame
+  rays can give a positive straight-sweep witness; absence of one is unknown.
+  The prototype rejects normal noisy/delayed assumptions and does not label logs
+  or qualify real input. Reviewed uncertainty/registration and actual target
+  evidence/labels remain missing; mode stays unlabeled.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

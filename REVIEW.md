@@ -2078,6 +2078,51 @@ No episode, actual annotation/task dataset, inference, training, dependency,
 download or hardware work. Tasks 6/9 still need reviewed observation-based
 target evidence, mode semantics and actual reviewed family/cohort/data.
 
+## 39. Synthetic Positive Ray-Witness Feasibility (2026-10-16)
+
+The user approved "synthetic-only evidence prototype and checks", explicitly
+excluding existing-log use and actual annotations. The study keeps inputs,
+history, simulator/proxy defaults, token ceiling and quarantine unchanged, with
+no episode generation, task dataset/split, inference/training, dependencies,
+downloads or hardware work. Zero noise/current-frame registration are artificial
+fixture assumptions, not accepted production guarantees or input changes.
+
+`probe_synthetic_ray_witness` in `sim/navigation.py` takes eight artificial rays
+and boolean masks behind an explicit synthetic-only opt-in. Only declared zero
+noise, zero latency/age and straight motion support geometric witnesses. Hits
+strictly inside the adopted centre-braking capsule may return `blocked_witness`;
+all other cases return `unknown`. Saturation is not a known surface, and masked
+padding cannot create a hit. Numerical contact ambiguity abstains without
+changing the oracle's contact meaning. No missing hit or unknown becomes clear.
+
+Output contains synthetic-only scope, no-training/no-real-input-qualification/
+no-physical-claim metadata, witness columns and reasons. This is not a
+probability model, evidence-policy adoption, observation-to-label adapter or
+reviewer ingestion pathway. Caller-supplied exactness/registration is not
+attestation. Floating-point allowances are engineering safeguards, not formal
+certificates or calibrated noise bounds. Normal noisy/delayed defaults abstain;
+no threshold, registration model or feature removal was silently adopted.
+
+Twenty-nine artificial cases pass. Scene comparisons against the adopted ideal
+oracle include visible blocked/witness, clear/unknown and hidden blocked/unknown.
+They establish limited fixture correspondence and preserve the ambiguity gate,
+not accuracy, representative coverage or universal observability. Tests also
+cover strict boundaries, masks, saturated returns inside the footprint, unsupported
+assumptions, numerical scale, explicit opt-in, invalid values and nonmutation.
+The study used no existing log, environment rollout or persisted artifact.
+
+Verification: 146 simulator tests and 462 repository passes plus the known
+transformer numerical expected failure. Ruff lint/format, editor diagnostics
+and documentation reference/local-target/whitespace checks pass. Simulator,
+proxies/catalogue, interface, renderer, teacher/review/provenance paths and all
+historical reports are unchanged. No actual label/data or training was enabled.
+
+**Outcome:** approved feasibility work is complete, but Task 6 still lacks
+reviewed sensor uncertainty/registration evidence and observation-based target
+labels, especially any qualified negative/clear evidence. Mode semantics remain
+undefined and unlabeled. Task 9 still awaits accepted family/cohort review and
+actual task data/splits; no quarantined log was promoted by these synthetic cases.
+
 ## Sources
 
 Hardware and tools:

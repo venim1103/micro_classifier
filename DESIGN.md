@@ -1648,6 +1648,60 @@ clean lint/format/editor/doc checks. No existing artifact was regenerated.
 
 [navigation-reference]: sim/navigation.py
 
+#### Synthetic Ray-Witness Feasibility (2026-10-16)
+
+The user approved a CPU-only synthetic prototype/checks with **no use on
+existing logs or actual annotations**. This study explores positive evidence
+for the adopted straight braking footprint, not a production labeler or new
+sensor uncertainty policy. Existing proxy rules, inputs/history/defaults, token
+ceiling and diagnostic quarantine remain unchanged.
+
+The separate `probe_synthetic_ray_witness` function in the
+[navigation module][navigation-reference] accepts eight artificial planar
+ranges and a boolean validity mask. It requires explicit synthetic-test opt-in,
+zero declared sensor noise, zero acquisition latency and age, and zero measured
+turn rate. These conditions model exact rays already in the current body frame;
+they are caller-supplied fixture assumptions, not registration or calibration
+performed by this function. They do not alter the normal noisy/delayed simulator.
+No observation dictionary, episode reader, history reduction or pipeline adapter
+was introduced. The eight-ray fixture is not a change to the 8x8 student input.
+
+For speed $v$, the centreline ends at $D=v\Delta t+v^2/(2a)$. At the existing
+eight horizontal ray angles $\theta_i$, a finite unmasked range $z_i$ defines
+$p_i=(z_i\cos\theta_i,z_i\sin\theta_i)$. A point strictly inside the swept
+disk capsule, beyond a scale-based floating-point allowance, is a positive
+synthetic collision witness. Exact/numerically close boundary contact abstains
+rather than changing the adopted contact semantics. A saturated maximum range
+is not treated as a surface return; masked zero padding cannot create an origin
+hit. No positive witness means **unknown**, never clear or `path_blocked=false`.
+
+The only output statuses are `blocked_witness` and `unknown`, with column
+indices/reasons and artificial-only, training-disabled, real-input-unqualified,
+no-physical-safety metadata. Unsupported noise, unregistered delay/latency,
+curved motion and numerical scale abstain. The floating-point allowance is an
+engineering safeguard, not verified interval arithmetic, a physical margin or
+a noise confidence threshold. The opt-in and Config values do not attest that
+supplied rays really are exact or registered. The function does not emit wire
+decisions, mode labels, reviewer assessments, datasets or calibrated probabilities.
+
+Twenty-nine artificial cases pass. Three scene/ray comparisons with the adopted
+geometric oracle include a visible blocked witness, clear geometry with probe
+unknown, and hidden blocked geometry with probe unknown. This confirms that
+unknown cannot be read as clearance; it is not a universal proof or measured
+task accuracy. Other checks cover strict numerical boundaries, partial/missing
+masks, saturation inside the footprint, unsupported assumptions, explicit scope,
+input validation, immutability and normal-default abstention. No rollout,
+existing-log read or persisted data artifact was used for this study.
+
+All 146 simulator tests and 462 repository tests pass plus the known transformer
+expected failure; lint/format/editor/doc checks pass. Simulator, proxy/catalogue,
+interface, renderer, teacher/review/provenance paths and historical reports are
+unchanged. No episode, task annotation/dataset/split, inference, training,
+dependency/download or hardware work occurred. Task 6 still needs reviewed
+sensor uncertainty/registration evidence and observation-to-target labels; this
+restricted positive witness neither qualifies real inputs nor supplies negative
+labels. Mode semantics and actual family/cohort/data gates also remain open.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

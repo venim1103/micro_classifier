@@ -389,6 +389,217 @@ def test_synthetic_navigation_reference_curved_contact_uncertainty_is_not_none()
     assert result["answers"]["clear_sector"] is None
 
 
+@pytest.mark.parametrize(
+    "distance,status", [(0.3, "blocked_witness"), (0.8, "unknown"), (4.0, "unknown")]
+)
+def test_synthetic_ray_probe_has_positive_witness_but_never_infers_clear(
+    distance, status
+):
+    from sim.navigation import probe_synthetic_ray_witness
+
+    ranges, valid = np.full(8, 4.0), np.ones(8, dtype=bool)
+    ranges[3] = distance
+    original = ranges.copy()
+    result = probe_synthetic_ray_witness(
+        ranges,
+        valid,
+        speed=0.6,
+        config=Config(noise_std=0, latency_ticks=0),
+        synthetic_test_only=True,
+    )
+    assert result["status"] == status
+    assert result["synthetic"] and not result["training_approved"]
+    assert not result["real_input_qualified"] and not result["physical_safety_claim"]
+    assert result["witness_columns"] == ([3] if status == "blocked_witness" else [])
+    np.testing.assert_array_equal(ranges, original)
+
+
+def test_synthetic_ray_probe_normal_defaults_abstain():
+    from sim.navigation import probe_synthetic_ray_witness
+
+    result = probe_synthetic_ray_witness(
+        np.full(8, 0.3), np.ones(8, dtype=bool), speed=0.6, synthetic_test_only=True
+    )
+    assert (
+        result["status"] == "unknown" and result["reason"] == "noise_model_unqualified"
+    )
+
+
+@pytest.mark.parametrize(
+    "obstacle,oracle_answer,probe_status",
+    [
+        ((1.35, 3.0, 0.04), "true", "blocked_witness"),
+        ((1.6, 3.0, 0.04), "false", "unknown"),
+        ((1.25, 3.195, 0.02), "true", "unknown"),
+    ],
+)
+def test_synthetic_ray_probe_corresponds_to_geometry_without_proving_clear(
+    obstacle, oracle_answer, probe_status
+):
+    from sim.navigation import evaluate_synthetic, probe_synthetic_ray_witness
+
+    config = Config(noise_std=0, latency_ticks=0)
+    scene = Scenario(obstacles=(obstacle,))
+    angles = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)
+    ranges = ray_ranges(
+        scene.start[:2], angles, scene.obstacles, scene.bounds, config.max_range
+    )
+    probe = probe_synthetic_ray_witness(
+        ranges,
+        np.ones(8, dtype=bool),
+        speed=0.6,
+        config=config,
+        synthetic_test_only=True,
+    )
+    reference = evaluate_synthetic(
+        scene, speed=0.6, config=config, synthetic_test_only=True
+    )
+    assert probe["status"] == probe_status
+    assert reference["answers"]["path_blocked"] == oracle_answer
+
+
+@pytest.mark.parametrize(
+    "offset,status", [(-1e-6, "blocked_witness"), (0, "unknown"), (1e-6, "unknown")]
+)
+def test_synthetic_ray_probe_boundary_requires_strict_interior(offset, status):
+    from sim.navigation import probe_synthetic_ray_witness
+
+    config = Config(noise_std=0, latency_ticks=0)
+    angle = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)[3]
+    distance = 0.6 * config.dt + 0.6**2 / (2 * config.acceleration)
+    contact = distance * math.cos(angle) + math.sqrt(
+        config.radius**2 - distance**2 * math.sin(angle) ** 2
+    )
+    ranges, valid = np.zeros(8), np.zeros(8, dtype=bool)
+    ranges[3], valid[3] = contact + offset, True
+    result = probe_synthetic_ray_witness(
+        ranges, valid, speed=0.6, config=config, synthetic_test_only=True
+    )
+    assert result["status"] == status
+
+
+def test_synthetic_ray_probe_missing_mask_cannot_create_origin_witness():
+    from sim.navigation import probe_synthetic_ray_witness
+
+    result = probe_synthetic_ray_witness(
+        np.zeros(8),
+        np.zeros(8, dtype=bool),
+        speed=0.6,
+        config=Config(noise_std=0, latency_ticks=0),
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown" and result["witness_columns"] == []
+
+
+@pytest.mark.parametrize(
+    "settings,reason",
+    [
+        ({"config": Config(noise_std=0)}, "registration_unqualified"),
+        ({"tof_age_s": 0.1}, "registration_unqualified"),
+        ({"turn_rate": 0.1}, "curved_reference_not_supported"),
+    ],
+)
+def test_synthetic_ray_probe_unqualified_assumptions_abstain(settings, reason):
+    from sim.navigation import probe_synthetic_ray_witness
+
+    arguments = {
+        "speed": 0.6,
+        "config": Config(noise_std=0, latency_ticks=0),
+        "synthetic_test_only": True,
+        **settings,
+    }
+    result = probe_synthetic_ray_witness(
+        np.full(8, 0.3), np.ones(8, dtype=bool), **arguments
+    )
+    assert result["status"] == "unknown" and result["reason"] == reason
+
+
+@pytest.mark.parametrize("opt_in", [False, None, 1])
+def test_synthetic_ray_probe_requires_explicit_scope_before_reading_inputs(opt_in):
+    from sim.navigation import probe_synthetic_ray_witness
+
+    with pytest.raises(ValueError, match="synthetic-test-only"):
+        probe_synthetic_ray_witness(
+            object(), object(), speed=0.6, synthetic_test_only=opt_in
+        )
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "speed",
+        "bool_speed",
+        "age",
+        "turn",
+        "shape",
+        "bool_ranges",
+        "nonfinite",
+        "range",
+        "mask",
+        "invalid_padding",
+    ],
+)
+def test_synthetic_ray_probe_rejects_malformed_artificial_input(defect):
+    from sim.navigation import probe_synthetic_ray_witness
+
+    ranges, valid = np.full(8, 0.3), np.ones(8, dtype=bool)
+    settings = {
+        "speed": 0.6,
+        "config": Config(noise_std=0, latency_ticks=0),
+        "synthetic_test_only": True,
+    }
+    if defect == "speed":
+        settings["speed"] = 1
+    elif defect == "bool_speed":
+        settings["speed"] = True
+    elif defect == "age":
+        settings["tof_age_s"] = -1
+    elif defect == "turn":
+        settings["turn_rate"] = float("nan")
+    elif defect == "shape":
+        ranges = np.full((8, 8), 0.3)
+    elif defect == "bool_ranges":
+        ranges = np.ones(8, dtype=bool)
+    elif defect == "nonfinite":
+        ranges[0] = float("inf")
+    elif defect == "range":
+        ranges[0] = 5
+    elif defect == "mask":
+        valid = np.ones(8)
+    else:
+        valid[0] = False
+    with pytest.raises(ValueError):
+        probe_synthetic_ray_witness(ranges, valid, **settings)
+
+
+def test_synthetic_ray_probe_saturation_inside_footprint_is_not_a_surface_hit():
+    from sim.navigation import probe_synthetic_ray_witness
+
+    config = Config(noise_std=0, latency_ticks=0, max_range=0.3)
+    result = probe_synthetic_ray_witness(
+        np.full(8, config.max_range),
+        np.ones(8, dtype=bool),
+        speed=0.6,
+        config=config,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown" and result["witness_columns"] == []
+
+
+def test_synthetic_ray_probe_unresolved_numerical_scale_abstains():
+    from sim.navigation import probe_synthetic_ray_witness
+
+    config = Config(noise_std=0, latency_ticks=0, radius=1e-16)
+    result = probe_synthetic_ray_witness(
+        np.full(8, 0.3),
+        np.ones(8, dtype=bool),
+        speed=0.6,
+        config=config,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown" and result["reason"] == "numerical_unknown"
+
+
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
 

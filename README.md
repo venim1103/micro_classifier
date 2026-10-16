@@ -84,6 +84,23 @@ remain training-disabled, not a reviewed dataset or safety evidence. `mode`
 is always unlabeled; real teacher labeling and training remain unapproved.
 The original simulator CLI and wire export are unchanged.
 
+Run the separately approved bounded diagnostic study into a new directory:
+
+```sh
+python -m sim.labels --coverage-study --output sim/episodes/my-label-coverage \
+	--report sim/reports/my-label-coverage.json --seed 20261016
+python -m pytest -q tests/test_sim.py -k label_coverage
+```
+
+The [recorded study][sim-label-coverage-report] contains eight 32-tick episodes
+with 264 observations: both blocked values, every sector option and every speed
+tier occur. Twelve synthetic option/fault fixtures are reported separately;
+`mode` is always absent. Physics/sensor defaults and label rules are unchanged;
+only the diagnostic horizon is shortened from 400 ticks. These selected probes
+and artificial faults are **not representative data, reviewed labels or safety
+evidence**. Eight intentional horizon timeouts are not navigation results.
+No training or live teacher ran. See DESIGN.md §7 and REVIEW.md §26 for limits.
+
 ## Teacher-Pipeline Host Tooling
 
 The [request planner and cache API][teacher-label-pipeline] are approved for
@@ -301,6 +318,7 @@ The simulation JSONL container remains separately versioned. See
 [sim-catalogue-draft]: sim/catalogue.json
 [sim-label-draft]: sim/labels.py
 [sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
+[sim-label-coverage-report]: sim/reports/label-coverage-20261016.json
 [teacher-label-pipeline]: teacher/label_pipeline.py
 [teacher-pipeline-tests]: tests/test_label_pipeline.py
 [teacher-evaluation]: teacher/evaluation.py

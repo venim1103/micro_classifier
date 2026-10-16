@@ -1,0 +1,3875 @@
+{
+  "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+  "cases": [
+    {
+      "bytes": 419919,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "none"
+          ],
+          "option_counts": {
+            "centre": 9,
+            "left": 8,
+            "none": 0,
+            "right": 14
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "true"
+          ],
+          "option_counts": {
+            "false": 31,
+            "true": 0
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "0",
+            "1",
+            "2"
+          ],
+          "option_counts": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 31
+          }
+        }
+      },
+      "file": "open-hold.jsonl",
+      "observation_count": 33,
+      "scene": "open-hold",
+      "seed": 20261016,
+      "sha256": "1bc684b00d30b8f4a676018c7352a3d43dc577859d71b7d7668030f323755ca1",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.3200000000000001
+      }
+    },
+    {
+      "bytes": 555255,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "left",
+            "centre",
+            "right"
+          ],
+          "option_counts": {
+            "centre": 0,
+            "left": 0,
+            "none": 31,
+            "right": 0
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "false"
+          ],
+          "option_counts": {
+            "false": 0,
+            "true": 31
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "option_counts": {
+            "0": 31,
+            "1": 0,
+            "2": 0,
+            "3": 0
+          }
+        }
+      },
+      "file": "wall-near-hold.jsonl",
+      "observation_count": 33,
+      "scene": "wall-near-hold",
+      "seed": 20261017,
+      "sha256": "df5b18c3e34623b41ad046aec28f5605fb2a6030942757263d0cf13c9c0815d6",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.3200000000000001
+      }
+    },
+    {
+      "bytes": 550793,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "none"
+          ],
+          "option_counts": {
+            "centre": 5,
+            "left": 13,
+            "none": 0,
+            "right": 13
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "true"
+          ],
+          "option_counts": {
+            "false": 31,
+            "true": 0
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "0",
+            "2",
+            "3"
+          ],
+          "option_counts": {
+            "0": 0,
+            "1": 31,
+            "2": 0,
+            "3": 0
+          }
+        }
+      },
+      "file": "wall-tier1-hold.jsonl",
+      "observation_count": 33,
+      "scene": "wall-tier1-hold",
+      "seed": 20261018,
+      "sha256": "9affd71636cca8c0ce9b2e4be57a3814bc4aeb22b44d0ec43886de8b933fda79",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.3200000000000001
+      }
+    },
+    {
+      "bytes": 550664,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "none"
+          ],
+          "option_counts": {
+            "centre": 1,
+            "left": 19,
+            "none": 0,
+            "right": 11
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "true"
+          ],
+          "option_counts": {
+            "false": 31,
+            "true": 0
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "0",
+            "1",
+            "3"
+          ],
+          "option_counts": {
+            "0": 0,
+            "1": 0,
+            "2": 31,
+            "3": 0
+          }
+        }
+      },
+      "file": "wall-tier2-hold.jsonl",
+      "observation_count": 33,
+      "scene": "wall-tier2-hold",
+      "seed": 20261019,
+      "sha256": "92df968b558e7014cb8b91820e59c1a05d5234b587f8582013622dbfbd286ab0",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.3200000000000001
+      }
+    },
+    {
+      "bytes": 543180,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "none"
+          ],
+          "option_counts": {
+            "centre": 1,
+            "left": 7,
+            "none": 0,
+            "right": 23
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "true"
+          ],
+          "option_counts": {
+            "false": 31,
+            "true": 0
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "0",
+            "1",
+            "2"
+          ],
+          "option_counts": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 31
+          }
+        }
+      },
+      "file": "wall-clear-hold.jsonl",
+      "observation_count": 33,
+      "scene": "wall-clear-hold",
+      "seed": 20261020,
+      "sha256": "eff8ed212d6614d3faaaf81fbdf9bb0cd35757a4314c99a3bea458295eb1151c",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.3200000000000001
+      }
+    },
+    {
+      "bytes": 552840,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "right",
+            "none"
+          ],
+          "option_counts": {
+            "centre": 1,
+            "left": 30,
+            "none": 0,
+            "right": 0
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "true"
+          ],
+          "option_counts": {
+            "false": 31,
+            "true": 0
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "0",
+            "1",
+            "3"
+          ],
+          "option_counts": {
+            "0": 0,
+            "1": 0,
+            "2": 31,
+            "3": 0
+          }
+        }
+      },
+      "file": "wall-left-hold.jsonl",
+      "observation_count": 33,
+      "scene": "wall-left-hold",
+      "seed": 20261021,
+      "sha256": "18f9a98688fe585dea5d970c1399d6796c97c801d5bc781a5ee2d58d83502e03",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.3200000000000001
+      }
+    },
+    {
+      "bytes": 554781,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "left",
+            "none"
+          ],
+          "option_counts": {
+            "centre": 1,
+            "left": 0,
+            "none": 0,
+            "right": 30
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "true"
+          ],
+          "option_counts": {
+            "false": 31,
+            "true": 0
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": false,
+          "answered": 31,
+          "missing_options": [
+            "0",
+            "1",
+            "3"
+          ],
+          "option_counts": {
+            "0": 0,
+            "1": 0,
+            "2": 31,
+            "3": 0
+          }
+        }
+      },
+      "file": "wall-right-hold.jsonl",
+      "observation_count": 33,
+      "scene": "wall-right-hold",
+      "seed": 20261022,
+      "sha256": "2867f3419c04790a378d45b5af70ab86865f3f76e6cf2a7a9214dda5cf93717a",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.3200000000000001
+      }
+    },
+    {
+      "bytes": 551084,
+      "coverage": {
+        "clear_sector": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": true,
+          "answered": 31,
+          "missing_options": [],
+          "option_counts": {
+            "centre": 3,
+            "left": 11,
+            "none": 3,
+            "right": 14
+          }
+        },
+        "mode": {
+          "abstained": 33,
+          "abstention_counts": {
+            "human_review_required": 33
+          },
+          "all_options_observed": false,
+          "answered": 0,
+          "missing_options": [
+            "explore",
+            "approach",
+            "avoid",
+            "dock",
+            "halt"
+          ],
+          "option_counts": {
+            "approach": 0,
+            "avoid": 0,
+            "dock": 0,
+            "explore": 0,
+            "halt": 0
+          }
+        },
+        "path_blocked": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": true,
+          "answered": 31,
+          "missing_options": [],
+          "option_counts": {
+            "false": 22,
+            "true": 9
+          }
+        },
+        "speed_tier": {
+          "abstained": 2,
+          "abstention_counts": {
+            "no_tof_sample": 2
+          },
+          "all_options_observed": true,
+          "answered": 31,
+          "missing_options": [],
+          "option_counts": {
+            "0": 5,
+            "1": 5,
+            "2": 5,
+            "3": 16
+          }
+        }
+      },
+      "file": "wall-approach-brake.jsonl",
+      "observation_count": 33,
+      "scene": "wall-approach-brake",
+      "seed": 20261023,
+      "sha256": "a9c14532f6972c8784273751a35797d77a2d179d305f114811c06efa2e5e82b2",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": false,
+        "ticks": 32,
+        "timeout": true,
+        "total_reward": -0.8900000000000022
+      }
+    }
+  ],
+  "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+  "config": {
+    "acceleration": 1.0,
+    "collision_cost": 10.0,
+    "dropout": 0.02,
+    "dt": 0.05,
+    "field_of_view": 0.7853981633974483,
+    "goal_tolerance": 0.25,
+    "history_ticks": 8,
+    "latency_ticks": 2,
+    "max_range": 4.0,
+    "max_speed": 0.6,
+    "max_ticks": 32,
+    "max_turn_rate": 1.5,
+    "noise_std": 0.02,
+    "radius": 0.18,
+    "success_reward": 10.0,
+    "tick_cost": 0.01
+  },
+  "config_overrides": {
+    "max_ticks": 32
+  },
+  "created_utc": "2026-10-16T08:43:15.016215+00:00",
+  "default_config": {
+    "acceleration": 1.0,
+    "collision_cost": 10.0,
+    "dropout": 0.02,
+    "dt": 0.05,
+    "field_of_view": 0.7853981633974483,
+    "goal_tolerance": 0.25,
+    "history_ticks": 8,
+    "latency_ticks": 2,
+    "max_range": 4.0,
+    "max_speed": 0.6,
+    "max_ticks": 400,
+    "max_turn_rate": 1.5,
+    "noise_std": 0.02,
+    "radius": 0.18,
+    "success_reward": 10.0,
+    "tick_cost": 0.01
+  },
+  "environment": {
+    "numpy": "2.2.6",
+    "python": "3.12.3"
+  },
+  "episode_coverage": {
+    "clear_sector": {
+      "abstained": 16,
+      "abstention_counts": {
+        "no_tof_sample": 16
+      },
+      "all_options_observed": true,
+      "answered": 248,
+      "missing_options": [],
+      "option_counts": {
+        "centre": 21,
+        "left": 88,
+        "none": 34,
+        "right": 105
+      }
+    },
+    "mode": {
+      "abstained": 264,
+      "abstention_counts": {
+        "human_review_required": 264
+      },
+      "all_options_observed": false,
+      "answered": 0,
+      "missing_options": [
+        "explore",
+        "approach",
+        "avoid",
+        "dock",
+        "halt"
+      ],
+      "option_counts": {
+        "approach": 0,
+        "avoid": 0,
+        "dock": 0,
+        "explore": 0,
+        "halt": 0
+      }
+    },
+    "path_blocked": {
+      "abstained": 16,
+      "abstention_counts": {
+        "no_tof_sample": 16
+      },
+      "all_options_observed": true,
+      "answered": 248,
+      "missing_options": [],
+      "option_counts": {
+        "false": 208,
+        "true": 40
+      }
+    },
+    "speed_tier": {
+      "abstained": 16,
+      "abstention_counts": {
+        "no_tof_sample": 16
+      },
+      "all_options_observed": true,
+      "answered": 248,
+      "missing_options": [],
+      "option_counts": {
+        "0": 36,
+        "1": 36,
+        "2": 98,
+        "3": 78
+      }
+    }
+  },
+  "episode_limit": 16,
+  "episode_observation_count": 264,
+  "limitations": [
+    "Selected diagnostic scenes and artificial current-only fixtures are not task-distribution data.",
+    "Near-wall positives can arise from sensor noise, not actual footprint obstruction.",
+    "Stationary probes and a map-aware brake script are not navigation experts.",
+    "Duration-limit timeouts are intentional; these are not goal-success evaluations.",
+    "Mode remains absent for every observation; labels are not reviewed or training-approved."
+  ],
+  "live_teacher_labeling_approved": false,
+  "physical_safety_claim": false,
+  "policy_review_passed": false,
+  "representative_task_coverage_claim": false,
+  "review_status": "unreviewed_draft",
+  "schema": "micro-classifier/sim-label-coverage-draft/1",
+  "seed": 20261016,
+  "simulator_sha256": "52366f3ead404ec90bca87d8e1a35c5ece3072144c2c9866e228dcebc2084976",
+  "source_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+  "synthetic_coverage": {
+    "clear_sector": {
+      "abstained": 4,
+      "abstention_counts": {
+        "incomplete_sector_coverage": 2,
+        "no_tof_sample": 1,
+        "stale_tof": 1
+      },
+      "all_options_observed": true,
+      "answered": 8,
+      "missing_options": [],
+      "option_counts": {
+        "centre": 5,
+        "left": 1,
+        "none": 1,
+        "right": 1
+      }
+    },
+    "mode": {
+      "abstained": 12,
+      "abstention_counts": {
+        "human_review_required": 12
+      },
+      "all_options_observed": false,
+      "answered": 0,
+      "missing_options": [
+        "explore",
+        "approach",
+        "avoid",
+        "dock",
+        "halt"
+      ],
+      "option_counts": {
+        "approach": 0,
+        "avoid": 0,
+        "dock": 0,
+        "explore": 0,
+        "halt": 0
+      }
+    },
+    "path_blocked": {
+      "abstained": 3,
+      "abstention_counts": {
+        "incomplete_centre_coverage": 1,
+        "no_tof_sample": 1,
+        "stale_tof": 1
+      },
+      "all_options_observed": true,
+      "answered": 9,
+      "missing_options": [],
+      "option_counts": {
+        "false": 6,
+        "true": 3
+      }
+    },
+    "speed_tier": {
+      "abstained": 3,
+      "abstention_counts": {
+        "incomplete_centre_coverage": 1,
+        "no_tof_sample": 1,
+        "stale_tof": 1
+      },
+      "all_options_observed": true,
+      "answered": 9,
+      "missing_options": [],
+      "option_counts": {
+        "0": 4,
+        "1": 1,
+        "2": 1,
+        "3": 3
+      }
+    }
+  },
+  "synthetic_fixtures": [
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "left"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "true"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "0"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 0.09,
+            "left": 4.0,
+            "right": 0.09
+          }
+        },
+        "input_sha256": "69a2b81a63e6c2a24e72f01957e3334054688adfea9c3bdd546f1f9cbedb6179",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "sector-left",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "centre"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "false"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 3,
+            "value": "3"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 4.0,
+            "left": 0.09,
+            "right": 0.09
+          }
+        },
+        "input_sha256": "24d3ba9b4b14896d05784ba0b104f3e06e13c631e6a1735fd2acbd0ccff80810",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "sector-centre",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            0.09,
+            0.09,
+            0.09
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 2,
+            "value": "right"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "true"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "0"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 0.09,
+            "left": 0.09,
+            "right": 4.0
+          }
+        },
+        "input_sha256": "9eb264539ba70a08b345e22ba0ab29ce4f35a7775a8e5dda5cf84cbed671751f",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "sector-right",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            4.0,
+            4.0,
+            4.0
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 3,
+            "value": "none"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "true"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "0"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 0.09,
+            "left": 0.09,
+            "right": 0.09
+          }
+        },
+        "input_sha256": "2a81aa52d06c5dbe2615069c6871ab60bc3c3f2ae2da3fa7bcb4a69018feced9",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "sector-none",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ],
+          [
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09,
+            0.09
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "centre"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "false"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "0"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 0.205,
+            "left": 0.205,
+            "right": 0.205
+          }
+        },
+        "input_sha256": "28abb0b347ba519b9b0a2f50dd9109b678f8a66b98cfa35e8515e0e5a19bae87",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "speed-tier-0",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ],
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ],
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ],
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ],
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ],
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ],
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ],
+          [
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205,
+            0.205
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "centre"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "false"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "1"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 0.27499999999999997,
+            "left": 0.27499999999999997,
+            "right": 0.27499999999999997
+          }
+        },
+        "input_sha256": "ceb6f66d1ce865d27c94cacf76cdecb6e9593ac0b0abfe0ad867973afd56b53c",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "speed-tier-1",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ],
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ],
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ],
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ],
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ],
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ],
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ],
+          [
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997,
+            0.27499999999999997
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "centre"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "false"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 2,
+            "value": "2"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 0.385,
+            "left": 0.385,
+            "right": 0.385
+          }
+        },
+        "input_sha256": "1f89e76a5f801b0572a79aec317a16f033757e9350c9fd4e55e958a33c6e2832",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "speed-tier-2",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ],
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ],
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ],
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ],
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ],
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ],
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ],
+          [
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385,
+            0.385
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 1,
+            "value": "centre"
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "false"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 3,
+            "value": "3"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 2.225,
+            "left": 2.225,
+            "right": 2.225
+          }
+        },
+        "input_sha256": "c05ba28ce2a8d0e6f421d3cb45255d79e15db90a93aaced36c64bed04befc9ff",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "speed-tier-3",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ],
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ],
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ],
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ],
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ],
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ],
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ],
+          [
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225,
+            2.225
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "no_tof_sample",
+            "selected": null,
+            "value": null
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "no_tof_sample",
+            "selected": null,
+            "value": null
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "no_tof_sample",
+            "selected": null,
+            "value": null
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": null,
+            "left": null,
+            "right": null
+          }
+        },
+        "input_sha256": "01948acefacad7d02524b2af9f4af47f36610ab5c0c7a5d5788b104258b3209e",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "no-sample",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "tof_sample_tick": null,
+        "tof_valid": [
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "stale_tof",
+            "selected": null,
+            "value": null
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "stale_tof",
+            "selected": null,
+            "value": null
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "stale_tof",
+            "selected": null,
+            "value": null
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 4.0,
+            "left": 4.0,
+            "right": 4.0
+          }
+        },
+        "input_sha256": "c4c53c2b87b79b0f62b0bfe7aed9adbf38dfa1e40d5e880d4fadf9306a9aaa69",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "stale",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.2,
+        "tof_m": [
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ]
+        ],
+        "tof_sample_tick": 0,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "incomplete_sector_coverage",
+            "selected": null,
+            "value": null
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "incomplete_centre_coverage",
+            "selected": null,
+            "value": null
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "incomplete_centre_coverage",
+            "selected": null,
+            "value": null
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": null,
+            "left": 4.0,
+            "right": 4.0
+          }
+        },
+        "input_sha256": "85f7c8cd9854532e7111ebae7c1d546c7c3303d17f0942de6e1031012d6b1ead",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "missing-centre-column",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            4.0,
+            4.0,
+            4.0,
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    },
+    {
+      "label": {
+        "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+        "answers": {
+          "clear_sector": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "incomplete_sector_coverage",
+            "selected": null,
+            "value": null
+          },
+          "mode": {
+            "label_source": "human_review_required",
+            "reason": "human_review_required",
+            "selected": null,
+            "value": null
+          },
+          "path_blocked": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 0,
+            "value": "false"
+          },
+          "speed_tier": {
+            "label_source": "deterministic_sensor_proxy",
+            "reason": "sensor_proxy",
+            "selected": 3,
+            "value": "3"
+          }
+        },
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config": {
+          "acceleration": 1.0,
+          "collision_cost": 10.0,
+          "dropout": 0.02,
+          "dt": 0.05,
+          "field_of_view": 0.7853981633974483,
+          "goal_tolerance": 0.25,
+          "history_ticks": 8,
+          "latency_ticks": 2,
+          "max_range": 4.0,
+          "max_speed": 0.6,
+          "max_ticks": 32,
+          "max_turn_rate": 1.5,
+          "noise_std": 0.02,
+          "radius": 0.18,
+          "success_reward": 10.0,
+          "tick_cost": 0.01
+        },
+        "config_sha256": "28f14e701e635532adbb6b96dc28ef79b8b6a41e60c68feaf26715f4a1b60175",
+        "evidence": {
+          "envelope_m": 0.18,
+          "sector_min_m": {
+            "centre": 4.0,
+            "left": null,
+            "right": 4.0
+          }
+        },
+        "input_sha256": "dc2d87294a9842e2c06f7fe2a2f174654d734b4a0f2ab2c2a68cb6e4e82e5ca2",
+        "labeler_sha256": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+        "physical_safety_claim": false,
+        "policy_id": "rover-sensor-proxy-draft-v0",
+        "review_status": "unreviewed_draft",
+        "schema": "micro-classifier/sim-label-draft/1",
+        "tick": 4,
+        "training_approved": false
+      },
+      "name": "missing-left-column",
+      "observation": {
+        "ego": [
+          0.0,
+          0.0,
+          4.0,
+          0.0
+        ],
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": 4,
+        "tof_age_s": 0.1,
+        "tof_m": [
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ],
+          [
+            0.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0,
+            4.0
+          ]
+        ],
+        "tof_sample_tick": 2,
+        "tof_valid": [
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      "origin": "synthetic_current_observation_only"
+    }
+  ],
+  "training_approved": false
+}

@@ -1515,6 +1515,54 @@ do not authorize rounding, history removal or a larger ceiling.
 [float32-draft-flash]: teacher/reports/float32-draft-budget-d3-flash-20261016.json
 [float32-draft-mini]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
 
+## 26. Diagnostic Label Coverage, Not Dataset Clearance (2026-10-16)
+
+The user approved CPU-only coverage tooling/tests, at most sixteen diagnostic
+simulation episodes plus synthetic fault fixtures, and an unreviewed report.
+No rules/defaults, safety policy, input/history or token ceiling may change;
+production datasets, live teachers, training, dependencies/downloads and
+hardware remain excluded.
+
+The [label CLI][sim-label-draft] adds opt-in `--coverage-study` while keeping
+the original smoke mode. A zero-inclusive counter reports every option and
+abstention reason. Eight 32-tick diagnostics retain default physics, sensor
+faults, latency and full history, overriding only the study horizon (default
+400). Seven stationary probes and a map-aware approach/brake script generate
+observations; the labeler never receives truth or actions. Metadata marks the
+script's privilege and non-expert diagnostic purpose. Twelve current-only
+synthetic sector/speed/fault fixtures remain separate from episode counts.
+
+The [seed-20261016 report][sim-label-coverage-report] records **264 observations**:
+blocked false/true counts **208/40**, sector left/centre/right/none counts
+**88/21/105/34**, and speed tiers 0/1/2/3 counts **36/36/98/78**. Every computable
+question abstains on sixteen no-sample warmups; mode abstains on all 264.
+There are zero collisions and eight intentional horizon timeouts, with zero
+goal completions: this is not a navigation or controller-success evaluation.
+
+All computable options now appear in selected diagnostic scenes, but this does
+**not** establish representative coverage or correct ground truth. Thirty-one
+blocked positives are from the noisy near-wall stationary case with a clear
+starting footprint, and nine from the moving brake probe. Radial noisy proxies
+remain unreviewed. Synthetic fixtures separately exercise all options and
+no-sample/stale/incomplete-centre/incomplete-sector abstentions; they supply no
+mode labels and are neither episode data nor a reviewed task dataset.
+
+Independent verification checked all eight log hashes, 264 relabeled states,
+consecutive ticks, option identities, twelve synthetic fixtures and disabled
+approval flags. AST comparison confirms the original catalogue/envelope/label
+and smoke functions are unchanged; Config defaults, catalogue, wire contract
+and prompt tooling were not edited. DESIGN.md §7 records exact counts and
+report SHA-256. Logs remain ignored; the shareable report binds their hashes.
+
+Nine new focused checks pass; the repository has 307 passes plus the known
+transformer numerical expected failure (80 simulator tests). Ruff lint/changed
+format and editor diagnostics pass. No real teacher, training, production
+dataset, dependency/download, firmware or board action occurred. Task 6 stays
+blocked on policy/data review, and Task 8 live use on the unchanged prompt and
+teacher-quality gates. Keep the defaults and training-disabled scope unchanged.
+
+[sim-label-coverage-report]: sim/reports/label-coverage-20261016.json
+
 ## Sources
 
 Hardware and tools:

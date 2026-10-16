@@ -6,14 +6,23 @@ import json
 import math
 import platform
 from collections import Counter
-from dataclasses import asdict
+from copy import deepcopy
+from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from numbers import Real
 from pathlib import Path
 
 import numpy as np
 
-from sim.rover import Config, RoverEnv, make_scenario, rollout, write_episode
+from sim.rover import (
+    Config,
+    RoverEnv,
+    Scenario,
+    json_value,
+    make_scenario,
+    rollout,
+    write_episode,
+)
 
 
 def draft_catalogue():
@@ -182,6 +191,32 @@ def draft_labels(observation, config=None):
     }
 
 
+def answer_coverage(labels):
+    catalogue = draft_catalogue()
+    counts = {row["name"]: Counter() for row in catalogue["questions"]}
+    reasons = {name: Counter() for name in counts}
+    for record in labels:
+        for name, answer in record["answers"].items():
+            if answer["value"] is None:
+                reasons[name][answer["reason"]] += 1
+            else:
+                counts[name][answer["value"]] += 1
+    summary = {}
+    for row in catalogue["questions"]:
+        name = row["name"]
+        options = {option: counts[name][option] for option in row["options"]}
+        missing = [option for option, count in options.items() if not count]
+        summary[name] = {
+            "option_counts": options,
+            "answered": sum(options.values()),
+            "abstained": sum(reasons[name].values()),
+            "abstention_counts": dict(reasons[name]),
+            "missing_options": missing,
+            "all_options_observed": not missing,
+        }
+    return summary
+
+
 def smoke_suite(output, *, seed=20261016, config=None):
     if type(seed) is not int or not 0 <= seed < 2**63:
         raise ValueError("seed must be an integer between zero and 2**63 - 1")
@@ -250,16 +285,225 @@ def smoke_suite(output, *, seed=20261016, config=None):
     return report
 
 
+class _CoverageProbe:
+    def __init__(self, env, approach):
+        self.env = env
+        self.approach = approach
+        self.braking = False
+
+    def __call__(self, observation):
+        config = self.env.config
+        if not self.approach:
+            return (0.0, 0.0)
+        speed = min(float(observation["ego"][0]), config.max_speed)
+        clearance = self.env.scenario.bounds[0] - self.env.position[0]
+        stop = config.radius + speed**2 / (2 * config.acceleration)
+        if clearance <= stop + config.max_speed * config.dt + config.noise_std:
+            self.braking = True
+        return (0.0 if self.braking else config.max_speed, 0.0)
+
+
+def _coverage_fixtures(config):
+    age = config.latency_ticks * config.dt
+    base = {
+        "schema": "micro-classifier/sim-observation/1",
+        "tick": config.latency_ticks + 2,
+        "tof_sample_tick": 2,
+        "tof_age_s": age,
+        "ego": np.array([0.0, 0.0, 4.0, 0.0]),
+        "tof_m": np.full((8, 8), config.max_range),
+        "tof_valid": np.ones((8, 8), dtype=bool),
+    }
+    cases = []
+    for selected in ("left", "centre", "right", "none"):
+        observation = deepcopy(base)
+        observation["tof_m"][:] = config.radius / 2
+        if selected != "none":
+            columns = draft_catalogue()["rules"]["sector_columns"][selected]
+            observation["tof_m"][:, columns] = config.max_range
+        cases.append((f"sector-{selected}", observation))
+    fractions = draft_catalogue()["rules"]["speed_fractions"]
+    for tier in range(4):
+        lower = stopping_envelope(config.max_speed * fractions[tier], age, config)
+        upper = (
+            stopping_envelope(config.max_speed * fractions[tier + 1], age, config)
+            if tier < 3
+            else config.max_range
+        )
+        observation = deepcopy(base)
+        observation["tof_m"][:] = (lower + upper) / 2
+        cases.append((f"speed-tier-{tier}", observation))
+    for name in ("no-sample", "stale", "missing-centre-column", "missing-left-column"):
+        observation = deepcopy(base)
+        if name == "no-sample":
+            observation["tof_sample_tick"] = None
+            observation["tof_valid"][:] = False
+            observation["tof_m"][:] = 0
+        elif name == "stale":
+            observation["tof_sample_tick"] = 0
+            observation["tof_age_s"] = observation["tick"] * config.dt
+        else:
+            column = 3 if name == "missing-centre-column" else 0
+            observation["tof_valid"][:, column] = False
+            observation["tof_m"][:, column] = 0
+        cases.append((name, observation))
+    return cases
+
+
+def coverage_suite(output, *, seed=20261016):
+    if type(seed) is not int or not 0 <= seed < 2**63:
+        raise ValueError("seed must be an integer between zero and 2**63 - 1")
+    config = replace(Config(), max_ticks=32)
+    catalogue = draft_catalogue()
+    if not catalogue.get("scope_approval", {}).get("simulation_smoke"):
+        raise ValueError("simulation smoke is not approved by this catalogue")
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=False)
+    age = config.latency_ticks * config.dt
+    envelopes = [
+        stopping_envelope(config.max_speed * fraction, age, config)
+        for fraction in catalogue["rules"]["speed_fractions"]
+    ]
+    distances = {
+        "near": config.radius + config.noise_std / 2,
+        "tier1": (envelopes[1] + envelopes[2]) / 2 + config.noise_std,
+        "tier2": (envelopes[2] + envelopes[3]) / 2 + config.noise_std,
+        "clear": envelopes[3] + config.max_speed / 3,
+    }
+    scenes = [(Scenario(name="open-hold"), False)]
+    for name, distance in distances.items():
+        scenes.append(
+            (
+                Scenario(
+                    name=f"wall-{name}-hold",
+                    start=(6 - distance, 3.0, 0.0),
+                    goal=(1.0, 3.0),
+                ),
+                False,
+            )
+        )
+    for side, sign in (("left", 1), ("right", -1)):
+        scenes.append(
+            (
+                Scenario(
+                    name=f"wall-{side}-hold",
+                    start=(
+                        6 - distances["tier2"],
+                        3.0,
+                        sign * config.field_of_view / 3,
+                    ),
+                    goal=(1.0, 3.0),
+                ),
+                False,
+            )
+        )
+    scenes.append(
+        (
+            Scenario(
+                name="wall-approach-brake", start=(5.2, 3.0, 0.0), goal=(1.0, 3.0)
+            ),
+            True,
+        )
+    )
+    cases, episode_labels = [], []
+    for index, (scene, approach) in enumerate(scenes):
+        env = RoverEnv(config, scene)
+        env.reset(seed=seed + index)
+        records, summary = rollout(env, _CoverageProbe(env, approach))
+        labels = []
+        for record in records:
+            if "observation" in record:
+                record["simulation_label"] = draft_labels(record["observation"], config)
+                labels.append(record["simulation_label"])
+            if record["kind"] == "metadata":
+                record.update(
+                    training_approved=False,
+                    diagnostic_only=True,
+                    privileged_diagnostic_policy=approach,
+                    policy_purpose="coverage_probe_not_navigation_expert",
+                )
+        path = output / f"{scene.name}.jsonl"
+        write_episode(path, records)
+        episode_labels.extend(labels)
+        cases.append(
+            {
+                "scene": scene.name,
+                "file": path.name,
+                "seed": seed + index,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "bytes": path.stat().st_size,
+                "summary": summary,
+                "observation_count": len(labels),
+                "coverage": answer_coverage(labels),
+            }
+        )
+    fixtures = []
+    for name, observation in _coverage_fixtures(config):
+        fixtures.append(
+            {
+                "name": name,
+                "origin": "synthetic_current_observation_only",
+                "observation": json.loads(json.dumps(observation, default=json_value)),
+                "label": draft_labels(observation, config),
+            }
+        )
+    report = {
+        "schema": "micro-classifier/sim-label-coverage-draft/1",
+        "created_utc": datetime.now(UTC).isoformat(),
+        "seed": seed,
+        "review_status": "unreviewed_draft",
+        "allowed_use": catalogue["allowed_use"],
+        "training_approved": False,
+        "live_teacher_labeling_approved": False,
+        "physical_safety_claim": False,
+        "representative_task_coverage_claim": False,
+        "policy_review_passed": False,
+        "default_config": asdict(Config()),
+        "config": asdict(config),
+        "config_overrides": {"max_ticks": 32},
+        "episode_limit": 16,
+        "catalogue_sha256": digest(catalogue),
+        "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "simulator_sha256": hashlib.sha256(
+            Path(__file__).with_name("rover.py").read_bytes()
+        ).hexdigest(),
+        "environment": {"python": platform.python_version(), "numpy": np.__version__},
+        "cases": cases,
+        "episode_observation_count": len(episode_labels),
+        "episode_coverage": answer_coverage(episode_labels),
+        "synthetic_fixtures": fixtures,
+        "synthetic_coverage": answer_coverage(row["label"] for row in fixtures),
+        "limitations": [
+            "Selected diagnostic scenes and artificial current-only fixtures are not task-distribution data.",
+            "Near-wall positives can arise from sensor noise, not actual footprint obstruction.",
+            "Stationary probes and a map-aware brake script are not navigation experts.",
+            "Duration-limit timeouts are intentional; these are not goal-success evaluations.",
+            "Mode remains absent for every observation; labels are not reviewed or training-approved.",
+        ],
+    }
+    with (output / "report.json").open("x") as stream:
+        json.dump(report, stream, indent=2, sort_keys=True, allow_nan=False)
+        stream.write("\n")
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--report", type=Path)
     parser.add_argument("--seed", type=int, default=20261016)
+    parser.add_argument(
+        "--coverage-study",
+        action="store_true",
+        help="run eight diagnostic episodes and separate synthetic coverage fixtures",
+    )
     args = parser.parse_args()
     if args.report and args.report.exists():
         parser.error("report already exists; choose a new path")
     try:
-        report = smoke_suite(args.output, seed=args.seed)
+        report = (coverage_suite if args.coverage_study else smoke_suite)(
+            args.output, seed=args.seed
+        )
         if args.report:
             args.report.parent.mkdir(parents=True, exist_ok=True)
             with args.report.open("x") as stream:
@@ -271,12 +515,16 @@ def main():
         json.dumps(
             {
                 "output": str(args.output),
-                "all_scenes_succeeded": report["all_scenes_succeeded"],
+                **(
+                    {"episode_coverage": report["episode_coverage"]}
+                    if args.coverage_study
+                    else {"all_scenes_succeeded": report["all_scenes_succeeded"]}
+                ),
                 "training_approved": False,
             }
         )
     )
-    if not report["all_scenes_succeeded"]:
+    if not args.coverage_study and not report["all_scenes_succeeded"]:
         raise SystemExit(1)
 
 

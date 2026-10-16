@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §25 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §26 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -206,6 +206,27 @@ Keep this section and the Task List current; a new session resumes from them.
   DESIGN.md §7 and REVIEW.md §25 record exactness, hashes and limits. No model
   runtime, inference, labels, training, download, dependency or hardware action.
 
+- Approved (2026-10-16): CPU-only diagnostic coverage tooling/tests, at most
+  16 simulation episodes plus synthetic fault fixtures, and an unreviewed smoke
+  report. Keep label rules, simulator defaults, inputs/history and token ceiling
+  unchanged. No production dataset, live teachers, training, downloads,
+  dependencies, physical safety changes or deployment approval.
+
+- Diagnostic coverage study at seed 20261016 completed eight 32-tick episodes
+  (264 observations) plus twelve separate synthetic option/fault fixtures.
+  Episode counts cover both blocked values (208 false/40 true), all four sector
+  options and speed tiers (36/36/98/78); each computable question has 16 warmup
+  abstentions. `mode` is absent throughout. No collisions; eight intentional
+  horizon timeouts, not navigation failures/success evidence. Thirty-one blocked
+  positives are from a stationary noisy near-wall probe; representative coverage
+  and proxy accuracy remain unproven. Only the diagnostic horizon overrides
+  Config (32 versus 400); rule/catalogue/original smoke function ASTs unchanged.
+  Report: `sim/reports/label-coverage-20261016.json`, all eight ignored log hashes
+  and 264 labels independently verified. Nine new tests; 80 simulator tests and
+  307 repository passes plus the known transformer expected failure; lint,
+  changed-file format and diagnostics clean. DESIGN.md §7 and REVIEW.md §26.
+  No live teachers, reviewed dataset, training, dependency or hardware work.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -248,6 +269,12 @@ on missing tools, and continue with the next unblocked task.
   suite and fake-teacher pipeline tests; four seeded scenes succeeded and all
   567 observation labels/hashes checked. Training-dataset review, positive-class
   coverage, human `mode` labels and physical safety remain pending.
+  Diagnostic result (2026-10-16): approved bounded coverage tooling ran eight
+  episodes and twelve separate synthetic fixtures with unchanged rules. All
+  computable options appear in the selected episodes, including 40 blocked and
+  36 tier-0 outputs; 264 observations, no mode labels. These selected probes and
+  artificial faults are not representative data or reviewed ground truth.
+  Task 6 remains blocked on policy/dataset review, not option-counter plumbing.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

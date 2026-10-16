@@ -6,7 +6,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from sim.labels import draft_catalogue, draft_labels, smoke_suite, stopping_envelope
+from sim.labels import (
+    answer_coverage,
+    coverage_suite,
+    draft_catalogue,
+    draft_labels,
+    smoke_suite,
+    stopping_envelope,
+)
 from sim.rover import (
     Config,
     RoverEnv,
@@ -251,6 +258,175 @@ def test_draft_rejects_nonzero_invalid_cells_and_missing_fields(draft_observatio
     del observation["tof_m"]
     with pytest.raises(ValueError, match="missing required"):
         draft_labels(observation, config)
+
+
+def test_label_coverage_preserves_zero_options_and_separates_abstentions(
+    draft_observation,
+):
+    config, observation = draft_observation
+    stale = deepcopy(observation)
+    stale.update(tick=4, tof_age_s=4 * config.dt)
+    warmup = deepcopy(observation)
+    warmup.update(tof_sample_tick=None, tof_age_s=config.dt)
+    warmup["tof_valid"][:] = False
+    warmup["tof_m"][:] = 0
+    labels = [draft_labels(value, config) for value in (observation, stale, warmup)]
+    original = deepcopy(labels)
+    coverage = answer_coverage(iter(labels))
+    assert coverage["path_blocked"] == {
+        "option_counts": {"false": 1, "true": 0},
+        "answered": 1,
+        "abstained": 2,
+        "abstention_counts": {"stale_tof": 1, "no_tof_sample": 1},
+        "missing_options": ["true"],
+        "all_options_observed": False,
+    }
+    assert coverage["mode"]["answered"] == 0
+    assert coverage["mode"]["abstention_counts"] == {"human_review_required": 3}
+    assert coverage["speed_tier"]["missing_options"] == ["0", "1", "2"]
+    assert all(row["answered"] + row["abstained"] == 3 for row in coverage.values())
+    assert labels == original
+
+
+def test_label_coverage_empty_input_does_not_claim_coverage():
+    coverage = answer_coverage([])
+    for question in draft_catalogue()["questions"]:
+        row = coverage[question["name"]]
+        assert row["missing_options"] == question["options"]
+        assert row["answered"] == row["abstained"] == 0
+        assert not row["all_options_observed"]
+
+
+def test_label_coverage_study_is_bounded_reproducible_and_keeps_origins_separate(
+    tmp_path,
+):
+    import hashlib
+
+    output = tmp_path / "coverage"
+    report = coverage_suite(output, seed=17)
+    replay = coverage_suite(tmp_path / "replay", seed=17)
+    assert report["cases"] == replay["cases"]
+    assert report["synthetic_fixtures"] == replay["synthetic_fixtures"]
+    assert len(report["cases"]) == 8 <= report["episode_limit"] == 16
+    assert report["episode_observation_count"] == 8 * 33
+    assert report["default_config"] == Config().__dict__
+    assert report["config"] == {**Config().__dict__, "max_ticks": 32}
+    assert report["config_overrides"] == {"max_ticks": 32}
+    for flag in (
+        "training_approved",
+        "live_teacher_labeling_approved",
+        "physical_safety_claim",
+        "representative_task_coverage_claim",
+        "policy_review_passed",
+    ):
+        assert not report[flag]
+    for case in report["cases"]:
+        path = output / case["file"]
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == case["sha256"]
+        records = [json.loads(line) for line in path.read_text().splitlines()]
+        assert records[0]["diagnostic_only"] and not records[0]["training_approved"]
+        assert records[0]["policy_purpose"] == "coverage_probe_not_navigation_expert"
+        config = Config(**report["config"])
+        labels = [
+            draft_labels(row["observation"], config)
+            for row in records
+            if "observation" in row
+        ]
+        assert labels == [
+            row["simulation_label"] for row in records if "observation" in row
+        ]
+        assert answer_coverage(labels) == case["coverage"]
+        assert not case["summary"]["collision"] and case["summary"]["timeout"]
+    for case in report["synthetic_fixtures"]:
+        assert case["origin"] == "synthetic_current_observation_only"
+        assert case["label"] == draft_labels(case["observation"], config)
+    assert len(report["synthetic_fixtures"]) == 12
+    for name in ("path_blocked", "clear_sector", "speed_tier"):
+        assert report["synthetic_coverage"][name]["all_options_observed"]
+    assert report["episode_coverage"]["mode"]["answered"] == 0
+    assert report["synthetic_coverage"]["mode"]["answered"] == 0
+    assert report["synthetic_coverage"]["path_blocked"]["abstention_counts"] == {
+        "no_tof_sample": 1,
+        "stale_tof": 1,
+        "incomplete_centre_coverage": 1,
+    }
+    assert (
+        report["synthetic_coverage"]["clear_sector"]["abstention_counts"][
+            "incomplete_sector_coverage"
+        ]
+        == 2
+    )
+    assert json.loads((output / "report.json").read_text()) == report
+    with pytest.raises(FileExistsError):
+        coverage_suite(output)
+
+
+@pytest.mark.parametrize("seed", [-1, True, 2**63])
+def test_label_coverage_study_rejects_invalid_seed_before_creating_output(
+    tmp_path, seed
+):
+    output = tmp_path / "invalid-coverage"
+    with pytest.raises(ValueError, match="seed"):
+        coverage_suite(output, seed=seed)
+    assert not output.exists()
+
+
+@pytest.mark.parametrize("coverage", [False, True])
+def test_label_coverage_cli_is_opt_in_and_preserves_default_smoke(
+    tmp_path, monkeypatch, capsys, coverage
+):
+    from sim.labels import main
+
+    called = []
+
+    def run(output, *, seed):
+        called.append((output, seed))
+        return (
+            {"episode_coverage": {"probe": True}}
+            if coverage
+            else {"all_scenes_succeeded": True}
+        )
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("nonselected smoke mode must not execute")
+
+    monkeypatch.setattr("sim.labels.coverage_suite", run if coverage else forbidden)
+    monkeypatch.setattr("sim.labels.smoke_suite", forbidden if coverage else run)
+    output = tmp_path / "episodes"
+    report_path = tmp_path / "report.json"
+    arguments = [
+        "labels",
+        "--output",
+        str(output),
+        "--report",
+        str(report_path),
+        "--seed",
+        "23",
+    ]
+    if coverage:
+        arguments.append("--coverage-study")
+    monkeypatch.setattr("sys.argv", arguments)
+    main()
+    assert called == [(output, 23)]
+    summary = json.loads(capsys.readouterr().out)
+    assert not summary["training_approved"]
+    key = "episode_coverage" if coverage else "all_scenes_succeeded"
+    assert summary[key] == json.loads(report_path.read_text())[key]
+    with pytest.raises(SystemExit) as error:
+        main()
+    assert error.value.code == 2 and len(called) == 1
+
+
+def test_label_coverage_study_requires_smoke_approval_before_output(
+    tmp_path, monkeypatch
+):
+    catalogue = draft_catalogue()
+    catalogue["scope_approval"]["simulation_smoke"] = False
+    monkeypatch.setattr("sim.labels.draft_catalogue", lambda: catalogue)
+    output = tmp_path / "not-approved"
+    with pytest.raises(ValueError, match="not approved"):
+        coverage_suite(output)
+    assert not output.exists()
 
 
 def test_label_smoke_is_repeatable_exclusive_and_never_labels_mode(tmp_path):

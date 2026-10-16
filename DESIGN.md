@@ -1186,6 +1186,70 @@ changed-file format and editor diagnostics clean. Task 6 still needs review
 for training data, coverage and human mode labels. Task 8 preparation is
 approved only with fake teachers; real labeling remains gated.
 
+#### Diagnostic Coverage Study (2026-10-16)
+
+The user approved **CPU-only coverage tooling/tests, at most 16 diagnostic
+episodes plus synthetic fault fixtures, and an unreviewed smoke report**.
+No production dataset, live teacher, training, dependency/download, physical
+safety change or input/history/token-budget change was approved. Accepted
+defaults and label rules remain unchanged; this does not clear Task 6 review.
+
+The [label CLI][sim-label-draft] adds explicit `--coverage-study`; without it,
+the original four-scene smoke path is unchanged. The study runs eight episodes:
+open hold, four wall-clearance holds, left/right wall views and a straight
+approach/brake probe. Only the study's time horizon is overridden to 32 ticks
+from Config's default 400, retaining default physics, noise, dropout, latency
+and history. Stationary probes are not navigation experts; the brake probe uses
+privileged wall distance solely to generate observations. Labels still consume
+only observations, with truth and actions separate. Script privilege and
+diagnostic/training-disabled scope are explicit in episode metadata.
+
+A zero-inclusive coverage summary lists each option, missing options, answered
+counts and abstentions by reason. Twelve synthetic current-observation fixtures
+(four sector, four speed and four fault cases) are embedded separately in the
+report, never pooled with episode coverage. They are artificial rule exercises,
+not complete-history episodes, reviewed labels or task-distribution samples.
+
+The [measured report][sim-label-coverage-report], seed 20261016, contains eight
+episodes and 264 observations. All episodes avoid collision and intentionally
+reach the 32-tick horizon; none reaches its goal. These are **not navigation
+success rates or evidence of a safe controller**.
+
+| Question | Episode Option Counts in Catalogue Order | Abstentions |
+| --- | --- | --- |
+| `path_blocked` | false: 208; true: 40 | 16 no-sample warmups |
+| `clear_sector` | left: 88; centre: 21; right: 105; none: 34 | 16 no-sample warmups |
+| `speed_tier` | 0: 36; 1: 36; 2: 98; 3: 78 | 16 no-sample warmups |
+| `mode` | All five options: 0 | 264 human-review-required |
+
+All computable options occur in these selected episodes, unlike the earlier
+expert smoke, but **representative coverage and proxy accuracy remain unproven**.
+Thirty-one blocked positives come from the noisy stationary near-wall case,
+whose true starting footprint is clear; nine occur in the moving brake probe.
+Sensor-proxy positives are not independently reviewed obstacle ground truth.
+The twelve separate synthetic fixtures exercise no-sample, stale, incomplete
+centre-column and incomplete side-sector abstentions, plus every computable
+option; `mode` remains absent for all twelve. They do not cover every possible
+fault/configuration or establish a label policy suitable for training.
+
+All eight ignored JSONL log hashes, consecutive ticks, 264 recomputed labels and
+option identities were independently checked, as were the twelve fixtures and
+false approval flags. An AST comparison against the preceding commit confirms
+that `draft_catalogue`, `stopping_envelope`, `draft_labels` and `smoke_suite` are
+unchanged. Config defaults, catalogue, wire contract and prompt renderer were
+not edited. Report SHA-256:
+`612d3a7251a2021ffaf24c80030de669fb72929abb37fc5b0b99bba4f670224f`.
+
+Verification: nine new focused coverage checks, 80 simulator tests and 307
+repository passes plus the known transformer numerical expected failure; Ruff
+lint/changed-file format and editor diagnostics clean. Tests cover zero counts,
+separate abstentions, empty inputs, deterministic replay, complete relabeling,
+bounded runs, origin separation, no-mode/no-training invariants, CLI opt-in,
+existing-output protection, invalid seeds and smoke-approval rejection. No real
+teacher, reviewed dataset, training, dependency/download, firmware or hardware
+action occurred. Training-label review, human mode labels, representative task
+data and the unchanged 2,048-token live-teacher gate remain pending.
+
 ### Teacher-Pipeline Host Preparation (2026-10-16)
 
 The [host pipeline][teacher-label-pipeline] completes Task 8's approved
@@ -1825,6 +1889,7 @@ for this project.
 [sim-catalogue-draft]: sim/catalogue.json
 [sim-label-draft]: sim/labels.py
 [sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
+[sim-label-coverage-report]: sim/reports/label-coverage-20261016.json
 [teacher-label-pipeline]: teacher/label_pipeline.py
 [teacher-pipeline-tests]: tests/test_label_pipeline.py
 [teacher-evaluation]: teacher/evaluation.py

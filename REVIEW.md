@@ -1388,6 +1388,48 @@ student training, firmware and hardware remain outside this approval.
 [synthetic-evaluation-report]: teacher/reports/evaluation-synthetic-20261016.json
 [evaluation-tests]: tests/test_evaluation.py
 
+## 23. Offline Prompt Budget: Measured Blocker (2026-10-16)
+
+The user approved tokenizer/template-only offline preflight using already-
+cached approved d3 revisions, explicitly excluding downloads, weights/model
+loading, inference, labels and training. The [tool][prompt-budget] verifies
+pinned manifest identity and consumed prompt/tokenizer assets, not model
+weights or the complete inference package. Only the reviewed pure formatter
+runs; model runtime/constructors and loaders are not invoked. Fast-tokenizer
+loading is local-only with remote code disabled; answer-code parity is checked.
+
+Complete mode-choice text sequences use the release formatter/chat template,
+including question/options/generation prefix, with no truncation or padding.
+Reports bind tool source, tokenizer/library assets, request hashes and original
+episode/tick provenance. Fake CPU tests cover inclusive ceilings, scope flags,
+hash tampering, local-only loading, forbidden model paths, answer-code mismatch,
+metadata isolation and exclusive failure reports.
+
+Both [flash][prompt-budget-flash] and [mini][prompt-budget-mini] tokenizers
+were run offline with GPUs hidden on sixteen identical requests, eight each
+from existing clear wire-v0 and label-smoke prefixes. All sixteen exceed the
+2,048-token ceiling: 3,421 minimum, 6,788 wire maximum and 6,936 label-smoke
+maximum, identically for both tokenizers. This replaces the earlier unmeasured
+budget status with a concrete failure, not a new resource allowance. DESIGN.md
+§7 records artifact hashes and scope. Fresh request/tool hashes and count-list
+parity were independently verified; no labels were generated.
+
+Verification: 15 [focused tests][prompt-budget-tests], 275 repository passes
+plus the known transformer numerical expected failure; Ruff lint/changed-file
+format and clean editor diagnostics. No weights/model runtime, inference,
+training, download, dependency change or hardware action occurred.
+
+The current renderer is not budget-qualified for live labeling. Proposed
+default: keep the ceiling and full input/history unchanged while reviewing a
+budget-compatible representation. No automatic rounding, feature removal,
+history truncation or budget increase is authorized. Human/policy/data review,
+live-label approval and the existing ST/board gates remain unresolved.
+
+[prompt-budget]: teacher/prompt_budget.py
+[prompt-budget-flash]: teacher/reports/prompt-budget-d3-flash-20261016.json
+[prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
+[prompt-budget-tests]: tests/test_prompt_budget.py
+
 ## Sources
 
 Hardware and tools:

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §22 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §23 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -139,8 +139,9 @@ Keep this section and the Task List current; a new session resumes from them.
   pass; full suite: 222 passed plus the known transformer expected failure.
   Two real-log eight-observation plans invoked no teacher; maximum state text
   lengths were 9,689/9,842 characters, not measured token counts. Cache data and
-  plans are ignored. Live adapters/labeling, prompt-budget fit, reviewed human
-  mode labels and training remain unapproved/unverified. DESIGN.md §7 and
+  plans are ignored. Live adapters/labeling, reviewed human mode labels and
+  training remain unapproved; the tokenizer-only follow-up below measures
+  prompt-budget failure. DESIGN.md §7 and
   REVIEW.md §20 record the tooling-only exit and limits.
 - Follow-up provenance fix (2026-10-16): returned fake-teacher records no
   longer share nested identity/settings with the running batch. Two reproduced
@@ -157,6 +158,21 @@ Keep this section and the Task List current; a new session resumes from them.
   `teacher/reports/evaluation-synthetic-20261016.json`. No real label, task
   dataset, model fit, training, dependency, download or hardware action occurred.
   Actual Task 9 evaluation/baselines remain blocked on reviewed data and splits.
+- Approved (2026-10-16): offline prompt/token-budget checks using only already-
+  cached approved d3 tokenizer/template files; no downloads, weight/model loading,
+  inference, labels or training. This does not approve live labeling or a new
+  token ceiling. Prompt/tokenizer asset verification is distinct from full
+  model-package verification, which remains mandatory for approved inference.
+- `teacher/prompt_budget.py` now verifies pinned prompt/tokenizer assets,
+  answer-code parity and exact complete text-prompt counts without truncation.
+  Offline/GPU-hidden runs used both approved cached tokenizers on the same
+  sixteen observations (eight each from existing wire/smoke clear logs).
+  All sixteen fail the 2,048-token budget for both models: 3,421-6,936 tokens.
+  Reports are `teacher/reports/prompt-budget-d3-{flash,mini}-20261016.json`.
+  No weights/model runtime, inference, labels, download or training occurred.
+  Fifteen focused tests pass; full suite: 275 passed plus the known expected
+  transformer failure; lint/format/editor diagnostics pass. DESIGN.md §7 and
+  REVIEW.md §23 record this measured live-use blocker, not a budget increase.
 
 ## Task List
 
@@ -222,6 +238,11 @@ on missing tools, and continue with the next unblocked task.
   repository passes plus the known expected failure. Live labeling remains
   blocked on approval, reviewed labels, adapter provenance and token-budget
   validation; this completes only the approved host-tooling portion.
+  Tokenizer-only follow-up (2026-10-16): completed offline preflight, 15 focused
+  tests; all 16 sampled prompts exceed 2,048 tokens for both pinned tokenizers.
+  Live use remains blocked on a reviewed budget-compatible representation.
+  Proposed default: keep the budget and full input/history unchanged; review
+  representation before any compaction, rounding, feature removal or live use.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

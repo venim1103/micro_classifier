@@ -1249,6 +1249,59 @@ changed-file format and editor diagnostics pass. Existing plan hashes above
 describe the earlier artifacts; source-bound keys invalidate on this code change.
 No real teacher, training, new dependency or change to approval gates occurred.
 
+### Offline Prompt-Budget Preflight (2026-10-16)
+
+The user separately approved [offline tokenizer-only checks][prompt-budget]
+using already-cached approved d3 assets, without downloads, weight/model
+loading, inference, labels or training. This supersedes the earlier unmeasured
+prompt-length status, not the live-labeling prohibition or 2,048-token ceiling.
+
+The tool checks the pinned manifest identity and hashes consumed tokenizer,
+configuration and prompt assets. This is **not full model-package verification**:
+weights are not read or verified, and full verification remains mandatory for
+any separately approved inference. Only the reviewed standard-library formatter
+is loaded from a private copy of its verified source; `d3_runtime` and model
+constructors are not imported/called. Local fast-tokenizer loading disables
+remote code and requires local files; answer codes/token IDs must match the
+pinned decision config. Tokenizer/library versions and asset hashes are retained.
+
+For the current choice-only mode request, formatting matches the release's
+text-only preparation path, including system/user turns, question, answer codes,
+chat template and generation prefix. Counts use no added special tokens,
+padding or truncation. The CLI bounds observations per episode and writes an
+exclusive report, returning 1 when any prompt exceeds the existing ceiling.
+It does not mutate requests, grant live-label approval or run a decision model.
+
+With offline flags and GPUs hidden, both approved cached tokenizers counted
+the same sixteen complete requests: the first eight observations each from
+the existing clear wire-v0 and label-smoke logs. **Every sampled prompt exceeds
+2,048 tokens** for both teachers:
+
+| Tokenizer | Minimum | Wire Maximum | Label-Smoke Maximum | Over Budget |
+| --- | --- | --- | --- | --- |
+| d3-flash, pinned revision | 3,421 | 6,788 | 6,936 | 16/16 |
+| d3-mini, pinned revision | 3,421 | 6,788 | 6,936 | 16/16 |
+
+The [flash report][prompt-budget-flash] SHA-256 is
+`f907ff133f2c4cd1e5eea903bc341e5b9b3d1b0b643a3de1f02f81a5b91b99be`;
+the [mini report][prompt-budget-mini] SHA-256 is
+`505a2476f166928fef02bfff90d7fe97d095db55758c46353284925be84e6627`.
+Tool-source hashes and all request digests were independently checked against
+fresh rendering; the token-count lists match across tokenizers. These are
+bounded-prefix measurements, not maximum lengths over complete episodes.
+
+The current full-history JSON renderer is therefore **not budget-qualified
+for live use**. Do not silently truncate, round inputs, remove history/features
+or raise the ceiling. A budget-compatible representation needs review before
+changing the accepted input/tooling path; teacher quality would still require
+separately approved live evaluation. Keep the current budget/input definitions
+unchanged while that decision is pending.
+
+Verification: 15 [focused CPU tests][prompt-budget-tests], 275 repository
+passes plus the known transformer expected failure; lint, changed-file format
+and editor diagnostics pass. No model weights/runtime, inference, labels,
+training, dependency change, download or hardware action occurred.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following
@@ -1656,6 +1709,10 @@ for this project.
 [teacher-evaluation]: teacher/evaluation.py
 [synthetic-evaluation-report]: teacher/reports/evaluation-synthetic-20261016.json
 [evaluation-tests]: tests/test_evaluation.py
+[prompt-budget]: teacher/prompt_budget.py
+[prompt-budget-flash]: teacher/reports/prompt-budget-d3-flash-20261016.json
+[prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
+[prompt-budget-tests]: tests/test_prompt_budget.py
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

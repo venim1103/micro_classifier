@@ -111,6 +111,24 @@ CLI path. Every cached answer is synthetic, training-disabled and requires
 human review. Token-budget fit and genuine label quality remain unverified;
 full history is not silently truncated. See DESIGN.md §7 and REVIEW.md §20.
 
+The [offline prompt preflight][prompt-budget] uses only the approved cached
+tokenizer/prompt assets, never weights or inference:
+
+```sh
+HF_HUB_OFFLINE=1 CUDA_VISIBLE_DEVICES="" python -m teacher.prompt_budget \
+	--episode sim/episodes/wire-v0-smoke/clear-20261015.jsonl \
+	--output teacher/reports/my-prompt-budget.json --limit 8
+```
+
+It includes complete question/chat overhead, checks pinned asset hashes, and
+refuses downloads, remote tokenizer code, truncation and budget increases.
+`--repo-id vllm-sr/d3-mini` selects the other approved cached tokenizer.
+Outputs must be new; exit 1 means prompts exceed the 2,048-token ceiling.
+The recorded [flash][prompt-budget-flash]/[mini][prompt-budget-mini] runs each
+found all 16 sampled prompts over budget (3,421-6,936 tokens). **The current
+renderer is not budget-qualified for live use.** Input/representation review
+is needed; no automatic trimming or larger budget is approved. See REVIEW.md §23.
+
 ## Synthetic Evaluation Tooling
 
 [CPU-only metrics and split checks][teacher-evaluation] are approved for
@@ -252,5 +270,8 @@ The simulation JSONL container remains separately versioned. See
 [teacher-pipeline-tests]: tests/test_label_pipeline.py
 [teacher-evaluation]: teacher/evaluation.py
 [synthetic-evaluation-report]: teacher/reports/evaluation-synthetic-20261016.json
+[prompt-budget]: teacher/prompt_budget.py
+[prompt-budget-flash]: teacher/reports/prompt-budget-d3-flash-20261016.json
+[prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

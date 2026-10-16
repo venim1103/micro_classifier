@@ -179,6 +179,13 @@ a real-input model, log labeler or observation adapter; exactness/registration
 are fixture assumptions. No existing logs or annotations were used. See
 REVIEW.md §39 for the feasibility study and its limits.
 
+The separate `probe_synthetic_bounded_ray_witness` draft accepts explicit
+artificial range/translation/heading bounds and requires their entire error
+ball inside the stopping footprint. Bounds are caller assumptions, not measured
+limits or Gaussian-noise confidence levels. Existing exact-probe/default guards
+remain unchanged; no logs, real labels or data production are enabled. See
+REVIEW.md §40 for the synthetic-only model and remaining evidence gaps.
+
 [navigation-reference]: sim/navigation.py
 
 ## Diagnostic Source-Provenance Audit

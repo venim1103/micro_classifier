@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §39 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §40 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -472,6 +472,31 @@ Keep this section and the Task List current; a new session resumes from them.
   training, dependency/download or hardware action. Tasks 6/9 remain blocked on
   reviewed uncertainty/registration/target evidence, mode and actual cohort/data.
 
+- Approved (2026-10-16): CPU-only synthetic bounded-error draft and checks,
+  with no existing-log use. Explore explicit artificial range, translation and
+  heading-error bounds for positive witnesses only; bounds are fixture
+  assumptions, not measurements or Gaussian-sigma conversions. Preserve the
+  exact-ray API and normal-default rejection. No uncertainty-policy adoption,
+  real-input qualification, negative/clear labels, inputs/history/token changes,
+  episodes, annotations/dataset/splits, inference/training, dependency/download
+  or hardware work.
+
+- Synthetic bounded-error draft completed (2026-10-16): separate additive
+  `probe_synthetic_bounded_ray_witness` accepts explicit artificial range,
+  translation and heading-error bounds, then requires the complete assumed
+  hit-location error ball strictly inside the braking footprint. Bounds are
+  assumptions, not measurements, Gaussian-sigma conversions or an adopted
+  uncertainty policy. No clear/negative labels; unsupported evidence abstains.
+  The exact probe and all existing oracle functions/signatures are AST-identical
+  to the prior commit; normal-default/age/curve rejection remains unchanged.
+  Twenty-six new cases include a 72-point perturbation cross-check; 172 simulator
+  tests and 488 repository passes plus known transformer expected failure, with
+  clean lint/format/editor/doc checks. No existing logs, rollouts, artifacts,
+  labels/dataset/splits, inference/training, dependency/download or hardware work;
+  inputs/history/defaults/token limits unchanged. DESIGN.md §7 and REVIEW.md §40.
+  Task 6 still needs reviewed uncertainty/registration/target evidence and mode;
+  Task 9 still needs accepted families/cohort and reviewed task data/splits.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -545,6 +570,10 @@ on missing tools, and continue with the next unblocked task.
   The prototype rejects normal noisy/delayed assumptions and does not label logs
   or qualify real input. Reviewed uncertainty/registration and actual target
   evidence/labels remain missing; mode stays unlabeled.
+  Bounded-error draft (2026-10-16, REVIEW.md §40): assumed artificial range/pose
+  bounds can preserve or remove positive witnesses; they are not measured error
+  limits, real-input qualification or negative/clear evidence. No current log
+  was processed and no uncertainty policy or label/data approval was adopted.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

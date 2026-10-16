@@ -600,6 +600,233 @@ def test_synthetic_ray_probe_unresolved_numerical_scale_abstains():
     assert result["status"] == "unknown" and result["reason"] == "numerical_unknown"
 
 
+@pytest.mark.parametrize(
+    "error,status",
+    [(0.0, "blocked_witness"), (0.01, "blocked_witness"), (0.2, "unknown")],
+)
+def test_bounded_ray_probe_uncertainty_can_remove_but_not_create_witnesses(
+    error, status
+):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    ranges, valid = np.zeros(8), np.zeros(8, dtype=bool)
+    ranges[3], valid[3] = 0.3, True
+    result = probe_synthetic_bounded_ray_witness(
+        ranges,
+        valid,
+        speed=0.6,
+        range_error_m=error,
+        translation_error_m=error,
+        heading_error_rad=error,
+        config=Config(noise_std=0, latency_ticks=0),
+        synthetic_test_only=True,
+    )
+    assert result["status"] == status
+    assert result["witness_columns"] == ([3] if status == "blocked_witness" else [])
+    assert result["synthetic"] and not result["training_approved"]
+    assert not result["real_input_qualified"] and not result["physical_safety_claim"]
+    json.dumps(result, allow_nan=False)
+
+
+def test_bounded_ray_probe_does_not_qualify_normal_defaults():
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    result = probe_synthetic_bounded_ray_witness(
+        np.full(8, 0.3),
+        np.ones(8, dtype=bool),
+        speed=0.6,
+        range_error_m=0.01,
+        translation_error_m=0.01,
+        heading_error_rad=0.01,
+        synthetic_test_only=True,
+    )
+    assert (
+        result["status"] == "unknown" and result["reason"] == "noise_model_unqualified"
+    )
+
+
+@pytest.fixture
+def bounded_ray_fixture():
+    ranges, valid = np.zeros(8), np.zeros(8, dtype=bool)
+    ranges[3], valid[3] = 0.3, True
+    return (
+        ranges,
+        valid,
+        {
+            "speed": 0.6,
+            "range_error_m": 0.01,
+            "translation_error_m": 0.01,
+            "heading_error_rad": 0.01,
+            "config": Config(noise_std=0, latency_ticks=0),
+            "synthetic_test_only": True,
+        },
+    )
+
+
+def test_bounded_ray_probe_sampled_perturbations_respect_error_ball_and_footprint(
+    bounded_ray_fixture,
+):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    ranges, valid, settings = bounded_ray_fixture
+    original = deepcopy((ranges, valid, settings))
+    result = probe_synthetic_bounded_ray_witness(ranges, valid, **settings)
+    assert result["status"] == "blocked_witness"
+    angle = np.linspace(
+        settings["config"].field_of_view / 2, -settings["config"].field_of_view / 2, 8
+    )[3]
+    nominal = ranges[3] * np.array([math.cos(angle), math.sin(angle)])
+    distance = settings["speed"] * settings["config"].dt + settings["speed"] ** 2 / (
+        2 * settings["config"].acceleration
+    )
+    for radial in (-settings["range_error_m"], 0, settings["range_error_m"]):
+        for heading in (
+            -settings["heading_error_rad"],
+            0,
+            settings["heading_error_rad"],
+        ):
+            for direction in np.linspace(0, 2 * math.pi, 8, endpoint=False):
+                translation = settings["translation_error_m"] * np.array(
+                    [math.cos(direction), math.sin(direction)]
+                )
+                point = (ranges[3] + radial) * np.array(
+                    [math.cos(angle + heading), math.sin(angle + heading)]
+                ) + translation
+                assert (
+                    np.linalg.norm(point - nominal)
+                    <= result["point_error_bound_m"][3] + 1e-12
+                )
+                assert (
+                    math.hypot(point[0] - np.clip(point[0], 0, distance), point[1])
+                    < settings["config"].radius
+                )
+    np.testing.assert_array_equal(ranges, original[0])
+    np.testing.assert_array_equal(valid, original[1])
+    assert settings == original[2]
+    result["assumed_error_bounds"]["range_error_m"] = 1
+    assert settings == original[2]
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [("range_error_m", 0.2), ("translation_error_m", 0.2), ("heading_error_rad", 1.0)],
+)
+def test_bounded_ray_probe_each_error_component_can_remove_a_witness(
+    bounded_ray_fixture, field, value
+):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    ranges, valid, settings = bounded_ray_fixture
+    result = probe_synthetic_bounded_ray_witness(
+        ranges, valid, **{**settings, field: value}
+    )
+    assert result["status"] == "unknown" and result["witness_columns"] == []
+
+
+@pytest.mark.parametrize(
+    "offset,status", [(-1e-6, "blocked_witness"), (0, "unknown"), (1e-6, "unknown")]
+)
+def test_bounded_ray_probe_error_ball_contact_abstains(
+    bounded_ray_fixture, offset, status
+):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    ranges, valid, settings = bounded_ray_fixture
+    angle = np.linspace(
+        settings["config"].field_of_view / 2, -settings["config"].field_of_view / 2, 8
+    )[3]
+    distance = settings["speed"] * settings["config"].dt + settings["speed"] ** 2 / (
+        2 * settings["config"].acceleration
+    )
+    separation = math.hypot(
+        ranges[3] * math.cos(angle) - distance, ranges[3] * math.sin(angle)
+    )
+    result = probe_synthetic_bounded_ray_witness(
+        ranges,
+        valid,
+        **{
+            **settings,
+            "range_error_m": 0,
+            "heading_error_rad": 0,
+            "translation_error_m": settings["config"].radius - separation + offset,
+        },
+    )
+    assert result["status"] == status
+
+
+@pytest.mark.parametrize("radial_error", [0.05, 0.3])
+def test_bounded_ray_probe_unsupported_range_interval_stays_unknown(
+    bounded_ray_fixture, radial_error
+):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    ranges, valid, settings = bounded_ray_fixture
+    result = probe_synthetic_bounded_ray_witness(
+        ranges,
+        valid,
+        **{
+            **settings,
+            "range_error_m": radial_error,
+            "config": Config(noise_std=0, latency_ticks=0, max_range=0.35),
+        },
+    )
+    assert result["status"] == "unknown" and result["witness_columns"] == []
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("range_error_m", -0.1),
+        ("range_error_m", True),
+        ("range_error_m", float("nan")),
+        ("translation_error_m", None),
+        ("translation_error_m", -0.1),
+        ("translation_error_m", float("inf")),
+        ("heading_error_rad", math.pi + 1e-6),
+        ("heading_error_rad", -0.1),
+        ("heading_error_rad", False),
+    ],
+)
+def test_bounded_ray_probe_rejects_invalid_assumed_bounds(
+    bounded_ray_fixture, field, value
+):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    ranges, valid, settings = bounded_ray_fixture
+    with pytest.raises(ValueError):
+        probe_synthetic_bounded_ray_witness(ranges, valid, **{**settings, field: value})
+
+
+def test_bounded_ray_probe_scope_checked_before_inputs(bounded_ray_fixture):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    _, _, settings = bounded_ray_fixture
+    with pytest.raises(ValueError, match="synthetic-test-only"):
+        probe_synthetic_bounded_ray_witness(
+            object(), object(), **{**settings, "synthetic_test_only": 1}
+        )
+
+
+@pytest.mark.parametrize(
+    "override,reason",
+    [
+        ({"config": Config(noise_std=0)}, "registration_unqualified"),
+        ({"tof_age_s": 0.1}, "registration_unqualified"),
+        ({"turn_rate": 0.1}, "curved_reference_not_supported"),
+    ],
+)
+def test_bounded_ray_probe_cannot_override_unqualified_assumptions(
+    bounded_ray_fixture, override, reason
+):
+    from sim.navigation import probe_synthetic_bounded_ray_witness
+
+    ranges, valid, settings = bounded_ray_fixture
+    result = probe_synthetic_bounded_ray_witness(
+        ranges, valid, **{**settings, **override}
+    )
+    assert result["status"] == "unknown" and result["reason"] == reason
+
+
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
 

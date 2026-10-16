@@ -1702,6 +1702,61 @@ sensor uncertainty/registration evidence and observation-to-target labels; this
 restricted positive witness neither qualifies real inputs nor supplies negative
 labels. Mode semantics and actual family/cohort/data gates also remain open.
 
+#### Synthetic Bounded-Error Draft (2026-10-16)
+
+The user approved a CPU-only bounded-error draft and synthetic checks, with
+**no existing-log use** or adoption of an uncertainty/registration policy.
+`probe_synthetic_bounded_ray_witness` is a separate additive diagnostic in the
+[navigation module][navigation-reference]. It reuses the unchanged exact-probe
+validation and rejection guards: normal noise/default latency, nonzero age and
+curved motion still abstain. Artificial zero-noise/current-frame fixtures may
+add deterministic residual errors; this is not a conversion of Gaussian noise
+standard deviation to a hard bound or registration performed by the code.
+
+For nominal ray point $p_i=z_i d_i$, the **assumed** true registered hit is
+$q_i=t+R(\eta)(z_i+\delta)d_i$, where
+$|\delta|\leq\epsilon_z$, $\|t\|\leq\epsilon_t$ and
+$|\eta|\leq\epsilon_\psi\leq\pi$. Bounds must be explicitly supplied,
+finite and nonnegative; booleans are rejected. Under this fixture model:
+
+$$
+\|q_i-p_i\|\leq
+u_i=\epsilon_z+\epsilon_t+
+2(z_i+\epsilon_z)\sin(\epsilon_\psi/2).
+$$
+
+The candidate range interval must remain strictly positive and below saturation:
+$z_i-\epsilon_z>0$ and $z_i+\epsilon_z<z_{max}$. Let $S$ be the adopted
+straight-braking centreline and $r$ its footprint radius. A sufficient positive
+criterion is $d(p_i,S)+u_i<r-\varepsilon_{fp}$: the entire assumed error ball
+lies strictly inside the swept footprint. The argument uses the triangle
+inequality and the distance-to-segment Lipschitz property in exact arithmetic.
+The floating-point allowance is an engineering safeguard, not a formal verified
+interval bound. Error-ball contact, unsupported intervals, larger uncertainty
+or absent nominal witnesses yield unknown, never clear or negative labels.
+
+This draft bounds only the declared hit-location model. It does not bound
+ego-state/dynamics, footprint error, obstacle motion, missed surfaces or sensor
+outliers. Supplied bounds are caller assumptions, not measurement, provenance
+attestation or probability coverage. The new schema records assumed bounds and
+candidate point-error radii; results remain artificial-only, training-disabled,
+real-input-unqualified and without physical safety claims. No CLI, log reader,
+observation adapter, wire decision, mode label or data exporter is added.
+
+Twenty-six new cases pass. Tests exercise each error component independently,
+strict error-ball contact, unsupported range intervals, invalid bounds, inherited
+scope/default/age/curve rejection and nonmutation. A finite 72-point perturbation
+grid lies within the predicted error ball and footprint for one positive fixture;
+this is a sampled cross-check, not universal testing or a calibration result.
+The original exact probe and all existing oracle functions/signatures are
+AST-identical to the prior commit. All 172 simulator tests and 488 repository
+tests pass plus the known transformer expected failure; lint/format/editor/doc
+checks pass. No existing log, episode, annotation/data/split, inference, training,
+dependency/download, hardware action, input/history/default/token change or
+historical artifact modification occurred. Task 6 still needs reviewed physical
+uncertainty/registration and target evidence; Tasks 6/9 are not cleared by this
+assumed-set calculation. Negative/clear evidence and mode remain unresolved.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

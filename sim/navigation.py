@@ -105,6 +105,92 @@ def probe_synthetic_ray_witness(
     return result
 
 
+def probe_synthetic_bounded_ray_witness(
+    ranges,
+    valid,
+    *,
+    speed,
+    range_error_m,
+    translation_error_m,
+    heading_error_rad,
+    tof_age_s=0.0,
+    turn_rate=0.0,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Probe assumed artificial error sets, not measured sensor uncertainty."""
+    config = Config() if config is None else config
+    baseline = probe_synthetic_ray_witness(
+        ranges,
+        valid,
+        speed=speed,
+        tof_age_s=tof_age_s,
+        turn_rate=turn_rate,
+        config=config,
+        synthetic_test_only=synthetic_test_only,
+    )
+    bounds = {
+        "range_error_m": range_error_m,
+        "translation_error_m": translation_error_m,
+        "heading_error_rad": heading_error_rad,
+    }
+    for name, value in bounds.items():
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not math.isfinite(value)
+            or value < 0
+        ):
+            raise ValueError(f"{name} must be finite nonnegative numeric data")
+    if heading_error_rad > math.pi:
+        raise ValueError("heading_error_rad must not exceed pi")
+    bounds = {name: float(value) for name, value in bounds.items()}
+    result = {
+        **baseline,
+        "schema": "micro-classifier/synthetic-bounded-ray-witness/1",
+        "allowed_use": "artificial_bounded_ray_tests_only",
+        "assumed_error_bounds": bounds,
+        "point_error_bound_m": [None] * 8,
+    }
+    if baseline["status"] != "blocked_witness":
+        return result
+    result.update(status="unknown", reason="no_robust_witness", witness_columns=[])
+    ranges = np.asarray(ranges, dtype=float)
+    distance = float(speed) * config.dt + float(speed) ** 2 / (2 * config.acceleration)
+    angles = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)
+    for column in baseline["witness_columns"]:
+        nominal = float(ranges[column])
+        lower, upper = (
+            nominal - bounds["range_error_m"],
+            nominal + bounds["range_error_m"],
+        )
+        if not math.isfinite(upper) or lower <= 0 or upper >= config.max_range:
+            continue
+        error = (
+            bounds["range_error_m"]
+            + bounds["translation_error_m"]
+            + 2 * math.sin(bounds["heading_error_rad"] / 2) * upper
+        )
+        if not math.isfinite(error):
+            continue
+        allowance = (
+            128
+            * np.finfo(float).eps
+            * max(1.0, config.max_range, distance, config.radius, upper, error)
+        )
+        point = nominal * np.array([math.cos(angles[column]), math.sin(angles[column])])
+        separation = math.hypot(point[0] - np.clip(point[0], 0, distance), point[1])
+        result["point_error_bound_m"][column] = error
+        if separation + error < config.radius - allowance:
+            result["witness_columns"].append(column)
+    if result["witness_columns"]:
+        result.update(
+            status="blocked_witness",
+            reason="assumed_error_ball_inside_braking_footprint",
+        )
+    return result
+
+
 def _touches(start, end, radius, obstacles, bounds):
     start, end = np.asarray(start), np.asarray(end)
     return bool(

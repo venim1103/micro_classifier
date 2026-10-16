@@ -2123,6 +2123,52 @@ labels, especially any qualified negative/clear evidence. Mode semantics remain
 undefined and unlabeled. Task 9 still awaits accepted family/cohort review and
 actual task data/splits; no quarantined log was promoted by these synthetic cases.
 
+## 40. Synthetic Bounded-Error Witness Draft (2026-10-16)
+
+The user approved "bounded-error draft and synthetic-only tests" without
+existing-log application or real-input qualification. Explicit fixture range,
+translation and heading-error bounds are assumptions, not measured values,
+Gaussian-sigma conversions or an adopted uncertainty/registration policy.
+Accepted inputs/history/defaults/token limits and diagnostic quarantine stay
+unchanged; episodes, actual annotations/data/splits, inference/training,
+downloads/dependencies and hardware remain outside this increment.
+
+`probe_synthetic_bounded_ray_witness` is a separate additive diagnostic. It
+inherits the exact probe's scope and data guards and cannot override noise,
+default latency, age or curved-motion abstention. For assumed registered hit
+$q=t+R(\eta)(z+\delta)d$, the triangle inequality gives displacement radius
+$u=\epsilon_z+\epsilon_t+2(z+\epsilon_z)\sin(\epsilon_\psi/2)$, with
+finite nonnegative bounds and heading bound at most pi. Range intervals must
+stay strictly positive and unsaturated. A positive witness requires the whole
+error ball strictly inside the adopted straight-braking capsule; ambiguous
+contact or missing evidence is unknown, never clear or a negative label.
+
+This is an exact-arithmetic sufficiency argument plus an engineering
+floating-point allowance, not formal interval verification or calibrated
+probability coverage. Ego-state/dynamics, footprint error, obstacle motion,
+missed surfaces and outliers are not bounded by this hit-location model.
+Caller-supplied exactness/registration and bounds are not attestation. Output
+is tagged synthetic-only, training-disabled, real-input-unqualified and without
+physical safety claims; no observation/log adapter, CLI, mode label or data
+export path was introduced.
+
+Twenty-six new cases pass, covering all error components, strict boundary,
+unsupported intervals, invalid bounds, inherited rejection/scope and immutability.
+A 72-point perturbation grid checks one positive fixture's predicted point ball
+and footprint containment; it is finite sampling, not a universal empirical
+proof or quality measurement. All existing navigation functions/signatures,
+including the exact probe, are AST-identical to the prior commit. Verification:
+172 simulator tests and 488 repository passes plus the known transformer
+numerical expected failure, Ruff lint/format, editor diagnostics and doc
+reference/local-target/whitespace checks. No existing log, report, review packet
+or source beyond the approved navigation diagnostic/tests/docs was modified.
+
+**Outcome:** the approved synthetic study is complete. Task 6 still needs
+reviewed uncertainty/registration and observation-to-target evidence/labels;
+negative/clear evidence and mode semantics remain unresolved. Task 9 still
+requires accepted family/cohort review and actual task data/splits. No physical
+evidence policy, label/data production or training was enabled by these bounds.
+
 ## Sources
 
 Hardware and tools:

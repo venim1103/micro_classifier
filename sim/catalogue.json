@@ -3,7 +3,14 @@
   "policy_id": "rover-sensor-proxy-draft-v0",
   "catalogue_version": 0,
   "review_status": "unreviewed_draft",
-  "allowed_use": "tooling_and_unit_tests_only",
+  "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+  "scope_approval": {
+    "date": "2026-10-16",
+    "simulation_smoke": true,
+    "fake_teacher_pipeline_tests": true,
+    "live_teacher_labeling": false,
+    "training": false
+  },
   "physical_safety_claim": false,
   "rules": {
     "envelope_m": "radius + speed * (tof_age_s + dt) + speed**2 / (2 * acceleration)",
@@ -51,7 +58,7 @@
     }
   ],
   "limitations": [
-    "Not approved for dataset generation, teacher labeling, training or deployment.",
+    "Not approved for training datasets, live teacher labeling, training or deployment.",
     "No world geometry, expert action, future observation or collision truth is used.",
     "Planar rays, limited field of view, noise and radial minima do not prove a free swept footprint.",
     "No turning dynamics, noise-bound guarantee, physical thresholds or host fail-safe policy is established."

@@ -1254,6 +1254,37 @@ requires a reviewed catalogue/policy; training and firmware remain out of scope.
 [sim-catalogue-draft]: sim/catalogue.json
 [sim-label-draft]: sim/labels.py
 
+## 19. Bounded Simulation Label Smoke (2026-10-16)
+
+The user approved the existing draft unchanged for a small seeded simulation
+smoke suite, followed by teacher-pipeline tooling tested with **fake teachers
+only**. This supersedes §18's generation prohibition only for that bounded
+smoke. No live teacher labeling, training, reviewed production dataset,
+new dependency, ST execution or hardware action was approved.
+
+The labeler now records the narrower approval in catalogue scope metadata
+and offers a separate four-scene smoke CLI. Rules and wire identities did
+not change. Exclusive labeled logs remain ignored; `mode` remains absent,
+training disabled, and the draft remains unreviewed for production quality.
+
+The [seed-20261016 report][sim-label-smoke-report] records clear/obstacle/
+corridor/slalom at 133/141/133/156 ticks, all successful with no collision or
+timeout. There are 567 observations, including eight warmup abstentions per
+computable question. All 559 usable blocked values are false and all speed
+tiers are 3. Sector labels include left/centre/right but no `none`; mode is
+human-review/absent for all 567. This explicitly lacks positive-blocked and
+lower-speed coverage; it is plumbing evidence, not quality or safety evidence.
+
+All four log hashes, report equality and observation counts were independently
+checked. DESIGN.md §7 records the report digest and exact limits. Four new
+tests cover exclusive outputs, replay and scope invariants. Full verification:
+192 passed plus the known transformer expected failure, 71 simulator tests,
+Ruff lint/format and clean editor diagnostics. Task 6 still needs reviewed
+training labels and human mode examples; Task 8 host preparation can proceed
+with fake teachers but cannot generate genuine teacher labels yet.
+
+[sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
+
 ## Sources
 
 Hardware and tools:

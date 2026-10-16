@@ -1,0 +1,169 @@
+{
+  "all_scenes_succeeded": true,
+  "allowed_use": "simulation_smoke_and_pipeline_tests_only",
+  "cases": [
+    {
+      "answer_counts": {
+        "clear_sector": {
+          "abstain:no_tof_sample": 2,
+          "centre": 14,
+          "left": 45,
+          "right": 73
+        },
+        "mode": {
+          "abstain:human_review_required": 134
+        },
+        "path_blocked": {
+          "abstain:no_tof_sample": 2,
+          "false": 132
+        },
+        "speed_tier": {
+          "3": 132,
+          "abstain:no_tof_sample": 2
+        }
+      },
+      "bytes": 2135100,
+      "file": "clear.jsonl",
+      "scene": "clear",
+      "sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 133,
+        "timeout": false,
+        "total_reward": 12.434999999999997
+      }
+    },
+    {
+      "answer_counts": {
+        "clear_sector": {
+          "abstain:no_tof_sample": 2,
+          "centre": 19,
+          "left": 62,
+          "right": 59
+        },
+        "mode": {
+          "abstain:human_review_required": 142
+        },
+        "path_blocked": {
+          "abstain:no_tof_sample": 2,
+          "false": 140
+        },
+        "speed_tier": {
+          "3": 140,
+          "abstain:no_tof_sample": 2
+        }
+      },
+      "bytes": 2362730,
+      "file": "obstacle.jsonl",
+      "scene": "obstacle",
+      "sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 141,
+        "timeout": false,
+        "total_reward": 12.368734762300097
+      }
+    },
+    {
+      "answer_counts": {
+        "clear_sector": {
+          "abstain:no_tof_sample": 2,
+          "centre": 72,
+          "left": 25,
+          "right": 35
+        },
+        "mode": {
+          "abstain:human_review_required": 134
+        },
+        "path_blocked": {
+          "abstain:no_tof_sample": 2,
+          "false": 132
+        },
+        "speed_tier": {
+          "3": 132,
+          "abstain:no_tof_sample": 2
+        }
+      },
+      "bytes": 2234414,
+      "file": "corridor.jsonl",
+      "scene": "corridor",
+      "sha256": "22cc76d3fab37b3895c377564dcc02e5a6da7fd56ef8bfe0793c5dc84b6e3a3f",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 133,
+        "timeout": false,
+        "total_reward": 12.434999999999997
+      }
+    },
+    {
+      "answer_counts": {
+        "clear_sector": {
+          "abstain:no_tof_sample": 2,
+          "centre": 46,
+          "left": 10,
+          "right": 99
+        },
+        "mode": {
+          "abstain:human_review_required": 157
+        },
+        "path_blocked": {
+          "abstain:no_tof_sample": 2,
+          "false": 155
+        },
+        "speed_tier": {
+          "3": 155,
+          "abstain:no_tof_sample": 2
+        }
+      },
+      "bytes": 2656057,
+      "file": "slalom.jsonl",
+      "scene": "slalom",
+      "sha256": "d7e38a7020da223bf48daaadeff82132b4932a90fa8f9053d9e43238a4f47235",
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 156,
+        "timeout": false,
+        "total_reward": 12.190722584988569
+      }
+    }
+  ],
+  "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+  "config": {
+    "acceleration": 1.0,
+    "collision_cost": 10.0,
+    "dropout": 0.02,
+    "dt": 0.05,
+    "field_of_view": 0.7853981633974483,
+    "goal_tolerance": 0.25,
+    "history_ticks": 8,
+    "latency_ticks": 2,
+    "max_range": 4.0,
+    "max_speed": 0.6,
+    "max_ticks": 400,
+    "max_turn_rate": 1.5,
+    "noise_std": 0.02,
+    "radius": 0.18,
+    "success_reward": 10.0,
+    "tick_cost": 0.01
+  },
+  "created_utc": "2026-10-16T07:07:43.928413+00:00",
+  "environment": {
+    "numpy": "2.2.6",
+    "python": "3.12.3"
+  },
+  "live_teacher_labeling_approved": false,
+  "physical_safety_claim": false,
+  "schema": "micro-classifier/sim-label-smoke/1",
+  "seed": 20261016,
+  "simulator_sha256": "52366f3ead404ec90bca87d8e1a35c5ece3072144c2c9866e228dcebc2084976",
+  "source_sha256": "b0ee4abd68a43c304a7c4ee16e3c230584a1f69ccd3ecc643c1af33264b12e24",
+  "training_approved": false
+}

@@ -16,10 +16,10 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §18 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §19 is the latest update, and
   §10 is the M0 decision template.
 
-## Current State (2026-10-15)
+## Current State (2026-10-16)
 
 Keep this section and the Task List current; a new session resumes from them.
 
@@ -121,6 +121,16 @@ Keep this section and the Task List current; a new session resumes from them.
   All 67 simulator tests pass (37 draft-policy tests); full suite: 188 passed
   plus the known transformer expected failure. DESIGN.md §7 and REVIEW.md §18
   record the exact proposed formulas and limitations. Task 6 awaits review.
+- User approved the unchanged draft for a four-scene seeded simulation smoke
+  and teacher-pipeline tooling with fake-teacher tests on 2026-10-16. Live
+  teacher labeling, training, production datasets and hardware remain excluded.
+  `python -m sim.labels` records that scope and writes exclusive smoke logs.
+  Seed 20261016: four successes, no collisions/timeouts, 567 observations;
+  eight warmup abstentions per computable question, `mode` absent for all 567.
+  All usable blocked labels are false and speed tiers are 3: no positive-class
+  or low-speed coverage claim. Report: `sim/reports/label-smoke-20261016.json`;
+  all four log hashes verified. Full suite: 192 passed plus the known expected
+  transformer failure; 71 simulator tests. DESIGN.md §7 and REVIEW.md §19.
 
 ## Task List
 
@@ -154,16 +164,16 @@ on missing tools, and continue with the next unblocked task.
    round-trip tests.
   Result (2026-10-15): approved provisional host-side contract, 62 focused
   tests, generated C offsets and five golden frames; no hardware freeze.
-6. [blocked: draft simulation label policy awaits review]
+6. [blocked: reviewed training labels not approved; smoke-only policy accepted]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.
-  Open decision: review the exact envelope, sector, tier and abstention rules
-  in DESIGN.md §7 before approving simulation-only label generation. Proposed
-  next step: a reviewed simulation smoke suite only, with `mode` human-reviewed;
-  physical safety and production labels remain unfrozen and unapproved.
+  Smoke result (2026-10-16): user approved unchanged rules for a bounded smoke
+  suite and fake-teacher pipeline tests; four seeded scenes succeeded and all
+  567 observation labels/hashes checked. Training-dataset review, positive-class
+  coverage, human `mode` labels and physical safety remain pending.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
@@ -175,10 +185,12 @@ on missing tools, and continue with the next unblocked task.
   Result (2026-10-15): provisional state frames exported with `--wire`, 30
   simulator tests, four successful scene runs and 566 verified frames. JSONL
   embeds wire bytes as hex; no model decisions, reviewed labels or board claim.
-8. [blocked: draft catalogue and label policy not reviewed]
+8. [ ]
   Teacher labeling pipeline: deterministic rendering of state packets for
    the teacher, cached and resumable labeling, and provenance (revision,
    settings, and hashes).
+  Approved (2026-10-16): implement host tooling with fake-teacher CPU tests
+  only. Do not call real teachers or claim a reviewed training dataset.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

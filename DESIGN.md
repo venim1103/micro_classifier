@@ -1096,6 +1096,47 @@ provenance changes, no privileged-data leakage and input immutability. Lint,
 changed-file formatting and editor diagnostics pass. No labeling run, training,
 new dependency, ST execution, firmware or hardware work occurred.
 
+#### Bounded Simulation Smoke Approval (2026-10-16)
+
+The user subsequently approved the unchanged draft for a **small seeded smoke
+suite and fake-teacher pipeline tests only**. Catalogue scope metadata records
+this date and keeps live teacher labeling/training disabled. `unreviewed_draft`
+still means no training/production-quality approval; `allowed_use` now names
+the simulation-smoke/pipeline-test scope. No rule or wire identity was changed.
+
+`python -m sim.labels` runs exactly clear/obstacle/corridor/slalom with one
+seed, retaining original observations and separate diagnostic truth. Labels
+consume only observations; `mode` remains absent. Exclusive new logs under
+ignored `sim/episodes/` and an optional shareable report prevent accidental
+replacement of evidence. No training or real teacher invocation is connected.
+
+The [recorded report][sim-label-smoke-report] at seed 20261016 has four
+successful scenes, zero collisions/timeouts and 567 labeled observations:
+
+| Scene | Ticks | Observations |
+| --- | --- | --- |
+| clear | 133 | 134 |
+| obstacle | 141 | 142 |
+| corridor | 133 | 134 |
+| slalom | 156 | 157 |
+
+Each computable question abstains for two warmup observations per scene.
+All 559 remaining `path_blocked` values are false and all speed tiers are 3;
+sector counts span left/centre/right, with no `none` cases. `mode` abstains
+on all 567 observations. These privileged-expert trajectories lack positive
+blocked/lower-tier coverage and are **not a balanced or reviewed dataset**.
+They validate labeling plumbing, not proxy accuracy, calibration or safety.
+
+All four log hashes and observation counts were independently verified against
+the shareable report and its ignored copy. Report SHA-256:
+`4ebfe308d8cc8070d543d314ca1621ea59a5e6fe441ef0b47e5d791ab972aee8`.
+Four additional tests cover replay, no-mode/no-training invariants, log hashes,
+exclusive outputs and invalid seeds. Verification: 71 simulator tests,
+192 repository passes plus the known transformer expected failure; lint,
+changed-file format and editor diagnostics clean. Task 6 still needs review
+for training data, coverage and human mode labels. Task 8 preparation is
+approved only with fake teachers; real labeling remains gated.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following
@@ -1497,6 +1538,7 @@ for this project.
 [st-cli-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-cli.html
 [sim-catalogue-draft]: sim/catalogue.json
 [sim-label-draft]: sim/labels.py
+[sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

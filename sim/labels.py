@@ -1,15 +1,19 @@
-"""Unreviewed sensor-proxy label draft for tooling and unit tests only."""
+"""Draft sensor proxies; approved for simulation smoke and pipeline tests only."""
 
+import argparse
 import hashlib
 import json
 import math
+import platform
+from collections import Counter
 from dataclasses import asdict
+from datetime import UTC, datetime
 from numbers import Real
 from pathlib import Path
 
 import numpy as np
 
-from sim.rover import Config
+from sim.rover import Config, RoverEnv, make_scenario, rollout, write_episode
 
 
 def draft_catalogue():
@@ -163,7 +167,7 @@ def draft_labels(observation, config=None):
     return {
         "schema": "micro-classifier/sim-label-draft/1",
         "review_status": "unreviewed_draft",
-        "allowed_use": "tooling_and_unit_tests_only",
+        "allowed_use": catalogue["allowed_use"],
         "training_approved": False,
         "physical_safety_claim": False,
         "policy_id": catalogue["policy_id"],
@@ -176,3 +180,105 @@ def draft_labels(observation, config=None):
         "answers": answers,
         "evidence": {"envelope_m": envelope, "sector_min_m": sectors},
     }
+
+
+def smoke_suite(output, *, seed=20261016, config=None):
+    if type(seed) is not int or not 0 <= seed < 2**63:
+        raise ValueError("seed must be an integer between zero and 2**63 - 1")
+    config = Config() if config is None else config
+    if not isinstance(config, Config):
+        raise TypeError("config must be a simulator Config")
+    catalogue = draft_catalogue()
+    if not catalogue.get("scope_approval", {}).get("simulation_smoke"):
+        raise ValueError("simulation smoke is not approved by this catalogue")
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=False)
+    cases = []
+    for name in ("clear", "obstacle", "corridor", "slalom"):
+        env = RoverEnv(config, make_scenario(name, seed))
+        env.reset(seed=seed)
+        records, summary = rollout(env)
+        counts = {row["name"]: Counter() for row in catalogue["questions"]}
+        labeled = []
+        for record in records:
+            entry = dict(record)
+            if "observation" in entry:
+                labels = draft_labels(entry["observation"], config)
+                entry["simulation_label"] = labels
+                for question, answer in labels["answers"].items():
+                    key = answer["value"]
+                    if key is None:
+                        key = "abstain:" + answer["reason"]
+                    counts[question][key] += 1
+            if entry["kind"] == "metadata":
+                entry["label_scope"] = catalogue["scope_approval"]
+                entry["training_approved"] = False
+            labeled.append(entry)
+        path = output / f"{name}.jsonl"
+        write_episode(path, labeled)
+        cases.append(
+            {
+                "scene": name,
+                "file": path.name,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "bytes": path.stat().st_size,
+                "summary": summary,
+                "answer_counts": {key: dict(value) for key, value in counts.items()},
+            }
+        )
+    report = {
+        "schema": "micro-classifier/sim-label-smoke/1",
+        "created_utc": datetime.now(UTC).isoformat(),
+        "seed": seed,
+        "config": asdict(config),
+        "catalogue_sha256": digest(catalogue),
+        "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "simulator_sha256": hashlib.sha256(
+            Path(__file__).with_name("rover.py").read_bytes()
+        ).hexdigest(),
+        "environment": {"python": platform.python_version(), "numpy": np.__version__},
+        "allowed_use": catalogue["allowed_use"],
+        "training_approved": False,
+        "live_teacher_labeling_approved": False,
+        "physical_safety_claim": False,
+        "cases": cases,
+        "all_scenes_succeeded": all(row["summary"]["success"] for row in cases),
+    }
+    with (output / "report.json").open("x") as stream:
+        json.dump(report, stream, indent=2, sort_keys=True, allow_nan=False)
+        stream.write("\n")
+    return report
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--report", type=Path)
+    parser.add_argument("--seed", type=int, default=20261016)
+    args = parser.parse_args()
+    if args.report and args.report.exists():
+        parser.error("report already exists; choose a new path")
+    try:
+        report = smoke_suite(args.output, seed=args.seed)
+        if args.report:
+            args.report.parent.mkdir(parents=True, exist_ok=True)
+            with args.report.open("x") as stream:
+                json.dump(report, stream, indent=2, sort_keys=True, allow_nan=False)
+                stream.write("\n")
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "all_scenes_succeeded": report["all_scenes_succeeded"],
+                "training_approved": False,
+            }
+        )
+    )
+    if not report["all_scenes_succeeded"]:
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()

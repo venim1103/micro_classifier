@@ -61,7 +61,7 @@ CPU unit tests: `python -m pytest tests`.
 ## Simulation Label Policy Draft
 
 The [catalogue][sim-catalogue-draft] and [labeler][sim-label-draft] are approved
-for **draft tooling and unit tests only**. They propose deterministic
+for **simulation smoke and fake-teacher pipeline tests only**. They propose deterministic
 observation-only proxies for `path_blocked`, `clear_sector` and `speed_tier`,
 with explicit abstention; `mode` always awaits human review. Every result is
 unreviewed and training-disabled, with catalogue/config/input/source hashes.
@@ -71,8 +71,18 @@ The formulas and limitations await review in [DESIGN.md](DESIGN.md) §7.
 python -m pytest -q tests/test_sim.py -k draft
 ```
 
-No episode labeling CLI, dataset, teacher-labeling run or training is supplied
-or approved by this draft. Simulator logging and wire export are unchanged.
+Run the approved four-scene smoke suite into a new ignored directory:
+
+```sh
+python -m sim.labels --output sim/episodes/my-label-smoke \
+	--report sim/reports/my-label-smoke.json --seed 20261016
+```
+
+The [recorded smoke][sim-label-smoke-report] has 567 observations and four
+successful scenes, but no positive-blocked or lower-speed examples. Results
+remain training-disabled, not a reviewed dataset or safety evidence. `mode`
+is always unlabeled; real teacher labeling and training remain unapproved.
+The original simulator CLI and wire export are unchanged.
 
 ## M1a Host Probes
 
@@ -190,5 +200,6 @@ The simulation JSONL container remains separately versioned. See
 [m1a-script]: export/m1a.py
 [sim-catalogue-draft]: sim/catalogue.json
 [sim-label-draft]: sim/labels.py
+[sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

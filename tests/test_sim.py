@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from sim.labels import draft_catalogue, draft_labels, stopping_envelope
+from sim.labels import draft_catalogue, draft_labels, smoke_suite, stopping_envelope
 from sim.rover import (
     Config,
     RoverEnv,
@@ -30,7 +30,10 @@ def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     catalogue = draft_catalogue()
     assert catalogue["catalogue_version"] == CATALOGUE_VERSION
     assert catalogue["review_status"] == "unreviewed_draft"
-    assert catalogue["allowed_use"] == "tooling_and_unit_tests_only"
+    assert catalogue["allowed_use"] == "simulation_smoke_and_pipeline_tests_only"
+    assert catalogue["scope_approval"]["simulation_smoke"]
+    assert not catalogue["scope_approval"]["live_teacher_labeling"]
+    assert not catalogue["scope_approval"]["training"]
     assert not catalogue["physical_safety_claim"]
     assert len(catalogue["questions"]) == len(QUESTIONS)
     for row in catalogue["questions"]:
@@ -248,6 +251,39 @@ def test_draft_rejects_nonzero_invalid_cells_and_missing_fields(draft_observatio
     del observation["tof_m"]
     with pytest.raises(ValueError, match="missing required"):
         draft_labels(observation, config)
+
+
+def test_label_smoke_is_repeatable_exclusive_and_never_labels_mode(tmp_path):
+    import hashlib
+
+    config = Config(max_ticks=3)
+    output = tmp_path / "smoke"
+    report = smoke_suite(output, seed=7, config=config)
+    replay = smoke_suite(tmp_path / "replay", seed=7, config=config)
+    assert report["cases"] == replay["cases"]
+    assert len(report["cases"]) == 4
+    assert not report["training_approved"]
+    assert not report["live_teacher_labeling_approved"]
+    for row in report["cases"]:
+        path = output / row["file"]
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == row["sha256"]
+        records = [json.loads(line) for line in path.read_text().splitlines()]
+        for record in records:
+            if "observation" in record:
+                labels = record["simulation_label"]
+                assert labels == draft_labels(record["observation"], config)
+                assert labels["answers"]["mode"]["value"] is None
+        assert row["answer_counts"]["mode"] == {"abstain:human_review_required": 4}
+    with pytest.raises(FileExistsError):
+        smoke_suite(output, config=config)
+
+
+@pytest.mark.parametrize("seed", [-1, True, 2**63])
+def test_label_smoke_rejects_invalid_seed_before_creating_output(tmp_path, seed):
+    output = tmp_path / "invalid"
+    with pytest.raises(ValueError, match="seed"):
+        smoke_suite(output, seed=seed)
+    assert not output.exists()
 
 
 def test_rays_hit_nearest_obstacle_and_wall():

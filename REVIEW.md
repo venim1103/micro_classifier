@@ -2169,6 +2169,54 @@ negative/clear evidence and mode semantics remain unresolved. Task 9 still
 requires accepted family/cohort review and actual task data/splits. No physical
 evidence policy, label/data production or training was enabled by these bounds.
 
+## 41. Range and Registration Qualification Plan (Proposed, 2026-10-16)
+
+The user approved "documentation-only evidence plan": required measurements,
+provenance, outlier handling, registration checks and acceptance decisions still
+needing review. This does not approve measurements, numeric bounds, an adopted
+uncertainty policy, code changes, log application, episodes, annotations/data/
+splits, inference/training, dependencies/downloads or hardware execution.
+
+DESIGN.md §7 now proposes six review stages, without selecting sample counts,
+limits, confidence levels, physical conditions or reference equipment:
+
+1. Specify claim/domain and check that a real zone's return supports the assumed
+  surface/ray geometry; finite-zone or out-of-plane ambiguity cannot be silently
+  treated as a known centre-ray point.
+2. Plan independent range-reference records with raw failures, validity/status,
+  sensor/configuration identity, surface association, reference uncertainty,
+  calibration/procedure lineage and tool/file hashes.
+3. Define acquisition/integration/delivery/reference times, clock offset/drift,
+  skew/gaps/wrap, mounting transforms and independently referenced motion.
+  Proposed static-world frame composition is explicit; neither timestamps nor
+  motion references are invented as student inputs. Missing registration stays
+  unresolved, and setting Config age/latency/noise to zero is not registration.
+4. Separate deterministic assumptions from empirical quantiles: finite maxima
+  and Gaussian sigmas are not hard bounds. Any probabilistic claim needs its
+  own reviewed coverage/dependence/outlier conventions; undetected outliers
+  cannot simply be removed from the claimed domain. Per-ray evidence alone
+  does not establish per-tick/history coverage.
+5. Review lineage before independent qualification groups; separate bound
+  derivation from held-out qualification and task data. Reference geometry/pose
+  remains privileged qualification evidence, excluded from observation-only
+  reviewer and teacher/student inputs. No group or partition is assigned and
+  no quarantined source is promoted.
+6. Review the separate braking/ego-state/footprint/dynamics/moving-obstacle
+  assumptions, then bind any future acceptance to versioned evidence and
+  explicit reviewer decisions with change/requalification triggers.
+
+**Outcome:** the approved documentation preparation is complete, not evidence
+qualification or policy adoption. The next review must choose claim/domain,
+independent references and authorized collection scope before measurements;
+numeric uncertainty/failure conventions and any compatible adapter need separate
+decisions. Recommended meanwhile: unchanged abstention, inputs/history/defaults,
+token ceiling and diagnostic quarantine. Negative/clear evidence, mode, accepted
+family/cohort/task data and Tasks 6/9 remain blocked. ST tools/board gates are
+independent. No code or artifact was changed; documentation reference/local-target
+and whitespace/scope checks validate this increment. The last code gate remains
+488 passing tests plus the known transformer expected failure; it is historical
+verification, not a new measurement or a test of physical uncertainty.
+
 ## Sources
 
 Hardware and tools:

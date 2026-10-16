@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §40 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §41 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -497,6 +497,22 @@ Keep this section and the Task List current; a new session resumes from them.
   Task 6 still needs reviewed uncertainty/registration/target evidence and mode;
   Task 9 still needs accepted families/cohort and reviewed task data/splits.
 
+- Approved and completed (2026-10-16): documentation-only range-error and
+  frame-registration evidence-qualification plan in DESIGN.md §7 and REVIEW.md
+  §41. Six proposed stages cover domain/ray compatibility, independent reference
+  uncertainty and provenance, acquisition-to-reference timing/transforms,
+  deterministic versus empirical uncertainty/outliers, independent qualification
+  lineage and versioned acceptance/requalification. No bounds, sample counts,
+  confidence/failure levels, equipment, groups or physical domain are selected.
+  No policy adoption, measurements, code/adapter, log use, labels/data/splits,
+  inference/training, dependencies/downloads or hardware work. Current synthetic
+  rejection, inputs/history/defaults/token ceiling and quarantine stay unchanged.
+  Doc reference/local-target/whitespace/scope checks pass; the last code gate
+  remains 488 passes plus the known expected failure, not newly rerun evidence.
+  Task 6 still needs reviewed claim/domain, references/collection authorization,
+  actual uncertainty/registration/target evidence and mode; Task 9 still needs
+  accepted family/cohort review and reviewed task data/splits.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -574,6 +590,11 @@ on missing tools, and continue with the next unblocked task.
   bounds can preserve or remove positive witnesses; they are not measured error
   limits, real-input qualification or negative/clear evidence. No current log
   was processed and no uncertainty policy or label/data approval was adopted.
+  Evidence-plan result (2026-10-16, REVIEW.md §41): documentation-only proposed
+  measurement/registration/qualification stages are complete. Claim/domain,
+  references, collection approval and numeric uncertainty/failure conventions
+  remain undecided; no measurements, model/adapter implementation, policy or
+  real-input qualification occurred. Existing abstention/quarantine stay in force.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

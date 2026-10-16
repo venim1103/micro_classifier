@@ -1757,6 +1757,96 @@ historical artifact modification occurred. Task 6 still needs reviewed physical
 uncertainty/registration and target evidence; Tasks 6/9 are not cleared by this
 assumed-set calculation. Negative/clear evidence and mode remain unresolved.
 
+#### Evidence-Qualification Plan (Proposed, 2026-10-16)
+
+The user approved **documentation only**: a plan for qualifying range error and
+frame registration, not measurements, an implemented adapter or adoption of an
+uncertainty policy. The following stages and evidence records are proposals for
+review. No numeric bound, sampling budget, confidence level, acceptable failure
+rate or physical operating domain is selected. Current synthetic APIs and their
+noise/latency/age/curve rejection remain unchanged.
+
+1. **Specify the claim and domain before collection.** Distinguish simulator
+  model checks from physical sensor qualification; neither establishes the
+  other. Propose an explicit sensor/firmware/configuration identity, mounting
+  transform, units, supported range/material/incidence/lighting/temperature and
+  motion conditions, validity/saturation meanings and excluded cases. Review
+  whether each zone supplies a surface point compatible with the assumed planar
+  ray model. Zone angular extent, mixed returns or out-of-plane surfaces cannot
+  silently be reduced to a centre ray or hidden in a range residual. Unsupported
+  hit existence or geometry remains unknown until a compatible evidence model
+  is separately reviewed; no 8x8-to-eight-ray adapter is authorized here.
+2. **Plan independent range references.** A proposed measurement record retains
+  raw readings/masks/status, acquisition identifiers, sensor settings, fixture
+  geometry/pose and its independent reference uncertainty, calibration versions,
+  operator/procedure identity and raw-file/tool hashes. Establish the same
+  surface/zone association before comparing a reading with a reference distance.
+  Reference tolerance and alignment error belong in the proposed error budget;
+  a residual against an uncertain reference is not sensor error alone. Include
+  proposed near-range, saturation, dropout, mixed-surface and adverse-condition
+  cases, retaining failures rather than deleting them. No reference instrument,
+  scene, sample count, acquisition or hardware run is selected or approved.
+3. **Define acquisition-to-decision registration.** Propose separate exposure or
+  integration timing (including per-zone skew if applicable), acquisition time,
+  delivery time and decision/reference time. Record clock identities, units,
+  offset/drift/synchronization uncertainty, wrap/gap handling and timestamp
+  semantics; a tick index, receipt time or nominal two-tick delay alone is not
+  proof of acquisition time. In a static-world rigid-transform proposal, map a
+  hit from sensor frame $S$ at acquisition $t_a$ to body frame $B_r$ at reference
+  $t_r$ using mounting extrinsics and independently referenced body motion:
+
+  $$
+  p_{B_r}=T_{B_r\leftarrow W}(t_r)
+  T_{W\leftarrow B_a}(t_a)T_{B_a\leftarrow S}p_S.
+  $$
+
+  Here $W$ is the proposed reference frame and $B_a$ the acquisition body frame;
+  these are qualification evidence, not newly available student inputs. Account
+  for extrinsic, timing and motion-estimation residuals without double counting.
+  Endpoint poses or integrated velocities alone do not bound unobserved motion
+  between timestamps. Unknown timestamps, gaps, unsupported turning or moving
+  surfaces remain unresolved. No transform is implemented and no delayed frame
+  may be made admissible merely by declaring zero age/latency/noise in Config.
+4. **Choose the uncertainty claim explicitly.** A finite residual maximum is
+  only an observed maximum, not a universal deterministic bound. A Gaussian
+  sigma is not a hard support limit. An empirical tail/quantile proposal would
+  need reviewed coverage/confidence, dependence, sample-size and outlier
+  conventions; it must not be inserted into the deterministic witness formula
+  and described as certainty. For a proposed deterministic enclosure, identify
+  the external assumptions supporting every component and the detectable
+  domain violations. Retain unmodeled or undetectable outliers as unresolved
+  evidence, not presumed removable faults. Decide how any per-zone/per-frame
+  claims combine across a tick/history before making an aggregate claim.
+5. **Separate fitting, qualification and task evidence.** Propose reviewing
+  source/template/device/session/fixture lineage before independent qualification
+  groups or any partition are accepted; repeated zones/ticks are not independent
+  trials. Preserve untouched reference records and a separately versioned bound
+  derivation, then evaluate proposed limits on independently held-out conditions
+  without tuning on failures. Record support, exclusions, violations, missingness
+  and reference uncertainty, not just successful witnesses. No family, cohort,
+  split or sample is assigned here, and current diagnostic logs stay quarantined.
+  Privileged metrology/pose evidence belongs only to qualification, not blind
+  human review or teacher/student inputs; it does not create task labels.
+6. **Review model coverage and authorize release separately.** Even qualified
+  hit-location error would not qualify the braking capsule: speed/ego-state,
+  reaction/dynamics, deceleration, footprint and obstacle-motion assumptions
+  remain separate from this draft's error ball. A proposed acceptance record
+  would bind claim/domain, evidence and tool hashes, reference uncertainties,
+  derivation, independent results, unresolved failures and reviewer decisions
+  to a version. Requalification triggers would include changed mounting,
+  sensor/firmware/settings, time base, motion model or operating domain. These
+  are proposed review items, not an accepted physical-safety specification.
+
+**Decisions still required before execution or adoption:** which claim/domain
+and independent references to use; what collection scope and lineage groups to
+approve; any numeric limits, uncertainty coverage and failure/abstention policy;
+and whether a separately reviewed evidence model/adapter is compatible with the
+accepted inputs and target. Proposed default: keep current abstention and
+quarantine until those decisions and evidence are reviewed. Any collection,
+hardware work, log application, implementation, label/data/split acceptance or
+training requires its own approval. This plan does not qualify real inputs,
+clear/negative evidence, mode, Task 6 or Task 9.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

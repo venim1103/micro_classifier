@@ -197,6 +197,12 @@ point/pose error assumptions. Its algebraic radii are not measured limits or
 certified floating-point bounds and do not enable witness labels or real-input
 use. REVIEW.md §44 records the model, checks and remaining qualification gates.
 
+`probe_synthetic_registered_witness` separately tests whole assumed obstacle-
+location balls against the straight braking footprint, using artificial point/
+pose inputs and explicit obstacle membership. It yields only a conditional
+positive witness or unknown, not clear/negative labels or qualified real input.
+REVIEW.md §45 records independent geometry and numerical-cancellation checks.
+
 [navigation-reference]: sim/navigation.py
 
 ## Diagnostic Source-Provenance Audit

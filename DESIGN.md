@@ -1983,6 +1983,78 @@ inputs/history/defaults/token ceiling and quarantine are unchanged. Tasks 6/9
 still need reviewed real uncertainty/registration/target evidence, mode and
 accepted family/cohort/task data; ST/board gates remain independent.
 
+#### Synthetic Registered-Point Witness Study (2026-10-16)
+
+The user approved the complete CPU-only synthetic registration-to-positive-
+witness work package: implementation, integration tests, independent geometric
+checks and documentation. This expands only artificial reference tooling, not
+the observation/log pipeline, physical qualification or uncertainty-policy
+adoption. `probe_synthetic_registered_witness` in the
+[navigation module][navigation-reference] calls bounded registration on the
+explicit artificial points, mounting/body poses, timestamps and error bounds.
+It does not consume an editable cached result or infer these inputs from logs.
+
+Obstacle membership must be explicitly assumed with
+`assume_obstacle_points=True`; absent/false membership yields unknown. This is
+fixture occupancy, not observed surface association or attestation. Current
+speed, straight motion, footprint and braking dynamics are also exact fixture
+assumptions. Config's normal noise and latency still reject, and nonzero current
+turn rate abstains. Malformed types, motion limits and inherited registration/
+bound validation are rejected. No default, existing exact/ray API or noisy/
+delayed sensor input is promoted. Nonzero artificial acquisition-to-reference
+elapsed time can be used with the supplied static-world fixture poses; that is
+not clock/exposure qualification or permission to zero real-input age/latency.
+
+For registered nominal point $q_i$ and assumed displacement radius $U_i$, let
+$S=[0,D]\times\{0\}$ with $D=v\Delta t+v^2/(2a)$. A sufficient geometric
+positive criterion is $d(q_i,S)+U_i<r-\varepsilon_{fp,i}$: the entire assumed
+obstacle-location ball lies strictly inside the straight swept footprint. No
+witness, boundary contact or unsupported/numerically unresolved evidence means
+**unknown**, never clear or a negative task label. At rest, $D=0$ tests only the
+current footprint. One supported positive can suffice despite other unknown
+points; there is no free-space inference or complete-obstacle-coverage claim.
+
+The numerical allowance is an engineering scale guard, not certified interval
+arithmetic, measured uncertainty or a physical safety margin. It includes raw
+point coordinates and all pose translations as well as registered coordinates,
+braking distance, radius and assumed error. Two exact-rational regressions
+exposed why output scale alone is insufficient: floating evaluation of
+$10^{16}+1-10^{16}$ produced zero rather than the exact one-metre displacement,
+creating a nominal near-origin witness. The new probe now returns numerical
+unknown in both coordinate-axis cases. Existing registration arithmetic is
+unchanged and remains explicitly uncertified; large common world offsets may
+conservatively cause this stricter witness guard to abstain even when nominal
+relative-coordinate arithmetic is stable.
+
+The only statuses are `blocked_witness` and `unknown`, with point indices,
+nominal points/error radii, assumed bounds/timing, braking distance and numerical
+allowances. Output stays artificial-only, training-disabled, real-input-
+unqualified and without physical safety or floating-point certification. It is
+not a wire decision, `path_blocked` label, reviewer suggestion, data exporter,
+CLI, range/8x8 adapter or actual registration-evidence validator. Reference
+timestamps, static obstacle membership, all error enclosures and exact motion/
+footprint assumptions still need real evidence before any separately approved
+real-input design; no clock, moving-object or braking uncertainty is qualified.
+
+Forty-one new tests pass. Three independent swept-world comparisons cover a
+visible blocked witness, clear-but-unknown and hidden-blocked-but-unknown. Across
+three headings, 2,592 separately scalar-composed point/pose perturbations remain
+within their assumed enclosures and collide with the independently evaluated
+world-frame sweep. These are finite artificial cross-checks, not representative
+data, universal numerical proofs or physical measurements. Other cases cover
+whole-ball contact, required occupancy, missing/malformed evidence, scope,
+immutability, overflow, mixed known/unknown points, at rest and the two exact-
+rational cancellation regressions. All eight pre-existing navigation functions/
+signatures are AST-identical to the prior commit. All 286 simulator tests and
+602 repository tests pass plus the known transformer expected failure; lint,
+changed-file format, editor diagnostics and doc checks pass.
+
+No existing log, new study episode, persisted data artifact, task annotation/
+dataset/split, live teacher/training, dependency/download or hardware action
+occurred. Inputs/history/defaults/token ceiling and quarantine stay unchanged.
+Tasks 6/9 still require reviewed real uncertainty/registration/target evidence,
+mode and accepted family/cohort/task data; ST/board gates remain independent.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

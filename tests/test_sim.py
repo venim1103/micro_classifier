@@ -1319,6 +1319,356 @@ def test_bounded_registration_checks_scope_before_inputs(
         )
 
 
+@pytest.fixture
+def registered_witness_fixture(bounded_registration_fixture):
+    return {
+        **deepcopy(bounded_registration_fixture),
+        "points": [[0.3, 0.0]],
+        "point_error_m": 0.01,
+        "speed": 0.6,
+        "assume_obstacle_points": True,
+        "config": Config(noise_std=0, latency_ticks=0),
+    }
+
+
+@pytest.mark.parametrize(
+    "point,error,status",
+    [
+        ([0.3, 0], 0.01, "blocked_witness"),
+        ([0.3, 0], 0.1, "unknown"),
+        ([1, 1], 0.01, "unknown"),
+    ],
+)
+def test_registered_witness_requires_entire_error_ball_inside(
+    registered_witness_fixture, point, error, status
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    result = probe_synthetic_registered_witness(
+        **{**registered_witness_fixture, "points": [point], "point_error_m": error}
+    )
+    assert result["status"] == status
+    assert result["witness_indices"] == ([0] if status == "blocked_witness" else [])
+    assert result["braking_distance_m"] == pytest.approx(0.21)
+    assert result["synthetic"] and not result["training_approved"]
+    assert not result["real_input_qualified"] and not result["physical_safety_claim"]
+    assert not result["floating_point_certified"]
+    assert "labels" not in result and "path_blocked" not in result
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize(
+    "offset,status", [(-1e-6, "blocked_witness"), (0, "unknown"), (1e-6, "unknown")]
+)
+def test_registered_witness_error_ball_contact_abstains(
+    registered_witness_fixture, offset, status
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    result = probe_synthetic_registered_witness(
+        **{**registered_witness_fixture, "points": [[0.1, 0.17 + offset]]}
+    )
+    assert result["status"] == status
+
+
+@pytest.mark.parametrize(
+    "override,reason",
+    [
+        ({"assume_obstacle_points": False}, "obstacle_membership_unqualified"),
+        ({"config": None}, "noise_model_unqualified"),
+        ({"config": Config(noise_std=0)}, "registration_unqualified"),
+        ({"turn_rate": 0.1}, "curved_reference_not_supported"),
+        ({"reference_pose": None}, "missing_pose"),
+        ({"acquisition_time_s": None}, "missing_timing"),
+    ],
+)
+def test_registered_witness_unsupported_evidence_stays_unknown(
+    registered_witness_fixture, override, reason
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    result = probe_synthetic_registered_witness(
+        **{**registered_witness_fixture, **override}
+    )
+    assert result["status"] == "unknown" and result["reason"] == reason
+    assert result["witness_indices"] == []
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize(
+    "field,value,exception",
+    [
+        ("speed", -0.1, ValueError),
+        ("speed", 0.7, ValueError),
+        ("speed", True, TypeError),
+        ("speed", float("nan"), ValueError),
+        ("speed", 10**400, ValueError),
+        ("turn_rate", 2.0, ValueError),
+        ("turn_rate", float("inf"), ValueError),
+        ("turn_rate", False, TypeError),
+        ("assume_obstacle_points", 1, TypeError),
+        ("assume_obstacle_points", None, TypeError),
+        ("assume_obstacle_points", "yes", TypeError),
+    ],
+)
+def test_registered_witness_rejects_malformed_motion_or_membership(
+    registered_witness_fixture, field, value, exception
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    with pytest.raises(exception):
+        probe_synthetic_registered_witness(
+            **{**registered_witness_fixture, field: value}
+        )
+
+
+@pytest.mark.parametrize("opt_in", [False, 1])
+def test_registered_witness_scope_precedes_inputs(registered_witness_fixture, opt_in):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    with pytest.raises(ValueError, match="synthetic-test-only"):
+        probe_synthetic_registered_witness(
+            **{
+                **registered_witness_fixture,
+                "points": object(),
+                "synthetic_test_only": opt_in,
+            }
+        )
+
+
+def test_registered_witness_one_positive_survives_other_unknown_points(
+    registered_witness_fixture,
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    result = probe_synthetic_registered_witness(
+        **{**registered_witness_fixture, "points": [[1e16, 0], [0.3, 0]]}
+    )
+    assert result["status"] == "blocked_witness" and result["witness_indices"] == [1]
+    unknown = probe_synthetic_registered_witness(
+        **{**registered_witness_fixture, "points": [[1e16, 0]]}
+    )
+    assert unknown["status"] == "unknown" and unknown["reason"] == "numerical_unknown"
+
+
+@pytest.mark.parametrize(
+    "point,obstacles,collision,status",
+    [
+        ([0.4, 0], ((3.4, 3, 0.001),), True, "blocked_witness"),
+        ([1.1, 1], ((4.1, 4, 0.001),), False, "unknown"),
+        ([1.1, 1], ((4.1, 4, 0.001), (3.4, 3, 0.001)), True, "unknown"),
+    ],
+)
+def test_registered_witness_independent_world_geometry(
+    registered_witness_fixture, point, obstacles, collision, status
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    settings = {
+        **registered_witness_fixture,
+        "points": [point],
+        "acquisition_pose": [3, 3, 0],
+        "reference_pose": [3.1, 3, 0],
+    }
+    result = probe_synthetic_registered_witness(**settings)
+    config = settings["config"]
+    distance = settings["speed"] * config.dt + settings["speed"] ** 2 / (
+        2 * config.acceleration
+    )
+    assert (
+        swept_collision((3.1, 3), (3.1 + distance, 3), config.radius, obstacles, (6, 6))
+        is collision
+    )
+    assert result["status"] == status
+    assert result["acquisition_time_s"] < result["reference_time_s"]
+    np.testing.assert_allclose(
+        result["reference_points_m"], [[point[0] - 0.1, point[1]]]
+    )
+
+
+@pytest.mark.parametrize("heading", [-math.pi / 3, 0, math.pi / 3])
+def test_registered_witness_perturbed_world_points_all_collide(
+    registered_witness_fixture, heading
+):
+    from itertools import product
+
+    from sim.navigation import probe_synthetic_registered_witness
+
+    settings = deepcopy(registered_witness_fixture)
+    settings.update(
+        points=[[0.35, 0]],
+        point_error_m=0.003,
+        sensor_pose=[0.05, 0, 0.1],
+        acquisition_pose=[3, 3, heading],
+        reference_pose=[
+            3 + 0.1 * math.cos(heading),
+            3 + 0.1 * math.sin(heading),
+            heading,
+        ],
+    )
+    names = ("sensor_pose", "acquisition_pose", "reference_pose")
+    for name in names:
+        settings["pose_error_bounds"][name] = {
+            "translation_m": 0.002,
+            "heading_rad": 0.003,
+        }
+    result = probe_synthetic_registered_witness(**settings)
+    assert result["status"] == "blocked_witness" and result["witness_indices"] == [0]
+    config = settings["config"]
+    distance = settings["speed"] * config.dt + settings["speed"] ** 2 / (
+        2 * config.acceleration
+    )
+
+    def transform(point, pose):
+        cosine, sine = math.cos(pose[2]), math.sin(pose[2])
+        return np.array(
+            [
+                point[0] * cosine - point[1] * sine + pose[0],
+                point[0] * sine + point[1] * cosine + pose[1],
+            ]
+        )
+
+    checked = 0
+    for signs in product((-1, 0, 1), repeat=3):
+        for direction, point_direction in product(range(8), range(4)):
+            poses = {}
+            for index, name in enumerate(names):
+                pose = settings[name]
+                angle = (direction + index) * math.pi / 4
+                poses[name] = [
+                    pose[0] + 0.002 * math.cos(angle),
+                    pose[1] + 0.002 * math.sin(angle),
+                    pose[2] + 0.003 * signs[index],
+                ]
+            angle = point_direction * math.pi / 2
+            point = np.asarray(settings["points"][0]) + 0.003 * np.array(
+                [math.cos(angle), math.sin(angle)]
+            )
+            body = transform(point, poses["sensor_pose"])
+            world = transform(body, poses["acquisition_pose"])
+            reference = poses["reference_pose"]
+            actual = transform(world - reference[:2], [0, 0, -reference[2]])
+            error = np.linalg.norm(actual - result["reference_points_m"][0])
+            assert error <= result["point_error_bound_m"][0] + 1e-12
+            start = np.asarray(reference[:2])
+            end = start + distance * np.array(
+                [math.cos(reference[2]), math.sin(reference[2])]
+            )
+            assert swept_collision(start, end, config.radius, ((*world, 1e-6),), (6, 6))
+            checked += 1
+    assert checked == 864
+
+
+def test_registered_witness_association_is_required_by_default(
+    registered_witness_fixture,
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    settings = dict(registered_witness_fixture)
+    del settings["assume_obstacle_points"]
+    result = probe_synthetic_registered_witness(**settings)
+    assert (
+        result["status"] == "unknown"
+        and result["reason"] == "obstacle_membership_unqualified"
+    )
+
+
+def test_registered_witness_inputs_and_results_are_detached(registered_witness_fixture):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    original = deepcopy(registered_witness_fixture)
+    result = probe_synthetic_registered_witness(**registered_witness_fixture)
+    result["reference_points_m"][0][0] = 100
+    result["assumed_error_bounds"]["point_error_m"] = 100
+    result["assumptions"]["obstacle_membership"] = False
+    result["witness_indices"].clear()
+    assert registered_witness_fixture == original
+    assert probe_synthetic_registered_witness(**registered_witness_fixture)[
+        "witness_indices"
+    ] == [0]
+
+
+def test_registered_witness_nonfinite_braking_distance_abstains(
+    registered_witness_fixture,
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    result = probe_synthetic_registered_witness(
+        **{
+            **registered_witness_fixture,
+            "speed": 1e308,
+            "config": Config(max_speed=1e308, noise_std=0, latency_ticks=0),
+        }
+    )
+    assert result["status"] == "unknown" and result["reason"] == "numerical_unknown"
+    assert result["braking_distance_m"] is None
+    json.dumps(result, allow_nan=False)
+
+
+def test_registered_witness_invalid_config_is_rejected(registered_witness_fixture):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    with pytest.raises(TypeError, match="Config"):
+        probe_synthetic_registered_witness(
+            **{**registered_witness_fixture, "config": object()}
+        )
+
+
+def test_registered_witness_cannot_bypass_registration_bound_validation(
+    registered_witness_fixture,
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    settings = deepcopy(registered_witness_fixture)
+    settings["pose_error_bounds"]["reference_pose"]["heading_rad"] = float("nan")
+    with pytest.raises(ValueError):
+        probe_synthetic_registered_witness(**settings)
+
+
+@pytest.mark.parametrize("axis", [0, 1])
+def test_registered_witness_source_cancellation_cannot_create_positive(
+    registered_witness_fixture, axis
+):
+    from fractions import Fraction
+
+    from sim.navigation import probe_synthetic_registered_witness
+
+    point, mounting, reference = [0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+    point[axis], mounting[axis], reference[axis] = 1e16, 1.0, 1e16
+    exact = Fraction(point[axis]) + Fraction(mounting[axis]) - Fraction(reference[axis])
+    assert exact == 1
+    obstacle = [3.0, 3.0, 1e-6]
+    obstacle[axis] += float(exact)
+    assert not swept_collision((3, 3), (3.21, 3), 0.18, (obstacle,), (6, 6))
+    result = probe_synthetic_registered_witness(
+        **{
+            **registered_witness_fixture,
+            "points": [point],
+            "sensor_pose": mounting,
+            "reference_pose": reference,
+            "point_error_m": 0.0,
+        }
+    )
+    assert result["reference_points_m"] == [[0.0, 0.0]]
+    assert result["status"] == "unknown" and result["reason"] == "numerical_unknown"
+    assert result["witness_indices"] == []
+
+
+@pytest.mark.parametrize(
+    "point,status", [([0.1, 0], "blocked_witness"), ([0.3, 0], "unknown")]
+)
+def test_registered_witness_at_rest_uses_current_footprint_only(
+    registered_witness_fixture, point, status
+):
+    from sim.navigation import probe_synthetic_registered_witness
+
+    result = probe_synthetic_registered_witness(
+        **{**registered_witness_fixture, "speed": 0.0, "points": [point]}
+    )
+    assert result["braking_distance_m"] == 0.0
+    assert result["status"] == status
+
+
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
 

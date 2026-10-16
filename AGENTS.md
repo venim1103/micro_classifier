@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §44 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §45 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -556,6 +556,24 @@ Keep this section and the Task List current; a new session resumes from them.
   registration/target evidence, mode and accepted family/cohort/task data; ST/
   board gates remain blocked. Bounds are assumptions, not policy adoption.
 
+- Approved and completed (2026-10-16): full CPU-only synthetic registered-point
+  positive-witness package in `probe_synthetic_registered_witness`. Explicit
+  artificial obstacle membership, bounded point/pose registration and exact
+  motion/footprint assumptions only; whole-ball strict containment or unknown,
+  never clear/negative labels. Default noise/latency and current turns abstain;
+  all eight existing navigation functions/signatures are AST-identical. Source-
+  scale numerical guards repair two exact-rational cancellation false positives;
+  no numerical certification or physical qualification. Forty-one new cases,
+  three independent world comparisons and 2,592 scalar/world perturbation checks;
+  286 simulator tests, 602 repository passes plus known transformer expected
+  failure; lint/format/editor/doc checks pass. DESIGN.md §7 and REVIEW.md §45.
+  No existing logs, study episodes, persisted data artifacts, task labels/data/
+  splits, live teachers/training, dependencies/downloads or hardware. No input/
+  history/default/token/quarantine change, observation/range adapter, wire/CLI or
+  data exporter. Task 6 still needs reviewed real uncertainty/registration/target
+  evidence and mode; Task 9 still needs accepted family/cohort/task data/splits.
+  ST/board gates remain blocked; all bounds/occupancy are fixture assumptions.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -646,6 +664,11 @@ on missing tools, and continue with the next unblocked task.
   point/pose error propagation and 30 cases pass, including 864 perturbations.
   The algebraic enclosure neither measures uncertainty nor qualifies clocks,
   registration or real inputs; exact APIs and all witness rejection stay intact.
+  Registered-witness study (2026-10-16, REVIEW.md §45): complete artificial
+  registration-to-positive containment checks, including 41 cases and 2,592
+  perturbed-world checks. No task label, default-input qualification, physical
+  uncertainty policy or observation/log adapter; negative/clear evidence remains
+  unsupported. This does not clear the reviewed evidence/data gate.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

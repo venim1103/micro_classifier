@@ -215,6 +215,134 @@ def register_synthetic_bounded_points(
     return result
 
 
+def probe_synthetic_registered_witness(
+    points,
+    *,
+    speed,
+    point_error_m,
+    pose_error_bounds,
+    sensor_pose,
+    acquisition_pose,
+    reference_pose,
+    acquisition_time_s,
+    reference_time_s,
+    assume_obstacle_points=False,
+    turn_rate=0.0,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Probe artificial registered obstacle balls, never real sensor evidence."""
+    registered = register_synthetic_bounded_points(
+        points,
+        point_error_m=point_error_m,
+        pose_error_bounds=pose_error_bounds,
+        sensor_pose=sensor_pose,
+        acquisition_pose=acquisition_pose,
+        reference_pose=reference_pose,
+        acquisition_time_s=acquisition_time_s,
+        reference_time_s=reference_time_s,
+        synthetic_test_only=synthetic_test_only,
+    )
+    config = Config() if config is None else config
+    if not isinstance(config, Config):
+        raise TypeError("synthetic registered probe requires Config")
+    if type(assume_obstacle_points) is not bool:
+        raise TypeError("obstacle membership requires a boolean fixture assumption")
+    motion = {}
+    for name, value in (("speed", speed), ("turn_rate", turn_rate)):
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError(f"{name} must be finite numeric data")
+        try:
+            number = float(value)
+        except OverflowError as error:
+            raise ValueError(f"{name} must be finite numeric data") from error
+        if not math.isfinite(number):
+            raise ValueError(f"{name} must be finite numeric data")
+        motion[name] = number
+    if (
+        not 0 <= motion["speed"] <= config.max_speed
+        or abs(motion["turn_rate"]) > config.max_turn_rate
+    ):
+        raise ValueError("registered probe motion exceeds synthetic limits")
+    result = {
+        **registered,
+        "schema": "micro-classifier/synthetic-registered-witness/1",
+        "allowed_use": "artificial_registered_witness_tests_only",
+        "status": "unknown",
+        "witness_indices": [],
+        "braking_distance_m": None,
+        "numerical_allowance_m": None,
+        "speed_m_s": motion["speed"],
+        "turn_rate_rad_s": motion["turn_rate"],
+        "assumptions": {
+            **registered["assumptions"],
+            "obstacle_membership": assume_obstacle_points,
+            "exact_fixture_motion_and_footprint": True,
+        },
+    }
+    if registered["status"] != "bounded_fixture":
+        return result
+    if not assume_obstacle_points:
+        result["reason"] = "obstacle_membership_unqualified"
+        return result
+    if config.noise_std != 0:
+        result["reason"] = "noise_model_unqualified"
+        return result
+    if config.latency_ticks != 0:
+        result["reason"] = "registration_unqualified"
+        return result
+    if motion["turn_rate"] != 0:
+        result["reason"] = "curved_reference_not_supported"
+        return result
+    distance = motion["speed"] * config.dt + motion["speed"] * motion["speed"] / (
+        2 * config.acceleration
+    )
+    if not math.isfinite(distance):
+        result["reason"] = "numerical_unknown"
+        return result
+    result["braking_distance_m"] = distance
+    result["numerical_allowance_m"] = []
+    source_points = np.asarray(points, dtype=float)
+    pose_scale = max(
+        abs(float(value))
+        for pose in (sensor_pose, acquisition_pose, reference_pose)
+        for value in np.asarray(pose, dtype=float)[:2]
+    )
+    unresolved = False
+    for index, (point, error) in enumerate(
+        zip(registered["reference_points_m"], registered["point_error_bound_m"])
+    ):
+        allowance = (
+            128
+            * np.finfo(float).eps
+            * max(
+                1.0,
+                config.radius,
+                distance,
+                pose_scale,
+                abs(source_points[index, 0]),
+                abs(source_points[index, 1]),
+                abs(point[0]),
+                abs(point[1]),
+                error,
+            )
+        )
+        result["numerical_allowance_m"].append(float(allowance))
+        separation = math.hypot(point[0] - min(max(point[0], 0.0), distance), point[1])
+        if allowance >= config.radius or not math.isfinite(separation + error):
+            unresolved = True
+            continue
+        if separation + error < config.radius - allowance:
+            result["witness_indices"].append(index)
+    result["reason"] = "numerical_unknown" if unresolved else "no_robust_witness"
+    if result["witness_indices"]:
+        result.update(
+            status="blocked_witness",
+            reason="assumed_registered_ball_inside_braking_footprint",
+        )
+    return result
+
+
 def probe_synthetic_ray_witness(
     ranges,
     valid,

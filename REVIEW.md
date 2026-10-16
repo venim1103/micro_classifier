@@ -2329,6 +2329,56 @@ Tasks 6/9 still lack reviewed real uncertainty/registration/target evidence,
 mode and accepted family/cohort/task data/splits. ST/board gates remain blocked;
 no synthetic result was promoted into a task label or qualified real-input path.
 
+## 45. Synthetic Registered-Point Positive Witness Study (2026-10-16)
+
+The user approved the complete CPU-only synthetic work package, including
+implementation, integration tests, independent geometric checks and evidence
+documentation without pauses between substeps. Approval excludes existing logs,
+episodes, task labels/data/splits, real-input qualification, uncertainty-policy
+adoption, live teachers, training, dependencies/downloads and hardware.
+
+`probe_synthetic_registered_witness` calls bounded registration on raw artificial
+point/pose/time/error inputs rather than trusting editable output metadata. An
+explicit obstacle-membership assumption is required; membership and exact fixture
+motion/footprint are not real evidence. Normal Config noise/latency and nonzero
+current turn abstain; existing exact/ray APIs and all eight pre-existing
+navigation functions/signatures remain AST-identical. No observer/log/range
+adapter, wire result, label, reviewer input, CLI or data exporter was introduced.
+
+The new sufficient criterion puts the whole registered obstacle-error ball
+strictly inside the straight braking capsule beyond a numerical allowance.
+Only `blocked_witness` or `unknown` is returned; absence, contact and unsupported
+evidence never imply clear/negative labels. At rest the segment reduces to the
+current footprint. Explicit static-world poses may register nonzero elapsed
+fixture time, not qualify real clocks/skew/exposure or bypass sensor-age guards.
+
+Independent numerical checks exposed two cancellation false positives in the
+uncommitted implementation: $10^{16}+1-10^{16}$ rounded to zero, although exact
+rational arithmetic and independent geometry placed the point outside the sweep.
+Including source-point and all pose-translation scales in the engineering
+allowance now forces unknown. This is a reproduced local repair, not formal
+floating-point certification; conservative abstention at large common offsets
+is permitted. All supplied geometric/error/occupancy/motion assumptions remain
+unattested, and no physical safety or probabilistic coverage claim is made.
+
+Forty-one new cases pass: three independent visible/clear/hidden world comparisons;
+2,592 scalar-composed perturbations with world-frame swept-collision checks over
+three headings; required occupancy, boundary, input/scope/missing-evidence,
+immutability, overflow, mixed unknown points, at-rest and exact-rational
+cancellation checks. The finite grids are not a universal proof or physical
+measurement. Full gate: 286 simulator tests, 602 repository passes plus the
+known transformer numerical expected failure; Ruff lint/changed-file format,
+editor diagnostics and doc reference/local-target/whitespace/scope checks pass.
+
+**Outcome:** the approved synthetic package is complete, without processing
+existing logs, generating study episodes or persisting a dataset/report artifact.
+Inputs/history/defaults/token ceiling/quarantine are unchanged. Physical
+claim/domain, independent references, authorized collection and numeric
+uncertainty/failure conventions still need review, as do actual target evidence,
+mode and accepted family/cohort/task data/splits. Tasks 6/9 and ST/board gates
+remain blocked; this conditional synthetic positive is not a task label or
+real-input qualification.
+
 ## Sources
 
 Hardware and tools:

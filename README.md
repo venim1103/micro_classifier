@@ -88,6 +88,23 @@ normal 2,048-token limit. Neither longer-context quality nor mode labels are
 approved; normal defaults/input/history are unchanged. See
 [REVIEW.md](REVIEW.md) §30 for measured limits and exclusions.
 
+The separately approved longer-context parity phase uses the same inputs and
+ceilings, comparing INT8 with streamed BF16. It saves only deltas/flips,
+resource measurements and provenance, not response values:
+
+```sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m teacher.validate_d3_int8 \
+	--repo-id vllm-sr/d3-mini --snapshot /path/to/already-cached/mini/snapshot \
+	--mini-int8-context-parity \
+	--reviewed-parity-report teacher/reports/d3-mini-int8-parity-capped-20261016.json \
+	--output teacher/reports/mini-context-parity-local.json
+```
+
+The measured warm-clear input changed its selected option at both admitted
+ceilings. This is numerical diagnostic evidence, not task accuracy or mode-label
+approval. Normal defaults and input/history remain unchanged; see
+[REVIEW.md](REVIEW.md) §31 for the finding and review gates.
+
 CPU unit tests: `python -m pytest tests`.
 
 ## Simulation Label Policy Draft

@@ -386,11 +386,71 @@ def context_probe_inputs():
     return result
 
 
-def validate_mini_context_probe(path, parity_path):
+def measure_context_response(teacher, request, limit):
+    torch.cuda.empty_cache()
+    torch.cuda.reset_peak_memory_stats()
+    torch.cuda.synchronize()
+    started = time.perf_counter()
+    response = teacher.system_one(
+        state=request["state"], questions=request["questions"]
+    )
+    torch.cuda.synchronize()
+    metrics = {
+        "seconds": time.perf_counter() - started,
+        "peak_allocated_gib": torch.cuda.max_memory_allocated() / 2**30,
+        "peak_reserved_gib": torch.cuda.max_memory_reserved() / 2**30,
+    }
+    if set(response["answers"]) != set(request["questions"]):
+        raise ValueError("context response question mismatch")
+    for answer in response["answers"].values():
+        distribution(answer)
+    if (
+        metrics["peak_allocated_gib"] * 2**30 > limit["enforced_cap_bytes"]
+        or metrics["peak_reserved_gib"] > 11
+    ):
+        raise RuntimeError("measured memory cap exceeded")
+    return response, metrics
+
+
+def summarize_context_parity(cases):
+    rows = [case["parity"] for case in cases if "parity" in case]
+    if not rows:
+        raise ValueError("no context parity comparisons completed")
+
+    def summary(values):
+        count = sum(row["compared_values"] for row in values)
+        return {
+            "compared_values": count,
+            "decision_flips": sum(row["decision_flips"] for row in values),
+            "max_abs_delta": max((row["max_abs_delta"] for row in values), default=0),
+            "mean_abs_delta": sum(
+                row["mean_abs_delta"] * row["compared_values"] for row in values
+            )
+            / count
+            if count
+            else 0,
+        }
+
+    result = summary(rows)
+    result["by_type"] = {
+        kind: {
+            **summary([row["by_type"][kind] for row in rows]),
+            "questions": sum(row["by_type"][kind]["questions"] for row in rows),
+        }
+        for kind in ("choice", "noul", "score")
+    }
+    return result
+
+
+def validate_mini_context_probe(path, parity_path, *, reference_parity=False):
     from teacher.label_pipeline import digest
 
+    if type(reference_parity) is not bool:
+        raise TypeError("reference_parity must be a boolean")
     report = {
-        "schema": "micro-classifier/d3-mini-context-resource-probe/1",
+        "schema": "micro-classifier/d3-mini-context-parity/1"
+        if reference_parity
+        else "micro-classifier/d3-mini-context-resource-probe/1",
         "repo_id": d3_int8.MINI_REPO_ID,
         "revision": d3_int8.APPROVED_REVISIONS[d3_int8.MINI_REPO_ID],
         "manifest_sha256": d3_int8.APPROVED_MANIFESTS[d3_int8.MINI_REPO_ID],
@@ -403,6 +463,7 @@ def validate_mini_context_probe(path, parity_path):
         "task_quality_claim": False,
         "mode_labels_written": 0,
         "responses_discarded": True,
+        "reference_parity_enabled": reference_parity,
         "truncation_enabled": False,
         "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "adapter_source_sha256": hashlib.sha256(
@@ -410,8 +471,10 @@ def validate_mini_context_probe(path, parity_path):
         ).hexdigest(),
         "limitations": [
             "Three selected existing full states, not representative task coverage.",
-            "Original mode question is only a resource workload; answer values are discarded.",
-            "No BF16 parity or task-quality measurement at larger contexts.",
+            "Original mode question is a diagnostic workload; answer values are discarded.",
+            "No task quality or mode-label approval; numerical parity is not accuracy.",
+            "Repeated ceilings reuse three inputs, not six independent observations.",
+            "Reference timings include weight streaming, not resident BF16 speed.",
             "Normal defaults, full input/history and draft representations unchanged.",
             "Abort the whole probe on OOM/cap failure, without retry or larger allocation.",
         ],
@@ -499,35 +562,40 @@ def validate_mini_context_probe(path, parity_path):
                     report["cases"].append(case)
                     if case["status"] == "budget_rejected":
                         continue
-                    torch.cuda.empty_cache()
-                    torch.cuda.reset_peak_memory_stats()
-                    torch.cuda.synchronize()
-                    started = time.perf_counter()
-                    response = teacher.system_one(
-                        state=request["state"], questions=request["questions"]
+                    case["active_phase"] = "candidate"
+                    response, metrics = measure_context_response(
+                        teacher, request, limit
                     )
-                    torch.cuda.synchronize()
-                    case["seconds"] = time.perf_counter() - started
-                    if set(response["answers"]) != set(request["questions"]):
-                        raise ValueError("resource response question mismatch")
-                    for answer in response["answers"].values():
-                        distribution(answer)
+                    case.update(metrics)
+                    if reference_parity:
+                        case["active_phase"] = "reference"
+                        with stored_reference(teacher, path):
+                            reference, reference_metrics = measure_context_response(
+                                teacher, request, limit
+                            )
+                        case["reference"] = reference_metrics
+                        case["parity"] = compare(
+                            {metadata["id"]: response}, {metadata["id"]: reference}
+                        )
+                        del reference
                     del response
-                    case.update(
-                        peak_allocated_gib=torch.cuda.max_memory_allocated() / 2**30,
-                        peak_reserved_gib=torch.cuda.max_memory_reserved() / 2**30,
+                    case.pop("active_phase")
+                    case["status"] = (
+                        "complete_parity_answers_discarded"
+                        if reference_parity
+                        else "complete_answers_discarded"
                     )
-                    if (
-                        case["peak_allocated_gib"] * 2**30 > limit["enforced_cap_bytes"]
-                        or case["peak_reserved_gib"] > 11
-                    ):
-                        raise RuntimeError("measured memory cap exceeded")
-                    case["status"] = "complete_answers_discarded"
                     print(
                         f"{case['id']} budget={budget} tokens={case['tokens']}: {case['seconds']:.3f}s",
                         flush=True,
                     )
-            report["status"] = "complete_resource_only"
+            if reference_parity:
+                report["parity"] = summarize_context_parity(report["cases"])
+            report["status"] = (
+                "complete_parity_requires_review"
+                if reference_parity
+                else "complete_resource_only"
+            )
     except (RuntimeError, ValueError, OSError, KeyError, TypeError) as error:
         report.update(
             status="aborted", error_type=type(error).__name__, error=str(error)
@@ -552,27 +620,33 @@ def main():
     experiment = parser.add_mutually_exclusive_group()
     experiment.add_argument("--mini-int8-experiment", action="store_true")
     experiment.add_argument("--mini-int8-context-probe", action="store_true")
+    experiment.add_argument("--mini-int8-context-parity", action="store_true")
     parser.add_argument("--reviewed-parity-report", type=Path)
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
-    if args.reviewed_parity_report is not None and not args.mini_int8_context_probe:
+    context_experiment = args.mini_int8_context_probe or args.mini_int8_context_parity
+    if args.reviewed_parity_report is not None and not context_experiment:
         parser.error(
-            "--reviewed-parity-report is only valid with --mini-int8-context-probe"
+            "--reviewed-parity-report is only valid with a mini context experiment"
         )
-    if args.mini_int8_experiment or args.mini_int8_context_probe:
+    if args.mini_int8_experiment or context_experiment:
         if args.repo_id != d3_int8.MINI_REPO_ID or args.snapshot is None:
             parser.error(
                 "mini INT8 experiment requires d3-mini and an already-cached --snapshot"
             )
-        if args.mini_int8_context_probe and args.reviewed_parity_report is None:
+        if context_experiment and args.reviewed_parity_report is None:
             parser.error(
                 "context probe requires --reviewed-parity-report after result review"
             )
         torch.set_num_threads(4)
         report = (
-            validate_mini_context_probe(args.snapshot, args.reviewed_parity_report)
-            if args.mini_int8_context_probe
+            validate_mini_context_probe(
+                args.snapshot,
+                args.reviewed_parity_report,
+                reference_parity=args.mini_int8_context_parity,
+            )
+            if context_experiment
             else validate_mini_int8_experiment(args.snapshot)
         )
         args.output.parent.mkdir(parents=True, exist_ok=True)

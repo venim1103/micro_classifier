@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §30 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §31 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -293,6 +293,31 @@ Keep this section and the Task List current; a new session resumes from them.
   §4 and REVIEW.md §30 record limits. Live-use strategy/targets/data still need
   review, mode stays unlabeled, and ST tools/board remain unavailable.
 
+- Approved (2026-10-16): bounded longer-context INT8-versus-streamed-BF16 parity
+  on the same three existing full inputs at 4,096/8,192/12,288 ceilings, using
+  only the fully verified cached pinned mini package and the 10 GiB PyTorch cap.
+  Abort the whole run on OOM/cap failure; retain only numeric deltas/flips,
+  timing, memory and provenance, discarding answer values. Mode stays unlabeled;
+  normal BF16/2,048 defaults, inputs/history and drafts unchanged. No task
+  labels/dataset, training, download, dependency or hardware approval.
+
+- Bounded longer-context parity completed (2026-10-16): same three full inputs
+  and exact token/provenance hashes as the resource probe. Six admitted INT8/
+  streamed-BF16 comparisons, three budget rejections, no truncation/OOM/cap
+  failure. Across 30 values, max/weighted mean delta 0.0206704/0.00752864 and
+  two flips: the same warm-clear observation at 8,192/12,288, not two distinct
+  examples. Startup and warm slalom had no flips. Peak allocated/reserved:
+  6.498/7.313 GiB. Report: `teacher/reports/d3-mini-context-parity-capped-20261016.json`;
+  all answer values discarded, zero mode labels. No argmax-parity or task-
+  quality clearance; only three distinct choice inputs, not noul/score or an
+  actual 12,288-token sequence. Ten new tests; 47 d3 checks, 346 repository
+  passes plus known transformer expected failure; lint/format/diagnostics and
+  CPU evidence audits pass. DESIGN.md §4 and REVIEW.md §31 record findings.
+  Normal BF16/2,048, full inputs/history and drafts remain unchanged. No live
+  labeling, task dataset, training, new episode, dependency/download or hardware
+  work. Next review: target/data and input/teacher strategy; keep mode unlabeled
+  and current defaults meanwhile. ST tools/board remain unavailable.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -389,6 +414,11 @@ on missing tools, and continue with the next unblocked task.
   warm inputs run under experimental ceilings, not the normal 2,048 limit.
   Answers were discarded; mode and real labeling remain unapproved. No normal
   budget, input-strategy or teacher-quality gate is cleared by resource fit.
+  Longer-context parity follow-up (2026-10-16): approved bounded comparison
+  completed, with the same warm-clear input flipping at two ceilings; maximum
+  delta 0.0206704. REVIEW.md §31 records the numerical limitation, not labeling
+  clearance. Decision needed: reviewed targets/data and input/teacher strategy;
+  proposed default remains BF16/2,048 with no mode labels. No pipeline promotion.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

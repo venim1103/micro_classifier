@@ -1,0 +1,540 @@
+{
+  "schema": "micro-classifier/d3-mini-context-parity/1",
+  "repo_id": "vllm-sr/d3-mini",
+  "revision": "6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59",
+  "manifest_sha256": "7adae8e93f8e8e7d90108e88a1121530ede64de79eff8fd8f1af3f4528824fca",
+  "status": "complete_parity_requires_review",
+  "budgets": [
+    4096,
+    8192,
+    12288
+  ],
+  "cases": [
+    {
+      "id": "startup-clear",
+      "budget": 4096,
+      "tokens": 3421,
+      "status": "complete_parity_answers_discarded",
+      "seconds": 5.682753144999879,
+      "peak_allocated_gib": 4.806690692901611,
+      "peak_reserved_gib": 5.185546875,
+      "reference": {
+        "seconds": 3.481744742999581,
+        "peak_allocated_gib": 4.825954914093018,
+        "peak_reserved_gib": 5.228515625
+      },
+      "parity": {
+        "compared_values": 5,
+        "max_abs_delta": 0.020291716472334742,
+        "mean_abs_delta": 0.008116686588933903,
+        "decision_flips": 0,
+        "by_type": {
+          "choice": {
+            "questions": 1,
+            "decision_flips": 0,
+            "compared_values": 5,
+            "max_abs_delta": 0.020291716472334742,
+            "mean_abs_delta": 0.008116686588933903
+          },
+          "noul": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          },
+          "score": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "warm-clear",
+      "budget": 4096,
+      "tokens": 7616,
+      "status": "budget_rejected"
+    },
+    {
+      "id": "warm-slalom",
+      "budget": 4096,
+      "tokens": 10705,
+      "status": "budget_rejected"
+    },
+    {
+      "id": "startup-clear",
+      "budget": 8192,
+      "tokens": 3421,
+      "status": "complete_parity_answers_discarded",
+      "seconds": 2.437021032001212,
+      "peak_allocated_gib": 4.806423664093018,
+      "peak_reserved_gib": 5.201171875,
+      "reference": {
+        "seconds": 3.2633409180016315,
+        "peak_allocated_gib": 4.825954914093018,
+        "peak_reserved_gib": 5.228515625
+      },
+      "parity": {
+        "compared_values": 5,
+        "max_abs_delta": 0.020291716472334742,
+        "mean_abs_delta": 0.008116686588933903,
+        "decision_flips": 0,
+        "by_type": {
+          "choice": {
+            "questions": 1,
+            "decision_flips": 0,
+            "compared_values": 5,
+            "max_abs_delta": 0.020291716472334742,
+            "mean_abs_delta": 0.008116686588933903
+          },
+          "noul": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          },
+          "score": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "warm-clear",
+      "budget": 8192,
+      "tokens": 7616,
+      "status": "complete_parity_answers_discarded",
+      "seconds": 5.674976039001194,
+      "peak_allocated_gib": 5.773146629333496,
+      "peak_reserved_gib": 6.423828125,
+      "reference": {
+        "seconds": 6.032408404000307,
+        "peak_allocated_gib": 5.792677879333496,
+        "peak_reserved_gib": 6.482421875
+      },
+      "parity": {
+        "compared_values": 5,
+        "max_abs_delta": 0.02067039878723176,
+        "mean_abs_delta": 0.008355946200973558,
+        "decision_flips": 1,
+        "by_type": {
+          "choice": {
+            "questions": 1,
+            "decision_flips": 1,
+            "compared_values": 5,
+            "max_abs_delta": 0.02067039878723176,
+            "mean_abs_delta": 0.008355946200973558
+          },
+          "noul": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          },
+          "score": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "warm-slalom",
+      "budget": 8192,
+      "tokens": 10705,
+      "status": "budget_rejected"
+    },
+    {
+      "id": "startup-clear",
+      "budget": 12288,
+      "tokens": 3421,
+      "status": "complete_parity_answers_discarded",
+      "seconds": 2.3350194539998483,
+      "peak_allocated_gib": 4.806423664093018,
+      "peak_reserved_gib": 5.201171875,
+      "reference": {
+        "seconds": 2.7951848299999256,
+        "peak_allocated_gib": 4.825954914093018,
+        "peak_reserved_gib": 5.228515625
+      },
+      "parity": {
+        "compared_values": 5,
+        "max_abs_delta": 0.020291716472334742,
+        "mean_abs_delta": 0.008116686588933903,
+        "decision_flips": 0,
+        "by_type": {
+          "choice": {
+            "questions": 1,
+            "decision_flips": 0,
+            "compared_values": 5,
+            "max_abs_delta": 0.020291716472334742,
+            "mean_abs_delta": 0.008116686588933903
+          },
+          "noul": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          },
+          "score": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "warm-clear",
+      "budget": 12288,
+      "tokens": 7616,
+      "status": "complete_parity_answers_discarded",
+      "seconds": 4.833373252000456,
+      "peak_allocated_gib": 5.773146629333496,
+      "peak_reserved_gib": 6.423828125,
+      "reference": {
+        "seconds": 5.553908018999209,
+        "peak_allocated_gib": 5.792677879333496,
+        "peak_reserved_gib": 6.482421875
+      },
+      "parity": {
+        "compared_values": 5,
+        "max_abs_delta": 0.02067039878723176,
+        "mean_abs_delta": 0.008355946200973558,
+        "decision_flips": 1,
+        "by_type": {
+          "choice": {
+            "questions": 1,
+            "decision_flips": 1,
+            "compared_values": 5,
+            "max_abs_delta": 0.02067039878723176,
+            "mean_abs_delta": 0.008355946200973558
+          },
+          "noul": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          },
+          "score": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "warm-slalom",
+      "budget": 12288,
+      "tokens": 10705,
+      "status": "complete_parity_answers_discarded",
+      "seconds": 7.189993680000043,
+      "peak_allocated_gib": 6.4778947830200195,
+      "peak_reserved_gib": 7.3125,
+      "reference": {
+        "seconds": 8.125400753000577,
+        "peak_allocated_gib": 6.498272895812988,
+        "peak_reserved_gib": 7.3125
+      },
+      "parity": {
+        "compared_values": 5,
+        "max_abs_delta": 0.010165188380065804,
+        "mean_abs_delta": 0.004109880239192341,
+        "decision_flips": 0,
+        "by_type": {
+          "choice": {
+            "questions": 1,
+            "decision_flips": 0,
+            "compared_values": 5,
+            "max_abs_delta": 0.010165188380065804,
+            "mean_abs_delta": 0.004109880239192341
+          },
+          "noul": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          },
+          "score": {
+            "questions": 0,
+            "decision_flips": 0,
+            "compared_values": 0,
+            "max_abs_delta": 0,
+            "mean_abs_delta": 0
+          }
+        }
+      }
+    }
+  ],
+  "review_acknowledged_by_explicit_cli": true,
+  "training_approved": false,
+  "live_labeling_approved": false,
+  "task_quality_claim": false,
+  "mode_labels_written": 0,
+  "responses_discarded": true,
+  "reference_parity_enabled": true,
+  "truncation_enabled": false,
+  "source_sha256": "105279c9058fdc1e03ff0c19dc6692fd1c30021121da71f6a2fd954851e11cd5",
+  "adapter_source_sha256": "e4e7d0b83f064daeb53850b902139440ae836c4a70be162deedb7e5fbf08143e",
+  "limitations": [
+    "Three selected existing full states, not representative task coverage.",
+    "Original mode question is a diagnostic workload; answer values are discarded.",
+    "No task quality or mode-label approval; numerical parity is not accuracy.",
+    "Repeated ceilings reuse three inputs, not six independent observations.",
+    "Reference timings include weight streaming, not resident BF16 speed.",
+    "Normal defaults, full input/history and draft representations unchanged.",
+    "Abort the whole probe on OOM/cap failure, without retry or larger allocation."
+  ],
+  "reviewed_parity_sha256": "7d6e9d9480de5077aa93911f310bcb4bfd499fb3b7fb62c707ae59f882beabe7",
+  "memory_limit": {
+    "requested_cap_gib": 10,
+    "enforced_cap_bytes": 10737418240,
+    "allocator_fraction": 0.8333672431332655,
+    "device_total_bytes": 12884377600,
+    "device_free_before_bytes": 11771314176,
+    "scope": "PyTorch caching allocator, not all driver allocations"
+  },
+  "load": {
+    "seconds": 133.18060017300013,
+    "allocated_gib": 4.0059709548950195,
+    "peak_reserved_gib": 4.69921875
+  },
+  "provenance": {
+    "kind": "d3-code-readout",
+    "runtime": "d3-runtime/1",
+    "model_name": "vllm-sr/d3-mini",
+    "repo_id": "vllm-sr/d3-mini",
+    "model_sha256": "9ac186bb30b30c129d7aae03d73932600424963bd4644c2041a9d7120f029af5",
+    "format_id": "d3-code-readout-v1",
+    "prompt": "d3",
+    "attention_mode": "noncausal_full_attention",
+    "pooling": "last",
+    "temperature": 1.0,
+    "max_length": 12288,
+    "readout_dtype": "float32",
+    "backbone_dtype": "bfloat16",
+    "attn_implementation": "sdpa",
+    "batch_size": 1,
+    "files_sha256": {
+      "decision_config.json": "588bc0ac7644479b9adde0498d80b6fb7c576388992564ac67599c05d29add07",
+      "readout.safetensors": "d570665c1da72cb9fca7ad7b23a25720eb691362694dd69d4c80c17d7656ed55",
+      "config.json": "8f5f404a71ecc53c4ff26fc42cb4c778ffacfb4c9623f5e2d51245166d6b5057",
+      "MODEL_MANIFEST.json": "7adae8e93f8e8e7d90108e88a1121530ede64de79eff8fd8f1af3f4528824fca"
+    },
+    "kernels": {
+      "torch_chunk_gated_delta_rule": "torch-reference",
+      "causal_conv1d_fn": "torch-reference",
+      "fla": "missing (ModuleNotFoundError)"
+    },
+    "policy": "One forward pass per question; options under single-token answer codes; last-token readout over the question's codes only; argmax choice; no truncation (over-limit questions are refused); no option filtering; one fixed prompt for every request.",
+    "images": {
+      "supported": true,
+      "min_pixels": 65536,
+      "max_pixels": 1638400,
+      "placement": "before the text of the user turn, one placeholder per image, request order",
+      "patch_embedding": "matrix product (equal to the Conv3d with kernel = stride)",
+      "image_processor": "Qwen2VLImageProcessor",
+      "torchvision": "0.25.0+cu128"
+    },
+    "videos": {
+      "supported": true,
+      "fps": 2.0,
+      "min_frames": 4,
+      "max_frames": 32,
+      "max_pixels_per_frame": 200704,
+      "max_tokens_per_request": 16384,
+      "placement": "after the images, before the text of the user turn, one placeholder per video, request order; every two frames are one token group after their timestamp",
+      "sampling": "source frames spread evenly over the whole video (frame arrays: frames at 2 per second)",
+      "video_processor": "Qwen3VLVideoProcessor",
+      "opencv": null
+    },
+    "revision": "6d8971f464d6f9d4c5af7d9a8d75f3aa03be4f59",
+    "storage": "int8-group128",
+    "embedding_storage": "host-bfloat16",
+    "token_budget": 12288,
+    "local_media_only": true,
+    "videos_enabled": false
+  },
+  "environment": {
+    "torch": "2.10.0+cu128",
+    "transformers": "5.19.0",
+    "device": "cuda:0",
+    "cuda": "12.8",
+    "hip": null,
+    "loaded_seconds": 1.27,
+    "gpu": "NVIDIA RTX A3000 12GB Laptop GPU",
+    "fast_path": {
+      "active": false,
+      "reason": "not a ROCm GPU"
+    }
+  },
+  "inputs": [
+    {
+      "id": "startup-clear",
+      "source": {
+        "episode_sha256": "6d574743a4ac4fb4ee01338631735941b0a07486b0ec1031bf6c58f47755d731",
+        "line": 1,
+        "tick": 0,
+        "frame_origin": "embedded"
+      },
+      "request_sha256": "c2d11bb7b037074128c3bb6f44cb3913b6fc109ef7163a4bb354b44b34d29a23",
+      "input_provenance": {
+        "config": {
+          "dt": 0.05,
+          "radius": 0.18,
+          "max_speed": 0.6,
+          "acceleration": 1.0,
+          "max_turn_rate": 1.5,
+          "field_of_view": 0.7853981633974483,
+          "max_range": 4.0,
+          "noise_std": 0.02,
+          "dropout": 0.02,
+          "latency_ticks": 2,
+          "history_ticks": 8,
+          "max_ticks": 400,
+          "goal_tolerance": 0.25,
+          "tick_cost": 0.01,
+          "success_reward": 10.0,
+          "collision_cost": 10.0
+        },
+        "renderer_sha256": "9d81d4a38b88be2e4374d016337a518e598c2fb8b2277b94bf7646d7a923a482",
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "state_frame_sha256": "e8de586a4937c8a78a7e4f8b95071e5cb5291a1daaa24f3ffec52830bba3ee79"
+      },
+      "state_sha256": "5e3eaddd0d3844cc67ef4f56105238ce722b05104cb862c198609418e57047dc",
+      "token_ids_sha256": "fb276fdcf13fc97048d0267f846e9f476eeccaba5c472936ac4c4b8a2b662e64",
+      "tokens": 3421,
+      "history_ticks": 1,
+      "truncated": false
+    },
+    {
+      "id": "warm-clear",
+      "source": {
+        "episode_sha256": "6d574743a4ac4fb4ee01338631735941b0a07486b0ec1031bf6c58f47755d731",
+        "line": 16,
+        "tick": 15,
+        "frame_origin": "embedded"
+      },
+      "request_sha256": "5e3b6119ed7b60fd2019cd343c8a44a0a760fe7b243385730a4457f48d859b97",
+      "input_provenance": {
+        "config": {
+          "dt": 0.05,
+          "radius": 0.18,
+          "max_speed": 0.6,
+          "acceleration": 1.0,
+          "max_turn_rate": 1.5,
+          "field_of_view": 0.7853981633974483,
+          "max_range": 4.0,
+          "noise_std": 0.02,
+          "dropout": 0.02,
+          "latency_ticks": 2,
+          "history_ticks": 8,
+          "max_ticks": 400,
+          "goal_tolerance": 0.25,
+          "tick_cost": 0.01,
+          "success_reward": 10.0,
+          "collision_cost": 10.0
+        },
+        "renderer_sha256": "9d81d4a38b88be2e4374d016337a518e598c2fb8b2277b94bf7646d7a923a482",
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "state_frame_sha256": "f91368a37de1dd2d6703d41b405c94cddc76a27083f9862ded5a6e5b28a018dc"
+      },
+      "state_sha256": "154669d2d7dd77f8af96c66ba240bf1a6833922b7c2ef8d2e0f23e8f5504fa08",
+      "token_ids_sha256": "a89dd15562c0e9ab233a2b27b017aeccc79c282aa08e23a140d7a5bb62868a91",
+      "tokens": 7616,
+      "history_ticks": 8,
+      "truncated": false
+    },
+    {
+      "id": "warm-slalom",
+      "source": {
+        "episode_sha256": "d7e38a7020da223bf48daaadeff82132b4932a90fa8f9053d9e43238a4f47235",
+        "line": 16,
+        "tick": 15,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "request_sha256": "bee96f0148b2bb767d58ac4cfc5a1d23fa241953189d2eb890ad4bf260cc9e83",
+      "input_provenance": {
+        "config": {
+          "dt": 0.05,
+          "radius": 0.18,
+          "max_speed": 0.6,
+          "acceleration": 1.0,
+          "max_turn_rate": 1.5,
+          "field_of_view": 0.7853981633974483,
+          "max_range": 4.0,
+          "noise_std": 0.02,
+          "dropout": 0.02,
+          "latency_ticks": 2,
+          "history_ticks": 8,
+          "max_ticks": 400,
+          "goal_tolerance": 0.25,
+          "tick_cost": 0.01,
+          "success_reward": 10.0,
+          "collision_cost": 10.0
+        },
+        "renderer_sha256": "9d81d4a38b88be2e4374d016337a518e598c2fb8b2277b94bf7646d7a923a482",
+        "catalogue_sha256": "d42f34ff40780dfcbe043c30e3ce515b182d5b3a28ffb73003a78a8d5158a4f3",
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "state_frame_sha256": "cb042fb128c44638a4a57b069b2ea3598929463833ddcef8d62621ef1643c59e"
+      },
+      "state_sha256": "8dfba84ba7f6b0dac37c63a6e835551d4b1e7a07e0a145ba62e4cbea82c0c57b",
+      "token_ids_sha256": "d83fc38bd59cbf163e09e22ec037c5802ea3a4093f933a085c34797b1e55345a",
+      "tokens": 10705,
+      "history_ticks": 8,
+      "truncated": false
+    }
+  ],
+  "parity": {
+    "compared_values": 30,
+    "decision_flips": 2,
+    "max_abs_delta": 0.02067039878723176,
+    "mean_abs_delta": 0.007528638734656861,
+    "by_type": {
+      "choice": {
+        "compared_values": 30,
+        "decision_flips": 2,
+        "max_abs_delta": 0.02067039878723176,
+        "mean_abs_delta": 0.007528638734656861,
+        "questions": 6
+      },
+      "noul": {
+        "compared_values": 0,
+        "decision_flips": 0,
+        "max_abs_delta": 0,
+        "mean_abs_delta": 0,
+        "questions": 0
+      },
+      "score": {
+        "compared_values": 0,
+        "decision_flips": 0,
+        "max_abs_delta": 0,
+        "mean_abs_delta": 0,
+        "questions": 0
+      }
+    }
+  }
+}

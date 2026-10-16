@@ -347,12 +347,32 @@ def test_mini_parity_experiment_is_capped_and_requires_review(
     assert runner.call_count == (0 if oom else 2)
 
 
-@pytest.mark.parametrize("oom", [False, True])
+@pytest.mark.parametrize(
+    "reference_parity,failure",
+    [
+        (False, None),
+        (False, "candidate_oom"),
+        (True, None),
+        (True, "candidate_oom"),
+        (True, "reference_oom"),
+        (True, "reference_cap"),
+    ],
+)
 def test_mini_context_probe_preserves_full_inputs_and_aborts_without_retry(
-    monkeypatch, oom, tmp_path
+    monkeypatch, reference_parity, failure, tmp_path
 ):
     from teacher import validate_d3_int8 as validation
 
+    short_response = {
+        "answers": {
+            "mode": {
+                "type": "choice",
+                "probabilities": {"discarded-a": 0.25, "discarded-b": 0.75},
+            }
+        },
+        "usage": {"input_tokens": 20},
+    }
+    short_responses = {"short": short_response}
     parity = {
         "schema": "micro-classifier/d3-mini-int8-experiment/1",
         "repo_id": validation.d3_int8.MINI_REPO_ID,
@@ -365,13 +385,12 @@ def test_mini_context_probe_preserves_full_inputs_and_aborts_without_retry(
         "status": "complete_requires_parity_review",
         "token_budget": 2048,
         "fixtures": {"sha256": fixture_digest(diagnostic_requests())},
-        "candidate": {"responses": {}},
-        "reference": {"responses": {}},
-        "parity": {"fixture": True},
+        "candidate": {"responses": short_responses},
+        "reference": {"responses": short_responses},
+        "parity": compare(short_responses, short_responses),
     }
     parity_path = tmp_path / "parity.json"
     parity_path.write_text(json.dumps(parity))
-    monkeypatch.setattr(validation, "compare", lambda *args: {"fixture": True})
     inputs = [
         (
             str(tokens),
@@ -403,6 +422,17 @@ def test_mini_context_probe_preserves_full_inputs_and_aborts_without_retry(
         runtime_info=lambda: {"fixture": True},
     )
     calls = []
+    phases = {"reference": False, "candidate_calls": 0, "reference_calls": 0}
+
+    @contextlib.contextmanager
+    def reference_context(*args):
+        phases["reference"] = True
+        try:
+            yield
+        finally:
+            phases["reference"] = False
+
+    monkeypatch.setattr(validation, "stored_reference", reference_context)
     teacher = SimpleNamespace(
         engine=engine, token_budget=12288, provenance=lambda: {"fixture": True}
     )
@@ -410,27 +440,80 @@ def test_mini_context_probe_preserves_full_inputs_and_aborts_without_retry(
     def infer(*, state, questions):
         calls.append((state, questions, teacher.token_budget, engine.max_length))
         assert json.loads(state)["tokens"] <= teacher.token_budget == engine.max_length
-        if oom and len(calls) == 2:
+        key = "reference_calls" if phases["reference"] else "candidate_calls"
+        phases[key] += 1
+        if (
+            failure == "candidate_oom"
+            and key == "candidate_calls"
+            and phases[key] == 2
+            or failure == "reference_oom"
+            and key == "reference_calls"
+        ):
             raise torch.OutOfMemoryError("capped fixture OOM")
-        return {"answers": {"mode": {"secret_probability": 0.75}}}
+        probability = 0.7 if phases["reference"] else 0.75
+        return {
+            "answers": {
+                "mode": {
+                    "type": "choice",
+                    "probabilities": {
+                        "discarded-a": 1 - probability,
+                        "discarded-b": probability,
+                    },
+                }
+            },
+            "usage": {"input_tokens": json.loads(state)["tokens"]},
+        }
 
     teacher.system_one = infer
     loader = Mock(return_value=teacher)
     monkeypatch.setattr(validation.d3_int8, "load_engine", loader)
-    monkeypatch.setattr(validation, "distribution", lambda answer: [0.25, 0.75])
     monkeypatch.setattr(torch.cuda, "empty_cache", Mock())
     monkeypatch.setattr(torch.cuda, "reset_peak_memory_stats", Mock())
     monkeypatch.setattr(torch.cuda, "synchronize", Mock())
     monkeypatch.setattr(torch.cuda, "memory_allocated", lambda: 4 * 2**30)
-    monkeypatch.setattr(torch.cuda, "max_memory_allocated", lambda: 5 * 2**30)
+    monkeypatch.setattr(
+        torch.cuda,
+        "max_memory_allocated",
+        lambda: (
+            (11 if failure == "reference_cap" and phases["reference"] else 5) * 2**30
+        ),
+    )
     monkeypatch.setattr(torch.cuda, "max_memory_reserved", lambda: 6 * 2**30)
     monkeypatch.setattr(torch.cuda, "is_initialized", lambda: False)
-    report = validation.validate_mini_context_probe(tmp_path, parity_path)
-    assert report["status"] == ("aborted" if oom else "complete_resource_only")
+    report = validation.validate_mini_context_probe(
+        tmp_path, parity_path, reference_parity=reference_parity
+    )
+    assert report["status"] == (
+        "aborted"
+        if failure
+        else "complete_parity_requires_review"
+        if reference_parity
+        else "complete_resource_only"
+    )
     assert report["responses_discarded"] and report["mode_labels_written"] == 0
-    assert "secret_probability" not in json.dumps(report)
-    assert len(calls) == (2 if oom else 6)
-    assert len(report["cases"]) == (4 if oom else 9)
+    assert "discarded-a" not in json.dumps(
+        report
+    ) and "probabilities" not in json.dumps(report)
+    assert not phases["reference"]
+    assert phases["candidate_calls"] == (
+        2 if failure == "candidate_oom" else 1 if failure else 6
+    )
+    assert len(report["cases"]) == (
+        4 if failure == "candidate_oom" else 1 if failure else 9
+    )
+    assert phases["reference_calls"] == (
+        1 if failure and reference_parity else 6 if reference_parity else 0
+    )
+    if reference_parity and not failure:
+        assert report["parity"]["compared_values"] == 12
+        assert report["parity"]["max_abs_delta"] == pytest.approx(0.05)
+        assert report["parity"]["mean_abs_delta"] == pytest.approx(0.05)
+        assert report["parity"]["decision_flips"] == 0
+        assert report["parity"]["by_type"]["choice"]["questions"] == 6
+    if failure:
+        assert report["cases"][-1]["active_phase"] == (
+            "candidate" if failure == "candidate_oom" else "reference"
+        )
     assert all(
         state in [request["state"] for _, request in inputs] for state, _, _, _ in calls
     )
@@ -440,6 +523,93 @@ def test_mini_context_probe_preserves_full_inputs_and_aborts_without_retry(
         report["reviewed_parity_sha256"]
         == hashlib.sha256(parity_path.read_bytes()).hexdigest()
     )
+
+
+def test_context_parity_summary_weights_values_and_discards_distributions():
+    from teacher.validate_d3_int8 import summarize_context_parity
+
+    candidate = {
+        "answers": {
+            "mode": {
+                "type": "choice",
+                "probabilities": {"discarded-a": 0.6, "discarded-b": 0.4},
+            }
+        },
+        "usage": {"input_tokens": 4},
+    }
+    reference = json.loads(json.dumps(candidate))
+    reference["answers"]["mode"]["probabilities"] = {
+        "discarded-a": 0.4,
+        "discarded-b": 0.6,
+    }
+    score = {
+        "answers": {
+            "tier": {"type": "score", "probabilities": {"0": 0.2, "1": 0.3, "2": 0.5}}
+        },
+        "usage": {"input_tokens": 4},
+    }
+    result = summarize_context_parity(
+        [
+            {"parity": compare({"row": candidate}, {"row": reference})},
+            {"parity": compare({"row": score}, {"row": score})},
+            {"status": "budget_rejected"},
+        ]
+    )
+    assert result["compared_values"] == 5
+    assert result["decision_flips"] == 1
+    assert result["max_abs_delta"] == pytest.approx(0.2)
+    assert result["mean_abs_delta"] == pytest.approx(0.08)
+    assert result["by_type"]["choice"]["questions"] == 1
+    assert result["by_type"]["score"]["questions"] == 1
+    assert result["by_type"]["noul"]["compared_values"] == 0
+    assert "discarded-a" not in json.dumps(result)
+    with pytest.raises(ValueError, match="no context parity"):
+        summarize_context_parity([])
+
+
+def test_context_parity_opt_in_requires_boolean():
+    from teacher.validate_d3_int8 import validate_mini_context_probe
+
+    with pytest.raises(TypeError, match="must be a boolean"):
+        validate_mini_context_probe(None, None, reference_parity="true")
+
+
+def test_context_parity_cli_dispatch_is_explicit(monkeypatch, tmp_path):
+    from teacher import validate_d3_int8 as validation
+
+    snapshot = tmp_path / "cached"
+    parity_path = tmp_path / "review.json"
+    output = tmp_path / "fresh.json"
+    report = {
+        "status": "complete_parity_requires_review",
+        "parity": {"decision_flips": 0},
+    }
+    context = Mock(return_value=report)
+    parity = Mock()
+    monkeypatch.setattr(validation, "validate_mini_context_probe", context)
+    monkeypatch.setattr(validation, "validate_mini_int8_experiment", parity)
+    monkeypatch.setattr(torch, "set_num_threads", Mock())
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "validate_d3_int8",
+            "--mini-int8-context-parity",
+            "--repo-id",
+            "vllm-sr/d3-mini",
+            "--snapshot",
+            str(snapshot),
+            "--reviewed-parity-report",
+            str(parity_path),
+            "--output",
+            str(output),
+        ],
+    )
+    validation.main()
+    assert context.call_args.args == (snapshot, parity_path)
+    assert context.call_args.kwargs == {"reference_parity": True}
+    parity.assert_not_called()
+    assert json.loads(output.read_text()) == report
 
 
 def test_mini_context_probe_rejects_unreviewed_report_before_gpu(monkeypatch, tmp_path):
@@ -471,6 +641,15 @@ def test_mini_context_probe_rejects_unreviewed_report_before_gpu(monkeypatch, tm
         ],
         ["--reviewed-parity-report", "review.json"],
         ["--mini-int8-experiment", "--mini-int8-context-probe"],
+        ["--mini-int8-context-parity"],
+        [
+            "--mini-int8-context-parity",
+            "--repo-id",
+            "vllm-sr/d3-mini",
+            "--snapshot",
+            "cached",
+        ],
+        ["--mini-int8-context-probe", "--mini-int8-context-parity"],
     ],
 )
 def test_mini_experiment_cli_rejects_incomplete_scope_before_execution(

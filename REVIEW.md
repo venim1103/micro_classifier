@@ -1733,6 +1733,60 @@ expected failure; Ruff/format/editor diagnostics pass.
 
 [mini-context-resource]: teacher/reports/d3-mini-context-resource-capped-20261016.json
 
+## 31. Longer-Context Mini Numerical Parity (2026-10-16)
+
+The user approved a bounded comparison of mini INT8 with streamed BF16 on the
+same three existing full inputs and 4,096/8,192/12,288 ceilings as §30. Approval
+retained the pinned/full-verified cached package, 10 GiB PyTorch cap and whole-
+run abort on OOM/cap failure. Only numeric deltas/flips, timings, memory and
+provenance could be retained; no mode labels, task dataset, training, download,
+dependency or hardware action. Normal BF16/2,048 and inputs/history/drafts remain
+unchanged. This is a separate explicit CLI opt-in, not a resource-probe default.
+
+The [longer-context parity report][mini-context-parity] has SHA256
+`f2f14d97b76ef5447ebe59b3dd2a2281487da69e97bcba640a74636462d519c4`.
+All source/request/state/frame/renderer and complete token-sequence hashes were
+independently checked on CPU; input metadata exactly matches §30. The original
+`mode` question is a five-option diagnostic workload, not reviewed task truth.
+Six candidate/reference pairs completed, three cases were budget-rejected,
+and no truncation/OOM/cap failure occurred. Peak allocated/reserved across both
+phases: 6.498/7.313 GiB; the cap excludes driver/native allocations.
+
+| Input | Tokens | Ceilings | Max absolute delta | Flips |
+| --- | --- | --- | --- | --- |
+| Startup clear | 3,421 | 4,096 / 8,192 / 12,288 | 0.0202917 | zero each |
+| Warm clear | 7,616 | 8,192 / 12,288 | 0.0206704 | one each |
+| Warm slalom | 10,705 | 12,288 | 0.0101652 | zero |
+
+Across 30 compared values, maximum/weighted mean delta is
+0.0206704/0.00752864, with two flips across six comparisons. Both flips repeat
+the same warm-clear observation at different ceilings. There are only three
+distinct inputs and one changed observation, not six independent samples or
+two distinct failures. No noul/score, representative task population or actual
+12,288-token sequence was tested. Candidate/reference times are in DESIGN §4;
+cold/cache and streaming effects preclude a controlled speed claim.
+
+**Finding and review:** the full-input path runs within this measured resource
+envelope, but exact decision parity fails for the selected warm-clear state.
+The short-suite maximum was lower on different requests; this is not evidence
+of a causal context-length trend or a new universal tolerance. Responses were
+used transiently for comparison, then discarded. Selected labels and top-two
+margins were not retained, so neither correctness nor the cause of the flip is
+established. No task-quality threshold is changed and no teacher winner or
+labeling clearance follows. This is a reason to retain the review gate, not
+silently accept INT8 labels or raise limits. Mode remains unlabeled.
+
+Ten new cases cover both phases' OOM/cap abort, reference cleanup, response
+discard, CLI admission/dispatch and weighted aggregate arithmetic. 47 d3 checks
+and 346 repository passes plus the known transformer expected failure; Ruff,
+format and editor diagnostics pass. Pylance's signature check found only the
+deliberate non-boolean rejection test incompatible; actual callers remain
+compatible. Proposed next default: keep normal BF16/2,048 and no mode labels
+pending reviewed target/data and input/teacher strategy; ST/board gates remain
+blocked. This approved experiment is complete, not a live-use promotion.
+
+[mini-context-parity]: teacher/reports/d3-mini-context-parity-capped-20261016.json
+
 ## Sources
 
 Hardware and tools:

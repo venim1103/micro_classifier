@@ -666,6 +666,48 @@ the known transformer expected failure; Ruff/format/editor diagnostics clean.
 
 [mini-context-report]: teacher/reports/d3-mini-context-resource-capped-20261016.json
 
+#### Bounded Longer-Context Numerical Parity (2026-10-16)
+
+The user separately approved INT8-versus-streamed-BF16 comparison on the same
+three existing full inputs at the same experimental ceilings, retaining only
+numeric deltas/flips, timings, memory and provenance. Full cached mini package
+verification and the 10 GiB PyTorch cap remained mandatory. The [parity report][mini-context-parity-report]
+has SHA256 `f2f14d97b76ef5447ebe59b3dd2a2281487da69e97bcba640a74636462d519c4`.
+The complete input/token/provenance hashes match the preceding resource run and
+were independently reproduced on CPU with the approved cached tokenizer.
+
+| Existing input | Tokens | Admitted ceilings | Maximum absolute delta | Decision flips |
+| --- | --- | --- | --- | --- |
+| Startup clear | 3,421 | 4,096 / 8,192 / 12,288 | 0.0202917 | 0 at each ceiling |
+| Warm clear | 7,616 | 8,192 / 12,288 | 0.0206704 | 1 at each ceiling |
+| Warm slalom | 10,705 | 12,288 | 0.0101652 | 0 |
+
+Six comparisons covered 30 probability values: maximum/weighted mean delta
+0.0206704/0.00752864 and two flips. These are the original five-option `mode`
+choice question only, not noul/score coverage. Repeated ceilings reuse the same
+three observations: both flips are the same warm-clear input at two ceilings,
+not two independent examples. No actual 12,288-token input was tested. Three
+over-budget cases were rejected without truncation; no OOM/cap failure occurred.
+
+Peak allocated/reserved across both phases was 6.498/7.313 GiB. Candidate times
+were 2.335-5.683 s for startup, 4.833-5.675 s for warm clear, and 7.190 s for
+warm slalom; reference times were 2.795-3.482/5.554-6.032/8.125 s respectively.
+These single observations include cold-start/cache effects and BF16 weight
+streaming, not controlled throughput comparisons or resident-BF16 forecasts.
+
+**Review:** numerical execution fits, but argmax parity does not hold on all
+three selected inputs. The larger delta than the short suite is on different
+inputs, not proof of a context-length trend. Answer values and margins were
+discarded; no selected class, margin diagnosis, correctness or teacher winner
+is inferred. Do not promote this INT8 path to labels or claim calibrated/task
+quality. Mode stays unlabeled; no new threshold or default/input/history/draft
+change is adopted. No dataset, training, new episode, dependency/download or
+hardware action occurred. Ten added tests; 47 d3 checks and 346 repository
+passes plus the known transformer expected failure; lint/format/diagnostics
+and evidence/doc audits pass.
+
+[mini-context-parity-report]: teacher/reports/d3-mini-context-parity-capped-20261016.json
+
 #### Decision 3.0 d3 on Two RTX 3090s (when available)
 
 When it is available, a second host with two NVLinked RTX 3090s (2 x 24 GB) can

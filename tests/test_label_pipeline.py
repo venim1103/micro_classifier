@@ -15,7 +15,9 @@ from sim.rover import (
 )
 from teacher.label_pipeline import (
     LabelCache,
+    compact_request_draft,
     episode_requests,
+    expand_compact_state,
     label_requests,
     main,
     plan_episode,
@@ -64,6 +66,94 @@ def test_render_excludes_privileged_values_and_does_not_mutate_inputs(sample):
     )
     assert prepare_request(observation, config=config) == first
     assert "SECRET" not in first["state"] and "simulation_label" not in first["state"]
+
+
+def test_compact_draft_is_exact_nonmutating_and_keeps_default_renderer(sample):
+    config, observation = sample
+    request = prepare_request(observation, config=config)
+    original = deepcopy(request)
+    compact = compact_request_draft(request)
+    assert (
+        expand_compact_state(
+            compact["state"],
+            expected_sha256=compact["representation"]["original_state_sha256"],
+        )
+        == request["state"]
+    )
+    assert compact["questions"] == request["questions"]
+    assert compact["option_order"] == request["option_order"]
+    assert compact["provenance"] == request["provenance"]
+    assert request == original == prepare_request(observation, config=config)
+    assert compact["representation"]["review_status"] == "unreviewed_draft"
+    assert not compact["representation"]["live_use_approved"]
+    assert not compact["training_approved"] and not compact["token_budget_verified"]
+    assert len(compact["state"]) < len(request["state"])
+    assert compact == compact_request_draft(request)
+    compact["questions"]["mode"]["instructions"] = "changed"
+    assert request == original
+
+
+def test_compact_draft_preserves_float_digits_signed_zero_and_boolean_types(sample):
+    config, observation = sample
+    request = prepare_request(observation, config=config)
+    payload = json.loads(request["state"])
+    payload["module_observation"]["history_ego"][0] = [
+        0.6000000238418579,
+        -0.0,
+        1.0000000000000002,
+        1e-300,
+    ]
+    request["state"] = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), allow_nan=False
+    )
+    compact = compact_request_draft(request)
+    assert expand_compact_state(compact["state"]) == request["state"]
+    rows = json.loads(compact["state"])["row_table"]
+    assert any(row == payload["module_observation"]["history_ego"][0] for row in rows)
+    assert any(row and type(row[0]) is bool for row in rows)
+    assert any(row and type(row[0]) is not bool for row in rows)
+
+
+@pytest.mark.parametrize(("history_ticks", "dropout"), [(1, 0.0), (8, 0.25)])
+def test_compact_roundtrip_through_warm_noisy_masked_history(history_ticks, dropout):
+    config = Config(history_ticks=history_ticks, dropout=dropout, max_ticks=12)
+    env = RoverEnv(config)
+    observation, _ = env.reset(seed=11)
+    for _ in range(12):
+        original = prepare_request(observation, config=config)
+        compact = compact_request_draft(original)
+        assert expand_compact_state(compact["state"]) == original["state"]
+        assert compact["option_order"] == original["option_order"]
+        observation, _, _, _, _ = env.step([0.2, 0.1])
+
+
+@pytest.mark.parametrize(
+    "defect",
+    ["negative", "boolean", "out_of_range", "schema", "value", "double_compact"],
+)
+def test_compact_draft_rejects_bad_references_and_identity_mismatches(sample, defect):
+    config, observation = sample
+    compact = compact_request_draft(prepare_request(observation, config=config))
+    payload = json.loads(compact["state"])
+    if defect == "double_compact":
+        with pytest.raises(ValueError, match="canonical full-state"):
+            compact_request_draft(compact)
+        return
+    if defect in ("negative", "boolean", "out_of_range"):
+        payload["module_observation"]["tof_m"][0] = {
+            "negative": -1,
+            "boolean": True,
+            "out_of_range": len(payload["row_table"]),
+        }[defect]
+    elif defect == "schema":
+        payload["schema"] = "unknown"
+    else:
+        payload["host_state"]["sequence"] += 1
+    with pytest.raises(ValueError):
+        expand_compact_state(
+            json.dumps(payload),
+            expected_sha256=compact["representation"]["original_state_sha256"],
+        )
 
 
 def test_render_rejects_wire_mismatch(sample):

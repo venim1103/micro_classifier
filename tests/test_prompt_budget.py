@@ -6,9 +6,10 @@ from types import SimpleNamespace
 import pytest
 
 from sim.rover import Config, RoverEnv, rollout, write_episode
-from teacher.label_pipeline import prepare_request
+from teacher.label_pipeline import compact_request_draft, prepare_request
 from teacher.prompt_budget import (
     ASSET_NAMES,
+    compare_compact_requests,
     count_requests,
     load_prompt_assets,
     main,
@@ -126,6 +127,39 @@ def test_report_metadata_is_detached_from_inputs(prepared_request, fake_assets):
     assert prepared_request["source"] == {"tick": 0}
 
 
+def test_compact_comparison_checks_exactness_without_qualifying_live_use(
+    prepared_request, fake_assets
+):
+    original = deepcopy(prepared_request)
+    report = compare_compact_requests([prepared_request], assets=fake_assets)
+    row = report["results"][0]
+    assert row["original_tokens"]["mode"] > row["compact_tokens"]["mode"]
+    assert row["exact_roundtrip"] and report["exact_roundtrip_count"] == 1
+    assert not report["live_labeling_approved"] and not report["training_approved"]
+    assert report["review_status"] == "unreviewed_draft"
+    assert report["inference_calls"] == 0 and not report["model_weights_loaded"]
+    assert prepared_request == original
+    report["assets"]["kind"] = "changed"
+    assert fake_assets.provenance["kind"] == "fake_test_only"
+    json.dumps(report, allow_nan=False)
+
+
+def test_comparison_never_assumes_compact_is_shorter(prepared_request, fake_assets):
+    compact_state = compact_request_draft(prepared_request)["state"]
+
+    def tokenize(texts, **settings):
+        return {
+            "input_ids": [
+                list(range(2049 if compact_state in text else 1)) for text in texts
+            ]
+        }
+
+    fake_assets.tokenizer = tokenize
+    report = compare_compact_requests([prepared_request], assets=fake_assets)
+    assert report["original_all_fit"] and not report["all_fit"]
+    assert report["original_max_tokens"] == 1 and report["max_tokens"] == 2049
+
+
 @pytest.mark.parametrize("wrong_codes", [False, True])
 def test_asset_loader_is_local_only_and_never_loads_a_model(
     tmp_path, monkeypatch, wrong_codes
@@ -226,3 +260,35 @@ def test_cli_records_over_budget_without_labels_and_is_exclusive(
     with pytest.raises(FileExistsError):
         main()
     assert output.read_bytes() == original
+
+
+def test_cli_compact_draft_is_explicit_opt_in(
+    tmp_path, fake_assets, monkeypatch, capsys
+):
+    records, _ = rollout(RoverEnv(Config(max_ticks=1)))
+    episode = tmp_path / "episode.jsonl"
+    output = tmp_path / "comparison.json"
+    write_episode(episode, records)
+    monkeypatch.setattr(
+        "teacher.prompt_budget.load_prompt_assets", lambda **kwargs: fake_assets
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "prompt_budget",
+            "--episode",
+            str(episode),
+            "--output",
+            str(output),
+            "--limit",
+            "1",
+            "--compare-compact-draft",
+        ],
+    )
+    status = main()
+    summary = json.loads(capsys.readouterr().out)
+    report = json.loads(output.read_text())
+    assert report["schema"] == "micro-classifier/lossless-prompt-comparison-draft/1"
+    assert status == (0 if report["all_fit"] else 1)
+    assert summary["request_count"] == report["exact_roundtrip_count"] == 1
+    assert not report["live_labeling_approved"]

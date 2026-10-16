@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §23 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §24 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -173,6 +173,21 @@ Keep this section and the Task List current; a new session resumes from them.
   Fifteen focused tests pass; full suite: 275 passed plus the known expected
   transformer failure; lint/format/editor diagnostics pass. DESIGN.md §7 and
   REVIEW.md §23 record this measured live-use blocker, not a budget increase.
+- Approved (2026-10-16): a separate lossless compact-prompt draft, CPU round-trip
+  tests and offline comparisons on existing logs only. Keep the default renderer,
+  complete input/history and 2,048-token ceiling unchanged. No inference, labels,
+  training, download, dependency or live-use approval. Every original value must
+  reconstruct exactly; shorter prompts alone do not establish teacher quality.
+- Lossless row-table draft in `teacher/label_pipeline.py` is opt-in only;
+  `teacher/prompt_budget.py --compare-compact-draft` compares unchanged full
+  requests with exact row-table reconstructions. Offline runs counted 80 existing
+  observations per approved tokenizer: 80 exact round trips, but 65/80 draft
+  prompts still exceed 2,048 tokens (772-9,698 versus full 3,421-10,855).
+  Only ticks 0-2 fit in each of five selected log prefixes; warm-history use
+  remains unqualified. Both tokenizers agree. No values/history/defaults/budget
+  changed, and no model/inference/labels/training ran. Focused slice: 60 tests;
+  full suite: 288 passed plus the known expected transformer failure; lint,
+  format and diagnostics clean. DESIGN.md §7 and REVIEW.md §24 record limits.
 
 ## Task List
 
@@ -243,6 +258,10 @@ on missing tools, and continue with the next unblocked task.
   Live use remains blocked on a reviewed budget-compatible representation.
   Proposed default: keep the budget and full input/history unchanged; review
   representation before any compaction, rounding, feature removal or live use.
+  Approved draft-only follow-up: exact row-table representation and offline
+  comparison implemented; 65/80 sampled draft prompts still fail the unchanged
+  ceiling. Not a live-use approval or solved prompt-budget gate. Keep the
+  default full renderer and input/history unchanged pending further review.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

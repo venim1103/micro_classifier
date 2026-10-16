@@ -114,6 +114,101 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
+COMPACT_SCHEMA = "micro-classifier/sim-teacher-state-row-draft/1"
+ROW_FIELDS = {
+    "tof_m": 1,
+    "tof_valid": 1,
+    "history_ego": 1,
+    "history_tof_m": 2,
+    "history_tof_valid": 2,
+}
+ROW_ENCODING = (
+    "In module_observation, tof_m, tof_valid and history_ego contain zero-based "
+    "row_table indexes. history_tof_m and history_tof_valid contain lists of "
+    "row indexes, one list per history slot. Expand each index to its complete "
+    "row. Outer order and masks are unchanged; last history slot is current. "
+    "All original numbers and booleans are preserved without rounding."
+)
+
+
+def expand_compact_state(state, *, expected_sha256=None):
+    payload = json.loads(state)
+    if (
+        payload.get("schema") != COMPACT_SCHEMA
+        or payload.get("row_encoding") != ROW_ENCODING
+    ):
+        raise ValueError("unsupported compact state draft")
+    rows = payload.pop("row_table")
+    if not isinstance(rows, list) or any(not isinstance(row, list) for row in rows):
+        raise ValueError("row table must contain arrays")
+
+    def expand(value, depth):
+        if depth:
+            if not isinstance(value, list):
+                raise ValueError("row references require nested arrays")
+            return [expand(item, depth - 1) for item in value]
+        if type(value) is not int or not 0 <= value < len(rows):
+            raise ValueError("invalid row reference")
+        return deepcopy(rows[value])
+
+    for name, depth in ROW_FIELDS.items():
+        payload["module_observation"][name] = expand(
+            payload["module_observation"][name], depth
+        )
+    payload.pop("row_encoding")
+    payload["schema"] = "micro-classifier/sim-teacher-state/1"
+    expanded = canonical(payload)
+    if (
+        expected_sha256 is not None
+        and hashlib.sha256(expanded.encode()).hexdigest() != expected_sha256
+    ):
+        raise ValueError("reconstructed state differs from its original identity")
+    return expanded
+
+
+def compact_request_draft(request):
+    validate_request(request)
+    original = request["state"]
+    payload = json.loads(original)
+    if (
+        payload.get("schema") != "micro-classifier/sim-teacher-state/1"
+        or canonical(payload) != original
+    ):
+        raise ValueError("compact draft requires the canonical full-state renderer")
+    rows = []
+    indexes = {}
+
+    def intern(value, depth):
+        if depth:
+            return [intern(item, depth - 1) for item in value]
+        key = canonical(value)
+        if key not in indexes:
+            indexes[key] = len(rows)
+            rows.append(deepcopy(value))
+        return indexes[key]
+
+    for name, depth in ROW_FIELDS.items():
+        payload["module_observation"][name] = intern(
+            payload["module_observation"][name], depth
+        )
+    payload["schema"] = COMPACT_SCHEMA
+    payload["row_table"] = rows
+    payload["row_encoding"] = ROW_ENCODING
+    result = deepcopy(request)
+    result["state"] = canonical(payload)
+    original_hash = hashlib.sha256(original.encode()).hexdigest()
+    if expand_compact_state(result["state"], expected_sha256=original_hash) != original:
+        raise ValueError("compact state failed exact reconstruction")
+    result["representation"] = {
+        "schema": COMPACT_SCHEMA,
+        "review_status": "unreviewed_draft",
+        "live_use_approved": False,
+        "original_state_sha256": original_hash,
+        "codec_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    }
+    return result
+
+
 def validate_identity(identity):
     required = {"kind", "model_id", "revision", "settings", "artifact_sha256"}
     if not isinstance(identity, dict) or set(identity) != required:

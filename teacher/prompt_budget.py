@@ -10,7 +10,12 @@ from importlib.metadata import version
 from pathlib import Path
 from types import SimpleNamespace
 
-from teacher.label_pipeline import episode_requests, validate_request
+from teacher.label_pipeline import (
+    compact_request_draft,
+    episode_requests,
+    expand_compact_state,
+    validate_request,
+)
 
 ASSET_NAMES = (
     "d3_format.py",
@@ -173,6 +178,62 @@ def count_requests(requests, *, assets, budget=2048):
     }
 
 
+def compare_compact_requests(requests, *, assets, budget=2048):
+    requests = list(requests)
+    compact = [compact_request_draft(request) for request in requests]
+    original_report = count_requests(requests, assets=assets, budget=budget)
+    compact_report = count_requests(compact, assets=assets, budget=budget)
+    comparisons = []
+    for request, draft, original_row, compact_row in zip(
+        requests,
+        compact,
+        original_report["results"],
+        compact_report["results"],
+        strict=True,
+    ):
+        if expand_compact_state(draft["state"]) != request["state"]:
+            raise ValueError("comparison requires exact reconstruction")
+        comparisons.append(
+            {
+                "request_index": original_row["request_index"],
+                "source": deepcopy(original_row["source"]),
+                "original_request_sha256": original_row["request_sha256"],
+                "compact_request_sha256": compact_row["request_sha256"],
+                "original_state_sha256": draft["representation"][
+                    "original_state_sha256"
+                ],
+                "original_tokens": original_row["tokens"],
+                "compact_tokens": compact_row["tokens"],
+                "original_fits_budget": original_row["fits_budget"],
+                "compact_fits_budget": compact_row["fits_budget"],
+                "exact_roundtrip": True,
+            }
+        )
+    return {
+        "schema": "micro-classifier/lossless-prompt-comparison-draft/1",
+        "allowed_use": "lossless_draft_tests_and_offline_comparison_only",
+        "review_status": "unreviewed_draft",
+        "live_labeling_approved": False,
+        "training_approved": False,
+        "model_weights_loaded": False,
+        "inference_calls": 0,
+        "token_counts_verified": True,
+        "budget": budget,
+        "request_count": len(comparisons),
+        "exact_roundtrip_count": len(comparisons),
+        "all_fit": compact_report["all_fit"],
+        "over_budget_count": compact_report["over_budget_count"],
+        "max_tokens": compact_report["max_tokens"],
+        "original_all_fit": original_report["all_fit"],
+        "original_over_budget_count": original_report["over_budget_count"],
+        "original_max_tokens": original_report["max_tokens"],
+        "assets": deepcopy(assets.provenance),
+        "codec_source_sha256": compact[0]["representation"]["codec_source_sha256"],
+        "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "results": comparisons,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--episode", type=Path, nargs="+", required=True)
@@ -187,6 +248,11 @@ def main():
     parser.add_argument(
         "--snapshot", type=Path, help="already-cached pinned snapshot only"
     )
+    parser.add_argument(
+        "--compare-compact-draft",
+        action="store_true",
+        help="compare full state with the unreviewed lossless row-table draft",
+    )
     args = parser.parse_args()
     if args.limit < 1 or not 1 <= args.budget <= 2048:
         parser.error("limit must be positive and budget between 1 and 2048")
@@ -198,7 +264,11 @@ def main():
         for request in episode_requests(path, limit=args.limit)
     ]
     assets = load_prompt_assets(repo_id=args.repo_id, snapshot=args.snapshot)
-    report = count_requests(requests, assets=assets, budget=args.budget)
+    report = (
+        compare_compact_requests(requests, assets=assets, budget=args.budget)
+        if args.compare_compact_draft
+        else count_requests(requests, assets=assets, budget=args.budget)
+    )
     report["episode_limit"] = args.limit
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:

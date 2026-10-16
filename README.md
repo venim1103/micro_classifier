@@ -129,6 +129,23 @@ found all 16 sampled prompts over budget (3,421-6,936 tokens). **The current
 renderer is not budget-qualified for live use.** Input/representation review
 is needed; no automatic trimming or larger budget is approved. See REVIEW.md §23.
 
+An opt-in **lossless row-table draft** can be compared without changing the
+default renderer. It reuses identical rows and verifies exact reconstruction,
+preserving every input value and history slot:
+
+```sh
+HF_HUB_OFFLINE=1 CUDA_VISIBLE_DEVICES="" python -m teacher.prompt_budget \
+	--episode sim/episodes/wire-v0-smoke/clear-20261015.jsonl \
+	--output teacher/reports/my-row-draft-comparison.json --limit 16 \
+	--compare-compact-draft
+```
+
+The recorded [flash][row-draft-flash]/[mini][row-draft-mini] comparisons cover
+80 existing observations with exact round trips, but 65/80 draft prompts still
+exceed 2,048 tokens, reaching 9,698. Only startup ticks 0-2 fit. The draft remains
+unreviewed, opt-in and **not qualified for live labeling**; no inference or
+training was run. See DESIGN.md §7 and REVIEW.md §24 for limits.
+
 ## Synthetic Evaluation Tooling
 
 [CPU-only metrics and split checks][teacher-evaluation] are approved for
@@ -273,5 +290,7 @@ The simulation JSONL container remains separately versioned. See
 [prompt-budget]: teacher/prompt_budget.py
 [prompt-budget-flash]: teacher/reports/prompt-budget-d3-flash-20261016.json
 [prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
+[row-draft-flash]: teacher/reports/row-draft-budget-d3-flash-20261016.json
+[row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

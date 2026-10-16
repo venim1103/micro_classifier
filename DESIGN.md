@@ -1302,6 +1302,66 @@ passes plus the known transformer expected failure; lint, changed-file format
 and editor diagnostics pass. No model weights/runtime, inference, labels,
 training, dependency change, download or hardware action occurred.
 
+### Lossless Row-Table Draft (2026-10-16)
+
+The user approved a **separate lossless compact-prompt draft, CPU tests and
+offline comparisons on existing logs only**. No default renderer, input/history,
+token ceiling, live-labeling permission, dependency or hardware scope changed.
+This is not approval to round values, remove features or shorten the history.
+
+The [renderer][teacher-label-pipeline] now offers `compact_request_draft`.
+It interns byte-identical innermost numeric/boolean rows in a per-request table,
+replacing repeated rows with zero-based indexes while preserving outer/time
+order. A visible legend describes expansion; unchanged metadata and host state
+remain in the text. Numbers are not reformatted or rounded, and JSON keys keep
+booleans, integers, signed zero and float spellings distinct during interning.
+`expand_compact_state` reconstructs the original canonical state byte for byte;
+the factory verifies this against the original SHA-256 before returning. An
+expected original hash can also detect valid-looking but altered references.
+The default `prepare_request` output remains the full representation. Questions,
+option order, source/frame/config provenance and training-disabled scope persist;
+separate draft metadata binds codec source and original state identity.
+
+The existing [offline preflight][prompt-budget] adds an explicit
+`--compare-compact-draft` flag. Without it, behavior is unchanged. The comparison
+counts complete released prompts for both forms and makes no assumption that
+the draft is shorter. Reports retain per-request source/tick, both request
+hashes/counts and exact reconstruction checks; they never approve live use.
+
+Both cached approved tokenizers were compared offline with GPUs hidden on the
+first 16 observations of five existing logs: clear wire-v0 and clear, obstacle,
+corridor and slalom label-smoke. **All 80 inputs reconstruct exactly, but the
+draft still fails the unchanged 2,048-token ceiling for 65/80 requests**:
+
+| Existing Prefix | Draft Fits | Draft Maximum Tokens |
+| --- | --- | --- |
+| wire clear | 3/16 | 6,892 |
+| label-smoke clear | 3/16 | 7,042 |
+| label-smoke obstacle | 3/16 | 8,891 |
+| label-smoke corridor | 3/16 | 8,794 |
+| label-smoke slalom | 3/16 | 9,698 |
+
+Counts match between tokenizers. Only ticks 0-2 fit in every prefix; none of
+the later selected requests does. Full-state counts span 3,421-10,855 (80/80
+fail); draft counts span 772-9,698. These bounded prefixes include warm history,
+but are not whole-episode maxima, teacher-quality results or a deployment test.
+Exact round trips and all original/draft source identities were independently
+recomputed from the unchanged logs.
+
+[Flash comparison][row-draft-flash] SHA-256:
+`c68c07722ec806bbb0979f9edb3136946c5595aa93539bd1857912d7a3f45b92`.
+[Mini comparison][row-draft-mini] SHA-256:
+`adc2b9c4ac4433353d0f0d8b1e90dc1656526e535b9cd10c0db6ebfa629d26d0`.
+
+Verification: 42 pipeline and 18 preflight focused tests; 288 repository
+passes plus the known transformer numerical expected failure, Ruff lint/format
+and clean editor diagnostics. Tests cover cold/warm noisy masked histories,
+numeric/type preservation, invalid references, mutation isolation, unchanged
+defaults and a tokenizer fixture where the draft is worse. No inference,
+weights/model runtime, labels, new episode, training, download or dependency
+action occurred. This draft does **not** solve the live-use budget gate; keep
+it unreviewed and opt-in pending a separate input-strategy/quality decision.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following
@@ -1713,6 +1773,8 @@ for this project.
 [prompt-budget-flash]: teacher/reports/prompt-budget-d3-flash-20261016.json
 [prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
 [prompt-budget-tests]: tests/test_prompt_budget.py
+[row-draft-flash]: teacher/reports/row-draft-budget-d3-flash-20261016.json
+[row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

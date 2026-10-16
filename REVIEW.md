@@ -1430,6 +1430,47 @@ live-label approval and the existing ST/board gates remain unresolved.
 [prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
 [prompt-budget-tests]: tests/test_prompt_budget.py
 
+## 24. Lossless Row-Table Draft: Still Over Budget (2026-10-16)
+
+The user approved a separate lossless compact-prompt draft, CPU round-trip
+tests and offline comparisons on existing logs. The default renderer, complete
+input/history and 2,048-token ceiling must remain unchanged. No inference,
+labels, training, downloads, dependency or live-use approval was granted.
+
+The [renderer][teacher-label-pipeline] adds per-request row interning and an
+inverse decoder. It reuses only byte-identical JSON numeric/boolean rows,
+retaining every literal value, mask, outer/time order and host-state field.
+The compact text includes a row-reference legend. The factory verifies exact
+canonical-state reconstruction against the original state hash; invalid index
+types/ranges or expected-identity mismatches fail. Questions and option order
+are unchanged, and separate draft metadata keeps live-use approval false.
+
+The [preflight][prompt-budget] compares forms only with the explicit
+`--compare-compact-draft` flag. Both pinned cached tokenizers were run offline
+with GPUs hidden on 80 observations: the first 16 from wire-clear and each of
+the four existing label-smoke logs. Every input round-trips exactly. Full
+prompts take 3,421-10,855 tokens, all over budget; the draft takes 772-9,698,
+with **65/80 still over budget**. Only ticks 0-2 fit in every prefix. Both
+tokenizers agree, and warm-history requests remain unqualified. These are
+bounded-prefix measurements, not whole-episode maxima or model-quality tests.
+
+[Flash][row-draft-flash] and [mini][row-draft-mini] reports bind original and
+draft request hashes, episode/tick provenance, exactness and source/asset
+identities. All 80 reconstructions and source/request identities were checked
+independently; DESIGN.md §7 records per-prefix counts and artifact hashes.
+
+Verification: 42 pipeline and 18 preflight tests, 288 repository passes plus
+the known transformer numerical expected failure; Ruff lint/format and editor
+diagnostics clean. No weights/model runtime, inference, labels, new episode,
+training, download, dependency or hardware action occurred. Row interning helps
+startup size but does not solve the live-label budget gate. Keep this draft
+opt-in/unreviewed; a further input-strategy and teacher-quality decision is
+needed before any promotion. No rounding, feature/history removal or ceiling
+increase is authorized by these results.
+
+[row-draft-flash]: teacher/reports/row-draft-budget-d3-flash-20261016.json
+[row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
+
 ## Sources
 
 Hardware and tools:

@@ -186,6 +186,12 @@ limits or Gaussian-noise confidence levels. Existing exact-probe/default guards
 remain unchanged; no logs, real labels or data production are enabled. See
 REVIEW.md §40 for the synthetic-only model and remaining evidence gaps.
 
+`register_synthetic_points` separately checks static planar frame composition
+with supplied artificial mounting/body poses and acquisition/reference times.
+Missing evidence stays unknown; transformed fixtures do not qualify physical
+registration or enable delayed/noisy witness inputs. See REVIEW.md §42 for the
+synthetic-only reference and tests; no observation/log adapter is provided.
+
 [navigation-reference]: sim/navigation.py
 
 ## Diagnostic Source-Provenance Audit

@@ -1847,6 +1847,66 @@ hardware work, log application, implementation, label/data/split acceptance or
 training requires its own approval. This plan does not qualify real inputs,
 clear/negative evidence, mode, Task 6 or Task 9.
 
+#### Synthetic Point-Registration Reference (2026-10-16)
+
+The user separately approved a CPU-only synthetic registration reference and
+tests after the documentation-only plan. `register_synthetic_points` in the
+[navigation module][navigation-reference] is an isolated static-world planar
+transform, not a sensor/observation adapter or qualification of that plan.
+It accepts a nonempty array of artificial sensor-frame $(x,y)$ points, explicit
+mounting/acquisition/reference poses $(x,y,\psi)$ in metres/radians, and explicit
+acquisition/reference times in seconds in one assumed fixture time base. All
+three poses are required; no mounting, world pose or timestamp is inferred from
+the current student input/history. Explicit synthetic-only opt-in is checked
+before reading inputs. Assumptions are caller-supplied, not attestation.
+
+The mounting pose maps sensor to acquisition body; acquisition/reference poses
+map those body frames to the same artificial world frame. For corresponding
+rotations/translations, the reference computes:
+
+$$
+p_{B_r}=R_r^T R_a(R_s p_S+t_s)+R_r^T(t_a-t_r).
+$$
+
+Here $t_s,t_a,t_r$ are translation vectors, not the scalar timestamps in the
+preceding plan. Relative body translation is formed before rotating, avoiding
+the needless loss of small local points in a large common world-coordinate
+offset. Each yaw is evaluated separately with sine/cosine rather than subtracting
+large angles. This does not recover precision already lost in supplied poses
+or provide a certified floating-point error enclosure.
+
+Missing timing or poses returns `unknown` with no transformed points. Malformed,
+boolean or nonfinite numeric data and reference time preceding acquisition are
+rejected; nonfinite computed coordinates return numerical unknown. Successful
+output is `registered_fixture`, with detached reference-frame points, supplied
+times, elapsed time and explicit static-world/exact-pose/instantaneous-acquisition
+assumptions. No motion is integrated or extrapolated from elapsed time, and no
+clock synchronization, skew, exposure interval, outlier, surface association or
+moving-object uncertainty is qualified. The supplied common time base and
+consistency of the exact fixture poses are not independently verified.
+
+Results stay artificial-only, training-disabled, real-input-unqualified and
+without physical safety claims. There is no range/mask or 8x8 adapter, CLI,
+episode/history reader, error-ball propagation, witness/label, mode output,
+wire decision or data exporter. The function is not called by either witness
+probe: their normal-noise, delayed/aged and curved-motion abstention is unchanged.
+The previous exact/bounded probes and all existing oracle functions/signatures
+are AST-identical to the prior commit. Transforming a fixture does not authorize
+zeroing Config noise/latency/age or feeding real/delayed observations to them.
+
+Thirty-six new tests cover six hand-computed identity/translation/rotation/mount
+fixtures, composition/inversion, a large common-coordinate offset, large-heading
+equivalence, missing/invalid evidence, scope, overflow, detached outputs and
+unchanged witness rejection. All 208 simulator tests and 524 repository tests
+pass plus the known transformer expected failure; Ruff lint/changed-file format,
+editor diagnostics and documentation reference/local-target/whitespace checks
+pass. No existing log was processed, new study episode or persisted data artifact
+was created, or task label/data/split, live teacher, training, dependency/download
+or hardware action occurred. Inputs/history/defaults/token ceiling and quarantine
+stay unchanged. Physical uncertainty/registration, target evidence, negative/clear
+evidence, mode and actual family/cohort/task data remain unqualified; Tasks 6/9
+and the independent ST/board gates are not cleared.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

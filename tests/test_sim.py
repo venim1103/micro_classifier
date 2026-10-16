@@ -827,6 +827,233 @@ def test_bounded_ray_probe_cannot_override_unqualified_assumptions(
     assert result["status"] == "unknown" and result["reason"] == reason
 
 
+@pytest.fixture
+def registration_fixture():
+    return {
+        "points": [[1.0, 0.0], [0.0, 1.0]],
+        "sensor_pose": [0.0, 0.0, 0.0],
+        "acquisition_pose": [0.0, 0.0, 0.0],
+        "reference_pose": [0.0, 0.0, 0.0],
+        "acquisition_time_s": 1.0,
+        "reference_time_s": 1.1,
+        "synthetic_test_only": True,
+    }
+
+
+@pytest.mark.parametrize(
+    "poses,expected",
+    [
+        ({}, [[1, 0], [0, 1]]),
+        ({"sensor_pose": [0.25, -0.5, 0]}, [[1.25, -0.5], [0.25, 0.5]]),
+        ({"reference_pose": [1, 0, 0]}, [[0, 0], [-1, 1]]),
+        ({"reference_pose": [0, 0, math.pi / 2]}, [[0, -1], [1, 0]]),
+        ({"acquisition_pose": [0, 0, math.pi / 2]}, [[0, 1], [-1, 0]]),
+        (
+            {
+                "sensor_pose": [0.5, 0, math.pi / 2],
+                "acquisition_pose": [2, 4, 0],
+                "reference_pose": [2, 3, math.pi / 2],
+            },
+            [[2, -0.5], [1, 0.5]],
+        ),
+    ],
+)
+def test_registration_reference_analytic_fixtures(
+    registration_fixture, poses, expected
+):
+    from sim.navigation import register_synthetic_points
+
+    result = register_synthetic_points(**{**registration_fixture, **poses})
+    assert result["status"] == "registered_fixture"
+    np.testing.assert_allclose(result["reference_points_m"], expected, atol=1e-14)
+    assert result["elapsed_s"] == pytest.approx(0.1)
+    assert result["synthetic"] and not result["training_approved"]
+    assert not result["real_input_qualified"] and not result["physical_safety_claim"]
+    assert all(result["assumptions"].values())
+    assert "labels" not in result and "witness_columns" not in result
+    json.dumps(result, allow_nan=False)
+
+
+def test_registration_reference_composition_and_inverse(registration_fixture):
+    from sim.navigation import register_synthetic_points
+
+    first, middle, last = [1, 2, 0.3], [-1, 3, -0.4], [2, -2, 0.8]
+    first_to_middle = register_synthetic_points(
+        **{**registration_fixture, "acquisition_pose": first, "reference_pose": middle}
+    )
+    composed = register_synthetic_points(
+        **{
+            **registration_fixture,
+            "points": first_to_middle["reference_points_m"],
+            "acquisition_pose": middle,
+            "reference_pose": last,
+        }
+    )
+    direct = register_synthetic_points(
+        **{**registration_fixture, "acquisition_pose": first, "reference_pose": last}
+    )
+    np.testing.assert_allclose(
+        composed["reference_points_m"], direct["reference_points_m"], atol=1e-14
+    )
+    inverse = register_synthetic_points(
+        **{
+            **registration_fixture,
+            "points": first_to_middle["reference_points_m"],
+            "acquisition_pose": middle,
+            "reference_pose": first,
+        }
+    )
+    np.testing.assert_allclose(
+        inverse["reference_points_m"], registration_fixture["points"], atol=1e-14
+    )
+
+
+def test_registration_reference_common_large_offset_preserves_local_points(
+    registration_fixture,
+):
+    from sim.navigation import register_synthetic_points
+
+    result = register_synthetic_points(
+        **{
+            **registration_fixture,
+            "points": [[0.125, -0.25]],
+            "sensor_pose": [0.25, 0.5, 0],
+            "acquisition_pose": [1e16, -1e16, 0],
+            "reference_pose": [1e16, -1e16, 0],
+        }
+    )
+    np.testing.assert_array_equal(result["reference_points_m"], [[0.375, 0.25]])
+
+
+@pytest.mark.parametrize("heading", [1e16, -1e16])
+def test_registration_reference_large_heading_matches_bounded_orientation(
+    registration_fixture, heading
+):
+    from sim.navigation import register_synthetic_points
+
+    poses = {
+        "sensor_pose": [0.5, -0.25, heading],
+        "acquisition_pose": [1, 2, -heading],
+        "reference_pose": [2, 3, heading],
+    }
+    actual = register_synthetic_points(**{**registration_fixture, **poses})
+    bounded = {
+        name: [*pose[:2], math.atan2(math.sin(pose[2]), math.cos(pose[2]))]
+        for name, pose in poses.items()
+    }
+    expected = register_synthetic_points(**{**registration_fixture, **bounded})
+    np.testing.assert_allclose(
+        actual["reference_points_m"], expected["reference_points_m"], atol=1e-14
+    )
+
+
+@pytest.mark.parametrize(
+    "field,reason",
+    [
+        ("acquisition_time_s", "missing_timing"),
+        ("reference_time_s", "missing_timing"),
+        ("sensor_pose", "missing_pose"),
+        ("acquisition_pose", "missing_pose"),
+        ("reference_pose", "missing_pose"),
+    ],
+)
+def test_registration_reference_missing_evidence_stays_unknown(
+    registration_fixture, field, reason
+):
+    from sim.navigation import register_synthetic_points
+
+    result = register_synthetic_points(**{**registration_fixture, field: None})
+    assert result["status"] == "unknown" and result["reason"] == reason
+    assert result["reference_points_m"] is None
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("points", [[True, 0]]),
+        ("points", [[1, float("nan")]]),
+        ("points", [[1, 2, 3]]),
+        ("points", [1, 2]),
+        ("points", []),
+        ("sensor_pose", [0, 0]),
+        ("sensor_pose", [0, 0, float("inf")]),
+        ("acquisition_pose", [0, True, 0]),
+        ("reference_pose", [0, 0, "0"]),
+        ("acquisition_time_s", True),
+        ("acquisition_time_s", -1),
+        ("reference_time_s", float("nan")),
+        ("reference_time_s", float("inf")),
+        ("reference_time_s", "1.1"),
+        ("reference_time_s", 0.5),
+    ],
+)
+def test_registration_reference_rejects_invalid_evidence(
+    registration_fixture, field, value
+):
+    from sim.navigation import register_synthetic_points
+
+    with pytest.raises(ValueError):
+        register_synthetic_points(**{**registration_fixture, field: value})
+
+
+@pytest.mark.parametrize("opt_in", [False, None, 1, "yes"])
+def test_registration_reference_requires_scope_before_inputs(
+    registration_fixture, opt_in
+):
+    from sim.navigation import register_synthetic_points
+
+    with pytest.raises(ValueError, match="synthetic-test-only"):
+        register_synthetic_points(
+            **{
+                **registration_fixture,
+                "points": object(),
+                "synthetic_test_only": opt_in,
+            }
+        )
+
+
+def test_registration_reference_numerical_overflow_stays_unknown(registration_fixture):
+    from sim.navigation import register_synthetic_points
+
+    result = register_synthetic_points(
+        **{
+            **registration_fixture,
+            "acquisition_pose": [1e308, 0, 0],
+            "reference_pose": [-1e308, 0, 0],
+        }
+    )
+    assert result["status"] == "unknown" and result["reason"] == "numerical_unknown"
+    assert result["reference_points_m"] is None
+    json.dumps(result, allow_nan=False)
+
+
+def test_registration_reference_is_detached_and_does_not_qualify_witnesses(
+    registration_fixture, bounded_ray_fixture
+):
+    from sim.navigation import (
+        probe_synthetic_bounded_ray_witness,
+        register_synthetic_points,
+    )
+
+    original = deepcopy(registration_fixture)
+    result = register_synthetic_points(**registration_fixture)
+    result["reference_points_m"][0][0] = 100
+    result["assumptions"]["static_world"] = False
+    assert registration_fixture == original
+    ranges, valid, settings = bounded_ray_fixture
+    for override, reason in (
+        ({"config": Config()}, "noise_model_unqualified"),
+        ({"config": Config(noise_std=0)}, "registration_unqualified"),
+        ({"tof_age_s": 0.1}, "registration_unqualified"),
+        ({"turn_rate": 0.1}, "curved_reference_not_supported"),
+    ):
+        probe = probe_synthetic_bounded_ray_witness(
+            ranges, valid, **{**settings, **override}
+        )
+        assert probe["status"] == "unknown" and probe["reason"] == reason
+
+
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
 

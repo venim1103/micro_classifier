@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §41 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §42 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -513,6 +513,23 @@ Keep this section and the Task List current; a new session resumes from them.
   actual uncertainty/registration/target evidence and mode; Task 9 still needs
   accepted family/cohort review and reviewed task data/splits.
 
+- Approved and completed (2026-10-16): CPU-only synthetic static-point frame
+  registration reference/tests in `sim/navigation.py`, with explicit artificial
+  mounting/acquisition/reference poses and times. No observation/range/log
+  adapter, extrapolation, clock/error qualification, witness/label or exporter.
+  Missing evidence/overflow stays unknown; successful `registered_fixture`
+  results are assumption-tagged, training-disabled and real-input-unqualified.
+  Relative-coordinate composition preserves local points under a large common
+  world offset. All prior navigation functions/signatures are AST-identical;
+  normal-noise/default-latency/age/curve witness rejection remains unchanged.
+  Thirty-six new cases; 208 simulator tests, 524 repository passes plus known
+  transformer expected failure; lint/format/editor/doc checks pass. DESIGN.md §7
+  and REVIEW.md §42 record scope/limits. No existing-log application, study
+  episodes, task labels/data/splits, live teachers/training, dependency/download
+  or hardware action; inputs/history/defaults/token ceiling/quarantine unchanged.
+  Tasks 6/9 still require reviewed real uncertainty/registration/target evidence,
+  mode and actual accepted family/cohort/task data; ST/board gates remain blocked.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -595,6 +612,10 @@ on missing tools, and continue with the next unblocked task.
   references, collection approval and numeric uncertainty/failure conventions
   remain undecided; no measurements, model/adapter implementation, policy or
   real-input qualification occurred. Existing abstention/quarantine stay in force.
+  Registration-reference result (2026-10-16, REVIEW.md §42): isolated artificial
+  static-point frame arithmetic and 36 cases pass; supplied exact poses/times
+  are assumptions, not physical evidence. No observation/log adapter or witness
+  integration, uncertainty-policy adoption or real-data qualification occurred.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

@@ -2217,6 +2217,54 @@ and whitespace/scope checks validate this increment. The last code gate remains
 488 passing tests plus the known transformer expected failure; it is historical
 verification, not a new measurement or a test of physical uncertainty.
 
+## 42. Synthetic Static-Point Registration Reference (2026-10-16)
+
+The user approved "synthetic registration reference and tests": CPU-only
+artificial planar poses, mounting transforms and explicit acquisition/reference
+timestamps, with static-world point transforms checked against analytic fixtures.
+This extends the previous documentation-only scope only to the isolated
+reference/tests. It does not approve observation/log application, study episodes,
+task annotations/data/splits, physical uncertainty claims, live teachers,
+training, dependencies/downloads or hardware work.
+
+`register_synthetic_points` in `sim/navigation.py` requires explicit synthetic
+opt-in, artificial sensor-frame points and all three poses. DESIGN.md §7 defines
+pose directions, SI units and the assumed common fixture time base. Composition
+uses relative body translation before rotation, avoiding a lossy round trip
+through large world coordinates, and evaluates yaw rotations independently.
+Missing poses/timing stays unknown; malformed/nonfinite/boolean numeric inputs
+or reversed time are rejected, and coordinate overflow stays unknown. Successful
+`registered_fixture` results contain detached transformed points and timing,
+with static-world/exact-pose/instantaneous-acquisition assumptions and no training,
+real-input qualification or physical-safety claim.
+
+Assumptions are not authenticated pose/time evidence. No integration,
+extrapolation, clock/skew/exposure qualification, measured pose/error bound,
+sensor-return association, moving-object handling or certified numerical interval
+is implemented. In particular, this is not an 8x8/range adapter, error-ball
+propagator, witness/labeler, CLI, wire decision or exporter. The witness probes
+do not call it and keep normal noise/default-latency/age/curve rejection.
+All existing navigation functions and signatures are AST-identical to the prior
+commit; simulator, proxies/catalogue, interface, renderer, teacher/review tools
+and historical artifacts remain unchanged.
+
+Thirty-six new cases pass: six hand-computed frame/mount fixtures, composition
+and inverse, a large common-coordinate offset, two large-heading equivalents,
+missing/invalid evidence, explicit scope, overflow, immutability and retained
+witness rejection. Full verification: 208 simulator tests; 524 repository passes
+plus the known transformer numerical expected failure; Ruff lint/changed-file
+format, editor diagnostics and doc reference/local-target/whitespace checks.
+No existing log, new study rollout or persisted data artifact was used/created.
+
+**Outcome:** approved reference work is complete. This validates artificial
+transform arithmetic, not real timing/registration, uncertainty bounds, task
+truth or deployment safety. Existing inputs/history/defaults/token ceiling and
+diagnostic quarantine remain unchanged. Task 6 still needs reviewed uncertainty/
+registration and target evidence/labels plus mode semantics; Task 9 still needs
+accepted families/cohort and reviewed task data/splits. ST tools and board remain
+independent blockers. The proposed qualification plan's physical claim/domain,
+references, collection scope and numeric conventions still need review.
+
 ## Sources
 
 Hardware and tools:

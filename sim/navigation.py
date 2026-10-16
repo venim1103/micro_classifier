@@ -10,6 +10,108 @@ from sim.rover import Config, Scenario, swept_collision
 NUMERICAL_TOLERANCE_M = 1e-5
 
 
+def register_synthetic_points(
+    points,
+    *,
+    sensor_pose,
+    acquisition_pose,
+    reference_pose,
+    acquisition_time_s,
+    reference_time_s,
+    synthetic_test_only=False,
+):
+    """Transform artificial static points with assumed exact instantaneous poses."""
+    if synthetic_test_only is not True:
+        raise ValueError("explicit synthetic-test-only use is required")
+    result = {
+        "schema": "micro-classifier/synthetic-point-registration/1",
+        "allowed_use": "artificial_static_point_registration_tests_only",
+        "synthetic": True,
+        "training_approved": False,
+        "real_input_qualified": False,
+        "physical_safety_claim": False,
+        "status": "unknown",
+        "reason": "missing_timing",
+        "reference_points_m": None,
+        "acquisition_time_s": None,
+        "reference_time_s": None,
+        "elapsed_s": None,
+        "assumptions": {
+            "static_world": True,
+            "exact_fixture_poses": True,
+            "instantaneous_acquisition": True,
+        },
+    }
+    for name, value in (
+        ("acquisition_time_s", acquisition_time_s),
+        ("reference_time_s", reference_time_s),
+    ):
+        if value is None:
+            continue
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not math.isfinite(value)
+            or value < 0
+        ):
+            raise ValueError(f"{name} must be finite nonnegative numeric data")
+        result[name] = float(value)
+    if acquisition_time_s is None or reference_time_s is None:
+        return result
+    if reference_time_s < acquisition_time_s:
+        raise ValueError("reference time must not precede acquisition time")
+    result["elapsed_s"] = float(reference_time_s) - float(acquisition_time_s)
+    if sensor_pose is None or acquisition_pose is None or reference_pose is None:
+        result["reason"] = "missing_pose"
+        return result
+    arrays = {}
+    for name, value in (
+        ("points", points),
+        ("sensor_pose", sensor_pose),
+        ("acquisition_pose", acquisition_pose),
+        ("reference_pose", reference_pose),
+    ):
+        raw = np.asarray(value, dtype=object)
+        shape_valid = (
+            raw.ndim == 2 and raw.shape[0] > 0 and raw.shape[1] == 2
+            if name == "points"
+            else raw.shape == (3,)
+        )
+        if not shape_valid or any(
+            isinstance(number, bool)
+            or not isinstance(number, Real)
+            or not math.isfinite(number)
+            for number in raw.flat
+        ):
+            raise ValueError(f"{name} requires finite numeric planar data")
+        arrays[name] = np.asarray(raw, dtype=float)
+    rotations = {}
+    for name in ("sensor_pose", "acquisition_pose", "reference_pose"):
+        yaw = arrays[name][2]
+        cosine, sine = math.cos(yaw), math.sin(yaw)
+        rotations[name] = np.array([[cosine, -sine], [sine, cosine]])
+    with np.errstate(over="ignore", invalid="ignore"):
+        body_points = (
+            arrays["points"] @ rotations["sensor_pose"].T + arrays["sensor_pose"][:2]
+        )
+        relative_rotation = (
+            rotations["reference_pose"].T @ rotations["acquisition_pose"]
+        )
+        displacement = (
+            arrays["acquisition_pose"][:2] - arrays["reference_pose"][:2]
+        ) @ rotations["reference_pose"]
+        registered = body_points @ relative_rotation.T + displacement
+    if not np.isfinite(registered).all():
+        result["reason"] = "numerical_unknown"
+        return result
+    result.update(
+        status="registered_fixture",
+        reason="assumed_static_exact_planar_poses",
+        reference_points_m=registered.tolist(),
+    )
+    return result
+
+
 def probe_synthetic_ray_witness(
     ranges,
     valid,

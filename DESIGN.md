@@ -1476,6 +1476,97 @@ future outcomes. A different evidence policy or added input requires another
 explicit decision. Tasks 6/9 still wait on target definitions and actual reviewed
 data/cohort evidence; approved review boundaries alone do not clear those gates.
 
+#### Concrete Navigation-Target Draft (Unaccepted, 2026-10-16)
+
+The user approved this concrete proposal and **synthetic-only checks**, not
+target adoption, labels, data generation, input/default changes or training.
+This candidate replaces neither the catalogue nor its three diagnostic rules.
+It describes geometric navigation questions separately from the evidence a
+human could establish using only the accepted input. Mode stays unlabeled.
+
+**Candidate maneuver model.** Use current FLU forward speed $v$, yaw rate
+$\omega_0$, ToF age $A$, and the existing simulation Config values: tick
+$\Delta t=0.05$ s, radius $r=0.18$ m, acceleration/deceleration magnitude
+$a=1$ m/s², maximum speed 0.6 m/s and turn rate 1.5 rad/s. These are simulation
+numbers, not measured braking capabilities or accepted physical safety limits.
+For a hypothetical braking maneuver, propose:
+
+$$
+\begin{aligned}
+	au &= A+\Delta t, & T_v &= \tau+v/a,\\
+s_v(t) &= \max(0, v-a\max(0,t-\tau)),\\
+\psi_u(t) &= \omega_0\min(t,\tau)+u\max(0,t-\tau),\\
+q_u(t) &= \int_0^t s_v(z)(\cos\psi_u(z),\sin\psi_u(z))\,dz.
+\end{aligned}
+$$
+
+Start at the current body origin with yaw zero. During the reaction allowance
+retain measured yaw rate; while braking use candidate $u=0$ (centre), $+1.5$
+(left), or $-1.5$ rad/s (right). Compare the **entire** swept radius-$r$ disk
+for $0\leq t\leq T_v$ against occupied space, not a ray minimum or endpoint.
+Using age in this future allowance is a candidate design choice; delayed
+measurements still need registration to the current frame, not direct reuse as
+current geometry. The integral and complete curved-sweep evaluator are not
+implemented. This model is not a description of the host's actual commands.
+
+For zero yaw, the centre sweep is a capsule of centreline length
+$D=v(A+\Delta t)+v^2/(2a)$. With the example age 0.10 s, nominal speeds
+0.2/0.4/0.6 m/s give $D=0.05/0.14/0.27$ m and horizons 0.35/0.55/0.75 s.
+Those examples are checked arithmetically; no new freshness limit is selected.
+Propose contact, including tangency, as blocked and strict positive clearance
+as clear, with no extra geometric margin in these idealized fixtures. The
+existing simulator counts circle tangency as collision but permits exact wall
+contact; adopting the proposed target convention would require an independent
+wall-boundary oracle. No simulator collision rule is changed here.
+
+**Candidate answers, conditional on adequate evidence:**
+
+| Question | Proposed Meaning | Abstention or Limitation |
+| --- | --- | --- |
+| `path_blocked` | Does the centre braking sweep intersect occupied space? `false` requires the entire sweep to have strict clearance | Alternative worlds consistent with the input that disagree require abstention; no ray hit is not a clear-space certificate |
+| `clear_sector` | Among fully classified left/centre/right braking sweeps, choose a clear one whose endpoint minimizes distance to the observed goal; exact ties prefer centre, left, right. `none` means all three are established blocked | Any unknown sweep abstains rather than producing `none`; at zero speed the directions degenerate, so abstain instead of inferring a turn from an arbitrary tie |
+| `speed_tier` | For tiers 1/2/3, test the centre maneuver at reference speed $\max(v,0.6k/3)$ for tier $k$, then choose the highest established clear tier when all three are classified. If all are blocked, tier 0 requests reduction/stop | Reference speeds are counterfactual capacity tests, not instantaneous speed changes or proof of containment of every real trajectory. Unknown is not tier 0; tier 0 does not assert a collision-free stop |
+| `mode` | Remain absent; this proposal does not define a five-way task target | Exploration/approach intent, docking identity and host-health meaning are not observable merely from a goal vector and ToF. Meanings, precedence or additional inputs still need explicit review |
+
+The tier fractions reuse the existing nominal fractions, but the proposed
+geometric meanings are not adoption of the old sensor proxies. Lower requested
+speed must not erase current momentum. Goal-distance ranking is only a proposed
+comparison of these finite maneuvers, not route planning, guaranteed reachability
+or permission to execute any command. Starting from rest needs a separately
+reviewed motion-start definition; none is invented here.
+
+**Evidence and unknown space.** The geometry above defines an ideal-world
+candidate, not permission for a reviewer to inspect a map. Actual review still
+uses only complete student-visible input/history and must abstain when that
+input cannot establish an answer. No accepted surface interpolation, minimum
+obstacle size, bounded noise/error, dynamic-obstacle model, measurement-frame
+registration or statistical decision threshold is supplied by this proposal.
+Gaussian noise standard deviation is not a hard error bound. Therefore it
+does not certify negative/clear labels from the current sparse ray model.
+Accepting such assumptions or changing inputs would require explicit review.
+
+Ten [synthetic checks][sim-tests] pass without episode generation or persistence.
+Two pairs of artificial circular-obstacle worlds have **identical complete
+rendered input**, including eight valid ego/ToF-history ticks with two-tick
+sensor latency, but opposite centre-sweep collision results. One obstacle is
+between rays; another is outside the viewed region but within the swept body.
+Both starting footprints are collision-free. This demonstrates ambiguity for
+those inputs even with noise/dropout disabled, not that every navigation input
+is ambiguous. Other cases check whole-sweep circle contact, the three nominal
+distance/horizon examples and two lower-speed momentum counterexamples.
+
+The tests reuse existing ray/collision/rendering helpers, not an independent
+physics engine. They do not qualify curved sweeps, goal ranking, uncertainty
+bounds or a production labeler. Ninety simulator tests and 388 repository tests
+pass plus the known transformer expected failure; lint/format/editor and doc
+checks pass. Simulator, catalogue/rules, interface, renderer and review runtime
+files are unchanged. No observation from current logs was relabeled, and no
+report, task dataset, split, inference, training or hardware action occurred.
+Tasks 6/9 remain blocked: review these candidate meanings and unresolved
+observability/model choices before target adoption or actual annotation.
+
+[sim-tests]: tests/test_sim.py
+
 ### Teacher-Pipeline Host Preparation (2026-10-16)
 
 The [host pipeline][teacher-label-pipeline] completes Task 8's approved

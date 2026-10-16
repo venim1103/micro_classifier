@@ -31,6 +31,122 @@ from sim.rover import (
 )
 
 
+@pytest.mark.parametrize("obstacle", [(2.4, 2.0, 0.01), (2.1, 2.185, 0.01)])
+def test_navigation_proposal_full_ray_history_can_hide_a_swept_collision(obstacle):
+    from teacher.label_pipeline import prepare_request
+
+    config = Config(noise_std=0, dropout=0)
+    position = np.array([2.0, 2.0])
+    bounds = (6.0, 6.0)
+    angles = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)
+    free_history, obstructed_history = [], []
+    for offset in range(config.history_ticks):
+        past = position - np.array(
+            [
+                (config.history_ticks - 1 - offset + config.latency_ticks)
+                * config.max_speed
+                * config.dt,
+                0,
+            ]
+        )
+        free_history.append(ray_ranges(past, angles, (), bounds, config.max_range))
+        obstructed_history.append(
+            ray_ranges(past, angles, (obstacle,), bounds, config.max_range)
+        )
+    np.testing.assert_array_equal(free_history, obstructed_history)
+    assert not swept_collision(position, position, config.radius, (obstacle,), bounds)
+    age = config.latency_ticks * config.dt
+    stopping_distance = config.max_speed * (age + config.dt) + config.max_speed**2 / (
+        2 * config.acceleration
+    )
+    end = position + np.array([stopping_distance, 0])
+    assert not swept_collision(position, end, config.radius, (), bounds)
+    assert swept_collision(position, end, config.radius, (obstacle,), bounds)
+
+    ego_history = np.array(
+        [
+            [
+                config.max_speed,
+                0,
+                3 + (config.history_ticks - 1 - offset) * config.max_speed * config.dt,
+                0,
+            ]
+            for offset in range(config.history_ticks)
+        ],
+        dtype=np.float32,
+    )
+    states = []
+    for history in (free_history, obstructed_history):
+        tof_history = np.repeat(
+            np.asarray(history, dtype=np.float32)[:, None, :], 8, axis=1
+        )
+        observation = {
+            "schema": "micro-classifier/sim-observation/1",
+            "tick": 15,
+            "time_s": 15 * config.dt,
+            "ego": ego_history[-1],
+            "goal_body_m": ego_history[-1, 2:],
+            "tof_m": tof_history[-1],
+            "tof_valid": np.ones((8, 8), dtype=bool),
+            "tof_age_s": age,
+            "tof_sample_tick": 15 - config.latency_ticks,
+            "history_ego": ego_history,
+            "history_tof_m": tof_history,
+            "history_tof_valid": np.ones((8, 8, 8), dtype=bool),
+            "history_valid": np.ones(config.history_ticks, dtype=bool),
+        }
+        states.append(prepare_request(observation, config=config)["state"])
+    assert states[0] == states[1]
+
+
+@pytest.mark.parametrize("offset,blocked", [(-1e-6, True), (0, True), (1e-6, False)])
+def test_navigation_proposal_circle_contact_counts_across_the_whole_sweep(
+    offset, blocked
+):
+    start, end = (2.0, 2.0), (3.0, 2.0)
+    radius = 0.125
+    obstacles = ((2.5, 2.25 + offset, 0.125),)
+    bounds = (6.0, 6.0)
+    assert not swept_collision(start, start, radius, obstacles, bounds)
+    assert not swept_collision(end, end, radius, obstacles, bounds)
+    assert swept_collision(start, end, radius, obstacles, bounds) == blocked
+
+
+@pytest.mark.parametrize("tier,distance", [(1, 0.05), (2, 0.14), (3, 0.27)])
+def test_navigation_proposal_nominal_stopping_candidates(tier, distance):
+    config = Config()
+    speed = config.max_speed * tier / 3
+    age = config.latency_ticks * config.dt
+    reaction = age + config.dt
+    assert reaction == pytest.approx(0.15)
+    assert speed * reaction + speed**2 / (2 * config.acceleration) == pytest.approx(
+        distance
+    )
+    assert reaction + speed / config.acceleration == pytest.approx(0.15 + tier * 0.2)
+
+
+@pytest.mark.parametrize("requested_tier", [1, 2])
+def test_navigation_proposal_lower_request_does_not_erase_current_momentum(
+    requested_tier,
+):
+    config = Config()
+    position = np.array([2.0, 2.0])
+    obstacles, bounds = ((2.35, 2.0, 0.02),), (6.0, 6.0)
+    requested_speed = config.max_speed * requested_tier / 3
+    current_speed = config.max_speed
+    reaction = (config.latency_ticks + 1) * config.dt
+    distances = [
+        speed * reaction + speed**2 / (2 * config.acceleration)
+        for speed in (requested_speed, max(current_speed, requested_speed))
+    ]
+    assert not swept_collision(
+        position, position + [distances[0], 0], config.radius, obstacles, bounds
+    )
+    assert swept_collision(
+        position, position + [distances[1], 0], config.radius, obstacles, bounds
+    )
+
+
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
 

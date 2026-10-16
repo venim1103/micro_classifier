@@ -1907,6 +1907,56 @@ documentation-only update. Documentation references/local targets and whitespace
 checks pass; the preceding code gates remain 378 passed plus the known expected
 transformer failure. ST toolchain/board gates remain independent and unavailable.
 
+## 35. Concrete Navigation Proposal and Synthetic Observability Checks (2026-10-16)
+
+The user explicitly approved "concrete draft and synthetic-only checks" while
+keeping target adoption and real-data use subject to further review. Scope
+excludes episode generation, actual annotations/data, inference/training,
+downloads/dependencies, hardware and accepted input/default changes. Adopted
+observation-only review, abstention and current-log quarantine remain controlling.
+
+DESIGN.md §7 now proposes explicit reaction/braking paths and swept footprints,
+finite left/centre/right comparisons by goal distance, speed-capacity references
+that retain current momentum, and mode abstention. Config-derived example
+horizons/distances are candidates, not physical limits. `none` requires all turn
+choices established blocked; unknown is an abstention, not `none` or tier 0.
+Tier 0 is a reduction/stop recommendation, not proof a stop avoids collision.
+The candidate path model does not represent the host's actual future commands.
+
+Ten new cases in the existing simulator test file use artificial inputs only.
+Two independently specified pairs have the same exact complete rendered state,
+with eight valid history ticks and two-tick ToF delay, yet opposite swept-body
+collision results. Both start collision-free; one obstruction falls between
+rays and the other outside their angular view. Fixtures disable noise/dropout
+only locally. No accepted simulator setting is changed. The other eight cases
+check circle contact across an entire sweep, three nominal stopping examples,
+and two cases where testing only a lower requested speed hides current-momentum
+collision. No environment rollout, log export or label persistence is used.
+
+These are synthetic counterexamples, not class coverage, reviewed ground truth,
+accuracy or universal impossibility results. Geometry uses existing helpers;
+curved-sweep execution, goal ranking and statistical/uncertainty bounds are not
+implemented or qualified. The proposal explicitly leaves at-rest direction
+semantics and sensor-to-current-frame registration unresolved. No surface model,
+minimum obstacle size or bounded noise is assumed: a Gaussian standard deviation
+does not certify a finite error bound. Strict proposed wall-contact semantics
+also differ from existing arena-wall collision boundaries and need a distinct
+oracle if adopted. No existing collision convention was changed.
+
+Verification: ten focused cases and 90 simulator tests pass; full suite 388
+passed plus the known transformer numerical expected failure. Ruff lint/format,
+editor diagnostics and doc reference/local-target/whitespace checks pass. The
+catalogue, proxy rules, simulator, interface, renderer and review runtime files
+are unchanged. No new report/data artifact, actual reviewed input, annotation,
+split, teacher/model runtime, training, dependency/download or hardware action.
+
+**Outcome:** the approved concrete proposal/checks are complete, but target
+definitions remain unaccepted. Reviewer evidence and diagnostic quarantine are
+already adopted; do not re-ask those policy questions. Tasks 6/9 require review
+of the candidate meanings and unresolved modeling/observability issues before
+any target adoption or real annotation. The draft clears neither that gate nor
+the independent missing-ST/board gates.
+
 ## Sources
 
 Hardware and tools:

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §34 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §35 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -365,6 +365,29 @@ Keep this section and the Task List current; a new session resumes from them.
   the adopted evidence/quarantine questions; target definitions and actual
   reviewed cohort/data remain blocked.
 
+- Approved (2026-10-16): prepare a concrete simulation-only navigation-target
+  proposal and synthetic-only checks. Candidate definitions and parameters are
+  unaccepted; keep current proxy rules, inputs, defaults and token limits
+  unchanged. No episode generation, annotations/task dataset, inference,
+  training, download/dependency or hardware work. Target adoption and real-data
+  use still require review; observation-only abstention and current-log
+  quarantine remain adopted.
+
+- Concrete navigation-target proposal completed (2026-10-16), unaccepted:
+  DESIGN.md §7 and REVIEW.md §35 specify candidate reaction/braking sweeps,
+  goal-ranked turn options, momentum-preserving speed-capacity tiers and mode
+  abstention. Ten synthetic checks include two artificial world pairs with
+  identical complete rendered eight-tick input/history but opposite swept-body
+  collision results. No actual log, episode, label or dataset was generated.
+  Other cases pin circle contact and nominal stopping/momentum arithmetic.
+  Ninety simulator tests, 388 repository passes plus known transformer expected
+  failure; lint/format/editor and doc checks pass. Runtime source, catalogue,
+  inputs/defaults, token limits and all original artifacts are unchanged.
+  Curved-sweep/ranking execution and evidence/uncertainty models are not
+  implemented or qualified; at-rest direction semantics still need review.
+  Tasks 6/9 remain blocked on adoption/independent target evidence and actual
+  reviewed data. No inference, training, dependency/download or hardware work.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -423,6 +446,11 @@ on missing tools, and continue with the next unblocked task.
   diagnostic quarantine are adopted. Navigation targets remain unaccepted; define
   path/horizon/footprint, sector decision meaning, tier meaning and observable
   mode semantics before annotation. No proxy-task target or training approval.
+  Concrete-draft result (2026-10-16, REVIEW.md §35): candidate maneuver-based
+  definitions and ten synthetic checks complete, not target acceptance. Complete
+  input aliases with different geometric outcomes expose an observability gate;
+  keep abstention, existing rules diagnostic-only and mode unlabeled. Review
+  geometry/evidence assumptions and at-rest direction semantics before adoption.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

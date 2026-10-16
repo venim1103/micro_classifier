@@ -21,7 +21,7 @@ def _touches(start, end, radius, obstacles, bounds):
 
 def _sweep(scenario, config, speed, current_turn, turn, age, max_segments):
     position = np.array(scenario.start[:2], dtype=float)
-    yaw = scenario.start[2]
+    yaw = math.atan2(math.sin(scenario.start[2]), math.cos(scenario.start[2]))
     reaction = age + config.dt
     braking = speed / config.acceleration
     distance = speed * reaction + 0.5 * speed * braking

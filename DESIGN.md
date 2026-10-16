@@ -1635,6 +1635,17 @@ observable mode semantics. Task 9 still lacks reviewed cohorts/data and locked
 splits. M1a/board gates remain separate. The reference is not promoted into the
 simulator, existing labeler, teacher pipeline or review ingestion.
 
+Follow-up (2026-10-16, REVIEW.md §38): two orientation-equivalence regressions
+at finite initial yaw +/-1e16 exposed lost small turn increments and about
+0.0236 m endpoint disagreement, well above the reported numerical allowances.
+The oracle now starts from atan2(sin(yaw), cos(yaw)), preserving the represented
+direction while allowing small angular updates. Positive/negative large-heading
+cases now match equivalent bounded headings within endpoint allowances. The
+simulator and input contract are unchanged; this is a reference numerical
+repair, not a safety or evidence qualification. All 117 simulator tests and
+433 repository tests pass plus the known transformer expected failure, with
+clean lint/format/editor/doc checks. No existing artifact was regenerated.
+
 [navigation-reference]: sim/navigation.py
 
 #### Diagnostic Source-Provenance Audit (2026-10-16)

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §37 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §38 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -438,6 +438,16 @@ Keep this section and the Task List current; a new session resumes from them.
   checks pass. DESIGN.md §7 and REVIEW.md §37. No dataset, episode, inference,
   training, dependency/download, hardware or accepted-input/default change.
   Tasks 6/9 still await reviewed target evidence/mode and actual family/cohort/data.
+
+- Synthetic-oracle numerical repair (2026-10-16): two reproduced regressions
+  showed small yaw increments lost at initial headings +/-1e16, producing about
+  0.0236 m endpoint disagreement between equivalent orientations. The reference
+  now bounds its initial yaw with atan2(sin(yaw), cos(yaw)) before accumulating
+  turns. Both cases pass; 117 simulator tests and 433 repository passes plus the
+  known transformer expected failure; lint/format/editor/doc checks pass.
+  Existing simulator, inputs/defaults, semantics and artifacts are unchanged.
+  DESIGN.md §7 and REVIEW.md §38 record the repair. No label/data, inference,
+  training, dependency/download or hardware action; Tasks 6/9 remain blocked.
 
 ## Task List
 

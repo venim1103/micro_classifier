@@ -299,6 +299,30 @@ def test_synthetic_navigation_reference_curved_endpoints_match_high_order_quadra
         )
 
 
+@pytest.mark.parametrize("yaw", [1e16, -1e16])
+def test_synthetic_navigation_reference_large_heading_preserves_small_turns(yaw):
+    from sim.navigation import evaluate_synthetic
+
+    bounded_yaw = math.atan2(math.sin(yaw), math.cos(yaw))
+    settings = {
+        "speed": 0.6,
+        "turn_rate": 0.7,
+        "tof_age_s": 0.1,
+        "synthetic_test_only": True,
+    }
+    large = evaluate_synthetic(Scenario(start=(1.0, 3.0, yaw)), **settings)
+    bounded = evaluate_synthetic(Scenario(start=(1.0, 3.0, bounded_yaw)), **settings)
+    for name, reference in bounded["maneuvers"].items():
+        actual = large["maneuvers"][name]
+        assert actual["status"] == reference["status"] == "clear"
+        assert math.dist(actual["endpoint_m"], reference["endpoint_m"]) <= (
+            actual["endpoint_error_bound_m"]
+            + reference["endpoint_error_bound_m"]
+            + 1e-12
+        )
+    assert large["answers"] == bounded["answers"]
+
+
 def test_synthetic_navigation_reference_unresolved_goal_ranking_abstains():
     from sim.navigation import evaluate_synthetic
 

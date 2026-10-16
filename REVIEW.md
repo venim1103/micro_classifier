@@ -2053,6 +2053,31 @@ Tasks 6/9 remain blocked on reviewed target evidence/labels, mode semantics and
 actual family/cohort/task-data review. Candidate identity matches do not replace
 those decisions, accept a cohort or lock any split. ST/board gates remain separate.
 
+## 38. Synthetic Reference Large-Heading Repair (2026-10-16)
+
+Continuing within the approved synthetic-only reference, two regression cases
+compared initial headings +/-1e16 with bounded headings having the same
+sine/cosine direction. Both failed: adding small yaw increments directly to the
+large values lost the turn, yielding approximately 0.0236 m endpoint difference
+against combined reported allowances of about 0.000000683 m. Scenario permits
+finite headings, so this was an implementation defect, not invalid fixture data.
+
+The reference now initializes its integration yaw with
+atan2(sin(yaw), cos(yaw)); represented orientation is retained while subsequent
+small updates remain resolvable. Both reproductions pass for every maneuver,
+including answer parity. Existing zero-yaw Gauss-Legendre comparisons, ranking
+abstention and geometry tests remain intact. The simulator and accepted inputs,
+defaults and target semantics were not changed. This numerical repair does not
+upgrade engineering allowances to formal bounds or qualify sensor evidence.
+
+Verification: 117 simulator tests and 433 repository passes plus the known
+transformer numerical expected failure; Ruff lint/format, editor diagnostics,
+documentation references/local targets and whitespace checks pass. No existing
+log, packet, report, proxy, renderer or provenance-audit runtime was modified.
+No episode, actual annotation/task dataset, inference, training, dependency,
+download or hardware work. Tasks 6/9 still need reviewed observation-based
+target evidence, mode semantics and actual reviewed family/cohort/data.
+
 ## Sources
 
 Hardware and tools:

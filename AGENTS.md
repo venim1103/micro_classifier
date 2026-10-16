@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §26 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §27 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -226,6 +226,17 @@ Keep this section and the Task List current; a new session resumes from them.
   307 repository passes plus the known transformer expected failure; lint,
   changed-file format and diagnostics clean. DESIGN.md §7 and REVIEW.md §26.
   No live teachers, reviewed dataset, training, dependency or hardware work.
+
+- Approved (2026-10-16): both decision-preparation tasks: an unaccepted
+  label-policy/evaluation-set proposal and a CPU-only offline prompt-cost study
+  on existing logs/approved cached tokenizers. No task labels/datasets, split
+  lock, accepted rules/defaults/input changes, live teachers, training,
+  downloads/dependencies or ST licence actions.
+- DESIGN.md §7 and REVIEW.md §27 now propose review of proxy-vs-task truth,
+  observable mode semantics/reviewer abstention and episode/source/template
+  grouping across five evaluation purposes. Nothing is adopted or labeled;
+  no assignments or thresholds were created. Mode remains absent. Tasks 6/9
+  stay review/data-blocked; offline prompt-cost study is the next approved step.
 
 ## Task List
 

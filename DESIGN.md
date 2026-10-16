@@ -1250,6 +1250,84 @@ teacher, reviewed dataset, training, dependency/download, firmware or hardware
 action occurred. Training-label review, human mode labels, representative task
 data and the unchanged 2,048-token live-teacher gate remain pending.
 
+### Proposed Label and Evaluation Review (2026-10-16)
+
+The user approved **decision preparation only**: a label-policy/evaluation-set
+proposal and an offline prompt-cost study using existing logs and approved
+cached tokenizers. This section is a proposal, not acceptance of new targets,
+labels, datasets, splits, thresholds, training or inputs. All previous gates
+and accepted defaults remain unchanged.
+
+#### Targets Requiring Review
+
+The [catalogue][sim-catalogue-draft] specifies reproducible sensor proxies, not
+independently reviewed task truth. The proposed review should distinguish:
+
+| Question | What Existing Labels Measure | What They Do Not Establish |
+| --- | --- | --- |
+| `path_blocked` | A noisy centre-sector minimum compared with the draft envelope | Obstruction of the robot's swept footprint or collision risk |
+| `clear_sector` | Greatest qualifying radial sector minimum, with fixed ties | A collision-free, goal-directed steering action |
+| `speed_tier` | Config-derived straight-line ceiling proxy, with tier-0 fallback | A physical speed limit, stop interlock or guaranteed safe action |
+| `mode` | No labels; human review is required | An agreed, observable distinction between all five behaviour options |
+
+**Proposed default:** retain the three proxy definitions for diagnostic
+conformance only until their intended training roles and independent task
+targets are reviewed. Agreement with the deterministic labeler measures
+imitation of that algorithm; it must not be reported as obstacle accuracy or
+proof that learning improves on computing the rule directly.
+
+The five `mode` options remain `explore`, `approach`, `avoid`, `dock`, `halt`.
+Their operational meanings and precedence are not defined by the catalogue.
+The current simulated input provides ego-state, goal displacement and ToF
+history, not explicit exploration/docking intent, a docking marker or measured
+host health. An identical observation may be consistent with different intended
+modes under different mission policies. This is an unresolved identifiability
+question, not evidence that every possible mode definition is unlearnable.
+
+**Proposed default:** keep mode absent until the user defines decisions that
+reviewers can distinguish from the accepted inputs. Do not infer it from the
+expert's actions, privileged simulator state or an unrecorded mission phase.
+Allow reviewer abstention for insufficient observation, ambiguous intent or
+disagreement rather than forcing one of five options. Abstention is review
+metadata, not a new wire option. Adding mission intent, changing options or
+reducing the task would require a separate interface/product decision.
+
+#### Evaluation-Set Proposal
+
+No records or assignments are generated or locked by this proposal:
+
+1. Define each target, its allowed evidence and abstention conditions before
+  collecting or annotating data. Keep sensor-proxy agreement, reviewed task
+  labels and simulator diagnostic truth as distinct evidence sources.
+2. Review complete student-visible current input plus the eight-tick history.
+  Keep privileged truth separate for diagnostic audit; do not use information
+  unavailable to the student to force a semantic mode label. Reviewers should
+  initially be blind to teacher and proxy suggestions to reduce anchoring.
+3. Cover ordinary runs, boundary clearances, braking/turning, sensor faults,
+  warmup, ambiguity and out-of-domain cases. Existing expert and selected
+  diagnostic trajectories are useful audit cases, not a representative cohort
+  or an approved task dataset. Real pilot data remains a later requirement.
+4. Group whole episodes and related source/template families before windowing
+  or augmentation. Nearby frames share history, and changing a seed alone
+  does not establish independence. Variants/mirrors of one parent scene stay
+  in the same group; exact duplicate inputs must not cross purposes.
+5. Keep training, development, quantization calibration, confidence calibration
+  and final test purposes separate. Record original hashes, group lineage,
+  catalogue/input/config versions and reviewer provenance. Freeze an attested
+  manifest before model selection; the synthetic split checker alone neither
+  attests the inputs nor locks a task test set.
+6. Report class support, abstention/disagreement and existing metrics without
+  claiming quality for absent classes. Compare a learned model against direct
+  rules and a classical baseline on reviewed task targets, not solely against
+  the same rules used to generate its supervision. Thresholds and cohort size
+  require review; no new acceptance values are selected here.
+
+The next product review must resolve the three proxies' roles, observable mode
+semantics, permitted reviewer evidence and the cohort/grouping policy. Until
+then, Tasks 6/9 remain blocked on review/data, and student training and live
+teacher labeling remain unapproved. M1a is independently blocked on the absent
+approved ST toolchain; this proposal does not replace deployment proof.
+
 ### Teacher-Pipeline Host Preparation (2026-10-16)
 
 The [host pipeline][teacher-label-pipeline] completes Task 8's approved

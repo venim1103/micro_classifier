@@ -1563,6 +1563,43 @@ teacher-quality gates. Keep the defaults and training-disabled scope unchanged.
 
 [sim-label-coverage-report]: sim/reports/label-coverage-20261016.json
 
+## 27. Proposed Target and Evaluation Review (2026-10-16)
+
+The user approved two decision-preparation tasks only: a label-policy and
+evaluation-set proposal, plus an offline prompt-cost study using existing logs
+and approved cached tokenizers. No task labels/dataset, split lock, accepted
+input/default/rule changes, teacher inference, training, downloads/dependencies
+or licence actions were approved.
+
+DESIGN.md §7 now contains an explicitly unaccepted review proposal. The three
+current sensor targets measure rule conformance, not independently established
+obstacle/steering/speed truth. A model reproducing them does not, by that fact,
+outperform the direct rule or satisfy task-quality gates. Diagnostic class
+coverage from §26 does not resolve that distinction.
+
+The [catalogue/labeler][sim-label-draft] leaves `mode` to human review, but no
+operational meanings or precedence for explore/approach/avoid/dock/halt have
+been accepted. Simulated inputs provide goal/ego/ToF history rather than an
+explicit mission or docking intent. Different intended modes may share the
+same observed input. The proposal recommends keeping mode absent, defining
+observable semantics and allowing reviewer abstention rather than deriving it
+from expert actions or privileged/unrecorded context. This is a review question,
+not a proof that every possible mode policy is unlearnable or an option change.
+
+The proposed dataset procedure separates proxy agreement, reviewed task labels
+and diagnostic truth; reviews full student-visible histories; groups related
+episodes/source/templates before windowing; and separates the existing five
+evaluation purposes. Reviewer provenance and attested group/input identities
+are required before an actual split lock. No cohort size, new quality threshold,
+record selection, labels or split assignments were created. The recommendation
+is pending product review, not a new accepted requirement.
+
+Verification checks reference/local-target resolution and unchanged catalogue,
+labeler and input source files. This is documentation only, not a new runtime
+test or task-quality result. The last complete executable gate remains 307
+passes plus the known transformer expected failure. ST tools remain absent;
+Tasks 6/9 and live teacher use retain their existing review/data/budget gates.
+
 ## Sources
 
 Hardware and tools:

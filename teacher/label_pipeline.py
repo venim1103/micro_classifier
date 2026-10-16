@@ -115,6 +115,7 @@ def canonical(value):
 
 
 COMPACT_SCHEMA = "micro-classifier/sim-teacher-state-row-draft/1"
+FLOAT32_COMPACT_SCHEMA = "micro-classifier/sim-teacher-state-row-f32-draft/1"
 ROW_FIELDS = {
     "tof_m": 1,
     "tof_valid": 1,
@@ -129,18 +130,71 @@ ROW_ENCODING = (
     "row. Outer order and masks are unchanged; last history slot is current. "
     "All original numbers and booleans are preserved without rounding."
 )
+FLOAT32_ROW_ENCODING = ROW_ENCODING + (
+    ' A row encoded as {"f32":[decimal strings]} contains IEEE-754 binary32 '
+    "values: parse those strings as binary32, then promote exactly to the "
+    "original float. Other rows are literal JSON. No binary precision is changed."
+)
+
+
+def _float32_row_draft(row):
+    if not row or any(type(value) is not float for value in row):
+        return deepcopy(row)
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        values = np.asarray(row, dtype=np.float32)
+    if not np.isfinite(values).all() or canonical(
+        [float(value) for value in values]
+    ) != canonical(row):
+        return deepcopy(row)
+    return {
+        "f32": [
+            min(
+                (
+                    np.format_float_positional(value, unique=True, trim="-"),
+                    np.format_float_scientific(
+                        value, unique=True, trim="-", exp_digits=1
+                    ),
+                ),
+                key=len,
+            )
+            for value in values
+        ]
+    }
 
 
 def expand_compact_state(state, *, expected_sha256=None):
     payload = json.loads(state)
+    encodings = {
+        COMPACT_SCHEMA: ROW_ENCODING,
+        FLOAT32_COMPACT_SCHEMA: FLOAT32_ROW_ENCODING,
+    }
     if (
-        payload.get("schema") != COMPACT_SCHEMA
-        or payload.get("row_encoding") != ROW_ENCODING
+        payload.get("schema") not in encodings
+        or payload.get("row_encoding") != encodings[payload["schema"]]
     ):
         raise ValueError("unsupported compact state draft")
     rows = payload.pop("row_table")
-    if not isinstance(rows, list) or any(not isinstance(row, list) for row in rows):
-        raise ValueError("row table must contain arrays")
+    if not isinstance(rows, list):
+        raise TypeError("row table must contain arrays")
+    decoded_rows = []
+    for row in rows:
+        if isinstance(row, list):
+            decoded_rows.append(row)
+        elif (
+            payload["schema"] == FLOAT32_COMPACT_SCHEMA
+            and isinstance(row, dict)
+            and set(row) == {"f32"}
+            and isinstance(row["f32"], list)
+            and len(row["f32"]) in (4, 8)
+            and all(isinstance(text, str) for text in row["f32"])
+        ):
+            with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+                values = np.asarray(row["f32"], dtype=np.float32)
+            if not np.isfinite(values).all():
+                raise ValueError("typed rows require finite float32 values")
+            decoded_rows.append([float(value) for value in values])
+        else:
+            raise ValueError("invalid literal or typed row")
 
     def expand(value, depth):
         if depth:
@@ -149,7 +203,7 @@ def expand_compact_state(state, *, expected_sha256=None):
             return [expand(item, depth - 1) for item in value]
         if type(value) is not int or not 0 <= value < len(rows):
             raise ValueError("invalid row reference")
-        return deepcopy(rows[value])
+        return deepcopy(decoded_rows[value])
 
     for name, depth in ROW_FIELDS.items():
         payload["module_observation"][name] = expand(
@@ -166,8 +220,10 @@ def expand_compact_state(state, *, expected_sha256=None):
     return expanded
 
 
-def compact_request_draft(request):
+def compact_request_draft(request, *, float32_rows=False):
     validate_request(request)
+    if type(float32_rows) is not bool:
+        raise TypeError("float32_rows must be a boolean")
     original = request["state"]
     payload = json.loads(original)
     if (
@@ -191,16 +247,19 @@ def compact_request_draft(request):
         payload["module_observation"][name] = intern(
             payload["module_observation"][name], depth
         )
-    payload["schema"] = COMPACT_SCHEMA
-    payload["row_table"] = rows
-    payload["row_encoding"] = ROW_ENCODING
+    schema = FLOAT32_COMPACT_SCHEMA if float32_rows else COMPACT_SCHEMA
+    payload["schema"] = schema
+    payload["row_table"] = (
+        [_float32_row_draft(row) for row in rows] if float32_rows else rows
+    )
+    payload["row_encoding"] = FLOAT32_ROW_ENCODING if float32_rows else ROW_ENCODING
     result = deepcopy(request)
     result["state"] = canonical(payload)
     original_hash = hashlib.sha256(original.encode()).hexdigest()
     if expand_compact_state(result["state"], expected_sha256=original_hash) != original:
         raise ValueError("compact state failed exact reconstruction")
     result["representation"] = {
-        "schema": COMPACT_SCHEMA,
+        "schema": schema,
         "review_status": "unreviewed_draft",
         "live_use_approved": False,
         "original_state_sha256": original_hash,

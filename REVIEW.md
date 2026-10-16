@@ -1471,6 +1471,50 @@ increase is authorized by these results.
 [row-draft-flash]: teacher/reports/row-draft-budget-d3-flash-20261016.json
 [row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
 
+## 25. Typed Float32 Draft: Exact but Still Over Budget (2026-10-16)
+
+The user approved a second offline-only draft using shortest float32
+round-trip strings for exactly representable values, CPU tests and cached
+tokenizer comparisons. Nonrepresentable rows must stay literal. Complete
+original reconstruction, defaults and the 2,048-token ceiling stay unchanged;
+no inference, labels, training, downloads, dependencies or live-use approval.
+
+The [codec][teacher-label-pipeline] now offers a separate typed-row schema and
+explicit `float32_rows=True` option. An all-float row uses decimal strings only
+when casting to binary32 and promoting back reproduces every original canonical
+float, including signed zero. Otherwise the entire row stays literal. The
+legend requires binary32 parsing; this is not ordinary double-precision parsing
+of the shortened decimal and does not reduce binary precision. Exact canonical
+reconstruction and original hashes remain checked. The literal-row draft and
+default full renderer are unchanged; malformed/nonfinite typed rows fail.
+
+The [preflight][prompt-budget] exposes mutually exclusive comparison flags and
+a distinct typed-comparison schema. Offline/GPU-hidden runs used both approved
+cached tokenizers on the same 80 existing observations as §24. **All 80 states
+round-trip exactly, but 63/80 typed prompts still exceed the unchanged ceiling**.
+Both tokenizers agree: 811-6,016 tokens, versus literal rows' 772-9,698. Seventy
+typed requests are smaller, but only two extra startup requests fit (tick 3 in
+the two clear prefixes). Other scenes fit only ticks 0-2. No sampled
+full-eight-tick-history prompt fits; smaller size is not a live-use gate pass.
+
+[Flash][float32-draft-flash] and [mini][float32-draft-mini] reports bind original
+and typed request/state identities, source/asset hashes and exactness. All 80
+reconstructions and source bindings were independently checked; original state
+hashes/counts match §24. DESIGN.md §7 records per-prefix metrics and report
+hashes. These are bounded-prefix observations, not whole-episode maxima or
+evidence of teacher interpretation/quality.
+
+Verification: 49 pipeline and 21 preflight tests, 298 repository passes plus the
+known transformer numerical expected failure; Ruff lint/format and editor
+diagnostics clean. No weights/model runtime, inference, labels, new episode,
+training, download, dependency or hardware action occurred. Keep both drafts
+unreviewed/opt-in, complete inputs and budget unchanged. Live labeling remains
+blocked pending an input-strategy and teacher-quality decision; these results
+do not authorize rounding, history removal or a larger ceiling.
+
+[float32-draft-flash]: teacher/reports/float32-draft-budget-d3-flash-20261016.json
+[float32-draft-mini]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
+
 ## Sources
 
 Hardware and tools:

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §24 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §25 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -188,6 +188,23 @@ Keep this section and the Task List current; a new session resumes from them.
   changed, and no model/inference/labels/training ran. Focused slice: 60 tests;
   full suite: 288 passed plus the known expected transformer failure; lint,
   format and diagnostics clean. DESIGN.md §7 and REVIEW.md §24 record limits.
+- Approved (2026-10-16): a second offline-only draft using shortest float32
+  round-trip decimal strings for exactly representable values. Non-float32 rows
+  must remain literal; original reconstruction, defaults and budget stay
+  unchanged. This is lossless typed encoding, not reduced precision. No live
+  use, inference, labels, training, downloads or dependencies are approved.
+
+- The typed float32 row draft is separately opt-in through
+  `teacher/prompt_budget.py --compare-float32-draft`. All 80 existing sampled
+  states reconstruct exactly for both cached tokenizers, but 63/80 still exceed
+  2,048 tokens (811-6,016). Only two additional startup requests fit compared
+  with literal rows; no sampled full-history request fits. Nonrepresentable
+  rows remain literal, including signed-zero/exponent-sensitive regression
+  cases. Full suite: 298 passed plus the known transformer expected failure;
+  70 focused pipeline/preflight tests, lint/format and diagnostics clean.
+  Reports: `teacher/reports/float32-draft-budget-d3-{flash,mini}-20261016.json`.
+  DESIGN.md §7 and REVIEW.md §25 record exactness, hashes and limits. No model
+  runtime, inference, labels, training, download, dependency or hardware action.
 
 ## Task List
 
@@ -262,6 +279,11 @@ on missing tools, and continue with the next unblocked task.
   comparison implemented; 65/80 sampled draft prompts still fail the unchanged
   ceiling. Not a live-use approval or solved prompt-budget gate. Keep the
   default full renderer and input/history unchanged pending further review.
+  Typed float32 follow-up: approved exact typed strings with literal fallback,
+  tests and offline comparison only. All 80 sampled states reconstruct exactly;
+  63/80 still fail. This does not clear live use or full-history prompt budgets.
+  Proposed default remains unchanged input/history and ceiling, both drafts
+  opt-in/unreviewed, pending an input-strategy and teacher-quality decision.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

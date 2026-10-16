@@ -114,17 +114,69 @@ def test_compact_draft_preserves_float_digits_signed_zero_and_boolean_types(samp
     assert any(row and type(row[0]) is not bool for row in rows)
 
 
+@pytest.mark.parametrize("float32_rows", [False, True])
 @pytest.mark.parametrize(("history_ticks", "dropout"), [(1, 0.0), (8, 0.25)])
-def test_compact_roundtrip_through_warm_noisy_masked_history(history_ticks, dropout):
+def test_compact_roundtrip_through_warm_noisy_masked_history(
+    history_ticks, dropout, float32_rows
+):
     config = Config(history_ticks=history_ticks, dropout=dropout, max_ticks=12)
     env = RoverEnv(config)
     observation, _ = env.reset(seed=11)
     for _ in range(12):
         original = prepare_request(observation, config=config)
-        compact = compact_request_draft(original)
+        compact = compact_request_draft(original, float32_rows=float32_rows)
         assert expand_compact_state(compact["state"]) == original["state"]
         assert compact["option_order"] == original["option_order"]
         observation, _, _, _, _ = env.step([0.2, 0.1])
+
+
+def test_compact_float32_rows_are_exact_and_fallback_without_precision_loss(sample):
+    config, observation = sample
+    request = prepare_request(observation, config=config)
+    payload = json.loads(request["state"])
+    exact = [
+        0.6000000238418579,
+        -0.0,
+        float(np.finfo(np.float32).smallest_subnormal),
+        float(np.finfo(np.float32).max),
+    ]
+    nonrepresentable = [1.0000000000000002, 1e-300, 1e300, 0.0]
+    payload["module_observation"]["history_ego"][0] = exact
+    payload["module_observation"]["history_ego"][1] = nonrepresentable
+    request["state"] = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), allow_nan=False
+    )
+    original = deepcopy(request)
+    compact = compact_request_draft(request, float32_rows=True)
+    encoded = json.loads(compact["state"])
+    assert (
+        expand_compact_state(
+            compact["state"],
+            expected_sha256=compact["representation"]["original_state_sha256"],
+        )
+        == request["state"]
+    )
+    assert {"f32": ["0.6", "-0", "1e-45", "3.4028235e+38"]} in encoded["row_table"]
+    assert nonrepresentable in encoded["row_table"]
+    assert compact["representation"]["schema"].endswith("row-f32-draft/1")
+    assert not compact["representation"]["live_use_approved"]
+    assert request == original
+    assert json.loads(compact_request_draft(request)["state"])["schema"].endswith(
+        "row-draft/1"
+    )
+
+
+@pytest.mark.parametrize("bad_value", ["nan", "inf", "not-a-number", 0.6])
+def test_compact_float32_decoder_rejects_invalid_typed_rows(sample, bad_value):
+    config, observation = sample
+    compact = compact_request_draft(
+        prepare_request(observation, config=config), float32_rows=True
+    )
+    payload = json.loads(compact["state"])
+    row = next(row for row in payload["row_table"] if isinstance(row, dict))
+    row["f32"][0] = bad_value
+    with pytest.raises(ValueError):
+        expand_compact_state(json.dumps(payload))
 
 
 @pytest.mark.parametrize(

@@ -178,9 +178,12 @@ def count_requests(requests, *, assets, budget=2048):
     }
 
 
-def compare_compact_requests(requests, *, assets, budget=2048):
+def compare_compact_requests(requests, *, assets, budget=2048, float32_rows=False):
     requests = list(requests)
-    compact = [compact_request_draft(request) for request in requests]
+    compact = [
+        compact_request_draft(request, float32_rows=float32_rows)
+        for request in requests
+    ]
     original_report = count_requests(requests, assets=assets, budget=budget)
     compact_report = count_requests(compact, assets=assets, budget=budget)
     comparisons = []
@@ -210,7 +213,12 @@ def compare_compact_requests(requests, *, assets, budget=2048):
             }
         )
     return {
-        "schema": "micro-classifier/lossless-prompt-comparison-draft/1",
+        "schema": (
+            "micro-classifier/lossless-float32-prompt-comparison-draft/1"
+            if float32_rows
+            else "micro-classifier/lossless-prompt-comparison-draft/1"
+        ),
+        "representation_schema": compact[0]["representation"]["schema"],
         "allowed_use": "lossless_draft_tests_and_offline_comparison_only",
         "review_status": "unreviewed_draft",
         "live_labeling_approved": False,
@@ -248,10 +256,16 @@ def main():
     parser.add_argument(
         "--snapshot", type=Path, help="already-cached pinned snapshot only"
     )
-    parser.add_argument(
+    comparison = parser.add_mutually_exclusive_group()
+    comparison.add_argument(
         "--compare-compact-draft",
         action="store_true",
         help="compare full state with the unreviewed lossless row-table draft",
+    )
+    comparison.add_argument(
+        "--compare-float32-draft",
+        action="store_true",
+        help="compare the unreviewed exact float32 row-string draft",
     )
     args = parser.parse_args()
     if args.limit < 1 or not 1 <= args.budget <= 2048:
@@ -265,8 +279,13 @@ def main():
     ]
     assets = load_prompt_assets(repo_id=args.repo_id, snapshot=args.snapshot)
     report = (
-        compare_compact_requests(requests, assets=assets, budget=args.budget)
-        if args.compare_compact_draft
+        compare_compact_requests(
+            requests,
+            assets=assets,
+            budget=args.budget,
+            float32_rows=args.compare_float32_draft,
+        )
+        if args.compare_compact_draft or args.compare_float32_draft
         else count_requests(requests, assets=assets, budget=args.budget)
     )
     report["episode_limit"] = args.limit

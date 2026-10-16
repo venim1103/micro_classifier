@@ -1362,6 +1362,67 @@ weights/model runtime, labels, new episode, training, download or dependency
 action occurred. This draft does **not** solve the live-use budget gate; keep
 it unreviewed and opt-in pending a separate input-strategy/quality decision.
 
+### Exact Typed Float32 Draft (2026-10-16)
+
+The user approved a second **offline-only lossless draft, CPU tests and cached
+tokenizer comparisons**. The default renderer, full input/history, 2,048-token
+ceiling and all live-use restrictions remain unchanged. This does not approve
+precision reduction, inference, labels, training, downloads or dependencies.
+
+The [row codec][teacher-label-pipeline] accepts `float32_rows=True` only as an
+explicit option, producing a separate `sim-teacher-state-row-f32-draft/1` schema.
+An all-float row is encoded as `{"f32":[decimal strings]}` only if every value
+is exactly representable as IEEE-754 binary32, including its signed zero.
+Otherwise the entire row stays literal. Each string is the shorter of NumPy's
+unique positional/scientific float32 spellings. The visible legend requires
+parsing it as binary32 before promoting to the original Python float, not as an
+ordinary JSON numeric value. Thus `0.6000000238418579` can use typed string
+`"0.6"` without changing the reconstructed value, while `1.0000000000000002`
+and `1e-300` remain literal. The factory still verifies byte-identical original
+canonical-state reconstruction and its SHA-256; row interning preserves type,
+outer/time order, masks and full history. No physical input precision changed.
+
+The [preflight][prompt-budget] adds mutually exclusive
+`--compare-float32-draft` and `--compare-compact-draft` modes. With neither flag,
+the original full-state preflight remains unchanged. Typed reports carry a
+distinct comparison schema, representation schema, source/asset/request hashes
+and exactness checks; every approval flag remains false.
+
+Both already-cached pinned tokenizers were run offline with GPUs hidden on the
+same five 16-observation prefixes as the literal-row comparison. **All 80 states
+reconstruct exactly, but 63/80 prompts still exceed 2,048 tokens**:
+
+| Existing Prefix | Typed Draft Fits | Typed Draft Maximum Tokens |
+| --- | --- | --- |
+| wire clear | 4/16 | 4,356 |
+| label-smoke clear | 4/16 | 4,442 |
+| label-smoke obstacle | 3/16 | 5,487 |
+| label-smoke corridor | 3/16 | 5,364 |
+| label-smoke slalom | 3/16 | 6,016 |
+
+Typed counts span 811-6,016 and match between tokenizers. Seventy requests are
+shorter than the literal-row draft, but only two additional requests fit: tick
+3 in the two clear prefixes. All other fits remain ticks 0-2; no sampled
+full-eight-tick-history request fits. Original full-state counts and state hashes
+match the earlier comparison. Independent checks recomputed every typed request
+identity, exact reconstruction and source binding from the unchanged logs.
+These are bounded-prefix results, not whole-episode maxima or evidence that a
+teacher interprets typed strings correctly. The live-use budget gate is unsolved.
+
+[Flash typed comparison][float32-draft-flash] SHA-256:
+`a34f4205ed26e737a66ff6fd4bff3578252a8622a6db52b879dde95e051d20bf`.
+[Mini typed comparison][float32-draft-mini] SHA-256:
+`9cdf30672cebe06841123204d5499fba7c8704243b56cc4c56f8583d1139b4d4`.
+
+Verification: 49 pipeline and 21 preflight tests, 298 repository passes plus the
+known transformer numerical expected failure; Ruff lint/changed-file format and
+editor diagnostics clean. Tests cover exact float32 extremes/subnormals, signed
+zero, literal fallback for nonrepresentable values, malformed typed rows, noisy
+masked histories and explicit CLI opt-in. No weights/model runtime, inference,
+labels, new episode, training, download, dependency or hardware action occurred.
+Keep both drafts opt-in/unreviewed and the accepted input/budget unchanged;
+further input-strategy and teacher-quality decisions require separate review.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following
@@ -1775,6 +1836,8 @@ for this project.
 [prompt-budget-tests]: tests/test_prompt_budget.py
 [row-draft-flash]: teacher/reports/row-draft-budget-d3-flash-20261016.json
 [row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
+[float32-draft-flash]: teacher/reports/float32-draft-budget-d3-flash-20261016.json
+[float32-draft-mini]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

@@ -146,6 +146,24 @@ exceed 2,048 tokens, reaching 9,698. Only startup ticks 0-2 fit. The draft remai
 unreviewed, opt-in and **not qualified for live labeling**; no inference or
 training was run. See DESIGN.md §7 and REVIEW.md §24 for limits.
 
+A second, separately opt-in **exact typed float32 draft** uses short decimal
+strings only for rows whose values reconstruct identically through binary32;
+all other rows stay literal. It does not reduce input precision:
+
+```sh
+HF_HUB_OFFLINE=1 CUDA_VISIBLE_DEVICES="" python -m teacher.prompt_budget \
+	--episode sim/episodes/wire-v0-smoke/clear-20261015.jsonl \
+	--output teacher/reports/my-float32-draft-comparison.json --limit 16 \
+	--compare-float32-draft
+```
+
+The [flash][float32-draft-flash]/[mini][float32-draft-mini] results reconstruct
+all 80 sampled states exactly, but **63/80 still exceed 2,048 tokens** (811-6,016).
+Only two additional startup requests fit; no sampled full-eight-tick-history
+request fits. Neither draft is approved for live use or teacher-quality claims.
+Both comparison flags are mutually exclusive; omitting them retains the full
+renderer. See DESIGN.md §7 and REVIEW.md §25. No inference or training was run.
+
 ## Synthetic Evaluation Tooling
 
 [CPU-only metrics and split checks][teacher-evaluation] are approved for
@@ -292,5 +310,7 @@ The simulation JSONL container remains separately versioned. See
 [prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
 [row-draft-flash]: teacher/reports/row-draft-budget-d3-flash-20261016.json
 [row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
+[float32-draft-flash]: teacher/reports/float32-draft-budget-d3-flash-20261016.json
+[float32-draft-mini]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

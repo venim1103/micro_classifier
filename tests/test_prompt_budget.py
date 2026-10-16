@@ -127,11 +127,14 @@ def test_report_metadata_is_detached_from_inputs(prepared_request, fake_assets):
     assert prepared_request["source"] == {"tick": 0}
 
 
+@pytest.mark.parametrize("float32_rows", [False, True])
 def test_compact_comparison_checks_exactness_without_qualifying_live_use(
-    prepared_request, fake_assets
+    prepared_request, fake_assets, float32_rows
 ):
     original = deepcopy(prepared_request)
-    report = compare_compact_requests([prepared_request], assets=fake_assets)
+    report = compare_compact_requests(
+        [prepared_request], assets=fake_assets, float32_rows=float32_rows
+    )
     row = report["results"][0]
     assert row["original_tokens"]["mode"] > row["compact_tokens"]["mode"]
     assert row["exact_roundtrip"] and report["exact_roundtrip_count"] == 1
@@ -142,6 +145,60 @@ def test_compact_comparison_checks_exactness_without_qualifying_live_use(
     report["assets"]["kind"] = "changed"
     assert fake_assets.provenance["kind"] == "fake_test_only"
     json.dumps(report, allow_nan=False)
+
+
+def test_cli_float32_draft_uses_explicit_typed_comparison(
+    prepared_request, tmp_path, fake_assets, monkeypatch, capsys
+):
+    output = tmp_path / "float32-comparison.json"
+    monkeypatch.setattr(
+        "teacher.prompt_budget.episode_requests",
+        lambda *args, **kwargs: [prepared_request],
+    )
+    monkeypatch.setattr(
+        "teacher.prompt_budget.load_prompt_assets", lambda **kwargs: fake_assets
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "prompt_budget",
+            "--episode",
+            "unused.jsonl",
+            "--output",
+            str(output),
+            "--compare-float32-draft",
+        ],
+    )
+    status = main()
+    summary = json.loads(capsys.readouterr().out)
+    report = json.loads(output.read_text())
+    assert (
+        report["schema"]
+        == "micro-classifier/lossless-float32-prompt-comparison-draft/1"
+    )
+    assert report["representation_schema"].endswith("row-f32-draft/1")
+    assert report["exact_roundtrip_count"] == summary["request_count"] == 1
+    assert status == (0 if report["all_fit"] else 1)
+    assert not report["live_labeling_approved"] and not report["training_approved"]
+
+
+def test_cli_comparison_drafts_are_mutually_exclusive(tmp_path, monkeypatch):
+    output = tmp_path / "report.json"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "prompt_budget",
+            "--episode",
+            "unused.jsonl",
+            "--output",
+            str(output),
+            "--compare-compact-draft",
+            "--compare-float32-draft",
+        ],
+    )
+    with pytest.raises(SystemExit) as error:
+        main()
+    assert error.value.code == 2 and not output.exists()
 
 
 def test_comparison_never_assumes_compact_is_shorter(prepared_request, fake_assets):

@@ -1567,6 +1567,76 @@ observability/model choices before target adoption or actual annotation.
 
 [sim-tests]: tests/test_sim.py
 
+#### Synthetic Navigation Reference (Simulation Scope Adopted, 2026-10-16)
+
+The user adopted the preceding first-three geometric meanings **for simulation**
+and approved an isolated CPU-only oracle with artificial fixtures. This
+supersedes the draft's unaccepted/implementation status only in that scope.
+Unknown or numerically unresolved cases abstain, at-rest sector choice abstains,
+mode remains unlabeled, and contact includes tangency. No physical safety,
+observation-based evidence model, reviewed dataset, episode labeling, real
+annotation/import, split, inference or training approval is implied. Existing
+proxy rules, accepted inputs/defaults and token ceiling are unchanged.
+
+The [reference][navigation-reference] exposes `evaluate_synthetic(Scenario,
+speed=..., synthetic_test_only=True, ...)` using complete artificial geometry.
+It accepts neither observation dictionaries nor episode paths, performs no
+rollout or file I/O and provides no CLI/cache/data-export path. The explicit
+opt-in is a caller scope assertion, not attestation that geometry is synthetic.
+Every result is tagged artificial-geometry-only, synthetic, training-disabled,
+not a reviewed dataset and not a physical safety claim; mode is always absent.
+The output is not a new wire contract or a substitute for the blind-review path.
+
+Straight zero-yaw trajectories use analytic capsules. Curved trajectories split
+reaction and braking phases, integrate velocity with midpoint quadrature and
+query complete chord sweeps against inflated circles and arena boundaries.
+For a segment of duration $h$, speed bounded by $v$, angular rate $\omega$ and
+phase deceleration $a_p$, the exact-arithmetic bounds used are:
+
+$$
+M_2=a_p+v|\omega|,\qquad M_3=2a_p|\omega|+v\omega^2,
+\qquad E\leftarrow E+M_3h^3/24+\varepsilon_{fp},
+\qquad \delta=E+M_2h^2/8.
+$$
+
+An intersection using radius $r-\delta$ establishes a blocked sweep; separation
+using $r+\delta$ establishes clearance. Otherwise it is numerically unknown.
+Initial/analytic contacts use the strict reference convention, including wall
+contact; the simulator's original wall behavior is unchanged. The floating-point
+term is an engineering allowance based on coordinate scale, **not verified
+interval arithmetic or a formal numerical certificate**. Analytic endpoints
+also retain a nonzero roundoff allowance. These ideal-geometry results are not
+calibrated probabilities, sensor uncertainty bounds or physical guarantees.
+
+Steps are at most 0.02 s with a local chord-deviation target of $10^{-5}$ m;
+that target is not a global position-error limit or a new physical margin.
+Each maneuver admits at most 4,096 segments; the caller can lower that cap.
+Budget exhaustion or nonfinite/unresolved numerical bounds return unknown.
+Endpoint error intervals participate in goal ranking: overlapping candidates
+abstain unless an exact model symmetry establishes the left/right tie, which
+prefers left. Other unresolved ties abstain rather than inventing precision.
+No unknown maneuver becomes `none` or tier 0. Current speed is retained in every
+tier reference; at-rest sector choice abstains as explicitly adopted.
+
+Twenty-five added oracle cases pass, bringing the simulator suite to 115 and
+the repository to 413 passes plus the known transformer expected failure.
+Tests cover all tiers, open/blocked/rest scenes, goal ranking, exact mirror
+ties, numerical ambiguity, bounded computation, invalid input/scope rejection,
+and strict wall contact. Three turn-rate cases compare endpoints with separate
+64-point Gauss-Legendre quadrature. The earlier identical-full-input artificial
+world pairs now also produce opposite ideal `path_blocked` answers, confirming
+that the oracle does not solve the real-input observability gate. Lint/format,
+editor diagnostics and doc checks pass. No existing log/report/packet was
+changed or relabeled, and no episode or task dataset was generated.
+
+Task 6 now has adopted simulation meanings for three questions and a synthetic
+reference, but still lacks reviewed observation-to-target evidence/labels and
+observable mode semantics. Task 9 still lacks reviewed cohorts/data and locked
+splits. M1a/board gates remain separate. The reference is not promoted into the
+simulator, existing labeler, teacher pipeline or review ingestion.
+
+[navigation-reference]: sim/navigation.py
+
 ### Teacher-Pipeline Host Preparation (2026-10-16)
 
 The [host pipeline][teacher-label-pipeline] completes Task 8's approved

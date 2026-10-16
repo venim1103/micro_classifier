@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §35 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §36 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -388,6 +388,32 @@ Keep this section and the Task List current; a new session resumes from them.
   Tasks 6/9 remain blocked on adoption/independent target evidence and actual
   reviewed data. No inference, training, dependency/download or hardware work.
 
+- Approved (2026-10-16): adopt the first three proposed geometric meanings for
+  simulation and implement an isolated CPU-only ideal-geometry reference with
+  artificial-fixture tests only. Unknown/numerically unresolved cases abstain;
+  at-rest sector choice abstains, mode stays unlabeled, contact includes tangency.
+  No physical-safety claim or real-input evidence qualification. Keep existing
+  proxies, input/defaults and token limits unchanged; no episode generation,
+  actual annotations/datasets/splits, inference, training, dependency/download
+  or hardware work. This does not approve an observation/episode labeler.
+
+- Synthetic reference completed (2026-10-16) in `sim/navigation.py` after
+  explicit simulation-semantics adoption. Requires synthetic-only opt-in and
+  complete artificial Scenario geometry; no observation/log/CLI labeling path.
+  Analytic straight sweeps, bounded curved integration/chord checks, endpoint
+  error-aware ranking and numerical abstention; at-rest sector abstains, mode
+  stays absent. Twenty-five oracle cases plus the ten draft checks pass; 115
+  simulator tests and 413 repository passes plus known transformer expected
+  failure; lint/format/editor/doc checks pass. Gauss-Legendre endpoint checks
+  and the existing exact-input geometry aliases pass. Numerical floating-point
+  allowances are not formal certification or sensor uncertainty bounds.
+  Existing runtime/proxies, inputs/defaults, token limits and artifacts are
+  unchanged. No episodes, actual labels/dataset/splits, inference, training,
+  dependency/download or hardware work. DESIGN.md §7 and REVIEW.md §36.
+  Tasks 6/9 remain blocked on reviewed target evidence/labels, mode semantics
+  and actual reviewed cohort/data. Do not re-ask first-three simulation adoption
+  or the already-adopted reviewer-evidence/quarantine policy questions.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -420,7 +446,7 @@ on missing tools, and continue with the next unblocked task.
    round-trip tests.
   Result (2026-10-15): approved provisional host-side contract, 62 focused
   tests, generated C offsets and five golden frames; no hardware freeze.
-6. [blocked: independent navigation targets and reviewed labels pending]
+6. [blocked: reviewed target evidence/labels and mode semantics pending]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
@@ -451,6 +477,11 @@ on missing tools, and continue with the next unblocked task.
   input aliases with different geometric outcomes expose an observability gate;
   keep abstention, existing rules diagnostic-only and mode unlabeled. Review
   geometry/evidence assumptions and at-rest direction semantics before adoption.
+  Synthetic-reference result (2026-10-16, REVIEW.md §36): user adopted the first
+  three geometric meanings for simulation only; isolated artificial-geometry
+  oracle and 25 new checks complete. Existing proxies remain diagnostic-only;
+  sparse real-input evidence is unqualified, mode unlabeled, no annotation or
+  dataset approval. Task 6 is not complete merely because a geometry oracle exists.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

@@ -150,6 +150,30 @@ and artificial faults are **not representative data, reviewed labels or safety
 evidence**. Eight intentional horizon timeouts are not navigation results.
 No training or live teacher ran. See DESIGN.md §7 and REVIEW.md §26 for limits.
 
+## Synthetic Navigation Reference
+
+The [ideal-geometry reference][navigation-reference] implements the three
+adopted **simulation-only** navigation meanings on artificial fixtures:
+
+```python
+from sim.navigation import evaluate_synthetic
+from sim.rover import Scenario
+
+result = evaluate_synthetic(
+	Scenario(), speed=0.6, tof_age_s=0.1, synthetic_test_only=True
+)
+```
+
+This is not an observation or episode labeler. It reads no logs and exports no
+data. Results are synthetic and training-disabled; mode remains absent. Numeric
+ambiguity and computation exhaustion abstain rather than claiming clearance.
+The opt-in is not source attestation, and numerical allowances are not formal
+certificates or physical limits. Existing proxies/defaults are unchanged. Real
+annotations, task datasets/splits, inference and training remain unapproved;
+reviewed observation-to-target evidence is still missing. See REVIEW.md §36.
+
+[navigation-reference]: sim/navigation.py
+
 ## Blind Human-Review Preparation
 
 The [CPU-only review tooling][blind-review-tool] exports blank packets from

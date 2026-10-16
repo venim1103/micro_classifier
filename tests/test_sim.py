@@ -33,6 +33,7 @@ from sim.rover import (
 
 @pytest.mark.parametrize("obstacle", [(2.4, 2.0, 0.01), (2.1, 2.185, 0.01)])
 def test_navigation_proposal_full_ray_history_can_hide_a_swept_collision(obstacle):
+    from sim.navigation import evaluate_synthetic
     from teacher.label_pipeline import prepare_request
 
     config = Config(noise_std=0, dropout=0)
@@ -97,6 +98,21 @@ def test_navigation_proposal_full_ray_history_can_hide_a_swept_collision(obstacl
         }
         states.append(prepare_request(observation, config=config)["state"])
     assert states[0] == states[1]
+    settings = {
+        "speed": config.max_speed,
+        "tof_age_s": age,
+        "config": config,
+        "synthetic_test_only": True,
+    }
+    clear_reference = evaluate_synthetic(
+        Scenario(start=(2.0, 2.0, 0.0), goal=(5.0, 2.0)), **settings
+    )
+    blocked_reference = evaluate_synthetic(
+        Scenario(start=(2.0, 2.0, 0.0), goal=(5.0, 2.0), obstacles=(obstacle,)),
+        **settings,
+    )
+    assert clear_reference["answers"]["path_blocked"] == "false"
+    assert blocked_reference["answers"]["path_blocked"] == "true"
 
 
 @pytest.mark.parametrize("offset,blocked", [(-1e-6, True), (0, True), (1e-6, False)])
@@ -145,6 +161,208 @@ def test_navigation_proposal_lower_request_does_not_erase_current_momentum(
     assert swept_collision(
         position, position + [distances[1], 0], config.radius, obstacles, bounds
     )
+
+
+def test_synthetic_navigation_reference_includes_wall_contact_without_changing_simulator():
+    from sim.navigation import _touches
+
+    point, radius, bounds = (0.125, 2.0), 0.125, (6.0, 6.0)
+    assert not swept_collision(point, point, radius, (), bounds)
+    assert _touches(point, point, radius, (), bounds)
+    assert not _touches((0.126, 2.0), (0.126, 2.0), radius, (), bounds)
+
+
+def test_synthetic_navigation_reference_requires_opt_in_and_no_observation_input():
+    from sim.navigation import evaluate_synthetic
+
+    with pytest.raises(ValueError, match="synthetic-test-only"):
+        evaluate_synthetic(Scenario(), speed=0.3)
+    with pytest.raises(TypeError, match="not observations"):
+        evaluate_synthetic({}, speed=0.3, synthetic_test_only=True)
+
+
+@pytest.mark.parametrize(
+    "goal,expected",
+    [((5.0, 3.0), "centre"), ((5.0, 4.0), "left"), ((5.0, 2.0), "right")],
+)
+def test_synthetic_navigation_reference_open_geometry_goal_ranking(goal, expected):
+    from sim.navigation import evaluate_synthetic
+
+    result = evaluate_synthetic(
+        Scenario(goal=goal), speed=0.6, tof_age_s=0.1, synthetic_test_only=True
+    )
+    assert result["answers"] == {
+        "path_blocked": "false",
+        "clear_sector": expected,
+        "speed_tier": "3",
+        "mode": None,
+    }
+    assert result["synthetic"] and not result["training_approved"]
+    assert not result["reviewed_dataset"] and not result["physical_safety_claim"]
+    assert result["mode_labels"] == 0
+    json.dumps(result, allow_nan=False)
+
+
+def test_synthetic_navigation_reference_at_rest_and_blocked_are_distinct():
+    from sim.navigation import evaluate_synthetic
+
+    stopped = evaluate_synthetic(Scenario(), speed=0, synthetic_test_only=True)
+    assert stopped["answers"]["path_blocked"] == "false"
+    assert stopped["answers"]["clear_sector"] is None
+    obstacle = Scenario(obstacles=((1.3, 3.0, 0.1),))
+    moving = evaluate_synthetic(
+        obstacle, speed=0.6, tof_age_s=0.1, synthetic_test_only=True
+    )
+    assert moving["answers"] == {
+        "path_blocked": "true",
+        "clear_sector": "none",
+        "speed_tier": "0",
+        "mode": None,
+    }
+
+
+def test_synthetic_navigation_reference_budget_exhaustion_abstains():
+    from sim.navigation import evaluate_synthetic
+
+    result = evaluate_synthetic(
+        Scenario(),
+        speed=0.4,
+        turn_rate=0.7,
+        tof_age_s=0.1,
+        max_segments=1,
+        synthetic_test_only=True,
+    )
+    assert all(answer is None for answer in result["answers"].values())
+    assert all(row["status"] == "unknown" for row in result["maneuvers"].values())
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("speed", True),
+        ("speed", -1),
+        ("speed", 0.7),
+        ("turn_rate", 2),
+        ("tof_age_s", -1),
+        ("tof_age_s", float("nan")),
+        ("max_segments", True),
+        ("max_segments", 4097),
+    ],
+)
+def test_synthetic_navigation_reference_rejects_invalid_inputs(field, value):
+    from sim.navigation import evaluate_synthetic
+
+    settings = {"speed": 0.3, "synthetic_test_only": True, field: value}
+    with pytest.raises(ValueError):
+        evaluate_synthetic(Scenario(), **settings)
+
+
+@pytest.mark.parametrize("turn_rate", [-0.7, 0.0, 0.7])
+def test_synthetic_navigation_reference_curved_endpoints_match_high_order_quadrature(
+    turn_rate,
+):
+    from sim.navigation import evaluate_synthetic
+
+    scenario, config = Scenario(), Config()
+    speed, reaction = 0.6, 0.15
+    result = evaluate_synthetic(
+        scenario,
+        speed=speed,
+        turn_rate=turn_rate,
+        tof_age_s=0.1,
+        synthetic_test_only=True,
+    )
+    nodes, weights = np.polynomial.legendre.leggauss(64)
+    for name, angular_rate in (
+        ("centre", 0),
+        ("left", config.max_turn_rate),
+        ("right", -config.max_turn_rate),
+    ):
+        endpoint = np.array(scenario.start[:2], dtype=float)
+        yaw = scenario.start[2]
+        for duration, angular, deceleration in (
+            (reaction, turn_rate, 0),
+            (speed / config.acceleration, angular_rate, config.acceleration),
+        ):
+            times = (nodes + 1) * duration / 2
+            headings = yaw + angular * times
+            velocity = (speed - deceleration * times)[:, None] * np.stack(
+                [np.cos(headings), np.sin(headings)], axis=1
+            )
+            endpoint += duration / 2 * np.sum(weights[:, None] * velocity, axis=0)
+            yaw += angular * duration
+        row = result["maneuvers"][name]
+        assert row["status"] == "clear"
+        assert (
+            np.linalg.norm(endpoint - row["endpoint_m"])
+            <= row["endpoint_error_bound_m"] + 1e-12
+        )
+
+
+def test_synthetic_navigation_reference_unresolved_goal_ranking_abstains():
+    from sim.navigation import evaluate_synthetic
+
+    settings = {"speed": 0.6, "tof_age_s": 0.1, "synthetic_test_only": True}
+    result = evaluate_synthetic(Scenario(), **settings)
+    goal = tuple(
+        (
+            np.asarray(result["maneuvers"]["centre"]["endpoint_m"])
+            + result["maneuvers"]["left"]["endpoint_m"]
+        )
+        / 2
+    )
+    unresolved = evaluate_synthetic(Scenario(goal=goal), **settings)
+    assert all(row["status"] == "clear" for row in unresolved["maneuvers"].values())
+    assert unresolved["answers"]["clear_sector"] is None
+
+
+def test_synthetic_navigation_reference_symmetric_turn_tie_prefers_left():
+    from sim.navigation import evaluate_synthetic
+
+    result = evaluate_synthetic(
+        Scenario(obstacles=((1.47, 3.0, 0.02),)),
+        speed=0.6,
+        tof_age_s=0.1,
+        synthetic_test_only=True,
+    )
+    assert result["maneuvers"]["centre"]["status"] == "blocked"
+    assert (
+        result["maneuvers"]["left"]["status"]
+        == result["maneuvers"]["right"]["status"]
+        == "clear"
+    )
+    assert result["answers"]["clear_sector"] == "left"
+
+
+@pytest.mark.parametrize(
+    "gap,tier", [(0.025, "0"), (0.09, "1"), (0.2, "2"), (0.35, "3")]
+)
+def test_synthetic_navigation_reference_tier_capacity_and_current_momentum(gap, tier):
+    from sim.navigation import evaluate_synthetic
+
+    scenario = Scenario(obstacles=((1.19 + gap, 3.0, 0.01),))
+    result = evaluate_synthetic(
+        scenario, speed=0, tof_age_s=0.1, synthetic_test_only=True
+    )
+    assert result["answers"]["speed_tier"] == tier
+    if tier == "2":
+        moving = evaluate_synthetic(
+            scenario, speed=0.6, tof_age_s=0.1, synthetic_test_only=True
+        )
+        assert moving["answers"]["speed_tier"] == "0"
+
+
+def test_synthetic_navigation_reference_curved_contact_uncertainty_is_not_none():
+    from sim.navigation import evaluate_synthetic
+
+    settings = {"speed": 0.6, "tof_age_s": 0.1, "synthetic_test_only": True}
+    empty = evaluate_synthetic(Scenario(), **settings)
+    endpoint = np.asarray(empty["maneuvers"]["left"]["endpoint_m"])
+    centre = endpoint + 0.19 * np.array([math.sin(0.9), -math.cos(0.9)])
+    scene = Scenario(obstacles=((*centre, 0.01),))
+    result = evaluate_synthetic(scene, **settings)
+    assert result["maneuvers"]["left"]["status"] == "unknown"
+    assert result["answers"]["clear_sector"] is None
 
 
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():

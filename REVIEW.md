@@ -1957,6 +1957,52 @@ of the candidate meanings and unresolved modeling/observability issues before
 any target adoption or real annotation. The draft clears neither that gate nor
 the independent missing-ST/board gates.
 
+## 36. Simulation Semantics Adopted; Synthetic Geometry Reference (2026-10-16)
+
+The user explicitly selected "Adopt simulation semantics and approve
+synthetic-only oracle" after reviewing the concrete draft and observability
+counterexamples. Adoption covers the first three geometric question meanings
+for simulation, including complete braking sweeps, goal-ranked turn choices,
+momentum-preserving tier references, contact/tangency and explicit abstention.
+At-rest sector choice abstains; mode stays unlabeled. It does not qualify sparse
+ToF uncertainty or approve episodes, actual labels/annotations/datasets/splits,
+inference, training, dependencies/downloads or hardware work.
+
+The isolated reference in `sim/navigation.py` requires an explicit synthetic
+opt-in and Scenario geometry, not observations or episode files. It has no CLI,
+log/cache reader or exporter. The flag asserts permitted caller use, not source
+attestation. Results remain synthetic/artificial-only, training-disabled,
+not reviewed data and not physical safety claims. Existing proxy labelers and
+accepted input/default/token settings are unchanged; this is not their replacement.
+
+Straight paths use analytic capsules; reaction/braking curved phases use bounded
+midpoint integration and full chord sweeps with derivative-based expansion and
+contraction. Numeric boundary ambiguity and computation-cap exhaustion return
+unknown. Endpoint errors participate in ranking, with unresolved comparisons
+abstaining; exact left/right mirror ties prefer left. No unknown is converted
+to `none` or tier 0, and tier references cannot erase current momentum.
+The local $10^{-5}$ m chord target and 4,096-segment cap are computational,
+not physical thresholds. Floating-point allowances are engineering estimates,
+not formal interval certificates or sensor-noise bounds. The strict wall-contact
+convention is isolated from the simulator's existing boundary behavior.
+
+Twenty-five new oracle cases pass, with 115 simulator checks and 413 repository
+passes plus the known transformer numerical expected failure. Three endpoint
+cases compare against separate 64-point Gauss-Legendre quadrature; other cases
+cover every tier, scope/input rejection, bounded failure, ranking/contact
+abstention, open/blocked/rest geometry and mirror ties. The original two exact
+complete-input alias pairs also give opposite ideal oracle answers. That result
+preserves, rather than clears, the observation-to-target evidence blocker.
+Ruff lint/format, editor diagnostics and doc reference/local-target/whitespace
+checks pass. No existing log, packet or report was regenerated or modified.
+
+**Outcome:** the approved oracle increment is complete, not Task 6 or 9.
+Three simulation meanings are adopted, but reviewed observation-based target
+evidence/labels, observable mode semantics, actual cohort/family review and task
+data/splits remain missing. Human review remains observation-only with abstention;
+current logs remain diagnostic-only. No integration, labeling, inference,
+training or physical deployment permission follows from this reference.
+
 ## Sources
 
 Hardware and tools:

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §31 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §32 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -318,6 +318,29 @@ Keep this section and the Task List current; a new session resumes from them.
   work. Next review: target/data and input/teacher strategy; keep mode unlabeled
   and current defaults meanwhile. ST tools/board remain unavailable.
 
+- Approved (2026-10-16): CPU-only blind human-review preparation on at most
+  32 existing observations, preserving full student-visible input/history and
+  source/group provenance. Add blank packets, strict format validators and
+  fake-reviewer tests only. Keep the three rules diagnostic proxies and mode
+  unlabeled. No actual annotations/reviewed dataset, locked task splits,
+  teacher inference, training, new episodes, dependencies/downloads, hardware
+  work or changes to accepted defaults.
+
+- Blind review preparation completed (2026-10-16) in `teacher/review.py`, reusing
+  the unchanged full renderer without invalidating its source/cache identities.
+  The bounded CPU-only run exported 32 blank packets from existing clear and
+  obstacle smoke ticks 0-15; 18 full histories, two known episode identities.
+  All states/source/frame/provenance and hashes independently audited. No
+  teacher/proxy suggestions, truth/actions, annotations or mode labels; family
+  groups and partitions remain unresolved. Packet data stays ignored under
+  `teacher/cache/`; evidence: `teacher/reports/review-preparation-20261016.json`.
+  Strict renderer-backed packet validation and fake-only review format tests
+  reject mode labels and any scope promotion. Twenty-eight new cases; 77 pipeline
+  tests, full suite 374 passes plus known transformer expected failure; lint,
+  format/editor diagnostics and audits pass. DESIGN.md §7 and REVIEW.md §32.
+  Tasks 6/9 still await target/evidence/cohort review and actual reviewed data;
+  no training, inference, download/dependency, hardware or accepted-default change.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -369,6 +392,9 @@ on missing tools, and continue with the next unblocked task.
   Decision-preparation result (2026-10-16): DESIGN.md §7 and REVIEW.md §27
   propose proxy-vs-task targets, mode observability/reviewer abstention and
   grouped five-purpose evaluation. No definitions, labels or splits adopted.
+  Review-preparation result (2026-10-16): 32 blind blank packets and fake-review
+  format tests now available (REVIEW.md §32). Still no accepted target policy,
+  actual annotations or reviewed cohort; mode stays unlabeled, rules diagnostic.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
@@ -429,6 +455,10 @@ on missing tools, and continue with the next unblocked task.
   leakage/hash checks and exclusive built-in smoke report implemented; 36 focused
   tests, 260 repository passes plus the known expected failure. No baseline was
   fitted, task dataset generated or real split locked. DESIGN.md §7, REVIEW.md §22.
+  Review-preparation follow-up (2026-10-16): provenance-bound blank packets and
+  fake-only validators complete; all family-group reviews and split assignments
+  remain pending. Decide targets, allowed reviewer evidence and cohort policy
+  before annotation or locked evaluation; no baseline fit or training approval.
 10. [blocked: training outside current tooling scope; dataset pending]
   Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled

@@ -1500,6 +1500,57 @@ changed-file format and editor diagnostics pass. Existing plan hashes above
 describe the earlier artifacts; source-bound keys invalidate on this code change.
 No real teacher, training, new dependency or change to approval gates occurred.
 
+### Blind Human-Review Preparation (2026-10-16)
+
+The user approved CPU-only preparation for at most 32 existing observations,
+not annotations, accepted targets, reviewed datasets or split assignments.
+[Review tooling][blind-review-tool] reuses the unchanged full renderer in a
+separate module, preserving existing request/cache source identities. Packets
+contain the exact structured student-visible state, source line/tick/frame
+origin and hashes, plus question IDs/types/options and blank assessments.
+Teacher/proxy suggestions, rule formulas, privileged truth and actions are not
+included. Mode remains unlabeled and the three rules remain diagnostic proxies.
+
+Packet identities bind their complete contents; state and config hashes and
+catalogue options are checked. Reconstructing the observation through the
+existing renderer rechecks shapes, numeric values, masks, history padding,
+host-frame parity and provenance. The observation schema and existing host
+timestamp restore required encoder metadata; no new sensor value or clock is
+invented. Source hashes and test identities are consistency checks, not source
+attestation or anonymity. Known episode identity is retained; source/template
+families and partition assignments are explicitly unresolved and unreviewed.
+
+The CLI accepts repeated existing `--episode` paths and a per-episode `--limit`,
+refusing more than 32 total requested records, duplicate source bytes, reused
+output/report paths or an existing destination. Limits bound selected rendered
+observations, not source-file memory or full-log validation. Packet and summary
+schemas are distinct. `normalize_review_fixture` accepts only an explicit
+fake-test opt-in and `test/` reviewer identity, preserves abstention reasons and
+rejects mode labels. It cannot import an accepted human annotation or promote
+anything to a reviewed/training dataset. The test identity is not authentication.
+
+The bounded offline/GPU-hidden run exported clear/obstacle smoke-log ticks 0-15:
+32 blank packets from two existing episodes, including 18 full-eight-tick
+histories. Zero annotations, mode labels or teacher calls; no partition or
+source/template-family review was fabricated. All 32 exact states, complete
+input/source/frame provenance and packet hashes were independently audited on
+CPU. The 1,238,526-byte packet file stays ignored under `teacher/cache/`, SHA256
+`eb0a1d087965fa970a0632adf69e8d715fdb6747a3accfcd9dff992655b8d7f2`.
+The [non-label evidence report][blind-review-report] has SHA256
+`4795fe33d996109a4276014b33e171350bb084ae615b8ecaec424da900d5f112`.
+
+Twenty-eight added cases pass; 77 pipeline tests and 374 repository passes plus
+the known transformer expected failure. Ruff/format/editor diagnostics and
+evidence/doc checks pass. Existing renderer, catalogue/rules, simulator and
+teacher paths are unchanged; no download, dependency, inference, training or
+hardware work. The real run used existing logs only; temporary synthetic unit
+fixtures are not study episodes or a task cohort. Tasks 6/9 still require target
+definitions, permitted review evidence, family/cohort review and actual reviewed
+data. Neither a target policy nor a representative evaluation set is adopted.
+
+[blind-review-tool]: teacher/review.py
+[blind-review-report]: teacher/reports/review-preparation-20261016.json
+
 ### Offline Prompt-Budget Preflight (2026-10-16)
 
 The user separately approved [offline tokenizer-only checks][prompt-budget]

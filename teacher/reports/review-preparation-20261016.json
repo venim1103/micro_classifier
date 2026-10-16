@@ -1,0 +1,346 @@
+{
+  "schema": "micro-classifier/blind-review-preparation-report/1",
+  "allowed_use": "unreviewed_blind_review_preparation_only",
+  "review_status": "unreviewed",
+  "training_approved": false,
+  "task_labels_approved": false,
+  "locked_task_splits": false,
+  "actual_annotations": 0,
+  "mode_labels": 0,
+  "teacher_calls": 0,
+  "tool_sha256": "7b8a2a232b9a8b60b3f6da9b15b2adec441859eca3ff4385906f61afe4a33bbc",
+  "packet_count": 32,
+  "source_episode_count": 2,
+  "family_group_review_complete": false,
+  "packet_file_sha256": "eb0a1d087965fa970a0632adf69e8d715fdb6747a3accfcd9dff992655b8d7f2",
+  "full_history_packet_count": 18,
+  "packet_evidence": [
+    {
+      "packet_id": "7ebbba2b2c22c8a3df49c7ec17513a50ebcaf3bc284e4bfdb6409dd87618af9a",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 1,
+        "tick": 0,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "5e3eaddd0d3844cc67ef4f56105238ce722b05104cb862c198609418e57047dc"
+    },
+    {
+      "packet_id": "2b9a893a86e0c30d98abb79c6799676b6fde9f707d96209d0f9199857e0f8572",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 2,
+        "tick": 1,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "816f9d1c3c36cadc05fb9a5698040c1d44ddc5a30a7c9ab22b4eab06acc5a494"
+    },
+    {
+      "packet_id": "a01d15aa6764dd3baabffeaa3c78d3b21ecac8be54c65808390e26585982d154",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 3,
+        "tick": 2,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "05d7b8af2ab843d2c65d3f690f22ac9a92d04c917b2f0ae331ccaaff41f6e102"
+    },
+    {
+      "packet_id": "9e9a8f4fca556cc7f54d1be27cf78c57f9488f44d4a3a856dba8550363f84508",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 4,
+        "tick": 3,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "135760390f231f64bdad8372919383d6feda2380975c0430a4f3b7dc66fceee7"
+    },
+    {
+      "packet_id": "290bfd1508a14ceb9eb7ff7916022642420023273a39c9725cb482db1472e047",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 5,
+        "tick": 4,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "377b7e3bed2ad20f944f4f914a79340e646efd856db4255fa010eac7da4000f1"
+    },
+    {
+      "packet_id": "e1e49cbe8e24727decacbb88607a7ed4586d97445afd3adf354aa02c8ebee718",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 6,
+        "tick": 5,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "7fdc3e4e5785d6c01b5378da6a0564fe22a3141645d47d06a82d46e9dfc8517c"
+    },
+    {
+      "packet_id": "2482325c77b8c3622036ac487ab2790003c7ca79943ec18cd650ad28bbf9758e",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 7,
+        "tick": 6,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "44bbe514a09cf13ee9a93b64abce5b3da0e90bf1bd391ef6089df3514c229291"
+    },
+    {
+      "packet_id": "726f35e85211660726e58236e71abb7281c6b6928e0527415ee55e29d51409b5",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 8,
+        "tick": 7,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "a69f08c7d6c444d006732874a94ae9da37bb0a18f6f81e72494c0807a9b98952"
+    },
+    {
+      "packet_id": "8cd39424e90be6ae4b16d897103c0b15a8d36ba0ddd29ca2125ba78f72082870",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 9,
+        "tick": 8,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "df2dcf69f8da17e320eb8fcc7c58177d8d79c218e6ece4dd1844379818cd5218"
+    },
+    {
+      "packet_id": "662c4123287eda606cb91ef536c60912f1ae96cacde60d31bc894404fd13385b",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 10,
+        "tick": 9,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "c1e84cec79761f1ccbb93927850f716d54dbc2bf564fc971cacc97f35e35a530"
+    },
+    {
+      "packet_id": "caf096ae2999c9a08109feabf1be5d5c15909af6ce98082752c78a8dd7b93d16",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 11,
+        "tick": 10,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "8a1670c7a83fb387dbdbd22c29db9806162c7854debcf0bca9a0f399f15b6175"
+    },
+    {
+      "packet_id": "4c83907db5dd7853ee893805ddb4a6fa8a9963bf3101dd9a9cbdc7d90203d9c7",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 12,
+        "tick": 11,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "98431598d25c0d1eb0677046cd542e8e7a24eaa0679b04f49d4d6fdf2ae56efa"
+    },
+    {
+      "packet_id": "143af7b5fd5e025e54485c5ab8e02b9aebb38e0fce4699ba3c1f4a370484dcaf",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 13,
+        "tick": 12,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "e5d45a4c8894862faff9ec784d5fc6744b2377820349bf9c1989259342e2f65c"
+    },
+    {
+      "packet_id": "eb634c5f9c12e5f1c777d57844b4dad1872ead26ac9cf360b30b1bd79d17e6c1",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 14,
+        "tick": 13,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "b27c85a278f5c6c29478d9bf31717acd262d659296901e8b302f332169d03b07"
+    },
+    {
+      "packet_id": "b1f55d5479d7705e48cb1ca5fbc5341491b478e4d191983f324a39f88ce033c3",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 15,
+        "tick": 14,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "460f38e130c14eb16bf87130eb6c98987b6655b8289f05ffbaf114106615f513"
+    },
+    {
+      "packet_id": "ccdd1e7a47050066ddc90ec972ad2f61b1c2a0ef8053cb49f8545a084e118c69",
+      "source": {
+        "episode_sha256": "b16eed6792a1e6cc594ea369e0b1b0a25001ae0d1702dbe56f47da9a50ff0c0e",
+        "line": 16,
+        "tick": 15,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "fdb88e0844412847a08642298a01f1321d9d0e097655eb4794c9631e3aaa73bb"
+    },
+    {
+      "packet_id": "18adb3ade245e10f26c49c60fb8cdb70f5d891ec361563cad0321eb9888d2070",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 1,
+        "tick": 0,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "5e3eaddd0d3844cc67ef4f56105238ce722b05104cb862c198609418e57047dc"
+    },
+    {
+      "packet_id": "fc377f6cab452d1931112bcb1eb7983048635b9a5b92fd726de8fa298b159b99",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 2,
+        "tick": 1,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "816f9d1c3c36cadc05fb9a5698040c1d44ddc5a30a7c9ab22b4eab06acc5a494"
+    },
+    {
+      "packet_id": "ece50c2b94c38b9d9b2adb694f7291c60f68d45f45ae66e64a7fb5910a18fe85",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 3,
+        "tick": 2,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "f5c70b648fd267de205c755a3aa0d008d5cb45c15ff5de66da721738ba782268"
+    },
+    {
+      "packet_id": "e3b016d134074c7a1eedb7ebcc25f812b5c29a9576676977a7e981509145ad78",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 4,
+        "tick": 3,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "ab8e989378679601121005063758f50b6168e71e11e87eeea20fccbd934cd38a"
+    },
+    {
+      "packet_id": "8fe7d58cbfe21392601f131ed0c49db76e2a807e9610a6791c842adaef17b4ac",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 5,
+        "tick": 4,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "ef09eb8fd6a1068967ec44c30939f7c81ceec89b5819744d1414579c52c3f679"
+    },
+    {
+      "packet_id": "b7d469120bd9bb9f653672e5227384548a06375c637983a0ec8582d8dff42f53",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 6,
+        "tick": 5,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "b30c2b6e6e0ddbb63d0b64cbc5c9369c5257a57a96b4f1db6cfdf742a2ba819b"
+    },
+    {
+      "packet_id": "20e6a8e4fd9256a9ef560383e5368ec42165c7e298d3dadb7281639507bb668e",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 7,
+        "tick": 6,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "1c870c81d13d901f80bd67e9d7d27b07fefbd7b9d0d0d2e95d381ecdce40bfd3"
+    },
+    {
+      "packet_id": "a8d31d6d19e6c664deb4db51813e19865b3f12371a1a192ec8dea8c99e0f34e7",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 8,
+        "tick": 7,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "5be212f9d45412322050f8e7746a3ed477c533994d8315bc9d41e115c1ccbb8b"
+    },
+    {
+      "packet_id": "fb73df7ebe31bc820d42b4381d4eb96770a0540f61f1fe73181ea58d078b07ee",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 9,
+        "tick": 8,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "06736bd94eae1352296de1241b876237c246495ac5dc6d531ddb20643c25ad57"
+    },
+    {
+      "packet_id": "a3da27735accb4b1e0832255fbd2c91851f400902451693d1e3bb36686046bab",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 10,
+        "tick": 9,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "6676b27cbb2f719fe5138cb75d195aeb5b96fb2a998c8d348e619a6df0606fe5"
+    },
+    {
+      "packet_id": "1ed530f8f6e215ab885951674855a8243b1526b1184bcd5818fabcbd1e548d08",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 11,
+        "tick": 10,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "a2b72d4e31a6708e9a5ae09336827ac2cfd5a756f51b806b06d3e51d6a42c229"
+    },
+    {
+      "packet_id": "4008439396d761093b6dd342c1896e07673819669ee313d3a6209ad86fbd1dc2",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 12,
+        "tick": 11,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "7b98dba92f2773ff887f8fabab74dd4fec825b72672564356e5247f0d1c81ffc"
+    },
+    {
+      "packet_id": "8870c83f4f85617910ef835d6f52f0014d69d2082ca92d07392a9c472208aac8",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 13,
+        "tick": 12,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "3165d78cea3f158fdc5213aa2201afd7d4593570e46f7280568d1b199b1b2dbc"
+    },
+    {
+      "packet_id": "b31e1b608f866818d82f056653b1e0f6b904b85248cd1f86878e1757e8ab0009",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 14,
+        "tick": 13,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "791cb534904459943036a520771e8009bd0cecd59545966e6c6ba4c356f2acf7"
+    },
+    {
+      "packet_id": "f2151685910e9761e99171755ae7cdbe0a02a93b819d41dbd32e2eac7412370a",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 15,
+        "tick": 14,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "c25b91c6fb1b693525b2045a381c2d5553d87c3e99c475014ef5b852c3e38550"
+    },
+    {
+      "packet_id": "8f19ebc11ca3e6a52bb8450ca29b69463015dde114affa6d59538696b88aa758",
+      "source": {
+        "episode_sha256": "c636f0126d0d4e650d272ee843d8d674b877426b2edc1b3913761f857b7c5a50",
+        "line": 16,
+        "tick": 15,
+        "frame_origin": "synthesized_from_observation"
+      },
+      "state_sha256": "ba490af0b1aedec82223a9e405ac303feb74b4f649e4a26a4c85b7d2d8d87e0b"
+    }
+  ],
+  "limitations": [
+    "Blank preparation packets, not annotations or an approved task dataset.",
+    "Teacher/proxy suggestions and privileged fields excluded; hashes are not anonymity.",
+    "Known episode identity is retained; source/template families and partitions unresolved.",
+    "Content hashes and test identities are consistency checks, not reviewer attestation.",
+    "Record limits bound rendered observations, not source-file memory or full-log validation."
+  ]
+}

@@ -150,6 +150,33 @@ and artificial faults are **not representative data, reviewed labels or safety
 evidence**. Eight intentional horizon timeouts are not navigation results.
 No training or live teacher ran. See DESIGN.md §7 and REVIEW.md §26 for limits.
 
+## Blind Human-Review Preparation
+
+The [CPU-only review tooling][blind-review-tool] exports blank packets from
+existing logs. It preserves full state/history and provenance without teacher,
+proxy, truth or action suggestions. The three rules remain diagnostic-only;
+mode is unlabeled. Source/template families and partitions remain unresolved.
+
+```sh
+CUDA_VISIBLE_DEVICES="" HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m teacher.review \
+	--episode sim/episodes/label-smoke-20261016/clear.jsonl \
+	--episode sim/episodes/label-smoke-20261016/obstacle.jsonl --limit 16 \
+	--output teacher/cache/my-review-packets.json \
+	--report teacher/reports/my-review-preparation.json
+```
+
+`--limit` applies per episode; at most 32 records may be requested in total.
+Both output paths must be fresh. Full packets stay in ignored `teacher/cache/`;
+the optional report contains counts and hashes, not annotations. The [recorded
+run][blind-review-report] prepared 32 blank packets, including 18 full histories,
+with no annotations or teacher calls. Hashes provide consistency, not anonymity
+or reviewer attestation. Python review normalization is fake-test-only and
+rejects mode labels; real annotation/import, target acceptance, reviewed task
+datasets, locked splits and training remain unapproved. See REVIEW.md §32.
+
+[blind-review-tool]: teacher/review.py
+[blind-review-report]: teacher/reports/review-preparation-20261016.json
+
 ## Teacher-Pipeline Host Tooling
 
 The [request planner and cache API][teacher-label-pipeline] are approved for

@@ -1787,6 +1787,64 @@ blocked. This approved experiment is complete, not a live-use promotion.
 
 [mini-context-parity]: teacher/reports/d3-mini-context-parity-capped-20261016.json
 
+## 32. Blind Human-Review Preparation (2026-10-16)
+
+The user approved CPU-only tooling and at most 32 existing observations, with
+blank assessments, complete input/history, source/group provenance and strict
+format/fake-review tests. Actual annotations, reviewed datasets, task split
+locks, teachers/training, new study episodes, dependencies/downloads, hardware
+and accepted-default changes remain excluded. Three rules remain diagnostic
+proxies; mode remains unlabeled. This prepares review, not product acceptance.
+
+[The separate review module][blind-review-tool] consumes the existing renderer
+without changing its file or source-bound request/cache identities. It exports
+only exact student-visible state, source/provenance, question IDs/types/options
+and blank assessment fields. Proxy suggestions/formulas, teacher responses,
+truth and actions are excluded. Known source hashes remain visible; this is
+blinding against suggestions, not anonymity or an independent source attestation.
+
+The validator checks exact supported packet/state fields, blank scope, hashes,
+catalogue parity and unresolved family/partition metadata. It reconstructs the
+observation through the existing renderer to reject malformed numeric ranges,
+array shapes, masks/history padding, host frames and provenance even after
+packet hashes are recomputed. Fake-format tests require explicit opt-in and
+`test/` identities; categorical option and abstention checks reject mode labels
+and real reviewer identities. No real-review import or accepted-label pathway
+is enabled, and caller-supplied test identities are not authentication.
+
+The real bounded run read the unchanged clear/obstacle label-smoke logs, ticks
+0-15: 32 packets, two known episode identities and 18 full-eight-tick histories.
+All 128 assessment entries are blank, including all mode entries. Zero teacher
+calls/actual annotations and no family-group review or locked assignments.
+The [evidence report][blind-review-report] has SHA256
+`4795fe33d996109a4276014b33e171350bb084ae615b8ecaec424da900d5f112`.
+The ignored packet file is 1,238,526 bytes, SHA256
+`eb0a1d087965fa970a0632adf69e8d715fdb6747a3accfcd9dff992655b8d7f2`.
+All exact state/source/frame/provenance and packet identities were independently
+audited on CPU, with no model runtime imported. Existing teacher/source paths,
+renderer/rules and simulator defaults remain unchanged.
+
+Twenty-eight new cases pass: 77 pipeline checks, 374 repository passes plus the
+known transformer numerical expected failure; Ruff, format, editor diagnostics
+and evidence/doc audits pass. VS Code's test tool is disabled; verification
+used repository `pytest`. The reconstruction tests exposed missing simulator
+schema/time metadata, repaired from the existing schema and host timestamp;
+no physical parameter was invented. Temporary synthetic test episodes do not
+constitute new study data. CLI record/source bounds and fresh packet/report
+destinations are tested; packet and report schemas are distinct.
+
+**Review outcome:** tooling preparation is complete, but Tasks 6/9 remain
+review/data-blocked. Episode hashes are not a reviewed grouping policy;
+source/template families and all partitions remain unresolved. Neither these
+two selected episodes nor their class appearances define a representative
+cohort. The next decision is still target definitions, permissible reviewer
+evidence and family/cohort policy before actual annotation or evaluation.
+Keep mode unlabeled, three rules diagnostic-only and normal BF16/2,048 while
+those decisions and ST/board gates remain pending.
+
+[blind-review-tool]: teacher/review.py
+[blind-review-report]: teacher/reports/review-preparation-20261016.json
+
 ## Sources
 
 Hardware and tools:

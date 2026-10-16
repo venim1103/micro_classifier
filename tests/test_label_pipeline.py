@@ -32,6 +32,257 @@ def sample():
     return config, observation
 
 
+def review_request(sample):
+    config, observation = sample
+    prepared = prepare_request(observation, config=config)
+    prepared["source"] = {
+        "episode_sha256": "2" * 64,
+        "tick": 0,
+        "line": 1,
+        "frame_origin": "synthesized_from_observation",
+    }
+    return prepared
+
+
+def test_blind_review_packet_preserves_input_without_suggestions(sample):
+    from teacher.label_pipeline import canonical
+    from teacher.review import make_review_packet, validate_review_packet
+
+    prepared = review_request(sample)
+    original = deepcopy(prepared)
+    prepared["teacher_suggestion"] = "SECRET"
+    prepared["proxy_suggestion"] = "SECRET"
+    packet = make_review_packet(prepared)
+    assert canonical(packet["state"]) == original["state"]
+    assert packet["source"] == original["source"]
+    assert packet["input_provenance"] == original["provenance"]
+    assert all(row["label"] is None for row in packet["assessments"].values())
+    assert packet["grouping"]["source_family"] is None
+    assert packet["grouping"]["template_family"] is None
+    assert packet["grouping"]["partition"] is None
+    assert "SECRET" not in json.dumps(packet)
+    assert packet == make_review_packet(prepared)
+    validate_review_packet(packet)
+    packet["input_provenance"]["config"]["radius"] = 5
+    assert prepared["provenance"] == original["provenance"]
+
+
+@pytest.mark.parametrize(
+    "defect", ["answer", "privileged", "source", "state", "split", "scope", "extra"]
+)
+def test_review_packet_rejects_tampering_even_with_recomputed_id(sample, defect):
+    from teacher.label_pipeline import digest
+    from teacher.review import make_review_packet, validate_review_packet
+
+    packet = make_review_packet(review_request(sample))
+    if defect == "answer":
+        packet["assessments"]["mode"]["label"] = "dock"
+    elif defect == "privileged":
+        packet["state"]["module_observation"]["ground_truth"] = "SECRET"
+    elif defect == "source":
+        packet["source"]["tick"] += 1
+    elif defect == "state":
+        packet["state"]["host_state"]["sequence"] += 1
+    elif defect == "split":
+        packet["grouping"]["partition"] = "test"
+    elif defect == "scope":
+        packet["training_approved"] = True
+    else:
+        packet["suggestion"] = "SECRET"
+    packet["packet_id"] = digest(
+        {key: value for key, value in packet.items() if key != "packet_id"}
+    )
+    with pytest.raises(ValueError):
+        validate_review_packet(packet)
+
+
+@pytest.mark.parametrize("defect", ["padding", "range_shape", "motion"])
+def test_review_rehashing_does_not_bypass_renderer_validation(sample, defect):
+    import hashlib
+
+    from teacher.label_pipeline import canonical, digest
+    from teacher.review import make_review_packet, validate_review_packet
+
+    packet = make_review_packet(review_request(sample))
+    observation = packet["state"]["module_observation"]
+    if defect == "padding":
+        observation["history_tof_m"][0][0][0] = 1.0
+    elif defect == "range_shape":
+        observation["tof_m"][0].pop()
+    else:
+        observation["history_ego"][-1][0] = 1.0
+    packet["state_sha256"] = hashlib.sha256(
+        canonical(packet["state"]).encode()
+    ).hexdigest()
+    packet["packet_id"] = digest(
+        {key: value for key, value in packet.items() if key != "packet_id"}
+    )
+    with pytest.raises(ValueError, match="renderer validation"):
+        validate_review_packet(packet)
+
+
+def fake_review_fixture(packet):
+    return {
+        "schema": "micro-classifier/fake-review-fixture/1",
+        "packet_id": packet["packet_id"],
+        "reviewer": {"kind": "fake_test_only", "id": "test/reviewer"},
+        "assessments": {
+            row["name"]: {
+                "label": None if row["name"] == "mode" else row["options"][0],
+                "abstention_reason": "policy_undefined"
+                if row["name"] == "mode"
+                else None,
+                "notes": "synthetic format fixture",
+            }
+            for row in packet["questions"]
+        },
+    }
+
+
+def test_fake_review_is_explicit_isolated_and_keeps_mode_unlabeled(sample):
+    from teacher.review import make_review_packet, normalize_review_fixture
+
+    packet = make_review_packet(review_request(sample))
+    fixture = fake_review_fixture(packet)
+    original = deepcopy(fixture)
+    with pytest.raises(ValueError, match="explicit fake"):
+        normalize_review_fixture(packet, fixture)
+    result = normalize_review_fixture(packet, fixture, fake_test_only=True)
+    assert result["synthetic"] and not result["training_approved"]
+    assert not result["reviewed_dataset"]
+    assert result["assessments"]["mode"]["label"] is None
+    result["assessments"]["path_blocked"]["notes"] = "changed"
+    assert fixture == original
+    assert all(row["label"] is None for row in packet["assessments"].values())
+
+
+@pytest.mark.parametrize(
+    "defect",
+    ["real", "identity", "mode", "option", "reason", "missing", "notes", "numeric"],
+)
+def test_fake_review_rejects_real_identity_and_invalid_assessments(sample, defect):
+    from teacher.review import make_review_packet, normalize_review_fixture
+
+    packet = make_review_packet(review_request(sample))
+    fixture = fake_review_fixture(packet)
+    if defect == "real":
+        fixture["reviewer"]["kind"] = "human"
+    elif defect == "identity":
+        fixture["packet_id"] = "0" * 64
+    elif defect == "mode":
+        fixture["assessments"]["mode"].update(label="dock", abstention_reason=None)
+    elif defect == "option":
+        fixture["assessments"]["path_blocked"]["label"] = "unknown"
+    elif defect == "reason":
+        fixture["assessments"]["mode"]["abstention_reason"] = None
+    elif defect == "missing":
+        del fixture["assessments"]["clear_sector"]
+    elif defect == "notes":
+        fixture["assessments"]["mode"]["notes"] = 5
+    else:
+        fixture["assessments"]["speed_tier"]["label"] = 0
+    with pytest.raises(ValueError):
+        normalize_review_fixture(packet, fixture, fake_test_only=True)
+
+
+@pytest.mark.parametrize("limit", [0, -1, 33, True, 1.5])
+def test_review_preparation_rejects_bad_bounds_before_source_reads(limit):
+    from teacher.review import prepare_review
+
+    with pytest.raises(ValueError, match="1-32"):
+        prepare_review(["not-opened"], limit=limit)
+
+
+@pytest.mark.parametrize("wire", [False, True])
+def test_review_bundle_cli_is_bounded_blank_model_free_and_exclusive(
+    tmp_path, monkeypatch, wire
+):
+    import hashlib
+    import sys
+
+    from teacher.review import main as review_main
+    from teacher.review import prepare_review, validate_review_packet
+
+    records, _ = rollout(RoverEnv(Config(max_ticks=2)))
+    source = tmp_path / "episode.jsonl"
+    write_episode(source, with_wire_frames(records) if wire else records)
+    original = source.read_bytes()
+    output, report_path = tmp_path / "packets.json", tmp_path / "report.json"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "review",
+            "--episode",
+            str(source),
+            "--limit",
+            "2",
+            "--output",
+            str(output),
+            "--report",
+            str(report_path),
+        ],
+    )
+    review_main()
+    bundle = json.loads(output.read_text())
+    report = json.loads(report_path.read_text())
+    assert report["schema"] == "micro-classifier/blind-review-preparation-report/1"
+    assert bundle["schema"] == "micro-classifier/blind-review-bundle/1"
+    assert bundle["packet_count"] == 2 and bundle["source_episode_count"] == 1
+    assert (
+        bundle["teacher_calls"]
+        == bundle["actual_annotations"]
+        == bundle["mode_labels"]
+        == 0
+    )
+    assert not bundle["locked_task_splits"] and not bundle["training_approved"]
+    assert (
+        report["packet_file_sha256"] == hashlib.sha256(output.read_bytes()).hexdigest()
+    )
+    for packet in bundle["packets"]:
+        validate_review_packet(packet)
+        assert (
+            packet["source"]["episode_sha256"] == hashlib.sha256(original).hexdigest()
+        )
+    assert source.read_bytes() == original
+    with pytest.raises(FileExistsError):
+        review_main()
+    with pytest.raises(ValueError, match="duplicate source"):
+        prepare_review([source, source])
+    with pytest.raises(ValueError, match="1-32"):
+        prepare_review([source] * 5, limit=8)
+    assert "ground_truth" not in output.read_text()
+    assert "probabilities" not in output.read_text()
+
+
+def test_review_cli_preserves_existing_report_before_any_source_read(
+    tmp_path, monkeypatch
+):
+    import sys
+
+    from teacher.review import main as review_main
+
+    output, report = tmp_path / "fresh.json", tmp_path / "existing.json"
+    report.write_text("existing report")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "review",
+            "--episode",
+            "not-opened",
+            "--output",
+            str(output),
+            "--report",
+            str(report),
+        ],
+    )
+    with pytest.raises(FileExistsError):
+        review_main()
+    assert report.read_text() == "existing report"
+    assert not output.exists()
+
+
 def test_render_preserves_host_sensor_history_and_question_order(sample):
     config, observation = sample
     frame = encode_state(state_from_observation(observation))

@@ -912,6 +912,55 @@ representative examples are planning ranges, not universal requirements.
 Scale using learning curves and error analysis; the PDF's 150,000-example
 figure is not an established minimum.
 
+### Synthetic Evaluation Tooling (2026-10-16)
+
+The user approved [CPU evaluation tooling][teacher-evaluation] with synthetic
+fixtures only. This prepares part of Task 9; it does not approve task datasets,
+live teacher labels, baseline fitting, student training or locked task splits.
+No deployment/acceptance threshold or physical safety rule was changed.
+
+`evaluate_synthetic` requires explicit ordered option identities and integer
+label indices, rejecting malformed/nonfinite probabilities rather than
+renormalizing them. Reports identify their synthetic scope and input/source
+hashes. Metric conventions are explicit:
+
+- Macro-F1 includes every declared option, assigning undefined class F1 zero;
+  absent-class recall/precision are null where their denominators vanish.
+- NLL uses natural logarithms with no epsilon clipping. A zero target
+  probability yields JSON null plus an explicit infinite-NLL flag/count.
+- Brier is mean per-example sum of squared probability errors over options,
+  not additionally divided by option count.
+- ECE uses configurable equal-width bins of maximum class probability,
+  left-closed/right-open except the final bin includes one. Explicit edge
+  search avoids decimal multiplication rounding into the preceding bin.
+- Argmax ties choose the first declared option. Coverage/risk curves accept
+  all confidence ties together with maximum probability at least the threshold;
+  zero-coverage accuracy/risk are null. This is not the wire Jev-confidence
+  formula and does not select a deployment rejection threshold.
+
+`validate_synthetic_splits` requires five distinct nonempty purposes: training,
+development, quantization calibration, confidence calibration and test. Sample
+IDs are globally unique; declared input hashes and source/episode/template
+groups cannot cross purposes. Groups may repeat within a purpose. An optional
+expected canonical manifest SHA-256 detects changes. These identifiers/hashes
+are supplied fixture metadata, not verified files, approved grouping policy,
+production schema or a real test lock; output says `locked_task_splits=false`.
+It does not create split assignments, fit models or operate on episode logs.
+
+`python -m teacher.evaluation --output ...` runs built-in toy fixtures only,
+writing a new report exclusively. The [recorded report][synthetic-evaluation-report]
+checks a four-row, three-option arithmetic fixture (accuracy 0.75, macro-F1
+7/9, Brier 0.395, two-bin ECE 0.05) and five separate one-row placeholder
+partitions. These values demonstrate arithmetic, **not robot task quality**.
+Report SHA-256:
+`a4436830a3b687d36fc7ca4130da87bda72c65d6460e4d2859b24c7ac73a94bf`.
+
+Verification: 36 [focused tests][evaluation-tests], 260 repository passes plus
+the known transformer expected failure; Ruff lint/changed-file format and
+editor diagnostics pass. No real teacher call, task dataset, model fit,
+training, dependency change, download or hardware action occurred. Task 9's
+baselines/evaluation remain blocked on reviewed data and genuinely locked splits.
+
 ### Training Baselines and Loss
 
 Train a supervised-only student and an otherwise comparable distilled student.
@@ -1604,6 +1653,9 @@ for this project.
 [sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
 [teacher-label-pipeline]: teacher/label_pipeline.py
 [teacher-pipeline-tests]: tests/test_label_pipeline.py
+[teacher-evaluation]: teacher/evaluation.py
+[synthetic-evaluation-report]: teacher/reports/evaluation-synthetic-20261016.json
+[evaluation-tests]: tests/test_evaluation.py
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

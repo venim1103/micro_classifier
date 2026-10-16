@@ -1346,6 +1346,48 @@ synthetic-fixture CPU evaluation metrics and split-validation tooling, pending
 user approval. This would not approve real labels, training, dataset generation,
 new metric thresholds or a claim of locked task splits.
 
+## 22. Synthetic Evaluation Preparation (2026-10-16)
+
+The user explicitly selected `Approve synthetic-only evaluation tooling`:
+CPU metrics and split-validation fixtures, with live labeling, task datasets
+and training still disabled. This supersedes §21's pending approval only for
+that tooling. Baseline fitting, actual split locking, deployment thresholds,
+dependencies and hardware scope remain unchanged.
+
+The [implementation][teacher-evaluation] computes macro-F1 over all declared
+options, per-class recall, natural-log NLL, summed multiclass Brier, equal-width
+top-label ECE and inclusive tie-preserving risk/coverage curves. Missing-class
+denominators and zero-coverage accuracy/risk are explicit nulls; zero target
+probability is infinite NLL, represented as null with a flag rather than
+silently clipped. Decimal-edge regression tests reproduced two ECE binning
+errors before explicit edge search repaired them. DESIGN.md §7 records all
+conventions; none defines a new application rejection rule.
+
+Five-purpose synthetic manifests keep train, development, quantization
+calibration, confidence calibration and test distinct. Duplicate sample IDs,
+cross-purpose declared input/source/episode/template overlap, wrong scope and
+unexpected manifest identity are rejected. Same-purpose groups can repeat.
+Declared groups/hashes are not attested against files; no production grouping
+contract, representative dataset or actual test lock is claimed.
+
+The exclusive CLI runs only a built-in fixture. Its [report][synthetic-evaluation-report]
+records four toy probability rows and five disjoint one-row placeholder
+partitions: accuracy 0.75, macro-F1 7/9, Brier 0.395, ECE 0.05. This is
+arithmetic/plumbing evidence, not rover accuracy, calibration or coverage.
+The report source/environment/input/manifest hashes and exact artifact digest
+are recorded in DESIGN.md §7.
+
+Verification: 36 [focused CPU tests][evaluation-tests], 260 repository passes
+plus the known transformer numerical expected failure, Ruff lint/changed-file
+format and clean editor diagnostics. No teacher call, task dataset generation,
+baseline fit, training, download, dependency or hardware action occurred.
+Task 9 remains blocked on reviewed task data and locked splits; live labels,
+student training, firmware and hardware remain outside this approval.
+
+[teacher-evaluation]: teacher/evaluation.py
+[synthetic-evaluation-report]: teacher/reports/evaluation-synthetic-20261016.json
+[evaluation-tests]: tests/test_evaluation.py
+
 ## Sources
 
 Hardware and tools:

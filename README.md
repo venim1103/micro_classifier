@@ -111,6 +111,26 @@ CLI path. Every cached answer is synthetic, training-disabled and requires
 human review. Token-budget fit and genuine label quality remain unverified;
 full history is not silently truncated. See DESIGN.md §7 and REVIEW.md §20.
 
+## Synthetic Evaluation Tooling
+
+[CPU-only metrics and split checks][teacher-evaluation] are approved for
+synthetic fixtures only. The CLI runs a built-in arithmetic fixture, not
+episode logs, real labels or trained models:
+
+```sh
+python -m teacher.evaluation --output teacher/reports/my-synthetic-evaluation.json
+python -m pytest -q tests/test_evaluation.py
+```
+
+Outputs must be new. The [recorded report][synthetic-evaluation-report] is
+plumbing evidence, not robot accuracy or a locked dataset. The Python API
+provides explicit ordered-class macro-F1/recall, NLL, Brier, ECE and tied
+risk/coverage curves. Split checks reject declared group/input overlap across
+five separate purposes; identifiers/hashes are not attested against files.
+Missing classes and infinite NLL are explicit, with no silent normalization
+or clipping. See DESIGN.md §7 and REVIEW.md §22 for conventions and limits.
+Real evaluation, baseline fitting and training remain gated.
+
 ## M1a Host Probes
 
 [CPU preparation tooling][m1a-script] exports nine **untrained** fixed-shape
@@ -230,5 +250,7 @@ The simulation JSONL container remains separately versioned. See
 [sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
 [teacher-label-pipeline]: teacher/label_pipeline.py
 [teacher-pipeline-tests]: tests/test_label_pipeline.py
+[teacher-evaluation]: teacher/evaluation.py
+[synthetic-evaluation-report]: teacher/reports/evaluation-synthetic-20261016.json
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

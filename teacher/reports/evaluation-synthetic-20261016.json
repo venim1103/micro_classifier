@@ -1,0 +1,188 @@
+{
+  "environment": {
+    "numpy": "2.2.6",
+    "python": "3.12.3"
+  },
+  "fixture_id": "test/metric-arithmetic-v1",
+  "live_teacher_calls": 0,
+  "locked_task_splits": false,
+  "metrics": {
+    "accuracy": 0.75,
+    "allowed_use": "synthetic_fixture_tests_only",
+    "argmax_tie_policy": "first_declared_option",
+    "brier": 0.3950000000000001,
+    "brier_policy": "mean_sum_over_options",
+    "confusion_matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        1,
+        1
+      ]
+    ],
+    "coverage_curve": [
+      {
+        "accepted": 0,
+        "accuracy": null,
+        "coverage": 0.0,
+        "risk": null,
+        "threshold": null
+      },
+      {
+        "accepted": 1,
+        "accuracy": 1.0,
+        "coverage": 0.25,
+        "risk": 0.0,
+        "threshold": 0.8
+      },
+      {
+        "accepted": 3,
+        "accuracy": 0.6666666666666666,
+        "coverage": 0.75,
+        "risk": 0.33333333333333337,
+        "threshold": 0.7
+      },
+      {
+        "accepted": 4,
+        "accuracy": 0.75,
+        "coverage": 1.0,
+        "risk": 0.25,
+        "threshold": 0.6
+      }
+    ],
+    "coverage_policy": "max_probability_at_least_threshold_include_all_ties",
+    "ece": 0.050000000000000044,
+    "ece_bins": [
+      {
+        "accuracy": null,
+        "count": 0,
+        "lower": 0.0,
+        "mean_confidence": null,
+        "upper": 0.5
+      },
+      {
+        "accuracy": 0.75,
+        "count": 4,
+        "lower": 0.5,
+        "mean_confidence": 0.7,
+        "upper": 1.0
+      }
+    ],
+    "ece_policy": "equal_width_top_label_probability_left_closed_last_includes_1",
+    "input_sha256": "0cced6a44bc6b65990ca3f86768764e1f4ac55b7e075d7f13aa02d0cb31a13c3",
+    "macro_f1": 0.7777777777777777,
+    "macro_f1_policy": "all_declared_options_zero_division_0",
+    "missing_classes": [],
+    "nll": 0.6750205078632583,
+    "nll_is_infinite": false,
+    "options": [
+      "first",
+      "second",
+      "third"
+    ],
+    "per_class": [
+      {
+        "f1": 1.0,
+        "option": "first",
+        "precision": 1.0,
+        "predicted": 1,
+        "recall": 1.0,
+        "support": 1
+      },
+      {
+        "f1": 0.6666666666666666,
+        "option": "second",
+        "precision": 0.5,
+        "predicted": 2,
+        "recall": 1.0,
+        "support": 1
+      },
+      {
+        "f1": 0.6666666666666666,
+        "option": "third",
+        "precision": 1.0,
+        "predicted": 1,
+        "recall": 0.5,
+        "support": 2
+      }
+    ],
+    "sample_count": 4,
+    "schema": "micro-classifier/synthetic-evaluation/1",
+    "source_sha256": "8cc4c551be0b47cae4a9a0beede05579df947fccd0c81b58161c0aaca6b67529",
+    "synthetic": true,
+    "task_quality_claim": false,
+    "training_approved": false,
+    "zero_target_probability_count": 0
+  },
+  "schema": "micro-classifier/synthetic-evaluation-smoke/1",
+  "source_sha256": "8cc4c551be0b47cae4a9a0beede05579df947fccd0c81b58161c0aaca6b67529",
+  "split_audit": {
+    "allowed_use": "synthetic_fixture_tests_only",
+    "group_identities_verified": false,
+    "locked_task_splits": false,
+    "manifest_sha256": "c348896b47b814603c20c0d7ddf0b97a293aa0e1ac75f647101c2f8ecd68cb1f",
+    "partitions": {
+      "confidence_calibration": {
+        "groups": {
+          "episode": 1,
+          "source": 1,
+          "template": 1
+        },
+        "samples": 1,
+        "unique_inputs": 1
+      },
+      "development": {
+        "groups": {
+          "episode": 1,
+          "source": 1,
+          "template": 1
+        },
+        "samples": 1,
+        "unique_inputs": 1
+      },
+      "quantization_calibration": {
+        "groups": {
+          "episode": 1,
+          "source": 1,
+          "template": 1
+        },
+        "samples": 1,
+        "unique_inputs": 1
+      },
+      "test": {
+        "groups": {
+          "episode": 1,
+          "source": 1,
+          "template": 1
+        },
+        "samples": 1,
+        "unique_inputs": 1
+      },
+      "train": {
+        "groups": {
+          "episode": 1,
+          "source": 1,
+          "template": 1
+        },
+        "samples": 1,
+        "unique_inputs": 1
+      }
+    },
+    "schema": "micro-classifier/synthetic-split-audit/1",
+    "synthetic": true,
+    "training_approved": false
+  },
+  "synthetic": true,
+  "task_quality_claim": false,
+  "training_approved": false,
+  "training_runs": 0
+}

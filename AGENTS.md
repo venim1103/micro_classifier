@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §21 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §22 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -147,6 +147,16 @@ Keep this section and the Task List current; a new session resumes from them.
   regressions now pass for both fresh and cached starts; 32 pipeline tests,
   224 repository passes plus the known transformer expected failure. Lint,
   format and editor diagnostics pass. No approval boundary or label rule changed.
+- User approved synthetic-only evaluation tooling on 2026-10-16. The CPU-only
+  `teacher/evaluation.py` reports macro-F1, per-class recall, NLL, Brier, ECE
+  and tie-preserving coverage curves with explicit conventions. Five-purpose
+  fixture manifests reject cross-partition declared input/source/episode/template
+  overlap; identifiers/hashes are not attested and no task split is locked.
+  Thirty-six focused tests pass; full suite: 260 passed plus the known expected
+  transformer failure. Built-in toy report:
+  `teacher/reports/evaluation-synthetic-20261016.json`. No real label, task
+  dataset, model fit, training, dependency, download or hardware action occurred.
+  Actual Task 9 evaluation/baselines remain blocked on reviewed data and splits.
 
 ## Task List
 
@@ -215,9 +225,13 @@ on missing tools, and continue with the next unblocked task.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.
-  Proposed next scope (pending approval): CPU-only metric and split-validation
+  Approved (2026-10-16): CPU-only metric and split-validation
   tooling with synthetic fixtures only; no real labeling, training, dataset
   generation, metric-threshold changes or claim of locked task splits.
+  Partial result (2026-10-16): synthetic metric arithmetic, five-purpose declared
+  leakage/hash checks and exclusive built-in smoke report implemented; 36 focused
+  tests, 260 repository passes plus the known expected failure. No baseline was
+  fitted, task dataset generated or real split locked. DESIGN.md §7, REVIEW.md §22.
 10. [blocked: training outside current tooling scope; dataset pending]
   Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled

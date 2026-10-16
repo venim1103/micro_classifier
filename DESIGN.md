@@ -1565,6 +1565,87 @@ labels, new episode, training, download, dependency or hardware action occurred.
 Keep both drafts opt-in/unreviewed and the accepted input/budget unchanged;
 further input-strategy and teacher-quality decisions require separate review.
 
+### Offline Prompt-Cost Decision Study (2026-10-16)
+
+The second approved decision-preparation task measures **existing inputs and
+representations only**, with cached tokenizers and CPU tests. It does not
+generate task labels/data, invent another encoding, remove input/history,
+raise the 2,048-token ceiling or approve inference/training. The default
+renderer, both lossless codecs and accepted policy remain unchanged.
+
+The [preflight][prompt-budget] adds explicit `--profile-input-costs`, mutually
+exclusive with both comparison flags. It profiles the unchanged full, literal
+row and typed float32 forms. Each form is counted as a complete released prompt;
+the existing default path and complete-request budget checks are preserved.
+The CLI summary refers to full/default prompts; each form has its own result.
+
+Standalone state text and JSON fields are tokenized separately for diagnosis.
+Each fragment includes its own field key/braces and a text hash. **These counts
+are not additive, removal-savings estimates, lower bounds or valid request
+budgets**: BPE boundaries and wrapper contexts differ. No fragment is rendered
+as a teacher request or substituted for a full input. Reports carry original
+and representation request/state/source identities, exact reconstructions,
+asset hashes, false inference/training approvals and this interpretation.
+
+Both pinned cached tokenizers were run offline with GPUs hidden on the same
+80 observations used in the preceding comparisons (five 16-observation
+prefixes). All complete/state/field counts match between models. Complete
+prompt ranges and failures reproduce the prior evidence:
+
+| Form | Complete Tokens | Over 2,048 | Full-Eight-Tick-History Fits |
+| --- | --- | --- | --- |
+| full/default | 3,421-10,855 | 80/80 | 0/45 |
+| literal rows | 772-9,698 | 65/80 | 0/45 |
+| typed float32 rows | 811-6,016 | 63/80 | 0/45 |
+
+The 45 fully populated history windows have these **standalone diagnostic**
+field counts; the table does not partition or sum to the full prompt:
+
+| Form / Field | Standalone Tokens |
+| --- | --- |
+| full `history_tof_m` | 4,771-8,432 |
+| full current `tof_m` | 624-1,074 |
+| full `history_ego` | 272-601 |
+| full `history_tof_valid` | 598 |
+| literal `row_table` | 4,562-8,876 |
+| typed float32 `row_table` | 2,635-5,131 |
+| either row form `history_tof_m` references | 192 |
+
+This suggests numeric contents, not just question/chat wording, drive token
+pressure in these forms. It is not a proof that another lossless encoding
+cannot fit, that dropping a field saves its standalone count, or that any
+representation is understandable to a teacher. No model-quality test occurred.
+
+#### Strategy Choices Still Requiring Review
+
+| Possible Direction | Decision/Evidence Needed Before Use |
+| --- | --- |
+| Promote an existing exact draft at 2,048 | Current sampled full-history failures prevent promotion; semantic quality is unmeasured |
+| Try another exact encoding | Separate draft approval, exact reconstruction and complete-prompt counts, then task-quality evidence; no predicted saving is claimed |
+| Use derived summaries or a visual representation | Review any information/precision/input-policy change and teacher/student consistency; no such change is approved |
+| Change context budget, hardware or teacher | Explicit resource/revision/licence approvals and measured memory/throughput plus task quality; advertised context length does not prove fit |
+
+**Proposed default:** keep full inputs/history and the existing ceiling. Resolve
+the proposed mode/target review first, then select an input/resource strategy
+against reviewed task needs. Do not enlarge a labeling job or assume that
+further wording cleanup alone clears the gate. If the agreed pilot requires
+only computable rules, evaluate their direct value before assuming distillation
+is necessary. This recommendation is not an accepted product change.
+
+[Flash cost study][input-cost-flash] SHA-256:
+`dfb4dc0bd5078787457425c694986251b2c148aa2055a6539a538d660e80b96c`.
+[Mini cost study][input-cost-mini] SHA-256:
+`beb69510c75fe8447622226980bb8a5de0882d6411549ba71c427376944d20be`.
+
+Independent verification retokenized every complete/state/field string and
+recomputed request/fragment/source hashes: 240 representation rows and 160 exact
+draft round trips per model. Existing full/typed counts and original state
+identities match the prior reports. Seven new tests pass; 77 focused
+pipeline/preflight tests and 314 repository passes plus the known transformer
+numerical expected failure; Ruff lint/changed-file format and editor diagnostics
+clean. No new episodes, task labels/dataset, model weights/runtime, inference,
+training, download/dependency or hardware action occurred.
+
 ### Quantization and Confidence
 
 Perform static INT8 PTQ with representative calibration inputs, following
@@ -1981,6 +2062,8 @@ for this project.
 [row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
 [float32-draft-flash]: teacher/reports/float32-draft-budget-d3-flash-20261016.json
 [float32-draft-mini]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
+[input-cost-flash]: teacher/reports/input-cost-d3-flash-20261016.json
+[input-cost-mini]: teacher/reports/input-cost-d3-mini-20261016.json
 [st-npu-primer-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
 [st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
 [st-boot]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification#boot-modes

@@ -178,8 +178,28 @@ The [flash][float32-draft-flash]/[mini][float32-draft-mini] results reconstruct
 all 80 sampled states exactly, but **63/80 still exceed 2,048 tokens** (811-6,016).
 Only two additional startup requests fit; no sampled full-eight-tick-history
 request fits. Neither draft is approved for live use or teacher-quality claims.
-Both comparison flags are mutually exclusive; omitting them retains the full
-renderer. See DESIGN.md §7 and REVIEW.md §25. No inference or training was run.
+The comparison flags and cost-study flag below are mutually exclusive; omitting
+all three retains the full-renderer preflight. See DESIGN.md §7 and REVIEW.md §25.
+No inference or training was run.
+
+An offline cost study diagnoses the three existing forms without creating a
+new representation or changing any input:
+
+```sh
+HF_HUB_OFFLINE=1 CUDA_VISIBLE_DEVICES="" python -m teacher.prompt_budget \
+	--episode sim/episodes/wire-v0-smoke/clear-20261015.jsonl \
+	--output teacher/reports/my-input-cost-study.json --limit 16 \
+	--profile-input-costs
+```
+
+The [flash][input-cost-flash]/[mini][input-cost-mini] studies reproduce the
+complete-prompt results on 80 existing inputs; none of the 45 full-history
+inputs fits in any form. Isolated full ToF-history fields cost 4,771-8,432
+tokens; typed row tables 2,635-5,131. **Standalone field counts are not additive,
+removal savings, lower bounds or request budgets.** They never replace complete
+inputs. CLI summary/exit status refer to full/default prompts; each form has
+its own budget results. No teacher or training runs. See REVIEW.md §27-28 for
+the unaccepted target/evaluation proposal and input-strategy decisions.
 
 ## Synthetic Evaluation Tooling
 
@@ -330,5 +350,7 @@ The simulation JSONL container remains separately versioned. See
 [row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
 [float32-draft-flash]: teacher/reports/float32-draft-budget-d3-flash-20261016.json
 [float32-draft-mini]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
+[input-cost-flash]: teacher/reports/input-cost-d3-flash-20261016.json
+[input-cost-mini]: teacher/reports/input-cost-d3-mini-20261016.json
 [m1a-report]: export/reports/m1a-cpu-20261015.json
 [st-compile-script]: export/st_compile.py

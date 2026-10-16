@@ -1600,6 +1600,59 @@ test or task-quality result. The last complete executable gate remains 307
 passes plus the known transformer expected failure. ST tools remain absent;
 Tasks 6/9 and live teacher use retain their existing review/data/budget gates.
 
+## 28. Offline Prompt Costs and Strategy Decisions (2026-10-16)
+
+The second decision-preparation task adds an opt-in cost study to the existing
+[preflight][prompt-budget]. It profiles only the unchanged full and two existing
+lossless forms with approved cached tokenizers. No additional representation,
+input/history removal, context increase, real teacher, dataset or training is
+approved. The default preflight and complete-request budget checks remain intact.
+
+`--profile-input-costs` is mutually exclusive with the two comparison flags.
+It counts complete released prompts for every form, plus standalone state/JSON
+fields with original/source/text hashes. Fragments include their own keys/braces;
+their tokenization boundaries differ from a complete prompt. **Field counts are
+not additive, savings estimates, lower bounds or budget-qualified requests**.
+Fragments are never rendered as teacher requests. The CLI summary remains
+explicitly the full/default budget summary, with per-form results in the report.
+
+Offline/GPU-hidden runs used both cached pinned tokenizers on the same 80
+existing observations. Full prompts remain 3,421-10,855 tokens (80/80 over
+2,048); literal rows 772-9,698 (65/80 over); typed float32 rows 811-6,016
+(63/80 over). All 45 full-eight-tick-history inputs fail in every form.
+Both tokenizers agree on every complete, state and field count.
+
+For those warm histories, independently tokenized full `history_tof_m` fields
+cost 4,771-8,432 tokens and current ToF 624-1,074. Literal row tables cost
+4,562-8,876; typed row tables 2,635-5,131. These diagnostics suggest that
+numeric payload is the main pressure in these forms, not merely chat wording.
+They neither prove another exact encoding impossible nor establish removal
+savings, teacher interpretation or task quality.
+
+[Flash][input-cost-flash] and [mini][input-cost-mini] reports retain full asset,
+source, original/representation request and fragment identities. Independent
+checks retokenized all complete/state/field texts, recomputed their hashes and
+verified 240 representation rows/160 exact draft round trips per model. Existing
+full/typed counts and original state identities agree with §25; DESIGN.md §7
+records exact report hashes and diagnostic field ranges.
+
+The proposed next decision is to resolve mode/target semantics (§27) and then
+review an input/resource strategy: another exact draft, a separately approved
+summary/visual input change, or explicitly measured budget/hardware/teacher
+changes. None is selected or authorized here. Keep full inputs/history and the
+2,048 ceiling; a larger labeling run remains blocked. Direct rules should still
+be compared before assuming that the eventual task needs distillation.
+
+Seven new tests pass; 77 focused pipeline/preflight checks and 314 repository
+passes plus the known transformer numerical expected failure. Ruff lint/changed
+format and editor diagnostics pass. No new episode, task label/dataset, model
+weights/runtime, inference, training, dependency/download or hardware action.
+Both approved decision-preparation tasks are complete; product and ST gates
+remain open, not silently cleared by the reports.
+
+[input-cost-flash]: teacher/reports/input-cost-d3-flash-20261016.json
+[input-cost-mini]: teacher/reports/input-cost-d3-mini-20261016.json
+
 ## Sources
 
 Hardware and tools:

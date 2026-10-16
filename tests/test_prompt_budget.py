@@ -13,6 +13,8 @@ from teacher.prompt_budget import (
     count_requests,
     load_prompt_assets,
     main,
+    profile_input_costs,
+    profile_request_costs,
     verify_prompt_assets,
 )
 
@@ -97,6 +99,158 @@ def test_bad_tokenizer_output_is_rejected(prepared_request, fake_assets, sequenc
     fake_assets.tokenizer = lambda *args, **kwargs: {"input_ids": sequences}
     with pytest.raises(ValueError, match="sequences"):
         count_requests([prepared_request], assets=fake_assets)
+
+
+def test_cost_profile_preserves_complete_requests_and_hashes_fields(
+    prepared_request, fake_assets
+):
+    original = deepcopy(prepared_request)
+    rendered = []
+
+    def render(tokenizer, state, question, codes):
+        rendered.append(state)
+        return state + "|question-and-chat-overhead"
+
+    fake_assets.formatter.render = render
+    report = profile_request_costs([prepared_request], assets=fake_assets)
+    row = report["results"][0]
+    assert rendered == [prepared_request["state"]]
+    assert row["tokens"]["mode"] == len(
+        prepared_request["state"] + "|question-and-chat-overhead"
+    )
+    assert row["state_only_tokens"] == len(prepared_request["state"])
+    payload = json.loads(prepared_request["state"])
+    fragment = json.dumps(
+        {"history_tof_m": payload["module_observation"]["history_tof_m"]},
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    assert row["components"]["$.module_observation.history_tof_m"] == {
+        "standalone_tokens": len(fragment),
+        "text_sha256": hashlib.sha256(fragment.encode()).hexdigest(),
+    }
+    assert (
+        row["state_sha256"]
+        == hashlib.sha256(prepared_request["state"].encode()).hexdigest()
+    )
+    assert not report["component_token_counts_additive"]
+    assert (
+        not report["partial_counts_budget_authority"]
+        and not report["fragments_used_as_requests"]
+    )
+    assert not report["training_approved"] and not report["live_labeling_approved"]
+    assert report["inference_calls"] == 0 and not report["model_weights_loaded"]
+    assert prepared_request == original
+    assert len(fake_assets.calls) == 2
+    assert all(
+        call == {"add_special_tokens": False, "truncation": False, "padding": False}
+        for call in fake_assets.calls
+    )
+    json.dumps(report, allow_nan=False)
+
+
+def test_cost_profile_small_fragments_never_override_complete_budget(
+    prepared_request, fake_assets
+):
+    fake_assets.tokenizer = lambda texts, **settings: {
+        "input_ids": [
+            list(range(2049 if text.endswith("|question-and-chat-overhead") else 1))
+            for text in texts
+        ]
+    }
+    report = profile_request_costs([prepared_request], assets=fake_assets)
+    assert not report["all_fit"] and report["max_tokens"] == 2049
+    assert report["results"][0]["state_only_tokens"] == 1
+    assert all(
+        row["standalone_tokens"] == 1
+        for row in report["results"][0]["components"].values()
+    )
+
+
+@pytest.mark.parametrize("state", ["[]", '{"schema":"other","module_observation":{}}'])
+def test_cost_profile_rejects_unsupported_state_objects(
+    prepared_request, fake_assets, state
+):
+    prepared_request["state"] = state
+    with pytest.raises(ValueError, match="supported state object"):
+        profile_request_costs([prepared_request], assets=fake_assets)
+
+
+def test_cost_profile_rejects_missing_component_sequences(
+    prepared_request, fake_assets
+):
+    fake_assets.tokenizer = lambda texts, **settings: {
+        "input_ids": [[1]] if len(texts) == 1 else []
+    }
+    with pytest.raises(ValueError, match="component sequences"):
+        profile_request_costs([prepared_request], assets=fake_assets)
+
+
+def test_input_cost_study_binds_all_existing_forms_without_mutation(
+    prepared_request, fake_assets
+):
+    original = deepcopy(prepared_request)
+    report = profile_input_costs([prepared_request], assets=fake_assets)
+    assert list(report["variants"]) == ["full", "literal_rows", "float32_rows"]
+    assert report["request_count"] == 1 and report["profiled_request_count"] == 3
+    assert report["exact_draft_roundtrip_count"] == 2
+    full = report["variants"]["full"]
+    assert report["max_tokens"] == full["max_tokens"]
+    assert report["all_fit"] == full["all_fit"]
+    assert report["budget_summary_representation"] == "full_default"
+    for name, variant in report["variants"].items():
+        row = variant["results"][0]
+        assert row["exact_roundtrip"]
+        assert row["original_state_sha256"] == full["results"][0]["state_sha256"]
+        assert row["original_request_sha256"] == full["results"][0]["request_sha256"]
+        if name != "full":
+            assert "$.row_table" in row["components"]
+    report["variants"]["full"]["assets"]["kind"] = "changed"
+    assert fake_assets.provenance["kind"] == "fake_test_only"
+    assert prepared_request == original
+    assert not report["live_labeling_approved"] and not report["training_approved"]
+    assert (
+        not report["partial_counts_budget_authority"]
+        and not report["fragments_used_as_requests"]
+    )
+    json.dumps(report, allow_nan=False)
+
+
+def test_cli_input_cost_study_is_explicit_and_exclusive(
+    prepared_request, fake_assets, tmp_path, monkeypatch, capsys
+):
+    output = tmp_path / "costs.json"
+    monkeypatch.setattr(
+        "teacher.prompt_budget.episode_requests",
+        lambda *args, **kwargs: [prepared_request],
+    )
+    monkeypatch.setattr(
+        "teacher.prompt_budget.load_prompt_assets", lambda **kwargs: fake_assets
+    )
+    arguments = [
+        "prompt_budget",
+        "--episode",
+        "unused.jsonl",
+        "--output",
+        str(output),
+        "--profile-input-costs",
+    ]
+    monkeypatch.setattr("sys.argv", arguments)
+    status = main()
+    report = json.loads(output.read_text())
+    summary = json.loads(capsys.readouterr().out)
+    assert report["schema"] == "micro-classifier/offline-input-cost-study/1"
+    assert (
+        summary["request_count"] == 1
+        and summary["max_tokens"] == report["variants"]["full"]["max_tokens"]
+    )
+    assert status == (0 if report["all_fit"] else 1)
+    with pytest.raises(FileExistsError):
+        main()
+    arguments.append("--compare-float32-draft")
+    with pytest.raises(SystemExit) as error:
+        main()
+    assert error.value.code == 2
 
 
 def test_asset_hashes_are_required_before_any_release_code_execution(tmp_path):

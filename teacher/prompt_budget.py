@@ -11,6 +11,8 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from teacher.label_pipeline import (
+    COMPACT_SCHEMA,
+    FLOAT32_COMPACT_SCHEMA,
     compact_request_draft,
     episode_requests,
     expand_compact_state,
@@ -178,6 +180,122 @@ def count_requests(requests, *, assets, budget=2048):
     }
 
 
+def profile_request_costs(requests, *, assets, budget=2048):
+    requests = list(requests)
+    report = count_requests(requests, assets=assets, budget=budget)
+    for request, row in zip(requests, report["results"], strict=True):
+        payload = json.loads(request["state"])
+        if (
+            not isinstance(payload, dict)
+            or payload.get("schema")
+            not in (
+                "micro-classifier/sim-teacher-state/1",
+                COMPACT_SCHEMA,
+                FLOAT32_COMPACT_SCHEMA,
+            )
+            or not isinstance(payload.get("module_observation"), dict)
+        ):
+            raise ValueError("cost profiling requires a supported state object")
+        fields = {}
+        for name, value in payload.items():
+            if name == "module_observation":
+                for field, content in value.items():
+                    fields[f"$.module_observation.{field}"] = {field: content}
+            else:
+                fields[f"$.{name}"] = {name: value}
+        fragments = [
+            json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+            for value in fields.values()
+        ]
+        sequences = assets.tokenizer(
+            [request["state"], *fragments],
+            add_special_tokens=False,
+            truncation=False,
+            padding=False,
+        )["input_ids"]
+        if len(sequences) != len(fragments) + 1 or any(
+            not sequence for sequence in sequences
+        ):
+            raise ValueError("tokenizer returned missing or empty component sequences")
+        row["state_sha256"] = hashlib.sha256(request["state"].encode()).hexdigest()
+        row["representation_schema"] = payload["schema"]
+        row["state_only_tokens"] = len(sequences[0])
+        row["components"] = {
+            name: {
+                "standalone_tokens": len(sequence),
+                "text_sha256": hashlib.sha256(text.encode()).hexdigest(),
+            }
+            for name, text, sequence in zip(
+                fields, fragments, sequences[1:], strict=True
+            )
+        }
+    report.update(
+        schema="micro-classifier/offline-prompt-cost/1",
+        allowed_use="offline_prompt_cost_diagnostics_only",
+        component_token_counts_additive=False,
+        partial_counts_budget_authority=False,
+        fragments_used_as_requests=False,
+        interpretation=(
+            "Components are independently tokenized JSON fields with their own keys/braces. "
+            "BPE boundaries and wrapper context differ: do not sum these counts or treat them "
+            "as removal savings, lower bounds or request budgets. Only complete prompt counts "
+            "in tokens/fits_budget qualify the unchanged ceiling."
+        ),
+    )
+    return report
+
+
+def profile_input_costs(requests, *, assets, budget=2048):
+    requests = list(requests)
+    full = profile_request_costs(requests, assets=assets, budget=budget)
+    variants = {"full": full}
+    for name, float32_rows in (("literal_rows", False), ("float32_rows", True)):
+        compact = [
+            compact_request_draft(request, float32_rows=float32_rows)
+            for request in requests
+        ]
+        for request, draft, row in zip(requests, compact, full["results"], strict=True):
+            if (
+                expand_compact_state(
+                    draft["state"], expected_sha256=row["state_sha256"]
+                )
+                != request["state"]
+            ):
+                raise ValueError("cost study requires exact original reconstruction")
+        variants[name] = profile_request_costs(compact, assets=assets, budget=budget)
+    for variant in variants.values():
+        for row, original in zip(variant["results"], full["results"], strict=True):
+            row["original_request_sha256"] = original["request_sha256"]
+            row["original_state_sha256"] = original["state_sha256"]
+            row["exact_roundtrip"] = True
+    return {
+        "schema": "micro-classifier/offline-input-cost-study/1",
+        "allowed_use": "offline_decision_preparation_only",
+        "review_status": "unreviewed_diagnostic",
+        "live_labeling_approved": False,
+        "training_approved": False,
+        "model_weights_loaded": False,
+        "inference_calls": 0,
+        "component_token_counts_additive": False,
+        "partial_counts_budget_authority": False,
+        "fragments_used_as_requests": False,
+        "budget": budget,
+        "budget_summary_representation": "full_default",
+        "request_count": len(requests),
+        "profiled_request_count": 3 * len(requests),
+        "exact_draft_roundtrip_count": 2 * len(requests),
+        "all_fit": full["all_fit"],
+        "over_budget_count": full["over_budget_count"],
+        "max_tokens": full["max_tokens"],
+        "variants": variants,
+        "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "codec_source_sha256": hashlib.sha256(
+            Path(__file__).with_name("label_pipeline.py").read_bytes()
+        ).hexdigest(),
+        "interpretation": full["interpretation"],
+    }
+
+
 def compare_compact_requests(requests, *, assets, budget=2048, float32_rows=False):
     requests = list(requests)
     compact = [
@@ -267,6 +385,11 @@ def main():
         action="store_true",
         help="compare the unreviewed exact float32 row-string draft",
     )
+    comparison.add_argument(
+        "--profile-input-costs",
+        action="store_true",
+        help="diagnose standalone field costs for full and existing lossless drafts",
+    )
     args = parser.parse_args()
     if args.limit < 1 or not 1 <= args.budget <= 2048:
         parser.error("limit must be positive and budget between 1 and 2048")
@@ -278,16 +401,17 @@ def main():
         for request in episode_requests(path, limit=args.limit)
     ]
     assets = load_prompt_assets(repo_id=args.repo_id, snapshot=args.snapshot)
-    report = (
-        compare_compact_requests(
+    if args.profile_input_costs:
+        report = profile_input_costs(requests, assets=assets, budget=args.budget)
+    elif args.compare_compact_draft or args.compare_float32_draft:
+        report = compare_compact_requests(
             requests,
             assets=assets,
             budget=args.budget,
             float32_rows=args.compare_float32_draft,
         )
-        if args.compare_compact_draft or args.compare_float32_draft
-        else count_requests(requests, assets=assets, budget=args.budget)
-    )
+    else:
+        report = count_requests(requests, assets=assets, budget=args.budget)
     report["episode_limit"] = args.limit
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:

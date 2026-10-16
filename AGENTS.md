@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §27 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §28 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -236,7 +236,24 @@ Keep this section and the Task List current; a new session resumes from them.
   observable mode semantics/reviewer abstention and episode/source/template
   grouping across five evaluation purposes. Nothing is adopted or labeled;
   no assignments or thresholds were created. Mode remains absent. Tasks 6/9
-  stay review/data-blocked; offline prompt-cost study is the next approved step.
+  stay review/data-blocked; the offline prompt-cost result is recorded below.
+- Offline decision-preparation cost study is complete in
+  `teacher/prompt_budget.py --profile-input-costs`: the same 80 existing inputs
+  with both cached pinned tokenizers, full/literal/typed-float32 forms only.
+  Complete counts reproduce 80/65/63 over-budget failures; all 45 full-history
+  inputs fail in each form. Standalone warm ToF-history fields cost 4,771-8,432
+  tokens; typed row tables 2,635-5,131. Fragment counts are explicitly nonadditive,
+  not savings/lower bounds or valid request budgets; none is used as a request.
+  Reports: `teacher/reports/input-cost-d3-{flash,mini}-20261016.json`; all 240
+  representation rows and 160 exact draft round trips per model independently
+  audited, including full/state/field retokenization and provenance hashes.
+  Seven new tests; 77 focused pipeline/preflight checks, 314 repository passes
+  plus the known transformer expected failure, lint/format/diagnostics clean.
+  DESIGN.md §7 and REVIEW.md §28 record limits and still-unaccepted strategy
+  choices. No new episode, task labels/dataset, inference/model runtime,
+  training, dependency/download or hardware action. Both approved preparation
+  tasks are complete; mode/target, representative-data and input-strategy review
+  remain pending. ST tools are still absent; full inputs/history/ceiling unchanged.
 
 ## Task List
 
@@ -286,6 +303,9 @@ on missing tools, and continue with the next unblocked task.
   36 tier-0 outputs; 264 observations, no mode labels. These selected probes and
   artificial faults are not representative data or reviewed ground truth.
   Task 6 remains blocked on policy/dataset review, not option-counter plumbing.
+  Decision-preparation result (2026-10-16): DESIGN.md §7 and REVIEW.md §27
+  propose proxy-vs-task targets, mode observability/reviewer abstention and
+  grouped five-purpose evaluation. No definitions, labels or splits adopted.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
@@ -322,6 +342,10 @@ on missing tools, and continue with the next unblocked task.
   63/80 still fail. This does not clear live use or full-history prompt budgets.
   Proposed default remains unchanged input/history and ceiling, both drafts
   opt-in/unreviewed, pending an input-strategy and teacher-quality decision.
+  Cost-study follow-up: existing full/literal/typed forms profiled on the same
+  80 states; no sampled full-history request fits. Numeric payload dominates
+  the isolated diagnostics, which are not additive or removal estimates.
+  REVIEW.md §28 documents the decision options; live use remains blocked.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.

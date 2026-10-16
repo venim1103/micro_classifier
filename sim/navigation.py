@@ -119,6 +119,102 @@ def register_synthetic_points(
     return result
 
 
+def register_synthetic_bounded_points(
+    points,
+    *,
+    point_error_m,
+    pose_error_bounds,
+    sensor_pose,
+    acquisition_pose,
+    reference_pose,
+    acquisition_time_s,
+    reference_time_s,
+    synthetic_test_only=False,
+):
+    """Propagate assumed geometric errors, not measured registration uncertainty."""
+    baseline = register_synthetic_points(
+        points,
+        sensor_pose=sensor_pose,
+        acquisition_pose=acquisition_pose,
+        reference_pose=reference_pose,
+        acquisition_time_s=acquisition_time_s,
+        reference_time_s=reference_time_s,
+        synthetic_test_only=synthetic_test_only,
+    )
+    pose_names = ("sensor_pose", "acquisition_pose", "reference_pose")
+    if not isinstance(pose_error_bounds, dict) or set(pose_error_bounds) != set(
+        pose_names
+    ):
+        raise ValueError("pose_error_bounds requires all three artificial poses")
+    raw_bounds = {"point_error_m": point_error_m}
+    for name in pose_names:
+        row = pose_error_bounds[name]
+        if not isinstance(row, dict) or set(row) != {"translation_m", "heading_rad"}:
+            raise ValueError(f"{name} requires translation_m and heading_rad bounds")
+        raw_bounds.update({f"{name}_{field}": value for field, value in row.items()})
+    bounds = {}
+    for name, value in raw_bounds.items():
+        if isinstance(value, bool) or not isinstance(value, Real) or value < 0:
+            raise ValueError(f"{name} must be finite nonnegative numeric data")
+        try:
+            bound = float(value)
+        except OverflowError as error:
+            raise ValueError(
+                f"{name} must be finite nonnegative numeric data"
+            ) from error
+        if not math.isfinite(bound) or (
+            name.endswith("heading_rad") and bound > math.pi
+        ):
+            raise ValueError(f"{name} is outside the artificial error domain")
+        bounds[name] = bound
+    result = {
+        **baseline,
+        "schema": "micro-classifier/synthetic-bounded-point-registration/1",
+        "allowed_use": "artificial_bounded_point_registration_tests_only",
+        "assumed_error_bounds": bounds,
+        "point_error_bound_m": None,
+        "bound_semantics": "assumed_model_exact_arithmetic",
+        "floating_point_certified": False,
+        "assumptions": {
+            "static_world": True,
+            "instantaneous_acquisition": True,
+            "bounded_point_and_pose_errors": True,
+        },
+    }
+    if baseline["status"] != "registered_fixture":
+        return result
+    sensor_points = np.asarray(points, dtype=float)
+    mounting = np.asarray(sensor_pose, dtype=float)
+    cosine, sine = math.cos(mounting[2]), math.sin(mounting[2])
+    with np.errstate(over="ignore", invalid="ignore"):
+        body_points = (
+            sensor_points @ np.array([[cosine, sine], [-sine, cosine]]) + mounting[:2]
+        )
+    radii = []
+    for sensor_point, body_point, reference_point in zip(
+        sensor_points, body_points, baseline["reference_points_m"]
+    ):
+        radius = bounds["point_error_m"] + sum(
+            bounds[f"{name}_translation_m"] for name in pose_names
+        )
+        for name, point in zip(pose_names, (sensor_point, body_point, reference_point)):
+            radius += (
+                2 * math.sin(bounds[f"{name}_heading_rad"] / 2) * math.hypot(*point)
+            )
+        if not math.isfinite(radius):
+            result.update(
+                status="unknown", reason="numerical_unknown", reference_points_m=None
+            )
+            return result
+        radii.append(radius)
+    result.update(
+        status="bounded_fixture",
+        reason="assumed_static_point_and_pose_errors",
+        point_error_bound_m=radii,
+    )
+    return result
+
+
 def probe_synthetic_ray_witness(
     ranges,
     valid,

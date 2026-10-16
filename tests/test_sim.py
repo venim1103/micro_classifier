@@ -1061,6 +1061,264 @@ def test_registration_reference_is_detached_and_does_not_qualify_witnesses(
         assert probe["status"] == "unknown" and probe["reason"] == reason
 
 
+@pytest.fixture
+def bounded_registration_fixture(registration_fixture):
+    return {
+        **registration_fixture,
+        "point_error_m": 0.0,
+        "pose_error_bounds": {
+            name: {"translation_m": 0.0, "heading_rad": 0.0}
+            for name in ("sensor_pose", "acquisition_pose", "reference_pose")
+        },
+    }
+
+
+def test_bounded_registration_zero_errors_match_exact_reference(
+    bounded_registration_fixture,
+):
+    from sim.navigation import register_synthetic_bounded_points
+
+    result = register_synthetic_bounded_points(**bounded_registration_fixture)
+    assert result["status"] == "bounded_fixture"
+    assert result["reference_points_m"] == bounded_registration_fixture["points"]
+    assert result["point_error_bound_m"] == [0.0, 0.0]
+    assert not result["floating_point_certified"]
+    assert result["bound_semantics"] == "assumed_model_exact_arithmetic"
+    assert result["synthetic"] and not result["training_approved"]
+    assert not result["real_input_qualified"] and not result["physical_safety_claim"]
+    assert "labels" not in result and "witness_columns" not in result
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize(
+    "pose,field",
+    [(None, "point_error_m")]
+    + [
+        (name, field)
+        for name in ("sensor_pose", "acquisition_pose", "reference_pose")
+        for field in ("translation_m", "heading_rad")
+    ],
+)
+def test_bounded_registration_each_component_has_analytic_effect(
+    bounded_registration_fixture, pose, field
+):
+    from sim.navigation import register_synthetic_bounded_points
+
+    settings = deepcopy(bounded_registration_fixture)
+    if pose is None:
+        settings[field] = 0.1
+    else:
+        settings["pose_error_bounds"][pose][field] = 0.1
+    result = register_synthetic_bounded_points(**settings)
+    expected = 2 * math.sin(0.05) if field == "heading_rad" else 0.1
+    np.testing.assert_allclose(result["point_error_bound_m"], [expected, expected])
+
+
+def test_bounded_registration_heading_errors_use_distinct_lever_arms(
+    bounded_registration_fixture,
+):
+    from sim.navigation import register_synthetic_bounded_points
+
+    settings = deepcopy(bounded_registration_fixture)
+    settings.update(
+        points=[[1, 0]],
+        sensor_pose=[0.5, 0, 0],
+        acquisition_pose=[1, 0, 0],
+        point_error_m=0.01,
+    )
+    for name, translation, heading in (
+        ("sensor_pose", 0.02, 0.01),
+        ("acquisition_pose", 0.03, 0.02),
+        ("reference_pose", 0.04, 0.03),
+    ):
+        settings["pose_error_bounds"][name] = {
+            "translation_m": translation,
+            "heading_rad": heading,
+        }
+    result = register_synthetic_bounded_points(**settings)
+    expected = 0.1 + 2 * math.sin(0.005) + 3 * math.sin(0.01) + 5 * math.sin(0.015)
+    assert result["reference_points_m"] == [[2.5, 0.0]]
+    assert result["point_error_bound_m"] == pytest.approx([expected])
+    assert "exact_fixture_poses" not in result["assumptions"]
+    assert result["assumptions"]["bounded_point_and_pose_errors"]
+
+
+def test_bounded_registration_sampled_perturbations_fit_declared_enclosure(
+    bounded_registration_fixture,
+):
+    from itertools import product
+
+    from sim.navigation import register_synthetic_bounded_points
+
+    settings = deepcopy(bounded_registration_fixture)
+    settings.update(
+        points=[[1, 0.5], [-0.4, 0.2]],
+        sensor_pose=[0.3, -0.2, 0.4],
+        acquisition_pose=[1, 2, -0.3],
+        reference_pose=[-2, 0.5, 0.6],
+        point_error_m=0.01,
+    )
+    names = ("sensor_pose", "acquisition_pose", "reference_pose")
+    for index, name in enumerate(names):
+        settings["pose_error_bounds"][name] = {
+            "translation_m": 0.02 + 0.01 * index,
+            "heading_rad": 0.01 + 0.01 * index,
+        }
+    original = deepcopy(settings)
+    result = register_synthetic_bounded_points(**settings)
+
+    def transform(point, pose):
+        cosine, sine = math.cos(pose[2]), math.sin(pose[2])
+        return np.array(
+            [
+                cosine * point[0] - sine * point[1] + pose[0],
+                sine * point[0] + cosine * point[1] + pose[1],
+            ]
+        )
+
+    checked = 0
+    for heading_signs in product((-1, 0, 1), repeat=3):
+        for direction, point_direction in product(range(4), repeat=2):
+            perturbed = {}
+            for index, name in enumerate(names):
+                pose, errors = settings[name], settings["pose_error_bounds"][name]
+                angle = (direction + index) * math.pi / 2
+                perturbed[name] = [
+                    pose[0] + errors["translation_m"] * math.cos(angle),
+                    pose[1] + errors["translation_m"] * math.sin(angle),
+                    pose[2] + heading_signs[index] * errors["heading_rad"],
+                ]
+            angle = point_direction * math.pi / 2
+            for index, point in enumerate(settings["points"]):
+                displaced = np.asarray(point) + settings["point_error_m"] * np.array(
+                    [math.cos(angle), math.sin(angle)]
+                )
+                body = transform(displaced, perturbed["sensor_pose"])
+                world = transform(body, perturbed["acquisition_pose"])
+                reference = perturbed["reference_pose"]
+                relative = world - reference[:2]
+                actual = transform(relative, [0, 0, -reference[2]])
+                separation = np.linalg.norm(
+                    actual - result["reference_points_m"][index]
+                )
+                assert separation <= result["point_error_bound_m"][index] + 1e-12
+                checked += 1
+    assert checked == 864
+    assert settings == original
+    result["assumed_error_bounds"]["point_error_m"] = 100
+    result["reference_points_m"][0][0] = 100
+    assert settings == original
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "missing_pose",
+        "extra_pose",
+        "missing_component",
+        "extra_component",
+        "wrong_container",
+        "wrong_row",
+        "negative_point",
+        "boolean_point",
+        "overflow_point",
+        "nan_translation",
+        "overflow_translation",
+        "boolean_translation",
+        "infinite_heading",
+        "negative_heading",
+        "large_heading",
+    ],
+)
+def test_bounded_registration_rejects_malformed_bounds(
+    bounded_registration_fixture, defect
+):
+    from sim.navigation import register_synthetic_bounded_points
+
+    settings = deepcopy(bounded_registration_fixture)
+    rows = settings["pose_error_bounds"]
+    if defect == "missing_pose":
+        del rows["reference_pose"]
+    elif defect == "extra_pose":
+        rows["extra"] = rows["reference_pose"].copy()
+    elif defect == "missing_component":
+        del rows["sensor_pose"]["heading_rad"]
+    elif defect == "extra_component":
+        rows["sensor_pose"]["extra"] = 0
+    elif defect == "wrong_container":
+        settings["pose_error_bounds"] = []
+    elif defect == "wrong_row":
+        rows["sensor_pose"] = []
+    elif defect.endswith("point"):
+        settings["point_error_m"] = {
+            "negative_point": -0.1,
+            "boolean_point": True,
+            "overflow_point": 10**400,
+        }[defect]
+    elif defect.endswith("translation"):
+        rows["sensor_pose"]["translation_m"] = {
+            "nan_translation": float("nan"),
+            "overflow_translation": 10**400,
+            "boolean_translation": False,
+        }[defect]
+    else:
+        rows["reference_pose"]["heading_rad"] = {
+            "infinite_heading": float("inf"),
+            "negative_heading": -0.1,
+            "large_heading": math.pi + 1e-6,
+        }[defect]
+    with pytest.raises(ValueError):
+        register_synthetic_bounded_points(**settings)
+
+
+@pytest.mark.parametrize("field", ["acquisition_time_s", "reference_pose"])
+def test_bounded_registration_missing_nominal_evidence_stays_unknown(
+    bounded_registration_fixture, field
+):
+    from sim.navigation import register_synthetic_bounded_points
+
+    result = register_synthetic_bounded_points(
+        **{**bounded_registration_fixture, field: None}
+    )
+    assert result["status"] == "unknown"
+    assert (
+        result["reference_points_m"] is None and result["point_error_bound_m"] is None
+    )
+    json.dumps(result, allow_nan=False)
+
+
+def test_bounded_registration_nonfinite_enclosure_stays_unknown(
+    bounded_registration_fixture,
+):
+    from sim.navigation import register_synthetic_bounded_points
+
+    settings = deepcopy(bounded_registration_fixture)
+    for row in settings["pose_error_bounds"].values():
+        row["translation_m"] = 1e308
+    result = register_synthetic_bounded_points(**settings)
+    assert result["status"] == "unknown" and result["reason"] == "numerical_unknown"
+    assert (
+        result["reference_points_m"] is None and result["point_error_bound_m"] is None
+    )
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize("opt_in", [False, 1])
+def test_bounded_registration_checks_scope_before_inputs(
+    bounded_registration_fixture, opt_in
+):
+    from sim.navigation import register_synthetic_bounded_points
+
+    with pytest.raises(ValueError, match="synthetic-test-only"):
+        register_synthetic_bounded_points(
+            **{
+                **bounded_registration_fixture,
+                "points": object(),
+                "synthetic_test_only": opt_in,
+            }
+        )
+
+
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
 

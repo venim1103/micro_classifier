@@ -1917,6 +1917,72 @@ behavior and witness guards are unchanged. All 22 numeric-rejection cases,
 expected failure; lint/format/editor/doc checks pass. No scope, policy, input,
 default, data, dependency or hardware change accompanies this repair.
 
+#### Synthetic Registration Error Propagation (2026-10-16)
+
+The user separately approved CPU-only synthetic point/pose uncertainty
+propagation and analytic/perturbation tests. This is an assumed-error geometry
+study, not physical qualification, adoption of uncertainty limits or permission
+to process observations/logs. The separate `register_synthetic_bounded_points`
+API reuses exact registration for nominal geometry and all existing input/scope
+guards, without changing that API or integrating either witness probe.
+
+Inputs retain the explicit artificial points, three poses and timestamps from
+the exact reference. A required `point_error_m` bounds the Euclidean displacement
+of each sensor-frame point. Required `pose_error_bounds` has exactly the keys
+`sensor_pose`, `acquisition_pose`, `reference_pose`; each row has exactly
+`translation_m` (Euclidean translation error) and `heading_rad` (absolute
+angular error, at most pi). Every bound is explicitly supplied, finite and
+nonnegative, not boolean, and representable as binary64. These are simultaneous
+caller assumptions, not measurements, probability coverage or Gaussian-sigma
+conversions. No temporal error is inferred from elapsed time.
+
+Let nominal sensor point be $p$, mounted acquisition-body point
+$b=R_s p+t_s$ and registered reference-body point
+$q=R_r^T(R_a b+t_a-t_r)$. With point error $\epsilon_p$, translation errors
+$\epsilon_s,\epsilon_a,\epsilon_r$ and heading errors
+$\eta_s,\eta_a,\eta_r$, the proposed exact-arithmetic displacement enclosure is:
+
+$$
+U=\epsilon_p+\epsilon_s+\epsilon_a+\epsilon_r
+ +2\|p\|\sin(\eta_s/2)
+ +2\|b\|\sin(\eta_a/2)
+ +2\|q\|\sin(\eta_r/2).
+$$
+
+Changing one transform at a time, applying the triangle inequality and using
+rotation norm preservation gives this sufficient enclosure whenever all assumed
+component bounds hold. It does not require statistical independence. The three
+rotations have distinct lever arms: reference-heading error rotates the entire
+relative displacement, not just the original sensor point. Unknown real joint
+coverage is not established by this algebra. Floating-point evaluation is
+explicitly **not certified**; no interval implementation or physical margin is
+introduced. Lost input precision, clock/skew/exposure, moving surfaces, actual
+return geometry and braking/state/dynamics/footprint errors remain unqualified.
+
+Successful `bounded_fixture` output contains nominal points, per-point radii,
+detached assumed bounds and bounded-error assumptions, not an exact-pose claim.
+Its `bound_semantics` is `assumed_model_exact_arithmetic`, with
+`floating_point_certified=false`; training/real-input/physical-safety flags stay
+false. Missing nominal poses/timing stays unknown; malformed bounds are rejected
+and nonfinite enclosures return numerical unknown without points/radii. Zero
+assumed errors produce zero algebraic radii, not numerical certification. No
+clear/negative labels, witnesses, CLI, range/observation/log adapter, data export
+or change to normal noisy/delayed/curved-input rejection is enabled.
+
+Thirty new tests pass: zero-error parity, all seven error components, distinct
+translated lever arms, 864 perturbations checked by independent scalar frame
+composition, bounds/input/scope rejection, missing nominal evidence, enclosure
+overflow and detached results. The finite perturbation grid is a cross-check,
+not a universal numerical proof or real-error measurement. All seven existing
+navigation functions/signatures are AST-identical to the preceding repair
+commit. All 245 simulator tests and 561 repository tests pass plus the known
+transformer expected failure; lint/format/editor/doc checks pass. No existing
+log, new study episode, persisted data artifact, task labels/data/splits, live
+teacher/training, dependency/download or hardware action occurred. Current
+inputs/history/defaults/token ceiling and quarantine are unchanged. Tasks 6/9
+still need reviewed real uncertainty/registration/target evidence, mode and
+accepted family/cohort/task data; ST/board gates remain independent.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

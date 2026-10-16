@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §43 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §44 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -539,6 +539,23 @@ Keep this section and the Task List current; a new session resumes from them.
   witness guard, scope/policy, data, input/default, dependency or hardware change;
   Tasks 6/9 and ST/board gates remain blocked.
 
+- Approved and completed (2026-10-16): separate CPU-only synthetic registration
+  error propagation in `register_synthetic_bounded_points`, with explicit point
+  and mounting/acquisition/reference translation/heading-error assumptions.
+  Distinct rotation lever arms and translation-error sums give an algebraic
+  enclosure, not measured uncertainty or certified floating-point bounds. No
+  exact-pose claim, witness integration, observation/log/range adapter, temporal
+  qualification or label/data exporter. All seven prior navigation functions/
+  signatures are AST-identical to the repair commit; existing rejection stays.
+  Thirty new cases include 864 independently composed perturbations; 245
+  simulator tests and 561 repository passes plus known transformer expected
+  failure; lint/format/editor/doc checks pass. DESIGN.md §7 and REVIEW.md §44.
+  No log application, study episodes, task labels/data/splits, live teachers/
+  training, dependencies/downloads or hardware; inputs/history/defaults/token
+  ceiling/quarantine unchanged. Tasks 6/9 still need reviewed real uncertainty/
+  registration/target evidence, mode and accepted family/cohort/task data; ST/
+  board gates remain blocked. Bounds are assumptions, not policy adoption.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -625,6 +642,10 @@ on missing tools, and continue with the next unblocked task.
   static-point frame arithmetic and 36 cases pass; supplied exact poses/times
   are assumptions, not physical evidence. No observation/log adapter or witness
   integration, uncertainty-policy adoption or real-data qualification occurred.
+  Registration-error result (2026-10-16, REVIEW.md §44): separate artificial
+  point/pose error propagation and 30 cases pass, including 864 perturbations.
+  The algebraic enclosure neither measures uncertainty nor qualifies clocks,
+  registration or real inputs; exact APIs and all witness rejection stay intact.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

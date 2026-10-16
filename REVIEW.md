@@ -2284,6 +2284,51 @@ occurred. Inputs/history/defaults/token ceiling and quarantine stay unchanged.
 This is a synthetic-reference validation repair, not uncertainty/registration
 qualification; all target, mode, cohort/data and ST/board gates remain blocked.
 
+## 44. Synthetic Registration Error Propagation (2026-10-16)
+
+After committing the validation repair, the user approved a separate CPU-only
+increment for synthetic point/pose uncertainty propagation with analytic and
+perturbation tests. Bounds remain explicit artificial assumptions, not measured
+or adopted uncertainty limits. Exact registration and witness APIs/guards,
+normal inputs/history/defaults/token ceiling and diagnostic quarantine remain
+unchanged. No logs, study episodes, task labels/data/splits, live teachers,
+training, dependencies/downloads or hardware work were approved or performed.
+
+`register_synthetic_bounded_points` adds a required sensor-point error radius
+and required translation/heading bounds for each mounting/acquisition/reference
+pose. Strict fixed-key dictionaries and finite nonnegative binary64 values are
+required; headings are at most pi. DESIGN.md §7 derives the exact-arithmetic
+enclosure using translation-error sums and three rotation chord terms with
+distinct nominal lever arms (sensor point, mounted point, full reference-relative
+point). The triangle-inequality argument assumes all supplied bounds hold,
+without requiring independence or establishing their real joint coverage.
+
+Output is `bounded_fixture` with nominal points, algebraic radii and detached
+assumed bounds; its assumptions do not falsely claim exact poses. Metadata
+explicitly disclaims floating-point certification, training, real-input
+qualification and physical safety. Missing nominal evidence stays unknown,
+invalid bounds are rejected and nonfinite enclosures yield numerical unknown.
+No temporal uncertainty, exposure/skew/clock, moving-surface or braking dynamics
+qualification, interval proof, witness/label, adapter, CLI or exporter was added.
+Zero algebraic radii do not certify zero numerical or physical error.
+
+Thirty new cases cover zero-error parity, seven separate error components,
+translated lever arms, 864 independently scalar-composed perturbations, malformed
+bounds, missing/scope rejection, overflow and immutability. The grid samples one
+artificial geometry, not all errors or a physical distribution. All seven prior
+navigation functions/signatures are AST-identical to the repair commit; runtime,
+proxies, interface, teachers/review tools and historical artifacts are unchanged.
+Verification: 245 simulator tests, 561 repository passes plus the known
+transformer numerical expected failure; Ruff lint/changed-file format, editor
+diagnostics and doc reference/local-target/whitespace/scope checks pass.
+
+**Outcome:** this approved synthetic increment is complete. Physical claim/domain,
+independent references, collection scope and numeric uncertainty/failure policy
+still require review; this propagation model supplies none of that evidence.
+Tasks 6/9 still lack reviewed real uncertainty/registration/target evidence,
+mode and accepted family/cohort/task data/splits. ST/board gates remain blocked;
+no synthetic result was promoted into a task label or qualified real-input path.
+
 ## Sources
 
 Hardware and tools:

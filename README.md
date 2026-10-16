@@ -192,6 +192,11 @@ Missing evidence stays unknown; transformed fixtures do not qualify physical
 registration or enable delayed/noisy witness inputs. See REVIEW.md §42 for the
 synthetic-only reference and tests; no observation/log adapter is provided.
 
+`register_synthetic_bounded_points` additionally propagates explicit artificial
+point/pose error assumptions. Its algebraic radii are not measured limits or
+certified floating-point bounds and do not enable witness labels or real-input
+use. REVIEW.md §44 records the model, checks and remaining qualification gates.
+
 [navigation-reference]: sim/navigation.py
 
 ## Diagnostic Source-Provenance Audit

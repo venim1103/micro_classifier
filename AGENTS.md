@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §33 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §34 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-16)
@@ -352,6 +352,19 @@ Keep this section and the Task List current; a new session resumes from them.
   DESIGN.md §7 and REVIEW.md §33 record the repair. No policy, labels, dataset,
   splits, inputs/defaults, inference, training, dependency or hardware change.
 
+- Explicit policy decisions (2026-10-16): user kept navigation targets
+  unaccepted pending independent definitions; the three rules stay diagnostic
+  proxies and mode stays unlabeled. User adopted observation-only human review
+  of complete student-visible input/history, with abstention and no privileged
+  truth, actions or teacher/proxy suggestions. User also adopted diagnostic-only
+  quarantine for all current logs and source/template-family review before any
+  task cohort or split acceptance. This is policy adoption only, not actual
+  annotations/import, reviewed data, family assignments, split locks, changed
+  inputs/thresholds, inference or training. DESIGN.md §7 and REVIEW.md §34 record
+  the answers and remaining per-question definition checklist. Do not re-ask
+  the adopted evidence/quarantine questions; target definitions and actual
+  reviewed cohort/data remain blocked.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -384,7 +397,7 @@ on missing tools, and continue with the next unblocked task.
    round-trip tests.
   Result (2026-10-15): approved provisional host-side contract, 62 focused
   tests, generated C offsets and five golden frames; no hardware freeze.
-6. [blocked: reviewed training labels not approved; smoke-only policy accepted]
+6. [blocked: independent navigation targets and reviewed labels pending]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
@@ -406,6 +419,10 @@ on missing tools, and continue with the next unblocked task.
   Review-preparation result (2026-10-16): 32 blind blank packets and fake-review
   format tests now available (REVIEW.md §32). Still no accepted target policy,
   actual annotations or reviewed cohort; mode stays unlabeled, rules diagnostic.
+  Policy update (2026-10-16, REVIEW.md §34): observation-only review and current-log
+  diagnostic quarantine are adopted. Navigation targets remain unaccepted; define
+  path/horizon/footprint, sector decision meaning, tier meaning and observable
+  mode semantics before annotation. No proxy-task target or training approval.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
@@ -470,6 +487,10 @@ on missing tools, and continue with the next unblocked task.
   fake-only validators complete; all family-group reviews and split assignments
   remain pending. Decide targets, allowed reviewer evidence and cohort policy
   before annotation or locked evaluation; no baseline fit or training approval.
+  Policy update (2026-10-16, REVIEW.md §34): reviewer evidence and diagnostic-log
+  quarantine are adopted; source/template families must be reviewed before task
+  cohort/split acceptance. Actual family reviews, targets, reviewed task data and
+  all split assignments remain pending. No cohort or split was locked.
 10. [blocked: training outside current tooling scope; dataset pending]
   Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled

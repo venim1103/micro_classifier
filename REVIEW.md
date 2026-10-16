@@ -1872,6 +1872,41 @@ unchanged. No actual labels/annotations, reviewed data, split lock, teacher
 inference, training, new study episode, download/dependency or hardware action.
 Tasks 6/9 and the remaining target/reviewer-evidence/cohort decisions stay blocked.
 
+## 34. Review Boundaries Adopted; Navigation Targets Deferred (2026-10-16)
+
+After the validator repair, the user answered three batched product questions:
+
+1. **Target meaning:** "Keep targets unaccepted; define navigation truth first."
+  The first three rules remain diagnostic proxies, not adopted sensor-proxy
+  task targets. Mode remains unlabeled. No independent navigation meaning,
+  numeric target threshold or physical safety behaviour was accepted.
+2. **Reviewer evidence:** "Approve observation-only review policy."
+  Use complete student-visible current input/history; require abstention if
+  insufficient. Exclude privileged truth, actions and suggested teacher/proxy
+  answers. This is policy-only approval, not annotation, reviewed-data acceptance,
+  a real-review import pathway or training approval.
+3. **Cohort policy:** "Approve diagnostic-only quarantine and grouping review."
+  All current logs remain diagnostic-only. Retain episode identity and leave
+  unknown families unresolved; review source/template families before accepting
+  a task cohort or split. No family assignment, representative cohort or split
+  was accepted merely by adopting that requirement.
+
+DESIGN.md §7 records these adopted boundaries separately from its unaccepted
+target proposal. It now lists the remaining definition questions per catalogue
+entry: path/continuation, horizon and footprint; sector reachability/goal/ties;
+tier meaning and assumptions; observable mode meanings/precedence. No choice
+or numeric value is invented. A target unavailable from permitted observations
+requires reviewer abstention, not hidden maps/actions/outcomes; changing evidence
+or inputs would require another explicit product decision.
+
+This closes the evidence-policy and quarantine-policy questions, not Tasks 6/9.
+Target definitions, actual family/cohort review and reviewed task data remain
+missing; real labeling, teacher inference and training remain unapproved.
+Source code and the original 32-packet/report artifacts are unchanged by this
+documentation-only update. Documentation references/local targets and whitespace
+checks pass; the preceding code gates remain 378 passed plus the known expected
+transformer failure. ST toolchain/board gates remain independent and unavailable.
+
 ## Sources
 
 Hardware and tools:

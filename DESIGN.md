@@ -1437,6 +1437,45 @@ then, Tasks 6/9 remain blocked on review/data, and student training and live
 teacher labeling remain unapproved. M1a is independently blocked on the absent
 approved ST toolchain; this proposal does not replace deployment proof.
 
+#### Accepted Review Boundaries (2026-10-16)
+
+The user subsequently made these explicit decisions:
+
+1. **Targets remain unaccepted.** Define independent navigation truth before
+  adopting task targets. The existing three rules remain diagnostic proxies,
+  not accepted sensor-proxy training targets; mode remains unlabeled.
+2. **Observation-only review policy is adopted.** Human review may use only the
+  complete student-visible current input and history. Abstain when that evidence
+  is insufficient; exclude privileged truth, actions and teacher/proxy suggested
+  answers. This adopts review boundaries, not actual annotations or a real-review
+  import path. An accepted target definition and further approval are still
+  needed before collection.
+3. **Diagnostic-only quarantine and grouping review are adopted.** All current
+  logs remain diagnostic-only. Retain episode identities, leave unknown families
+  unresolved and review source/template families before accepting any task
+  cohort or split. This is not a completed family review, representative cohort,
+  dataset approval, split assignment or locked test set.
+
+These decisions supersede only the earlier undecided review-evidence and
+diagnostic-quarantine policy questions. They do not approve new inputs/options,
+numeric thresholds, physical safety parameters, inference, labels or training.
+
+The following definition checklist is still open, not an adopted target policy:
+
+| Question | Navigation Definition Still Needed |
+| --- | --- |
+| `path_blocked` | Which continuation/path and time horizon; swept footprint and clearance criterion; when missing spatial evidence requires abstention |
+| `clear_sector` | Whether clear means observed radial space or a reachable turn; role of goal alignment, tie-breaking and `none` versus insufficient evidence |
+| `speed_tier` | What each tier recommends over which horizon and motion assumptions; how unknown clearance affects review, without treating a tier as a physical safety interlock |
+| `mode` | Observable meanings and precedence of the five options without inventing mission intent, docking evidence or host-health inputs |
+
+No horizon, margin, tier meaning or mode precedence is selected here. If a
+candidate definition cannot be established from the permitted input, reviewers
+must abstain rather than silently consult privileged maps, expert actions or
+future outcomes. A different evidence policy or added input requires another
+explicit decision. Tasks 6/9 still wait on target definitions and actual reviewed
+data/cohort evidence; approved review boundaries alone do not clear those gates.
+
 ### Teacher-Pipeline Host Preparation (2026-10-16)
 
 The [host pipeline][teacher-label-pipeline] completes Task 8's approved

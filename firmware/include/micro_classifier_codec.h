@@ -14,7 +14,8 @@ typedef enum {
     MC_V0_ERROR_DECISION,
     MC_V0_ENCODE_OK = MC_V0_DECODE_OK,
     MC_V0_HISTORY_OK = MC_V0_DECODE_OK,
-    MC_V0_MATH_OK = MC_V0_DECODE_OK
+    MC_V0_MATH_OK = MC_V0_DECODE_OK,
+    MC_V0_HEAD_OK = MC_V0_DECODE_OK
 } mc_v0_result;
 
 typedef struct {

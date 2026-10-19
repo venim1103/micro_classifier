@@ -3034,6 +3034,57 @@ Existing wire/goldens, simulator and historical reports remain unchanged. Task
 13's broader runtime and Tasks 6/9/ST/board gates, strict abstention, unlabeled
 mode, quarantine and collection caps remain unchanged.
 
+## 61. Approved Synthetic C Head and Verifier Core (2026-10-19)
+
+The user explicitly approved a complete host-only synthetic C head reference
+and reproducible verifier package: artificial weights/features, probability/
+confidence/wire integration tests, Python parity, invalid/overflow/atomicity
+checks, native sanitizers, host/Arm builds, an evidence report, documentation
+and local commits. No trained model, production head/blob format, architecture/
+input changes, ToF/tensor packing, timing/rejection/safety policy, real log/label/
+task-data use, training, dependencies/downloads or linked board firmware/hardware
+is approved. This supersedes the previous head exclusion only for that reference.
+
+The [head API][head-reference-api] and [source][head-reference-source] add bounded
+row-major binary32 affine arithmetic, with 1-256 features and 1-5 rows. These are
+diagnostic bounds, not deployed dimensions. A compensated double sum preserves
+small cancellation residuals in the tested fixtures; it is not a universal
+rounding proof. Finite inputs and final binary32 range are required, underflow
+is allowed. Fixed temporary logits make failure atomic across all rows. No
+allocation/HAL, weights loader, normalization or policy is included.
+
+Dimensions are checked before multiplying sizes. All counts/capacities are float
+elements; lengths are truthful caller preconditions on valid nonnull nonoverlapping
+objects. Short/null/invalid/numerically out-of-range inputs reuse existing errors
+without output writes. Success writes only active rows; source/spare storage is
+preserved and trailing input capacity is ignored. `MC_V0_HEAD_OK` aliases zero.
+
+The [shared binding/build module][native-verifier] extracts the existing ctypes
+ABI from tests, preserving codec/history/math coverage rather than duplicating
+bindings for the forthcoming CLI. Fixed builds reject reused library output,
+hash sources/headers/compiler driver/library and recheck source/compiler after
+compilation. This is not complete-toolchain/library/environment attestation or
+an arbitrary library loading/security boundary.
+
+Verification: 56 head cases and four new host/Arm/unsafe-math build checks pass,
+including ordinary affine rows, a retained unit residual between opposite
+extreme products, later-row overflow atomicity, selected minimum/maximum shapes,
+all selected nonfinite positions, lengths/nulls/dimensions and ignored storage.
+All 233 C checks and 295 interface tests pass; full CPU/offline suite: 900 passes
+plus the known transformer expected failure. Lint/format and real host GCC 13.3/
+Cortex-M55 Arm GCC 13.2 objects pass. Standalone verifier/report and head-native
+sanitizers remain next, not claimed by this checkpoint.
+
+No simulator/log generation/application, actual annotations/task data/splits,
+teachers/training, dependencies/downloads, licence or hardware action occurred.
+No calibration/task quality, formal numerical/memory safety, timing, SRAM fit
+or board-runtime evidence follows. Inputs/defaults/history/token limits, mode
+abstention, strict risk rejection, quarantine and other blocked gates stay.
+
+[head-reference-api]: firmware/include/micro_classifier_heads.h
+[head-reference-source]: firmware/micro_classifier_heads.c
+[native-verifier]: interface/native_verify.py
+
 ## Sources
 
 Hardware and tools:

@@ -1177,6 +1177,60 @@ abstention, quarantine and all other data/hardware/runtime gates stay unchanged.
 [decision-math-api]: firmware/include/micro_classifier_math.h
 [decision-math-source]: firmware/micro_classifier_math.c
 
+#### Host-Only Synthetic Head Reference (Approved, 2026-10-19)
+
+The user approved a complete host-only artificial-head reference and reproducible
+verifier package: bounded caller-buffer arithmetic, artificial weight/feature
+fixtures, existing probability/confidence/wire integration, synthetic Python
+parity and rejection/overflow/atomicity tests, native sanitizers, host/Arm builds,
+an evidence report, documentation and local commits. No trained model, production
+head/blob format, student architecture/input change, ToF/tensor packing, robot
+timing/rejection/safety policy, real log/label/task-data use, training, dependency/
+download, linked firmware or hardware work is approved.
+
+The [head API][head-reference-api] and [source][head-reference-source] compute a
+row-major affine map from binary32 features, weights and biases to binary32
+logits. Diagnostic limits are 1-256 features and 1-5 rows, not a frozen trunk
+width, deployed head shape or blob representation. Weights use consecutive rows,
+with `feature_count` values per row; biases have one value per row. All lengths
+and capacity count float elements. Extra weight/bias capacity and trailing
+feature storage are ignored, not serialized. Inputs must be finite. Compensated
+double accumulation reduces cancellation loss; final nonfinite/out-of-binary32-
+range values fail before the float cast. Underflow to zero is allowed. This is
+not a formal rounding/error guarantee or target-optimized INT8 head kernel.
+
+All pointers must be nonnull and reference valid nonoverlapping objects with
+truthful lengths. Dimensions are bounded before multiplying lengths. Rejection
+leaves output unchanged, including when a later row fails; success copies only
+the requested rows and leaves spare capacity untouched. Inputs are not modified.
+Existing argument/length/decision errors are reused, and `MC_V0_HEAD_OK` aliases
+zero without renumbering them. The caller chooses any later normalization or
+selection; no recommendation/status or robot policy is inferred by this API.
+Binary32 and at least binary64 arithmetic/range and non-fast-math builds are
+required. There is no HAL, allocation, model loading or board integration.
+
+[Shared host bindings][native-verifier] now own the existing ctypes ABI and a
+fixed native compiler command, reused by tests. Builds reject reused library
+outputs and record source/header/compiler-driver/library hashes with pre/post
+source and compiler checks. These are local provenance checks, not attestation
+of the complete compiler toolchain, math library or environment. The standalone
+bounded synthetic verifier/report is still the next approved portion.
+
+Core verification: 56 head tests cover row order, all minimum/maximum dimension
+combinations in the selected grid, short/null/invalid dimensions, every selected
+nonfinite input position, ignored trailing storage, source/spare preservation,
+a small residual between cancelling extreme products and later-row overflow.
+Four new host/Arm/unsafe-math cases pass. All 233 C checks, 295 interface tests
+and 900 repository tests pass plus the known transformer expected failure;
+lint/format and real host/Cortex-M55 objects pass. Head native sanitizers and
+verifier evidence remain pending, not implied by prior numeric checks. No task
+accuracy, calibration, timing, SRAM fit, physical safety or target execution
+claim follows; all other data/runtime/hardware gates stay unchanged.
+
+[head-reference-api]: firmware/include/micro_classifier_heads.h
+[head-reference-source]: firmware/micro_classifier_heads.c
+[native-verifier]: interface/native_verify.py
+
 ### Question Catalogue and Embodiment Profiles
 
 Freeze a shared trunk on the NPU and store per-question heads as small,

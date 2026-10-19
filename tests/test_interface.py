@@ -12,6 +12,17 @@ from pathlib import Path
 
 import pytest
 
+from interface.native_verify import (
+    CAnswer,
+    CDecision,
+    CPacket,
+    CPacketHandler,
+    CState,
+    CStateHistory,
+    CStateWindow,
+    CStream,
+    build_native,
+)
 from interface.protocol import (
     CRC,
     HEADER,
@@ -381,177 +392,11 @@ int main(void) {
     assert result.stdout == GOLDEN[0]["hex"]
 
 
-class CState(ctypes.Structure):
-    _fields_ = [
-        ("sequence", ctypes.c_uint32),
-        ("timestamp_us", ctypes.c_uint32),
-        ("validity", ctypes.c_uint16),
-        ("task_id", ctypes.c_uint16),
-        ("ages_us", ctypes.c_uint32 * 5),
-        ("velocity_m_s", ctypes.c_float * 3),
-        ("angular_velocity_rad_s", ctypes.c_float * 3),
-        ("goal_m", ctypes.c_float * 3),
-        ("battery_fraction", ctypes.c_float),
-        ("faults", ctypes.c_uint32),
-    ]
-
-
-class CStateHistory(ctypes.Structure):
-    _fields_ = [
-        ("samples", CState * 8),
-        ("valid_mask", ctypes.c_uint8),
-        ("next", ctypes.c_uint8),
-    ]
-
-
-class CStateWindow(ctypes.Structure):
-    _fields_ = [("samples", CState * 8), ("valid_mask", ctypes.c_uint8)]
-
-
-class CAnswer(ctypes.Structure):
-    _fields_ = [
-        ("question_id", ctypes.c_uint8),
-        ("answer_type", ctypes.c_uint8),
-        ("selected", ctypes.c_uint8),
-        ("option_count", ctypes.c_uint8),
-        ("confidence", ctypes.c_float),
-        ("probabilities", ctypes.c_float * 5),
-    ]
-
-
-class CDecision(ctypes.Structure):
-    _fields_ = [
-        ("sequence", ctypes.c_uint32),
-        ("timestamp_us", ctypes.c_uint32),
-        ("latency_us", ctypes.c_uint32),
-        ("status", ctypes.c_uint16),
-        ("model_version", ctypes.c_uint16),
-        ("catalogue_version", ctypes.c_uint16),
-        ("answer_mask", ctypes.c_uint16),
-        ("answers", CAnswer * 4),
-    ]
-
-
-class CBody(ctypes.Union):
-    _fields_ = [("state", CState), ("decision", CDecision)]
-
-
-class CPacket(ctypes.Structure):
-    _fields_ = [("kind", ctypes.c_uint8), ("body", CBody)]
-
-
-class CStream(ctypes.Structure):
-    _fields_ = [
-        ("buffer", ctypes.c_uint8 * 128),
-        ("used", ctypes.c_size_t),
-        ("rejected_frames", ctypes.c_uint32),
-    ]
-
-
-CPacketHandler = ctypes.CFUNCTYPE(None, ctypes.POINTER(CPacket), ctypes.c_void_p)
-
-
 @pytest.fixture(scope="module")
 def c_codec(tmp_path_factory):
     if shutil.which("cc") is None:
         pytest.skip("host C compiler unavailable")
-    library = tmp_path_factory.mktemp("c-codec") / "codec.so"
-    subprocess.run(
-        [
-            "cc",
-            "-std=c11",
-            "-O2",
-            "-Wall",
-            "-Wextra",
-            "-Werror",
-            "-pedantic",
-            "-shared",
-            "-fPIC",
-            "-I",
-            str(HEADER_PATH.parent),
-            str(ROOT / "firmware/micro_classifier_codec.c"),
-            str(ROOT / "firmware/micro_classifier_history.c"),
-            str(ROOT / "firmware/micro_classifier_math.c"),
-            "-o",
-            str(library),
-            "-lm",
-        ],
-        capture_output=True,
-        check=True,
-    )
-    codec = ctypes.CDLL(str(library))
-    codec.mc_v0_crc32.argtypes = [ctypes.POINTER(ctypes.c_uint8), ctypes.c_size_t]
-    codec.mc_v0_crc32.restype = ctypes.c_uint32
-    codec.mc_v0_validate_state.argtypes = [ctypes.POINTER(CState)]
-    codec.mc_v0_validate_state.restype = ctypes.c_int
-    codec.mc_v0_answer_confidence.argtypes = [
-        ctypes.POINTER(CAnswer),
-        ctypes.POINTER(ctypes.c_double),
-    ]
-    codec.mc_v0_answer_confidence.restype = ctypes.c_int
-    codec.mc_v0_softmax.argtypes = [
-        ctypes.POINTER(ctypes.c_float),
-        ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_float),
-        ctypes.c_size_t,
-    ]
-    codec.mc_v0_softmax.restype = ctypes.c_int
-    codec.mc_v0_sigmoid.argtypes = [
-        ctypes.c_float,
-        ctypes.POINTER(ctypes.c_float),
-        ctypes.c_size_t,
-    ]
-    codec.mc_v0_sigmoid.restype = ctypes.c_int
-    codec.mc_v0_state_history_init.argtypes = [ctypes.POINTER(CStateHistory)]
-    codec.mc_v0_state_history_init.restype = None
-    codec.mc_v0_state_history_push.argtypes = [
-        ctypes.POINTER(CStateHistory),
-        ctypes.POINTER(CState),
-    ]
-    codec.mc_v0_state_history_push.restype = ctypes.c_int
-    codec.mc_v0_state_history_gap.argtypes = [ctypes.POINTER(CStateHistory)]
-    codec.mc_v0_state_history_gap.restype = ctypes.c_int
-    codec.mc_v0_state_history_snapshot.argtypes = [
-        ctypes.POINTER(CStateHistory),
-        ctypes.POINTER(CStateWindow),
-    ]
-    codec.mc_v0_state_history_snapshot.restype = ctypes.c_int
-    codec.mc_v0_decode_state.argtypes = [
-        ctypes.POINTER(ctypes.c_uint8),
-        ctypes.c_size_t,
-        ctypes.POINTER(CState),
-    ]
-    codec.mc_v0_decode_state.restype = ctypes.c_int
-    codec.mc_v0_encode_state.argtypes = [
-        ctypes.POINTER(CState),
-        ctypes.POINTER(ctypes.c_uint8),
-        ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_size_t),
-    ]
-    codec.mc_v0_encode_state.restype = ctypes.c_int
-    codec.mc_v0_decode_decision.argtypes = [
-        ctypes.POINTER(ctypes.c_uint8),
-        ctypes.c_size_t,
-        ctypes.POINTER(CDecision),
-    ]
-    codec.mc_v0_decode_decision.restype = ctypes.c_int
-    codec.mc_v0_encode_decision.argtypes = [
-        ctypes.POINTER(CDecision),
-        ctypes.POINTER(ctypes.c_uint8),
-        ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_size_t),
-    ]
-    codec.mc_v0_encode_decision.restype = ctypes.c_int
-    codec.mc_v0_stream_init.argtypes = [ctypes.POINTER(CStream)]
-    codec.mc_v0_stream_init.restype = None
-    codec.mc_v0_stream_feed.argtypes = [
-        ctypes.POINTER(CStream),
-        ctypes.POINTER(ctypes.c_uint8),
-        ctypes.c_size_t,
-        CPacketHandler,
-        ctypes.c_void_p,
-    ]
-    codec.mc_v0_stream_feed.restype = ctypes.c_int
+    codec, _ = build_native(tmp_path_factory.mktemp("c-codec"))
     return codec
 
 
@@ -1203,6 +1048,180 @@ def test_c_math_seeded_probabilities_confidence_and_wire_parity(c_codec):
     assert stream.used == stream.rejected_frames == 0
 
 
+def test_c_head_row_major_affine_and_spare_capacity(c_codec):
+    features = (ctypes.c_float * 3)(1, 2, 3)
+    weights = (ctypes.c_float * 9)(2, 0, -1, -1, 1, 2, 0, 0, 0)
+    biases = (ctypes.c_float * 3)(1, -2, 4)
+    output = (ctypes.c_float * 5)(42, 42, 42, 42, 42)
+    originals = [bytes(array) for array in (features, weights, biases)]
+    assert (
+        c_codec.mc_v0_dense_head(features, 3, weights, 9, biases, 3, 3, output, 5) == 0
+    )
+    assert list(output) == [0, 5, 4, 42, 42]
+    assert [bytes(array) for array in (features, weights, biases)] == originals
+
+
+def test_c_head_retains_small_cancellation_residual(c_codec):
+    largest = struct.unpack("<f", bytes.fromhex("ffff7f7f"))[0]
+    features = (ctypes.c_float * 3)(largest, 1, largest)
+    weights = (ctypes.c_float * 3)(largest, 1, -largest)
+    biases = (ctypes.c_float * 1)(0)
+    output = (ctypes.c_float * 1)(42)
+    assert (
+        c_codec.mc_v0_dense_head(features, 3, weights, 3, biases, 1, 1, output, 1) == 0
+    )
+    assert output[0] == 1
+
+
+def test_c_head_later_row_overflow_leaves_all_output_unchanged(c_codec):
+    largest = struct.unpack("<f", bytes.fromhex("ffff7f7f"))[0]
+    features = (ctypes.c_float * 2)(largest, largest)
+    weights = (ctypes.c_float * 4)(1, -1, 1, 1)
+    biases = (ctypes.c_float * 2)(0, 0)
+    output = (ctypes.c_float * 3)(42, 42, 42)
+    before = bytes(output)
+    assert (
+        c_codec.mc_v0_dense_head(features, 2, weights, 4, biases, 2, 2, output, 3) != 0
+    )
+    assert bytes(output) == before
+
+
+@pytest.mark.parametrize(
+    "feature_count,output_count",
+    [
+        (0, 1),
+        (257, 1),
+        (1, 0),
+        (1, 6),
+        (ctypes.c_size_t(-1).value, 1),
+        (1, ctypes.c_size_t(-1).value),
+    ],
+)
+def test_c_head_rejects_dimensions_before_access(c_codec, feature_count, output_count):
+    source = (ctypes.c_float * 1)(1)
+    output = (ctypes.c_float * 1)(42)
+    assert (
+        c_codec.mc_v0_dense_head(
+            source, feature_count, source, 1, source, 1, output_count, output, 1
+        )
+        != 0
+    )
+    assert output[0] == 42
+
+
+@pytest.mark.parametrize("field", [0, 2, 4, 7])
+def test_c_head_null_arguments(c_codec, field):
+    source = (ctypes.c_float * 1)(1)
+    output = (ctypes.c_float * 1)(42)
+    arguments = [source, 1, source, 1, source, 1, 1, output, 1]
+    arguments[field] = None
+    assert c_codec.mc_v0_dense_head(*arguments) != 0
+    assert output[0] == 42
+
+
+@pytest.mark.parametrize("field", [3, 5, 8])
+def test_c_head_short_buffers(c_codec, field):
+    features = (ctypes.c_float * 2)(1, 2)
+    weights = (ctypes.c_float * 4)(1, 2, 3, 4)
+    biases = (ctypes.c_float * 2)(0, 0)
+    output = (ctypes.c_float * 2)(42, 42)
+    arguments = [features, 2, weights, 4, biases, 2, 2, output, 2]
+    arguments[field] -= 1
+    assert c_codec.mc_v0_dense_head(*arguments) != 0
+    assert list(output) == [42, 42]
+
+
+@pytest.mark.parametrize("storage", ["features", "weights", "biases"])
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+def test_c_head_rejects_nonfinite_at_every_position(c_codec, storage, value):
+    for position in range({"features": 3, "weights": 15, "biases": 5}[storage]):
+        arrays = {
+            "features": (ctypes.c_float * 3)(1, 2, 3),
+            "weights": (ctypes.c_float * 15)(*range(15)),
+            "biases": (ctypes.c_float * 5)(*range(5)),
+        }
+        arrays[storage][position] = value
+        before = [bytes(array) for array in arrays.values()]
+        output = (ctypes.c_float * 5)(42, 42, 42, 42, 42)
+        assert (
+            c_codec.mc_v0_dense_head(
+                arrays["features"],
+                3,
+                arrays["weights"],
+                15,
+                arrays["biases"],
+                5,
+                5,
+                output,
+                5,
+            )
+            != 0
+        )
+        assert list(output) == [42] * 5
+        assert [bytes(array) for array in arrays.values()] == before
+
+
+@pytest.mark.parametrize("feature_count", [1, 2, 3, 8, 32, 256])
+@pytest.mark.parametrize("output_count", [1, 2, 3, 4, 5])
+def test_c_head_dimensions_match_exact_dyadic_reference(
+    c_codec, feature_count, output_count
+):
+    generator = random.Random(feature_count * 100 + output_count)
+    features = (ctypes.c_float * feature_count)(
+        *(generator.randrange(-32, 33) / 16 for _ in range(feature_count))
+    )
+    weights = (ctypes.c_float * (feature_count * output_count))(
+        *(
+            generator.randrange(-32, 33) / 32
+            for _ in range(feature_count * output_count)
+        )
+    )
+    biases = (ctypes.c_float * output_count)(
+        *(generator.randrange(-16, 17) / 16 for _ in range(output_count))
+    )
+    output = (ctypes.c_float * output_count)()
+    assert (
+        c_codec.mc_v0_dense_head(
+            features,
+            feature_count,
+            weights,
+            len(weights),
+            biases,
+            output_count,
+            output_count,
+            output,
+            output_count,
+        )
+        == 0
+    )
+    expected = [
+        ctypes.c_float(
+            math.fsum(
+                [
+                    biases[row],
+                    *(
+                        float(features[column]) * weights[row * feature_count + column]
+                        for column in range(feature_count)
+                    ),
+                ]
+            )
+        ).value
+        for row in range(output_count)
+    ]
+    assert list(output) == expected
+
+
+def test_c_head_ignores_trailing_storage(c_codec):
+    features = (ctypes.c_float * 2)(2, float("nan"))
+    weights = (ctypes.c_float * 2)(3, float("nan"))
+    biases = (ctypes.c_float * 2)(1, float("nan"))
+    output = (ctypes.c_float * 2)(42, 42)
+    assert (
+        c_codec.mc_v0_dense_head(features, 1, weights, 2, biases, 2, 1, output, 2) == 0
+    )
+    assert list(output) == [7, 42]
+
+
 def test_c_codec_crc(c_codec):
     for data in (b"", b"123456789", bytes(range(256))):
         assert c_codec.mc_v0_crc32(c_buffer(data), len(data)) == zlib.crc32(data)
@@ -1679,6 +1698,7 @@ def test_c_codec_all_state_validity_groups_and_binary32_extremes(c_codec):
         "micro_classifier_codec.c",
         "micro_classifier_history.c",
         "micro_classifier_math.c",
+        "micro_classifier_heads.c",
     ],
 )
 def test_c_codec_compiles_to_host_and_cortex_m55_objects(
@@ -1711,7 +1731,8 @@ def test_c_codec_compiles_to_host_and_cortex_m55_objects(
 
 @pytest.mark.parametrize("flag", ["-ffast-math", "-ffinite-math-only"])
 @pytest.mark.parametrize(
-    "source_name", ["micro_classifier_codec.c", "micro_classifier_math.c"]
+    "source_name",
+    ["micro_classifier_codec.c", "micro_classifier_math.c", "micro_classifier_heads.c"],
 )
 def test_c_codec_rejects_fast_math_build(tmp_path, flag, source_name):
     if shutil.which("cc") is None:

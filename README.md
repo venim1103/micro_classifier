@@ -175,6 +175,28 @@ and broader firmware remain outside scope.
 [c-codec-api]: firmware/include/micro_classifier_codec.h
 [c-codec-source]: firmware/micro_classifier_codec.c
 
+## Host-Only Synthetic Heads
+
+The [head API][head-reference-api] and [source][head-reference-source] evaluate
+an artificial row-major affine head with 1-256 features and 1-5 output rows.
+These diagnostic bounds are not a student architecture or production blob
+format. Features/weights/biases are finite binary32; compensated double sums
+produce binary32 logits. Final overflow rejects the whole operation, not just
+one row. Underflow is allowed. Lengths/capacity count float elements; callers
+supply nonnull valid nonoverlapping objects and truthful lengths. Failed output
+and successful spare capacity are unchanged; inputs remain untouched.
+
+The [shared host verifier bridge][native-verifier] compiles the reference and
+binds the same ABI used by the tests. It is not a deployment runtime. Standalone
+verification/reporting and head native sanitizers are the next approved work.
+DESIGN.md §6 and REVIEW.md §61 record scope and core checks. No trained model,
+production weight format, preprocessing, policy, task data/training or board
+integration is included.
+
+[head-reference-api]: firmware/include/micro_classifier_heads.h
+[head-reference-source]: firmware/micro_classifier_heads.c
+[native-verifier]: interface/native_verify.py
+
 ## Host-Only C Decision Math
 
 The [math API][decision-math-api] and [source][decision-math-source] provide

@@ -303,9 +303,31 @@ decision status/subset matches Python, and short capacity/null/invalid-input
 cases preserve buffers, lengths and sources. Thirty new tests, 97 C checks,
 159 interface tests and 764 repository passes plus the known transformer expected
 failure; lint/format and real host/Cortex-M55 object compilation pass. Encoder-
-specific sanitizer and seeded round-trip coverage remain the next approved
-checks. No linked firmware, board execution, task data, teacher inference,
+specific sanitizer and seeded round-trip completion is recorded below.
+No linked firmware, board execution, task data, teacher inference,
 training, dependency/download, licence or hardware action is authorized.
+
+Encoder verification completed (2026-10-19): encoding now covers all 32 validity
+masks and float32 extremes/signed zero, plus 500 seeded synthetic wire states
+and 500 decisions. C output exactly matches Python; native decode/re-encode and
+both chunked stream paths recover the same canonical packets. Four accepted
+noncanonical confidence inputs canonicalize identically to Python. Poisoned
+absent slots and unused probability storage do not enter serialized frames.
+Caller-buffer canaries include unaligned byte destinations and unchanged
+source objects.
+
+The ASan/UBSan harness now tests actual output allocations from zero capacity
+through each golden frame's length plus one, preserving bytes/length on short
+capacity, matching exact bytes on success and not writing spare capacity.
+All 256 u8 option-count values are exercised against the fixed noul layout;
+unsupported counts fail without output writes. Existing decoder/stream native
+checks, including 4,096 random buffers, continue passing. All 104 C checks,
+166 interface tests and 771 repository tests pass plus the known transformer
+expected failure; real host/Cortex-M55 objects and lint/format/editor gates pass.
+These finite checks are not formal memory/numerical certification, WCET, SRAM
+fit or board-runtime evidence. The approved encoder package is complete using
+artificial protocol fixtures only, not simulator episodes, task data, live
+teachers, training, dependencies or hardware. Broader firmware gates remain.
 
 [wire-codec-api]: firmware/include/micro_classifier_codec.h
 [wire-codec-source]: firmware/micro_classifier_codec.c

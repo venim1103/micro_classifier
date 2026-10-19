@@ -542,6 +542,25 @@ def c_decision_from_python(packet):
     return decision
 
 
+def c_encoded_frame(codec, source):
+    encoder = (
+        codec.mc_v0_encode_state
+        if isinstance(source, CState)
+        else codec.mc_v0_encode_decision
+    )
+    output = c_buffer(b"\xa5" * 130)
+    target = ctypes.cast(ctypes.byref(output, 1), ctypes.POINTER(ctypes.c_uint8))
+    written = ctypes.c_size_t(999)
+    original = bytes(source)
+    assert encoder(ctypes.byref(source), target, 128, ctypes.byref(written)) == 0
+    assert 0 < written.value <= 128
+    assert bytes(output[:1]) + bytes(output[1 + written.value :]) == b"\xa5" * (
+        130 - written.value
+    )
+    assert bytes(source) == original
+    return bytes(output[1 : 1 + written.value])
+
+
 def test_c_codec_crc(c_codec):
     for data in (b"", b"123456789", bytes(range(256))):
         assert c_codec.mc_v0_crc32(c_buffer(data), len(data)) == zlib.crc32(data)
@@ -1008,6 +1027,7 @@ def test_c_codec_all_state_validity_groups_and_binary32_extremes(c_codec):
         assert struct.pack("<3f", *output.velocity_m_s) == struct.pack(
             "<3f", *expected.velocity_m_s
         )
+        assert c_encoded_frame(c_codec, c_state_from_python(packet)) == frame
 
 
 @pytest.mark.parametrize("compiler", ["cc", "arm-none-eabi-gcc"])
@@ -1381,6 +1401,130 @@ def test_c_codec_seeded_mixed_stream_differential(c_codec):
     assert stream.used == 0
 
 
+@pytest.mark.parametrize("kind", ["state", "decision"])
+def test_c_codec_seeded_bidirectional_round_trips(c_codec, kind):
+    generator = random.Random(20261019)
+    frames, packets = [], []
+
+    def finite_float32():
+        bits = generator.getrandbits(32)
+        if bits & 0x7F800000 == 0x7F800000:
+            bits ^= 0x00800000
+        return struct.unpack("<f", struct.pack("<I", bits))[0]
+
+    for _ in range(500):
+        if kind == "state":
+            validity = generator.randrange(32)
+            vectors = [
+                tuple(finite_float32() for _ in range(3))
+                if validity & (1 << group)
+                else (0, 0, 0)
+                for group in range(3)
+            ]
+            packet = State(
+                sequence=generator.getrandbits(32),
+                timestamp_us=generator.getrandbits(32),
+                validity=validity,
+                ages_us=tuple(
+                    generator.randrange(UINT32_MAX)
+                    if validity & (1 << group)
+                    else UINT32_MAX
+                    for group in range(5)
+                ),
+                velocity_m_s=vectors[0],
+                angular_velocity_rad_s=vectors[1],
+                goal_m=vectors[2],
+                battery_fraction=generator.random() if validity & 8 else 0,
+                faults=generator.getrandbits(32) if validity & 16 else 0,
+            )
+            source = c_state_from_python(packet)
+            expected = encode_state(packet)
+            python_decode, native_decode, received = (
+                decode_state,
+                c_codec.mc_v0_decode_state,
+                CState(),
+            )
+        else:
+            status = generator.choice(list(Status))
+            mask = 15 if status == Status.OK else generator.randrange(16)
+            answers = []
+            for question, (_, options) in QUESTIONS.items():
+                if not mask & (1 << (question - 1)):
+                    continue
+                weights = [generator.randrange(33) for _ in options]
+                weights[generator.randrange(len(options))] += 1
+                total = sum(weights)
+                answers.append(
+                    Answer(
+                        question,
+                        tuple(weight / total for weight in weights),
+                        generator.randrange(len(options)),
+                    )
+                )
+            packet = Decision(
+                sequence=generator.getrandbits(32),
+                timestamp_us=generator.getrandbits(32),
+                latency_us=generator.getrandbits(32),
+                status=status,
+                model_version=generator.randrange(1, 65536)
+                if status == Status.OK
+                else generator.randrange(65536),
+                answers=tuple(answers),
+            )
+            source = c_decision_from_python(packet)
+            expected = encode_decision(packet)
+            python_decode, native_decode, received = (
+                decode_decision,
+                c_codec.mc_v0_decode_decision,
+                CDecision(),
+            )
+        frame = c_encoded_frame(c_codec, source)
+        assert frame == expected
+        assert native_decode(c_buffer(frame), len(frame), ctypes.byref(received)) == 0
+        assert c_encoded_frame(c_codec, received) == frame
+        frames.append(frame)
+        packets.append(python_decode(expected))
+    wire = b"".join(frames)
+    assert FrameDecoder().feed(wire) == packets
+    stream = CStream()
+    c_codec.mc_v0_stream_init(ctypes.byref(stream))
+    assert (
+        feed_c_stream(
+            c_codec,
+            stream,
+            (wire[offset : offset + 17] for offset in range(0, len(wire), 17)),
+        )
+        == packets
+    )
+    assert stream.used == stream.rejected_frames == 0
+
+
+@pytest.mark.parametrize("offset,delta", [(36, 1), (36, -1), (52, 66), (52, -67)])
+def test_c_codec_encode_canonicalizes_received_confidence(c_codec, offset, delta):
+    canonical = encode_decision(full_decision())
+    frame = bytearray(canonical)
+    bits = struct.unpack_from("<I", frame, offset)[0]
+    struct.pack_into("<I", frame, offset, bits + delta)
+    frame = with_crc(frame)
+    assert frame != canonical
+    expected = encode_decision(decode_decision(frame))
+    source = CDecision()
+    assert (
+        c_codec.mc_v0_decode_decision(c_buffer(frame), len(frame), ctypes.byref(source))
+        == 0
+    )
+    assert c_encoded_frame(c_codec, source) == expected == canonical
+
+
+def test_c_codec_encode_ignores_absent_slots_and_unused_probability_storage(c_codec):
+    packet = Decision(answers=(Answer(1, (0.75, 0.25), 1),))
+    source = c_decision_from_python(packet)
+    for index in (1, 2, 3):
+        ctypes.memset(ctypes.byref(source.answers[index]), 0xA5, ctypes.sizeof(CAnswer))
+    source.answers[0].probabilities[2:] = [float("nan"), float("inf"), -1]
+    assert c_encoded_frame(c_codec, source) == encode_decision(packet)
+
+
 def test_c_codec_address_and_undefined_sanitizers(tmp_path):
     if shutil.which("cc") is None:
         pytest.skip("host C compiler unavailable")
@@ -1409,6 +1553,36 @@ int main(void) {
     assert(mc_v0_crc32(NULL, 0) == 0);
     mc_v0_stream_init(&stream);
     for (size_t index = 0; index < sizeof(lengths) / sizeof(lengths[0]); ++index) {
+        if (frames[index][MC_V0_HEADER_KIND_OFFSET] == MC_V0_KIND_STATE) {
+            assert(mc_v0_decode_state(frames[index], lengths[index], &state) == MC_V0_DECODE_OK);
+        } else {
+            assert(mc_v0_decode_decision(frames[index], lengths[index], &decision) == MC_V0_DECODE_OK);
+        }
+        for (size_t capacity = 0; capacity <= lengths[index] + 1; ++capacity) {
+            uint8_t *encoded = malloc(capacity ? capacity : 1);
+            assert(encoded != NULL);
+            memset(encoded, 0xA5, capacity);
+            size_t written = SIZE_MAX;
+            mc_v0_result result;
+            if (frames[index][MC_V0_HEADER_KIND_OFFSET] == MC_V0_KIND_STATE) {
+                result = mc_v0_encode_state(&state, encoded, capacity, &written);
+            } else {
+                result = mc_v0_encode_decision(&decision, encoded, capacity, &written);
+            }
+            if (capacity < lengths[index]) {
+                assert(result != MC_V0_ENCODE_OK && written == SIZE_MAX);
+                for (size_t offset = 0; offset < capacity; ++offset) {
+                    assert(encoded[offset] == 0xA5);
+                }
+            } else {
+                assert(result == MC_V0_ENCODE_OK && written == lengths[index]);
+                assert(memcmp(encoded, frames[index], written) == 0);
+                if (capacity > written) {
+                    assert(encoded[written] == 0xA5);
+                }
+            }
+            free(encoded);
+        }
         for (size_t length = 0; length <= lengths[index] + 1; ++length) {
             uint8_t *data = malloc(length ? length : 1);
             assert(data != NULL);
@@ -1441,6 +1615,29 @@ int main(void) {
         assert(mc_v0_stream_feed(&stream, data, length, receive, &received) == MC_V0_DECODE_OK);
         assert(stream.used < MC_V0_MAX_FRAME_SIZE);
         free(data);
+    }
+    memset(&decision, 0, sizeof(decision));
+    decision.status = MC_V0_STATUS_FAULT;
+    decision.answer_mask = 1;
+    decision.answers[0].question_id = MC_V0_QUESTION_PATH_BLOCKED;
+    decision.answers[0].answer_type = MC_V0_TYPE_NOUL;
+    decision.answers[0].probabilities[0] = 0.75f;
+    decision.answers[0].probabilities[1] = 0.25f;
+    for (unsigned count = 0; count < 256; ++count) {
+        uint8_t encoded[MC_V0_MAX_FRAME_SIZE];
+        memset(encoded, 0xA5, sizeof(encoded));
+        size_t written = SIZE_MAX;
+        decision.answers[0].option_count = (uint8_t)count;
+        mc_v0_result result = mc_v0_encode_decision(&decision, encoded, sizeof(encoded), &written);
+        assert((result == MC_V0_ENCODE_OK) == (count == MC_V0_PATH_BLOCKED_OPTION_COUNT));
+        if (result != MC_V0_ENCODE_OK) {
+            assert(written == SIZE_MAX);
+            for (size_t offset = 0; offset < sizeof(encoded); ++offset) {
+                assert(encoded[offset] == 0xA5);
+            }
+        } else {
+            assert(written == 52);
+        }
     }
     received = 0;
     mc_v0_stream_init(&stream);

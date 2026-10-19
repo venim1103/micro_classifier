@@ -2812,6 +2812,47 @@ labels/review import/splits, teacher inference/training, dependency/download,
 licence or hardware action occurred. Existing strict abstention/quarantine and
 all broader firmware/ST/board and Task 6/9 gates remain in force.
 
+## 56. C Encoder Native Safety and Round Trips (2026-10-19)
+
+The remaining checks in §55's explicit host-only encoder approval are complete,
+using the same [API][wire-codec-api], [implementation][wire-codec-source] and
+existing interface test module. No runtime behavior changed after the core
+checkpoint; this follow-up strengthens encoder verification and documents
+completion, not broader firmware authorization.
+
+Verification:
+
+- All 32 state-validity masks, float32 extremes and signed-zero cases now also
+  encode exactly. Separately seeded fixtures generate 500 synthetic wire states
+  and 500 decisions: C bytes exactly match Python, native decode/re-encode is
+  exact for canonical frames, and Python plus chunked C streams return the same
+  packets. These are artificial protocol fixtures, not episodes or task labels.
+- Four accepted noncanonical confidence cases canonicalize exactly like Python.
+  Poisoned absent answer slots and unused probability cells are ignored; the
+  source remains unchanged. Unaligned byte destinations retain prefix/suffix
+  canaries and no bytes beyond the returned frame length are written.
+- The existing ASan/UBSan executable now allocates actual output buffers at
+  every capacity from zero through each golden length plus one. Short-capacity
+  errors preserve bytes and length; successful calls match golden bytes and
+  leave spare capacity untouched. All 256 u8 option-count values are checked
+  against the fixed noul layout, with no writes on unsupported counts.
+- The previous exact-input allocation, 4,096 random decoder/stream buffer and
+  golden-recovery sanitizer checks continue passing. No address, undefined-
+  behavior or leak error is reported.
+- The extension adds 37 tests in total: all 104 C checks and 166 interface tests
+  pass. Full offline/CPU gate: 771 passes plus the known transformer expected
+  failure. Host GCC 13.3 and Arm GCC 13.2 compile actual objects, with Cortex-M55
+  flags for Arm; lint/touched-file format and editor diagnostics pass.
+
+Finite fixtures and sanitizers do not establish formal memory/numeric safety,
+worst-case timing, SRAM fit, target execution or physical qualification. The
+approved encoding package is complete; protocol/schema/goldens, simulator
+defaults, input/history, policy and historical artifacts remain unchanged.
+No simulator episode/log collection, task annotations/dataset/split, teacher
+inference/training, dependency/download, licence, linked firmware or board action
+occurred. Strict abstention/quarantine and exhausted collection allowances stay
+in force; broader Task 13, Tasks 6/9 and ST/board gates remain blocked.
+
 ## Sources
 
 Hardware and tools:

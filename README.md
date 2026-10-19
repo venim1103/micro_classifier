@@ -143,7 +143,7 @@ partial input and clears counters; no threshold is imposed by this library.
 
 The test suite includes golden/stream parity, sanitizer checks, seeded malformed
 fixtures, tolerance edges and host/Arm compilation. DESIGN.md §2 and REVIEW.md
-§§53-55 record the host-only authorization and verification limits.
+§§53-56 record the host-only authorization and verification limits.
 
 For encoding, pass a native state/decision, writable destination, capacity and
 length pointer to `mc_v0_encode_state` or `mc_v0_encode_decision`. All pointers
@@ -167,8 +167,10 @@ IDs/types/counts/selections are checked; absent slots are ignored. Input
 `confidence` is ignored and derived from the binary32 probabilities, matching
 Python. Re-encoding accepted noncanonical confidence may change its bytes.
 Encoding a diagnostic or fault packet does not make it a usable recommendation.
-Encoder-specific sanitizer and seeded round-trip checks are the next approved
-follow-up; board integration and broader firmware remain outside scope.
+The completed checks include exact-capacity native sanitizers, all validity
+masks and 1,000 seeded synthetic cross-language round trips. They are host/
+compile evidence, not board runtime or safety qualification; board integration
+and broader firmware remain outside scope.
 
 [c-codec-api]: firmware/include/micro_classifier_codec.h
 [c-codec-source]: firmware/micro_classifier_codec.c

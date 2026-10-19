@@ -2438,6 +2438,31 @@ gates are independently blocked. No physical or real-input qualification follows
 [sensor-diagnostics]: sim/diagnostics.py
 [sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
 
+## 47. Diagnostic Output-Path Validation Repair (2026-10-19)
+
+A local no-collection regression reproduced a preflight gap: with the episode
+directory nested under the intended report path, the one-way containment guard
+accepted both fresh paths. Directory creation turned the report destination into
+a directory, and collection started before the eventual report write failed.
+The reproduction used a collector spy, so it generated no study episode.
+
+Resolved output/report destinations now reject equality and containment in
+either direction before mkdir or collection. Three parameterized regressions
+cover equal paths, a report inside the episode directory and an ancestral report
+path; each asserts both no collector invocation and no output creation. Existing
+fresh-output, hash, normal-Config and censoring checks remain intact. All 307
+simulator tests and 623 repository tests pass plus the known transformer
+numerical expected failure; Ruff lint/changed-file format, editor diagnostics
+and documentation reference/local-target/whitespace gates pass.
+
+The four-prefix study was not rerun, and its original logs/report/hash evidence
+remain unchanged. Report source hashes still identify the original exporter in
+`73a61e8`, not the repaired source. No physical/evidence qualification, witness
+application, labels/dataset/splits, bounds/family acceptance, inference/training,
+dependency/download or hardware work occurred. Inputs/history/defaults/token
+ceiling/quarantine and all Task 6/9 gates are unchanged. The ST tools directory
+was rechecked and remains empty; M1a and board gates are still blocked.
+
 ## Sources
 
 Hardware and tools:

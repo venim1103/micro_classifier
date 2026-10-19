@@ -1858,6 +1858,29 @@ def test_sensor_diagnostic_study_fresh_outputs_hashes_and_empty_statistics(tmp_p
         )
 
 
+@pytest.mark.parametrize("layout", ["same", "report_inside", "report_ancestor"])
+def test_sensor_diagnostic_study_rejects_overlapping_outputs_before_collection(
+    tmp_path, monkeypatch, layout
+):
+    from sim.diagnostics import run_diagnostic_study
+
+    root = tmp_path / "study"
+    output, report = {
+        "same": (root, root),
+        "report_inside": (root, root / "report.json"),
+        "report_ancestor": (root / "episodes", root),
+    }[layout]
+    monkeypatch.setattr(
+        "sim.diagnostics.collect_diagnostic_episode",
+        lambda *args, **kwargs: pytest.fail(
+            "collection started before path validation"
+        ),
+    )
+    with pytest.raises(ValueError):
+        run_diagnostic_study(output, report, seed=1)
+    assert not root.exists()
+
+
 def test_sensor_diagnostic_trace_all_dropout_is_not_zero_residual_evidence():
     from sim.diagnostics import DiagnosticRoverEnv, diagnostic_sample
 

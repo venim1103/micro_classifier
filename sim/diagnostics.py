@@ -288,8 +288,11 @@ def run_diagnostic_study(output_dir, report_path, *, seed, ticks=32, scenes=SCEN
         or report_path.is_symlink()
     ):
         raise FileExistsError("diagnostic outputs must be fresh")
-    if report_path.resolve().is_relative_to(output_dir.resolve()):
-        raise ValueError("report must be outside the diagnostic episode directory")
+    resolved_output, resolved_report = output_dir.resolve(), report_path.resolve()
+    if resolved_report.is_relative_to(
+        resolved_output
+    ) or resolved_output.is_relative_to(resolved_report):
+        raise ValueError("report and diagnostic episode directory must not overlap")
     output_dir.mkdir(parents=True, exist_ok=False)
     episodes, all_records = [], []
     for index, scene in enumerate(scenes):

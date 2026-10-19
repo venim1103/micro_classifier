@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §46 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §47 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -593,6 +593,17 @@ Keep this section and the Task List current; a new session resumes from them.
   No witness application, task labels/dataset/splits, accepted bounds/families,
   inference/training, dependency/download or hardware work; inputs/history,
   defaults/token ceiling/quarantine unchanged. Tasks 6/9 and ST/board remain blocked.
+
+- Diagnostic output-path repair (2026-10-19): a no-collection regression proved
+  that a report path ancestral to the episode directory passed preflight and
+  started collection before failing at report creation. Resolved paths now
+  reject equality or containment in either direction before mkdir/collection.
+  Three regression cases pass; 307 simulator tests and 623 repository passes
+  plus the known transformer expected failure; lint/format/editor/doc gates
+  pass. No new study episode or historical report/log regeneration; the report's
+  source hashes remain those of the original `73a61e8` export. DESIGN.md §7 and
+  REVIEW.md §47 record the repair. Scope/data/default/input and Task 6/9 gates
+  are unchanged; `.devcontainer/tools` is still empty.
 
 ## Task List
 

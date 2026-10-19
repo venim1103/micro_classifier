@@ -2114,6 +2114,17 @@ accepted family/bounds, live teacher/training, dependency/download or hardware
 action occurred. All logs stay quarantined; Tasks 6/9 and ST/board gates remain
 blocked on their existing real evidence/data and tool requirements.
 
+Output-path follow-up (2026-10-19, REVIEW.md §47): a report path that was an
+ancestor of the episode directory passed the original one-way containment
+check, allowing directory creation and collection before report creation failed.
+The collector now rejects equal/ancestor/descendant resolved destinations before
+any mkdir or collection. Three spy-backed regressions generate no episodes;
+all 307 simulator tests and 623 repository tests pass plus the known transformer
+expected failure, with lint/format/editor/doc gates clean. No study was rerun
+and no historical artifact changed. The report's source hashes describe its
+original export at `73a61e8`, not this repaired source. No evidence, policy,
+input/default, label/data or hardware gate changed.
+
 [sensor-diagnostics]: sim/diagnostics.py
 [sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
 

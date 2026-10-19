@@ -1669,6 +1669,111 @@ def test_registered_witness_at_rest_uses_current_footprint_only(
     assert result["status"] == status
 
 
+@pytest.fixture
+def gaussian_draft_half_width():
+    from statistics import NormalDist
+
+    def half_width(failure_budget, maximum_draws):
+        return -Config().noise_std * NormalDist().inv_cdf(
+            failure_budget / (2 * maximum_draws)
+        )
+
+    return half_width
+
+
+@pytest.mark.parametrize("failure_budget", [0.1, 0.01, 0.001])
+@pytest.mark.parametrize("maximum_draws", [64, 512, 25664, 205312])
+def test_gaussian_coverage_draft_union_bound_arithmetic(
+    gaussian_draft_half_width, failure_budget, maximum_draws
+):
+    half_width = gaussian_draft_half_width(failure_budget, maximum_draws)
+    marginal_failure = math.erfc(half_width / (Config().noise_std * math.sqrt(2)))
+    assert marginal_failure > 0
+    assert maximum_draws * marginal_failure == pytest.approx(failure_budget, rel=1e-12)
+
+
+def test_gaussian_coverage_draft_budget_counts_and_monotonicity(
+    gaussian_draft_half_width,
+):
+    from itertools import pairwise
+
+    config = Config()
+    budgets = [
+        64,
+        64 * config.history_ticks,
+        64 * (config.max_ticks + 1),
+        8 * 64 * (config.max_ticks + 1),
+    ]
+    assert budgets == [64, 512, 25664, 205312]
+    widths = [gaussian_draft_half_width(0.01, count) for count in budgets]
+    assert all(earlier < later for earlier, later in pairwise(widths))
+    assert gaussian_draft_half_width(0.001, budgets[-1]) > widths[-1]
+
+
+@pytest.mark.parametrize("failure_budget", [0.1, 0.01, 0.001])
+def test_gaussian_coverage_draft_clipping_and_float32_surface_filter(
+    gaussian_draft_half_width, failure_budget
+):
+    config = Config()
+    error = gaussian_draft_half_width(failure_budget, 512)
+    quantization = float(np.spacing(np.float32(config.max_range))) / 2
+    for reference in (0.0, 0.001, 0.1, 2.0, 3.99, config.max_range):
+        for fraction in (-1, -0.75, -0.25, 0, 0.25, 0.75, 1):
+            observed = float(
+                np.float32(np.clip(reference + fraction * error, 0, config.max_range))
+            )
+            assert abs(observed - reference) <= error + quantization + 1e-14
+            if (
+                observed - error - quantization > 0
+                and observed + error + quantization < config.max_range
+            ):
+                assert 0 < reference < config.max_range
+
+
+def test_gaussian_coverage_draft_masked_zero_has_no_surface_information():
+    config = Config()
+    observed = [
+        float(np.where(False, reference, 0)) for reference in (0, 1, config.max_range)
+    ]
+    assert observed == [0, 0, 0]
+
+
+def test_gaussian_coverage_draft_finite_interval_can_fail_outside_event(
+    gaussian_draft_half_width,
+):
+    config = Config()
+    error = gaussian_draft_half_width(0.01, 64)
+    observed = float(np.float32(config.max_range - 2 * error))
+    assert 0 < observed - error < observed + error < config.max_range
+    assert abs(observed - config.max_range) > error
+    assert math.erfc(2 * error / (config.noise_std * math.sqrt(2))) > 0
+
+
+def test_gaussian_coverage_draft_rare_errors_do_not_bound_selected_precision(
+    gaussian_draft_half_width,
+):
+    config = Config()
+    error = gaussian_draft_half_width(0.01, 1)
+    false_positive_probability = (
+        math.erfc(error / (config.noise_std * math.sqrt(2))) / 2
+    )
+    selected_probability = false_positive_probability
+    assert 0 < false_positive_probability < 0.01
+    assert false_positive_probability / selected_probability == 1
+
+
+def test_gaussian_coverage_draft_pointwise_budget_fails_after_selection(
+    gaussian_draft_half_width,
+):
+    config = Config()
+    maximum_draws = 64
+    pointwise_width = gaussian_draft_half_width(0.01, 1)
+    pointwise_failure = math.erfc(pointwise_width / (config.noise_std * math.sqrt(2)))
+    joint_failure = -math.expm1(maximum_draws * math.log1p(-pointwise_failure))
+    assert joint_failure > 0.4
+    assert gaussian_draft_half_width(0.01, maximum_draws) > pointwise_width
+
+
 @pytest.mark.parametrize(
     "config",
     [

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §49 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §50 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -646,6 +646,23 @@ Keep this section and the Task List current; a new session resumes from them.
   Task 9 still needs reviewed cohort/data and splits. Both bounded run approvals
   are exhausted; no further study episodes without approval. ST/board blocked.
 
+- Approved and completed (2026-10-19): simulation-only Gaussian coverage
+  proposal and 20 model-free synthetic checks, no log application or new study
+  episodes. DESIGN.md §7 and REVIEW.md §50 derive a simultaneous marginal-normal
+  union bound for a prospectively declared draw budget, without independence.
+  Examples use 64/512/25,664/205,312 draws; all failure budgets and claim units
+  remain unaccepted. Clipping/final float32 checks and rare-error/selection
+  counterexamples distinguish model coverage from posterior confidence or
+  precision among selected positives. Numerical/ray, registration, motion and
+  return-membership evidence remain unqualified; no runtime API or witness guard
+  changed. All 327 simulator tests and 663 repository tests pass plus the known
+  transformer expected failure; lint/format/editor/doc gates pass. No existing
+  log/artifact used or regenerated, labels/data/splits, live teacher/training,
+  dependency/download or hardware action. Inputs/history/defaults/token ceiling,
+  quarantine and Task 6/9 gates unchanged. Next decision: accept/modify a
+  simulation-only claim unit/domain and failure convention before implementation
+  or application; proposed default remains no adopted risk budget and abstention.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -758,6 +775,10 @@ on missing tools, and continue with the next unblocked task.
   unqualified and mode unlabeled. No task annotations, labels or training. The
   next substantive decision remains an admissible simulation-only target-evidence
   claim/domain, not more unapproved collection or automatic oracle labels.
+  Coverage proposal (2026-10-19, REVIEW.md §50): simultaneous Gaussian range
+  coverage and selection pitfalls are documented/tested only. No claim unit,
+  failure budget or uncertainty policy was adopted; registration/membership/
+  motion/space evidence still blocks labels, and mode remains absent.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

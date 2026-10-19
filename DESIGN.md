@@ -2335,6 +2335,125 @@ seeds, successful privileged rollouts or oracle agreement with task readiness.
 [readiness-tool]: teacher/readiness.py
 [readiness-report]: teacher/reports/readiness-pilot-20261019.json
 
+#### Gaussian Range-Coverage Proposal (Unaccepted, 2026-10-19)
+
+The user approved this **simulation-only proposal and synthetic checks**, not
+policy adoption, a runtime adapter, use on existing logs or any new collection.
+No failure budget, confidence/quality threshold or task-label rule is selected.
+Normal noise/defaults, input/history, token ceiling and existing witness guards
+are unchanged. In particular, a probabilistic proposal does not turn Gaussian
+sigma or an observed residual maximum into a deterministic error bound.
+
+**Assumed model and scope.** The [sampler source][simulator-range-source] adds
+64 Gaussian values to the repeated eight-ray frame, then applies dropout,
+clipping and float32 storage. For the mathematical draft, let the computed
+capped noiseless range be $z_i\in[0,R]$ and assume each innovation has marginal
+$\eta_i\sim\mathcal N(0,\sigma^2)$, with the normal Config's $\sigma=0.02$ m.
+This is an ideal stochastic simulation assumption, not physical calibration or
+certification of a pseudorandom floating-point generator; a fixed-seed run is
+deterministic. A computed ray range is not independently qualified exact-world
+geometry. All geometry/return/numerical issues remain separate claim assumptions.
+
+For a **prospectively fixed** maximum of $N$ innovations and proposed total
+failure allowance $0<\alpha<1$, define
+
+$$
+b(\alpha,N)=\sigma\Phi^{-1}\!\left(1-\frac{\alpha}{2N}\right),\qquad
+E=\bigcap_{i=1}^{N}\{|\eta_i|\le b\}.
+$$
+
+The union bound gives
+$\Pr(E^c)\le\sum_{i=1}^N\Pr(|\eta_i|>b)=\alpha$ in this exact assumed model.
+No independence is needed for that inequality. Test-local arithmetic uses the
+equivalent lower-tail expression
+`-sigma * NormalDist().inv_cdf(alpha / (2 * N))`, avoiding subtraction from one.
+This is not a public API, validated numeric enclosure or adopted risk rule;
+unsupported/underflowing/nonfinite arithmetic would need explicit rejection in
+any separately approved implementation, not silent zero width or truncation.
+
+The following are **illustrative calculations at unaccepted $\alpha=0.01$**,
+not measurements, suggested physical margins or accepted operational defaults:
+
+| Prospective Claim Unit | Conservative Maximum Draws | Formula Half-Width |
+| --- | --- | --- |
+| One capture | 64 | 0.0756184 m |
+| One preselected eight-capture history | 512 | 0.0854037 m |
+| One normal-Config episode, reset plus at most 400 ticks | 25,664 | 0.101479 m |
+| Eight such episodes, one shared allowance | 205,312 | 0.109119 m |
+
+Eight planar rays do **not** mean eight noise draws: each repeated vertical
+zone receives its own innovation. Copied histories are not new independent
+evidence. Counts must cover all relevant unique innovations conservatively,
+including potentially masked/clipped frames, rather than refunding risk after
+filtering outcomes. The 512 count is appropriate only for the specified fixed
+window/model, not arbitrary data-dependent choice among episode windows.
+
+**Selection and stopping.** The final tick, an extreme residual or a favorable
+window may be chosen using observed data. Reusing a fixed-window allowance at
+an adaptively selected time does not establish episode-wide coverage. A
+prospective episode/study-wide maximum permits a uniform bound even when later
+subsetting, without claiming conditional coverage of the subset. Do not plug
+the observed stopping count into a smaller budget after collection, choose
+$\alpha$ from observed maxima, tune a rule on test outcomes or multiply
+successive probabilities without a reviewed dependence model. For an independent
+64-coordinate toy example only, 1% pointwise failures give
+$1-(1-0.01)^{64}=0.4744035$ probability of at least one failure, not 1%.
+
+**Clipping, masks and numerical allowance.** Ideal interval projection onto
+$[0,R]$ is nonexpansive, so on $E$,
+$|\operatorname{clip}(z_i+\eta_i,0,R)-z_i|\le b$.
+If a separately justified numerical allowance $\delta_i$ covers storage and all
+required computation error, an interval radius would be $b+\delta_i$. A
+candidate surface test must require a valid zone and the **untruncated** interval
+strictly inside $(0,R)$. Intersecting every interval with $[0,R]$ and then
+declaring a surface would misinterpret censoring. Missing/masked zeros, saturated
+returns and interval contact remain unknown, never clear or a fabricated hit.
+
+The synthetic grid checks final float32 rounding with the conservative default
+range allowance $\tfrac12\operatorname{ulp}_{32}(4)=2.38419\times10^{-7}$ m.
+This is not a complete binary64 addition/raycast/transcendental/PRNG error bound,
+formal floating-point certification or a real sensor uncertainty limit. The
+source uses numerical ray arithmetic; none of its geometric error is qualified
+by a final-cast check. Outside $E$, even a censored $z_i=R$ can produce an
+apparently interior return through a finite-probability negative innovation;
+no finite Gaussian interval is an absolute guarantee.
+
+**Coverage is not label confidence.** A uniform range-error event, combined
+with independently justified geometry/registration/membership/motion evidence,
+could support a future sufficient-positive argument with an explicit range-
+failure contribution. This draft supplies none of those other qualifications.
+It does not prove $\Pr(\text{blocked}\mid\text{observed input})\ge1-\alpha$,
+precision among positive outputs, calibrated teacher confidence or physical
+safety. In an abstract all-negative toy detector selecting only a rare
+one-sided error event, the unconditional error rate is small while **every
+selected positive is false**. That counterexample is not a module classifier.
+
+Any future claim needs an explicit ledger for range innovations, numerical/ray
+error, surface association, acquisition/reference registration and timing,
+state/motion/footprint uncertainty and dynamic-world assumptions. Contributions
+may be union-bounded only under justified models; unknown entries are not zero.
+Positive-only conditional evidence still does not establish whole-sweep free
+space, sector ranking or capacity tiers. Existing identical-input geometric
+aliases and reviewer-evidence restrictions remain, with mode unlabeled.
+
+Twenty [model-free checks][sim-tests] cover 12 tail-budget combinations, budget
+counts/monotonicity, 126 finite clipping/float32 grid points across three example
+allowances, masking, a beyond-interval counterexample, selected-positive error
+and pointwise-selection failure. No Monte Carlo, study episode, log or teacher
+was used; these finite arithmetic checks do not certify the model universally.
+All 327 simulator tests and 663 repository tests pass plus the known transformer
+expected failure; lint/format/editor/doc gates pass. Only tests/docs changed;
+runtime sources and all prior artifacts/hashes are unchanged.
+
+The next genuine decision is the simulation-only claim/domain, its prospective
+unit and failure convention, followed by independent evidence for the missing
+ledger entries and separately approved tooling/application. No example
+$\alpha$, count or width is adopted here. Keep abstention, quarantine and all
+Task 6/9, training and ST/board gates in force; no labels or real-input
+qualification follow from this proposal.
+
+[simulator-range-source]: sim/rover.py
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

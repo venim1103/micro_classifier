@@ -2584,6 +2584,63 @@ rollouts cannot by themselves clear either gate; ST/board remain separate blocke
 [readiness-tool]: teacher/readiness.py
 [readiness-report]: teacher/reports/readiness-pilot-20261019.json
 
+## 50. Simulation Gaussian Coverage Proposal, Not Uncertainty Adoption (2026-10-19)
+
+The user approved the complete simulation-only proposal and bounded model-free
+synthetic checks, not risk-threshold adoption, log application, new study
+episodes, labels/data/splits, inference/training or hardware. DESIGN.md §7
+records the assumed Gaussian range-error model and all remaining qualifications.
+Normal noise/defaults, input/history, token ceiling, runtime APIs and existing
+positive-witness rejection guards are unchanged.
+
+With $N$ prospectively bounded innovations, marginal normal assumption and
+unaccepted failure allowance $\alpha$, the draft uses
+$b=-\sigma\Phi^{-1}(\alpha/(2N))$. A union bound gives simultaneous innovation
+coverage at least $1-\alpha$ in the exact assumed stochastic model, without
+independence. It is not a deterministic bound, physical measurement, certified
+floating-point enclosure or empirical claim about a fixed-seed run. Illustrative
+unaccepted $\alpha=0.01$ gives widths 0.0756184/0.0854037/0.101479/0.109119 m
+for 64/512/25,664/205,312 draws. The proposal adopts none of these numbers.
+
+Counts distinguish 64 innovations per capture from eight repeated planar rays,
+a preselected history from an adaptively chosen final/extreme window, and
+pointwise from episode/study-wide scope. A prospectively declared whole-run
+budget cannot be reduced after observing stopping/filtering. An independent
+64-coordinate toy example has 0.4744035 probability of at least one failure
+under a 1% pointwise rule, illustrating selection without claiming that the
+actual correlated inputs follow this toy joint distribution.
+
+Clipping preserves ideal range consistency on the coverage event, but masks,
+saturation and interval contact remain unknown. A potential surface interval
+must be strictly interior before truncation, with separately qualified numeric
+error. The tested final float32 allowance is not a complete binary64/raycast/
+PRNG or physical uncertainty bound. Gaussian tails can still produce an apparent
+interior return from a censored range outside the event.
+
+Uniform coverage is not posterior blocked probability or selected-positive
+precision. A separate abstract all-negative selection counterexample has rare
+unconditional errors but every selected positive false. Range coverage alone
+does not establish occupied membership, delayed-frame registration, motion/
+footprint, free-space coverage, sector ranking or capacity tiers. Unknown failure
+ledger entries cannot be assigned zero; identical-input aliases and observation-
+only human review remain controlling, and mode stays unlabeled.
+
+Twenty new synthetic cases pass: 12 tail/budget combinations, count/monotonicity,
+three 42-point clipping/float32 grids, masking and three failure/selection
+counterexamples. They use `statistics.NormalDist` and scalar `erfc`, not Monte
+Carlo, existing logs, new study episodes or runtime probability outputs. Full
+gate: 327 simulator tests and 663 repository passes plus the known transformer
+expected failure; Ruff lint/touched-file format, editor diagnostics and doc
+reference/local-target/whitespace/scope gates pass. No source artifact, prior
+report, teacher/renderer identity or accepted decision changed.
+
+**Outcome:** the proposal/check package is complete, not a qualified uncertainty
+policy or labeler. Next review must select an intended simulation-only claim,
+prospective unit/domain and failure convention and address independent missing
+evidence before any new tooling or application. No risk value was adopted,
+cohort/family/split accepted or task annotation produced; all current logs stay
+quarantined and Tasks 6/9, training, ST and board gates remain blocked.
+
 ## Sources
 
 Hardware and tools:

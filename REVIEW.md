@@ -3,7 +3,8 @@
 Status: Independent review of [DESIGN.md](DESIGN.md) and the repository state.
 Review date: 2026-10-13. Update 2 (2026-10-14, §12) covers the robot
 decision-module clarification and an external AI analysis; it corrects F1, F2,
-and §7.2 in place.
+and §7.2 in place. Update 3 (2026-10-19, §70) is a whole-repository code,
+design and process review.
 Scope: feasibility, verification of design claims, landscape changes, design
 gaps, alternatives, risks, and concrete next steps.
 
@@ -69,6 +70,12 @@ Key findings, by priority:
 Update 2 adds F12-F17 for the robot decision module: the module contract, label
 sources per question, closed-loop data, exclusion of Jev-derived teachers, the
 two-GPU d3 teacher, and the definition of European sourcing (§12).
+
+Update 3 adds F18-F36 from a whole-repository code, design and process review
+(§70): no rover v0 question needs learning, the undefined `mode` blocks `OK`,
+the simulated ToF does not match the VL53L8CX, Arm evidence used the soft-float
+ABI, the framing can drop frames, and most recent work is off the critical
+path.
 
 Recommended path in one paragraph: resolve M0 (one task, modality, latency,
 error costs). Install ST Edge AI Core in the devcontainer and run compile-only
@@ -3498,6 +3505,460 @@ production/data/runtime/ST/board gates stay in force.
 
 [assembly-build-report]: interface/reports/assembly-build-audit-20261019.json
 
+## 70. Whole-Repository Code, Design and Process Review (2026-10-19)
+
+**Scope and method.** The user asked for a deep review of the whole project, not
+an approval package. Read DESIGN.md, REVIEW.md, AGENTS.md, README.md, every
+Python and C source, the test layout and the git history (71 commits,
+2026-10-13 to 2026-10-19). Ran the full offline suite, Ruff and the targeted
+reproductions in §70.9, checked the Arm float ABI of the installed
+`arm-none-eabi-gcc` 13.2.1, and checked VL53L8CX limits against ST's product
+page and driver API. Reproductions used temporary files outside the repository.
+No source, report, artifact, dependency or configuration was changed, and no
+model, simulator study, ST tool or hardware was run. Finding numbers continue
+from F17 (§12.3).
+
+### 70.1 Verdict
+
+The modules are carefully engineered: strict validation, exclusive writes,
+pinned and fully hashed third-party code, deterministic seeds, candid
+limitation statements, and an offline suite of 1,106 tests that runs in under
+30 seconds with clean lint. The feasibility research in §§1-12 remains sound.
+
+The project is not converging on its product, however. Six days in, and four
+after the M0 defaults were confirmed, there is no defined learning target,
+dataset, student, ST compiler run or board measurement. Every critical-path
+task (6 and 9-15) is blocked on product decisions or user-side tool and
+hardware actions, not on missing code. Since 2026-10-16 most commits have been
+narrowly approved packages that move no gate: synthetic witness and
+registration probes, a Gaussian coverage proposal, readiness and provenance
+audits, and two build audits plus two verifier studies of about 1,000 lines of
+reference C. The git history adds about 10,300 lines of source and 9,900 of
+tests, against 124,000 lines of committed JSON evidence and 10,500 of
+documentation. The four Markdown files now hold 80,000 words; AGENTS.md alone
+is 95 KB.
+
+Three issues dominate:
+
+1. The rover v0 bundle gives the student and the teacher nothing to learn that
+   a rule cannot compute (F18), and its fourth question blocks every `OK`
+   decision (F19).
+2. Label truth is conflated with label observability (F20). That conflation
+   drove a week of certification-style evidence work that a probabilistic
+   classifier does not need.
+3. The process (per-package approvals, file-hash provenance and an
+   append-only agent log) consumes most of the effort (F33-F35).
+
+Concrete defects also need fixing before the code is reused: the Arm evidence
+was compiled with the soft-float ABI (F22), the framing can drop valid frames
+after line noise (F23), and the simulated ToF does not match the specified
+sensor (F21).
+
+### 70.2 Findings
+
+| # | Severity | Finding | Action |
+| --- | --- | --- | --- |
+| F18 | Strategic | No rover v0 question needs learning or the teacher | Ship geometry as rules; choose a learnable question |
+| F19 | High | Undefined `mode` is required for every `OK` | Drop it from catalogue v0 or allow per-question abstention |
+| F20 | High | Observation-only labels discard simulator truth | Label simulation from privileged truth; learn calibrated posteriors |
+| F21 | High | Simulated ToF does not match VL53L8CX; proxies would not transfer | Rebuild the sensor and scene model before generating data |
+| F22 | High | Arm builds use the soft-float ABI | Compile with `-mfloat-abi=hard`; discard soft-float figures |
+| F23 | High | Framing can drop valid frames after line noise | Header CRC with rescan on idle, or COBS |
+| F24 | Medium | Python encoder emits frames its decoder rejects | Validate after binary32 rounding |
+| F25 | Medium | `OverflowError` escapes validation contracts | One shared finite-float conversion |
+| F26 | Medium | Evaluation lacks the accepted M0 metrics | Add cost-weighted, metric-at-coverage and ordinal metrics |
+| F27 | Medium | Rover-state teacher path has no viable target | Park it; run the bake-off on camera questions |
+| F28 | Medium | Whole-file source hashes key caches and shape the code | Version constants plus git-commit provenance |
+| F29 | Medium | C reference math is not the deployed path; no firmware build | Freeze it; add CMake with hard float; real golden vectors |
+| F30 | Low | Small simulator and validation inconsistencies | One cleanup change |
+| F31 | Low | M1a matrix partly obsolete; ST success checks presence only | Rover-shaped probes when tools arrive |
+| F32 | Low | Verified d3 sources may run from unverified bytecode | Disable or hash-check bytecode for the import |
+| F33 | Strategic | Work is off the critical path | Clear user-side blockers; stop peripheral packages |
+| F34 | High | AGENTS.md is an append-only log | Cut to rules, commands, short state and next actions |
+| F35 | Medium | DESIGN.md and REVIEW.md have become changelogs | Separate design, evidence register and findings |
+| F36 | Medium | Evidence bloat, no CI, no project configuration | Archive bulk reports; add `pyproject.toml` and CI |
+
+### 70.3 Product and Design
+
+#### F18 (Strategic): No rover v0 question needs learning or the teacher
+
+`path_blocked`, `clear_sector` and `speed_tier` are deterministic functions of
+the module's current ToF frame, speed and sample age. The [draft
+labeler][sim-label-draft] computes them in a few dozen lines, and DESIGN §4
+already says such questions are "often better computed on the M55 at run time
+than learned". A student trained on these labels can at best reproduce the rule
+with added error; as DESIGN §7 notes, agreement with the rule measures
+imitation. The teacher adds nothing either: Decision 3.0 is a vision-language
+decision model, and reading hundreds of noisy floats rendered as JSON is not
+its strength (F27). The fourth question, `mode`, has neither semantics nor an
+input that carries intent (F19). The distillation architecture therefore has no
+question in this pilot on which M2 or M3 could show value, which is the "stop
+or revisit" condition of DESIGN §12.
+
+Proposed default for the product decision:
+
+1. Ship the three geometric answers as deterministic, unit-tested M55 code in
+   v0. Rules are the product for these questions and the M2 baseline.
+2. Exercise the training, export and compile chain with one learned `noul` head
+   whose label comes from future simulator outcomes rather than the current
+   frame: for example, contact within 1.0 s if the current command is held.
+   A time-to-contact rule is then a fair baseline instead of the label's own
+   definition. Report calibration and error cost against that rule.
+3. Start the teacher bake-off where Decision 3.0 is strong (F11): one or two
+   perceptual camera questions, such as a docking marker or a person ahead,
+   on frames at the student's resolution.
+
+#### F19 (High): Undefined `mode` is required for every `OK`
+
+`OK` requires all four answers and a nonzero model version
+([protocol][wire-python] line 314, [C codec][wire-codec-source] line 277,
+[assembly][assembly-source] line 17). `mode` has been deliberately unlabeled
+since the policy draft of 2026-10-15; its five options have no observable
+definitions, and the simulated inputs carry no mission intent. Under the
+provisional contract the module cannot emit a meaningful `OK`: every such
+decision would carry an untrained `mode` distribution. Either remove `mode`
+from catalogue v0 (three questions, answer mask `0x7`) or let `OK` mean that
+every question of the active catalogue is answered or explicitly abstained.
+Both are provisional-contract changes that are nearly free now and costly after
+host integration. Return `mode` in a later profile that adds a mission-phase
+input.
+
+#### F20 (High): Label truth is conflated with label observability
+
+The adopted policy (§34) labels from student-visible observations only, with
+human abstention. The witness, bounded-error, registration and Gaussian
+coverage work (§§39-51) then tried to certify positive evidence from those
+observations. For a probabilistic classifier this is the wrong target. Training
+on the true outcome, available in simulation from privileged geometry that the
+[synthetic oracle][review70-navigation] already computes, estimates the
+posterior P(y | observation) under the simulated distribution. Input aliasing,
+such as the two artificial worlds with identical eight-tick inputs and opposite
+outcomes (§35), then becomes calibrated uncertainty, which is exactly what the
+module's distributions are for, instead of a labelling defect. This is the
+privileged-teacher asymmetry of [Learning by Cheating][lbc], already cited in
+DESIGN §4. Human review of numeric arrays is slower and noisier and loses
+information; the [blind packets][blind-review-tool] do not even render the ToF
+history for reviewers.
+
+Recommendation for the user to reconsider: in simulation, label geometric and
+predictive questions from privileged truth with a documented horizon and
+footprint. Reserve human review for semantic questions and real-robot data, and
+judge models by calibration and error cost on held-out simulated and real
+episodes. Freeze the witness, registration and coverage APIs; none has a caller
+outside the tests.
+
+#### F21 (High): The simulated ToF does not match the specified sensor
+
+The pilot names the VL53L8CX, but [the simulator][review70-rover] differs in
+ways that matter for data, labels and timing. Its 45-degree field of view does
+match the sensor's 65-degree diagonal square field.
+
+- **Rate.** ST's driver accepts 1-15 Hz at 8x8 and 1-60 Hz at 4x4
+  ([ULD API][vl53l8cx-uld]); the [product page][vl53l8cx-page]'s 60 Hz is a
+  4x4 figure. M0 sets 20 Hz decisions, and the simulator delivers a fresh 8x8
+  frame every 50 ms tick. At 20 Hz at least one tick in four has no new frame,
+  so sample ages must vary.
+- **Geometry.** Eight planar rays are copied into all eight rows (line 136) and
+  noise is then added per cell: seven-eighths of each 512-value history is
+  redundant noise, which also inflated the teacher prompts measured in
+  §§23-28. There is no floor, ceiling, mounting height or pitch.
+- **No return.** A ray with no target becomes a valid reading near 4 m after
+  noise and clipping (line 139). The sensor reports per-zone target status,
+  sigma and possibly several targets; zones without a target are invalid.
+- **Proxy transfer.** The draft proxy uses each column's minimum over all valid
+  rows ([labels][sim-label-draft] line 108). On a forward-mounted sensor the
+  lower rows see the floor, so `path_blocked` would be nearly always true.
+- **Ego-state.** Speed and turn rate are exact and instantaneous (line 151);
+  real odometry is noisy and delayed.
+- **Scenes.** There are four fixed layouts and only `obstacle` uses the seed
+  (±0.15 m). Every episode starts from the same pose, so eight readiness
+  episodes shared one exact reset input (§49) and the provenance audit found
+  repeated geometry (§37). Lineage review cannot create diversity that the
+  generator never produces.
+
+Before generating training data, add procedural scenes (obstacles, walls,
+starts and goals), per-zone elevation with a floor plane and mounting pose,
+target status and dropout per zone, 15 Hz sampling with variable age, and
+noisy, delayed ego-state. Record a few minutes of real VL53L8CX frames on the
+intended mount early; that calibrates the sensor model better than further
+synthetic study. PX4/Gazebo software-in-the-loop (DESIGN §7) is the
+alternative to growing the custom simulator.
+
+#### F22 (High): Arm compile evidence uses the soft-float ABI
+
+[The build audit][reference-build-audit] (line 193) and the interface tests
+(line 2609) pass only `-mcpu=cortex-m55 -mthumb`. The installed Ubuntu
+`arm-none-eabi-gcc` 13.2.1 then defaults to `-mfloat-abi=soft` (shown by
+`-Q --help=target`), and [GCC][gcc-arm-options] emits floating-point
+instructions only when the ABI is not soft. Every float and double operation
+in the audited objects is therefore an `__aeabi_*` library call. Recompiling
+the dense head at `-O2` shows the effect: soft float gives 708 bytes of `.text`
+and 11 helper symbols; `-mfloat-abi=hard` gives 520 bytes and needs only
+`memcpy`, and hard-float objects record FPv5/FP-D16 and MVE integer and float
+attributes. The `.text` and stack tables of §§64 and 69 and their "unresolved
+Arm software-double helpers" describe a configuration no STM32N6 build would
+use. Compile with
+`-mfloat-abi=hard` (and `-mfpu=auto`), matching the eventual ST project flags,
+and do not cite the soft-float figures as M55 sizing evidence. Host results and
+C semantics are unaffected.
+
+#### F23 (High): The framing can drop valid frames after line noise
+
+Both stream decoders wait for the payload length claimed by any header that
+starts with `MC` ([Python][wire-python] line 423, [C][wire-codec-source] line
+435). Reproduced with `FrameDecoder`: six noise bytes forming a plausible
+decision header (104-byte payload) followed by a valid state frame return
+nothing. The state is released only after 30 more bytes, which at 20 Hz means
+the next tick's frame, about 50 ms later. DESIGN §2 tells the transport owner to
+reset the decoder on an inter-byte timeout; under that rule the valid frame is
+discarded. The C stream has the same structure. Line noise at connect, reset or
+brown-out is common on UART links. Before host integration, choose either:
+
+- a CRC-8 over the header, so false headers are rejected before waiting, and an
+  idle-timeout action that rescans buffered bytes instead of discarding them;
+  or
+- [COBS][cobs] framing with a zero delimiter, which resynchronizes at every
+  frame boundary for at most one extra byte per 254.
+
+The contract is provisional, so either change is cheap now.
+
+### 70.4 Code
+
+#### F24 (Medium): The Python encoder can emit frames its decoder rejects
+
+`encode_decision` validates double-precision probabilities and then packs
+binary32 values ([protocol][wire-python] line 331); both decoders validate the
+rounded values. Near the 1e-6 sum tolerance they disagree: of 200,000 random
+four-option distributions with a double-precision sum of 1 − 0.99e-6, 55,414
+encoded successfully and then failed to decode. The C encoder is consistent
+because it already stores binary32. Round first, then validate and compute
+confidence. Normalized softmax outputs are far from this edge, but a contract
+should not contain the asymmetry.
+
+#### F25 (Medium): `OverflowError` escapes documented validation errors
+
+`encode_state(State(velocity_m_s=(10**400, 0.0, 0.0)))` raises
+`OverflowError` because `finite` (line 172) catches only `TypeError`.
+`probe_synthetic_ray_witness(..., speed=10**400)` does the same
+([navigation][review70-navigation] lines 370, 474 and 718). This is the bug
+class §43 repaired only in the registration path. Use one shared conversion
+helper that maps unconvertible values to the documented error type.
+
+#### F26 (Medium): Evaluation does not compute the accepted M0 metrics
+
+M0 accepted "a missed obstacle is 20x worse than a false stop" and "`mode`
+macro-F1 ≥ 0.85 at ≥ 80% coverage" (§10). [The evaluation
+tool][teacher-evaluation] reports coverage against accuracy only (lines
+115-140), with no cost-weighted risk, metric at a coverage level or ordinal
+error for the `speed_tier` score. It ranks by maximum probability rather than
+the deployed confidence statistic, which differs for score answers. Add
+expected cost under an explicit cost matrix, macro-F1 and per-class recall at a
+given coverage, and expected-level absolute error for ordinal questions.
+
+#### F27 (Medium): The rover-state teacher path has no viable target
+
+The live labelling path asks only `mode`, with every option's `criteria` set to
+`None` ([pipeline][teacher-label-pipeline] line 96), so the teacher sees five
+bare option names. The state is a JSON dump of over 600 numbers plus masks, and
+full-history requests need 3,421-10,855 tokens (§§23-28). The compaction drafts
+and long-context studies (§§24-31) optimize a path that F18 and F19 remove. The
+d3-mini "BF16 versus streamed BF16" exact match (DESIGN §4) compares identical
+weights at identical precision: a plumbing check, not a quantization result.
+Park the rover-state teacher path. If a numeric-state teacher is ever needed,
+render derived features (sector minima, speed, time to contact) with option
+definitions, and measure teacher accuracy against simulator truth before
+distilling.
+
+#### F28 (Medium): Whole-file source hashes key caches and shape the code
+
+Teacher requests embed the SHA-256 of `label_pipeline.py`, and cache keys
+include it again ([pipeline][teacher-label-pipeline] lines 102 and 439-443).
+Any edit, even to a comment, invalidates every cached teacher label, which
+becomes expensive once labelling runs on the GPU. Labels and reports repeat the
+pattern, and it has shaped the code: the [review][blind-review-tool] and
+[readiness][readiness-tool] tools sit in separate modules so that hashed files
+stay unchanged, and later reviews proved non-changes with AST comparisons. Key
+caches on the canonical request content, the teacher identity and an explicit
+renderer version that changes only with semantics; record the git commit for
+provenance.
+
+#### F29 (Medium): The C reference is not the deployed numeric path
+
+The [dense head][head-reference-source] uses double-precision compensated
+summation with a 257-element partial expansion (lines 17-56). It is accurate,
+but the deployed path will be an INT8 NPU trunk with float32 or int32 heads,
+whose outputs will differ from this reference anyway; meanwhile it costs about
+2 KB of stack and data-dependent time. Golden vectors must come from the
+exported model path (float ONNX, INT8 QDQ, then target) with explicit
+tolerances (DESIGN §8). The library has no CMake or Make build (only the Python
+harness compiles it) and no `extern "C"` guards. It also lacks every part that
+carries design risk: ToF acquisition and history, normalization, the head blob
+format and signing, and rejection policy. Freeze reference-math work. The next
+firmware step should be a CMake library with a hard-float Cortex-M55 toolchain
+file and, once M1a runs, integration of the ST-generated network.
+
+#### F30 (Low): Small simulator and validation inconsistencies
+
+- `swept_collision` treats wall tangency as free but obstacle tangency as
+  contact ([rover][review70-rover] lines 288 and 302); the navigation oracle
+  treats both as contact.
+- `Config` accepts booleans for numeric fields; `Config(dt=True)` succeeds.
+- `_observation()` appends to the history buffer (line 152), so a second call
+  in one tick would corrupt history.
+- `draft_labels` re-reads the catalogue and re-hashes its own source for every
+  observation, and `prepare_request` computes labels only to validate inputs;
+  both will be slow at dataset scale.
+
+#### F31 (Low): The M1a matrix is partly obsolete
+
+Five of the nine probes come from the earlier text design: four temporal
+convolutions with C = 96 and T = 128, and a 256-token Gather ([M1a
+script][m1a-script] lines 71 and 83). The rover profile has no text branch, and
+the transformer probe's expected numerical failure does not affect it.
+Rover-shaped probes are missing, such as an eight-tick stack of 8x8 ToF and
+validity planes plus ego-state history. [The ST runner][st-compile-script]
+reports `generated_reports_pending_review` once the report files exist, without
+parsing them. That label is honest; parse epochs, fallbacks and memory use once
+a real report exists.
+
+#### F32 (Low): Verified d3 sources may run from unverified bytecode
+
+`verify_package` hashes the snapshot's Python sources, then `importlib` imports
+them ([d3 adapter][review70-d3] line 95). Python writes and reuses
+`__pycache__` bytecode in the snapshot directory and validates it by source
+timestamp and size, not hash, so a stale or replaced `.pyc` would go
+unnoticed. Risk is low on a single-user workstation. Suppress bytecode writing
+during the import and remove existing caches, or execute the verified bytes
+directly.
+
+### 70.5 Process
+
+#### F33 (Strategic): Work is off the critical path
+
+The critical path is: defined questions and labels, dataset, student, export
+and ST compile (M1a), board (M1b). The first step is undecided; the last two
+wait on user-side actions, since ST Edge AI Core has been absent since
+2026-10-13 and there is no board. Rather than force those decisions, recent
+sessions proposed narrowly scoped packages that were safe to approve and then
+executed them with full audits:
+
+- The six public functions in [navigation.py][review70-navigation] (788 lines,
+  about 64 tests) have no caller outside the tests.
+- The witness, registration and coverage work (§§39-51) answers a
+  certification question that F20 removes.
+- Two build audits measured soft-float objects (F22) of reference code that
+  F29 recommends freezing.
+- §§13-69 are 57 dated status sections (completions, proposals and repairs)
+  written in five days.
+
+None of these moved a task out of `blocked`. Before accepting a package, state
+which task or gate it moves, and do not propose it if the answer is none.
+Resolve the user-side blockers first (§70.7), time-box exploration, and prefer
+an end-to-end vertical slice over deeper audits of one layer.
+
+#### F34 (High): AGENTS.md has become an append-only log
+
+AGENTS.md is 95 KB and 11,600 words. It changed in 62 of 71 commits and grew to
+1,344 lines (1,518 added, 174 removed). Its Current State restates each
+package's approval scope, counts, hashes and exclusions in compressed prose and
+is loaded into every agent session, burying the rules and next actions. Its
+structure also encodes the loop described in F33: each session records what
+remains unapproved, and the next proposes the next narrowly approvable package.
+Reduce it to about 150 lines: summary, rules, commands, a current state of at
+most 20 lines, and the task list with one next action per task. History belongs
+in git and REVIEW.
+
+#### F35 (Medium): DESIGN.md and REVIEW.md have become changelogs
+
+DESIGN.md (254 KB, 33,600 words) interleaves architecture with test counts,
+report hashes and approval narratives; the wire-contract section in §2, for
+example, lists C check counts and repository totals. The current design is
+hard to extract, and the word "not" appears 446 times. REVIEW.md mixes the
+findings register with daily completion notes. Restructure: DESIGN holds
+current decisions and a short decision log; one evidence register lists
+measurements with links to reports; REVIEW holds findings and dated reviews.
+Completion detail lives in commits.
+
+#### F36 (Medium): Repository hygiene
+
+- About 124,000 lines of generated JSON are committed; the assembly build audit
+  alone is 26,400 lines and each input-cost report 19,192. Keep summaries and
+  hashes in git and archive full reports elsewhere, such as release assets.
+- There is no CI, so the fast suite runs only on one workstation. A small
+  workflow with pytest, Ruff and host plus hard-float Arm compilation would
+  protect the codecs.
+- There is no `pyproject.toml`, so Ruff and pytest have no project
+  configuration. Ruff 0.17's `ruff format --check .` now also fails on the
+  tab-indented Python blocks in README.md, alongside `.devcontainer/smoke.py`.
+- The base image and apt packages, including `gcc-arm-none-eabi`, are
+  unpinned, so toolchain identities recorded in reports can drift on rebuild.
+
+### 70.6 Keep, Freeze, Retire
+
+| Keep and build on | Freeze | Retire or archive |
+| --- | --- | --- |
+| d3 and Vela INT8 loaders and parity harness | Witness, registration and coverage APIs (F20) | Prompt-compaction drafts and cost studies (F27) |
+| Wire contract and C codec, after F19 and F23-F25 | Build audit and native verifier (F22, F29) | Bulk JSON evidence in git (F36) |
+| Simulator core, after F21 and F30 | Readiness, provenance and blind-review tooling | Per-package approval prose in AGENTS.md (F34) |
+| Evaluation metrics, after F26 | C head and assembly reference (F29) | Text-era M1a probes, once ST tools arrive (F31) |
+| ST compile runner and the fast offline suite | | |
+
+### 70.7 User-Side Actions That Unblock the Most
+
+1. **Install ST Edge AI Core and STM32CubeProgrammer** in `.devcontainer/tools`
+   after accepting their licences. This unblocks Task 14 (M1a), pending since
+   2026-10-13.
+2. **Decide the pilot questions** (F18, F19); proposed defaults above.
+3. **Revisit the simulation label-truth policy** (F20); proposed default:
+   privileged truth for geometric and predictive questions, human review for
+   semantic and real-robot data.
+4. **Send the Decision 3.0 training-data request** drafted in §14, the cheapest
+   commercial blocker to clear.
+5. **Obtain an STM32N6570-DK and a VL53L8CX evaluation board** to record real
+   frames early (F21) and start M1b.
+
+### 70.8 Suggested Sequence
+
+1. Fix F19 and F22-F25 and clean up F30, each with a regression test.
+2. Make the simulator credible (F21). Add a software-in-the-loop harness: the
+   host-built C library consumes simulator frames, computes the rule answers
+   and returns decisions to a simple host controller that brakes on rejection
+   or timeout. This exercises the contract, staleness and fail-safe path in
+   closed loop and yields the first M2 baseline.
+3. Train the first learned head (F18, item 2) on simulator-truth labels with
+   grouped splits, compared with the rule using the F26 metrics.
+4. Run M1a with the real toolchain on rover-shaped probes and that student,
+   then M1b on the board.
+5. In parallel, shrink AGENTS.md (F34) and restructure the documents (F35).
+
+### 70.9 Verification
+
+| Check | Result |
+| --- | --- |
+| `python -m pytest -q` | 1,106 passed, 1 expected transformer failure, 28.3 s |
+| `ruff check .` | Passed |
+| `ruff format --check .` | Fails only on `.devcontainer/smoke.py` (known) and README.md Python blocks |
+| Arm default ABI (`-Q --help=target`) | `-mfloat-abi=soft` |
+| Dense head at `-O2`, soft versus hard ABI | 708 versus 520 bytes `.text`; 11 versus 0 `__aeabi_*` symbols |
+| Six-byte false header before a valid state frame | Released after 30 more bytes; lost on a timeout reset |
+| 200,000 near-tolerance decision round trips | 55,414 encoded but rejected on decode |
+| `encode_state` and ray probe with `10**400` | `OverflowError` |
+| Tangency and `Config(dt=True)` | Wall tangency free, obstacle tangency contact; boolean accepted |
+| Added lines in git history | Source 10.3k, tests 9.9k, docs 10.5k, JSON reports 124k |
+
+These are recommendations, not approvals: every gate, default and approval
+boundary recorded in earlier sections remains in force until the user decides
+otherwise.
+
+[review70-rover]: sim/rover.py
+[review70-navigation]: sim/navigation.py
+[review70-d3]: teacher/d3_int8.py
+[lbc]: https://arxiv.org/abs/1912.12294
+[vl53l8cx-page]: https://www.st.com/en/imaging-and-photonics-solutions/vl53l8cx.html
+[vl53l8cx-uld]: https://github.com/stm32duino/VL53L8CX/blob/main/src/vl53l8cx_api.h
+[gcc-arm-options]: https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
+[cobs]: https://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
+
 ## Sources
 
 Hardware and tools:
@@ -3530,6 +3991,12 @@ Robot integration (Update 2):
 - [PX4 offboard mode][px4-offboard], [PX4 Gazebo simulation][px4-gazebo],
   [DAgger][dagger], [Infineon PSoC Edge E84][psoc-edge-e84], and the
   [EASA drone framework][easa-drones]
+
+Code, design and process review (Update 3):
+
+- [VL53L8CX product page][vl53l8cx-page] and [ULD driver API][vl53l8cx-uld],
+  [GCC Arm options][gcc-arm-options], [COBS][cobs], and
+  [Learning by Cheating][lbc]
 
 Methods and measurements:
 

@@ -16,8 +16,8 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §69 is the latest update, and
-  §10 is the M0 decision template.
+- [REVIEW.md](REVIEW.md): evidence and findings. §70 (whole-repository review,
+  F18-F36) is the latest update, and §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
 
@@ -936,6 +936,16 @@ Keep this section and the Task List current; a new session resumes from them.
   changed after run, historical reports unchanged, and no target link/execution,
   budgets, policy/input, production models, task labels/data/collection/training,
   dependencies/downloads, ST/licence or board scope is opened.
+
+- Whole-repository code, design and process review (2026-10-19, REVIEW.md §70):
+  findings F18-F36 with proposed defaults; review only, nothing approved or
+  changed in code, reports or defaults. Top items: no rover v0 question needs
+  learning or the teacher (F18); undefined `mode` blocks every `OK` (F19);
+  simulated ToF and proxies do not match the VL53L8CX, whose 8x8 mode is limited
+  to 15 Hz (F21); Arm checks used the soft-float ABI (F22); framing can drop
+  frames after line noise (F23); most recent work is off the critical path and
+  this file has become an append-only log (F33-F34). Next: the user decisions
+  and actions in §70.7, then the sequence in §70.8.
 
 ## Task List
 

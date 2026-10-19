@@ -250,8 +250,34 @@ There are 46 new C checks, 108 interface tests and 713 repository passes plus
 the known transformer expected failure; lint/format pass. Host GCC 13.3 and
 Arm GCC 13.2 compile real objects, the latter with `-mcpu=cortex-m55 -mthumb`.
 This is neither a linked firmware build nor target execution, timing, memory-fit
-or physical-safety evidence. Stream recovery is the next approved follow-up;
+or physical-safety evidence. The approved stream follow-up is recorded below;
 history, heads/inference, application rejection and hardware remain gated.
+
+Stream completion (2026-10-19): `mc_v0_stream_init` and `mc_v0_stream_feed` use a
+128-byte framing buffer plus fixed metadata, no allocation, and callbacks for
+all complete validated packets. Bad framing/CRC/semantics are discarded with
+bytewise magic recovery; rejected-candidate counts saturate at `UINT32_MAX`.
+The callback packet is borrowed until callback return: copy any retained data.
+Serialize access to each stream; callbacks must not feed/reset that same stream.
+Feed success means the chunk was processed, not that a packet or recommendation
+was produced. The transport owner calls init to discard partial data on its
+chosen timeout; init also clears counters. No timeout threshold is adopted.
+
+Additional checks cover every two-chunk split and bytewise delivery of all five
+goldens, single-bit corruption in each golden byte, impossible/unsupported and
+semantic faults, two nested packets released after one final corrupt-candidate
+byte, 100,000 noise bytes, counter saturation, resets and invalid arguments.
+Python and C agree on 2,000 seeded CRC-repaired mutations and packet/buffer/
+counter results throughout a seeded mixed stream. Eight binary32 tolerance-edge
+cases agree. ASan/UBSan pass exact-size golden prefixes/extra bytes and 4,096
+random buffers. Compile-time guards reject changed v0 version/capacity
+assumptions and fast/finite-only math; these force codec review, not an interface
+freeze. All 67 C checks, 129 interface tests and 734 repository tests pass plus
+the known transformer expected failure; host/Cortex-M55 object, lint/format/
+editor gates pass. These finite checks are not formal memory, numerical, WCET
+or physical-safety certification. The approved host-C package is complete with
+no linked firmware, hardware execution, study/log generation, annotation,
+inference/training, dependency/download or evidence-policy change.
 
 [wire-codec-api]: firmware/include/micro_classifier_codec.h
 [wire-codec-source]: firmware/micro_classifier_codec.c

@@ -2725,6 +2725,54 @@ are unchanged; Tasks 6/9 and remaining firmware/ST/board gates remain blocked.
 [wire-codec-api]: firmware/include/micro_classifier_codec.h
 [wire-codec-source]: firmware/micro_classifier_codec.c
 
+## 54. Bounded C Stream Recovery and Native Checks (2026-10-19)
+
+The remaining portion of §53's explicit host-only approval is complete in the
+same [API][wire-codec-api] and [source][wire-codec-source]. `mc_v0_stream_feed`
+processes arbitrary byte chunks with a 128-byte framing buffer plus fixed
+metadata, no allocation and callbacks only for complete validated packets.
+Corrupt/unsupported candidates are discarded with bytewise magic recovery;
+rejection counts saturate at `UINT32_MAX`. Multiple packets inside one bad
+candidate are all delivered after that candidate is rejected, without needing
+another input byte. Normal noise is not counted as a rejected frame.
+
+Callback packets are borrowed until callback return. The caller must copy
+retained data, serialize access and never feed/reset that stream from its
+callback. Feed success means a chunk was processed, not that a packet or usable
+recommendation exists. The transport owner chooses timeout behavior and calls
+init to discard partial framing/counters; no timeout or fail-safe threshold is
+introduced. Fixed-layout/version guards reject builds against unsupported
+contract changes; the wire contract remains provisional, not frozen.
+
+Verification:
+
+- All two-chunk boundaries and bytewise delivery of the five existing golden
+  frames match Python, including noise and consecutive frame kinds.
+- A single-bit flip in every golden-frame byte recovers to subsequent valid
+  packets with the same Python rejection count; semantic/length/header faults,
+  nested recovery, 100,000 noise bytes, reset, saturation and argument guards pass.
+- C/Python acceptance agrees for 2,000 seeded CRC-repaired mutations. A separate
+  seeded mixed stream compares decoded packets, retained bytes and rejection
+  counters after each chunk. Eight probability/confidence tolerance edges agree.
+- An ASan/UBSan executable passes all golden prefixes/one-byte extensions using
+  actual short allocations, 4,096 random buffers of lengths 0-256 and subsequent
+  golden recovery. There is no reported address/undefined-behavior/leak error.
+- Fast/finite-only math and representative changed version/capacity builds fail
+  as intended. Host GCC 13.3 and Arm GCC 13.2 compile actual objects; the Arm
+  check targets Cortex-M55, with no link, emulator or board execution.
+- All 67 C checks and 129 interface tests pass. Full offline/CPU suite: 734
+  passes plus the known transformer expected failure; lint/touched-file format
+  and editor diagnostics pass.
+
+Finite tests/sanitizers are not formal memory or numerical certification,
+worst-case timing, SRAM fit, physical safety or NPU compatibility evidence. No
+linked firmware, history, heads/inference, threshold policy, board integration,
+study/log/artifact regeneration, labels/review import, accepted cohort/split,
+model runtime/training, dependency/download, licence or hardware action occurred.
+All existing abstention/quarantine, exhausted collection allowances and Tasks
+6/9 plus broader firmware/ST/board gates remain. This completes the approved
+host-C package only; further roadmap work still needs its recorded prerequisites.
+
 ## Sources
 
 Hardware and tools:

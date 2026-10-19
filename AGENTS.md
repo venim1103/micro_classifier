@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §53 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §54 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -27,8 +27,8 @@ Keep this section and the Task List current; a new session resumes from them.
   ([teacher/vela_int8.py](teacher/vela_int8.py),
   [teacher/d3_int8.py](teacher/d3_int8.py)) and both validators, plus d3-mini
   BF16 support and a working CPU-only rover trainer environment in
-  [sim/rover.py](sim/rover.py). No student, reviewed dataset, firmware,
-  ST compiler report, or board measurement exists yet.
+  [sim/rover.py](sim/rover.py). No student, reviewed dataset, linked board
+  firmware, ST compiler report or board measurement exists yet.
 - M0 scope defaults for the ground-rover pilot were confirmed by the user on
   2026-10-15 (DESIGN.md §2 and REVIEW.md §10): four per-tick questions
   (`path_blocked`, `clear_sector`, `speed_tier`, `mode`), ego-state plus an
@@ -690,9 +690,24 @@ Keep this section and the Task List current; a new session resumes from them.
   failure. All five golden frames and 46 new C checks pass; 108 interface tests,
   713 repository passes plus the known transformer expected failure. Host GCC
   13.3 and Arm GCC 13.2 produce objects, including Cortex-M55 compilation;
-  fast-math builds are rejected. Lint/format pass. Stream recovery remains the
-  next approved portion, not board firmware or a completed Task 13. DESIGN.md
+  fast-math builds are rejected. Lint/format pass. Stream recovery was the next
+  approved portion at this core checkpoint, not completed Task 13. DESIGN.md
   §2 and REVIEW.md §53 record the approval and core limits.
+
+- Approved host-C package completed (2026-10-19): allocation-free callback stream
+  recovery now retains a 128-byte framing buffer plus fixed metadata, validates
+  before delivery and saturates rejected-candidate counts. Caller owns timeout
+  reset and serialized stream access; callback packets are borrowed only until
+  callback return. All golden chunk splits and byte-corruption recovery, nested
+  packets, resets/arguments and tolerance boundaries pass. C/Python agree on
+  2,000 seeded CRC-repaired mutations and mixed-stream packets/buffers/counters;
+  ASan/UBSan pass exact short buffers and 4,096 random buffers. Contract-drift and
+  nonfinite-math build guards pass. All 67 C checks, 129 interface tests and 734
+  repository tests pass plus the known transformer expected failure; real host/
+  Cortex-M55 objects, lint/format/editor/doc gates pass. DESIGN.md §2 and
+  REVIEW.md §54 record the limits. No linked firmware/board execution, timing,
+  memory-fit, data/labels, inference/training, dependency, licence or policy work.
+  This exhausts the approved package, not Task 13's broader firmware gates.
 
 ## Task List
 
@@ -904,11 +919,12 @@ on missing tools, and continue with the next unblocked task.
   Firmware library in C for the Cortex-M55 without the ST HAL: packet
     parsing, history buffer, heads, softmax, confidence, and rejection; host
     unit tests against the golden vectors and an `arm-none-eabi-gcc` build.
-  Partial result (2026-10-19): user approved portable host-only C protocol
-  tooling. Strict state/decision decoding and CRC pass 46 new host checks and
-  real Cortex-M55 object compilation; stream recovery is the next approved
-  portion. History, heads, inference/rejection policy, linked firmware and board
-  integration remain outside this approval; the contract stays provisional.
+  Tooling result (2026-10-19): approved portable host-only C parsing/CRC and
+  bounded callback stream recovery are complete. All 67 C checks pass, including
+  golden vectors, sanitizer/differential tests and real Cortex-M55 object
+  compilation (REVIEW.md §§53-54). History, heads, inference/rejection policy,
+  linked firmware and board integration remain outside this approval; the
+  contract stays provisional and the full task remains blocked.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

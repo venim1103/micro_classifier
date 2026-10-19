@@ -110,10 +110,11 @@ CPU unit tests: `python -m pytest tests`.
 ## Host-Only C Protocol Tooling
 
 The [C11 API][c-codec-api] and [source][c-codec-source] decode the provisional
-state/decision wire format and calculate CRC-32, reusing the generated constants
-and existing golden vectors. They use fixed native outputs, no allocation/HAL
-or packed-wire casts. Failed decodes leave outputs unchanged. The core is
-host-tested and compiles to Cortex-M55 objects, not linked board firmware.
+state/decision wire format, calculate CRC-32 and recover frames from byte chunks,
+reusing the generated constants and existing golden vectors. They use fixed
+native outputs, no allocation/HAL or packed-wire casts. Failed direct decodes
+leave outputs unchanged. The library is host-tested and compiles to Cortex-M55
+objects, not linked board firmware.
 
 ```sh
 python -m pytest -q tests/test_interface.py
@@ -126,9 +127,22 @@ slots selected by `answer_mask` are present. A successfully decoded rejection/
 fault is **not a usable recommendation**. The CRC function requires readable
 bytes for its length; null data is permitted only at length zero. No physical
 range, stale-data, timeout, ordering or fail-safe policy is imposed. Use binary32
-float and binary64-or-better double precision; fast-math builds are unsupported.
-Stream recovery is the next approved addition. DESIGN.md §2 and REVIEW.md §53
-record the bounded authorization and verification limits.
+float and binary64-or-better double precision; fast/finite-only math builds are
+unsupported. Changed protocol version/capacity assumptions require codec updates.
+
+Initialize `mc_v0_stream` with `mc_v0_stream_init`, then pass each byte chunk,
+a nonnull callback and context to `mc_v0_stream_feed`. A zero-length chunk may
+have null data. Feed success means processing succeeded; only callbacks deliver
+validated packets, possibly none or several. The callback packet is borrowed
+only until it returns; copy anything retained. Serialize access to each stream,
+and do not feed/reset it from its callback. The framing buffer is 128 bytes plus
+fixed metadata. `rejected_frames` counts rejected candidates, not noise bytes,
+and saturates at `UINT32_MAX`. On a transport-chosen timeout, init discards
+partial input and clears counters; no threshold is imposed by this library.
+
+The test suite includes golden/stream parity, sanitizer checks, seeded malformed
+fixtures, tolerance edges and host/Arm compilation. DESIGN.md §2 and REVIEW.md
+§§53-54 record the completed host-only authorization and verification limits.
 
 [c-codec-api]: firmware/include/micro_classifier_codec.h
 [c-codec-source]: firmware/micro_classifier_codec.c

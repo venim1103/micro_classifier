@@ -12,6 +12,17 @@ _Static_assert(sizeof(float) == 4 && FLT_RADIX == 2 && FLT_MANT_DIG == 24 &&
                FLT_MAX_EXP == 128 && FLT_MIN_EXP == -125,
                "Wire decoding requires IEEE-754 binary32 float");
 _Static_assert(DBL_MANT_DIG >= 53, "Confidence validation requires binary64 precision");
+_Static_assert(MC_V0_PROTOCOL_VERSION == 0 && MC_V0_SCHEMA_VERSION == 0 &&
+               MC_V0_PROFILE_ID == 1 && MC_V0_PROFILE_VERSION == 0 &&
+               MC_V0_CATALOGUE_VERSION == 0,
+               "Codec supports only the provisional rover v0 contract");
+_Static_assert(MC_V0_HEADER_SIZE == 20 && MC_V0_CRC_SIZE == 4 &&
+               MC_V0_STATE_PAYLOAD_SIZE == 68 && MC_V0_DECISION_PREFIX_SIZE == 12 &&
+               MC_V0_ANSWER_PREFIX_SIZE == 8 && MC_V0_DECISION_MAX_PAYLOAD_SIZE == 104 &&
+               MC_V0_MAX_FRAME_SIZE == 128 && MC_V0_PATH_BLOCKED_OPTION_COUNT == 2 &&
+               MC_V0_CLEAR_SECTOR_OPTION_COUNT == 4 && MC_V0_SPEED_TIER_OPTION_COUNT == 4 &&
+               MC_V0_MODE_OPTION_COUNT == 5,
+               "Wire layout changed; update the bounded codec before building");
 
 static uint16_t read16(const uint8_t *data) {
     return (uint16_t)((uint32_t)data[0] | ((uint32_t)data[1] << 8));
@@ -225,5 +236,77 @@ mc_v0_result mc_v0_decode_decision(const uint8_t *data, size_t length,
         return MC_V0_ERROR_DECISION;
     }
     *output = decoded;
+    return MC_V0_DECODE_OK;
+}
+
+void mc_v0_stream_init(mc_v0_stream *stream) {
+    if (stream != NULL) {
+        memset(stream, 0, sizeof(*stream));
+    }
+}
+
+static void discard_prefix(mc_v0_stream *stream, size_t count) {
+    memmove(stream->buffer, stream->buffer + count, stream->used - count);
+    stream->used -= count;
+}
+
+static void reject_candidate(mc_v0_stream *stream) {
+    if (stream->rejected_frames != UINT32_MAX) {
+        ++stream->rejected_frames;
+    }
+    discard_prefix(stream, 1);
+}
+
+static void process_pending(mc_v0_stream *stream, mc_v0_packet_handler handler,
+                             void *context) {
+    while (stream->used != 0) {
+        if (stream->buffer[0] != MC_V0_MAGIC_0 ||
+            (stream->used > 1 && stream->buffer[1] != MC_V0_MAGIC_1)) {
+            discard_prefix(stream, 1);
+            continue;
+        }
+        if (stream->used < MC_V0_HEADER_SIZE) {
+            return;
+        }
+        uint8_t kind = stream->buffer[MC_V0_HEADER_KIND_OFFSET];
+        size_t size = read16(stream->buffer + MC_V0_HEADER_PAYLOAD_SIZE_OFFSET);
+        if (!((kind == MC_V0_KIND_STATE && size == MC_V0_STATE_PAYLOAD_SIZE) ||
+              (kind == MC_V0_KIND_DECISION && size >= MC_V0_DECISION_PREFIX_SIZE &&
+               size <= MC_V0_DECISION_MAX_PAYLOAD_SIZE))) {
+            reject_candidate(stream);
+            continue;
+        }
+        size_t length = MC_V0_HEADER_SIZE + size + MC_V0_CRC_SIZE;
+        if (stream->used < length) {
+            return;
+        }
+        mc_v0_packet packet = {0};
+        packet.kind = kind;
+        mc_v0_result result;
+        if (kind == MC_V0_KIND_STATE) {
+            result = mc_v0_decode_state(stream->buffer, length, &packet.body.state);
+        } else {
+            result = mc_v0_decode_decision(stream->buffer, length, &packet.body.decision);
+        }
+        if (result != MC_V0_DECODE_OK) {
+            reject_candidate(stream);
+            continue;
+        }
+        discard_prefix(stream, length);
+        handler(&packet, context);
+    }
+}
+
+mc_v0_result mc_v0_stream_feed(mc_v0_stream *stream, const uint8_t *data,
+                              size_t length, mc_v0_packet_handler handler,
+                              void *context) {
+    if (stream == NULL || (data == NULL && length != 0) || handler == NULL ||
+        stream->used >= MC_V0_MAX_FRAME_SIZE) {
+        return MC_V0_ERROR_ARGUMENT;
+    }
+    for (size_t index = 0; index < length; ++index) {
+        stream->buffer[stream->used++] = data[index];
+        process_pending(stream, handler, context);
+    }
     return MC_V0_DECODE_OK;
 }

@@ -47,10 +47,30 @@ typedef struct {
     mc_v0_answer answers[4];
 } mc_v0_decision;
 
+typedef struct {
+    uint8_t kind;
+    union {
+        mc_v0_state state;
+        mc_v0_decision decision;
+    } body;
+} mc_v0_packet;
+
+typedef struct {
+    uint8_t buffer[MC_V0_MAX_FRAME_SIZE];
+    size_t used;
+    uint32_t rejected_frames;
+} mc_v0_stream;
+
+typedef void (*mc_v0_packet_handler)(const mc_v0_packet *packet, void *context);
+
 uint32_t mc_v0_crc32(const uint8_t *data, size_t length);
 mc_v0_result mc_v0_decode_state(const uint8_t *data, size_t length,
                                mc_v0_state *output);
 mc_v0_result mc_v0_decode_decision(const uint8_t *data, size_t length,
                                   mc_v0_decision *output);
+void mc_v0_stream_init(mc_v0_stream *stream);
+mc_v0_result mc_v0_stream_feed(mc_v0_stream *stream, const uint8_t *data,
+                              size_t length, mc_v0_packet_handler handler,
+                              void *context);
 
 #endif

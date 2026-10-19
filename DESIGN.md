@@ -2452,6 +2452,14 @@ $\alpha$, count or width is adopted here. Keep abstention, quarantine and all
 Task 6/9, training and ST/board gates in force; no labels or real-input
 qualification follow from this proposal.
 
+Subsequent explicit review (2026-10-19, REVIEW.md §51): the user chose **keep
+the convention unaccepted; retain strict abstention**. No illustrative failure
+budget or prospective claim unit was adopted. This confirms the existing
+evidence boundary, not new collection, runtime implementation, log application,
+task annotation, physical qualification or training approval. Further progress
+requires a new claim/domain or evidence decision; do not repeatedly re-ask the
+same risk-choice question merely because autonomous work was requested.
+
 [simulator-range-source]: sim/rover.py
 
 #### Diagnostic Source-Provenance Audit (2026-10-16)

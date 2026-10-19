@@ -2641,6 +2641,26 @@ evidence before any new tooling or application. No risk value was adopted,
 cohort/family/split accepted or task annotation produced; all current logs stay
 quarantined and Tasks 6/9, training, ST and board gates remain blocked.
 
+## 51. Gaussian Convention Remains Unaccepted (2026-10-19)
+
+After the completed §50 proposal/checks, the user explicitly selected **keep
+it unaccepted; retain strict abstention**, rather than either illustrative
+study-wide Gaussian failure allowance. No numeric risk value, prospective
+claim unit or uncertainty convention is adopted. This confirms the existing
+review/abstention boundary, not a change to simulation semantics or defaults.
+
+No new collection, runtime/API or log application, labels/review import,
+family/cohort/split acceptance, inference/training or hardware action is
+unlocked. Both bounded collection allowances remain exhausted; mode stays
+unlabeled, all logs remain quarantined and Tasks 6/9 plus ST/board gates remain
+blocked. Further work needs a new claim/domain, evidence direction or separately
+approved scope. Do not re-ask this same risk-choice question without new context.
+
+This is documentation-only decision recording. References/local targets,
+whitespace and exact three-file scope checks pass. The last code gate remains
+663 passes plus the known transformer expected failure from §50; it was not
+rerun for this decision note. No code or persisted data artifact changed.
+
 ## Sources
 
 Hardware and tools:

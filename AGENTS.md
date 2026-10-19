@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §50 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §51 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -663,6 +663,13 @@ Keep this section and the Task List current; a new session resumes from them.
   simulation-only claim unit/domain and failure convention before implementation
   or application; proposed default remains no adopted risk budget and abstention.
 
+- Explicit user decision (2026-10-19): keep the Gaussian range-failure convention
+  unaccepted and retain strict abstention (DESIGN.md §7, REVIEW.md §51). Neither
+  illustrative budget was adopted. No runtime API/application, new collection,
+  task labels, evidence qualification or training is unlocked. All remaining
+  Task List items remain blocked; do not re-ask the same risk-choice question
+  without a new claim/domain or evidence direction from the user.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -779,6 +786,9 @@ on missing tools, and continue with the next unblocked task.
   coverage and selection pitfalls are documented/tested only. No claim unit,
   failure budget or uncertainty policy was adopted; registration/membership/
   motion/space evidence still blocks labels, and mode remains absent.
+  Explicit follow-up (2026-10-19, REVIEW.md §51): user kept the risk convention
+  unaccepted and strict abstention in force; no additional implementation or
+  application is approved by the general request to continue autonomously.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

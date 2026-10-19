@@ -2519,6 +2519,71 @@ episode, annotation, dataset/split, accepted family/bound, inference/training,
 dependency/download or hardware action occurred. Tasks 6/9 and ST/board gates
 remain blocked; this proposal is not an adopted protocol or task-data clearance.
 
+## 49. Approved Readiness Pilot, Not Task-Data Clearance (2026-10-19)
+
+After §48 the user explicitly authorized the **complete readiness-only CPU
+package**, including source audit, window selector, blind projection, tests,
+at most eight fresh normal-Config episodes and 32 blank windows, report/audit
+and local commits without substep confirmations. The claim is simulator/input/
+provenance/projection readiness only. Uncertainty and task evidence remain
+unqualified; protocol-wide adoption, labels/review import, family/cohort/split
+acceptance, oracle/witness use, teachers/training and hardware stay excluded.
+
+[The isolated coordinator][readiness-tool] reuses unchanged simulator rollout,
+renderer, strict review-packet validator and metadata audit. Collection has fixed
+scene/controller/Config/seed limits; all output paths must be fresh, distinct and
+noncontaining before simulation. It retains ticks 0/7/15/final where present,
+deduplicating within a source without filling missing windows or retrying failures.
+Complete histories and validity/age fields reconstruct exactly. No teacher budget,
+student input, simulator default, label rule or historical artifact is changed.
+
+The reviewer bundle contains only opaque random IDs, complete validated state,
+questions, blank assessments and preparation flags. Private packet/source
+provenance and exact-input comparisons are separate from reviewer input. All
+JSON artifacts use exclusive mode-0600 creation; episode directory mode is 0700.
+System randomness for IDs/shuffling is independent of simulator RNG. These are
+separation measures, not an anonymity guarantee against recognizable input,
+known trajectories or the same user's access to private metadata. No actual
+reviewer was contacted and no annotation/import path was enabled.
+
+The [measured report][readiness-report] records seeds 20261020-20261027 and eight
+successes with the privileged map-aware controller, no collisions/timeouts or
+retries. Final ticks by scene pair: clear 133/133, obstacle 138/140, corridor
+133/133, slalom 156/156. There are 1,130 complete reset-inclusive observations,
+32 blank projections and 24 full-history projections. This is simulator-tooling
+evidence, not task quality, deployment performance or representative data.
+
+**New leakage evidence:** only 25 selected rendered inputs are distinct. One
+exact eight-member reset-input group spans all eight source episodes. Retaining
+these windows and whole episodes would force a common purpose under the adopted
+no-cross-purpose duplicate-input rule. No family or split assignment is made;
+silently dropping warmup or changing input to manufacture independence is not
+approved. The metadata audit also finds three exact geometry pairs and four
+scene-name pairs, not accepted families. The pilot cannot supply five nonempty
+independent-purpose groups; the earlier four-parent limitation remains as well.
+
+An independent CPU audit checked all file/source/artifact and state/frame hashes,
+Config, actual outcome counts, contiguous observations, complete rolling history,
+selection and ID/source mappings, blankness, permissions and match membership.
+A Python list/tuple assertion in the audit was corrected to canonical JSON
+comparison at the codec boundary; values already matched, so no producer or data
+repair/rerun was needed. Report SHA-256:
+`41298178a15979d83eaab354f60a37a6202cd23a6e23789c65eaa0905cc42559`.
+Twenty new cases; 101 pipeline tests and 643 repository passes plus the known
+transformer expected failure. Ruff lint/touched-file format, editor diagnostics
+and doc references/local targets/whitespace/scope checks pass.
+
+All eight logs and both packet artifacts remain ignored/quarantined. No actual
+annotation, mode label, reviewed task data, accepted bound/family/split, inference/
+training, dependency/download or hardware action occurred. Both bounded collection
+allowances are exhausted. Task 6 still requires an admissible simulation target-
+evidence claim/domain and mode semantics; Task 9 requires actual reviewed data,
+family/cohort review and valid splits. More seeds or successful privileged
+rollouts cannot by themselves clear either gate; ST/board remain separate blockers.
+
+[readiness-tool]: teacher/readiness.py
+[readiness-report]: teacher/reports/readiness-pilot-20261019.json
+
 ## Sources
 
 Hardware and tools:

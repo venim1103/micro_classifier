@@ -1,0 +1,493 @@
+{
+  "accepted_family_assignments": 0,
+  "actual_annotations": 0,
+  "allowed_use": "quarantined_readiness_preparation_only",
+  "blind_artifact": {
+    "path": "teacher/cache/readiness-pilot-20261019-blind.json",
+    "sha256": "26d9bea8681af1c6f9521a91a4205b6718bbda0ad1a1e818be4d933e118a466c"
+  },
+  "candidate_scene_parent_count": 4,
+  "claim": "simulator_provenance_and_blank_projection_readiness_only",
+  "config": {
+    "acceleration": 1.0,
+    "collision_cost": 10.0,
+    "dropout": 0.02,
+    "dt": 0.05,
+    "field_of_view": 0.7853981633974483,
+    "goal_tolerance": 0.25,
+    "history_ticks": 8,
+    "latency_ticks": 2,
+    "max_range": 4.0,
+    "max_speed": 0.6,
+    "max_ticks": 400,
+    "max_turn_rate": 1.5,
+    "noise_std": 0.02,
+    "radius": 0.18,
+    "success_reward": 10.0,
+    "tick_cost": 0.01
+  },
+  "distinct_selected_inputs": 25,
+  "episode_count": 8,
+  "episodes": [
+    {
+      "observation_count": 134,
+      "path": "sim/episodes/readiness-pilot-20261019/clear-0.jsonl",
+      "repeat": 0,
+      "scene": "clear",
+      "seed": 20261020,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        133
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 133,
+        "timeout": false,
+        "total_reward": 12.434999999999997
+      }
+    },
+    {
+      "observation_count": 134,
+      "path": "sim/episodes/readiness-pilot-20261019/clear-1.jsonl",
+      "repeat": 1,
+      "scene": "clear",
+      "seed": 20261021,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        133
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 133,
+        "timeout": false,
+        "total_reward": 12.434999999999997
+      }
+    },
+    {
+      "observation_count": 139,
+      "path": "sim/episodes/readiness-pilot-20261019/obstacle-0.jsonl",
+      "repeat": 0,
+      "scene": "obstacle",
+      "seed": 20261022,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        138
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 138,
+        "timeout": false,
+        "total_reward": 12.382126836912253
+      }
+    },
+    {
+      "observation_count": 141,
+      "path": "sim/episodes/readiness-pilot-20261019/obstacle-1.jsonl",
+      "repeat": 1,
+      "scene": "obstacle",
+      "seed": 20261023,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        140
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 140,
+        "timeout": false,
+        "total_reward": 12.354848190131516
+      }
+    },
+    {
+      "observation_count": 134,
+      "path": "sim/episodes/readiness-pilot-20261019/corridor-0.jsonl",
+      "repeat": 0,
+      "scene": "corridor",
+      "seed": 20261024,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        133
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 133,
+        "timeout": false,
+        "total_reward": 12.434999999999997
+      }
+    },
+    {
+      "observation_count": 134,
+      "path": "sim/episodes/readiness-pilot-20261019/corridor-1.jsonl",
+      "repeat": 1,
+      "scene": "corridor",
+      "seed": 20261025,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        133
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 133,
+        "timeout": false,
+        "total_reward": 12.434999999999997
+      }
+    },
+    {
+      "observation_count": 157,
+      "path": "sim/episodes/readiness-pilot-20261019/slalom-0.jsonl",
+      "repeat": 0,
+      "scene": "slalom",
+      "seed": 20261026,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        156
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 156,
+        "timeout": false,
+        "total_reward": 12.190722584988569
+      }
+    },
+    {
+      "observation_count": 157,
+      "path": "sim/episodes/readiness-pilot-20261019/slalom-1.jsonl",
+      "repeat": 1,
+      "scene": "slalom",
+      "seed": 20261027,
+      "selected_ticks": [
+        0,
+        7,
+        15,
+        156
+      ],
+      "summary": {
+        "collision": false,
+        "kind": "summary",
+        "success": true,
+        "ticks": 156,
+        "timeout": false,
+        "total_reward": 12.190722584988569
+      }
+    }
+  ],
+  "exact_input_match_group_sizes": [
+    8
+  ],
+  "full_action_truth_body_validation_performed": false,
+  "full_history_projection_count": 24,
+  "limitations": [
+    "All source episodes, projections and metadata remain quarantined; no task dataset or annotations.",
+    "Only the blind bundle is reviewer input; report, source logs and audit mapping are private diagnostic evidence.",
+    "Opaque IDs, shuffle and file permissions are separation aids, not anonymity against recognizable inputs or the same user.",
+    "Exact input matches and declared-geometry similarities are evidence, not accepted family assignments or independence proof.",
+    "Privileged map-aware controller outcomes are not labels, an operational controller or representative task-quality evidence.",
+    "No uncertainty/registration/spatial-coverage qualification, oracle/witness application, real-review import or training path."
+  ],
+  "locked_task_splits": false,
+  "max_sources_sharing_selected_input": 8,
+  "mode_labels": 0,
+  "numpy_version": "2.2.6",
+  "observation_count": 1130,
+  "observation_renderer_validation_performed": true,
+  "physical_safety_claim": false,
+  "private_audit_artifact": {
+    "path": "teacher/cache/readiness-pilot-20261019-private.json",
+    "sha256": "39ed6fb8ef5eb1102f948c3d767dd58c3830d5289b9c541942eaf330cbbdc0eb"
+  },
+  "projection_count": 32,
+  "protocol": "sim-task-data-protocol/draft-1-readiness-only",
+  "provenance_audit": {
+    "accepted_family_assignments": 0,
+    "actual_annotations": 0,
+    "all_sources_quarantined": true,
+    "allowed_use": "diagnostic_metadata_review_preparation_only",
+    "audit_scope": "byte_identity_and_declared_metadata_only",
+    "body_validation_performed": false,
+    "candidate_comparisons": [
+      {
+        "criterion": "config_sha256",
+        "identity": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "source_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "criterion": "geometry_sha256",
+        "identity": "89d375f7b979b21df3b260709d19f4a79e90baf4365153597ebb2ea23b5e4693",
+        "source_indices": [
+          0,
+          1
+        ]
+      },
+      {
+        "criterion": "geometry_sha256",
+        "identity": "9bbef316b5bc3da5ed83bd8567126eb4891590c2d361086fe814ebf5933c94b1",
+        "source_indices": [
+          4,
+          5
+        ]
+      },
+      {
+        "criterion": "geometry_sha256",
+        "identity": "c57bbefa4567a359ca65820d1d32089999cd5431285953accaf26fa37c716e03",
+        "source_indices": [
+          6,
+          7
+        ]
+      },
+      {
+        "criterion": "declared_scene_name",
+        "identity": "clear",
+        "source_indices": [
+          0,
+          1
+        ]
+      },
+      {
+        "criterion": "declared_scene_name",
+        "identity": "corridor",
+        "source_indices": [
+          4,
+          5
+        ]
+      },
+      {
+        "criterion": "declared_scene_name",
+        "identity": "obstacle",
+        "source_indices": [
+          2,
+          3
+        ]
+      },
+      {
+        "criterion": "declared_scene_name",
+        "identity": "slalom",
+        "source_indices": [
+          6,
+          7
+        ]
+      }
+    ],
+    "distinct_episode_count": 8,
+    "limitations": [
+      "Metadata is declared, not attested source/template lineage.",
+      "Matches are candidate similarities, never accepted family/cohort/split assignments.",
+      "Byte/JSON inequality does not prove independence; mirrors, rotations and variants need review.",
+      "Geometry identity excludes the name but preserves exact values and obstacle ordering.",
+      "Only the metadata header is parsed; observation/action/label bodies are not validated or reproduced.",
+      "All source bytes are hashed; 16-file admission does not bound total input I/O."
+    ],
+    "mode_labels": 0,
+    "reviewed_dataset": false,
+    "reviewer_input": false,
+    "schema": "micro-classifier/diagnostic-provenance-audit/1",
+    "source_count": 8,
+    "sources": [
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 1914753,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "clear",
+        "declared_seed": 20261020,
+        "episode_sha256": "e31c6ee8f8c2d14e74754c5a20d2960afb31fbaa14c4fc26752aa93c1fd7719c",
+        "geometry_sha256": "89d375f7b979b21df3b260709d19f4a79e90baf4365153597ebb2ea23b5e4693",
+        "line_count": 135,
+        "metadata_sha256": "ac1abe1444335d2b25b20f092ec10d08e0cd9b4f444108014be3184b9fa0ba46",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/clear-0.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "7ca366c847c01bb97ac61873bc9b5d1e25348781c8f6a8d518eec56160bb1be0",
+        "source_family": null,
+        "template_family": null
+      },
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 1910005,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "clear",
+        "declared_seed": 20261021,
+        "episode_sha256": "05b1078f221fccaae230bde02e715b87aaf239e7285ac996861784649ae46443",
+        "geometry_sha256": "89d375f7b979b21df3b260709d19f4a79e90baf4365153597ebb2ea23b5e4693",
+        "line_count": 135,
+        "metadata_sha256": "4e2730fb3d7bffec094c0060f134cd07182fe584c906b6216afc126176189b49",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/clear-1.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "7ca366c847c01bb97ac61873bc9b5d1e25348781c8f6a8d518eec56160bb1be0",
+        "source_family": null,
+        "template_family": null
+      },
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 2080186,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "obstacle",
+        "declared_seed": 20261022,
+        "episode_sha256": "fbc6de1d9567140f7f0fcd88cdbf9eea5844d063c62ef04fd4fb6fc1f9a72db8",
+        "geometry_sha256": "d01ef72b0810affa90b444d59631d70475c035cd4c8702c5220e2af99f3b8a6a",
+        "line_count": 140,
+        "metadata_sha256": "bb336e1ae323bdf8fec168d3cefc9073ba2005d8e6189843b2faaa11c91995b6",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/obstacle-0.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "1dfebbe9bd393ae71c2d6579868760f5d00eeb2040b051ec91830d9f91bc39df",
+        "source_family": null,
+        "template_family": null
+      },
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 2108368,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "obstacle",
+        "declared_seed": 20261023,
+        "episode_sha256": "022929be849ff31d5766064d20be1b596b4c05e2adb36c33c1fa6f786e869ee9",
+        "geometry_sha256": "546bf6f3e0f696efd9ad5252dcacaf6bba59848e2cd9bd0b4e2bc7f05a42e7f9",
+        "line_count": 142,
+        "metadata_sha256": "82c3da762ac2ff0622945872d32a7a426256fcf088de1335e4225d200e2006ec",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/obstacle-1.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "975168efa1f866776977ef59679aa5cb49189d0cb9d728479588c7fda78eac1a",
+        "source_family": null,
+        "template_family": null
+      },
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 2022413,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "corridor",
+        "declared_seed": 20261024,
+        "episode_sha256": "d51a9138b9decd3e33a39d11e1a5b371454dd706405b18d2362a0790bc62f105",
+        "geometry_sha256": "9bbef316b5bc3da5ed83bd8567126eb4891590c2d361086fe814ebf5933c94b1",
+        "line_count": 135,
+        "metadata_sha256": "fe818901dd05c4f3ed413241023a3fcea8d295fbd83c4c0af35a8d87407daae6",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/corridor-0.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "a482bcd02f780434a653789a1c1beae04e4b1b2402de9865652f193f4904d960",
+        "source_family": null,
+        "template_family": null
+      },
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 2021363,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "corridor",
+        "declared_seed": 20261025,
+        "episode_sha256": "e1494137b884a914f28da44e774ac634631b601fa08bacb0d7cbcba79c0405f3",
+        "geometry_sha256": "9bbef316b5bc3da5ed83bd8567126eb4891590c2d361086fe814ebf5933c94b1",
+        "line_count": 135,
+        "metadata_sha256": "f1e6979ac712b3223c222f4f7977c0fc017de2c8b5532b40afcbe69984a2a20b",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/corridor-1.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "a482bcd02f780434a653789a1c1beae04e4b1b2402de9865652f193f4904d960",
+        "source_family": null,
+        "template_family": null
+      },
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 2406890,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "slalom",
+        "declared_seed": 20261026,
+        "episode_sha256": "5e2455bc5213bcf148fcaeb7c3ffa17ed6d899929d6f160bbe28cb13a2ee04e5",
+        "geometry_sha256": "c57bbefa4567a359ca65820d1d32089999cd5431285953accaf26fa37c716e03",
+        "line_count": 158,
+        "metadata_sha256": "e60c21c05c696e7bb0ba21cf226878aff070486f92945b36483de2ec36720d78",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/slalom-0.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "80e3014509936b7ce0d2a234ed2744b0436cdaffcc1d55864f0479566ef7a5b2",
+        "source_family": null,
+        "template_family": null
+      },
+      {
+        "allowed_use": "diagnostic_only",
+        "byte_count": 2406279,
+        "config_sha256": "708744cc02c93d227f96882436fe3da5a8a690b9006e3dec6de441f38d6b0e18",
+        "declared_policy": "ScriptedExpert",
+        "declared_scene_name": "slalom",
+        "declared_seed": 20261027,
+        "episode_sha256": "cc5660b10344349454499b712bc56c05044737dca1111dc71fc85e3b466c4868",
+        "geometry_sha256": "c57bbefa4567a359ca65820d1d32089999cd5431285953accaf26fa37c716e03",
+        "line_count": 158,
+        "metadata_sha256": "52d0b2bb6ff291d8c2775f9a68ec51cedb162f93fe4e3add2c25937fbb9e2c1c",
+        "partition": null,
+        "path": "sim/episodes/readiness-pilot-20261019/slalom-1.jsonl",
+        "reviewed": false,
+        "scenario_sha256": "80e3014509936b7ce0d2a234ed2744b0436cdaffcc1d55864f0479566ef7a5b2",
+        "source_family": null,
+        "template_family": null
+      }
+    ],
+    "split_locked": false,
+    "task_cohort_accepted": false,
+    "teacher_calls": 0,
+    "tool_sha256": "d530cc49cb6ebc08ca072851c8a636d23028cc4cee01781cf416c41db3fceb09",
+    "training_approved": false
+  },
+  "python_version": "3.12.3",
+  "real_input_qualified": false,
+  "reviewer_input": false,
+  "schema": "micro-classifier/readiness-pilot-report/1",
+  "source_sha256": {
+    "interface/protocol.py": "3f417dc64c61cd221ab98e177e32c452df2fdde73711c12fe67af1df23a38337",
+    "sim/catalogue.json": "e519ae8077da55cf6289b7e43c0320dbe5c66505c7ee4ce10ea8028aaef4a184",
+    "sim/diagnostics.py": "98e9016a23611068c65747132338b0aaaed91a57f1318da733c07cedda867809",
+    "sim/labels.py": "1c9fd3b3ed0bafc6b5166eaa7d11b582ed709125f49db2b8e085fd6f8d01c23a",
+    "sim/rover.py": "52366f3ead404ec90bca87d8e1a35c5ece3072144c2c9866e228dcebc2084976",
+    "teacher/label_pipeline.py": "9d81d4a38b88be2e4374d016337a518e598c2fb8b2277b94bf7646d7a923a482",
+    "teacher/provenance.py": "d530cc49cb6ebc08ca072851c8a636d23028cc4cee01781cf416c41db3fceb09",
+    "teacher/readiness.py": "a952524b6e18413540cae95d9892a44bebd0b82efafe5014ebd68e494fbfe4eb",
+    "teacher/review.py": "6f77cf992893278242e55758133ddcfc59599d929aed36d6cdd8ee04c7d7688c"
+  },
+  "sufficient_for_five_purposes": false,
+  "task_cohort_accepted": false,
+  "task_labels_approved": false,
+  "teacher_calls": 0,
+  "training_approved": false,
+  "uncertainty_qualified": false
+}

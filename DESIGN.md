@@ -2252,6 +2252,89 @@ family assignments, splits, inference and training remain unapproved. The first
 pending decision is the simulation-only evidence claim/domain, not another
 synthetic implementation or an assumption that collecting more data qualifies it.
 
+#### Readiness-Only Pilot (Separately Approved, 2026-10-19)
+
+After the proposal above, the user explicitly approved the **complete CPU-only
+readiness package**: tooling/tests, up to eight fresh normal-Config episodes and
+32 blank review windows, source audit, verification, documentation and commits.
+The claim is limited to simulator/provenance/blank-projection readiness. This
+supersedes only the proposal's execution restriction for that bounded package,
+not its unaccepted task-data protocol or evidence/uncertainty conventions. No
+actual annotation/import, cohort/family/split acceptance, oracle/witness use,
+inference/training, dependency/download or hardware action is authorized.
+
+[The separate coordinator][readiness-tool] reuses the unchanged rollout,
+full-state renderer, strict blank-packet validation and declared-metadata audit.
+It fixes the four scenes and two repeats, seeds 20261020-20261027, normal Config
+including 400 ticks, and existing map-aware `ScriptedExpert`. No CLI override
+can expand episode count, Config or controller. Selection keeps existing ticks
+0/7/15/final, skips missing ticks and deduplicates within each source, never
+pads, retries or selects by target/proxy/teacher class. Every observed input is
+renderer-validated; this is not full independent action/truth-body validation.
+
+The blind artifact contains opaque UUID-based IDs, exact complete validated
+state, catalogue questions and blank assessments, with strict unreviewed/
+training-disabled flags. It omits source identities, group metadata, maps,
+actions, future outcomes and suggested answers. System-random shuffling does
+not consume simulator RNG. The separate private artifact retains validated
+original packets and the ID-to-source mapping, exact-input match evidence and
+metadata audit. Files are created exclusively with mode 0600 and episode output
+directory mode 0700. Only the blind artifact is reviewer input; source logs,
+audit and the report contain privileged metadata. Separation/permissions are
+not anonymity against recognizable input or access by the same user. All fresh
+destinations must be distinct and noncontaining before collection starts.
+
+The [readiness report][readiness-report] records the single bounded run:
+
+| Scene | Seeds | Final Ticks | Outcomes |
+| --- | --- | --- | --- |
+| clear | 20261020, 20261021 | 133, 133 | Two successes |
+| obstacle | 20261022, 20261023 | 138, 140 | Two successes |
+| corridor | 20261024, 20261025 | 133, 133 | Two successes |
+| slalom | 20261026, 20261027 | 156, 156 | Two successes |
+
+There are 1,130 reset-inclusive observations, no collisions/timeouts/retries,
+32 blank projections and 24 complete-history projections. These privileged
+controller outcomes are not task labels, representative navigation accuracy or
+deployment evidence. Sources/artifacts stay ignored and quarantined; no actual
+human review, mode label or task annotation was produced.
+
+**Leakage finding:** the 32 selected windows have only 25 distinct complete
+rendered states. All eight reset states are exactly equal, linking every source
+through one eight-member selected-input match group. If all these windows and
+whole episodes were retained in a future accepted cohort, the adopted no-cross-
+purpose exact-input rule would require these episodes to share one purpose.
+No family merge or purpose assignment is accepted here, and no warmup window
+was silently removed to manufacture a split. Three exact declared-geometry pairs
+(clear/corridor/slalom) and four scene-name pairs are further candidate evidence,
+not independence proof. Even the four proposed scene-parent candidates were
+already insufficient for five nonempty family-separated purposes.
+
+CPU auditing independently checked all eight file/source hashes, canonical
+selected-state and binary-frame hashes, actual outcome/contiguous-tick counts,
+complete rolling histories/masks, selected line/tick mappings, strict blank
+fields, source separation, permissions, duplicate groups and artifact hashes.
+The initial host-state audit comparison used Python list/tuple equality across
+JSON/codec representations; canonical JSON verified exact values with no artifact
+or source repair. Report SHA-256:
+`41298178a15979d83eaab354f60a37a6202cd23a6e23789c65eaa0905cc42559`.
+Twenty new readiness tests cover exact projection, mutation/scope rejection,
+window selection, normal-input limits, no-collection path preflight and fake-only
+fixed-run integration. Full gate: 643 repository passes plus the known transformer
+expected failure; 101 pipeline tests, lint/format/editor/doc checks pass.
+
+The readiness package is complete and its eight-episode allowance exhausted.
+No target evidence, uncertainty bound or real-input registration/coverage model
+is qualified; all first-three task annotations still require admissible evidence
+and separately authorized review, while mode remains undefined/unlabeled. No
+current or new log is promoted to task data, and Tasks 6/9 plus ST/board gates
+remain blocked. Next review must resolve the intended simulation-only evidence
+claim/domain and any genuinely separate future cohort design, not equate more
+seeds, successful privileged rollouts or oracle agreement with task readiness.
+
+[readiness-tool]: teacher/readiness.py
+[readiness-report]: teacher/reports/readiness-pilot-20261019.json
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

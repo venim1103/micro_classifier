@@ -223,6 +223,24 @@ cohort/split or training path is enabled. See DESIGN.md §7 and REVIEW.md §46.
 [sensor-diagnostics]: sim/diagnostics.py
 [sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
 
+## Simulation Readiness Pilot
+
+[The separately approved coordinator][readiness-tool] ran eight normal-Config
+episodes and exported 32 blank full-input projections, with private lineage
+separate from the blind bundle. Only the blind bundle is reviewer input; source
+logs, mapping and report contain privileged metadata. Opaque IDs and file
+permissions do not guarantee anonymity. No real annotation/import is enabled.
+
+[The report][readiness-report] records 1,130 observations and eight privileged-
+controller successes. The 32 projections contain 25 distinct inputs: all eight
+reset windows match exactly. These sources cannot be distributed across five
+purposes with those windows retained under the duplicate-input rule. No task
+labels, evidence qualification, accepted family/cohort/split or training resulted;
+all artifacts remain quarantined. See DESIGN.md §7 and REVIEW.md §49.
+
+[readiness-tool]: teacher/readiness.py
+[readiness-report]: teacher/reports/readiness-pilot-20261019.json
+
 ## Diagnostic Source-Provenance Audit
 
 The [bounded audit][provenance-audit] compares identities and declared metadata

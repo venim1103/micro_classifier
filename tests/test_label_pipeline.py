@@ -44,6 +44,206 @@ def review_request(sample):
     return prepared
 
 
+def test_readiness_projection_preserves_input_and_hides_private_lineage(sample):
+    from teacher.readiness import project_review_packet, validate_projection
+    from teacher.review import make_review_packet
+
+    packet = make_review_packet(review_request(sample))
+    original = deepcopy(packet)
+    projection = project_review_packet(packet, "1" * 32)
+    assert projection["state"] == packet["state"]
+    assert projection["assessments"] == packet["assessments"]
+    assert set(projection).isdisjoint(
+        {"source", "input_provenance", "grouping", "packet_id"}
+    )
+    assert packet["source"]["episode_sha256"] not in json.dumps(projection)
+    assert packet == original
+    validate_projection(projection, packet)
+    projection["state"]["module_observation"]["tof_m"][0][0] = 123
+    assert packet == original
+    with pytest.raises(ValueError):
+        validate_projection(projection, packet)
+
+
+@pytest.mark.parametrize("defect", ["answer", "scope", "numeric_scope", "extra", "id"])
+def test_readiness_projection_rejects_answers_scope_and_private_fields(sample, defect):
+    from teacher.readiness import project_review_packet, validate_projection
+    from teacher.review import make_review_packet
+
+    packet = make_review_packet(review_request(sample))
+    projection = project_review_packet(packet, "1" * 32)
+    if defect == "answer":
+        projection["assessments"]["mode"]["label"] = "dock"
+    elif defect == "scope":
+        projection["training_approved"] = True
+    elif defect == "numeric_scope":
+        projection["training_approved"] = 0
+    elif defect == "extra":
+        projection["source"] = packet["source"]
+    else:
+        projection["review_id"] = "clear-scene"
+    with pytest.raises(ValueError):
+        validate_projection(projection, packet)
+
+
+@pytest.mark.parametrize(
+    "final_tick,expected",
+    [(0, [0]), (1, [0, 1]), (7, [0, 7]), (15, [0, 7, 15]), (20, [0, 7, 15, 20])],
+)
+def test_readiness_window_selection_deduplicates_skips_and_keeps_final(
+    tmp_path, final_tick, expected
+):
+    from dataclasses import asdict
+
+    from teacher.readiness import select_review_requests
+
+    env = RoverEnv()
+    observation, _ = env.reset(seed=1)
+    records = [
+        {
+            "schema": "micro-classifier/sim-episode/1",
+            "kind": "metadata",
+            "config": asdict(env.config),
+            "observation": observation,
+        }
+    ]
+    for _ in range(final_tick):
+        observation, *_ = env.step((0, 0))
+        records.append({"kind": "transition", "observation": observation})
+    path = tmp_path / "fixture.jsonl"
+    write_episode(path, records)
+    requests = select_review_requests(path)
+    assert [row["source"]["tick"] for row in requests] == expected
+    assert all(
+        json.loads(row["state"])["module_observation"]["history_valid"][-1]
+        for row in requests
+    )
+
+
+@pytest.mark.parametrize("defect", ["empty", "too_long", "config"])
+def test_readiness_selection_rejects_non_normal_sources(monkeypatch, defect):
+    from dataclasses import asdict
+
+    from teacher.readiness import select_review_requests
+
+    rows = [
+        {
+            "source": {"tick": 401 if defect == "too_long" else 0},
+            "provenance": {"config": asdict(Config())},
+        }
+    ]
+    if defect == "empty":
+        rows = []
+    elif defect == "config":
+        rows[0]["provenance"]["config"]["max_ticks"] = 32
+    monkeypatch.setattr("teacher.readiness.episode_requests", lambda path: iter(rows))
+    with pytest.raises(ValueError):
+        select_review_requests("fake-source")
+
+
+@pytest.mark.parametrize(
+    "defect", ["same", "inside", "ancestor", "existing", "parent_file"]
+)
+def test_readiness_paths_reject_before_environment_creation(
+    tmp_path, monkeypatch, defect
+):
+    from teacher.readiness import run_readiness_pilot
+
+    paths = [
+        tmp_path / name
+        for name in ("episodes", "blind.json", "audit.json", "report.json")
+    ]
+    if defect == "same":
+        paths[2] = paths[1]
+    elif defect == "inside":
+        paths[2] = paths[0] / "audit.json"
+    elif defect == "ancestor":
+        paths[0] = paths[2] / "episodes"
+    elif defect == "existing":
+        paths[1].touch()
+    else:
+        paths[2].touch()
+        paths[3] = paths[2] / "report.json"
+        paths[2] = tmp_path / "other-audit.json"
+    monkeypatch.setattr(
+        "teacher.readiness.RoverEnv",
+        lambda *args: pytest.fail("simulation started before path validation"),
+    )
+    with pytest.raises((ValueError, FileExistsError, NotADirectoryError)):
+        run_readiness_pilot(*paths)
+    assert not paths[0].exists()
+
+
+def test_readiness_fake_rollouts_obey_fixed_scope_and_private_mapping(
+    tmp_path, monkeypatch
+):
+    import hashlib
+    import stat
+    from dataclasses import asdict
+
+    from teacher.readiness import run_readiness_pilot, validate_projection
+
+    seeds = []
+
+    def fake_rollout(env):
+        seeds.append(env.seed)
+        observation, _ = env.reset(seed=env.seed)
+        summary = {
+            "kind": "summary",
+            "ticks": 0,
+            "success": False,
+            "collision": False,
+            "timeout": False,
+        }
+        records = [
+            {
+                "schema": "micro-classifier/sim-episode/1",
+                "kind": "metadata",
+                "seed": env.seed,
+                "policy": "fake_fixture",
+                "config": asdict(env.config),
+                "scenario": asdict(env.scenario),
+                "observation": observation,
+            },
+            summary,
+        ]
+        return records, summary
+
+    monkeypatch.setattr("teacher.readiness.rollout", fake_rollout)
+    paths = [
+        tmp_path / name
+        for name in ("episodes", "blind.json", "audit.json", "report.json")
+    ]
+    report = run_readiness_pilot(*paths)
+    assert seeds == list(range(20261020, 20261028))
+    assert report["config"] == asdict(Config())
+    assert report["episode_count"] == report["projection_count"] == 8
+    assert report["distinct_selected_inputs"] == 1
+    assert report["exact_input_match_group_sizes"] == [8]
+    assert report["max_sources_sharing_selected_input"] == 8
+    assert (
+        report["actual_annotations"]
+        == report["mode_labels"]
+        == report["teacher_calls"]
+        == 0
+    )
+    assert not report["uncertainty_qualified"] and not report["task_cohort_accepted"]
+    blind, audit = json.loads(paths[1].read_text()), json.loads(paths[2].read_text())
+    private = {row["review_id"]: row["packet"] for row in audit["mappings"]}
+    for projection in blind["projections"]:
+        validate_projection(projection, private[projection["review_id"]])
+        assert projection["review_id"] not in json.dumps(report)
+    for key, path in (
+        ("blind_artifact", paths[1]),
+        ("private_audit_artifact", paths[2]),
+    ):
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == report[key]["sha256"]
+        assert stat.S_IMODE(path.stat().st_mode) == 0o600
+    assert json.loads(paths[3].read_text()) == report
+    with pytest.raises(FileExistsError):
+        run_readiness_pilot(*paths)
+
+
 def test_blind_review_packet_preserves_input_without_suggestions(sample):
     from teacher.label_pipeline import canonical
     from teacher.review import make_review_packet, validate_review_packet

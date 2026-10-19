@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §48 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §49 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -622,6 +622,30 @@ Keep this section and the Task List current; a new session resumes from them.
   decision: accept/modify the simulation-only claim/domain and admissible evidence
   conventions before collection or labels. Tasks 6/9 and ST/board stay blocked.
 
+- Approved and completed (2026-10-19): full CPU-only readiness package in
+  `teacher/readiness.py`: fixed eight fresh normal-Config episodes, at most
+  32 blank full-input projections, private source audit, tests, run and evidence
+  verification. This authorizes simulator/provenance/projection readiness only,
+  not protocol-wide adoption or label/uncertainty qualification. Seeds 20261020-
+  20261027: eight successes, no collisions/timeouts, 1,130 observations; 32 blank
+  projections, 24 full histories, 25 distinct selected inputs. All eight reset
+  states match exactly: retaining them would force these episodes into one
+  purpose under the no-cross-purpose exact-input rule, not accept a family.
+  Three repeated declared-geometry pairs and four scene-name pairs are candidate
+  metadata evidence only. Report: `teacher/reports/readiness-pilot-20261019.json`.
+  Eight logs and both packet artifacts stay ignored/quarantined; only the blind
+  bundle is reviewer input. Opaque random IDs/shuffling and mode-0600 audit files
+  separate private lineage, not guarantee anonymity. All source/artifact/frame
+  hashes, histories, selections, blankness and match groups audited on CPU.
+  Twenty new readiness tests; 101 pipeline tests, 643 repository passes plus
+  the known transformer expected failure; lint/format/editor/doc checks pass.
+  DESIGN.md §7 and REVIEW.md §49 record scope and limits. No actual annotations/
+  import, dataset/family/split acceptance, bounds, oracle/witness use, inference/
+  training, dependencies/downloads or hardware. Inputs/history/defaults/token
+  ceiling unchanged. Task 6 still needs admissible target evidence and mode;
+  Task 9 still needs reviewed cohort/data and splits. Both bounded run approvals
+  are exhausted; no further study episodes without approval. ST/board blocked.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -728,6 +752,12 @@ on missing tools, and continue with the next unblocked task.
   evidence/uncertainty conventions are acceptable? Proposed default is to keep
   strict abstention and all current boundaries until that review; no collection,
   task labels or training are approved by the documentation-only scope.
+  Readiness-only follow-up (2026-10-19, REVIEW.md §49): user separately approved
+  the complete eight-episode/32-blank-projection package; run/audit complete.
+  All data remain quarantined, uncertainty/registration/spatial-coverage evidence
+  unqualified and mode unlabeled. No task annotations, labels or training. The
+  next substantive decision remains an admissible simulation-only target-evidence
+  claim/domain, not more unapproved collection or automatic oracle labels.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
@@ -804,6 +834,10 @@ on missing tools, and continue with the next unblocked task.
   at most four scene-parent candidates, insufficient for five distinct family-
   separated purposes and possibly fewer after lineage review. Family/cohort/
   split acceptance and actual reviewed task data remain pending; no assignments.
+  Readiness result (2026-10-19, REVIEW.md §49): 32 blank projections include one
+  exact reset-input group shared across all eight fresh episodes. With all these
+  windows retained, the adopted duplicate-input rule prevents distributing the
+  episodes across five purposes; no split, family or task cohort was accepted.
 10. [blocked: training outside current tooling scope; dataset pending]
   Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled

@@ -5,9 +5,11 @@ import ctypes
 import hashlib
 import json
 import math
+import os
 import platform
 import random
 import shutil
+import signal
 import struct
 import subprocess
 import sys
@@ -117,18 +119,53 @@ def source_records():
     return {str(path.relative_to(ROOT)): file_record(path) for path in paths}
 
 
+class CommandInterrupted(KeyboardInterrupt):
+    def __init__(self, command, stdout, stderr):
+        super().__init__("native tool command interrupted")
+        self.cmd = command
+        self.stdout = stdout
+        self.stderr = stderr
+
+
+def run_command(command, *, cwd=None, env=None, timeout=120, check=True):
+    if os.name != "posix":
+        raise ValueError("native tool execution requires POSIX process groups")
+    with subprocess.Popen(
+        command,
+        cwd=cwd,
+        env=env,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    ) as process:
+        try:
+            stdout, stderr = process.communicate(timeout=timeout)
+        except BaseException as error:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            stdout, stderr = process.communicate()
+            if isinstance(error, subprocess.TimeoutExpired):
+                error.output = stdout
+                error.stderr = stderr
+            elif isinstance(error, KeyboardInterrupt):
+                raise CommandInterrupted(command, stdout, stderr) from error
+            raise
+    result = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+    if check:
+        result.check_returncode()
+    return result
+
+
 def compiler_identity(compiler):
     executable = shutil.which(compiler)
     if executable is None:
         raise FileNotFoundError(f"compiler unavailable: {compiler}")
     executable = str(Path(executable).resolve())
-    version = subprocess.run(
-        [executable, "--version"],
-        text=True,
-        capture_output=True,
-        check=True,
-        timeout=120,
-    )
+    version = run_command([executable, "--version"])
     return {
         "path": executable,
         **file_record(executable),
@@ -252,9 +289,7 @@ def build_native(directory, *, compiler="cc", optimization="-O2"):
         str(library),
         "-lm",
     ]
-    result = subprocess.run(
-        command, capture_output=True, text=True, check=True, timeout=120
-    )
+    result = run_command(command)
     if (
         source_records() != sources
         or file_record(identity["path"])["sha256"] != identity["sha256"]

@@ -233,6 +233,11 @@ head's reported stack is 2,176/2,192/2,200 bytes at `-O0/-O2/-Os`, excluding
 callees, libraries and runtime overhead. Zero object `.data/.bss` does not count
 caller buffers/history or stack. DESIGN.md §6 and REVIEW.md §§63-64 record limits.
 
+Native tool execution requires POSIX process groups. Timeouts and interruptions
+kill the command's group and retain captured diagnostics; failed/interrupted
+audits write no success report. REVIEW.md §65 records the reproduced descendant
+cleanup fix. Historical reports retain their original exporter hashes.
+
 [reference-build-audit]: interface/build_audit.py
 [reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
 

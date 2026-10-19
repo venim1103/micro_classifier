@@ -46,12 +46,10 @@ def diagnostic_text(value):
 def run_logged(command, output):
     record = {"argv": command, "cwd": str(ROOT), "locale": "C"}
     try:
-        result = subprocess.run(
+        result = native_verify.run_command(
             command,
             cwd=ROOT,
             env={**os.environ, "LC_ALL": "C"},
-            capture_output=True,
-            text=True,
             check=False,
             timeout=120,
         )
@@ -63,6 +61,17 @@ def run_logged(command, output):
                 "timed_out": True,
                 "stdout": diagnostic_text(error.stdout),
                 "stderr": diagnostic_text(error.stderr),
+            },
+        )
+        raise
+    except KeyboardInterrupt as error:
+        write_json(
+            output,
+            {
+                **record,
+                "interrupted": True,
+                "stdout": diagnostic_text(getattr(error, "stdout", None)),
+                "stderr": diagnostic_text(getattr(error, "stderr", None)),
             },
         )
         raise
@@ -270,14 +279,19 @@ def run_audit(output, work_dir, *, cases=128, seed=20261019):
             codec, build = native_verify.build_native(
                 host_dir, compiler=tools["host_cc"]["path"], optimization=optimization
             )
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
+        except (
+            subprocess.CalledProcessError,
+            subprocess.TimeoutExpired,
+            KeyboardInterrupt,
+        ) as error:
             write_json(
                 host_dir / "failure.json",
                 {
-                    "argv": error.cmd,
+                    "argv": getattr(error, "cmd", None),
                     "error": str(error),
-                    "stdout": diagnostic_text(error.stdout),
-                    "stderr": diagnostic_text(error.stderr),
+                    "interrupted": isinstance(error, KeyboardInterrupt),
+                    "stdout": diagnostic_text(getattr(error, "stdout", None)),
+                    "stderr": diagnostic_text(getattr(error, "stderr", None)),
                 },
             )
             raise

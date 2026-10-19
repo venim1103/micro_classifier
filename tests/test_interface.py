@@ -5,6 +5,7 @@ import math
 import os
 import random
 import shutil
+import signal
 import struct
 import subprocess
 import sys
@@ -1428,7 +1429,7 @@ def test_build_audit_command_failures_keep_diagnostics(tmp_path, monkeypatch, fa
             raise OSError("injected launch failure")
         return subprocess.CompletedProcess(command, 7, "partial out", "partial err")
 
-    monkeypatch.setattr(build_audit.subprocess, "run", fail)
+    monkeypatch.setattr(native_verify, "run_command", fail)
     output = tmp_path / "command.json"
     with pytest.raises((OSError, subprocess.SubprocessError)):
         build_audit.run_logged(["not-executed"], output)
@@ -1439,6 +1440,101 @@ def test_build_audit_command_failures_keep_diagnostics(tmp_path, monkeypatch, fa
         assert record["stderr"] == "partial err"
     else:
         assert "launch_error" in record
+
+
+@pytest.mark.skipif(sys.platform != "linux", reason="Linux /proc descendant check")
+@pytest.mark.parametrize("mode", ["timeout", "interrupted", "parent_exited"])
+def test_build_audit_timeout_terminates_descendants(tmp_path, monkeypatch, mode):
+    original_popen = subprocess.Popen
+
+    def launch(*arguments, **keywords):
+        process = original_popen(*arguments, **keywords)
+        communicate = process.communicate
+
+        def bounded_communicate(*arguments, **keywords):
+            if keywords.get("timeout") == 120:
+                keywords["timeout"] = 1
+                if mode == "interrupted":
+                    try:
+                        return communicate(*arguments, **keywords)
+                    except subprocess.TimeoutExpired:
+                        raise KeyboardInterrupt from None
+            return communicate(*arguments, **keywords)
+
+        process.communicate = bounded_communicate
+        return process
+
+    monkeypatch.setattr(build_audit.subprocess, "Popen", launch)
+    command = [
+        sys.executable,
+        "-c",
+        """
+import os
+import sys
+read_fd, write_fd = os.pipe()
+child = os.fork()
+if child:
+    print(child, flush=True)
+    print('fixture-ready', file=sys.stderr, flush=True)
+    if sys.argv[1] == 'parent_exited':
+        os._exit(0)
+os.read(read_fd, 1)
+""",
+        mode,
+    ]
+    descendant = None
+    try:
+        expected = (
+            KeyboardInterrupt if mode == "interrupted" else subprocess.TimeoutExpired
+        )
+        with pytest.raises(expected) as caught:
+            build_audit.run_logged(command, tmp_path / "command.json")
+        descendant = int(build_audit.diagnostic_text(caught.value.stdout).strip())
+        record = json.loads((tmp_path / "command.json").read_text())
+        assert record["stdout"] == f"{descendant}\n"
+        assert record["stderr"] == "fixture-ready\n"
+        assert record["interrupted" if mode == "interrupted" else "timed_out"] is True
+        status = Path(f"/proc/{descendant}/stat")
+        running = (
+            status.exists() and status.read_text().rsplit(")", 1)[1].split()[0] != "Z"
+        )
+        assert not running, "timed-out command left a running descendant"
+    finally:
+        if descendant is not None:
+            try:
+                os.kill(descendant, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+
+def test_native_command_preserves_output_and_closed_stdin():
+    result = native_verify.run_command(
+        [
+            sys.executable,
+            "-c",
+            "import sys; print(repr(sys.stdin.read())); print('diagnostic', file=sys.stderr)",
+        ]
+    )
+    assert result.returncode == 0
+    assert result.stdout == "''\n"
+    assert result.stderr == "diagnostic\n"
+
+
+@pytest.mark.parametrize("check", [False, True])
+def test_native_command_nonzero_preserves_diagnostics(check):
+    command = [
+        sys.executable,
+        "-c",
+        "import sys; print('out'); print('err', file=sys.stderr); sys.exit(7)",
+    ]
+    if check:
+        with pytest.raises(subprocess.CalledProcessError) as caught:
+            native_verify.run_command(command, check=True)
+        result = caught.value
+    else:
+        result = native_verify.run_command(command, check=False)
+    assert result.returncode == 7
+    assert result.stdout == "out\n" and result.stderr == "err\n"
 
 
 @pytest.mark.parametrize(
@@ -1544,6 +1640,27 @@ def test_build_audit_native_compile_failure_retains_command(tmp_path, monkeypatc
     record = json.loads((work / "O0/host-verification/failure.json").read_text())
     assert record["argv"] == ["fake-cc", "-O0"]
     assert record["stderr"] == "compile failure"
+
+
+def test_build_audit_interrupted_native_compile_has_no_success_report(
+    tmp_path, monkeypatch
+):
+    lightweight_audit(monkeypatch, tmp_path)
+
+    def fail(*_arguments, **_keywords):
+        raise native_verify.CommandInterrupted(
+            ["fake-cc", "-O0"], "partial out", "partial err"
+        )
+
+    monkeypatch.setattr(native_verify, "build_native", fail)
+    output, work = tmp_path / "report.json", tmp_path / "work"
+    with pytest.raises(KeyboardInterrupt):
+        build_audit.run_audit(output, work, cases=1)
+    assert not output.exists()
+    record = json.loads((work / "O0/host-verification/failure.json").read_text())
+    assert record["interrupted"] is True
+    assert record["argv"] == ["fake-cc", "-O0"]
+    assert record["stdout"] == "partial out" and record["stderr"] == "partial err"
 
 
 def test_build_audit_cli_under_python_optimization(tmp_path):

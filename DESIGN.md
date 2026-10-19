@@ -1346,6 +1346,28 @@ per-object requirements, not a linked dependency closure. No resource threshold,
 target math qualification, timing, formal numerical/memory guarantee or physical
 safety claim is adopted. Other Tasks 6/9/13/ST/board gates remain unchanged.
 
+Maintenance (2026-10-19): a real synthetic parent/child regression showed that
+`subprocess.run` killed only the timed-out command and left its child running.
+The shared native command runner now requires POSIX process groups, starts a
+new session with closed stdin, captures output and kills the command's group
+on timeout, interruption or communication failure before draining output and
+reaping the direct command. Compiler/version checks, host shared builds and
+audit object tools use it. Timeout output is preserved; interruption remains a
+`KeyboardInterrupt` subclass with command/stdout/stderr diagnostics. Audit logs
+record interruption, and interrupted host builds cannot publish a success report.
+This is cleanup of cooperating processes in that group, not containment of
+arbitrary programs that escape it or a whole descendant-tree sandbox.
+
+Seven new cases include real Linux `/proc` checks for timeout, interruption and
+an exited leader whose child holds the output pipe, plus command output/closed
+stdin, checked/unchecked nonzero exits and interrupted-build failure reporting.
+All 374 interface and 979 repository tests pass plus known transformer expected
+failure; lint/format and existing native sanitizer/host/Arm gates pass. No new
+study or report was generated: historical evidence and exporter hashes remain
+unchanged, not silently reassigned to the repaired tools. REVIEW.md §65 records
+this fix; no C/wire, accepted input/default/policy, data/training, dependency,
+ST/licence, linked firmware or hardware boundary changed.
+
 [reference-build-audit]: interface/build_audit.py
 [reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
 

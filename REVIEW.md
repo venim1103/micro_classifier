@@ -3260,6 +3260,45 @@ runtime/ST/board gates, mode abstention, quarantine and collection caps stay.
 
 [reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
 
+## 65. Native Compiler Descendant Cleanup Repair (2026-10-19)
+
+**Reproduced defect.** A real synthetic command forked a pipe-blocked child and
+timed out. The audit runner used `subprocess.run`, whose timeout killed only the
+direct parent; Linux `/proc` showed the descendant still running. The regression
+failed before the production change and cleaned up its survivor. Compiler drivers
+can likewise spawn subprocesses, so returning on timeout did not ensure their
+work had stopped. The existing ST runner already used group cleanup; it was not
+executed or changed in this repair.
+
+**Repair.** The shared [native tooling][native-verifier] now executes commands in
+new POSIX sessions with stdin closed and stdout/stderr captured. Timeout,
+interruption or other communication errors kill the process group, drain the
+output pipes and reap the direct process before propagation. Version/identity
+checks, host compilation and audit object tools reuse it. Normal completed-process
+and checked/unchecked nonzero-exit semantics remain intact. Timeout diagnostics
+are preserved; interrupted commands raise a `KeyboardInterrupt` subclass carrying
+command/stdout/stderr. Audit command and host-build logs preserve interruption,
+and no successful report is written after failed or interrupted compilation.
+
+**Verification.** The exact failing timeout check passes after repair. Seven new
+checks cover live descendant state for timeout, interruption and an already-exited
+parent with a pipe-holding child; normal output/closed stdin; checked/unchecked
+nonzero diagnostics; and interrupted host-build logs without a success report.
+The descendant checks are Linux-specific (`/proc`), not claimed as cross-platform
+execution evidence. Full CPU/offline suite: 979 passes plus the known transformer
+expected failure, 374 interface tests. Lint/format, existing ASan/UBSan, actual
+host/Arm compilation, matrix/parity and optimized-Python CLI gates pass.
+
+This bounds cleanup for cooperating processes in the command's process group,
+not arbitrary programs that deliberately escape it, a container sandbox or
+formal process-lifecycle certification. Historical reports/artifacts and their
+original exporter/source hashes are unchanged; no study/report was rerun to
+replace historical evidence. No C, wire/golden, simulator/log/data/labels/splits,
+model inference/training, dependency/download, ST/licence, linked firmware/board,
+accepted input/history/default/token, architecture or robot policy change.
+All production/data/runtime/ST/board gates, strict abstention, quarantine and
+collection caps remain in force.
+
 ## Sources
 
 Hardware and tools:

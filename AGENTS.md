@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §64 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §65 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -855,6 +855,21 @@ Keep this section and the Task List current; a new session resumes from them.
   report change. DESIGN.md §6 and REVIEW.md §64 record completion and limits.
   Approval exhausted; production/data/runtime/ST/board and all other gates stay.
 
+- Native process-cleanup repair (2026-10-19): a real synthetic timeout regression
+  reproduced a live compiler-style descendant after its parent was killed.
+  Shared POSIX `interface/native_verify.py` command execution now starts an
+  isolated session, kills the group on timeout/interruption/communication errors,
+  drains output and reaps the direct command. Compiler identity, host builds and
+  audit object tools share it; interrupted audit builds retain diagnostics and
+  cannot write success. Seven new cases include timeout, interruption and an
+  exited leader with a pipe-holding child, plus normal/nonzero command semantics.
+  All 374 interface tests and 979 repository tests pass plus known transformer
+  expected failure; lint/format and existing native sanitizer gates pass.
+  Historical reports/artifacts and C/wire/input/default/policy stay unchanged;
+  their recorded source hashes describe the original exporters, not this repair.
+  DESIGN.md §6 and REVIEW.md §65 record limits. No new study, model/data/training,
+  dependency/download, ST/licence, linked firmware or hardware scope is opened.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1101,6 +1116,10 @@ on missing tools, and continue with the next unblocked task.
   Forty-nine new checks; 972 repository passes plus known expected failure. No
   target link, full stack bound, memory-fit clearance or new resource budget;
   broader firmware/runtime/data/ST/board gates remain blocked.
+  Maintenance (2026-10-19): reproduced/fixed native compiler descendant survival
+  on timeout; shared POSIX process-group cleanup and seven regressions pass,
+  979 repository passes plus known expected failure (REVIEW.md §65). No historical
+  report regeneration or broader firmware/data/hardware gate change.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §52 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §53 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -680,6 +680,20 @@ Keep this section and the Task List current; a new session resumes from them.
   §7 and REVIEW.md §52 record the repair. No evidence-policy, input/default,
   label/data, collection, training or hardware scope change; all gates remain.
 
+- Approved (2026-10-19): host-only portable C protocol parsing, CRC and bounded
+  stream recovery against the unchanged provisional wire format/golden vectors,
+  host tests, Arm compile checks where available, documentation and local commits.
+  No board integration, broader firmware runtime, dependencies, labels/training,
+  policy or interface freeze is authorized. Core decoding is implemented in
+  `firmware/micro_classifier_codec.c`: strict state/decision validation, fixed
+  native outputs, no packed-wire casts/allocation/HAL and unchanged outputs on
+  failure. All five golden frames and 46 new C checks pass; 108 interface tests,
+  713 repository passes plus the known transformer expected failure. Host GCC
+  13.3 and Arm GCC 13.2 produce objects, including Cortex-M55 compilation;
+  fast-math builds are rejected. Lint/format pass. Stream recovery remains the
+  next approved portion, not board firmware or a completed Task 13. DESIGN.md
+  §2 and REVIEW.md §53 record the approval and core limits.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -886,10 +900,15 @@ on missing tools, and continue with the next unblocked task.
 11. [blocked: no trained student] Closed-loop evaluation in the simulator and one DAgger round.
 12. [blocked: no trained student] Static ONNX export, INT8 QDQ PTQ, float versus INT8 parity, calibration
     on the deployed path, and golden vectors for the firmware (M4, host side).
-13. [blocked: firmware outside current tooling scope; contract pending]
+13. [blocked: only host protocol tooling approved; remaining firmware out of scope]
   Firmware library in C for the Cortex-M55 without the ST HAL: packet
     parsing, history buffer, heads, softmax, confidence, and rejection; host
     unit tests against the golden vectors and an `arm-none-eabi-gcc` build.
+  Partial result (2026-10-19): user approved portable host-only C protocol
+  tooling. Strict state/decision decoding and CRC pass 46 new host checks and
+  real Cortex-M55 object compilation; stream recovery is the next approved
+  portion. History, heads, inference/rejection policy, linked firmware and board
+  integration remain outside this approval; the contract stays provisional.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

@@ -2685,6 +2685,46 @@ label/data/split, uncertainty-policy, inference/training or hardware scope chang
 The ST tools directory remains empty, both collection allowances exhausted,
 strict abstention/quarantine in force and all remaining Task List gates blocked.
 
+## 53. Approved Host-Only C Protocol Core (2026-10-19)
+
+The user explicitly approved host-only portable C packet parsing, CRC and
+bounded stream recovery, host tests using the existing golden frames, Arm
+compile checks where available, documentation and local commits. Board
+integration, broader firmware runtime, dependencies, labels/training, evidence
+policy and interface freezing remain excluded. This partially opens Task 13's
+protocol tooling, not its history/heads/inference or deployed firmware work.
+
+The [C11 API][wire-codec-api] and [source][wire-codec-source] now decode strict
+state and decision frames using explicit little-endian reads and float-bit
+`memcpy`, reusing unchanged generated constants. They allocate no memory and
+require no HAL, packed structs or unaligned native loads. Outputs remain
+unchanged on error. Decision validation retains raw distributions separately
+from selections, Python's first-mode confidence formulas/tolerances, complete
+`OK` rules and diagnostic rejection/fault subsets. Decode success is not
+permission to act on a non-OK decision. No new physical or stale-data policy is
+introduced. Binary32 float and at least binary64 double precision are required;
+fast-math builds explicitly fail rather than weakening finite-value checks.
+
+Verification: 46 new compile-backed C checks pass, covering all five existing
+golden frames, all 32 state-validity masks, float32 extremes/signed zero, all
+rejection/fault answer subsets, tie/nonbinary distributions, header/CRC damage,
+truncation, semantic rejection, null arguments and unchanged failed outputs.
+Host GCC 13.3 and Arm GCC 13.2 produce real objects; Cortex-M55 uses
+`-mcpu=cortex-m55 -mthumb`. All 108 interface tests and 713 repository tests pass
+plus the known transformer expected failure; lint/touched-file formatting pass.
+The deliberate compile-failure test initially needed explicit `check=False`
+for Ruff; repaired and the full interface/lint gates rerun successfully.
+
+Stream recovery remains the next approved portion. No linked board firmware,
+board execution, compiler/NPU fit, timing, power, safety or model-quality claim
+follows. No study/log/artifact generation, annotations, splits, model runtime,
+training, dependency/download, ST installation/licence or hardware action took
+place. Existing quarantine, strict abstention and exhausted collection limits
+are unchanged; Tasks 6/9 and remaining firmware/ST/board gates remain blocked.
+
+[wire-codec-api]: firmware/include/micro_classifier_codec.h
+[wire-codec-source]: firmware/micro_classifier_codec.c
+
 ## Sources
 
 Hardware and tools:

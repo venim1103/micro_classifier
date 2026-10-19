@@ -222,6 +222,40 @@ not measured latency. All 62 focused tests pass, including header equality,
 host/Arm GCC compilation and independent C state serialization matching a
 golden frame. Header syntax checks are not firmware or ST NPU validation.
 
+#### Host-Only C Codec (Approved, 2026-10-19)
+
+The user separately approved portable host-only C parsing, CRC and bounded stream
+recovery, host/golden tests, Arm compile checks where available, documentation
+and local commits. This does not authorize board integration, broader firmware
+runtime, dependencies, physical/evidence-policy changes, labels/training or an
+interface freeze. The existing byte contract and generated constants remain
+unchanged.
+
+The [C11 codec API][wire-codec-api] and [implementation][wire-codec-source]
+decode state and decision frames using explicit little-endian reads and
+`memcpy` for float bits, without packed casts, allocation or HAL. Caller outputs
+are written only on success; native structs are not wire layouts. State guards
+match Python validity/age/zero/finite/health rules. Decision guards preserve
+fixed ordering, all status/subset rules, separate selections, full distributions,
+first-mode tie handling and existing probability/confidence tolerances. A valid
+rejection/fault packet remains unusable as a recommendation. CRC is corruption
+detection, not authentication; stale/range/timeout/sequence and fail-safe policy
+stay outside the codec. Binary32 float, at least binary64 double precision and
+non-fast-math compilation are required.
+
+Core verification: all five golden frames, all 32 state-validity combinations,
+float32 extremes/signed zero, decision subsets/ties/nonbinary fractions, byte
+corruption, truncation, invalid layouts/values and unchanged failed outputs pass.
+There are 46 new C checks, 108 interface tests and 713 repository passes plus
+the known transformer expected failure; lint/format pass. Host GCC 13.3 and
+Arm GCC 13.2 compile real objects, the latter with `-mcpu=cortex-m55 -mthumb`.
+This is neither a linked firmware build nor target execution, timing, memory-fit
+or physical-safety evidence. Stream recovery is the next approved follow-up;
+history, heads/inference, application rejection and hardware remain gated.
+
+[wire-codec-api]: firmware/include/micro_classifier_codec.h
+[wire-codec-source]: firmware/micro_classifier_codec.c
+
 ### Decisions Required Before Scaffolding
 
 Recorded as provisional defaults on 2026-10-14 ([REVIEW.md](REVIEW.md) §10) so

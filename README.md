@@ -107,6 +107,32 @@ approval. Normal defaults and input/history remain unchanged; see
 
 CPU unit tests: `python -m pytest tests`.
 
+## Host-Only C Protocol Tooling
+
+The [C11 API][c-codec-api] and [source][c-codec-source] decode the provisional
+state/decision wire format and calculate CRC-32, reusing the generated constants
+and existing golden vectors. They use fixed native outputs, no allocation/HAL
+or packed-wire casts. Failed decodes leave outputs unchanged. The core is
+host-tested and compiles to Cortex-M55 objects, not linked board firmware.
+
+```sh
+python -m pytest -q tests/test_interface.py
+```
+
+Call `mc_v0_decode_state` or `mc_v0_decode_decision` with a readable byte buffer,
+its exact frame length and a native output pointer; check for `MC_V0_DECODE_OK`
+before reading the output. Decision answer slots use `question_id - 1`; only
+slots selected by `answer_mask` are present. A successfully decoded rejection/
+fault is **not a usable recommendation**. The CRC function requires readable
+bytes for its length; null data is permitted only at length zero. No physical
+range, stale-data, timeout, ordering or fail-safe policy is imposed. Use binary32
+float and binary64-or-better double precision; fast-math builds are unsupported.
+Stream recovery is the next approved addition. DESIGN.md §2 and REVIEW.md §53
+record the bounded authorization and verification limits.
+
+[c-codec-api]: firmware/include/micro_classifier_codec.h
+[c-codec-source]: firmware/micro_classifier_codec.c
+
 ## Simulation Label Policy Draft
 
 The [catalogue][sim-catalogue-draft] and [labeler][sim-label-draft] are approved

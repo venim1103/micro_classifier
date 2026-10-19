@@ -2463,6 +2463,62 @@ dependency/download or hardware work occurred. Inputs/history/defaults/token
 ceiling/quarantine and all Task 6/9 gates are unchanged. The ST tools directory
 was rechecked and remains empty; M1a and board gates are still blocked.
 
+## 48. Simulation-Only Task-Data Protocol Proposal (2026-10-19)
+
+The user selected **draft a concrete simulation-only task-data protocol** as
+the next workstream. Approval is documentation-only: proposed cohort design,
+admissible target evidence, observability/abstention and source-family gates.
+It does not authorize generation, packet export, oracle/log application,
+annotations/import, dataset acceptance, split locks, inference or training.
+
+DESIGN.md §7 records `sim-task-data-protocol/draft-1`. An explicitly unaccepted
+readiness pilot proposes eight new normal-Config episodes, two per existing
+scene, seed `20261020 + 2 * scene_index + repeat`, using the existing privileged
+map-aware controller. Candidate ticks 0/7/15/final provide at most 32 unique
+complete observation/history windows; absent ticks are skipped, duplicates
+removed and short/failed episodes retained without retries. These quantities
+are proposals, not an execution approval, adopted sample-size requirement or
+representative data claim. Current logs remain quarantined; fresh seeds do not
+create independent scene families or qualify target evidence.
+
+The proposal separates private source/geometry/provenance audit evidence from
+blind reviewer input. A future projection would expose only complete student-
+visible input and an opaque ID, not truth/maps/actions, future outcomes,
+termination reasons or proxy/teacher/oracle suggestions. Such projection and
+actual review/import are not claimed implemented. Two independent human passes
+and same-evidence adjudication are proposed, not adopted staffing/policy.
+Unresolved disagreements abstain rather than consulting privileged truth.
+
+Per-question checks preserve the already-adopted simulation meanings: a supported
+positive is distinct from whole-sweep clearance; no hit is not clear, unknown
+sector is not `none`, unknown capacity is not tier 0, rest-sector abstains and
+mode remains unlabeled. Exact eight-tick geometry aliases, sparse coverage and
+unqualified normal range/registration evidence remain blockers. Observed residual
+maxima and Gaussian sigma do not establish hard bounds. No oracle agreement or
+extra collection can by itself establish observation-only identifiability.
+
+The readiness pilot has at most four scene-parent candidates, possibly fewer
+after review of shared lineage. It cannot supply five nonempty disjoint reviewed
+families for training/development/quantization-calibration/confidence-calibration/
+test. No family/purpose assignment, automatic seed-based independence or fake
+production use of the synthetic split checker is proposed. A later accepted
+cohort/split needs separate review and enough genuinely reviewed groups.
+
+Six explicit gates cover simulation-only claim/domain/evidence conventions,
+collection authorization and parent lineage, tooling/blank projection and review
+approval, actual task cohort/evidence acceptance, five-purpose attestation and
+separate baseline/teacher/training authorization. The first gate remains open:
+no uncertainty/spatial-coverage/registration convention or actual label evidence
+is accepted here. Keep observation-only abstention and all existing policies.
+
+Documentation reference/local-target/whitespace, proposal arithmetic/scope and
+existing-policy checks pass. No Python, source artifact, log or report changed
+for this proposal; the latest code gate remains 623 passes plus the known
+transformer expected failure from §47, not newly rerun code evidence. No new
+episode, annotation, dataset/split, accepted family/bound, inference/training,
+dependency/download or hardware action occurred. Tasks 6/9 and ST/board gates
+remain blocked; this proposal is not an adopted protocol or task-data clearance.
+
 ## Sources
 
 Hardware and tools:

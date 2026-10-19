@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §47 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §48 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -605,6 +605,23 @@ Keep this section and the Task List current; a new session resumes from them.
   REVIEW.md §47 record the repair. Scope/data/default/input and Task 6/9 gates
   are unchanged; `.devcontainer/tools` is still empty.
 
+- Approved and completed (2026-10-19): documentation-only concrete simulation
+  task-data protocol proposal in DESIGN.md §7 and REVIEW.md §48. Unaccepted
+  candidate: eight future normal-Config readiness episodes, two per scene,
+  deterministic seeds and at most 32 unique full-input blank review windows;
+  no collection, packet export, oracle/log adapter, annotation/import or data
+  acceptance occurred. Proposed independent human review uses observation-only
+  evidence with abstention; private diagnostic truth cannot force task labels.
+  Explicit positive/negative/sector/tier admission checklists expose remaining
+  uncertainty/registration/spatial-coverage gates. At most four candidate scene
+  groups cannot satisfy five independent purposes; no family/split assignments.
+  All numeric/procedural choices remain proposals, not adopted requirements.
+  Mode stays unlabeled, current logs quarantined, inputs/defaults unchanged.
+  Doc/reference/local-target/scope checks pass; 623 passes plus the known expected
+  failure remain the last code gate, not newly rerun proposal evidence. Next
+  decision: accept/modify the simulation-only claim/domain and admissible evidence
+  conventions before collection or labels. Tasks 6/9 and ST/board stay blocked.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -705,6 +722,12 @@ on missing tools, and continue with the next unblocked task.
   collision and three censored horizons. These quarantined software diagnostics
   are neither physical uncertainty/registration qualification nor target labels;
   mode and actual reviewed evidence/data remain blocked.
+  Protocol proposal (2026-10-19, REVIEW.md §48): explicit per-question evidence
+  admission/abstention and a proposed eight-episode readiness pilot are documented,
+  not adopted or executed. Next question: what simulation-only claim/domain and
+  evidence/uncertainty conventions are acceptable? Proposed default is to keep
+  strict abstention and all current boundaries until that review; no collection,
+  task labels or training are approved by the documentation-only scope.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,
@@ -777,6 +800,10 @@ on missing tools, and continue with the next unblocked task.
   now have independently checked identity/declared-geometry evidence, including
   repeated geometry across differently hashed files. No family was accepted or
   cohort/split assigned; body validity and task truth are not established.
+  Protocol proposal (2026-10-19, REVIEW.md §48): the proposed readiness pilot has
+  at most four scene-parent candidates, insufficient for five distinct family-
+  separated purposes and possibly fewer after lineage review. Family/cohort/
+  split acceptance and actual reviewed task data remain pending; no assignments.
 10. [blocked: training outside current tooling scope; dataset pending]
   Student: a small convolutional or MLP trunk over the state history and
     the ToF grid with per-question heads; supervised versus distilled

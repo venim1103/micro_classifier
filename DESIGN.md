@@ -2128,6 +2128,130 @@ input/default, label/data or hardware gate changed.
 [sensor-diagnostics]: sim/diagnostics.py
 [sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
 
+#### Simulation-Only Task-Data Protocol Proposal (Unaccepted, 2026-10-19)
+
+The user approved **drafting this protocol only**, not adopting it or executing
+collection, packet export, reference evaluation, annotation, split assignment or
+training. Call this proposal `sim-task-data-protocol/draft-1`. It preserves the
+already-adopted first-three simulation meanings, observation-only human review
+with abstention, current-log quarantine and source/template-family review.
+Mode remains unlabeled. No physical-domain claim, uncertainty bound, input,
+history, Config value, teacher representation or 2,048-token ceiling changes.
+
+**Candidate readiness pilot, not a training/evaluation cohort.** The following
+quantities and procedure are proposals requiring explicit approval; they are
+not new execution authorization or sample-size/quality requirements:
+
+| Item | Proposed Value | Constraint |
+| --- | --- | --- |
+| New diagnostic episodes | Eight: two each of clear/obstacle/corridor/slalom | Normal Config, including the 400-tick limit; no existing log is promoted |
+| Seed schedule | `20261020 + 2 * scene_index + repeat`, indices starting at zero | Seeds and repeated runs are not independent families |
+| Controller | Existing privileged map-aware `ScriptedExpert` | Actions, controller identity and map remain private audit evidence, never reviewer suggestions or labels |
+| Candidate review windows | Tick 0, tick 7, tick 15 and the final available tick from each episode | At most 32 unique complete windows; remove duplicates, skip nonexistent ticks, never pad or retry |
+| Termination | Preserve actual success/collision/environment timeout | A failed or short episode is retained, not replaced to fill a quota |
+| Initial status | Diagnostic-only, unreviewed, training-disabled | No accepted family, purpose, task label or mode label |
+
+Four windows per episode give an upper bound, not a promise of 32 packets or
+class coverage. Complete native eight-tick histories/masks/ages must be retained;
+startup windows keep their real missing history. Select windows by the declared
+ticks, not teacher/proxy answers, geometric truth or a desired class balance.
+Do not claim that the existing prefix exporter implements this proposed sampler.
+No new sampler, collector adapter or real-review importer is implemented here.
+
+**Separate evidence bundles.** A future source audit would retain original
+file/observation hashes, full Config/Scenario, generator and controller revision/
+hash, seed, episode identity, parent template and transformation lineage. Exact
+geometry matches, mirrored/perturbed layouts, common parent templates and
+overlapping histories must be reviewed together. Metadata access is for source
+auditors, not blind task reviewers. An independently approved diagnostic oracle
+comparison could retain privileged geometry and numerical-unknown results in
+this private bundle only; no existing synthetic API is authorized for log use.
+
+The proposed reviewer projection contains only an opaque review ID and the
+complete student-visible input/history, with a protected provenance mapping in
+the audit bundle. No scene/map, future frame, termination reason, capture-truth
+pose/range, controller action, proxy/teacher/oracle answer or mission-intent hint
+may be used to force a label. Current fake-only validators and historical blank
+packets are preparation evidence, not a claim that this projection or actual
+annotation/import is ready. Any required tooling needs separate approval.
+
+**Per-question evidence checklist.** Human evidence sufficiency and independent
+geometric target truth are different objects. Matching an oracle is insufficient
+if the permitted input cannot distinguish contradictory worlds. Before actual
+annotation, review must explicitly accept a simulation-only claim/domain and
+its range/return-membership, acquisition-to-current registration, uncertainty,
+motion/footprint and spatial-coverage evidence. Current normal Gaussian noise
+is not a finite error bound; a residual maximum from the four-prefix study is
+not a bound either. No such evidence or convention is adopted by this proposal.
+
+| Question | Proposed Admission Rule Under the Already-Adopted Meaning |
+| --- | --- |
+| `path_blocked=true` | A supported occupied point/region must intersect the centre braking footprint under the accepted evidence/uncertainty model; noisy unregistered returns alone do not qualify |
+| `path_blocked=false` | The whole swept disk must have established strict clearance; absent hits, a clear ray or no observed collision are insufficient |
+| `clear_sector` | All three sweeps must be classified before goal-distance ranking; `none` requires all three established blocked; unknown evidence or rest requires abstention |
+| `speed_tier` | All three momentum-preserving centre capacity tests must be classified; unknown is not tier 0, and tier 0 does not certify a safe stop |
+| `mode` | No annotation; operational intent/precedence remains unresolved |
+
+The existing alias fixtures in this section demonstrate that even complete
+eight-tick inputs can correspond to opposite geometric outcomes. A proposed
+evidence model must address those counterexamples, restrict its claim/domain
+explicitly or abstain; extra seeds, privileged adjudication and an oracle
+export cannot remove the information gap. If no admitted labels remain, the
+readiness result is **not ready**, not permission to force proxy/geometry labels
+or silently broaden reviewer inputs. No negative/clear evidence path is
+qualified by the existing positive-only synthetic witness tools.
+
+**Candidate review procedure.** Propose two independent human first passes per
+admitted window, each recording a class or explicit per-question abstention,
+an evidence rationale and reviewer/procedure versions. This reviewer count is
+unaccepted, not a staffing commitment. A later adjudicator sees the same allowed
+input and original rationales, not hidden truth/suggestions. Disagreement remains
+recorded; unresolved disagreement abstains. Proposed reason categories include
+missing history, unknown spatial coverage, unsupported return/range evidence,
+unknown registration, unsupported motion assumptions, numerical ambiguity and
+reviewer disagreement. These are review metadata, not added wire options.
+Report raw reviewed/admitted/abstained/disputed counts and per-class support;
+do not infer task accuracy, representative coverage or a confidence threshold.
+
+**Family and five-purpose gate.** At most four scene-parent candidates exist
+in this pilot; common generator/geometry evidence may merge them further. Thus
+it cannot by itself supply five nonempty disjoint family-level purposes:
+training, development, quantization calibration, confidence calibration and
+test. Do not manufacture a fifth group by changing a seed, renaming a scene or
+splitting nearby windows. All family assignments remain null until review, and
+all purpose assignments remain null until a separately approved cohort/split
+design has enough reviewed groups. Proposed counts here neither guarantee
+independence nor satisfy the production leakage/attestation gate. The existing
+synthetic split validator does not attest real files or lock task splits.
+
+**Required decisions and exits, in order:**
+
+1. Accept/modify the intended simulation-only claim/domain and admissible
+  evidence/uncertainty conventions, without changing human evidence boundaries.
+  If adequate evidence is unavailable, retain abstention and stop before labels.
+2. Review the proposed parent-template lineage and explicitly authorize any
+  new collection scope, including episode/controller/seed/horizon limits. The
+  eight-episode pilot above is not authorized by approval to draft this document.
+3. Separately approve any source-audit/reviewer-projection tooling, private
+  oracle comparison and blank export; verify complete inputs and provenance
+  before approving actual human review/import. No oracle answer becomes a
+  reviewer suggestion or automatic task label.
+4. Review actual evidence, annotations/abstentions and source-family decisions
+  before accepting any task cohort. Do not retroactively promote current
+  quarantined logs or replace missing labels with diagnostic proxies.
+5. Approve and attest a separate five-purpose manifest before model selection,
+  with whole reviewed source/episode/template groups and exact-input duplicates
+  confined to one purpose. Neither this pilot nor a hash alone locks a test set.
+6. Obtain explicit baseline/training and live-teacher approvals separately.
+  Retain normal teacher/input defaults and unresolved mode semantics. ST M1a
+  deployment proof remains independent; no large labeling job is approved here.
+
+This protocol is a reviewable readiness proposal, not completion of Tasks 6/9.
+All current artifacts remain diagnostic-only and all actual task labels, cohort/
+family assignments, splits, inference and training remain unapproved. The first
+pending decision is the simulation-only evidence claim/domain, not another
+synthetic implementation or an assumption that collecting more data qualifies it.
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

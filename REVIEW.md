@@ -3196,6 +3196,70 @@ and broader Tasks 6/9/13/ST/board gates remain in force.
 
 [reference-build-audit]: interface/build_audit.py
 
+## 64. Offline Build-Audit Matrix and Independent Evidence Complete (2026-10-19)
+
+The full package approved in §63 is complete. The [report][reference-build-audit-report]
+records 24 separate host/Cortex-M55 objects and three synthetic host verifications
+at `-O0/-O2/-Os`, using installed GCC/binutils only. Each host run uses seed
+20261019 and the same 1,024 artificial cases: 4,096 question outputs, 14,336
+logits, 15,360 probabilities and 2,048 frames/225,280 frame bytes. Repeated
+optimization runs are not independent examples, task data or model-quality
+evaluation. No Arm code was linked or executed.
+
+**Exact host parity.** All three complete evidence objects equal the prior
+hash-pinned independently audited head report (§62), including every input/logit/
+frame row, numerical diagnostics and wire digest. Canonical result SHA256 remains
+`7f24377c218560fc4a81b49458b971203f8b48819fd7f45b01e8a2b2dc30a76f`.
+Checked logit/confidence errors stay zero; maximum probability error versus double
+reference stays 2.9798810863290726e-8, not an adopted task-quality tolerance.
+
+**Observed resources, not budgets.** Summed `.text`/`.rodata` across the four
+separate objects and GCC's dense-head individual stack report, in bytes:
+
+| Target | Optimization | `.text` | `.rodata` | Dense-Head Stack |
+| --- | --- | --- | --- | --- |
+| Host GCC 13.3 | `-O0` | 11,287 | 200 | 2,240 |
+| Host GCC 13.3 | `-O2` | 6,961 | 176 | 2,144 |
+| Host GCC 13.3 | `-Os` | 4,959 | 176 | 2,144 |
+| Cortex-M55 GCC 13.2 | `-O0` | 7,234 | 8 | 2,176 |
+| Cortex-M55 GCC 13.2 | `-O2` | 4,636 | 8 | 2,192 |
+| Cortex-M55 GCC 13.2 | `-Os` | 3,850 | 8 | 2,200 |
+
+Every observed stack qualifier is `static`; this still excludes callee chains,
+interrupts/runtime and other full-program requirements. Zero object `.data/.bss`
+does not imply zero RAM: state/history and buffers are caller-owned, and stack
+and linked runtime are excluded. Per-object undefined symbols include the shared
+validator, `exp`, memory helpers and Arm `__aeabi_*` double/conversion helpers;
+host objects also need `__stack_chk_fail`. These are not a resolved link closure,
+qualified deployed ABI/libm, latency, SRAM-fit or full stack bound. No optimization
+level or size/stack budget is adopted for deployment by this diagnostic.
+
+**Independent evidence audit.** All 153 raw artifacts and all 12 source/eight
+tool-driver byte counts/hashes match. A separate audit, without importing the
+production parsers, directly unpacked all 24 ELF section/symbol tables and
+matched every reported section size/address and undefined symbol, reconstructed
+every raw `.su` entry, and verified command exits/flags/Cortex-M55 attributes.
+Each complete host evidence object matches the prior independently reconstructed
+baseline. Report SHA256:
+`e08de9ddabbd4c038752bd13b318cf10f6b19c472cc912de64061fd488ba9351`.
+Raw artifacts stay ignored in `.runs/reference-build-audit-20261019/`; the evidence
+JSON is versioned. Source hashes remain exact after the run. Driver hashes are
+not whole-toolchain/library attestation or adversarial filesystem protection.
+
+**Exit and limits.** All 42 audit/seven optimization-helper checks and the last
+full code gate pass: 367 interface tests, 972 repository passes plus the known
+transformer expected failure, native ASan/UBSan, lint/format/editor diagnostics.
+Documentation references/review sequence/whitespace and evidence checks pass.
+No C/wire/golden source or historical report was changed or regenerated. No
+simulator/log collection/application, actual annotations/task data/splits,
+teacher/model inference/training, dependency/download, ST/licence, linked firmware
+or board action; no accepted input/history/default/token, production blob,
+architecture, timing/rejection/safety-policy or uncertainty-budget change. This
+exhausts the approved package, not broader Task 13. Remaining production/data/
+runtime/ST/board gates, mode abstention, quarantine and collection caps stay.
+
+[reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
+
 ## Sources
 
 Hardware and tools:

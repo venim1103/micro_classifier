@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §63 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §64 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -839,6 +839,22 @@ Keep this section and the Task List current; a new session resumes from them.
   optimization run and independent evidence audit remain approved follow-up.
   DESIGN.md §6 and REVIEW.md §63 record core scope, not board-fit evidence.
 
+- Approved build-audit package completed (2026-10-19): all 24 host/Arm objects
+  and three 1,024-case host verifications passed at `-O0/-O2/-Os`. Each host run
+  exactly matches the prior independently audited 1,024-case evidence, not three
+  independent cohorts. All 153 artifacts, source/tool hashes, object ELF section/
+  symbol tables, stack records and command logs independently checked. Report:
+  `interface/reports/reference-build-audit-20261019.json`. Arm summed `.text`:
+  7,234/4,636/3,850 bytes; dense-head compiler stack: 2,176/2,192/2,200 bytes.
+  These are unlinked objects/individual stack frames, not full runtime/call-chain
+  bounds or memory-fit evidence; software-double/libm/memory helpers remain
+  unresolved per object. All `.data/.bss` are zero, not zero RAM: caller buffers,
+  state/history, stack and runtime are excluded. Last code gate: 972 passes plus
+  known transformer expected failure, 367 interface checks; lint/format/editor,
+  native sanitizer and doc/evidence gates pass. No C/wire/golden or historical
+  report change. DESIGN.md §6 and REVIEW.md §64 record completion and limits.
+  Approval exhausted; production/data/runtime/ST/board and all other gates stay.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1079,10 +1095,12 @@ on missing tools, and continue with the next unblocked task.
   build checks; 238 C checks, 318 interface tests and 923 repository passes plus
   known expected failure. Production heads, training, input/runtime/policy and
   board gates stay blocked; diagnostic bounds do not freeze architecture.
-  Build-audit core (2026-10-19): separately approved host/Arm object inspection
-  and optimization parity tooling passes 49 new checks and the full 972-pass
-  suite plus known expected failure (REVIEW.md §63). Complete bounded run/audit
-  is next; no target link, complete stack bound, memory-fit gate or new budget.
+  Build-audit result (2026-10-19): separately approved host/Arm inspection and
+  optimization parity package complete (REVIEW.md §§63-64): 24 objects, three
+  identical 1,024-case host results and all 153 artifacts independently audited.
+  Forty-nine new checks; 972 repository passes plus known expected failure. No
+  target link, full stack bound, memory-fit clearance or new resource budget;
+  broader firmware/runtime/data/ST/board gates remain blocked.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

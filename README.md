@@ -226,9 +226,15 @@ failed checks do not write a success report. Existing outputs are never reused.
 These are unlinked object sizes and individual compiler stack reports, not full
 call-chain bounds, deployed ROM/RAM, target execution, latency or memory fit.
 No new resource budget, model/input/policy or hardware approval is implied.
-DESIGN.md §6 and REVIEW.md §63 record authorization and verified core limits.
+The [audited report][reference-build-audit-report] includes 24 objects and three
+identical 1,024-case host results; all 153 artifacts and ELF/stack evidence were
+independently checked. Arm `.text` totals are 7,234/4,636/3,850 bytes and the
+head's reported stack is 2,176/2,192/2,200 bytes at `-O0/-O2/-Os`, excluding
+callees, libraries and runtime overhead. Zero object `.data/.bss` does not count
+caller buffers/history or stack. DESIGN.md §6 and REVIEW.md §§63-64 record limits.
 
 [reference-build-audit]: interface/build_audit.py
+[reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
 
 ## Host-Only C Decision Math
 

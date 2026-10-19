@@ -1300,6 +1300,44 @@ failure; lint/format/editor diagnostics and existing native sanitizer checks pas
 The full 1,024-case-per-optimization evidence run/independent audit is next,
 not claimed by these test fixtures. REVIEW.md §63 records this checkpoint.
 
+Completion (2026-10-19): the [bounded report][reference-build-audit-report] records
+all 24 objects and three host runs at seed 20261019, each with the same 1,024
+artificial cases, 4,096 question outputs and 2,048 frames (225,280 frame bytes).
+All three complete evidence objects equal the prior hash-pinned independently
+audited head report, including all 1,024 input/logit/frame rows and canonical
+result `7f24377c218560fc4a81b49458b971203f8b48819fd7f45b01e8a2b2dc30a76f`.
+These are repeated fixtures, not three independent task cohorts. Maximum checked
+logit/confidence errors stay zero and probability error 2.9798810863290726e-8.
+
+| Target | Optimization | Summed `.text` Bytes | Summed `.rodata` Bytes | Dense-Head Reported Stack Bytes |
+| --- | --- | --- | --- | --- |
+| Host GCC 13.3 | `-O0` | 11,287 | 200 | 2,240 |
+| Host GCC 13.3 | `-O2` | 6,961 | 176 | 2,144 |
+| Host GCC 13.3 | `-Os` | 4,959 | 176 | 2,144 |
+| Cortex-M55 GCC 13.2 | `-O0` | 7,234 | 8 | 2,176 |
+| Cortex-M55 GCC 13.2 | `-O2` | 4,636 | 8 | 2,192 |
+| Cortex-M55 GCC 13.2 | `-Os` | 3,850 | 8 | 2,200 |
+
+Text/rodata totals sum the four separate reference objects, not linked images.
+All reported stack qualifiers were `static`, which does not bound callees or
+the full stack. All objects report zero `.data/.bss`; caller-owned state/history,
+buffers, stack and runtime still consume RAM and are not counted by those zeros.
+Per-object undefined symbols include the cross-module validator, `exp`, memory
+helpers and Arm software-double helpers (`__aeabi_*`); host objects also refer
+to `__stack_chk_fail`. No deployed ABI/math runtime is selected or qualified.
+
+The independent audit read ELF section/symbol tables directly with standard
+binary structures, separate from production CLI parsers, and compared every
+reported section size/address and undefined symbol. It independently reconstructed
+all `.su` records, checked all command exits/flags and Cortex-M55 attributes, all
+12 source/eight tool identities and every one of 153 raw artifact hashes. All
+three host results match the prior independently reconstructed baseline. Report
+SHA256: `e08de9ddabbd4c038752bd13b318cf10f6b19c472cc912de64061fd488ba9351`.
+Raw artifacts stay ignored in `.runs/reference-build-audit-20261019/`. No source
+changed after the run; the last code gate remains 972 passes plus the known
+transformer expected failure, not newly run board evidence. Documentation and
+evidence checks pass. REVIEW.md §64 records completion; this exhausts the package.
+
 Per-function stack numbers are compiler output, not call-chain/full-program
 bounds: external callees, interrupts/runtime, inlining and dynamic qualifiers
 must remain explicit. Section listings include metadata and unlinked/duplicate
@@ -1309,6 +1347,7 @@ target math qualification, timing, formal numerical/memory guarantee or physical
 safety claim is adopted. Other Tasks 6/9/13/ST/board gates remain unchanged.
 
 [reference-build-audit]: interface/build_audit.py
+[reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
 
 ### Question Catalogue and Embodiment Profiles
 

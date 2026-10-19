@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §58 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §59 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -763,6 +763,19 @@ Keep this section and the Task List current; a new session resumes from them.
   linked firmware/board execution, episode/log/data generation or application,
   inference/training, dependency/download, licence or accepted-default change.
 
+- Approved (2026-10-19): host-only C decision-math primitives and complete
+  synthetic verification: stable softmax/sigmoid for existing question sizes,
+  shared unchanged Jev confidence, Python parity/failure tests, host/sanitizer/
+  Arm checks, documentation and local commits. No heads/model, calibration,
+  thresholds/smoothing/rejection policy, ToF/tensors, linked firmware/board,
+  data/labels/training, dependencies or interface freeze. Core normalization is
+  in `firmware/micro_classifier_math.c`; public guarded confidence reuses the
+  codec's exact existing arithmetic. Forty-five math checks and four extra
+  compile/unsafe-math checks pass: 169 C checks, 231 interface and 836 repository
+  tests plus the known transformer expected failure; lint/format and host/
+  Cortex-M55 objects pass. Seeded parity/native math sanitizers remain approved
+  follow-up work. DESIGN.md §6 and REVIEW.md §59 record the core and limits.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -969,7 +982,7 @@ on missing tools, and continue with the next unblocked task.
 11. [blocked: no trained student] Closed-loop evaluation in the simulator and one DAgger round.
 12. [blocked: no trained student] Static ONNX export, INT8 QDQ PTQ, float versus INT8 parity, calibration
     on the deployed path, and golden vectors for the firmware (M4, host side).
-13. [blocked: only host protocol/state-history tooling approved; remaining firmware out of scope]
+13. [blocked: only host-side C reference tooling approved; firmware runtime out of scope]
   Firmware library in C for the Cortex-M55 without the ST HAL: packet
     parsing, history buffer, heads, softmax, confidence, and rejection; host
     unit tests against the golden vectors and an `arm-none-eabi-gcc` build.
@@ -990,6 +1003,11 @@ on missing tools, and continue with the next unblocked task.
   Python-queue operations and native ASan/UBSan checks pass (REVIEW.md §§57-58).
   All 120 C checks and 182 interface tests pass. No ToF/tensor, ordering/freshness,
   inference or linked-board runtime is authorized; broader Task 13 stays blocked.
+  Decision-math follow-up (2026-10-19): user separately approved stable numeric
+  primitives and synthetic verification only. Core softmax/sigmoid and shared
+  confidence pass 45 math cases plus four new build checks; 169 C checks and
+  real host/Cortex-M55 objects pass (REVIEW.md §59). Seeded/native safety checks
+  remain approved work. No model, calibration or policy/runtime gate is opened.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

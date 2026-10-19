@@ -1,5 +1,6 @@
 import ctypes
 import json
+import math
 import os
 import random
 import shutil
@@ -470,8 +471,10 @@ def c_codec(tmp_path_factory):
             str(HEADER_PATH.parent),
             str(ROOT / "firmware/micro_classifier_codec.c"),
             str(ROOT / "firmware/micro_classifier_history.c"),
+            str(ROOT / "firmware/micro_classifier_math.c"),
             "-o",
             str(library),
+            "-lm",
         ],
         capture_output=True,
         check=True,
@@ -481,6 +484,24 @@ def c_codec(tmp_path_factory):
     codec.mc_v0_crc32.restype = ctypes.c_uint32
     codec.mc_v0_validate_state.argtypes = [ctypes.POINTER(CState)]
     codec.mc_v0_validate_state.restype = ctypes.c_int
+    codec.mc_v0_answer_confidence.argtypes = [
+        ctypes.POINTER(CAnswer),
+        ctypes.POINTER(ctypes.c_double),
+    ]
+    codec.mc_v0_answer_confidence.restype = ctypes.c_int
+    codec.mc_v0_softmax.argtypes = [
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
+    ]
+    codec.mc_v0_softmax.restype = ctypes.c_int
+    codec.mc_v0_sigmoid.argtypes = [
+        ctypes.c_float,
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
+    ]
+    codec.mc_v0_sigmoid.restype = ctypes.c_int
     codec.mc_v0_state_history_init.argtypes = [ctypes.POINTER(CStateHistory)]
     codec.mc_v0_state_history_init.restype = None
     codec.mc_v0_state_history_push.argtypes = [
@@ -896,6 +917,190 @@ def test_c_history_seeded_operations_match_python_window(c_codec):
                 assert c_encoded_frame(c_codec, sample) == frame
         ctypes.memset(ctypes.byref(window), 0xA5, ctypes.sizeof(window))
         assert bytes(history) == original
+
+
+@pytest.mark.parametrize(
+    "logits",
+    [
+        (0, 0),
+        (1000, 1000, -1000, -1000),
+        (0, 0, 0, 0, 0),
+        (3.4028234663852886e38, -3.4028234663852886e38),
+        (-3, 1, 2, -1),
+    ],
+)
+def test_c_math_softmax_matches_stable_reference(c_codec, logits):
+    source = (ctypes.c_float * len(logits))(*logits)
+    original = bytes(source)
+    output = (ctypes.c_float * 7)(*([42] * 7))
+    assert c_codec.mc_v0_softmax(source, len(source), output, len(output)) == 0
+    maximum = max(source)
+    weights = [math.exp(value - maximum) for value in source]
+    expected = [weight / sum(weights) for weight in weights]
+    assert list(output[: len(source)]) == pytest.approx(expected, abs=5e-8, rel=1e-7)
+    assert sum(output[: len(source)]) == pytest.approx(1, abs=1e-6)
+    assert list(output[len(source) :]) == [42] * (7 - len(source))
+    assert bytes(source) == original
+
+
+@pytest.mark.parametrize(
+    "logit", [-3.4028234663852886e38, -1000, -1, -0.0, 1, 1000, 3.4028234663852886e38]
+)
+def test_c_math_sigmoid_matches_two_logit_softmax(c_codec, logit):
+    output = (ctypes.c_float * 3)(42, 42, 42)
+    reference = (ctypes.c_float * 2)()
+    source = (ctypes.c_float * 2)(0, logit)
+    assert c_codec.mc_v0_sigmoid(logit, output, 3) == 0
+    assert c_codec.mc_v0_softmax(source, 2, reference, 2) == 0
+    assert list(output[:2]) == list(reference)
+    assert output[2] == 42
+
+
+@pytest.mark.parametrize("question", list(QUESTIONS))
+def test_c_math_confidence_matches_existing_codec(c_codec, question):
+    count = len(QUESTIONS[question][1])
+    packet = Decision(answers=(Answer(question, (1 / count,) * count, count - 1),))
+    answer = c_decision_from_python(packet).answers[question - 1]
+    confidence = ctypes.c_double(42)
+    assert (
+        c_codec.mc_v0_answer_confidence(ctypes.byref(answer), ctypes.byref(confidence))
+        == 0
+    )
+    assert confidence.value == pytest.approx(-1 if question == 1 else 0, abs=2e-8)
+    assert c_encoded_frame(c_codec, c_decision_from_python(packet)) == encode_decision(
+        packet
+    )
+
+
+@pytest.mark.parametrize("count", [2, 4, 5])
+@pytest.mark.parametrize("invalid", [float("nan"), float("inf"), -float("inf")])
+def test_c_math_rejects_nonfinite_logits_without_output_writes(c_codec, count, invalid):
+    output = (ctypes.c_float * 7)(*([42] * 7))
+    original = bytes(output)
+    for position in range(count):
+        source = (ctypes.c_float * count)(*range(count))
+        source[position] = invalid
+        before = bytes(source)
+        assert c_codec.mc_v0_softmax(source, count, output, 7) != 0
+        assert bytes(output) == original
+        assert bytes(source) == before
+    assert c_codec.mc_v0_sigmoid(invalid, output, 7) != 0
+    assert bytes(output) == original
+
+
+@pytest.mark.parametrize("count", [0, 1, 3, 6, 255, ctypes.c_size_t(-1).value])
+def test_c_math_rejects_unsupported_counts_without_access(c_codec, count):
+    source = (ctypes.c_float * 1)(0)
+    output = (ctypes.c_float * 1)(42)
+    assert c_codec.mc_v0_softmax(source, count, output, 1) != 0
+    assert output[0] == 42
+
+
+def test_c_math_capacity_and_null_arguments(c_codec):
+    for count in (2, 4, 5):
+        source = (ctypes.c_float * count)(*range(count))
+        for capacity in range(8):
+            output = (ctypes.c_float * 7)(*([42] * 7))
+            before = bytes(output)
+            result = c_codec.mc_v0_softmax(source, count, output, capacity)
+            assert (result == 0) == (capacity >= count)
+            if result:
+                assert bytes(output) == before
+            else:
+                assert list(output[count:]) == [42] * (7 - count)
+            output[:] = [42] * 7
+            result = c_codec.mc_v0_sigmoid(1, output, capacity)
+            assert (result == 0) == (capacity >= 2)
+            if result:
+                assert bytes(output) == before
+            else:
+                assert list(output[2:]) == [42] * 5
+    output[:] = [42] * 7
+    assert c_codec.mc_v0_softmax(None, 5, output, 7) != 0
+    assert c_codec.mc_v0_softmax(source, 5, None, 7) != 0
+    assert c_codec.mc_v0_sigmoid(1, None, 7) != 0
+    assert list(output) == [42] * 7
+    confidence = ctypes.c_double(42)
+    answer = c_decision_from_python(
+        Decision(answers=(Answer(2, (0.25,) * 4, 3),))
+    ).answers[1]
+    assert c_codec.mc_v0_answer_confidence(None, ctypes.byref(confidence)) != 0
+    assert c_codec.mc_v0_answer_confidence(ctypes.byref(answer), None) != 0
+    assert confidence.value == 42
+
+
+def test_c_math_confidence_rejects_all_invalid_metadata_without_writes(c_codec):
+    answer = c_decision_from_python(
+        Decision(answers=(Answer(2, (0.25,) * 4, 3),))
+    ).answers[1]
+    answer.probabilities[4] = float("nan")
+    for field, valid_values in (
+        ("question_id", {2}),
+        ("answer_type", {2}),
+        ("option_count", {4}),
+        ("selected", {0, 1, 2, 3}),
+    ):
+        initial = getattr(answer, field)
+        for value in range(256):
+            setattr(answer, field, value)
+            confidence = ctypes.c_double(42)
+            before = bytes(answer)
+            result = c_codec.mc_v0_answer_confidence(
+                ctypes.byref(answer), ctypes.byref(confidence)
+            )
+            assert (result == 0) == (value in valid_values)
+            assert confidence.value == (0 if result == 0 else 42)
+            assert bytes(answer) == before
+        setattr(answer, field, initial)
+
+
+@pytest.mark.parametrize(
+    "probabilities",
+    [
+        (float("nan"), 0.25, 0.25, 0.25),
+        (float("inf"), 0, 0, 0),
+        (-float("inf"), 0, 0, 0),
+        (-0.1, 0.6, 0.5, 0),
+        (1.1, 0, 0, 0),
+        (0, 0, 0, 0),
+        (0.25, 0.25, 0.25, 0.2),
+    ],
+)
+def test_c_math_confidence_rejects_invalid_probabilities(c_codec, probabilities):
+    answer = c_decision_from_python(
+        Decision(answers=(Answer(2, probabilities, 3),))
+    ).answers[1]
+    before = bytes(answer)
+    confidence = ctypes.c_double(42)
+    assert (
+        c_codec.mc_v0_answer_confidence(ctypes.byref(answer), ctypes.byref(confidence))
+        != 0
+    )
+    assert confidence.value == 42
+    assert bytes(answer) == before
+
+
+@pytest.mark.parametrize(
+    "probabilities",
+    [
+        (0.5, 0.5, 0, 0),
+        (0.25, 0.25, 0.25, 0.25),
+        (0, 0.5, 0.5, 0),
+        (0, 0, 0.5, 0.5),
+        (0, 0.25, 0.5, 0.25),
+    ],
+)
+def test_c_math_score_confidence_uses_first_raw_mode_not_selected(
+    c_codec, probabilities
+):
+    packet = Answer(3, probabilities, 3)
+    answer = c_decision_from_python(Decision(answers=(packet,))).answers[2]
+    confidence = ctypes.c_double(42)
+    assert (
+        c_codec.mc_v0_answer_confidence(ctypes.byref(answer), ctypes.byref(confidence))
+        == 0
+    )
+    assert confidence.value == packet.confidence
 
 
 def test_c_codec_crc(c_codec):
@@ -1369,7 +1574,12 @@ def test_c_codec_all_state_validity_groups_and_binary32_extremes(c_codec):
 
 @pytest.mark.parametrize("compiler", ["cc", "arm-none-eabi-gcc"])
 @pytest.mark.parametrize(
-    "source_name", ["micro_classifier_codec.c", "micro_classifier_history.c"]
+    "source_name",
+    [
+        "micro_classifier_codec.c",
+        "micro_classifier_history.c",
+        "micro_classifier_math.c",
+    ],
 )
 def test_c_codec_compiles_to_host_and_cortex_m55_objects(
     tmp_path, compiler, source_name
@@ -1400,7 +1610,10 @@ def test_c_codec_compiles_to_host_and_cortex_m55_objects(
 
 
 @pytest.mark.parametrize("flag", ["-ffast-math", "-ffinite-math-only"])
-def test_c_codec_rejects_fast_math_build(tmp_path, flag):
+@pytest.mark.parametrize(
+    "source_name", ["micro_classifier_codec.c", "micro_classifier_math.c"]
+)
+def test_c_codec_rejects_fast_math_build(tmp_path, flag, source_name):
     if shutil.which("cc") is None:
         pytest.skip("host C compiler unavailable")
     result = subprocess.run(
@@ -1411,7 +1624,7 @@ def test_c_codec_rejects_fast_math_build(tmp_path, flag):
             "-I",
             str(HEADER_PATH.parent),
             "-c",
-            str(ROOT / "firmware/micro_classifier_codec.c"),
+            str(ROOT / "firmware" / source_name),
             "-o",
             str(tmp_path / "unsafe.o"),
         ],

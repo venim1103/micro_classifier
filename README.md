@@ -175,6 +175,33 @@ and broader firmware remain outside scope.
 [c-codec-api]: firmware/include/micro_classifier_codec.h
 [c-codec-source]: firmware/micro_classifier_codec.c
 
+## Host-Only C Decision Math
+
+The [math API][decision-math-api] and [source][decision-math-source] provide
+stable softmax for 2/4/5 logits and sigmoid producing `[false, true]`. Input and
+output values are binary32, with double intermediates. Capacities count float
+elements. Callers supply nonnull valid nonoverlapping objects and truthful sizes;
+failures leave output unchanged and success leaves unused capacity untouched.
+Finite extreme logits can produce zero/one probabilities without a floor.
+Host links use `-lm`; fast/finite-only math builds are unsupported.
+
+`mc_v0_answer_confidence` shares the codec's unchanged Jev arithmetic and fixed
+schema validation, returns a double and ignores stored confidence. It uses the
+first raw mode, not `selected`; noul confidence is absent (`-1`). Numeric success
+`MC_V0_MATH_OK` is zero, not a robot status or calibrated correctness claim.
+
+```sh
+python -m pytest -q tests/test_interface.py -k 'c_math or c_codec or c_history'
+```
+
+Core host/Cortex-M55 and failure checks pass; seeded parity and native math
+sanitizers are next. DESIGN.md §6 and REVIEW.md §59 record approval and limits.
+No heads/model, temperature/calibration, thresholds/smoothing/rejection policy,
+training or board integration is included.
+
+[decision-math-api]: firmware/include/micro_classifier_math.h
+[decision-math-source]: firmware/micro_classifier_math.c
+
 ## Host-Only C State History
 
 The [eight-slot history API][state-history-api] and [source][state-history-source]

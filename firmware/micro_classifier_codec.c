@@ -216,13 +216,22 @@ mc_v0_result mc_v0_encode_state(const mc_v0_state *state, uint8_t *output,
     return MC_V0_ENCODE_OK;
 }
 
-static int answer_confidence(const mc_v0_answer *answer, double *confidence) {
+mc_v0_result mc_v0_answer_confidence(const mc_v0_answer *answer, double *confidence) {
+    if (answer == NULL || confidence == NULL) {
+        return MC_V0_ERROR_ARGUMENT;
+    }
+    if (answer->question_id < 1 || answer->question_id > 4 ||
+        answer->answer_type != answer_types[answer->question_id - 1] ||
+        answer->option_count != answer_counts[answer->question_id - 1] ||
+        answer->selected >= answer->option_count) {
+        return MC_V0_ERROR_DECISION;
+    }
     double total = 0.0;
     size_t mode = 0;
     for (size_t index = 0; index < answer->option_count; ++index) {
         float probability = answer->probabilities[index];
         if (!isfinite(probability) || probability < 0.0f || probability > 1.0f) {
-            return 0;
+            return MC_V0_ERROR_DECISION;
         }
         total += probability;
         if (probability > answer->probabilities[mode]) {
@@ -230,7 +239,7 @@ static int answer_confidence(const mc_v0_answer *answer, double *confidence) {
         }
     }
     if (fabs(total - 1.0) > 1e-6) {
-        return 0;
+        return MC_V0_ERROR_DECISION;
     }
     double expected = -1.0;
     if (answer->answer_type == MC_V0_TYPE_CHOICE) {
@@ -250,12 +259,13 @@ static int answer_confidence(const mc_v0_answer *answer, double *confidence) {
         expected = 0.0;
     }
     *confidence = expected;
-    return 1;
+    return MC_V0_MATH_OK;
 }
 
 static int valid_answer(const mc_v0_answer *answer) {
     double expected;
-    return isfinite(answer->confidence) && answer_confidence(answer, &expected) &&
+    return isfinite(answer->confidence) &&
+           mc_v0_answer_confidence(answer, &expected) == MC_V0_MATH_OK &&
            fabs(answer->confidence - expected) <= 2e-6;
 }
 
@@ -357,7 +367,7 @@ mc_v0_result mc_v0_encode_decision(const mc_v0_decision *decision, uint8_t *outp
             return MC_V0_ERROR_DECISION;
         }
         double confidence;
-        if (!answer_confidence(answer, &confidence)) {
+        if (mc_v0_answer_confidence(answer, &confidence) != MC_V0_MATH_OK) {
             return MC_V0_ERROR_DECISION;
         }
         uint8_t *target = payload + offset;

@@ -1109,6 +1109,58 @@ preserve the winning class while changing probabilities; full expansion is
 another option but is not bit-true either. Calibrate and validate the actual
 deployed output path regardless of where probability calculation runs.
 
+#### Host-Only Decision Math (Approved, 2026-10-19)
+
+The user separately approved host-only stable softmax/sigmoid, shared existing
+Jev confidence, synthetic parity/failure tests, host/sanitizer/Arm checks,
+documentation and local commits. This authorizes numeric reference tooling,
+not heads/model execution, calibration, thresholds, smoothing/rejection policy,
+ToF/tensors, linked firmware/board work, labels/data/training, dependencies or
+an interface freeze. The [math API][decision-math-api] and
+[source][decision-math-source] use standard C `exp` with bounded fixed temporary
+arrays, no allocation or HAL. Link math users with the platform math library
+(`-lm` in host tests); Arm object compilation alone does not establish a usable
+linked target math runtime.
+
+`mc_v0_softmax` accepts finite binary32 logits for only 2, 4 or 5 options, uses
+maximum subtraction and double intermediates, then emits binary32 probabilities.
+`mc_v0_sigmoid` accepts one finite binary logit and emits `[false, true]`, using
+a sign-stable expression equivalent to softmax of `[0, logit]`. Capacities count
+float elements, not bytes. Outputs are written only on success and exactly for
+the requested options; unused capacity remains untouched. All pointers must be
+nonnull; callers supply valid nonoverlapping objects and truthful lengths and
+capacities. No size-query mode, arbitrary option count, temperature or calibration
+is added. Finite extreme logits may saturate/underflow to exact one/zero; there
+is no probability floor or second normalization after binary32 rounding.
+
+The newly public `mc_v0_answer_confidence` stays in the codec and shares its
+unchanged arithmetic with encoding/decoding. It validates fixed question ID,
+type/count/selected metadata and finite probabilities in [0,1] with the existing
+1e-6 sum tolerance before writing a double result. Choice/score retain the first
+raw mode and ignore the selection for calculation; noul returns absent `-1`.
+Input confidence and unused probability cells are ignored. Null pointers,
+unsupported softmax counts, short capacities and invalid numeric/schema inputs
+return existing argument/length/decision errors without output writes;
+`MC_V0_MATH_OK` aliases zero without renumbering existing errors. These numeric
+errors do not choose a robot rejection/fallback policy or output a recommendation.
+Binary32 float, at least binary64 intermediate precision/range and non-fast-math
+builds are required; no cross-platform bit-exact `libm` promise is made.
+
+Core verification: 45 math checks cover stable equal/extreme/nontrivial logits,
+sigmoid equivalence, existing confidence/first-mode rules, all 256 values of
+each metadata byte, invalid probabilities, unsupported counts, capacities,
+nulls and output/source preservation. Four extra build cases compile math with
+host GCC 13.3 and Cortex-M55 Arm GCC 13.2 and reject fast/finite-only math.
+All 169 C checks, 231 interface tests and 836 repository tests pass plus the
+known transformer expected failure; lint/format pass. Seeded full-path parity
+and native math sanitizer coverage are the next approved checks, not claimed
+by this checkpoint. No timing, SRAM-fit, target execution, calibration, task
+quality or physical safety evidence follows. Existing wire/goldens, normal
+inputs/defaults, mode abstention, quarantine and all data/hardware gates stay.
+
+[decision-math-api]: firmware/include/micro_classifier_math.h
+[decision-math-source]: firmware/micro_classifier_math.c
+
 Per-tick decisions can oscillate near a decision boundary. Apply hysteresis or
 a minimum dwell time to mode and steering selections on the module, document it
 in the interface contract, and report raw distributions alongside smoothed

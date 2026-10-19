@@ -2938,6 +2938,54 @@ wire bytes/goldens, simulator and historical reports remain unchanged. This
 exhausts the bounded approval, not broader Task 13; Tasks 6/9 and ST/board gates,
 quarantine, unlabeled mode and strict abstention remain unchanged.
 
+## 59. Approved Host-Only C Decision-Math Core (2026-10-19)
+
+The user explicitly approved host-only C stable softmax/sigmoid for existing
+question sizes, shared unchanged confidence formulas, synthetic Python parity/
+failure tests, ASan/UBSan, host/Arm compile checks, documentation and local
+commits. No model/heads, calibration, thresholds/smoothing/rejection policy,
+ToF/tensors, linked firmware/board work, task data/labels/training, dependencies
+or interface freeze is approved. All other task/evidence gates remain.
+
+The [math API][decision-math-api] and [source][decision-math-source] add bounded
+standard-C maximum-shift softmax (2/4/5 logits) and sign-stable sigmoid returning
+`[false, true]`. Fixed temporary arrays and double `exp` avoid overflow from
+finite binary32 extremes; binary32 output can underflow/saturate to zero/one.
+No allocation/HAL, probability floor, temperature or calibration is added.
+Math links require the platform library (`-lm` in host tests). Actual target
+linking/runtime, timing and SRAM-fit are not established by object compilation.
+
+The codec's existing confidence computation is newly public as
+`mc_v0_answer_confidence` and shared by encoding/decoding, with shape guards
+before bounded probability access. Fixed ID/type/count/selected metadata and
+finite [0,1] probabilities with the original sum tolerance are required; input
+confidence/unused storage are ignored. Arithmetic, first raw mode, selected-
+option independence and noul absent `-1` remain unchanged. Output is double;
+normalization emits floats. `MC_V0_MATH_OK` aliases zero and existing errors keep
+their values. Null/unsupported count, short capacity and invalid numeric/schema
+inputs do not write output. Valid nonoverlapping objects, truthful sizes and
+float-element capacities are caller preconditions, not arbitrary-pointer checks.
+
+Core verification: 45 math checks cover equal/extreme/mixed logits, sigmoid
+equivalence, confidence and score-mode ties, all metadata byte values, invalid
+probabilities/counts/capacities/nulls and source/output preservation. Four new
+build cases compile math to host GCC 13.3 and Cortex-M55 Arm GCC 13.2 objects
+and reject fast/finite-only math. All 169 C checks and 231 interface tests pass;
+full CPU/offline suite: 836 passes plus the known transformer numerical expected
+failure, with clean lint/format. Prior codec/history checks remain active.
+Seeded numeric/full-wire parity and native math ASan/UBSan are the next approved
+follow-up; earlier codec/history sanitizers do not by themselves cover this math.
+
+These are numerical plumbing tests, not probability calibration, teacher/task
+accuracy, board execution, formal numerical/memory certification or physical
+safety evidence. No episode/log application/generation, actual labels/data/
+splits, inference/training, dependency/download, licence or hardware action
+occurred. Wire/goldens, simulator, reports, defaults/history/token limits,
+unlabeled mode, strict abstention, quarantine and collection caps are unchanged.
+
+[decision-math-api]: firmware/include/micro_classifier_math.h
+[decision-math-source]: firmware/micro_classifier_math.c
+
 ## Sources
 
 Hardware and tools:

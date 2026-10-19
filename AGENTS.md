@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §65 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §66 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -870,6 +870,23 @@ Keep this section and the Task List current; a new session resumes from them.
   DESIGN.md §6 and REVIEW.md §65 record limits. No new study, model/data/training,
   dependency/download, ST/licence, linked firmware or hardware scope is opened.
 
+- Approved (2026-10-19): complete host-only synthetic four-head C assembly,
+  tests/sanitizers, host/Arm checks, reproducible evidence, docs and local commits.
+  `firmware/micro_classifier_assembly.c` composes existing affine, normalization,
+  confidence and wire validation without changing them. Caller status/selections
+  remain explicit; full four-answer metadata is validated before head access,
+  and failure leaves output unchanged. No production model/blob, ToF/tensors,
+  architecture/input or freshness/rejection/safety policy, real logs/task data,
+  collection, training, dependencies, ST/licence, linked target or board work.
+  All 102 assembly cases, six verifier checks, optimization/CLI and native
+  ASan/UBSan checks pass; 490 interface and 1,095 repository passes plus known
+  transformer expected failure, lint/format/editor diagnostics and host/Arm
+  objects pass. Default verifier evidence remains the primitive path; assembly
+  is separately opt-in. Current build audit includes five modules/30 objects;
+  historical 24-object reports remain unchanged. Full 1,024-case assembly run
+  and independent evidence audit remain approved work. DESIGN.md §6 and
+  REVIEW.md §66 record the core checkpoint, not broader Task 13 completion.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1120,6 +1137,12 @@ on missing tools, and continue with the next unblocked task.
   on timeout; shared POSIX process-group cleanup and seven regressions pass,
   979 repository passes plus known expected failure (REVIEW.md §65). No historical
   report regeneration or broader firmware/data/hardware gate change.
+  Assembly core (2026-10-19): separately approved host-only four-head composition
+  and opt-in verifier implemented (REVIEW.md §66), with explicit caller status/
+  selections and atomic rejection. All 490 interface and 1,095 repository tests
+  pass plus known expected failure. Native sanitizers, host/Arm and optimization
+  checks pass; bounded report/run audit remains approved. No production/runtime,
+  task-data, input/policy or hardware gate is opened.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

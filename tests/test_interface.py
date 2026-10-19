@@ -19,6 +19,7 @@ from interface import build_audit, native_verify
 from interface.native_verify import (
     CAnswer,
     CDecision,
+    CHeadInput,
     CPacket,
     CPacketHandler,
     CState,
@@ -1052,6 +1053,220 @@ def test_c_math_seeded_probabilities_confidence_and_wire_parity(c_codec):
     assert stream.used == stream.rejected_frames == 0
 
 
+def assembly_fixture():
+    metadata = native_verify.native_decision(full_decision())
+    inputs = (CHeadInput * 4)()
+    storage = []
+    for index, rows in enumerate((1, 4, 4, 5)):
+        features = (ctypes.c_float * 2)(1, -0.5)
+        weights = (ctypes.c_float * (2 * rows))(
+            *(column / 8 for column in range(2 * rows))
+        )
+        biases = (ctypes.c_float * rows)(*(row / 4 for row in range(rows)))
+        inputs[index] = CHeadInput(features, 2, weights, len(weights), biases, rows)
+        storage.extend((features, weights, biases))
+    return metadata, inputs, storage
+
+
+@pytest.mark.parametrize("status", list(Status))
+def test_c_assembly_matches_primitive_path_and_preserves_metadata(c_codec, status):
+    metadata, inputs, storage = assembly_fixture()
+    metadata.status = status
+    before = [bytes(value) for value in (metadata, inputs, *storage)]
+    expected = CDecision.from_buffer_copy(bytes(metadata))
+    for index, rows in enumerate((1, 4, 4, 5)):
+        head = inputs[index]
+        logits = (ctypes.c_float * rows)()
+        assert (
+            c_codec.mc_v0_dense_head(
+                head.features,
+                head.feature_count,
+                head.weights,
+                head.weight_count,
+                head.biases,
+                head.bias_count,
+                rows,
+                logits,
+                rows,
+            )
+            == 0
+        )
+        probabilities = expected.answers[index].probabilities
+        if index == 0:
+            assert c_codec.mc_v0_sigmoid(logits[0], probabilities, 2) == 0
+        else:
+            assert c_codec.mc_v0_softmax(logits, rows, probabilities, rows) == 0
+    output = CDecision()
+    assert (
+        c_codec.mc_v0_assemble_decision(
+            ctypes.byref(metadata), inputs, 4, ctypes.byref(output)
+        )
+        == 0
+    )
+    assert native_verify.native_frame(c_codec, output) == native_verify.native_frame(
+        c_codec, expected
+    )
+    assert [bytes(value) for value in (metadata, inputs, *storage)] == before
+    assert [answer.selected for answer in output.answers] == [
+        answer.selected for answer in metadata.answers
+    ]
+    assert output.answers[0].confidence == -1
+
+
+def assert_assembly_failure(c_codec, metadata, inputs, storage, expected):
+    output = CDecision()
+    ctypes.memset(ctypes.byref(output), 0xA5, ctypes.sizeof(output))
+    before = [bytes(value) for value in (metadata, inputs, output, *storage)]
+    assert (
+        c_codec.mc_v0_assemble_decision(
+            ctypes.byref(metadata), inputs, 4, ctypes.byref(output)
+        )
+        == expected
+    )
+    assert [bytes(value) for value in (metadata, inputs, output, *storage)] == before
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("status", 6),
+        ("status", 65535),
+        ("model_version", 0),
+        ("catalogue_version", 1),
+        ("answer_mask", 0),
+        ("answer_mask", 7),
+        ("answer_mask", 65535),
+    ],
+)
+def test_c_assembly_rejects_metadata_before_head_access(c_codec, field, value):
+    metadata, _inputs, storage = assembly_fixture()
+    setattr(metadata, field, value)
+    assert_assembly_failure(c_codec, metadata, (CHeadInput * 4)(), storage, 6)
+
+
+@pytest.mark.parametrize("index", range(4))
+@pytest.mark.parametrize(
+    "field,value",
+    [("question_id", 0), ("answer_type", 0), ("option_count", 0), ("selected", 255)],
+)
+def test_c_assembly_rejects_answer_metadata(c_codec, index, field, value):
+    metadata, inputs, storage = assembly_fixture()
+    setattr(metadata.answers[index], field, value)
+    assert_assembly_failure(c_codec, metadata, inputs, storage, 6)
+
+
+@pytest.mark.parametrize("count", [0, 1, 3, 5, ctypes.c_size_t(-1).value])
+def test_c_assembly_rejects_head_count_before_access(c_codec, count):
+    metadata, inputs, _storage = assembly_fixture()
+    output = CDecision()
+    before = bytes(output)
+    assert (
+        c_codec.mc_v0_assemble_decision(
+            ctypes.byref(metadata), inputs, count, ctypes.byref(output)
+        )
+        == 1
+    )
+    assert bytes(output) == before
+
+
+@pytest.mark.parametrize("field", [0, 1, 3])
+def test_c_assembly_rejects_null_arguments(c_codec, field):
+    metadata, inputs, _storage = assembly_fixture()
+    output = CDecision()
+    arguments = [ctypes.byref(metadata), inputs, 4, ctypes.byref(output)]
+    arguments[field] = None
+    assert c_codec.mc_v0_assemble_decision(*arguments) == 1
+
+
+@pytest.mark.parametrize("index", range(4))
+@pytest.mark.parametrize(
+    "field",
+    ["feature_count", "weight_count", "bias_count", "features", "weights", "biases"],
+)
+def test_c_assembly_rejects_bad_head_inputs_atomically(c_codec, index, field):
+    metadata, inputs, storage = assembly_fixture()
+    if field == "feature_count":
+        inputs[index].feature_count = 257
+    elif field.endswith("count"):
+        setattr(inputs[index], field, getattr(inputs[index], field) - 1)
+    else:
+        setattr(inputs[index], field, ctypes.POINTER(ctypes.c_float)())
+    expected = 2 if field in ("weight_count", "bias_count") else 1
+    assert_assembly_failure(c_codec, metadata, inputs, storage, expected)
+
+
+@pytest.mark.parametrize("index", range(4))
+@pytest.mark.parametrize("storage_index", range(3))
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+def test_c_assembly_nonfinite_late_failures_are_atomic(
+    c_codec, index, storage_index, value
+):
+    metadata, inputs, storage = assembly_fixture()
+    storage[3 * index + storage_index][-1] = value
+    assert_assembly_failure(c_codec, metadata, inputs, storage, 6)
+
+
+@pytest.mark.parametrize("index", range(4))
+def test_c_assembly_head_overflow_is_atomic(c_codec, index):
+    metadata, inputs, storage = assembly_fixture()
+    maximum = struct.unpack("<f", bytes.fromhex("ffff7f7f"))[0]
+    storage[3 * index][0] = maximum
+    storage[3 * index + 1][0] = maximum
+    assert_assembly_failure(c_codec, metadata, inputs, storage, 6)
+
+
+def test_c_assembly_ignores_input_probabilities_and_clears_unused_output(c_codec):
+    metadata, inputs, _storage = assembly_fixture()
+    for answer in metadata.answers:
+        answer.probabilities[:] = [float("nan")] * 5
+    output = CDecision()
+    assert (
+        c_codec.mc_v0_assemble_decision(
+            ctypes.byref(metadata), inputs, 4, ctypes.byref(output)
+        )
+        == 0
+    )
+    for answer in output.answers:
+        assert all(math.isfinite(value) for value in answer.probabilities)
+        assert list(answer.probabilities[answer.option_count :]) == [0] * (
+            5 - answer.option_count
+        )
+    native_verify.native_frame(c_codec, output)
+
+
+def test_c_assembly_verifier_is_reproducible_and_opt_in(c_codec, tmp_path):
+    first = native_verify.verification_evidence(c_codec, cases=16, assembly=True)
+    assert first == native_verify.verification_evidence(
+        c_codec, cases=16, assembly=True
+    )
+    assert first["assembled_decisions"] == 16
+    assert (
+        first["result_sha256"]
+        != native_verify.verification_evidence(c_codec, cases=16)["result_sha256"]
+    )
+    report = native_verify.run_verification(
+        tmp_path / "report.json", tmp_path / "work", cases=8, assembly=True
+    )
+    assert report["scope"]["assembly_reference"] is True
+    assert report["evidence"]["assembled_decisions"] == 8
+    assert not report["scope"]["model_loaded"]
+
+
+@pytest.mark.parametrize("assembly", [0, 1, None, "yes"])
+def test_c_assembly_verifier_rejects_implicit_opt_in(tmp_path, assembly):
+    with pytest.raises(ValueError, match="boolean"):
+        native_verify.run_verification(
+            tmp_path / "report.json", tmp_path / "work", cases=1, assembly=assembly
+        )
+    assert not list(tmp_path.iterdir())
+
+
+def test_c_assembly_verifier_rejects_native_failure(c_codec, monkeypatch):
+    monkeypatch.setattr(c_codec, "mc_v0_assemble_decision", lambda *_arguments: 6)
+    with pytest.raises(ValueError, match="C decision assembly"):
+        native_verify.verification_evidence(c_codec, cases=1, assembly=True)
+
+
 def test_c_head_row_major_affine_and_spare_capacity(c_codec):
     features = (ctypes.c_float * 3)(1, 2, 3)
     weights = (ctypes.c_float * 9)(2, 0, -1, -1, 1, 2, 0, 0, 0)
@@ -1266,12 +1481,13 @@ def test_c_head_ignores_trailing_storage(c_codec):
 
 
 @pytest.mark.parametrize("optimization", ["-O0", "-O2", "-Os"])
-def test_native_build_optimization_parity(c_codec, tmp_path, optimization):
+@pytest.mark.parametrize("assembly", [False, True])
+def test_native_build_optimization_parity(c_codec, tmp_path, optimization, assembly):
     codec, record = build_native(tmp_path, optimization=optimization)
     assert optimization in record["argv"]
     assert native_verify.verification_evidence(
-        codec, cases=8
-    ) == native_verify.verification_evidence(c_codec, cases=8)
+        codec, cases=8, assembly=assembly
+    ) == native_verify.verification_evidence(c_codec, cases=8, assembly=assembly)
 
 
 @pytest.mark.parametrize("optimization", ["-O3", "-Ofast", "-O2 -ffast-math", None])
@@ -1334,7 +1550,7 @@ def test_build_audit_real_matrix(tmp_path):
     output, work = tmp_path / "report.json", tmp_path / "build"
     report = build_audit.run_audit(output, work, cases=8)
     assert json.loads(output.read_text()) == report
-    assert len(report["objects"]) == 24
+    assert len(report["objects"]) == 6 * len(native_verify.SOURCES)
     assert len(report["host_runs"]) == 3
     assert len({run["evidence"]["result_sha256"] for run in report["host_runs"]}) == 1
     assert report["scope"]["arm_compile_only"]
@@ -1687,7 +1903,7 @@ def test_build_audit_cli_under_python_optimization(tmp_path):
     )
     assert json.loads(result.stdout) == {
         "status": "reference_build_checks_passed",
-        "objects": 24,
+        "objects": 6 * len(native_verify.SOURCES),
         "host_runs": 3,
     }
     assert not json.loads(output.read_text())["scope"]["board_executed"]
@@ -1836,7 +2052,8 @@ def test_native_verifier_source_drift_is_rejected(tmp_path, monkeypatch):
         native_verify.build_native(tmp_path)
 
 
-def test_native_verifier_cli_works_under_python_optimization(tmp_path):
+@pytest.mark.parametrize("assembly", [False, True])
+def test_native_verifier_cli_works_under_python_optimization(tmp_path, assembly):
     output = tmp_path / "report.json"
     result = subprocess.run(
         [
@@ -1844,6 +2061,7 @@ def test_native_verifier_cli_works_under_python_optimization(tmp_path):
             "-O",
             "-m",
             "interface.native_verify",
+            *(["--assembly-reference"] if assembly else []),
             "--cases",
             "2",
             "--output",
@@ -1858,6 +2076,7 @@ def test_native_verifier_cli_works_under_python_optimization(tmp_path):
     assert json.loads(result.stdout)["status"] == "synthetic_checks_passed"
     report = json.loads(output.read_text())
     assert report["evidence"]["question_outputs"] == 8
+    assert report["scope"].get("assembly_reference", False) is assembly
     evidence = dict(report["evidence"])
     digest = evidence.pop("result_sha256")
     assert (
@@ -2347,6 +2566,7 @@ def test_c_codec_all_state_validity_groups_and_binary32_extremes(c_codec):
         "micro_classifier_history.c",
         "micro_classifier_math.c",
         "micro_classifier_heads.c",
+        "micro_classifier_assembly.c",
     ],
 )
 def test_c_codec_compiles_to_host_and_cortex_m55_objects(
@@ -2380,7 +2600,12 @@ def test_c_codec_compiles_to_host_and_cortex_m55_objects(
 @pytest.mark.parametrize("flag", ["-ffast-math", "-ffinite-math-only"])
 @pytest.mark.parametrize(
     "source_name",
-    ["micro_classifier_codec.c", "micro_classifier_math.c", "micro_classifier_heads.c"],
+    [
+        "micro_classifier_codec.c",
+        "micro_classifier_math.c",
+        "micro_classifier_heads.c",
+        "micro_classifier_assembly.c",
+    ],
 )
 def test_c_codec_rejects_fast_math_build(tmp_path, flag, source_name):
     if shutil.which("cc") is None:
@@ -2858,7 +3083,7 @@ def test_c_codec_address_and_undefined_sanitizers(tmp_path):
         declarations.append(f"static const uint8_t vector_{index}[] = {{{values}}};")
     pointers = ",".join(f"vector_{index}" for index in range(len(GOLDEN)))
     sizes = ",".join(f"sizeof(vector_{index})" for index in range(len(GOLDEN)))
-    source = '#include "micro_classifier_heads.h"\n#include "micro_classifier_math.h"\n#include "micro_classifier_history.h"\n#include <assert.h>\n#include <float.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
+    source = '#include "micro_classifier_assembly.h"\n#include "micro_classifier_heads.h"\n#include "micro_classifier_math.h"\n#include "micro_classifier_history.h"\n#include <assert.h>\n#include <float.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
     source += "\n".join(declarations)
     source += f"\nstatic const uint8_t *const frames[] = {{{pointers}}};\n"
     source += f"static const size_t lengths[] = {{{sizes}}};\n"
@@ -3140,7 +3365,147 @@ static void check_heads(void) {
     assert(mc_v0_dense_head(&one, 1, &one, 1, &one, 1, SIZE_MAX, &output, 1) == MC_V0_ERROR_ARGUMENT);
     assert(output == 42);
 }
+static void assembly_result(const mc_v0_decision *metadata, const mc_v0_head_input *inputs,
+                            mc_v0_result expected) {
+    mc_v0_decision *output = malloc(sizeof(*output));
+    unsigned char before[sizeof(*output)], metadata_before[sizeof(*metadata)];
+    unsigned char inputs_before[4 * sizeof(*inputs)];
+    assert(output != NULL);
+    memset(output, 0xA5, sizeof(*output));
+    memcpy(before, output, sizeof(before));
+    memcpy(metadata_before, metadata, sizeof(metadata_before));
+    memcpy(inputs_before, inputs, sizeof(inputs_before));
+    assert(mc_v0_assemble_decision(metadata, inputs, 4, output) == expected);
+    assert(memcmp(metadata_before, metadata, sizeof(metadata_before)) == 0);
+    assert(memcmp(inputs_before, inputs, sizeof(inputs_before)) == 0);
+    if (expected != MC_V0_ASSEMBLY_OK) {
+        assert(memcmp(before, output, sizeof(before)) == 0);
+    } else {
+        uint8_t frame[MC_V0_MAX_FRAME_SIZE];
+        size_t written = 0;
+        assert(output->status == metadata->status && output->model_version == metadata->model_version);
+        for (size_t question = 0; question < 4; ++question) {
+            assert(output->answers[question].selected == metadata->answers[question].selected);
+        }
+        assert(mc_v0_encode_decision(output, frame, sizeof(frame), &written) == MC_V0_ENCODE_OK);
+        assert(written == MC_V0_MAX_FRAME_SIZE);
+    }
+    free(output);
+}
+static void check_assembly(void) {
+    const uint8_t counts[4] = {2, 4, 4, 5};
+    const uint8_t types[4] = {MC_V0_TYPE_NOUL, MC_V0_TYPE_CHOICE, MC_V0_TYPE_SCORE, MC_V0_TYPE_CHOICE};
+    const size_t dimensions[3] = {1, 3, 256};
+    mc_v0_decision metadata = {0};
+    metadata.status = MC_V0_STATUS_FAULT;
+    metadata.model_version = 1;
+    metadata.answer_mask = 15;
+    for (size_t question = 0; question < 4; ++question) {
+        metadata.answers[question].question_id = (uint8_t)(question + 1);
+        metadata.answers[question].answer_type = types[question];
+        metadata.answers[question].option_count = counts[question];
+        metadata.answers[question].selected = (uint8_t)(counts[question] - 1);
+        metadata.answers[question].confidence = NAN;
+        for (size_t option = 0; option < 5; ++option) {
+            metadata.answers[question].probabilities[option] = NAN;
+        }
+    }
+    for (size_t shape = 0; shape < 3; ++shape) {
+        size_t count = dimensions[shape];
+        float *features = malloc(count * sizeof(float));
+        mc_v0_head_input *inputs = malloc(4 * sizeof(*inputs));
+        assert(features != NULL && inputs != NULL);
+        for (size_t index = 0; index < count; ++index) {
+            features[index] = 1;
+        }
+        for (size_t question = 0; question < 4; ++question) {
+            size_t rows = question == 0 ? 1 : counts[question];
+            float *weights = calloc(count * rows, sizeof(float));
+            float *biases = calloc(rows, sizeof(float));
+            assert(weights != NULL && biases != NULL);
+            inputs[question] = (mc_v0_head_input){features, count, weights, count * rows, biases, rows};
+        }
+        assembly_result(&metadata, inputs, MC_V0_ASSEMBLY_OK);
+        for (size_t question = 0; question < 4; ++question) {
+            mc_v0_head_input original = inputs[question];
+            size_t rows = question == 0 ? 1 : counts[question];
+            for (size_t field = 0; field < 2; ++field) {
+                size_t required = field == 0 ? count * rows : rows;
+                for (size_t length = 0; length <= required + 1; ++length) {
+                    float *short_buffer = malloc(length ? length * sizeof(float) : 1);
+                    assert(short_buffer != NULL);
+                    for (size_t index = 0; index < length; ++index) {
+                        short_buffer[index] = index < required ? 0 : NAN;
+                    }
+                    if (field == 0) {
+                        inputs[question].weights = short_buffer;
+                        inputs[question].weight_count = length;
+                    } else {
+                        inputs[question].biases = short_buffer;
+                        inputs[question].bias_count = length;
+                    }
+                    assembly_result(&metadata, inputs, length < required ? MC_V0_ERROR_LENGTH : MC_V0_ASSEMBLY_OK);
+                    inputs[question] = original;
+                    free(short_buffer);
+                }
+            }
+            const float invalid[3] = {NAN, INFINITY, -INFINITY};
+            float *targets[3] = {features, (float *)original.weights, (float *)original.biases};
+            for (size_t field = 0; field < 3; ++field) {
+                float saved = targets[field][0];
+                for (size_t kind = 0; kind < 3; ++kind) {
+                    targets[field][0] = invalid[kind];
+                    assembly_result(&metadata, inputs, MC_V0_ERROR_DECISION);
+                }
+                targets[field][0] = saved;
+            }
+            features[0] = FLT_MAX;
+            ((float *)original.weights)[0] = FLT_MAX;
+            assembly_result(&metadata, inputs, MC_V0_ERROR_DECISION);
+            features[0] = 1;
+            ((float *)original.weights)[0] = 0;
+            inputs[question].feature_count = 0;
+            assembly_result(&metadata, inputs, MC_V0_ERROR_ARGUMENT);
+            inputs[question].feature_count = SIZE_MAX;
+            assembly_result(&metadata, inputs, MC_V0_ERROR_ARGUMENT);
+            inputs[question] = original;
+            for (unsigned value = 0; value < 256; ++value) {
+                metadata.answers[question].option_count = (uint8_t)value;
+                assembly_result(&metadata, inputs, value == counts[question] ? MC_V0_ASSEMBLY_OK : MC_V0_ERROR_DECISION);
+            }
+            metadata.answers[question].option_count = counts[question];
+            for (unsigned value = 0; value < 256; ++value) {
+                metadata.answers[question].selected = (uint8_t)value;
+                assembly_result(&metadata, inputs, value < counts[question] ? MC_V0_ASSEMBLY_OK : MC_V0_ERROR_DECISION);
+            }
+            metadata.answers[question].selected = (uint8_t)(counts[question] - 1);
+        }
+        for (size_t length = 0; length <= 5; ++length) {
+            mc_v0_head_input *short_inputs = malloc(length ? length * sizeof(*short_inputs) : 1);
+            assert(short_inputs != NULL);
+            for (size_t index = 0; index < length; ++index) {
+                short_inputs[index] = inputs[index % 4];
+            }
+            mc_v0_decision output;
+            memset(&output, 0xA5, sizeof(output));
+            assert(mc_v0_assemble_decision(&metadata, short_inputs, length, &output) ==
+                   (length == 4 ? MC_V0_ASSEMBLY_OK : MC_V0_ERROR_ARGUMENT));
+            free(short_inputs);
+        }
+        mc_v0_decision output;
+        assert(mc_v0_assemble_decision(NULL, inputs, 4, &output) == MC_V0_ERROR_ARGUMENT);
+        assert(mc_v0_assemble_decision(&metadata, NULL, 4, &output) == MC_V0_ERROR_ARGUMENT);
+        assert(mc_v0_assemble_decision(&metadata, inputs, 4, NULL) == MC_V0_ERROR_ARGUMENT);
+        for (size_t question = 0; question < 4; ++question) {
+            free((void *)inputs[question].weights);
+            free((void *)inputs[question].biases);
+        }
+        free(inputs);
+        free(features);
+    }
+}
 int main(void) {
+    check_assembly();
     check_heads();
     check_math();
     check_history();
@@ -3273,6 +3638,7 @@ int main(void) {
             str(ROOT / "firmware/micro_classifier_history.c"),
             str(ROOT / "firmware/micro_classifier_math.c"),
             str(ROOT / "firmware/micro_classifier_heads.c"),
+            str(ROOT / "firmware/micro_classifier_assembly.c"),
             "-o",
             str(executable),
             "-lm",

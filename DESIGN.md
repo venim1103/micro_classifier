@@ -1274,7 +1274,7 @@ The [audit CLI][reference-build-audit] uses the already-installed host and Arm
 GCC/binutils. It builds three host libraries and executes the existing artificial
 head/probability/confidence/wire/history verifier with identical cases and seed.
 The complete canonical evidence must agree across optimization levels. Separate
-objects for both targets and all four sources produce a 24-object matrix using
+objects for both targets and the original four sources produced a 24-object matrix using
 `-fstack-usage`; Arm adds `-mcpu=cortex-m55 -mthumb`, without linking or running.
 Little-endian relocatable ELF identity is checked; Arm must be ELF32/machine ARM.
 GNU `size` SysV section rows, `nm` undefined symbols and tab-delimited GCC `.su`
@@ -1370,6 +1370,61 @@ ST/licence, linked firmware or hardware boundary changed.
 
 [reference-build-audit]: interface/build_audit.py
 [reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
+
+#### Host-Only Synthetic Decision Assembly (Approved, 2026-10-19)
+
+The user approved the complete host-only synthetic assembly package: bounded
+caller-buffer composition of the four existing heads, strict metadata/dimension
+validation and atomic failure, Python parity, native sanitizers, host/Arm object
+checks, reproducible synthetic evidence, documentation and local commits.
+This does not authorize trained/production models or blob formats, trunk/ToF/
+tensor preprocessing, architecture/input changes, freshness/threshold/smoothing/
+fallback policy, real logs/task labels/datasets/splits, simulator collection,
+real-model inference/training, dependencies/downloads, ST/licence actions,
+target linking/execution or board integration. Broader Task 13 remains blocked.
+
+The [assembly API][assembly-api] and [source][assembly-source] accept a complete
+four-answer `mc_v0_decision` metadata object and exactly four `mc_v0_head_input`
+descriptors, ordered by question ID. Each descriptor has its own feature vector,
+row-major weights and biases with float-element lengths. Existing reference
+limits remain 1-256 features and rows 1/4/4/5; these are not an architecture or
+production format. Callers supply initialized, valid, nonoverlapping objects and
+truthful lengths; pointer validity/aliasing are preconditions, not runtime checks.
+
+The full answer mask must be 15, including for non-OK status. Prefix/question/
+selection metadata passes the unchanged codec validation before any head buffer
+is read. Existing affine and sigmoid/softmax primitives compute probabilities;
+the unchanged encoder/decoder canonicalizes confidence and unused storage before
+publishing output. Metadata probability/confidence storage is ignored. Caller
+status, selected indices, sequence, timestamp, latency and versions are preserved,
+not inferred or made safe by assembly. In particular, selections need not be
+argmax, and fault-status choices are not usable recommendations. Existing error
+values are reused; output remains byte-for-byte unchanged on failure, and inputs
+are never mutated under the pointer preconditions. The implementation allocates
+no heap and uses fixed temporary native/frame/logit storage; no stack/call-chain,
+timing or SRAM-fit claim follows.
+
+The [verifier][native-verifier] has a separate `--assembly-reference` opt-in.
+It retains the ordinary primitive evidence path by default. Artificial assembly
+fixtures cycle all six statuses and all option selections, independently of
+argmax, with synthetic model version 1. Complete metadata is added to fixture
+hashes. C-assembled frames must exactly match Python frames based on separately
+checked affine/normalization primitives; source preservation, confidence, history
+and both streams remain checked. These fixtures are not robot-selection policy.
+Both modes are checked under `python -O` and host `-O0/-O2/-Os`.
+
+Core gate: 102 assembly cases and six verifier checks, actual-allocation native
+ASan/UBSan, all selection/count byte values, short buffers, nonfinite/overflow,
+metadata preflight and late-head atomic failures pass. All 490 interface and
+1,095 repository tests pass plus the known transformer expected failure;
+lint/format/editor diagnostics and host/Cortex-M55 objects pass. The shared
+build audit now includes five sources, hence 30 objects; its historical 24-object
+report and all prior source hashes remain historical evidence, not an assembly
+resource measurement. The approved 1,024-case run/independent audit remains next.
+REVIEW.md §66 records this core checkpoint and boundaries.
+
+[assembly-api]: firmware/include/micro_classifier_assembly.h
+[assembly-source]: firmware/micro_classifier_assembly.c
 
 ### Question Catalogue and Embodiment Profiles
 

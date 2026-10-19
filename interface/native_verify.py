@@ -31,11 +31,11 @@ from interface.protocol import (
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = tuple(
     ROOT / "firmware" / f"micro_classifier_{name}.c"
-    for name in ("codec", "history", "math", "heads")
+    for name in ("codec", "history", "math", "heads", "assembly")
 )
 HEADERS = tuple(
     ROOT / "firmware/include" / f"micro_classifier_{name}.h"
-    for name in ("protocol", "codec", "history", "math", "heads")
+    for name in ("protocol", "codec", "history", "math", "heads", "assembly")
 )
 
 
@@ -87,6 +87,17 @@ class CDecision(ctypes.Structure):
         ("catalogue_version", ctypes.c_uint16),
         ("answer_mask", ctypes.c_uint16),
         ("answers", CAnswer * 4),
+    ]
+
+
+class CHeadInput(ctypes.Structure):
+    _fields_ = [
+        ("features", ctypes.POINTER(ctypes.c_float)),
+        ("feature_count", ctypes.c_size_t),
+        ("weights", ctypes.POINTER(ctypes.c_float)),
+        ("weight_count", ctypes.c_size_t),
+        ("biases", ctypes.POINTER(ctypes.c_float)),
+        ("bias_count", ctypes.c_size_t),
     ]
 
 
@@ -204,6 +215,15 @@ def bind_native(path):
                 ctypes.c_size_t,
                 float_pointer,
                 ctypes.c_size_t,
+            ],
+        ),
+        "mc_v0_assemble_decision": (
+            ctypes.c_int,
+            [
+                ctypes.POINTER(CDecision),
+                ctypes.POINTER(CHeadInput),
+                ctypes.c_size_t,
+                ctypes.POINTER(CDecision),
             ],
         ),
         "mc_v0_state_history_init": (None, [ctypes.POINTER(CStateHistory)]),
@@ -376,8 +396,10 @@ def validate_configuration(cases, seed):
         raise ValueError("synthetic seed must be an unsigned 32-bit integer")
 
 
-def verification_evidence(codec, *, cases=128, seed=20261019):
+def verification_evidence(codec, *, cases=128, seed=20261019, assembly=False):
     validate_configuration(cases, seed)
+    if type(assembly) is not bool:
+        raise ValueError("assembly reference must be explicitly boolean")
     generator = random.Random(seed)
     rows, frames, packets = [], [], []
     max_logit_error = max_probability_error = max_confidence_error = 0.0
@@ -392,6 +414,8 @@ def verification_evidence(codec, *, cases=128, seed=20261019):
         fixture_digest = hashlib.sha256(float_bytes(features))
         logit_digest = hashlib.sha256()
         answers = []
+        head_inputs = (CHeadInput * 4)()
+        head_storage = []
         for question, (_, options) in QUESTIONS.items():
             output_count = 1 if question == 1 else len(options)
             weights = (ctypes.c_float * (count * output_count))(
@@ -403,6 +427,11 @@ def verification_evidence(codec, *, cases=128, seed=20261019):
             biases = (ctypes.c_float * output_count)(
                 *(generator.randrange(-16, 17) / 16 for _ in range(output_count))
             )
+            if assembly:
+                head_inputs[question - 1] = CHeadInput(
+                    features, count, weights, len(weights), biases, len(biases)
+                )
+                head_storage.extend((weights, biases))
             fixture_digest.update(struct.pack("<III", question, count, output_count))
             fixture_digest.update(float_bytes(weights))
             fixture_digest.update(float_bytes(biases))
@@ -478,7 +507,11 @@ def verification_evidence(codec, *, cases=128, seed=20261019):
                 )
                 max_probability_error = max(max_probability_error, error)
             require(abs(sum(probabilities) - 1) <= 1e-6, "probability sum")
-            selected = max(range(len(options)), key=probabilities.__getitem__)
+            selected = (
+                (case + question) % len(options)
+                if assembly
+                else max(range(len(options)), key=probabilities.__getitem__)
+            )
             answer = Answer(question, tuple(probabilities), selected)
             native = native_decision(Decision(answers=(answer,))).answers[question - 1]
             confidence = ctypes.c_double()
@@ -497,6 +530,56 @@ def verification_evidence(codec, *, cases=128, seed=20261019):
             sequence=case, timestamp_us=case, goal_m=(features[0], features[-1], 0)
         )
         decision = Decision(sequence=case, timestamp_us=case, answers=tuple(answers))
+        decision_native = native_decision(decision)
+        if assembly:
+            decision = Decision(
+                sequence=case,
+                timestamp_us=case,
+                latency_us=case * 3,
+                status=case % 6,
+                model_version=1,
+                answers=tuple(answers),
+            )
+            metadata = native_decision(decision)
+            fixture_digest.update(b"assembly-metadata-v1\0")
+            fixture_digest.update(
+                struct.pack(
+                    "<IIIHHHH4B",
+                    metadata.sequence,
+                    metadata.timestamp_us,
+                    metadata.latency_us,
+                    metadata.status,
+                    metadata.model_version,
+                    metadata.catalogue_version,
+                    metadata.answer_mask,
+                    *(answer.selected for answer in metadata.answers),
+                )
+            )
+            for answer in metadata.answers:
+                answer.probabilities[:] = [float("nan")] * 5
+            before = [
+                bytes(value)
+                for value in (metadata, head_inputs, features, *head_storage)
+            ]
+            decision_native = CDecision()
+            require(
+                codec.mc_v0_assemble_decision(
+                    ctypes.byref(metadata),
+                    head_inputs,
+                    4,
+                    ctypes.byref(decision_native),
+                )
+                == 0,
+                "C decision assembly",
+            )
+            require(
+                before
+                == [
+                    bytes(value)
+                    for value in (metadata, head_inputs, features, *head_storage)
+                ],
+                "assembly input preservation",
+            )
         pair = []
         for packet, native, encoder, decoder, native_decoder in (
             (
@@ -508,7 +591,7 @@ def verification_evidence(codec, *, cases=128, seed=20261019):
             ),
             (
                 decision,
-                native_decision(decision),
+                decision_native,
                 encode_decision,
                 decode_decision,
                 codec.mc_v0_decode_decision,
@@ -628,14 +711,24 @@ def verification_evidence(codec, *, cases=128, seed=20261019):
         "wire_sha256": hashlib.sha256(wire).hexdigest(),
         "cases": rows,
     }
+    if assembly:
+        evidence.update(
+            assembled_decisions=cases,
+            caller_selection_fixture="(case + question_id) modulo option_count",
+            caller_status_fixture="case modulo 6; synthetic model version 1",
+        )
     payload = json.dumps(
         evidence, sort_keys=True, separators=(",", ":"), allow_nan=False
     ).encode()
     return {**evidence, "result_sha256": hashlib.sha256(payload).hexdigest()}
 
 
-def run_verification(output, work_dir, *, cases=128, seed=20261019, compiler="cc"):
+def run_verification(
+    output, work_dir, *, cases=128, seed=20261019, compiler="cc", assembly=False
+):
     validate_configuration(cases, seed)
+    if type(assembly) is not bool:
+        raise ValueError("assembly reference must be explicitly boolean")
     output, work_dir = Path(output).expanduser(), Path(work_dir).expanduser()
     if output.is_symlink() or work_dir.is_symlink():
         raise ValueError("verification outputs must not be symlinks")
@@ -652,7 +745,7 @@ def run_verification(output, work_dir, *, cases=128, seed=20261019, compiler="cc
         raise FileNotFoundError(f"compiler unavailable: {compiler}")
     work_dir.mkdir(parents=True)
     codec, build = build_native(work_dir, compiler=compiler)
-    evidence = verification_evidence(codec, cases=cases, seed=seed)
+    evidence = verification_evidence(codec, cases=cases, seed=seed, assembly=assembly)
     require(
         source_records() == build["sources"], "source stability through verification"
     )
@@ -685,6 +778,11 @@ def run_verification(output, work_dir, *, cases=128, seed=20261019, compiler="cc
             "sanitizer and Arm checks are separate pytest gates, not this CLI",
         ],
     }
+    if assembly:
+        report["scope"]["assembly_reference"] = True
+        report["limits"].append(
+            "caller selections/status are artificial fixtures, not adopted robot policy"
+        )
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x") as stream:
         json.dump(report, stream, indent=2, sort_keys=True, allow_nan=False)
@@ -699,6 +797,7 @@ def main(argv=None):
     parser.add_argument("--cases", type=int, default=128)
     parser.add_argument("--seed", type=int, default=20261019)
     parser.add_argument("--compiler", default="cc")
+    parser.add_argument("--assembly-reference", action="store_true")
     arguments = parser.parse_args(argv)
     try:
         report = run_verification(
@@ -707,6 +806,7 @@ def main(argv=None):
             cases=arguments.cases,
             seed=arguments.seed,
             compiler=arguments.compiler,
+            assembly=arguments.assembly_reference,
         )
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         parser.exit(1, f"native verification failed: {error}\n")

@@ -209,11 +209,41 @@ partial build artifacts may remain. Hashes are not complete-toolchain attestatio
 [native-verifier]: interface/native_verify.py
 [native-head-report]: interface/reports/native-heads-20261019.json
 
+## Host-Only Synthetic Decision Assembly
+
+The [assembly API][assembly-api] and [source][assembly-source] compose all four
+artificial heads using the existing affine, sigmoid/softmax, confidence and wire
+semantics. Callers explicitly supply status, selections and complete metadata;
+no argmax, freshness, fallback or safety policy is inferred. Full answer mask 15
+and exactly four head descriptors are required. Each has its own feature vector,
+row-major weights/biases and truthful float-element lengths. Valid initialized,
+nonnull nonoverlapping objects are caller preconditions. Metadata probabilities/
+confidence are ignored and recomputed; failed output and all inputs are unchanged.
+
+Use the separately opt-in verifier with fresh outputs:
+
+```sh
+python -m interface.native_verify --assembly-reference --cases 128 --seed 20261019 \
+	--output .runs/native-assembly-manual.json --work-dir .runs/native-assembly-manual-build
+```
+
+The default verifier remains the primitive path. Assembly tests include all
+statuses, nonargmax caller selections, atomic errors, actual short allocations
+under ASan/UBSan, host optimization parity and Cortex-M55 object compilation.
+This is not a trained/production model, preprocessing/tensor adapter, deployed
+runtime, target link/execution, policy, memory-fit or safety qualification.
+DESIGN.md §6 and REVIEW.md §66 record approval and the core gate; the full bounded
+report and independent audit are pending.
+
+[assembly-api]: firmware/include/micro_classifier_assembly.h
+[assembly-source]: firmware/micro_classifier_assembly.c
+
 ## Offline Reference Build Audit
 
 The [build audit][reference-build-audit] uses installed host/Arm GCC and GNU
 binutils, no ST tools or board. It compares the same artificial host fixtures at
-`-O0/-O2/-Os` and inspects 24 separate host/Cortex-M55 objects for section sizes,
+`-O0/-O2/-Os` and now inspects 30 separate host/Cortex-M55 objects for five reference
+modules, including assembly, for section sizes,
 undefined symbols and compiler-reported per-function stack usage. Use fresh paths:
 
 ```sh
@@ -226,7 +256,8 @@ failed checks do not write a success report. Existing outputs are never reused.
 These are unlinked object sizes and individual compiler stack reports, not full
 call-chain bounds, deployed ROM/RAM, target execution, latency or memory fit.
 No new resource budget, model/input/policy or hardware approval is implied.
-The [audited report][reference-build-audit-report] includes 24 objects and three
+The historical [audited report][reference-build-audit-report] covers the original
+four modules only: 24 objects and three
 identical 1,024-case host results; all 153 artifacts and ELF/stack evidence were
 independently checked. Arm `.text` totals are 7,234/4,636/3,850 bytes and the
 head's reported stack is 2,176/2,192/2,200 bytes at `-O0/-O2/-Os`, excluding

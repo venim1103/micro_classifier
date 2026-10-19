@@ -3299,6 +3299,58 @@ accepted input/history/default/token, architecture or robot policy change.
 All production/data/runtime/ST/board gates, strict abstention, quarantine and
 collection caps remain in force.
 
+## 66. Approved Synthetic C Decision-Assembly Core (2026-10-19)
+
+**Approval.** The user explicitly approved the complete host-only synthetic C
+assembly package: four existing artificial heads, caller-buffer composition,
+strict metadata/dimension validation, atomic failures, Python parity, native
+sanitizers, host/Arm checks, reproducible evidence, docs and local commits.
+Caller selections/status remain explicit inputs, not inferred rejection/safety
+policy. Excluded: trained/production models or blob formats, trunk/ToF/tensors,
+architecture/input changes, freshness/threshold/smoothing/fallback policy, real
+logs/labels/task data/splits, simulator collection, real-model inference/training,
+dependencies/downloads, ST/licence actions, target linking/execution and board
+integration. This is not broader Task 13 or an interface freeze.
+
+**Implementation.** The [assembly API][assembly-api] and [source][assembly-source]
+accept complete four-answer metadata and exactly four independent head input
+descriptors. Mask 15 and unchanged prefix/question/type/count/selection validation
+are required before head access. Existing affine and normalization functions
+compute outputs; existing encode/decode canonicalizes probability-derived
+confidence and unused slots before atomic publication. Caller status/selections,
+sequence/time/latency/versions survive; input probabilities/confidence are ignored.
+All inputs stay unchanged and failure leaves output untouched. Valid initialized
+nonnull nonoverlapping storage and truthful lengths are caller preconditions;
+no heap, pointer-validity detector, ordering/freshness or recommendation policy.
+
+The existing [native verifier][native-verifier] adds `--assembly-reference` only.
+Default primitive evidence remains unchanged. Assembly fixtures deliberately
+cycle statuses/selections independently of argmax, hash explicit metadata and
+require exact Python/native frame parity plus source preservation. New source/
+header inclusion automatically expands current build-audit tests to five modules
+and 30 objects. Historical four-module reports/artifacts remain unchanged, not
+recomputed assembly resource evidence.
+
+**Core verification.** All 102 assembly cases and six verifier cases pass,
+including preflight-before-head-access, all six statuses, caller nonargmax choices,
+bad counts/nulls/metadata, all nonfinite roles, overflow, ignored input storage
+and late-head atomic rejection. The existing native ASan/UBSan harness now uses
+actual exact/short/spare weight/bias and descriptor allocations at 1/3/256 features,
+all 256 selection/count bytes, huge counts and invalid evidence. Host `-O0/-O2/-Os`
+both-mode parity, `python -O` CLI, actual host/Cortex-M55 objects and unsafe-math
+guards pass. Full CPU/offline suite: 1,095 passes plus the known transformer
+expected failure; 490 interface tests, lint/format/editor diagnostics clean.
+
+The full approved 1,024-case assembly evidence run and independent audit remain
+next. These finite fixtures do not prove universal numerical/memory safety,
+timing, full stack/SRAM fit, target math/runtime, calibration, task quality or
+physical safety. No real labels/data, production heads, model use, collection,
+input/default/token or evidence-policy change occurred; quarantine, strict
+abstention and all production/data/ST/board gates remain unchanged.
+
+[assembly-api]: firmware/include/micro_classifier_assembly.h
+[assembly-source]: firmware/micro_classifier_assembly.c
+
 ## Sources
 
 Hardware and tools:

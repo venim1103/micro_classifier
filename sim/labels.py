@@ -9,6 +9,7 @@ from collections import Counter
 from copy import deepcopy
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
+from functools import lru_cache
 from numbers import Real
 from pathlib import Path
 
@@ -25,8 +26,27 @@ from sim.rover import (
 )
 
 
+@lru_cache(maxsize=4)
+def _cached_file_snapshot(path, _identity):
+    content = path.read_bytes()
+    return content, hashlib.sha256(content).hexdigest()
+
+
+def _file_snapshot(path):
+    metadata = path.stat()
+    identity = (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+        metadata.st_size,
+    )
+    return _cached_file_snapshot(path, identity)
+
+
 def draft_catalogue():
-    return json.loads(Path(__file__).with_name("catalogue.json").read_text())
+    content, _ = _file_snapshot(Path(__file__).with_name("catalogue.json"))
+    return json.loads(content)
 
 
 def stopping_envelope(speed, age_s, config=None):
@@ -34,7 +54,11 @@ def stopping_envelope(speed, age_s, config=None):
     for name, value in (("speed", speed), ("age", age_s)):
         if isinstance(value, bool) or not isinstance(value, Real):
             raise TypeError(f"{name} must be a finite number")
-        if not math.isfinite(value) or value < 0:
+        try:
+            finite = math.isfinite(value)
+        except OverflowError:
+            finite = False
+        if not finite or value < 0:
             raise ValueError(f"{name} must be nonnegative and finite")
     if speed > config.max_speed:
         raise ValueError("speed exceeds simulation Config.max_speed")
@@ -53,7 +77,8 @@ def digest(value):
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
-def draft_labels(observation, config=None):
+def validate_observation(observation, config=None):
+    """Validate current simulator input without computing proxy labels or provenance."""
     config = Config() if config is None else config
     if not isinstance(config, Config):
         raise TypeError("config must be a simulator Config")
@@ -103,6 +128,15 @@ def draft_labels(observation, config=None):
         age, (tick - sample_tick) * config.dt, rel_tol=1e-6, abs_tol=1e-9
     ):
         raise ValueError("ToF age and sample tick disagree")
+    return ego, ranges, valid, envelope
+
+
+def draft_labels(observation, config=None):
+    config = Config() if config is None else config
+    ego, ranges, valid, envelope = validate_observation(observation, config)
+    tick = observation["tick"]
+    sample_tick = observation["tof_sample_tick"]
+    age = observation["tof_age_s"]
     catalogue = draft_catalogue()
     rules = catalogue["rules"]
     columns = np.min(np.where(valid, ranges, np.inf), axis=0)
@@ -181,7 +215,7 @@ def draft_labels(observation, config=None):
         "physical_safety_claim": False,
         "policy_id": catalogue["policy_id"],
         "catalogue_sha256": digest(catalogue),
-        "labeler_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "labeler_sha256": _file_snapshot(Path(__file__))[1],
         "config": settings,
         "config_sha256": digest(settings),
         "input_sha256": digest(inputs),

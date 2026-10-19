@@ -1,3 +1,4 @@
+import hashlib
 import json
 import math
 from copy import deepcopy
@@ -13,6 +14,7 @@ from sim.labels import (
     draft_labels,
     smoke_suite,
     stopping_envelope,
+    validate_observation,
 )
 from sim.rover import (
     Config,
@@ -163,11 +165,14 @@ def test_navigation_proposal_lower_request_does_not_erase_current_momentum(
     )
 
 
-def test_synthetic_navigation_reference_includes_wall_contact_without_changing_simulator():
+@pytest.mark.parametrize(
+    "point", [(0.125, 2.0), (5.875, 2.0), (2.0, 0.125), (2.0, 5.875)]
+)
+def test_synthetic_navigation_reference_and_simulator_include_wall_contact(point):
     from sim.navigation import _touches
 
-    point, radius, bounds = (0.125, 2.0), 0.125, (6.0, 6.0)
-    assert not swept_collision(point, point, radius, (), bounds)
+    radius, bounds = 0.125, (6.0, 6.0)
+    assert swept_collision(point, point, radius, (), bounds)
     assert _touches(point, point, radius, (), bounds)
     assert not _touches((0.126, 2.0), (0.126, 2.0), radius, (), bounds)
 
@@ -321,6 +326,18 @@ def test_synthetic_navigation_reference_large_heading_preserves_small_turns(yaw)
             + 1e-12
         )
     assert large["answers"] == bounded["answers"]
+
+
+@pytest.mark.parametrize("field", ["speed", "turn_rate", "tof_age_s"])
+@pytest.mark.parametrize("value", [10**400, -(10**400)])
+def test_synthetic_navigation_rejects_unrepresentable_motion(field, value):
+    from sim.navigation import evaluate_synthetic, probe_synthetic_ray_witness
+
+    settings = {"speed": 0.6, "synthetic_test_only": True, field: value}
+    with pytest.raises(ValueError, match="finite"):
+        evaluate_synthetic(Scenario(), **settings)
+    with pytest.raises(ValueError, match="finite"):
+        probe_synthetic_ray_witness(np.full(8, 0.3), np.ones(8, dtype=bool), **settings)
 
 
 def test_synthetic_navigation_reference_unresolved_goal_ranking_abstains():
@@ -779,12 +796,18 @@ def test_bounded_ray_probe_unsupported_range_interval_stays_unknown(
         ("range_error_m", -0.1),
         ("range_error_m", True),
         ("range_error_m", float("nan")),
+        ("range_error_m", 10**400),
+        ("range_error_m", -(10**400)),
         ("translation_error_m", None),
         ("translation_error_m", -0.1),
         ("translation_error_m", float("inf")),
+        ("translation_error_m", 10**400),
+        ("translation_error_m", -(10**400)),
         ("heading_error_rad", math.pi + 1e-6),
         ("heading_error_rad", -0.1),
         ("heading_error_rad", False),
+        ("heading_error_rad", 10**400),
+        ("heading_error_rad", -(10**400)),
     ],
 )
 def test_bounded_ray_probe_rejects_invalid_assumed_bounds(
@@ -2044,7 +2067,16 @@ def test_draft_envelope_matches_config_arithmetic_and_age_monotonicity():
 
 @pytest.mark.parametrize(
     "speed,age",
-    [(-1, 0), (1, 0), (0, -1), (float("nan"), 0), (0, float("inf")), (True, 0)],
+    [
+        (-1, 0),
+        (1, 0),
+        (0, -1),
+        (float("nan"), 0),
+        (0, float("inf")),
+        (True, 0),
+        (10**400, 0),
+        (0, 10**400),
+    ],
 )
 def test_draft_envelope_rejects_invalid_values(speed, age):
     with pytest.raises((TypeError, ValueError)):
@@ -2071,6 +2103,60 @@ def test_draft_clear_observation_is_serializable_and_unreviewed(draft_observatio
     assert result["answers"]["mode"]["reason"] == "human_review_required"
     assert json.loads(json.dumps(result, allow_nan=False)) == result
     assert draft_labels(observation, config) == result
+
+
+def test_observation_validation_does_not_read_catalogue_or_source(
+    draft_observation, monkeypatch
+):
+    from sim import labels
+
+    def unexpected_catalogue():
+        raise AssertionError("input validation must not compute proxy labels")
+
+    monkeypatch.setattr(labels, "draft_catalogue", unexpected_catalogue)
+    config, observation = draft_observation
+    ego, ranges, valid, envelope = validate_observation(observation, config)
+    np.testing.assert_equal(ego, observation["ego"])
+    np.testing.assert_equal(ranges, observation["tof_m"])
+    np.testing.assert_equal(valid, observation["tof_valid"])
+    assert envelope == config.radius
+
+
+def test_draft_file_cache_preserves_ownership_and_invalidates_edits(
+    draft_observation, tmp_path, monkeypatch
+):
+    from sim import labels
+
+    source = tmp_path / "labels.py"
+    catalogue_path = tmp_path / "catalogue.json"
+    catalogue = draft_catalogue()
+    source.write_bytes(b"fixture labeler source\n")
+    catalogue_path.write_text(json.dumps(catalogue))
+    monkeypatch.setattr(labels, "__file__", str(source))
+    original_read = Path.read_bytes
+    reads = []
+
+    def read_bytes(path):
+        reads.append(path)
+        return original_read(path)
+
+    monkeypatch.setattr(Path, "read_bytes", read_bytes)
+    config, observation = draft_observation
+    first = draft_labels(observation, config)
+    assert draft_labels(observation, config) == first
+    assert reads.count(source) == reads.count(catalogue_path) == 1
+    draft_catalogue()["questions"][0]["options"][0] = "modified"
+    assert draft_catalogue() == catalogue
+    replacement = b"replacement fixture source\n"
+    source.write_bytes(replacement)
+    updated = draft_labels(observation, config)
+    assert updated["labeler_sha256"] == hashlib.sha256(replacement).hexdigest()
+    assert updated["labeler_sha256"] != first["labeler_sha256"]
+    assert reads.count(source) == 2
+    catalogue["policy_id"] += "-fixture"
+    catalogue_path.write_text(json.dumps(catalogue))
+    assert draft_labels(observation, config)["policy_id"] == catalogue["policy_id"]
+    assert reads.count(catalogue_path) == 2
 
 
 @pytest.mark.parametrize(
@@ -2489,6 +2575,25 @@ def test_reset_is_seeded_with_stable_shapes_and_no_ground_truth_leak():
     assert "ground_truth" not in first
 
 
+def test_observation_reads_do_not_advance_or_expose_history():
+    env = RoverEnv()
+    observation, _ = env.reset(seed=4)
+    for tick in range(env.config.history_ticks + 2):
+        rng_state = deepcopy(env.rng.bit_generator.state)
+        repeated = env._observation()
+        assert len(env.history) == min(tick + 1, env.config.history_ticks)
+        assert env.rng.bit_generator.state == rng_state
+        for name, value in observation.items():
+            np.testing.assert_equal(repeated[name], value)
+        for value in repeated.values():
+            if isinstance(value, np.ndarray):
+                value[:] = 0
+        detached = env._observation()
+        for name, value in observation.items():
+            np.testing.assert_equal(detached[name], value)
+        observation, *_ = env.step((0.1, 0.1))
+
+
 def test_latency_dropout_and_sensor_timestamp_are_explicit():
     env = RoverEnv(Config(noise_std=0, dropout=0, latency_ticks=2))
     observation, _ = env.reset()
@@ -2542,11 +2647,21 @@ def test_goal_timeout_collision_and_reset_semantics():
         {"latency_ticks": -1},
         {"history_ticks": 1.5},
         {"noise_std": float("nan")},
+        {"dt": 10**400},
+        {"max_speed": -(10**400)},
+        {"noise_std": 10**400},
     ],
 )
 def test_invalid_simulation_configuration_is_rejected(kwargs):
     with pytest.raises(ValueError):
         Config(**kwargs)
+
+
+@pytest.mark.parametrize("field", Config.__dataclass_fields__)
+@pytest.mark.parametrize("value", [False, True])
+def test_boolean_simulation_configuration_is_rejected(field, value):
+    with pytest.raises(ValueError, match="finite"):
+        Config(**{field: value})
 
 
 def test_episode_logs_are_reproducible_and_never_overwritten(tmp_path):

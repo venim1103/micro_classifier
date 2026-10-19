@@ -38,7 +38,15 @@ class Config:
 
     def __post_init__(self):
         for name, value in asdict(self).items():
-            if not isinstance(value, (int, float)) or not math.isfinite(value):
+            try:
+                finite = (
+                    not isinstance(value, bool)
+                    and isinstance(value, (int, float))
+                    and math.isfinite(value)
+                )
+            except OverflowError:
+                finite = False
+            if not finite:
                 raise ValueError(f"{name} must be finite")
         positive = (
             "dt",
@@ -119,6 +127,7 @@ class RoverEnv:
         self.tof = np.zeros((8, 8), dtype=np.float32)
         self.valid = np.zeros((8, 8), dtype=bool)
         self._sample()
+        self._record_history()
         return self._observation(), self._info(False, False)
 
     def _sample(self):
@@ -141,7 +150,7 @@ class RoverEnv:
         while self.pending and self.pending[0][0] <= self.tick:
             _, self.sensor_tick, self.tof, self.valid = self.pending.popleft()
 
-    def _observation(self):
+    def _record_history(self):
         delta = np.asarray(self.scenario.goal) - self.position
         cosine, sine = math.cos(self.yaw), math.sin(self.yaw)
         goal = np.array(
@@ -150,6 +159,10 @@ class RoverEnv:
         )
         ego = np.array([self.speed, self.turn_rate, *goal], dtype=np.float32)
         self.history.append((ego, self.tof.copy(), self.valid.copy()))
+
+    def _observation(self):
+        ego = self.history[-1][0].copy()
+        goal = ego[2:].copy()
         count = self.config.history_ticks
         ego_history = np.zeros((count, 4), dtype=np.float32)
         tof_history = np.zeros((count, 8, 8), dtype=np.float32)
@@ -242,6 +255,7 @@ class RoverEnv:
             self.position, self.yaw = position, yaw
         self.tick += 1
         self._sample()
+        self._record_history()
         info = self._info(collision, False)
         success = not collision and info["distance_to_goal_m"] <= config.goal_tolerance
         info["success"] = success
@@ -285,8 +299,8 @@ def ray_ranges(position, angles, obstacles, bounds, maximum):
 def swept_collision(start, end, radius, obstacles, bounds):
     """Test the full segment, not just its endpoint, against inflated obstacles."""
     start, end = np.asarray(start), np.asarray(end)
-    if np.any(np.minimum(start, end) < radius) or np.any(
-        np.maximum(start, end) > np.asarray(bounds) - radius
+    if np.any(np.minimum(start, end) <= radius) or np.any(
+        np.maximum(start, end) >= np.asarray(bounds) - radius
     ):
         return True
     delta = end - start

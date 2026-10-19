@@ -13,13 +13,13 @@ from pathlib import Path
 import numpy as np
 
 from interface.protocol import decode_state, encode_state
-from sim.labels import digest, draft_catalogue, draft_labels
+from sim.labels import digest, draft_catalogue, validate_observation
 from sim.rover import Config, state_from_observation
 
 
 def prepare_request(observation, *, config=None, state_frame=None):
     config = Config() if config is None else config
-    draft_labels(observation, config)
+    validate_observation(observation, config)
     expected_frame = encode_state(state_from_observation(observation))
     frame = expected_frame if state_frame is None else bytes(state_frame)
     state = decode_state(frame)

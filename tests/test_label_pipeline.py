@@ -32,6 +32,25 @@ def sample():
     return config, observation
 
 
+def test_request_preparation_uses_label_free_observation_validation(
+    sample, monkeypatch
+):
+    from teacher import label_pipeline
+
+    original = label_pipeline.validate_observation
+    validated = []
+
+    def validate(observation, config):
+        validated.append(observation)
+        return original(observation, config)
+
+    monkeypatch.setattr(label_pipeline, "validate_observation", validate)
+    config, observation = sample
+    prepared = prepare_request(observation, config=config)
+    assert len(validated) == 1 and validated[0] is observation
+    assert prepared["allowed_use"] == "fake_teacher_pipeline_tests_only"
+
+
 def review_request(sample):
     config, observation = sample
     prepared = prepare_request(observation, config=config)

@@ -10,6 +10,20 @@ from sim.rover import Config, Scenario, swept_collision
 NUMERICAL_TOLERANCE_M = 1e-5
 
 
+def _finite_float(value, name):
+    try:
+        number = (
+            float(value)
+            if not isinstance(value, bool) and isinstance(value, Real)
+            else math.nan
+        )
+    except OverflowError as error:
+        raise ValueError(f"{name} must be finite numeric data") from error
+    if not math.isfinite(number):
+        raise ValueError(f"{name} must be finite numeric data")
+    return number
+
+
 def register_synthetic_points(
     points,
     *,
@@ -50,15 +64,7 @@ def register_synthetic_points(
             continue
         if isinstance(value, bool) or not isinstance(value, Real) or value < 0:
             raise ValueError(f"{name} must be finite nonnegative numeric data")
-        try:
-            timestamp = float(value)
-        except OverflowError as error:
-            raise ValueError(
-                f"{name} must be finite nonnegative numeric data"
-            ) from error
-        if not math.isfinite(timestamp):
-            raise ValueError(f"{name} must be finite nonnegative numeric data")
-        result[name] = timestamp
+        result[name] = _finite_float(value, name)
     if acquisition_time_s is None or reference_time_s is None:
         return result
     if reference_time_s < acquisition_time_s:
@@ -156,15 +162,8 @@ def register_synthetic_bounded_points(
     for name, value in raw_bounds.items():
         if isinstance(value, bool) or not isinstance(value, Real) or value < 0:
             raise ValueError(f"{name} must be finite nonnegative numeric data")
-        try:
-            bound = float(value)
-        except OverflowError as error:
-            raise ValueError(
-                f"{name} must be finite nonnegative numeric data"
-            ) from error
-        if not math.isfinite(bound) or (
-            name.endswith("heading_rad") and bound > math.pi
-        ):
+        bound = _finite_float(value, name)
+        if name.endswith("heading_rad") and bound > math.pi:
             raise ValueError(f"{name} is outside the artificial error domain")
         bounds[name] = bound
     result = {
@@ -252,13 +251,7 @@ def probe_synthetic_registered_witness(
     for name, value in (("speed", speed), ("turn_rate", turn_rate)):
         if isinstance(value, bool) or not isinstance(value, Real):
             raise TypeError(f"{name} must be finite numeric data")
-        try:
-            number = float(value)
-        except OverflowError as error:
-            raise ValueError(f"{name} must be finite numeric data") from error
-        if not math.isfinite(number):
-            raise ValueError(f"{name} must be finite numeric data")
-        motion[name] = number
+        motion[name] = _finite_float(value, name)
     if (
         not 0 <= motion["speed"] <= config.max_speed
         or abs(motion["turn_rate"]) > config.max_turn_rate
@@ -364,12 +357,7 @@ def probe_synthetic_ray_witness(
         ("tof_age_s", tof_age_s),
         ("turn_rate", turn_rate),
     ):
-        if (
-            isinstance(value, bool)
-            or not isinstance(value, Real)
-            or not math.isfinite(value)
-        ):
-            raise ValueError(f"{name} must be finite numeric data")
+        _finite_float(value, name)
     if (
         not 0 <= speed <= config.max_speed
         or tof_age_s < 0
@@ -468,12 +456,8 @@ def probe_synthetic_bounded_ray_witness(
         "heading_error_rad": heading_error_rad,
     }
     for name, value in bounds.items():
-        if (
-            isinstance(value, bool)
-            or not isinstance(value, Real)
-            or not math.isfinite(value)
-            or value < 0
-        ):
+        bounds[name] = _finite_float(value, name)
+        if value < 0:
             raise ValueError(f"{name} must be finite nonnegative numeric data")
     if heading_error_rad > math.pi:
         raise ValueError("heading_error_rad must not exceed pi")
@@ -712,12 +696,7 @@ def evaluate_synthetic(
         ("turn_rate", turn_rate),
         ("tof_age_s", tof_age_s),
     ):
-        if (
-            isinstance(value, bool)
-            or not isinstance(value, Real)
-            or not math.isfinite(value)
-        ):
-            raise ValueError(f"{name} must be finite numeric data")
+        _finite_float(value, name)
     if (
         not 0 <= speed <= config.max_speed
         or abs(turn_rate) > config.max_turn_rate

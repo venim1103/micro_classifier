@@ -1,0 +1,253 @@
+{
+  "accepted_bounds": false,
+  "accepted_family_assignments": 0,
+  "allowed_use": "quarantined_simulator_diagnostics_only",
+  "diagnostics": {
+    "age_consistency_error_s": {
+      "count": 123,
+      "observed_max_abs_s": 1.3877787807814457e-16
+    },
+    "exclusion_counters_overlap": true,
+    "invalid_zones": 672,
+    "no_delivery_observations": 8,
+    "noiseless_registration_roundtrip_error_m": {
+      "count": 451,
+      "mean_m": 5.711125093415439e-17,
+      "observed_max_abs_m": 8.881784197001252e-16,
+      "rms_m": 1.798861844317697e-16
+    },
+    "observations": 131,
+    "range_residual_m": {
+      "count": 3535,
+      "mean_m": 0.00015504334704260833,
+      "observed_max_abs_m": 0.06878276865244981,
+      "rms_m": 0.019929585868332055
+    },
+    "unregistered_surface_displacement_m": {
+      "count": 451,
+      "mean_m": 0.08323924006495824,
+      "observed_max_abs_m": 0.18437154440528095,
+      "rms_m": 0.08786643526011843
+    },
+    "valid_clipped_zones": 2108,
+    "valid_reference_censored_zones": 4177
+  },
+  "episodes": [
+    {
+      "bytes": 413670,
+      "diagnostics": {
+        "age_consistency_error_s": {
+          "count": 31,
+          "observed_max_abs_s": 1.3877787807814457e-16
+        },
+        "exclusion_counters_overlap": true,
+        "invalid_zones": 163,
+        "no_delivery_observations": 2,
+        "noiseless_registration_roundtrip_error_m": {
+          "count": 0,
+          "mean_m": null,
+          "observed_max_abs_m": null,
+          "rms_m": null
+        },
+        "observations": 33,
+        "range_residual_m": {
+          "count": 0,
+          "mean_m": null,
+          "observed_max_abs_m": null,
+          "rms_m": null
+        },
+        "unregistered_surface_displacement_m": {
+          "count": 0,
+          "mean_m": null,
+          "observed_max_abs_m": null,
+          "rms_m": null
+        },
+        "valid_clipped_zones": 949,
+        "valid_reference_censored_zones": 1949
+      },
+      "observation_sha256": "61dd6dddab0f272d3422b64ab5412811d41b9c358640d1345226fdef30c393c8",
+      "path": "sim/episodes/sensor-diagnostics-20261019/clear.jsonl",
+      "scene": "clear",
+      "seed": 20261019,
+      "sha256": "26a41f92baad05093db5f6fc8fd5add752669aa7bdac4efdb946e5c7d6fb4433",
+      "summary": {
+        "censored": true,
+        "collision": false,
+        "environment_timeout": false,
+        "kind": "summary",
+        "observations": 33,
+        "stop_reason": "diagnostic_horizon",
+        "success": false,
+        "ticks": 32
+      }
+    },
+    {
+      "bytes": 474470,
+      "diagnostics": {
+        "age_consistency_error_s": {
+          "count": 31,
+          "observed_max_abs_s": 1.3877787807814457e-16
+        },
+        "exclusion_counters_overlap": true,
+        "invalid_zones": 162,
+        "no_delivery_observations": 2,
+        "noiseless_registration_roundtrip_error_m": {
+          "count": 108,
+          "mean_m": 7.401486830834377e-17,
+          "observed_max_abs_m": 4.440892098500626e-16,
+          "rms_m": 1.8129866073473578e-16
+        },
+        "observations": 33,
+        "range_residual_m": {
+          "count": 853,
+          "mean_m": 0.00024482053404392836,
+          "observed_max_abs_m": 0.06653591637449097,
+          "rms_m": 0.019780086157801323
+        },
+        "unregistered_surface_displacement_m": {
+          "count": 108,
+          "mean_m": 0.08428832137629387,
+          "observed_max_abs_m": 0.11826114774609066,
+          "rms_m": 0.08547527903105481
+        },
+        "valid_clipped_zones": 573,
+        "valid_reference_censored_zones": 1097
+      },
+      "observation_sha256": "3c7b3d35d1bad222ecc43a6e817320e98b70ff697caf579b99932cf482f916e3",
+      "path": "sim/episodes/sensor-diagnostics-20261019/obstacle.jsonl",
+      "scene": "obstacle",
+      "seed": 20261020,
+      "sha256": "aa1173faba28975f2c493a9bff3ae42cbfdd17279cc2ceddc9739954bcbbbf35",
+      "summary": {
+        "censored": true,
+        "collision": false,
+        "environment_timeout": false,
+        "kind": "summary",
+        "observations": 33,
+        "stop_reason": "diagnostic_horizon",
+        "success": false,
+        "ticks": 32
+      }
+    },
+    {
+      "bytes": 503351,
+      "diagnostics": {
+        "age_consistency_error_s": {
+          "count": 31,
+          "observed_max_abs_s": 1.3877787807814457e-16
+        },
+        "exclusion_counters_overlap": true,
+        "invalid_zones": 179,
+        "no_delivery_observations": 2,
+        "noiseless_registration_roundtrip_error_m": {
+          "count": 151,
+          "mean_m": 8.381816212401844e-17,
+          "observed_max_abs_m": 8.881784197001252e-16,
+          "rms_m": 2.349065378665099e-16
+        },
+        "observations": 33,
+        "range_residual_m": {
+          "count": 1177,
+          "mean_m": 8.577232405731931e-05,
+          "observed_max_abs_m": 0.06686063709661161,
+          "rms_m": 0.02039172551583595
+        },
+        "unregistered_surface_displacement_m": {
+          "count": 151,
+          "mean_m": 0.10240705738693913,
+          "observed_max_abs_m": 0.18437154440528095,
+          "rms_m": 0.10659576173194192
+        },
+        "valid_clipped_zones": 396,
+        "valid_reference_censored_zones": 756
+      },
+      "observation_sha256": "673aa86e03f5c604e99098f532e93e4a8b1d04a66cd0ba86567afcc372251444",
+      "path": "sim/episodes/sensor-diagnostics-20261019/corridor.jsonl",
+      "scene": "corridor",
+      "seed": 20261021,
+      "sha256": "387539c3555403390d95437f3a8f6a635f394caee4296885a5772905601252b6",
+      "summary": {
+        "censored": true,
+        "collision": false,
+        "environment_timeout": false,
+        "kind": "summary",
+        "observations": 33,
+        "stop_reason": "diagnostic_horizon",
+        "success": false,
+        "ticks": 32
+      }
+    },
+    {
+      "bytes": 517767,
+      "diagnostics": {
+        "age_consistency_error_s": {
+          "count": 30,
+          "observed_max_abs_s": 1.3877787807814457e-16
+        },
+        "exclusion_counters_overlap": true,
+        "invalid_zones": 168,
+        "no_delivery_observations": 2,
+        "noiseless_registration_roundtrip_error_m": {
+          "count": 192,
+          "mean_m": 2.6599093298311043e-17,
+          "observed_max_abs_m": 8.881784197001252e-16,
+          "rms_m": 1.1884227471249332e-16
+        },
+        "observations": 32,
+        "range_residual_m": {
+          "count": 1505,
+          "mean_m": 0.0001583337480669001,
+          "observed_max_abs_m": 0.06878276865244981,
+          "rms_m": 0.019646377594668297
+        },
+        "unregistered_surface_displacement_m": {
+          "count": 192,
+          "mean_m": 0.06757444216264906,
+          "observed_max_abs_m": 0.1452213081681295,
+          "rms_m": 0.07133907343014202
+        },
+        "valid_clipped_zones": 190,
+        "valid_reference_censored_zones": 375
+      },
+      "observation_sha256": "368328ad05b009872ef9704f8994dbd9083c79282c9957b6c5d82fef6d879216",
+      "path": "sim/episodes/sensor-diagnostics-20261019/slalom.jsonl",
+      "scene": "slalom",
+      "seed": 20261022,
+      "sha256": "549369ae536b57984ade4f76f8cc6eb9e3417920fdb288a8368a3ad25093c497",
+      "summary": {
+        "censored": false,
+        "collision": true,
+        "environment_timeout": false,
+        "kind": "summary",
+        "observations": 32,
+        "stop_reason": "environment_end",
+        "success": false,
+        "ticks": 31
+      }
+    }
+  ],
+  "limitations": [
+    "Software-model diagnostics, not independent physical metrology or task truth.",
+    "Residuals exclude missing, clipped and reference-censored zones; this selection biases noise statistics.",
+    "Repeated vertical zones and temporally related captures are not independent trials.",
+    "Round-trip consistency shares transforms/reference geometry; it is not measured registration accuracy.",
+    "Observed maxima are not hard error bounds or probabilistic coverage claims.",
+    "Horizon stops are censored; no navigation-success or physical safety qualification.",
+    "No witness application, labels, accepted cohort/splits, teacher or student training."
+  ],
+  "locked_splits": false,
+  "numpy_version": "2.2.6",
+  "physical_metrology": false,
+  "physical_safety_claim": false,
+  "python_version": "3.12.3",
+  "real_input_qualified": false,
+  "reference_independence": "shared_simulator_geometry_and_ray_model",
+  "reviewed": false,
+  "schema": "micro-classifier/sensor-diagnostic-study/1",
+  "source_sha256": {
+    "sim/diagnostics.py": "cac39637d7bd81c114f4ce70ca5cd3d8ca81e221c110a6f7d9ade15d5147f8b1",
+    "sim/rover.py": "52366f3ead404ec90bca87d8e1a35c5ece3072144c2c9866e228dcebc2084976"
+  },
+  "task_labels": 0,
+  "training_approved": false
+}

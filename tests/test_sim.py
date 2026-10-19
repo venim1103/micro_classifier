@@ -1669,6 +1669,221 @@ def test_registered_witness_at_rest_uses_current_footprint_only(
     assert result["status"] == status
 
 
+@pytest.mark.parametrize(
+    "config",
+    [
+        Config(),
+        Config(latency_ticks=0),
+        Config(noise_std=0, dropout=0, latency_ticks=1),
+    ],
+)
+def test_sensor_diagnostic_trace_preserves_observations_and_rng(config):
+    from sim.diagnostics import DiagnosticRoverEnv, diagnostic_sample
+
+    plain, traced = RoverEnv(config), DiagnosticRoverEnv(config)
+    plain_observation, plain_info = plain.reset(seed=20261019)
+    observation, info = traced.reset(seed=20261019)
+    actions = [(0.6, 0), (0.6, 0.4), (0.2, -0.3), (0, 0)]
+    for action in actions:
+        assert json.dumps(
+            observation, default=json_value, sort_keys=True
+        ) == json.dumps(plain_observation, default=json_value, sort_keys=True)
+        assert json.dumps(info, default=json_value, sort_keys=True) == json.dumps(
+            plain_info, default=json_value, sort_keys=True
+        )
+        assert traced.rng.bit_generator.state == plain.rng.bit_generator.state
+        sample = diagnostic_sample(traced, observation)
+        assert "diagnostic" not in observation and sample["diagnostic"]["privileged"]
+        assert not sample["diagnostic"]["training_approved"]
+        assert not sample["diagnostic"]["real_input_qualified"]
+        assert not sample["diagnostic"]["physical_safety_claim"]
+        if traced.tick < traced.config.latency_ticks:
+            assert sample["diagnostic"]["status"] == "no_delivery"
+        else:
+            capture = sample["diagnostic"]["delivered_capture"]
+            assert capture["tick"] == traced.tick - traced.config.latency_ticks
+            assert sample["diagnostic"]["age_consistency_error_s"] == pytest.approx(0)
+        plain_observation, plain_reward, plain_done, plain_timeout, plain_info = (
+            plain.step(action)
+        )
+        observation, reward, done, timeout, info = traced.step(action)
+        assert (reward, done, timeout) == (plain_reward, plain_done, plain_timeout)
+    assert len(traced.capture_trace) == 5
+    traced.reset(seed=20261019)
+    assert list(traced.capture_trace) == [0]
+
+
+def test_sensor_diagnostic_trace_noiseless_residual_and_detached_capture():
+    from sim.diagnostics import DiagnosticRoverEnv, diagnostic_sample
+
+    env = DiagnosticRoverEnv(
+        Config(noise_std=0, dropout=0), make_scenario("obstacle", seed=1)
+    )
+    env.reset(seed=1)
+    for _ in range(3):
+        observation, *_ = env.step((0.6, 0))
+    sample = diagnostic_sample(env, observation)
+    diagnostic = sample["diagnostic"]
+    residuals = [
+        value
+        for row in diagnostic["range_residual_m"]
+        for value in row
+        if value is not None
+    ]
+    assert residuals
+    assert max(map(abs, residuals)) < 1e-6
+    assert (
+        max(
+            value
+            for value in diagnostic["unregistered_surface_displacement_m"]
+            if value is not None
+        )
+        > 0
+    )
+    assert (
+        max(
+            value
+            for value in diagnostic["noiseless_registration_roundtrip_error_m"]
+            if value is not None
+        )
+        < 1e-12
+    )
+    diagnostic["delivered_capture"]["pose_m_rad"][0] = 100
+    diagnostic["delivered_capture"]["noiseless_ranges_m"][0] = 100
+    assert env.capture_trace[env.sensor_tick]["pose_m_rad"][0] != 100
+    assert env.capture_trace[env.sensor_tick]["noiseless_ranges_m"][0] != 100
+    json.dumps(sample, default=json_value, allow_nan=False)
+
+
+def test_sensor_diagnostic_trace_rejects_mismatched_owner_or_tick():
+    from sim.diagnostics import DiagnosticRoverEnv, diagnostic_sample
+
+    env = DiagnosticRoverEnv()
+    observation, _ = env.reset(seed=1)
+    with pytest.raises(TypeError):
+        diagnostic_sample(RoverEnv(), observation)
+    with pytest.raises(ValueError):
+        diagnostic_sample(env, {**observation, "tick": 1})
+
+
+def test_sensor_diagnostic_collection_is_bounded_and_censored():
+    from dataclasses import asdict
+
+    from sim.diagnostics import collect_diagnostic_episode, summarize_diagnostics
+
+    records, summary = collect_diagnostic_episode("obstacle", seed=20261019, ticks=3)
+    assert records[0]["config"] == asdict(Config())
+    assert (
+        records[0]["reference_independence"]
+        == "shared_simulator_geometry_and_ray_model"
+    )
+    assert not records[0]["task_labels"] and not records[0]["physical_metrology"]
+    assert summary["ticks"] == 3 and summary["observations"] == 4
+    assert summary["censored"] and not summary["environment_timeout"]
+    assert not summary["success"] and not summary["collision"]
+    statistics = summarize_diagnostics(records)
+    assert (
+        statistics["observations"] == 4 and statistics["no_delivery_observations"] == 2
+    )
+    assert statistics["range_residual_m"]["count"] > 0
+    assert statistics["age_consistency_error_s"]["observed_max_abs_s"] < 1e-12
+    assert all(
+        "diagnostic" not in record["observation"]
+        for record in records
+        if record["kind"] == "sample"
+    )
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"ticks": 0},
+        {"ticks": 33},
+        {"ticks": True},
+        {"seed": -1},
+        {"seed": True},
+        {"scenes": []},
+        {"scenes": ["clear"] * 5},
+        {"scenes": ["clear", "clear"]},
+        {"scenes": ["unknown"]},
+    ],
+)
+def test_sensor_diagnostic_study_rejects_out_of_scope_before_writing(
+    tmp_path, settings
+):
+    from sim.diagnostics import run_diagnostic_study
+
+    output, report = tmp_path / "episodes", tmp_path / "report.json"
+    with pytest.raises(ValueError):
+        run_diagnostic_study(output, report, **{"seed": 1, "ticks": 1, **settings})
+    assert not output.exists() and not report.exists()
+
+
+def test_sensor_diagnostic_study_fresh_outputs_hashes_and_empty_statistics(tmp_path):
+    import hashlib
+    from dataclasses import asdict
+
+    from sim.diagnostics import run_diagnostic_study
+
+    output, destination = tmp_path / "episodes", tmp_path / "report.json"
+    report = run_diagnostic_study(
+        output, destination, seed=1, ticks=1, scenes=["clear"]
+    )
+    assert json.loads(destination.read_text()) == report
+    assert not report["accepted_bounds"] and not report["locked_splits"]
+    assert report["task_labels"] == report["accepted_family_assignments"] == 0
+    assert report["diagnostics"]["range_residual_m"]["count"] == 0
+    assert report["diagnostics"]["range_residual_m"]["observed_max_abs_m"] is None
+    episode = report["episodes"][0]
+    data = Path(episode["path"]).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == episode["sha256"]
+    assert len(data) == episode["bytes"]
+    rows = [json.loads(line) for line in data.splitlines()]
+    assert rows[0]["config"] == asdict(Config())
+    observations = b"".join(
+        (
+            json.dumps(row["observation"], sort_keys=True, separators=(",", ":")) + "\n"
+        ).encode()
+        for row in rows
+        if row["kind"] == "sample"
+    )
+    assert hashlib.sha256(observations).hexdigest() == episode["observation_sha256"]
+    with pytest.raises(FileExistsError):
+        run_diagnostic_study(output, tmp_path / "other-report.json", seed=1)
+    with pytest.raises(FileExistsError):
+        run_diagnostic_study(tmp_path / "other-episodes", destination, seed=1)
+    with pytest.raises(ValueError):
+        run_diagnostic_study(
+            tmp_path / "nested", tmp_path / "nested" / "report.json", seed=1
+        )
+
+
+def test_sensor_diagnostic_trace_all_dropout_is_not_zero_residual_evidence():
+    from sim.diagnostics import DiagnosticRoverEnv, diagnostic_sample
+
+    env = DiagnosticRoverEnv(Config(dropout=1), make_scenario("obstacle", seed=1))
+    for _ in range(2):
+        observation, *_ = env.step((0, 0))
+    sample = diagnostic_sample(env, observation)["diagnostic"]
+    assert sample["status"] == "delivered" and sample["invalid_zones"] == 64
+    assert sample["valid_surface_zones"] == 0
+    assert all(value is None for row in sample["range_residual_m"] for value in row)
+
+
+def test_sensor_diagnostic_collection_preserves_real_termination(monkeypatch):
+    from sim.diagnostics import collect_diagnostic_episode
+
+    monkeypatch.setattr(
+        "sim.diagnostics.make_scenario",
+        lambda *args: Scenario(goal=(1.05, 3.0)),
+    )
+    _, summary = collect_diagnostic_episode("clear", seed=1, ticks=32)
+    assert summary["ticks"] == 1 and summary["observations"] == 2
+    assert summary["success"] and not summary["collision"]
+    assert not summary["censored"] and not summary["environment_timeout"]
+    assert summary["stop_reason"] == "environment_end"
+
+
 def test_draft_catalogue_matches_wire_types_options_and_review_gate():
     from interface.protocol import CATALOGUE_VERSION, QUESTIONS, QuestionId
 

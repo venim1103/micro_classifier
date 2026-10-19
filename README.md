@@ -205,6 +205,24 @@ REVIEW.md §45 records independent geometry and numerical-cancellation checks.
 
 [navigation-reference]: sim/navigation.py
 
+## Bounded Sensor Diagnostics
+
+[The CPU-only collector][sensor-diagnostics] retains acquisition poses/times
+and noiseless simulator references separately from unchanged student observations.
+It enforces at most four scenes and 32 ticks, leaves normal Config unchanged and
+marks horizon stops censored. Outputs must be fresh; logs remain quarantined.
+
+[The approved four-prefix study][sensor-diagnostics-report] contains 131
+observations: three censored 32-tick horizons and a slalom collision at tick 31.
+The turn-schedule policy is diagnostic-only, not an expert. Conditional residuals
+exclude clipped/missing/reference-censored zones; observed maxima are not hard
+bounds. Shared-model transforms are software checks, not independent physical
+metrology or real-input qualification. No witness, label, dataset, reviewed
+cohort/split or training path is enabled. See DESIGN.md §7 and REVIEW.md §46.
+
+[sensor-diagnostics]: sim/diagnostics.py
+[sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
+
 ## Diagnostic Source-Provenance Audit
 
 The [bounded audit][provenance-audit] compares identities and declared metadata

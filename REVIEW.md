@@ -2379,6 +2379,65 @@ mode and accepted family/cohort/task data/splits. Tasks 6/9 and ST/board gates
 remain blocked; this conditional synthetic positive is not a task label or
 real-input qualification.
 
+## 46. Bounded Simulator Sensor Diagnostics (2026-10-19)
+
+The user approved this CPU-only tooling/test/run/audit package on 2026-10-16,
+including at most four new 32-tick simulation prefixes. After the pause and
+interruption, work resumed on 2026-10-19 from the recovered prototype/tests.
+An initial failing noiseless-residual test had no uncensored surface in its
+clear-scene fixture; switching that artificial check to the existing obstacle
+scene produced actual residuals without changing production behavior.
+
+[The separate collector][sensor-diagnostics] wraps sampling to retain privileged
+acquisition poses/times and noiseless ray references. Seeded tests verify exact
+observation/info/reward/termination and RNG-state parity with the unchanged base
+simulator across three latency configurations. Current reference poses and
+acquisition diagnostics remain outside student observations/history, blind
+reviewer input and all teacher/labeling/witness paths. The references use the
+same simulator ray/geometry model, not independent physical metrology.
+
+The [real bounded simulation report][sensor-diagnostics-report] records four
+fresh ignored JSONL logs, source/file/canonical-observation hashes, Config,
+Scenario, seeds, policy and software versions. Seeds 20261019-20261022 cover
+clear/obstacle/corridor/slalom. Config remains entirely normal, including its
+400-tick limit; collection separately caps at 32. Clear/obstacle/corridor stop
+censored at tick 32; slalom collides at tick 31. No goals or environment timeouts
+occurred. This deliberately simple turn-schedule policy is not an expert or
+operational controller. The collision is retained, not retried or hidden.
+
+There are 131 full observations including eight no-delivery warmups, not 128
+independent examples. Conditional range residuals have 3,535 selected valid,
+unclipped, reference-surface zones: observed RMS 0.0199296 m, maximum absolute
+0.0687828 m. Counters record 672 invalid (512 no-delivery), 2,108 valid clipped
+and 4,177 valid reference-censored zones, with explicitly overlapping exclusions.
+Selection and repeated/related rays bias empirical summaries; these are not
+hard bounds, confidence levels, representative coverage or physical measurements.
+The 451 surface-column unregistered displacements reach 0.184372 m; shared-model
+round-trip error reaches 8.88178e-16 m and age-consistency error 1.38778e-16 s.
+Neither arithmetic consistency nor independent scalar software checking qualifies
+real sensor uncertainty, return membership, registration or braking dynamics.
+
+CPU auditing independently verified all four file and observation hashes,
+source hashes, normal Config, capture/reference times and poses, scalar ray
+intersections, residual selection/denominators/statistics and displacement
+arithmetic, without generating more episodes. Report SHA-256:
+`e560c16d326a6d19c75ff6135ad32df881ab43374f023a34e77e8762b250f3bc`.
+Eighteen new cases; all 304 simulator tests and 620 repository tests pass plus
+the known transformer numerical expected failure. Ruff lint/touched-file
+format, editor diagnostics and reference/local-target/whitespace checks pass.
+
+**Outcome:** the approved bounded diagnostic package is complete. There is no
+witness application, task label/dataset/split, accepted uncertainty bound or
+family/cohort assignment, live teacher/training, dependency/download or hardware
+action. Existing simulator/navigation/proxies, inputs/history/defaults/token
+ceiling and quarantine remain unchanged. Task 6 still requires reviewed real
+uncertainty/registration/target evidence and mode semantics; Task 9 still needs
+accepted family/cohort review and actual reviewed task data/splits. ST/board
+gates are independently blocked. No physical or real-input qualification follows.
+
+[sensor-diagnostics]: sim/diagnostics.py
+[sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
+
 ## Sources
 
 Hardware and tools:

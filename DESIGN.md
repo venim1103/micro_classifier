@@ -2055,6 +2055,68 @@ occurred. Inputs/history/defaults/token ceiling and quarantine stay unchanged.
 Tasks 6/9 still require reviewed real uncertainty/registration/target evidence,
 mode and accepted family/cohort/task data; ST/board gates remain independent.
 
+#### Bounded Sensor Diagnostics (2026-10-19)
+
+The user approved this complete CPU-only package on 2026-10-16: diagnostic
+tooling/tests, at most four new 32-tick simulation prefixes, a non-label report
+and audit. [The isolated collector][sensor-diagnostics] subclasses the existing
+simulator's sampling hook without changing its source, Config, student-visible
+observations/history or RNG draws. Acquisition tick/time/pose and noiseless
+eight-ray references are privileged diagnostics, kept outside observations.
+The reference pose is the current simulator pose; the mounting is the existing
+coincident planar sensor model. This is not physical registration metrology,
+independent reference evidence or a new observation-to-witness adapter.
+
+The deterministic `diagnostic_turn_schedule/1` commands max speed and one-third
+max turn rate, positive before tick 16 and negative thereafter. It is neither
+an expert nor a navigation baseline. The separate 32-tick collection limit
+leaves Config's 400-tick environment limit unchanged. Reset observations count;
+actual early termination is retained, while horizon stops are explicitly
+censored rather than fabricated timeouts or successes. Fresh output paths,
+source/file/observation hashes, full Config/Scenario, seeds and runtime versions
+are recorded; family groups/partitions remain unresolved and training disabled.
+
+The [study report][sensor-diagnostics-report] uses seeds 20261019-20261022 for
+clear, obstacle, corridor and slalom respectively. Three prefixes stopped
+censored at tick 32; slalom collided at tick 31. No goals or environment
+timeouts occurred. There are 131 complete observations, including eight
+no-delivery warmups and 123 delivered captures. None is a task label.
+
+Range residuals subtract acquisition-frame noiseless model ranges from delivered
+float32 values only when a zone is valid, strictly unclipped and has an uncensored
+reference surface. Across 3,535 selected zones, observed mean/RMS/max absolute
+residuals are 0.000155043/0.0199296/0.0687828 m. There are 672 invalid zones
+(including 512 from no-delivery warmups), 2,108 valid clipped zones and 4,177
+valid reference-censored zones. Exclusion counters overlap; conditioning biases
+the residual distribution, and repeated vertical zones/related captures are
+not independent trials. No Gaussian-sigma conversion, fitted/accepted hard
+bound, tail-coverage probability or representative-domain claim follows.
+
+For 451 surface-ray columns, noiseless acquisition-to-current-frame point
+displacement without registration has observed max 0.184372 m. A shared-model
+pose-transform round trip has max 8.88178e-16 m; delivery-age consistency error
+has max 1.38778e-16 s. These are software arithmetic checks, not measured clock,
+range or registration accuracy. They do not qualify normal noisy/delayed input
+for synthetic witness APIs, which are never invoked by this tool.
+
+All file/source/observation hashes, counters, acquisition poses/ticks, scalar
+ray-circle/boundary intersections, residuals and pose-displacement arithmetic
+were independently checked on CPU without more study episodes. Report SHA-256:
+`e560c16d326a6d19c75ff6135ad32df881ab43374f023a34e77e8762b250f3bc`.
+Eighteen new tests cover seeded observation/RNG parity at zero/one/two-tick
+latency, no-delivery/dropout/noiseless residuals, detached references, limits,
+censoring versus real termination, fresh outputs and hashes. Full gate: 304
+simulator tests, 620 repository passes plus the known transformer expected
+failure; lint, touched-file format, editor diagnostics and documentation checks
+pass. Base simulator/navigation, proxies, inputs/history/defaults/token ceiling
+and historical artifacts remain unchanged. No task annotation/dataset/split,
+accepted family/bounds, live teacher/training, dependency/download or hardware
+action occurred. All logs stay quarantined; Tasks 6/9 and ST/board gates remain
+blocked on their existing real evidence/data and tool requirements.
+
+[sensor-diagnostics]: sim/diagnostics.py
+[sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
+
 #### Diagnostic Source-Provenance Audit (2026-10-16)
 
 The user approved CPU-only audit tooling, synthetic tests and a read-only run

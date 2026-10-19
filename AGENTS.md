@@ -16,10 +16,10 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §45 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §46 is the latest update, and
   §10 is the M0 decision template.
 
-## Current State (2026-10-16)
+## Current State (2026-10-19)
 
 Keep this section and the Task List current; a new session resumes from them.
 
@@ -574,6 +574,26 @@ Keep this section and the Task List current; a new session resumes from them.
   evidence and mode; Task 9 still needs accepted family/cohort/task data/splits.
   ST/board gates remain blocked; all bounds/occupancy are fixture assumptions.
 
+- Approved (2026-10-16) and completed (2026-10-19): CPU-only bounded sensor
+  diagnostic tooling/tests in `sim/diagnostics.py` and four new prefixes of at
+  most 32 ticks, preserving normal Config (including the 400-tick environment
+  limit), student observations and RNG behavior. Privileged capture/reference
+  poses, times and noiseless ranges stay separate; references share simulator
+  geometry, not independent physical metrology. Seed 20261019 plus scene index:
+  clear/obstacle/corridor were censored at 32 ticks; slalom collided at tick 31.
+  The turn-schedule controller is diagnostic-only, not an expert. 131 observations,
+  eight no-delivery warmups; all four file/observation/source hashes and scalar
+  ray/pose/residual checks audited. Report:
+  `sim/reports/sensor-diagnostics-20261019.json`. Conditional observed range RMS
+  0.0199296 m and maximum absolute residual 0.0687828 m over 3,535 selected zones
+  are not accepted error bounds or coverage claims. Clipped/missing/censored
+  exclusions and shared-model dependence remain explicit. Eighteen new cases;
+  304 simulator tests, 620 repository passes plus known transformer expected
+  failure; lint/format/editor/doc checks pass. DESIGN.md §7 and REVIEW.md §46.
+  No witness application, task labels/dataset/splits, accepted bounds/families,
+  inference/training, dependency/download or hardware work; inputs/history,
+  defaults/token ceiling/quarantine unchanged. Tasks 6/9 and ST/board remain blocked.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -669,6 +689,11 @@ on missing tools, and continue with the next unblocked task.
   perturbed-world checks. No task label, default-input qualification, physical
   uncertainty policy or observation/log adapter; negative/clear evidence remains
   unsupported. This does not clear the reviewed evidence/data gate.
+  Sensor-diagnostic result (2026-10-19, REVIEW.md §46): four bounded normal-config
+  prefixes and privileged shared-model capture references audited, including one
+  collision and three censored horizons. These quarantined software diagnostics
+  are neither physical uncertainty/registration qualification nor target labels;
+  mode and actual reviewed evidence/data remain blocked.
 7. [x] The simulator chosen
   in M0 (accepted default: a minimal Python/NumPy 2-D
    rover simulator now, PX4 with Gazebo later), with an 8x8 ToF model, noise,

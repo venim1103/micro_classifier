@@ -1194,10 +1194,14 @@ logits. Diagnostic limits are 1-256 features and 1-5 rows, not a frozen trunk
 width, deployed head shape or blob representation. Weights use consecutive rows,
 with `feature_count` values per row; biases have one value per row. All lengths
 and capacity count float elements. Extra weight/bias capacity and trailing
-feature storage are ignored, not serialized. Inputs must be finite. Compensated
-double accumulation reduces cancellation loss; final nonfinite/out-of-binary32-
-range values fail before the float cast. Underflow to zero is allowed. This is
-not a formal rounding/error guarantee or target-optimized INT8 head kernel.
+feature storage are ignored, not serialized. Inputs must be finite. The initial
+single-correction sum failed a nested-scale cancellation fixture (zero instead
+of the exact unit residual). A fixed partial-sum expansion now preserves it and
+128 shuffled multi-scale variants, including signed minimum-subnormal residuals.
+Scratch is 257 doubles plus five floats, not measured stack/SRAM fit or a target-
+optimized INT8 kernel. Final nonfinite/out-of-binary32-range values fail before
+the float cast. Underflow is allowed; no universal correct rounding/error bound
+is claimed.
 
 All pointers must be nonnull and reference valid nonoverlapping objects with
 truthful lengths. Dimensions are bounded before multiplying lengths. Rejection
@@ -1213,23 +1217,47 @@ required. There is no HAL, allocation, model loading or board integration.
 fixed native compiler command, reused by tests. Builds reject reused library
 outputs and record source/header/compiler-driver/library hashes with pre/post
 source and compiler checks. These are local provenance checks, not attestation
-of the complete compiler toolchain, math library or environment. The standalone
-bounded synthetic verifier/report is still the next approved portion.
+of the complete compiler toolchain, math library or environment. The completed
+CPU-only CLI accepts 1-1,024 artificial cases and an unsigned seed, uses fresh
+noncontaining report/build paths and writes success only after all checks.
+Configuration, existing/dangling-symlink paths and missing compilers reject before
+creation; failed later checks may retain build artifacts but no success report.
+Runtime checks are explicit exceptions, tested under `python -O`. Result digests
+exclude timestamps/build paths, not a promise of identical whole reports/binaries.
 
-Core verification: 56 head tests cover row order, all minimum/maximum dimension
-combinations in the selected grid, short/null/invalid dimensions, every selected
-nonfinite input position, ignored trailing storage, source/spare preservation,
-a small residual between cancelling extreme products and later-row overflow.
-Four new host/Arm/unsafe-math cases pass. All 233 C checks, 295 interface tests
-and 900 repository tests pass plus the known transformer expected failure;
-lint/format and real host/Cortex-M55 objects pass. Head native sanitizers and
-verifier evidence remain pending, not implied by prior numeric checks. No task
-accuracy, calibration, timing, SRAM fit, physical safety or target execution
-claim follows; all other data/runtime/hardware gates stay unchanged.
+Completion: 61 head cases cover row order, selected dimension combinations,
+lengths/nulls/nonfinite inputs, ignored storage, copies, cancellation and overflow.
+Native ASan/UBSan tests actual feature/weight/bias/output allocations at 1/3/256
+features and all 1-5 rows, short-to-spare capacities, ignored tails, cancellation,
+later-row overflow and null/nonfinite rejection, alongside prior native checks.
+Eighteen verifier cases cover reproducibility, strict scope/configuration,
+reuse/containment/symlinks, missing compiler, source drift, injected failures,
+report hash and optimized-Python CLI execution. Four new build checks pass.
+All 238 C checks, 318 interface tests and 923 repository tests pass plus known
+transformer expected failure; host/Cortex-M55 objects, unsafe-math guards,
+lint/format/editor and documentation checks pass.
+
+The [actual report][native-head-report] uses seed 20261019 and 1,024 artificial
+cases: feature counts 1/2/3/8/32/64/128/256, 4,096 question outputs, 14,336 logits,
+15,360 probabilities and 2,048 state/fault-decision frames. Fixture argmax is not
+a runtime selection policy. Head features are generated arrays, not packed
+state/history; separate history/stream checks do not define an observation or
+tensor adapter. All 1,024 input/logit/frame hashes and 225,280 wire bytes were
+independently regenerated in Python without native calls; source/compiler/
+library/result hashes match. Maximum checked logit/confidence errors were zero;
+probability error was 2.9798810863290726e-8 versus double reference. These bounded
+dyadic fixtures are not task-quality/calibration or arbitrary-input qualification.
+Report SHA256: `0dcf13896d3aa1f21f9133e8a28b2381f7109fb1f454b9044db83492fe8267ab`;
+result SHA256: `7f24377c218560fc4a81b49458b971203f8b48819fd7f45b01e8a2b2dc30a76f`.
+Sanitizer/Arm gates are separate pytest evidence, not actions by this CLI.
+This completes the approved package, not formal numerical/memory safety, timing,
+SRAM fit, target execution, trained heads/blob format, task data, model runtime/
+training, input/policy or other hardware gates. REVIEW.md §§61-62 records limits.
 
 [head-reference-api]: firmware/include/micro_classifier_heads.h
 [head-reference-source]: firmware/micro_classifier_heads.c
 [native-verifier]: interface/native_verify.py
+[native-head-report]: interface/reports/native-heads-20261019.json
 
 ### Question Catalogue and Embodiment Profiles
 

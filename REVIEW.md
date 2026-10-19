@@ -3085,6 +3085,67 @@ abstention, strict risk rejection, quarantine and other blocked gates stay.
 [head-reference-source]: firmware/micro_classifier_heads.c
 [native-verifier]: interface/native_verify.py
 
+## 62. Synthetic Head Repair, Verifier and Evidence Complete (2026-10-19)
+
+The full artificial-head/verifier package approved in §61 is complete. The
+[reference][head-reference-source] and [verifier][native-verifier] stay outside
+trained/production heads, preprocessing, policy and linked target runtime.
+
+**Reproduced defect and repair.** Products `2^240, 2^120, 1, -2^120, -2^240`
+sum exactly to one, but the initial single-correction accumulator returned zero.
+The failing test was run before repair. A fixed partial-sum expansion now passes
+that case and 128 shuffled multi-scale variants with positive/negative unit and
+minimum-subnormal residuals. Scratch is 257 doubles and five floats, not measured
+stack/SRAM fit. No universal correct rounding or formal error enclosure is claimed.
+API bounds, row layout, atomic output and the byte contract are unchanged.
+
+**Standalone CPU verifier.** Fixed builds use shared ABI bindings, record source/
+header/compiler-driver/library hashes, compiler version/flags, runtime metadata
+and scope/limits. The CLI accepts 1-1,024 cases and an unsigned seed. Artificial
+dyadic features/weights/biases exercise heads, softmax/sigmoid, confidence and
+Python/native codecs. Fixture argmax is not an adopted selection policy. Separate
+synthetic state/history/stream checks do not pack history into head features or
+define a student tensor layout. Fresh noncontaining report/work paths, source
+stability and no success report on failure are enforced; partial failed build
+artifacts may remain. Preflight and optimized-Python checks pass; evidence checks
+are explicit exceptions, not removable `assert`s. Result identity excludes
+timestamps/build paths, not all environment effects or cross-platform differences.
+
+**Actual run and independent audit.** The [report][native-head-report] records
+seed 20261019, 1,024 cases, 4,096 question outputs, 14,336 logits, 15,360
+probabilities and 2,048 state/fault-decision frames. Feature counts
+1/2/3/8/32/64/128/256 each occur 128 times. Maximum checked logit/confidence
+errors were zero; probability error was 2.9798810863290726e-8 versus double
+reference. These are diagnostic results, not task-quality/calibration thresholds.
+All 1,024 input/logit/frame digests and all 225,280 wire bytes were independently
+reconstructed in Python without native calls; source/compiler/library hashes,
+counts, scope and canonical evidence identity match. Report SHA256:
+`0dcf13896d3aa1f21f9133e8a28b2381f7109fb1f454b9044db83492fe8267ab`;
+result SHA256:
+`7f24377c218560fc4a81b49458b971203f8b48819fd7f45b01e8a2b2dc30a76f`.
+These are local provenance checks, not whole compiler/math-library/environment
+attestation or an arbitrary-code loading security boundary. Build artifacts stay
+ignored under `.runs/native-heads-20261019/`; only the evidence JSON is versioned.
+
+**Gates.** There are 61 head cases, 18 verifier cases and four extra build cases:
+238 C checks, 318 interface tests and 923 repository passes plus known transformer
+expected failure. Native ASan/UBSan tests actual feature/weight/bias/output
+allocations at 1/3/256 features and every 1-5 row count, short-to-spare lengths,
+ignored tails, nested cancellation, later-row overflow and null/nonfinite inputs.
+Prior native checks remain active. Host GCC 13.3/Cortex-M55 Arm GCC 13.2 objects,
+unsafe-math guards, lint/format/editor/doc checks and the evidence audit pass.
+Sanitizers and Arm builds are separate pytest gates, not CLI claims. No target
+link/run, formal numerical/memory/safety proof, timing or SRAM fit is established.
+
+No simulator/log collection/application, actual labels/task data/splits,
+teacher/model loading/training, dependency/download, licence, production blob
+format, architecture/input/history/default/token change, timing/rejection/safety
+policy or linked firmware/board work occurred. This exhausts the approved
+package, not broader Task 13. Production/runtime/training and Tasks 6/9/ST/board
+gates, unlabeled mode, strict abstention, quarantine and collection caps stay.
+
+[native-head-report]: interface/reports/native-heads-20261019.json
+
 ## Sources
 
 Hardware and tools:

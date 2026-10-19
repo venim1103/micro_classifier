@@ -14,6 +14,26 @@ _Static_assert(sizeof(float) == 4 && FLT_RADIX == 2 && FLT_MANT_DIG == 24 &&
 _Static_assert(DBL_MANT_DIG >= 53 && DBL_MAX_EXP >= 1024 && DBL_MIN_EXP <= -1021,
                "Head reference requires at least binary64 precision and range");
 
+static size_t add_partial(double *partials, size_t used, double value) {
+    size_t retained = 0;
+    for (size_t index = 0; index < used; ++index) {
+        double previous = partials[index];
+        if (fabs(value) < fabs(previous)) {
+            double swap = value;
+            value = previous;
+            previous = swap;
+        }
+        double high = value + previous;
+        double low = previous - (high - value);
+        if (low != 0.0) {
+            partials[retained++] = low;
+        }
+        value = high;
+    }
+    partials[retained] = value;
+    return retained + 1;
+}
+
 mc_v0_result mc_v0_dense_head(const float *features, size_t feature_count,
                              const float *weights, size_t weight_count,
                              const float *biases, size_t bias_count,
@@ -33,27 +53,25 @@ mc_v0_result mc_v0_dense_head(const float *features, size_t feature_count,
         }
     }
     float result[MC_V0_HEAD_MAX_OUTPUTS];
+    double partials[MC_V0_HEAD_MAX_FEATURES + 1];
     for (size_t row = 0; row < output_count; ++row) {
         if (!isfinite(biases[row])) {
             return MC_V0_ERROR_DECISION;
         }
-        double sum = biases[row];
-        double correction = 0.0;
+        partials[0] = biases[row];
+        size_t used = 1;
         for (size_t column = 0; column < feature_count; ++column) {
             float weight = weights[row * feature_count + column];
             if (!isfinite(weight)) {
                 return MC_V0_ERROR_DECISION;
             }
             double product = (double)features[column] * weight;
-            double next = sum + product;
-            if (fabs(sum) >= fabs(product)) {
-                correction += (sum - next) + product;
-            } else {
-                correction += (product - next) + sum;
-            }
-            sum = next;
+            used = add_partial(partials, used, product);
         }
-        double value = sum + correction;
+        double value = 0.0;
+        for (size_t index = 0; index < used; ++index) {
+            value += partials[index];
+        }
         if (!isfinite(value) || fabs(value) > FLT_MAX) {
             return MC_V0_ERROR_DECISION;
         }

@@ -180,22 +180,34 @@ and broader firmware remain outside scope.
 The [head API][head-reference-api] and [source][head-reference-source] evaluate
 an artificial row-major affine head with 1-256 features and 1-5 output rows.
 These diagnostic bounds are not a student architecture or production blob
-format. Features/weights/biases are finite binary32; compensated double sums
+format. Features/weights/biases are finite binary32; bounded partial-sum expansions
 produce binary32 logits. Final overflow rejects the whole operation, not just
 one row. Underflow is allowed. Lengths/capacity count float elements; callers
 supply nonnull valid nonoverlapping objects and truthful lengths. Failed output
 and successful spare capacity are unchanged; inputs remain untouched.
 
-The [shared host verifier bridge][native-verifier] compiles the reference and
-binds the same ABI used by the tests. It is not a deployment runtime. Standalone
-verification/reporting and head native sanitizers are the next approved work.
-DESIGN.md §6 and REVIEW.md §61 record scope and core checks. No trained model,
-production weight format, preprocessing, policy, task data/training or board
-integration is included.
+The [CPU-only verifier][native-verifier] uses the same ABI as the tests, not a
+deployment runtime. Use fresh paths for each run:
+
+```sh
+python -m interface.native_verify --cases 128 --seed 20261019 \
+	--output .runs/native-head-manual.json --work-dir .runs/native-head-manual-build
+```
+
+The [audited report][native-head-report] covers 1,024 artificial cases, 4,096
+question outputs and 2,048 frames. All input/logit/frame digests and wire bytes
+were independently reconstructed in Python. Native ASan/UBSan, host/Cortex-M55
+objects and full offline tests pass. DESIGN.md §6 and REVIEW.md §§61-62 record
+results and the repaired nested-cancellation fixture. Numerical success is not
+task quality, calibration, formal safety, timing, SRAM fit or target evidence.
+No trained model, production weight format, preprocessing, policy, task data/
+training or board integration is included. Failed checks write no success report;
+partial build artifacts may remain. Hashes are not complete-toolchain attestation.
 
 [head-reference-api]: firmware/include/micro_classifier_heads.h
 [head-reference-source]: firmware/micro_classifier_heads.c
 [native-verifier]: interface/native_verify.py
+[native-head-report]: interface/reports/native-heads-20261019.json
 
 ## Host-Only C Decision Math
 

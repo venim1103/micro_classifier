@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §61 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §62 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -806,6 +806,25 @@ Keep this section and the Task List current; a new session resumes from them.
   pass. Standalone verifier/report and head-specific native sanitizers remain
   approved work. DESIGN.md §6 and REVIEW.md §61 record the core and boundaries.
 
+- Approved synthetic-head/verifier package completed (2026-10-19): CPU-only CLI
+  `interface/native_verify.py` ran 1,024 artificial cases, 4,096 question outputs,
+  14,336 logits, 15,360 probabilities and 2,048 frames. All 1,024 input/logit/frame
+  digests and 225,280 wire bytes were independently reconstructed in Python;
+  source/compiler/library/result hashes match. Report:
+  `interface/reports/native-heads-20261019.json`. Maximum checked logit/confidence
+  errors were zero; probability error 2.9798811e-8 versus double reference, not
+  model-quality evidence. Reproduced nested cancellation was repaired with a
+  fixed partial-sum expansion; 128 shuffled multi-scale variants and native
+  ASan/UBSan pass. Scratch is 257 doubles plus five floats, not measured stack/
+  SRAM fit. All 61 head cases, 18 verifier cases and four extra build cases pass:
+  238 C checks, 318 interface tests and 923 repository passes plus known
+  transformer expected failure; lint/format, host/Cortex-M55 objects, unsafe-math,
+  editor/doc/evidence gates pass. DESIGN.md §6 and REVIEW.md §62 record limits.
+  This exhausts the approved artificial package, not broader Task 13. No trained/
+  production heads, task data/labels/splits, simulator/log use, model runtime/
+  training, dependencies, linked firmware/board, accepted inputs/defaults or
+  safety-policy change occurred.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1039,11 +1058,13 @@ on missing tools, and continue with the next unblocked task.
   native ASan/UBSan boundaries (REVIEW.md §§59-60). All 173 C checks, 235
   interface tests and host/Cortex-M55 objects pass. No model, calibration,
   safety/rejection policy or linked runtime gate is opened.
-  Synthetic-head follow-up (2026-10-19): user approved the complete host-only
-  artificial-head/verifier package. Core affine arithmetic and shared ABI pass
-  56 head checks plus four new build cases; full suite 900 passes plus known
-  expected failure (REVIEW.md §61). Verifier/report and head native sanitizers
-  are next. Production heads, training, input/runtime/policy and board gates stay.
+  Synthetic-head result (2026-10-19): separately approved artificial affine
+  reference/verifier complete, including repaired nested cancellation, native
+  sanitizers and independently audited 1,024-case/4,096-question CLI report
+  (REVIEW.md §§61-62). There are 61 head and 18 verifier cases plus four new
+  build checks; 238 C checks, 318 interface tests and 923 repository passes plus
+  known expected failure. Production heads, training, input/runtime/policy and
+  board gates stay blocked; diagnostic bounds do not freeze architecture.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

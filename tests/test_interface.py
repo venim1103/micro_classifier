@@ -1,4 +1,5 @@
 import ctypes
+import hashlib
 import json
 import math
 import os
@@ -6,12 +7,14 @@ import random
 import shutil
 import struct
 import subprocess
+import sys
 import zlib
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
+from interface import native_verify
 from interface.native_verify import (
     CAnswer,
     CDecision,
@@ -1073,6 +1076,45 @@ def test_c_head_retains_small_cancellation_residual(c_codec):
     assert output[0] == 1
 
 
+def test_c_head_retains_nested_cancellation_residual(c_codec):
+    features = (ctypes.c_float * 5)(2**120, 2**60, 1, 2**60, 2**120)
+    weights = (ctypes.c_float * 5)(2**120, 2**60, 1, -(2**60), -(2**120))
+    biases = (ctypes.c_float * 1)(0)
+    output = (ctypes.c_float * 1)(42)
+    assert (
+        c_codec.mc_v0_dense_head(features, 5, weights, 5, biases, 1, 1, output, 1) == 0
+    )
+    assert (
+        output[0]
+        == math.fsum(
+            float(value) * weight
+            for value, weight in zip(features, weights, strict=True)
+        )
+        == 1
+    )
+
+
+@pytest.mark.parametrize("residual", [1, -1, 2**-149, -(2**-149)])
+def test_c_head_shuffled_multiscale_cancellation(c_codec, residual):
+    generator = random.Random(20261019)
+    terms = [
+        (2.0**exponent, sign * 2.0**exponent)
+        for exponent in (-120, -60, 0, 60, 120)
+        for sign in (-1, 1)
+    ] + [(residual, 1)]
+    for _ in range(32):
+        generator.shuffle(terms)
+        features = (ctypes.c_float * 256)(*(value for value, _ in terms))
+        weights = (ctypes.c_float * 256)(*(value for _, value in terms))
+        bias = (ctypes.c_float * 1)(0)
+        output = (ctypes.c_float * 1)(42)
+        assert (
+            c_codec.mc_v0_dense_head(features, 256, weights, 256, bias, 1, 1, output, 1)
+            == 0
+        )
+        assert output[0] == residual
+
+
 def test_c_head_later_row_overflow_leaves_all_output_unchanged(c_codec):
     largest = struct.unpack("<f", bytes.fromhex("ffff7f7f"))[0]
     features = (ctypes.c_float * 2)(largest, largest)
@@ -1220,6 +1262,183 @@ def test_c_head_ignores_trailing_storage(c_codec):
         c_codec.mc_v0_dense_head(features, 1, weights, 2, biases, 2, 1, output, 2) == 0
     )
     assert list(output) == [7, 42]
+
+
+def test_native_verifier_seeded_reproducibility_and_scope(c_codec, tmp_path):
+    first = native_verify.verification_evidence(c_codec, cases=16, seed=20261019)
+    assert first == native_verify.verification_evidence(
+        c_codec, cases=16, seed=20261019
+    )
+    assert (
+        first["result_sha256"]
+        != native_verify.verification_evidence(c_codec, cases=16, seed=20261020)[
+            "result_sha256"
+        ]
+    )
+    assert first["question_outputs"] == 64
+    assert first["frames"] == 32
+    assert {row["feature_count"] for row in first["cases"]} == {
+        1,
+        2,
+        3,
+        8,
+        32,
+        64,
+        128,
+        256,
+    }
+    report = native_verify.run_verification(
+        tmp_path / "report.json", tmp_path / "work", cases=2
+    )
+    assert json.loads((tmp_path / "report.json").read_text()) == report
+    assert report["scope"] == {
+        "synthetic_only": True,
+        "training_enabled": False,
+        "task_data": False,
+        "model_loaded": False,
+        "board_executed": False,
+        "safety_qualified": False,
+        "target_runtime_qualified": False,
+    }
+    assert report["build"]["sources"] == native_verify.source_records()
+
+
+@pytest.mark.parametrize(
+    "cases,seed", [(0, 1), (1025, 1), (True, 1), (1, -1), (1, 2**32), (1, True)]
+)
+def test_native_verifier_rejects_configuration_before_creation(tmp_path, cases, seed):
+    with pytest.raises(ValueError):
+        native_verify.run_verification(
+            tmp_path / "report.json", tmp_path / "work", cases=cases, seed=seed
+        )
+    assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize("kind", ["same", "report_inside", "work_inside"])
+def test_native_verifier_rejects_containing_paths_before_creation(tmp_path, kind):
+    report = tmp_path / "report.json"
+    work = (
+        report
+        if kind == "same"
+        else report / "work"
+        if kind == "work_inside"
+        else tmp_path
+    )
+    if kind == "report_inside":
+        work = tmp_path / "work"
+        report = work / "report.json"
+    with pytest.raises(ValueError):
+        native_verify.run_verification(report, work, cases=1)
+    assert not list(tmp_path.iterdir())
+
+
+def test_native_verifier_existing_outputs_are_not_overwritten(tmp_path):
+    report = tmp_path / "report.json"
+    report.write_text("original")
+    with pytest.raises(FileExistsError):
+        native_verify.run_verification(report, tmp_path / "work", cases=1)
+    assert report.read_text() == "original"
+    assert not (tmp_path / "work").exists()
+    work = tmp_path / "existing"
+    work.mkdir()
+    library = work / "native.so"
+    library.write_bytes(b"original")
+    with pytest.raises(FileExistsError):
+        native_verify.build_native(work)
+    assert library.read_bytes() == b"original"
+
+
+@pytest.mark.parametrize("which", ["report", "work"])
+def test_native_verifier_rejects_symlinks(tmp_path, which):
+    report, work = tmp_path / "report.json", tmp_path / "work"
+    path = report if which == "report" else work
+    path.symlink_to(tmp_path / "missing")
+    with pytest.raises(ValueError, match="symlinks"):
+        native_verify.run_verification(report, work, cases=1)
+    assert path.is_symlink()
+    assert not (tmp_path / "missing").exists()
+
+
+def test_native_verifier_missing_compiler_creates_nothing(tmp_path):
+    with pytest.raises(FileNotFoundError):
+        native_verify.run_verification(
+            tmp_path / "report.json",
+            tmp_path / "work",
+            cases=1,
+            compiler="micro-classifier-missing-compiler",
+        )
+    assert not list(tmp_path.iterdir())
+
+
+def test_native_verifier_native_failure_is_not_accepted(c_codec, monkeypatch):
+    monkeypatch.setattr(c_codec, "mc_v0_dense_head", lambda *_arguments: 6)
+    with pytest.raises(ValueError, match="affine arithmetic"):
+        native_verify.verification_evidence(c_codec, cases=1)
+
+
+def test_native_verifier_failed_run_has_no_success_report(tmp_path, monkeypatch):
+    def fail(*_arguments, **_keywords):
+        raise ValueError("injected failure")
+
+    monkeypatch.setattr(native_verify, "verification_evidence", fail)
+    with pytest.raises(ValueError, match="injected failure"):
+        native_verify.run_verification(
+            tmp_path / "report.json", tmp_path / "work", cases=1
+        )
+    assert not (tmp_path / "report.json").exists()
+    assert (tmp_path / "work/native.so").exists()
+
+
+def test_native_verifier_source_drift_is_rejected(tmp_path, monkeypatch):
+    initial = native_verify.source_records()
+    calls = 0
+
+    def records():
+        nonlocal calls
+        calls += 1
+        return (
+            initial
+            if calls == 1
+            else {**initial, "changed": {"sha256": "0" * 64, "bytes": 0}}
+        )
+
+    monkeypatch.setattr(native_verify, "source_records", records)
+    with pytest.raises(ValueError, match="changed during compilation"):
+        native_verify.build_native(tmp_path)
+
+
+def test_native_verifier_cli_works_under_python_optimization(tmp_path):
+    output = tmp_path / "report.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-O",
+            "-m",
+            "interface.native_verify",
+            "--cases",
+            "2",
+            "--output",
+            str(output),
+            "--work-dir",
+            str(tmp_path / "work"),
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert json.loads(result.stdout)["status"] == "synthetic_checks_passed"
+    report = json.loads(output.read_text())
+    assert report["evidence"]["question_outputs"] == 8
+    evidence = dict(report["evidence"])
+    digest = evidence.pop("result_sha256")
+    assert (
+        digest
+        == hashlib.sha256(
+            json.dumps(
+                evidence, sort_keys=True, separators=(",", ":"), allow_nan=False
+            ).encode()
+        ).hexdigest()
+    )
 
 
 def test_c_codec_crc(c_codec):
@@ -2210,7 +2429,7 @@ def test_c_codec_address_and_undefined_sanitizers(tmp_path):
         declarations.append(f"static const uint8_t vector_{index}[] = {{{values}}};")
     pointers = ",".join(f"vector_{index}" for index in range(len(GOLDEN)))
     sizes = ",".join(f"sizeof(vector_{index})" for index in range(len(GOLDEN)))
-    source = '#include "micro_classifier_math.h"\n#include "micro_classifier_history.h"\n#include <assert.h>\n#include <float.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
+    source = '#include "micro_classifier_heads.h"\n#include "micro_classifier_math.h"\n#include "micro_classifier_history.h"\n#include <assert.h>\n#include <float.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
     source += "\n".join(declarations)
     source += f"\nstatic const uint8_t *const frames[] = {{{pointers}}};\n"
     source += f"static const size_t lengths[] = {{{sizes}}};\n"
@@ -2417,7 +2636,83 @@ static void check_math(void) {
     assert(mc_v0_answer_confidence(&answer, NULL) == MC_V0_ERROR_ARGUMENT);
     assert(confidence == 42);
 }
+static void check_heads(void) {
+    const size_t dimensions[] = {1, 3, 256};
+    for (size_t shape = 0; shape < 3; ++shape) {
+        size_t count = dimensions[shape];
+        float *features = malloc(count * sizeof(float));
+        assert(features != NULL);
+        for (size_t index = 0; index < count; ++index) {
+            features[index] = 1;
+        }
+        for (size_t rows = 1; rows <= 5; ++rows) {
+            for (unsigned field = 0; field < 3; ++field) {
+                size_t required = field == 0 ? count * rows : rows;
+                for (size_t length = 0; length <= required + 1; ++length) {
+                    size_t weight_count = field == 0 ? length : count * rows;
+                    size_t bias_count = field == 1 ? length : rows;
+                    size_t capacity = field == 2 ? length : rows;
+                    float *weights = malloc(weight_count ? weight_count * sizeof(float) : 1);
+                    float *biases = malloc(bias_count ? bias_count * sizeof(float) : 1);
+                    float *output = malloc(capacity ? capacity * sizeof(float) : 1);
+                    assert(weights != NULL && biases != NULL && output != NULL);
+                    for (size_t index = 0; index < weight_count; ++index) {
+                        weights[index] = index < count * rows ? 1.0f : NAN;
+                    }
+                    for (size_t index = 0; index < bias_count; ++index) {
+                        biases[index] = index < rows ? 0.25f : NAN;
+                    }
+                    for (size_t index = 0; index < capacity; ++index) {
+                        output[index] = 42;
+                    }
+                    mc_v0_result result = mc_v0_dense_head(features, count, weights, weight_count, biases, bias_count, rows, output, capacity);
+                    assert((result == MC_V0_HEAD_OK) == (length >= required));
+                    for (size_t index = 0; index < capacity; ++index) {
+                        assert(output[index] == (result == MC_V0_HEAD_OK && index < rows ? (float)count + 0.25f : 42.0f));
+                    }
+                    free(output);
+                    free(biases);
+                    free(weights);
+                }
+            }
+        }
+        free(features);
+    }
+    float features[256] = {0}, weights[256] = {0}, bias = 0, output = 42;
+    features[0] = 0x1p120f; weights[0] = 0x1p120f;
+    features[1] = 0x1p60f; weights[1] = 0x1p60f;
+    features[2] = 1; weights[2] = 1;
+    features[3] = 0x1p60f; weights[3] = -0x1p60f;
+    features[4] = 0x1p120f; weights[4] = -0x1p120f;
+    assert(mc_v0_dense_head(features, 256, weights, 256, &bias, 1, 1, &output, 1) == MC_V0_HEAD_OK);
+    assert(output == 1);
+    float overflowing_features[2] = {FLT_MAX, FLT_MAX};
+    float overflowing_weights[4] = {1, -1, 1, 1};
+    float biases[2] = {0, 0}, outputs[2] = {42, 42};
+    assert(mc_v0_dense_head(overflowing_features, 2, overflowing_weights, 4, biases, 2, 2, outputs, 2) == MC_V0_ERROR_DECISION);
+    assert(outputs[0] == 42 && outputs[1] == 42);
+    const float invalid[] = {NAN, INFINITY, -INFINITY};
+    for (size_t kind = 0; kind < 3; ++kind) {
+        for (size_t field = 0; field < 3; ++field) {
+            float source[3] = {1, 1, 0};
+            source[field] = invalid[kind];
+            output = 42;
+            assert(mc_v0_dense_head(source, 1, source + 1, 1, source + 2, 1, 1, &output, 1) == MC_V0_ERROR_DECISION);
+            assert(output == 42);
+        }
+    }
+    float one = 1;
+    output = 42;
+    assert(mc_v0_dense_head(NULL, 1, &one, 1, &one, 1, 1, &output, 1) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_dense_head(&one, 1, NULL, 1, &one, 1, 1, &output, 1) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_dense_head(&one, 1, &one, 1, NULL, 1, 1, &output, 1) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_dense_head(&one, 1, &one, 1, &one, 1, 1, NULL, 1) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_dense_head(&one, SIZE_MAX, &one, 1, &one, 1, 1, &output, 1) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_dense_head(&one, 1, &one, 1, &one, 1, SIZE_MAX, &output, 1) == MC_V0_ERROR_ARGUMENT);
+    assert(output == 42);
+}
 int main(void) {
+    check_heads();
     check_math();
     check_history();
     mc_v0_state state;
@@ -2548,6 +2843,7 @@ int main(void) {
             str(ROOT / "firmware/micro_classifier_codec.c"),
             str(ROOT / "firmware/micro_classifier_history.c"),
             str(ROOT / "firmware/micro_classifier_math.c"),
+            str(ROOT / "firmware/micro_classifier_heads.c"),
             "-o",
             str(executable),
             "-lm",

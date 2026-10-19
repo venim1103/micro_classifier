@@ -3399,6 +3399,43 @@ production/data/runtime/ST/board gates stay in force.
 
 [assembly-report]: interface/reports/native-assembly-20261019.json
 
+## 68. Approved Assembly Build-Audit Core (2026-10-19)
+
+**Approval.** After confirming the prior package was complete and pushed, the
+user explicitly approved the complete host-only assembly build-audit package:
+opt-in mode in the existing CLI; compare 1,024 synthetic cases at `-O0/-O2/-Os`;
+inspect all five modules' host/Cortex-M55 objects, sections, unresolved symbols
+and compiler per-function stack; independently audit fresh evidence; update docs
+and commit locally without intermediate routine confirmations. Excluded: target
+linking/execution, production model, architecture/input/policy changes, real
+logs/data/labels/splits, collection/training, dependencies/downloads, ST/licence
+and board work. Historical reports remain unchanged. This does not reopen
+broader Task 13, data, uncertainty or hardware approvals.
+
+**Implementation.** The [existing audit][reference-build-audit] adds an explicit
+`--assembly-reference` flag and boolean API argument, rejected before tools/output
+creation if not truly boolean. Each optimization invokes the unchanged assembly
+verifier when opted in, with explicit report scope and artificial-caller-policy
+limits. The default primitive path stays default. Existing fresh-output,
+source/tool drift, complete evidence parity, raw command diagnostics, object
+inspection and artifact hashes are reused. No C, native verifier, wire, golden,
+simulator or model code is changed.
+
+**Core verification.** Eleven new cases extend real matrix and `python -O` CLI
+checks to both modes, compare every host evidence object to the standalone
+verifier, verify exact opt-in forwarding on failure, retain no-success behavior
+under drift/mismatch, and reject implicit opt-in before tools or output creation.
+All 57 audit checks and the full offline suite pass: 1,106 passes plus known
+transformer expected failure, 501 interface tests. Lint, changed-file format,
+editor diagnostics and all ten Pylance-resolved call signatures pass. Existing
+native ASan/UBSan and actual host/Cortex-M55 compilation gates pass.
+
+The approved full 1,024-case-per-optimization run and independent audit remain
+next. Small test matrices are not that evidence run. Objects/individual compiler
+stack frames are not linked ROM/RAM, full stack/dependency bounds, accepted
+budgets, timing, target math/runtime or physical safety. All production/data/
+policy/ST/board gates and strict abstention/quarantine remain unchanged.
+
 ## Sources
 
 Hardware and tools:

@@ -250,8 +250,10 @@ def inspect_object(directory, source, target, optimization, tools):
     }
 
 
-def run_audit(output, work_dir, *, cases=128, seed=20261019):
+def run_audit(output, work_dir, *, cases=128, seed=20261019, assembly=False):
     native_verify.validate_configuration(cases, seed)
+    if type(assembly) is not bool:
+        raise ValueError("assembly reference must be explicitly boolean")
     output, work_dir = Path(output).expanduser(), Path(work_dir).expanduser()
     if output.is_symlink() or work_dir.is_symlink():
         raise ValueError("audit outputs must not be symlinks")
@@ -296,7 +298,9 @@ def run_audit(output, work_dir, *, cases=128, seed=20261019):
             )
             raise
         write_json(host_dir / "build.json", build)
-        evidence = native_verify.verification_evidence(codec, cases=cases, seed=seed)
+        evidence = native_verify.verification_evidence(
+            codec, cases=cases, seed=seed, assembly=assembly
+        )
         write_json(host_dir / "evidence.json", evidence)
         host_runs.append(
             {"optimization": optimization, "build": build, "evidence": evidence}
@@ -362,6 +366,11 @@ def run_audit(output, work_dir, *, cases=128, seed=20261019):
             "fresh paths prevent accidental reuse, not concurrent adversarial filesystem races",
         ],
     }
+    if assembly:
+        report["scope"]["assembly_reference"] = True
+        report["limits"].append(
+            "caller selections/status are artificial fixtures, not adopted robot policy"
+        )
     output.parent.mkdir(parents=True, exist_ok=True)
     write_json(output, report)
     return report
@@ -373,6 +382,7 @@ def main(argv=None):
     parser.add_argument("--work-dir", required=True, type=Path)
     parser.add_argument("--cases", type=int, default=128)
     parser.add_argument("--seed", type=int, default=20261019)
+    parser.add_argument("--assembly-reference", action="store_true")
     arguments = parser.parse_args(argv)
     try:
         report = run_audit(
@@ -380,6 +390,7 @@ def main(argv=None):
             arguments.work_dir,
             cases=arguments.cases,
             seed=arguments.seed,
+            assembly=arguments.assembly_reference,
         )
     except (OSError, ValueError, subprocess.SubprocessError, csv.Error) as error:
         parser.exit(1, f"reference build audit failed: {error}\n")

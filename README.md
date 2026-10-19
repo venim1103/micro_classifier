@@ -274,6 +274,20 @@ kill the command's group and retain captured diagnostics; failed/interrupted
 audits write no success report. REVIEW.md §65 records the reproduced descendant
 cleanup fix. Historical reports retain their original exporter hashes.
 
+Add `--assembly-reference` to exercise the complete artificial four-head assembly
+at each optimization rather than the default primitive verifier:
+
+```sh
+python -m interface.build_audit --assembly-reference --cases 128 --seed 20261019 \
+	--output .runs/assembly-audit-manual.json --work-dir .runs/assembly-audit-manual-build
+```
+
+Assembly scope is explicit in the report, and all three complete evidence results
+must agree. Caller status/selections remain artificial inputs, not robot policy.
+DESIGN.md §6 and REVIEW.md §68 record the approved package and core test gate;
+the full bounded run and independent audit are pending. This does not link or
+execute Arm firmware or establish memory fit or a full call-chain stack bound.
+
 [reference-build-audit]: interface/build_audit.py
 [reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
 

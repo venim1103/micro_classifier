@@ -1544,17 +1544,21 @@ def test_build_audit_rejects_malformed_tool_evidence(kind, text):
         getattr(build_audit, f"parse_{kind}")(text)
 
 
-def test_build_audit_real_matrix(tmp_path):
+@pytest.mark.parametrize("assembly", [False, True])
+def test_build_audit_real_matrix(tmp_path, c_codec, assembly):
     if any(shutil.which(name) is None for name in build_audit.TOOLS.values()):
         pytest.skip("reference build-audit tools unavailable")
     output, work = tmp_path / "report.json", tmp_path / "build"
-    report = build_audit.run_audit(output, work, cases=8)
+    report = build_audit.run_audit(output, work, cases=8, assembly=assembly)
     assert json.loads(output.read_text()) == report
     assert len(report["objects"]) == 6 * len(native_verify.SOURCES)
     assert len(report["host_runs"]) == 3
     assert len({run["evidence"]["result_sha256"] for run in report["host_runs"]}) == 1
     assert report["scope"]["arm_compile_only"]
     assert not report["scope"]["full_stack_bound"]
+    assert report["scope"].get("assembly_reference", False) is assembly
+    expected = native_verify.verification_evidence(c_codec, cases=8, assembly=assembly)
+    assert all(run["evidence"] == expected for run in report["host_runs"])
     for row in report["objects"]:
         assert row["stack_usage"] and row["sections"]
         if row["target"] == "arm":
@@ -1622,14 +1626,18 @@ def test_build_audit_missing_tool_creates_nothing(tmp_path, monkeypatch):
     assert not list(tmp_path.iterdir())
 
 
-def test_build_audit_failed_native_verification_has_no_report(tmp_path, monkeypatch):
+@pytest.mark.parametrize("assembly", [False, True])
+def test_build_audit_failed_native_verification_has_no_report(
+    tmp_path, monkeypatch, assembly
+):
     def fail(*_arguments, **_keywords):
+        assert _keywords["assembly"] is assembly
         raise ValueError("injected verification failure")
 
     monkeypatch.setattr(native_verify, "verification_evidence", fail)
     output, work = tmp_path / "report.json", tmp_path / "work"
     with pytest.raises(ValueError, match="injected"):
-        build_audit.run_audit(output, work, cases=1)
+        build_audit.run_audit(output, work, cases=1, assembly=assembly)
     assert not output.exists()
     assert (work / "O0/host-verification/build.json").is_file()
 
@@ -1802,9 +1810,10 @@ def lightweight_audit(monkeypatch, tmp_path):
     return tool
 
 
+@pytest.mark.parametrize("assembly", [False, True])
 @pytest.mark.parametrize("kind", ["source", "tool", "optimization", "artifact_symlink"])
 def test_build_audit_drift_and_mismatch_cannot_produce_report(
-    tmp_path, monkeypatch, kind
+    tmp_path, monkeypatch, kind, assembly
 ):
     tool = lightweight_audit(monkeypatch, tmp_path)
     calls = 0
@@ -1836,7 +1845,7 @@ def test_build_audit_drift_and_mismatch_cannot_produce_report(
         monkeypatch.setattr(build_audit, "inspect_object", inspect)
     output = tmp_path / "report.json"
     with pytest.raises(ValueError):
-        build_audit.run_audit(output, tmp_path / "work", cases=1)
+        build_audit.run_audit(output, tmp_path / "work", cases=1, assembly=assembly)
     assert not output.exists()
 
 
@@ -1879,7 +1888,8 @@ def test_build_audit_interrupted_native_compile_has_no_success_report(
     assert record["stdout"] == "partial out" and record["stderr"] == "partial err"
 
 
-def test_build_audit_cli_under_python_optimization(tmp_path):
+@pytest.mark.parametrize("assembly", [False, True])
+def test_build_audit_cli_under_python_optimization(tmp_path, assembly):
     if any(shutil.which(name) is None for name in build_audit.TOOLS.values()):
         pytest.skip("reference build-audit tools unavailable")
     output = tmp_path / "report.json"
@@ -1889,6 +1899,7 @@ def test_build_audit_cli_under_python_optimization(tmp_path):
             "-O",
             "-m",
             "interface.build_audit",
+            *(["--assembly-reference"] if assembly else []),
             "--cases",
             "1",
             "--output",
@@ -1906,7 +1917,28 @@ def test_build_audit_cli_under_python_optimization(tmp_path):
         "objects": 6 * len(native_verify.SOURCES),
         "host_runs": 3,
     }
-    assert not json.loads(output.read_text())["scope"]["board_executed"]
+    report = json.loads(output.read_text())
+    assert not report["scope"]["board_executed"]
+    assert report["scope"].get("assembly_reference", False) is assembly
+    if assembly:
+        assert all(
+            run["evidence"]["assembled_decisions"] == 1 for run in report["host_runs"]
+        )
+
+
+@pytest.mark.parametrize("assembly", [0, 1, None, "yes"])
+def test_build_audit_rejects_implicit_assembly_before_tools(
+    tmp_path, monkeypatch, assembly
+):
+    def forbidden(_name):
+        pytest.fail("invalid assembly mode must reject before invoking tools")
+
+    monkeypatch.setattr(native_verify, "compiler_identity", forbidden)
+    with pytest.raises(ValueError, match="boolean"):
+        build_audit.run_audit(
+            tmp_path / "report.json", tmp_path / "work", cases=1, assembly=assembly
+        )
+    assert not list(tmp_path.iterdir())
 
 
 def test_native_verifier_seeded_reproducibility_and_scope(c_codec, tmp_path):

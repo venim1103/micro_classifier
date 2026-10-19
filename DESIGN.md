@@ -1450,6 +1450,37 @@ gates and accepted inputs/history/defaults/token limits remain unchanged.
 [assembly-source]: firmware/micro_classifier_assembly.c
 [assembly-report]: interface/reports/native-assembly-20261019.json
 
+#### Assembly Build Audit (Approved, 2026-10-19)
+
+The user separately approved the complete host-only assembly audit: explicit
+assembly mode in the existing [build audit][reference-build-audit], 1,024
+synthetic cases at each of `-O0/-O2/-Os`, all five reference modules' host and
+Cortex-M55 objects, section/dependency/per-function-stack evidence, independent
+audit of fresh outputs, documentation and local commits. No target linking/
+execution, production model, architecture/input/policy change, real logs/task
+data/labels/splits, simulator collection, training, dependencies/downloads,
+ST/licence or board action is authorized. All other gates remain unchanged.
+
+`--assembly-reference` forwards the strict boolean opt-in to the unchanged
+assembly verifier for every host optimization, and marks report scope. Default
+primitive verification remains unchanged. Complete canonical evidence must match
+across all three runs. The existing source/tool stability, fresh/noncontaining
+output, raw diagnostic, object inspection and artifact hashing checks are reused;
+failed verification, source/tool drift and cross-optimization mismatch still
+cannot publish success. No C or wire behavior is changed.
+
+Core gate: eleven new cases extend the real matrix and optimized-Python CLI to
+both modes, check exact standalone-verifier parity and failure forwarding, and
+exercise drift/mismatch plus strict pre-tool opt-in rejection. All 57 audit
+checks, 501 interface and 1,106 repository tests pass plus known transformer
+expected failure. Lint/format/editor diagnostics and all ten Pylance-resolved
+call signatures pass; existing native sanitizers and host/Arm gates pass.
+The full 1,024-case-per-optimization run and independent evidence audit remain
+next, not represented by the small test matrices. REVIEW.md §68 records this
+checkpoint. Compiler stack frames exclude callees/interrupts/runtime; unlinked
+sections and undefined symbols are not a deployed image, full memory/dependency
+bound, accepted budget or target math/physical-safety qualification.
+
 ### Question Catalogue and Embodiment Profiles
 
 Freeze a shared trunk on the NPU and store per-question heads as small,

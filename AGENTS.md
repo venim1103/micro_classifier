@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §67 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §68 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -904,6 +904,21 @@ Keep this section and the Task List current; a new session resumes from them.
   training, dependencies, ST/licence, target link/execution or board work.
   All broader gates, inputs/defaults/token ceiling and quarantine stay unchanged.
 
+- Approved (2026-10-19): complete host-only assembly build-audit package:
+  opt-in assembly verification at `-O0/-O2/-Os`, all five modules' host/Arm
+  object sections/dependencies/per-function stack, 1,024 synthetic cases per
+  optimization, independent fresh-evidence audit, docs and local commits.
+  `interface/build_audit.py --assembly-reference` now forwards the strict boolean
+  opt-in and marks scope; default primitive evidence remains unchanged. Eleven
+  new cases cover both real matrices/optimized-Python CLIs, failed verification,
+  drift/mismatch and pre-tool implicit-opt-in rejection. All 57 audit checks,
+  501 interface and 1,106 repository tests pass plus known transformer expected
+  failure; lint/format/editor diagnostics and all ten resolved caller signatures
+  pass. Full bounded run/audit remains approved follow-up. DESIGN.md §6 and
+  REVIEW.md §68 record the core checkpoint. No C/model/input/policy change,
+  target linking/execution, real logs/data/labels/collection/training,
+  dependencies/downloads, ST/licence or board action is approved or performed.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1161,6 +1176,11 @@ on missing tools, and continue with the next unblocked task.
   checks pass; the 1,024-case report and all 225,280 wire bytes were independently
   audited. This exhausts the approved synthetic package. No production/runtime,
   task-data, input/policy or hardware gate is opened.
+  Assembly audit core (2026-10-19): separately approved opt-in assembly mode
+  added to existing build audit (REVIEW.md §68). Eleven new cases; 1,106 full
+  suite passes plus known expected failure, 501 interface checks. The bounded
+  1,024-case/optimization run and independent audit remain approved work;
+  no resource budget, target link/runtime, data/policy or hardware gate changed.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

@@ -4,7 +4,8 @@ Status: Independent review of [DESIGN.md](DESIGN.md) and the repository state.
 Review date: 2026-10-13. Update 2 (2026-10-14, §12) covers the robot
 decision-module clarification and an external AI analysis; it corrects F1, F2,
 and §7.2 in place. Update 3 (2026-10-19, §70) is a whole-repository code,
-design and process review.
+design and process review. Section 71 records the subsequent independent code
+repairs; product decisions remain deferred.
 Scope: feasibility, verification of design claims, landscape changes, design
 gaps, alternatives, risks, and concrete next steps.
 
@@ -3958,6 +3959,47 @@ otherwise.
 [vl53l8cx-uld]: https://github.com/stm32duino/VL53L8CX/blob/main/src/vl53l8cx_api.h
 [gcc-arm-options]: https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
 [cobs]: https://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
+
+## 71. Independent Review Repairs (2026-10-19)
+
+The user authorized code fixes while deferring product decisions. F22-F25 and
+F30 are implemented; this does not adopt the proposed catalogue, labels, sensor
+model or training scope in §70.
+
+- **F22:** [Arm audit][reference-build-audit] and object tests explicitly pass
+  `-mfloat-abi=hard -mfpu=auto`. Tests check the actual ELF VFP calling convention
+  and the audit's recorded commands. Historical soft-float reports remain
+  unchanged and do not describe the corrected build.
+- **F23:** [Python][wire-python] `FrameDecoder.flush()` and
+  [C][wire-codec-api] `mc_v0_stream_flush` recover complete CRC/semantic-valid
+  buffered frames on caller-declared idle before discarding fragments. Normal
+  feeds still wait for incomplete frames; flush preserves rejection counters.
+  This replaces reset-on-idle guidance without changing wire bytes, buffer
+  sizes, timing thresholds or choosing header CRC/COBS.
+- **F24-F25:** Python validates probabilities after binary32 serialization and
+  raises `ProtocolError` for unrepresentable numeric inputs. Synthetic navigation
+  shares overflow-safe scalar conversion; Config and stopping-envelope guards
+  likewise reject oversized integers with `ValueError`.
+- **F30:** [Simulator][review70-rover] history advances only on reset/step;
+  observation arrays are detached and repeated reads preserve history/RNG state.
+  Boolean Config values are rejected. Wall tangency now counts as contact, as
+  circle tangency already did. [Label input validation][sim-label-draft] is
+  separate from proxy generation and reused by the [request
+  renderer][teacher-label-pipeline]. Cached source/catalogue reads invalidate on
+  file identity/metadata changes, retain content hashes and return fresh catalogue
+  objects. Proxy formulas, accepted Config defaults and input schemas stay intact.
+
+**Verification:** 1,178 offline tests pass plus the unchanged transformer
+expected failure (72 additional cases); Ruff lint and changed-file formatting
+pass. This includes host/hard-float Arm compilation, both real audit test
+matrices, golden bytes, C/Python idle recovery and native ASan/UBSan on golden
+truncations/recovery and 4,096 random buffers. Editor diagnostics are clean;
+Pylance resolves all three validator and 17 stream-helper callers as compatible.
+
+No historical report, golden vector, generated protocol header, study artifact
+or dataset was regenerated. No new collection, model inference/training,
+dependency, ST or board action occurred. F18-F21 and the remaining product/
+evidence decisions stay pending; no blocked task is promoted by these repairs.
 
 ## Sources
 

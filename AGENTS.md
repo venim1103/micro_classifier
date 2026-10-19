@@ -16,8 +16,8 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §70 (whole-repository review,
-  F18-F36) is the latest update, and §10 is the M0 decision template.
+- [REVIEW.md](REVIEW.md): §70 is the whole-repository review (F18-F36), §71
+  records independent code repairs, and §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
 
@@ -947,6 +947,13 @@ Keep this section and the Task List current; a new session resumes from them.
   this file has become an append-only log (F33-F34). Next: the user decisions
   and actions in §70.7, then the sequence in §70.8.
 
+- User-approved independent fixes (2026-10-19, REVIEW.md §71): F22-F25/F30
+  repaired; 1,178 tests pass plus the known transformer expected failure.
+  Idle recovery now uses Python/C stream flush before discarding fragments;
+  hard-float Arm checks, native sanitizers, lint/format and diagnostics pass.
+  Wire bytes and historical reports remain unchanged. Product decisions, data,
+  policy, ST and board gates remain deferred; no task is newly unblocked.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1210,6 +1217,8 @@ on missing tools, and continue with the next unblocked task.
   objects, three 1,024-case results and 189 artifacts independently audited;
   host assembly retains bounded-dynamic qualifiers. Approval exhausted;
   no resource budget, target link/runtime, data/policy or hardware gate changed.
+  Maintenance (2026-10-19, REVIEW.md §71): idle frame recovery, numeric validation
+  and explicit hard-float Arm checks repaired; broader runtime remains blocked.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

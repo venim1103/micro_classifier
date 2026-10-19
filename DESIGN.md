@@ -209,9 +209,12 @@ frames are 36 bytes. Golden model ID 1 is synthetic, not an installed model.
 
 `FrameDecoder.feed` accepts byte chunks, bounds retained framing data, rejects
 corrupt/unsupported frames and resynchronizes on magic. The transport owner
-must discard a partial decoder on inter-byte timeout; no timing threshold is
-imposed here. Missing/late decisions, duplicate/out-of-order packets and gaps
-remain application duties. Sequence and timestamp wrap modulo 2^32; compare
+calls `FrameDecoder.flush()` on a chosen inter-byte timeout to recover complete
+valid frames behind incomplete candidates before discarding remaining fragments.
+Do not reset first. Flush preserves rejection counters; no timing threshold or
+new framing format is imposed here. Missing/late decisions, duplicates,
+out-of-order packets and gaps remain application duties. Sequence and timestamp
+wrap modulo 2^32; compare
 time differences modularly within less than half that range and use sequence
 echo plus host receipt time. Timestamp wrap is about 71.6 minutes, not a
 wall-clock timestamp. Independent frame-specific host fail-safes still apply.
@@ -258,10 +261,11 @@ Stream completion (2026-10-19): `mc_v0_stream_init` and `mc_v0_stream_feed` use 
 all complete validated packets. Bad framing/CRC/semantics are discarded with
 bytewise magic recovery; rejected-candidate counts saturate at `UINT32_MAX`.
 The callback packet is borrowed until callback return: copy any retained data.
-Serialize access to each stream; callbacks must not feed/reset that same stream.
+Serialize access to each stream; callbacks must not feed/flush/reset that stream.
 Feed success means the chunk was processed, not that a packet or recommendation
-was produced. The transport owner calls init to discard partial data on its
-chosen timeout; init also clears counters. No timeout threshold is adopted.
+was produced. For caller-declared idle recovery, use `mc_v0_stream_flush` with
+the callback and context, matching Python's flush behavior above. Init remains
+a full stream reset and clears counters. No timeout threshold is adopted.
 
 Additional checks cover every two-chunk split and bytewise delivery of all five
 goldens, single-bit corruption in each golden byte, impossible/unsupported and
@@ -278,6 +282,13 @@ editor gates pass. These finite checks are not formal memory, numerical, WCET
 or physical-safety certification. The approved host-C package is complete with
 no linked firmware, hardware execution, study/log generation, annotation,
 inference/training, dependency/download or evidence-policy change.
+
+Review repairs (2026-10-19, REVIEW.md §71) add idle flushing without changing
+the wire layout, golden frames or 128-byte C buffer. Python encoding also checks
+probability sums after binary32 rounding and rejects oversized numeric inputs
+with `ProtocolError`. Host and Arm tests include recovery, native sanitizers and
+explicit hard-float ABI attributes. Historical object-size reports retain their
+original soft-float flags and are not sizing evidence for the corrected build.
 
 Encoder extension (separately approved, 2026-10-19): the user approved caller-
 buffer C state/decision encoding, Python/golden round trips, host/sanitizer/Arm

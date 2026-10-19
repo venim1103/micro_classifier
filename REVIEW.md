@@ -2773,6 +2773,45 @@ All existing abstention/quarantine, exhausted collection allowances and Tasks
 6/9 plus broader firmware/ST/board gates remain. This completes the approved
 host-C package only; further roadmap work still needs its recorded prerequisites.
 
+## 55. Approved Host-Only C Encoder Core (2026-10-19)
+
+The user explicitly approved extending host-only protocol tooling with C state/
+decision encoders and round-trip tests against the unchanged Python codec and
+goldens, host/sanitizer/Arm checks, documentation and local commits. No wire
+freeze, transport driver, history/inference runtime, board integration, labels/
+training, dependency or policy changes are included. This expands only the
+host-protocol portion of Task 13.
+
+The existing [C API][wire-codec-api] and [implementation][wire-codec-source]
+now expose caller-buffer encoders with fixed local frames and explicit
+little-endian field writes. State validation, decision prefix/schema and
+confidence arithmetic are shared with decoding. Caller output bytes and
+`written` are changed only on success; source objects are not changed.
+`MC_V0_ENCODE_OK` aliases zero without changing existing error numbers.
+Nonnull, valid, nonoverlapping source/destination/length objects and truthful
+capacity are caller preconditions; null output is not a size query.
+
+Decision answer masks select fixed slots; present identities/types/counts/
+selections must match the schema. Input confidence is not trusted or serialized:
+it is computed from binary32 probabilities, matching Python. Absent slots are
+ignored. A received confidence within tolerance but not canonical may change on
+re-encoding, just as in Python; only canonical frames promise byte round trips.
+No smoothing, calibration, physical threshold or recommendation policy is added.
+
+Verification: 30 new checks pass, covering all five golden encodings, every
+supported status/answer subset, capacity boundaries, null arguments and invalid
+native states/decisions with unchanged output/length/source. All 97 C checks,
+159 interface tests and 764 repository tests pass plus the known transformer
+expected failure; lint/touched-file format and real host/Cortex-M55 object
+compilation pass. Existing parser/stream tests remain unchanged in behavior.
+Encoder-specific exact-allocation sanitizer tests and seeded cross-language
+round trips are the next approved checks, not yet claimed by this core result.
+
+No linked firmware, board execution, data collection/log application, task
+labels/review import/splits, teacher inference/training, dependency/download,
+licence or hardware action occurred. Existing strict abstention/quarantine and
+all broader firmware/ST/board and Task 6/9 gates remain in force.
+
 ## Sources
 
 Hardware and tools:

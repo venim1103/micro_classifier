@@ -110,7 +110,8 @@ CPU unit tests: `python -m pytest tests`.
 ## Host-Only C Protocol Tooling
 
 The [C11 API][c-codec-api] and [source][c-codec-source] decode the provisional
-state/decision wire format, calculate CRC-32 and recover frames from byte chunks,
+state/decision wire format, encode caller-buffer frames, calculate CRC-32 and
+recover frames from byte chunks,
 reusing the generated constants and existing golden vectors. They use fixed
 native outputs, no allocation/HAL or packed-wire casts. Failed direct decodes
 leave outputs unchanged. The library is host-tested and compiles to Cortex-M55
@@ -142,7 +143,32 @@ partial input and clears counters; no threshold is imposed by this library.
 
 The test suite includes golden/stream parity, sanitizer checks, seeded malformed
 fixtures, tolerance edges and host/Arm compilation. DESIGN.md §2 and REVIEW.md
-§§53-54 record the completed host-only authorization and verification limits.
+§§53-55 record the host-only authorization and verification limits.
+
+For encoding, pass a native state/decision, writable destination, capacity and
+length pointer to `mc_v0_encode_state` or `mc_v0_encode_decision`. All pointers
+must be nonnull and the source, destination and length objects must not overlap.
+There is no size-query mode. Check `MC_V0_ENCODE_OK` before using output; failure
+leaves the source, destination and length unchanged. Only the returned byte
+count is written on success, leaving remaining capacity untouched. State frames
+are 92 bytes; decision frames are 36-128 bytes. An empty fault can be encoded as:
+
+```c
+#include "micro_classifier_codec.h"
+
+mc_v0_result encode_fault(uint8_t *frame, size_t capacity, size_t *written) {
+	const mc_v0_decision decision = {.status = MC_V0_STATUS_FAULT};
+	return mc_v0_encode_decision(&decision, frame, capacity, written);
+}
+```
+
+For decisions, initialize the prefix and mask-selected answer slots. Present
+IDs/types/counts/selections are checked; absent slots are ignored. Input
+`confidence` is ignored and derived from the binary32 probabilities, matching
+Python. Re-encoding accepted noncanonical confidence may change its bytes.
+Encoding a diagnostic or fault packet does not make it a usable recommendation.
+Encoder-specific sanitizer and seeded round-trip checks are the next approved
+follow-up; board integration and broader firmware remain outside scope.
 
 [c-codec-api]: firmware/include/micro_classifier_codec.h
 [c-codec-source]: firmware/micro_classifier_codec.c

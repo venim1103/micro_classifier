@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §54 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §55 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -709,6 +709,19 @@ Keep this section and the Task List current; a new session resumes from them.
   memory-fit, data/labels, inference/training, dependency, licence or policy work.
   This exhausts the approved package, not Task 13's broader firmware gates.
 
+- Approved (2026-10-19): extend host-only C tooling with caller-buffer state/
+  decision encoders and Python/golden round-trip tests, host/sanitizer/Arm checks,
+  documentation and local commits. No interface freeze, transport/history/
+  inference runtime, board integration, data/labels/training, dependencies or
+  policy changes. Core encoders now share validation/schema/confidence with the
+  decoders, use fixed temporary frames and write output/length only on success.
+  Decision input confidence is ignored and recomputed from binary32 probabilities;
+  mask-selected metadata is validated. Thirty new tests pass; all 97 C checks,
+  159 interface tests and 764 repository tests pass plus the known transformer
+  expected failure, with clean lint/format. Encoder-specific sanitizer and
+  seeded cross-language round-trip follow-ups remain in this approved package.
+  DESIGN.md §2 and REVIEW.md §55 record the approval and core limits.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -925,6 +938,11 @@ on missing tools, and continue with the next unblocked task.
   compilation (REVIEW.md §§53-54). History, heads, inference/rejection policy,
   linked firmware and board integration remain outside this approval; the
   contract stays provisional and the full task remains blocked.
+  Encoding follow-up (2026-10-19): separately approved host C encoders now
+  match all five goldens and Python status/subset behavior, with atomic capacity/
+  validation failure. Thirty new cases and host/Arm compilation pass; native
+  sanitizer and seeded round-trip coverage are the next approved checks. No
+  broader firmware, input/policy or hardware authorization is implied.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

@@ -279,6 +279,34 @@ or physical-safety certification. The approved host-C package is complete with
 no linked firmware, hardware execution, study/log generation, annotation,
 inference/training, dependency/download or evidence-policy change.
 
+Encoder extension (separately approved, 2026-10-19): the user approved caller-
+buffer C state/decision encoding, Python/golden round trips, host/sanitizer/Arm
+checks, documentation and local commits only. `mc_v0_encode_state` and
+`mc_v0_encode_decision` share state validation, fixed answer schema, prefix rules
+and confidence arithmetic with decoding. They build a fixed temporary frame,
+then copy exactly the encoded length and set `written` on success; failures
+leave both caller outputs and source unchanged. No packed structs, allocation,
+HAL, wire/default/policy change or interface freeze is introduced.
+
+The caller supplies valid nonoverlapping source, destination and length objects
+and a truthful writable capacity. All pointers must be nonnull, even for zero
+capacity; no size-query mode is provided. Success is `MC_V0_ENCODE_OK` (the same
+zero value as decode success); errors preserve the existing numeric values.
+State is 92 bytes; decisions are 36-128 bytes according to the answer mask.
+Present answer IDs/types/counts/selections must match the fixed schema. Input
+confidence is ignored and recomputed from binary32 probabilities, like Python;
+absent answer slots are ignored. Accepted noncanonical received confidence may
+therefore canonicalize on re-encoding, not reproduce the original frame bytes.
+
+Core verification: all five existing goldens encode exactly, every supported
+decision status/subset matches Python, and short capacity/null/invalid-input
+cases preserve buffers, lengths and sources. Thirty new tests, 97 C checks,
+159 interface tests and 764 repository passes plus the known transformer expected
+failure; lint/format and real host/Cortex-M55 object compilation pass. Encoder-
+specific sanitizer and seeded round-trip coverage remain the next approved
+checks. No linked firmware, board execution, task data, teacher inference,
+training, dependency/download, licence or hardware action is authorized.
+
 [wire-codec-api]: firmware/include/micro_classifier_codec.h
 [wire-codec-source]: firmware/micro_classifier_codec.c
 

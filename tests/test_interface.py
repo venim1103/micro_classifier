@@ -14,6 +14,7 @@ import pytest
 from interface.protocol import (
     CRC,
     HEADER,
+    QUESTIONS,
     STATE,
     UINT32_MAX,
     Answer,
@@ -471,12 +472,26 @@ def c_codec(tmp_path_factory):
         ctypes.POINTER(CState),
     ]
     codec.mc_v0_decode_state.restype = ctypes.c_int
+    codec.mc_v0_encode_state.argtypes = [
+        ctypes.POINTER(CState),
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+    ]
+    codec.mc_v0_encode_state.restype = ctypes.c_int
     codec.mc_v0_decode_decision.argtypes = [
         ctypes.POINTER(ctypes.c_uint8),
         ctypes.c_size_t,
         ctypes.POINTER(CDecision),
     ]
     codec.mc_v0_decode_decision.restype = ctypes.c_int
+    codec.mc_v0_encode_decision.argtypes = [
+        ctypes.POINTER(CDecision),
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_size_t),
+    ]
+    codec.mc_v0_encode_decision.restype = ctypes.c_int
     codec.mc_v0_stream_init.argtypes = [ctypes.POINTER(CStream)]
     codec.mc_v0_stream_init.restype = None
     codec.mc_v0_stream_feed.argtypes = [
@@ -492,6 +507,39 @@ def c_codec(tmp_path_factory):
 
 def c_buffer(frame):
     return (ctypes.c_uint8 * len(frame)).from_buffer_copy(frame)
+
+
+def c_state_from_python(packet):
+    state = CState()
+    for name, field_type in CState._fields_:
+        value = getattr(packet, name)
+        if issubclass(field_type, ctypes.Array):
+            value = field_type(*value)
+        setattr(state, name, value)
+    return state
+
+
+def c_decision_from_python(packet):
+    decision = CDecision()
+    for name in (
+        "sequence",
+        "timestamp_us",
+        "latency_us",
+        "status",
+        "model_version",
+        "catalogue_version",
+    ):
+        setattr(decision, name, getattr(packet, name))
+    for answer in packet.answers:
+        decision.answer_mask |= 1 << (answer.question_id - 1)
+        target = decision.answers[answer.question_id - 1]
+        target.question_id = answer.question_id
+        target.answer_type = QUESTIONS[answer.question_id][0]
+        target.selected = answer.selected
+        target.option_count = len(answer.probabilities)
+        target.probabilities[: target.option_count] = answer.probabilities
+        target.confidence = float("nan")
+    return decision
 
 
 def test_c_codec_crc(c_codec):
@@ -517,6 +565,19 @@ def test_c_codec_state_golden(c_codec, vector):
         if isinstance(actual, ctypes.Array):
             actual = tuple(actual)
         assert actual == getattr(expected, name)
+    source = c_state_from_python(expected)
+    original = bytes(source)
+    encoded = c_buffer(b"\xa5" * 128)
+    written = ctypes.c_size_t(999)
+    assert (
+        c_codec.mc_v0_encode_state(
+            ctypes.byref(source), encoded, len(encoded), ctypes.byref(written)
+        )
+        == 0
+    )
+    assert bytes(encoded[: written.value]) == frame
+    assert bytes(encoded[written.value :]) == b"\xa5" * (128 - len(frame))
+    assert bytes(source) == original
 
 
 def test_c_codec_state_corruption_and_failed_output(c_codec):
@@ -575,6 +636,72 @@ def test_c_codec_state_null_arguments(c_codec):
     assert c_codec.mc_v0_decode_state(frame, len(frame), None) != 0
 
 
+def test_c_codec_state_encode_capacity_and_null_arguments(c_codec):
+    source = c_state_from_python(State())
+    output = c_buffer(b"\xa5" * 130)
+    written = ctypes.c_size_t(999)
+    original = bytes(output)
+    target = ctypes.cast(ctypes.byref(output, 1), ctypes.POINTER(ctypes.c_uint8))
+    for capacity in range(92):
+        assert (
+            c_codec.mc_v0_encode_state(
+                ctypes.byref(source), target, capacity, ctypes.byref(written)
+            )
+            != 0
+        )
+        assert bytes(output) == original
+        assert written.value == 999
+    assert c_codec.mc_v0_encode_state(None, target, 128, ctypes.byref(written)) != 0
+    assert (
+        c_codec.mc_v0_encode_state(
+            ctypes.byref(source), None, 128, ctypes.byref(written)
+        )
+        != 0
+    )
+    assert c_codec.mc_v0_encode_state(ctypes.byref(source), target, 128, None) != 0
+    assert bytes(output) == original and written.value == 999
+    assert (
+        c_codec.mc_v0_encode_state(
+            ctypes.byref(source), target, 92, ctypes.byref(written)
+        )
+        == 0
+    )
+    assert written.value == 92
+    assert bytes(output[1:93]) == encode_state(State())
+    assert bytes(output[:1]) + bytes(output[93:]) == b"\xa5" * 38
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"validity": 32},
+        {"task_id": 2},
+        {"ages_us": (UINT32_MAX,) * 5},
+        {"ages_us": (0,) * 5},
+        {"goal_m": (float("nan"), 0, 0)},
+        {"velocity_m_s": (float("inf"), 0, 0)},
+        {"faults": 1},
+        {"validity": 31, "ages_us": (0,) * 5, "battery_fraction": 1.1},
+    ],
+)
+def test_c_codec_state_encode_rejects_invalid_without_writes(c_codec, changes):
+    packet = replace(State(), **changes)
+    with pytest.raises(ProtocolError):
+        encode_state(packet)
+    source = c_state_from_python(packet)
+    original_source = bytes(source)
+    output = c_buffer(b"\xa5" * 128)
+    written = ctypes.c_size_t(999)
+    assert (
+        c_codec.mc_v0_encode_state(
+            ctypes.byref(source), output, len(output), ctypes.byref(written)
+        )
+        != 0
+    )
+    assert bytes(output) == b"\xa5" * 128
+    assert written.value == 999 and bytes(source) == original_source
+
+
 @pytest.mark.parametrize(
     "vector",
     [vector for vector in GOLDEN if vector["kind"] == "decision"],
@@ -608,6 +735,132 @@ def test_c_codec_decision_golden(c_codec, vector):
             tuple(actual.probabilities)[: actual.option_count] == answer.probabilities
         )
         assert actual.confidence == pytest.approx(answer.confidence, abs=2e-6)
+    source = c_decision_from_python(expected)
+    original = bytes(source)
+    encoded = c_buffer(b"\xa5" * 128)
+    written = ctypes.c_size_t(999)
+    assert (
+        c_codec.mc_v0_encode_decision(
+            ctypes.byref(source), encoded, len(encoded), ctypes.byref(written)
+        )
+        == 0
+    )
+    assert bytes(encoded[: written.value]) == frame
+    assert bytes(encoded[written.value :]) == b"\xa5" * (128 - len(frame))
+    assert bytes(source) == original
+
+
+@pytest.mark.parametrize("status", list(Status))
+def test_c_codec_decision_encode_all_subsets(c_codec, status):
+    for mask in range(16):
+        packet = replace(
+            full_decision(),
+            status=status,
+            answers=tuple(
+                answer
+                for answer in full_decision().answers
+                if mask & (1 << (answer.question_id - 1))
+            ),
+        )
+        if status == Status.OK and mask != 15:
+            continue
+        source = c_decision_from_python(packet)
+        original = bytes(source)
+        output = c_buffer(b"\xa5" * 128)
+        written = ctypes.c_size_t(999)
+        assert (
+            c_codec.mc_v0_encode_decision(
+                ctypes.byref(source), output, len(output), ctypes.byref(written)
+            )
+            == 0
+        )
+        frame = bytes(output[: written.value])
+        assert frame == encode_decision(packet)
+        assert decode_decision(frame) == packet
+        assert bytes(source) == original
+        assert bytes(output[written.value :]) == b"\xa5" * (128 - len(frame))
+
+
+def test_c_codec_decision_encode_capacity_and_null_arguments(c_codec):
+    for packet in (Decision(), full_decision()):
+        source = c_decision_from_python(packet)
+        frame = encode_decision(packet)
+        output = c_buffer(b"\xa5" * 130)
+        target = ctypes.cast(ctypes.byref(output, 1), ctypes.POINTER(ctypes.c_uint8))
+        written = ctypes.c_size_t(999)
+        original = bytes(output)
+        for capacity in range(len(frame)):
+            assert (
+                c_codec.mc_v0_encode_decision(
+                    ctypes.byref(source), target, capacity, ctypes.byref(written)
+                )
+                != 0
+            )
+            assert bytes(output) == original and written.value == 999
+        assert (
+            c_codec.mc_v0_encode_decision(None, target, 128, ctypes.byref(written)) != 0
+        )
+        assert (
+            c_codec.mc_v0_encode_decision(
+                ctypes.byref(source), None, 128, ctypes.byref(written)
+            )
+            != 0
+        )
+        assert (
+            c_codec.mc_v0_encode_decision(ctypes.byref(source), target, 128, None) != 0
+        )
+        assert bytes(output) == original and written.value == 999
+        assert (
+            c_codec.mc_v0_encode_decision(
+                ctypes.byref(source), target, len(frame), ctypes.byref(written)
+            )
+            == 0
+        )
+        assert written.value == len(frame)
+        assert bytes(output[1 : 1 + written.value]) == frame
+        assert bytes(output[:1]) + bytes(output[1 + written.value :]) == b"\xa5" * (
+            130 - len(frame)
+        )
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("status", 6),
+        ("catalogue_version", 1),
+        ("model_version", 0),
+        ("answer_mask", 16),
+        ("answer_mask", 7),
+        ("question_id", 2),
+        ("answer_type", 2),
+        ("selected", 2),
+        ("option_count", 0),
+        ("option_count", 255),
+        ("probability", float("nan")),
+        ("probability", float("inf")),
+        ("probability", -0.1),
+        ("probability", 0.8),
+    ],
+)
+def test_c_codec_decision_encode_rejects_invalid_without_writes(c_codec, field, value):
+    source = c_decision_from_python(full_decision())
+    if field == "probability":
+        source.answers[0].probabilities[0] = value
+    elif field in {name for name, _ in CAnswer._fields_}:
+        setattr(source.answers[0], field, value)
+    else:
+        setattr(source, field, value)
+    original_source = bytes(source)
+    output = c_buffer(b"\xa5" * 128)
+    written = ctypes.c_size_t(999)
+    assert (
+        c_codec.mc_v0_encode_decision(
+            ctypes.byref(source), output, len(output), ctypes.byref(written)
+        )
+        != 0
+    )
+    assert bytes(output) == b"\xa5" * 128
+    assert written.value == 999 and bytes(source) == original_source
 
 
 def test_c_codec_decision_subsets_ties_and_nonbinary_fractions(c_codec):

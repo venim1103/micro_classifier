@@ -11,7 +11,8 @@ typedef enum {
     MC_V0_ERROR_CRC,
     MC_V0_ERROR_HEADER,
     MC_V0_ERROR_STATE,
-    MC_V0_ERROR_DECISION
+    MC_V0_ERROR_DECISION,
+    MC_V0_ENCODE_OK = MC_V0_DECODE_OK
 } mc_v0_result;
 
 typedef struct {
@@ -68,6 +69,10 @@ mc_v0_result mc_v0_decode_state(const uint8_t *data, size_t length,
                                mc_v0_state *output);
 mc_v0_result mc_v0_decode_decision(const uint8_t *data, size_t length,
                                   mc_v0_decision *output);
+mc_v0_result mc_v0_encode_state(const mc_v0_state *state, uint8_t *output,
+                               size_t capacity, size_t *written);
+mc_v0_result mc_v0_encode_decision(const mc_v0_decision *decision, uint8_t *output,
+                                  size_t capacity, size_t *written);
 void mc_v0_stream_init(mc_v0_stream *stream);
 mc_v0_result mc_v0_stream_feed(mc_v0_stream *stream, const uint8_t *data,
                               size_t length, mc_v0_packet_handler handler,

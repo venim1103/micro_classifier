@@ -232,11 +232,16 @@ statuses, nonargmax caller selections, atomic errors, actual short allocations
 under ASan/UBSan, host optimization parity and Cortex-M55 object compilation.
 This is not a trained/production model, preprocessing/tensor adapter, deployed
 runtime, target link/execution, policy, memory-fit or safety qualification.
-DESIGN.md §6 and REVIEW.md §66 record approval and the core gate; the full bounded
-report and independent audit are pending.
+The [audited report][assembly-report] covers 1,024 artificial decisions and 2,048
+frames, including all six statuses and 2,840 nonargmax caller choices. Every
+input/logit/frame hash and all 225,280 wire bytes were independently reconstructed
+in Python without native/verifier calls; source/compiler/library hashes match.
+The head fixtures reuse the earlier synthetic study, not independent task data.
+DESIGN.md §6 and REVIEW.md §§66-67 record completion and finite-test limits.
 
 [assembly-api]: firmware/include/micro_classifier_assembly.h
 [assembly-source]: firmware/micro_classifier_assembly.c
+[assembly-report]: interface/reports/native-assembly-20261019.json
 
 ## Offline Reference Build Audit
 

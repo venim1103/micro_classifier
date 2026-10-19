@@ -3351,6 +3351,54 @@ abstention and all production/data/ST/board gates remain unchanged.
 [assembly-api]: firmware/include/micro_classifier_assembly.h
 [assembly-source]: firmware/micro_classifier_assembly.c
 
+## 67. Synthetic Decision Assembly and Evidence Complete (2026-10-19)
+
+The full host-only synthetic package approved in §66 is complete. The CPU-only
+`--assembly-reference` run at seed 20261019 used fresh outputs and wrote the
+[assembly report][assembly-report]: 1,024 artificial assembled decisions, 4,096
+question outputs, 14,336 logits, 15,360 probabilities and 2,048 state/decision
+frames (225,280 bytes). Feature counts 1/2/3/8/32/64/128/256 each appear 128 times.
+Caller status counts are 171 each for 0-3 and 170 each for 4-5. Every option
+selection occurs, including 2,840 deliberately nonargmax selections preserved
+without adopting a robot-selection or rejection policy. Synthetic model version
+1 and latency counters are fixture metadata, not a model or timing measurement.
+
+**Independent audit.** Scalar Python regenerated all seeded features, row-major
+weights/biases and binary32 logits, probabilities and existing confidence formulas.
+Explicit little-endian structures and CRC independently reconstructed all 1,024
+input/logit/frame rows and the complete wire stream, without calling C, the
+verifier or production codecs. Full caller metadata and dimensions are covered
+by input hashes. Every row and wire digest matches. The 13 source records,
+compiler-driver bytes/version, library bytes/ELF identity and result digest also
+match. Existing firmware/protocol source hashes and both historical report hashes
+are unchanged. Compiler-driver identity is not complete toolchain/libm attestation.
+
+Maximum checked logit/confidence errors are zero, with probability error
+2.9798810863290726e-8 versus double reference. Feature/weight/bias inputs equal the
+prior independently audited synthetic head fixtures; varied caller metadata is
+not an independent task cohort, task quality, calibration or real-label evidence.
+Report SHA256: `bfc9495aaa796dc0c105367b91a7bdac446532f2b68091c84c971224424caf7d`;
+canonical result SHA256:
+`a8dbd4a71ee81cfc4e06747a44b36fd254b320a406be4abd66e88b70f95d4221`.
+Raw host artifacts remain ignored in `.runs/native-assembly-20261019/`.
+
+No code changed after this run. The last full code gate is §66's 1,095 passes plus
+the known transformer expected failure, 490 interface tests, lint/format/editor
+checks, actual host/Cortex-M55 objects and native ASan/UBSan. Sanitizers and Arm
+compilation are separate pytest gates, not actions by this CLI. Finite fixtures
+do not certify numerical/memory safety, full stack/SRAM fit, timing, target runtime
+or physical safety. Historical four-module build sizes do not measure assembly.
+
+This exhausts the explicitly approved synthetic package, not broader Task 13.
+No production/trained models or blob format, trunk/ToF/tensor preprocessing,
+architecture/input/default/token changes, thresholds/freshness/fallback/safety
+policy, real logs/labels/task datasets/splits, simulator collection, model runtime/
+training, dependencies/downloads, ST/licence, target linking/execution or board
+integration occurred. Strict abstention, diagnostic quarantine and all remaining
+production/data/runtime/ST/board gates stay in force.
+
+[assembly-report]: interface/reports/native-assembly-20261019.json
+
 ## Sources
 
 Hardware and tools:

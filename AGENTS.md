@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §66 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §67 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -887,6 +887,23 @@ Keep this section and the Task List current; a new session resumes from them.
   and independent evidence audit remain approved work. DESIGN.md §6 and
   REVIEW.md §66 record the core checkpoint, not broader Task 13 completion.
 
+- Approved assembly package completed (2026-10-19): opt-in CPU CLI verified
+  1,024 artificial decisions, 4,096 question outputs, 14,336 logits, 15,360
+  probabilities and 2,048 frames. Every input/logit/frame row and all 225,280
+  wire bytes were independently reconstructed without native/verifier calls;
+  all 13 source identities, compiler/library/result hashes and historical report
+  hashes match. All six statuses and 2,840 nonargmax caller selections survive.
+  Report: `interface/reports/native-assembly-20261019.json`; raw build ignored
+  under `.runs/native-assembly-20261019/`. Checked logit/confidence errors zero,
+  probability error 2.9798811e-8 versus double; fixtures reuse prior artificial
+  head inputs, not independent task cohorts or quality evidence. Last code gate
+  remains 1,095 passes plus known transformer expected failure, 490 interface
+  tests; no code changed after the run. DESIGN.md §6 and REVIEW.md §67 record
+  completion and finite-test limits. Approval exhausted; no production models/
+  blobs, tensor/trunk/ToF adapter, policy, task labels/data/splits, collection,
+  training, dependencies, ST/licence, target link/execution or board work.
+  All broader gates, inputs/defaults/token ceiling and quarantine stay unchanged.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1137,11 +1154,12 @@ on missing tools, and continue with the next unblocked task.
   on timeout; shared POSIX process-group cleanup and seven regressions pass,
   979 repository passes plus known expected failure (REVIEW.md §65). No historical
   report regeneration or broader firmware/data/hardware gate change.
-  Assembly core (2026-10-19): separately approved host-only four-head composition
-  and opt-in verifier implemented (REVIEW.md §66), with explicit caller status/
+  Assembly result (2026-10-19): separately approved host-only four-head composition
+  and opt-in verifier complete (REVIEW.md §§66-67), with explicit caller status/
   selections and atomic rejection. All 490 interface and 1,095 repository tests
   pass plus known expected failure. Native sanitizers, host/Arm and optimization
-  checks pass; bounded report/run audit remains approved. No production/runtime,
+  checks pass; the 1,024-case report and all 225,280 wire bytes were independently
+  audited. This exhausts the approved synthetic package. No production/runtime,
   task-data, input/policy or hardware gate is opened.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.

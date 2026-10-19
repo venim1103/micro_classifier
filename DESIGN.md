@@ -1420,11 +1420,35 @@ metadata preflight and late-head atomic failures pass. All 490 interface and
 lint/format/editor diagnostics and host/Cortex-M55 objects pass. The shared
 build audit now includes five sources, hence 30 objects; its historical 24-object
 report and all prior source hashes remain historical evidence, not an assembly
-resource measurement. The approved 1,024-case run/independent audit remains next.
+resource measurement. The approved 1,024-case run/independent audit was next
+at this core checkpoint.
 REVIEW.md §66 records this core checkpoint and boundaries.
+
+Completion (2026-10-19): the [assembly report][assembly-report] records 1,024
+artificial decisions, 4,096 question outputs, 14,336 logits, 15,360 probabilities
+and 2,048 frames. All six caller statuses occur (171 each for 0-3, 170 each for
+4-5), with all selections represented and 2,840 nonargmax choices preserved.
+Every input/logit/frame digest and all 225,280 wire bytes were independently
+reconstructed using scalar Python, explicit binary structures and CRC, without
+native or verifier calls. All 13 source records, compiler-driver identity/version,
+library ELF/hash and canonical result hash match. Old firmware/protocol sources
+and historical head/build-audit report hashes remain unchanged.
+
+Maximum checked logit/confidence errors are zero; probability error versus double
+is 2.9798810863290726e-8. Feature/weight/bias fixtures match the prior head study;
+new caller metadata does not create an independent task cohort or quality claim.
+Report SHA256: `bfc9495aaa796dc0c105367b91a7bdac446532f2b68091c84c971224424caf7d`;
+result SHA256: `a8dbd4a71ee81cfc4e06747a44b36fd254b320a406be4abd66e88b70f95d4221`.
+Raw host build stays ignored in `.runs/native-assembly-20261019/`; sanitizer/Arm
+gates are separate tests, not CLI target actions. No code changed after the run;
+the last full gate remains 1,095 passes plus the known transformer expected
+failure, not a new board measurement. REVIEW.md §67 records completion. The
+approved synthetic package is exhausted; all production/data/policy/ST/board
+gates and accepted inputs/history/defaults/token limits remain unchanged.
 
 [assembly-api]: firmware/include/micro_classifier_assembly.h
 [assembly-source]: firmware/micro_classifier_assembly.c
+[assembly-report]: interface/reports/native-assembly-20261019.json
 
 ### Question Catalogue and Embodiment Profiles
 

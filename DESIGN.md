@@ -1475,11 +1475,56 @@ exercise drift/mismatch plus strict pre-tool opt-in rejection. All 57 audit
 checks, 501 interface and 1,106 repository tests pass plus known transformer
 expected failure. Lint/format/editor diagnostics and all ten Pylance-resolved
 call signatures pass; existing native sanitizers and host/Arm gates pass.
-The full 1,024-case-per-optimization run and independent evidence audit remain
-next, not represented by the small test matrices. REVIEW.md §68 records this
+The full 1,024-case-per-optimization run and independent evidence audit were
+next at this core checkpoint, not represented by the small test matrices. REVIEW.md §68 records this
 checkpoint. Compiler stack frames exclude callees/interrupts/runtime; unlinked
 sections and undefined symbols are not a deployed image, full memory/dependency
 bound, accepted budget or target math/physical-safety qualification.
+
+Completion (2026-10-19): the [assembly build report][assembly-build-report]
+records all 30 host/Arm objects and three complete 1,024-case host verifications.
+Each evidence object exactly matches the prior independently audited assembly
+report, including 4,096 question outputs, all 1,024 input/logit/frame rows and
+225,280 wire bytes. These are repeated artificial fixtures, not three independent
+task cohorts. Canonical result remains
+`a8dbd4a71ee81cfc4e06747a44b36fd254b320a406be4abd66e88b70f95d4221`.
+Maximum checked logit/confidence errors remain zero; probability error remains
+2.9798810863290726e-8 versus double reference, not task-quality evidence.
+
+| Target | Optimization | Summed `.text` Bytes | Summed `.rodata*` Bytes | Assembly Reported Stack Bytes | Assembly Qualifier |
+| --- | --- | --- | --- | --- | --- |
+| Host GCC 13.3 | `-O0` | 12,362 | 204 | 480 | `dynamic,bounded` |
+| Host GCC 13.3 | `-O2` | 7,591 | 180 | 464 | `dynamic,bounded` |
+| Host GCC 13.3 | `-Os` | 5,428 | 180 | 432 | `dynamic,bounded` |
+| Cortex-M55 GCC 13.2 | `-O0` | 7,876 | 8 | 376 | `static` |
+| Cortex-M55 GCC 13.2 | `-O2` | 4,896 | 8 | 352 | `static` |
+| Cortex-M55 GCC 13.2 | `-Os` | 4,078 | 8 | 344 | `static` |
+
+Section sums cover five unlinked objects; assembly stack is its own compiler
+record, not the dense-head or codec/math callees. Dense-head Arm records stay
+2,176/2,192/2,200 bytes. All remaining functions report `static`; none report
+unbounded `dynamic`. These qualifiers do not bound a whole call chain or total
+RAM. All object `.data/.bss` are zero while caller objects/buffers, stack,
+libraries, interrupts and runtime remain excluded. Undefined symbols retain
+cross-module/libm/memory/software-double requirements, not a linked closure.
+
+All 189 raw artifacts, 14 source/eight tool identities, compiler/library hashes,
+every ELF section/undefined-symbol table, GCC stack row and command exit/flags
+were independently checked without production parsers. Host evidence matches
+the hash-pinned, independently reconstructed prior baseline. An audit-only
+all-static assumption was corrected after observing the host assembly's raw
+`dynamic,bounded` records; no exporter or artifact repair was needed.
+Report SHA256: `1326101be0f51c4e6443afee940b6c90cfece4b9bf07eb5f1cd9b6ebb80d5ba9`.
+Raw artifacts remain ignored in `.runs/assembly-build-audit-20261019/`.
+
+No code changed after the run; the last full gate remains 1,106 passes plus
+known transformer expected failure, 501 interface checks, lint/format/editor/
+signature and native sanitizer gates. Historical reports retain original source
+hashes. REVIEW.md §69 records completion, exhausting this approved package.
+No target linking/execution, full stack/SRAM fit, new budget, task data/model/
+training, policy/input/default or ST/board gate is cleared.
+
+[assembly-build-report]: interface/reports/assembly-build-audit-20261019.json
 
 ### Question Catalogue and Embodiment Profiles
 

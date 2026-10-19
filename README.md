@@ -284,9 +284,15 @@ python -m interface.build_audit --assembly-reference --cases 128 --seed 20261019
 
 Assembly scope is explicit in the report, and all three complete evidence results
 must agree. Caller status/selections remain artificial inputs, not robot policy.
-DESIGN.md §6 and REVIEW.md §68 record the approved package and core test gate;
-the full bounded run and independent audit are pending. This does not link or
-execute Arm firmware or establish memory fit or a full call-chain stack bound.
+The [assembly build report][assembly-build-report] covers 30 objects and three
+identical 1,024-case host results; all 189 artifacts and raw ELF/stack/command
+evidence were independently checked. Arm summed `.text` is 7,876/4,896/4,078
+bytes and assembly's own stack is 376/352/344 bytes at `-O0/-O2/-Os`, excluding
+callees/runtime. Host assembly retains `dynamic,bounded` stack qualifiers.
+DESIGN.md §6 and REVIEW.md §§68-69 record completion and limits. This does not
+link or execute Arm firmware or establish memory fit or a full call-chain bound.
+
+[assembly-build-report]: interface/reports/assembly-build-audit-20261019.json
 
 [reference-build-audit]: interface/build_audit.py
 [reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json

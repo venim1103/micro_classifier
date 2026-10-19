@@ -3436,6 +3436,68 @@ stack frames are not linked ROM/RAM, full stack/dependency bounds, accepted
 budgets, timing, target math/runtime or physical safety. All production/data/
 policy/ST/board gates and strict abstention/quarantine remain unchanged.
 
+## 69. Assembly Build Audit and Evidence Complete (2026-10-19)
+
+The full host-only package approved in §68 is complete. The fresh
+[assembly build report][assembly-build-report] records 30 separate objects
+(five sources, two targets, three optimizations) and three opt-in host assembly
+verifications at `-O0/-O2/-Os`. Each uses 1,024 artificial cases at seed 20261019,
+4,096 question outputs, 14,336 logits, 15,360 probabilities and 2,048 frames.
+Every complete evidence object equals the prior independently reconstructed
+assembly baseline, including all 1,024 input/logit/frame rows and 225,280 wire
+bytes. Reusing those fixtures is not three independent task cohorts. Canonical
+result: `a8dbd4a71ee81cfc4e06747a44b36fd254b320a406be4abd66e88b70f95d4221`.
+Maximum checked logit/confidence errors are zero; probability error remains
+2.9798810863290726e-8 versus double, not model quality or calibration evidence.
+
+**Independent audit.** All 189 artifacts and 14 source/eight tool identities
+match their bytes/SHA256, including all three compiler/library/build/evidence
+records. Raw ELF section and symbol tables were read directly with binary
+structures, without production parsers; every section/address/size and undefined
+symbol matches. Every GCC `.su` location/function/size/qualifier, command exit,
+compiler flags and Cortex-M55 attributes matches. All three host results match
+the hash-pinned independently audited baseline; old source/report hashes are
+unchanged. Driver/tool hashes do not attest complete toolchains/runtime libraries.
+
+| Target | Optimization | Summed `.text` Bytes | Summed `.rodata*` Bytes | Assembly Own Stack Bytes | Assembly Qualifier |
+| --- | --- | --- | --- | --- | --- |
+| Host GCC 13.3 | `-O0` | 12,362 | 204 | 480 | `dynamic,bounded` |
+| Host GCC 13.3 | `-O2` | 7,591 | 180 | 464 | `dynamic,bounded` |
+| Host GCC 13.3 | `-Os` | 5,428 | 180 | 432 | `dynamic,bounded` |
+| Cortex-M55 GCC 13.2 | `-O0` | 7,876 | 8 | 376 | `static` |
+| Cortex-M55 GCC 13.2 | `-O2` | 4,896 | 8 | 352 | `static` |
+| Cortex-M55 GCC 13.2 | `-Os` | 4,078 | 8 | 344 | `static` |
+
+An audit-only assertion initially assumed all stack records would be `static`,
+as in the earlier four-module run. Raw host assembly records instead report
+`dynamic,bounded`; the corrected independent check retains that evidence. The
+production parser already preserves this qualifier, and no source/report/artifact
+repair or rerun was required. All remaining function records are `static`, with
+no unbounded `dynamic` entries. Arm dense-head own stack remains 2,176/2,192/2,200
+bytes; assembly's record does not include those or other callees' frames.
+
+Five-object section sums are not linked image sizes, and compiler function
+records are not full call-chain/interrupt/runtime bounds. All object `.data/.bss`
+are zero, not zero RAM: caller state/history/output buffers, stack and runtime
+are excluded. Per-object undefined cross-module/libm/memory/software-double
+symbols remain unresolved requirements, not a deployed dependency closure.
+Report SHA256: `1326101be0f51c4e6443afee940b6c90cfece4b9bf07eb5f1cd9b6ebb80d5ba9`.
+Raw outputs stay ignored in `.runs/assembly-build-audit-20261019/`.
+
+No code changed after the run. The last full code gate is §68's 1,106 passes
+plus known transformer expected failure, 501 interface tests, lint/format/editor/
+signature checks and existing native ASan/UBSan/host/Arm gates. Documentation and
+independent evidence checks pass; these are not new board measurements.
+
+This exhausts the approved audit package, not broader Task 13. No target linking/
+execution, production model/blob, architecture/input/default/token or policy
+change, new resource budget, full stack/SRAM fit, real logs/data/labels/splits,
+simulator collection, model runtime/training, dependencies/downloads, ST/licence
+or board work occurred. Strict abstention, quarantine and all remaining
+production/data/runtime/ST/board gates stay in force.
+
+[assembly-build-report]: interface/reports/assembly-build-audit-20261019.json
+
 ## Sources
 
 Hardware and tools:

@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §68 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §69 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -919,6 +919,24 @@ Keep this section and the Task List current; a new session resumes from them.
   target linking/execution, real logs/data/labels/collection/training,
   dependencies/downloads, ST/licence or board action is approved or performed.
 
+- Approved assembly build-audit package completed (2026-10-19): 30 host/Arm
+  objects and three opt-in 1,024-case host verifications pass at `-O0/-O2/-Os`.
+  Every complete host evidence object matches the prior independently audited
+  assembly baseline, not three independent cohorts. All 189 artifacts, 14
+  source/eight tool identities, raw ELF sections/undefined symbols, stack rows
+  and command logs independently checked. Report:
+  `interface/reports/assembly-build-audit-20261019.json`. Arm summed `.text` is
+  7,876/4,896/4,078 bytes; assembly's own reported stack is 376/352/344 bytes
+  (`static`), excluding callees/runtime. Host assembly is 480/464/432 bytes with
+  `dynamic,bounded` qualifiers, not all-static or full-stack evidence. All
+  object `.data/.bss` are zero, not zero RAM or memory fit. Last code gate:
+  1,106 passes plus known transformer expected failure, 501 interface tests;
+  lint/format/editor/signature/native sanitizer gates pass. DESIGN.md §6 and
+  REVIEW.md §69 record completion and limits. Approval exhausted; no source
+  changed after run, historical reports unchanged, and no target link/execution,
+  budgets, policy/input, production models, task labels/data/collection/training,
+  dependencies/downloads, ST/licence or board scope is opened.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1176,10 +1194,11 @@ on missing tools, and continue with the next unblocked task.
   checks pass; the 1,024-case report and all 225,280 wire bytes were independently
   audited. This exhausts the approved synthetic package. No production/runtime,
   task-data, input/policy or hardware gate is opened.
-  Assembly audit core (2026-10-19): separately approved opt-in assembly mode
-  added to existing build audit (REVIEW.md §68). Eleven new cases; 1,106 full
-  suite passes plus known expected failure, 501 interface checks. The bounded
-  1,024-case/optimization run and independent audit remain approved work;
+  Assembly audit result (2026-10-19): separately approved opt-in assembly mode
+  and full bounded audit complete (REVIEW.md §§68-69). Eleven new cases; 1,106
+  full suite passes plus known expected failure, 501 interface checks. All 30
+  objects, three 1,024-case results and 189 artifacts independently audited;
+  host assembly retains bounded-dynamic qualifiers. Approval exhausted;
   no resource budget, target link/runtime, data/policy or hardware gate changed.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.

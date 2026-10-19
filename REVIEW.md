@@ -2898,6 +2898,46 @@ gates remain blocked.
 [state-history-api]: firmware/include/micro_classifier_history.h
 [state-history-source]: firmware/micro_classifier_history.c
 
+## 58. C State-History Reference and Safety Checks Completed (2026-10-19)
+
+The separately approved host-only state-history package is complete. The
+[history API][state-history-api] and [source][state-history-source] are unchanged
+from the §57 core checkpoint; the follow-up adds verification, not timing,
+ordering, input or safety policy.
+
+A seeded CPU-only test compares 1,024 synthetic mixed operations against an
+independent Python eight-element queue: resets, explicit gaps, valid pushes and
+rejected nonfinite states. Each snapshot checks chronological masks, zero gap
+storage and exact Python-encoded bytes for retained states. Poisoning source
+and returned window storage does not alter retained history. States use varied
+validity masks, ages, vectors, battery/fault fields and arbitrary sequence/time
+metadata; no clock or ordering semantics are inferred.
+
+The existing native ASan/UBSan executable now links both C sources. A further
+1,024 deterministic mixed history operations check masks, detached snapshots,
+gap/reset behavior, rejected-state atomicity and exact encoded values against
+a separate shifted native queue. All 248 invalid uint8 cursors (8-255) reject
+push/gap/snapshot with unchanged history/output; null argument checks also pass.
+Existing decoder/encoder/stream sanitizer checks remain active. No library code
+change was needed after the core checkpoint.
+
+Verification: 14 history cases and two extra host/Arm compile cases bring the C
+slice to 120 passes and interface tests to 182. Full CPU/offline suite: 787 passes
+plus the known transformer numerical expected failure. Ruff lint/touched-file
+format, editor diagnostics, reference/local-target/review-sequence/whitespace
+checks pass. Both sources produce real GCC 13.3 host and GCC 13.2 Cortex-M55
+objects. Finite tests and sanitizer runs are not formal certification, target
+execution, timing or SRAM-fit evidence.
+
+No ToF/history alignment, observation/tensor packing, automatic timeout/sequence
+policy, normalization, inference/rejection runtime, linked firmware or board
+integration is authorized or implemented. No episode/log generation/application,
+task annotations/dataset/splits, teacher inference/training, dependency/download,
+licence, physical threshold or accepted-input/default change occurred. Existing
+wire bytes/goldens, simulator and historical reports remain unchanged. This
+exhausts the bounded approval, not broader Task 13; Tasks 6/9 and ST/board gates,
+quarantine, unlabeled mode and strict abstention remain unchanged.
+
 ## Sources
 
 Hardware and tools:

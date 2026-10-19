@@ -819,6 +819,85 @@ def test_c_history_rejects_damaged_cursor_without_writes(c_codec, cursor):
     assert bytes(window) == original_window
 
 
+def test_c_history_seeded_operations_match_python_window(c_codec):
+    generator = random.Random(20261019)
+    history, window = CStateHistory(), CStateWindow()
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    expected = [None] * 8
+    for _ in range(1024):
+        operation = generator.randrange(16)
+        if operation == 0:
+            c_codec.mc_v0_state_history_init(ctypes.byref(history))
+            expected = [None] * 8
+        elif operation < 5:
+            assert c_codec.mc_v0_state_history_gap(ctypes.byref(history)) == 0
+            expected = expected[1:] + [None]
+        else:
+            validity = generator.randrange(32)
+            vectors = [
+                tuple(generator.randrange(-32768, 32769) / 256 for _ in range(3))
+                if validity & (1 << group)
+                else (0, 0, 0)
+                for group in range(3)
+            ]
+            packet = State(
+                sequence=generator.getrandbits(32),
+                timestamp_us=generator.getrandbits(32),
+                validity=validity,
+                ages_us=tuple(
+                    generator.randrange(UINT32_MAX)
+                    if validity & (1 << group)
+                    else UINT32_MAX
+                    for group in range(5)
+                ),
+                velocity_m_s=vectors[0],
+                angular_velocity_rad_s=vectors[1],
+                goal_m=vectors[2],
+                battery_fraction=generator.getrandbits(23) / 2**23
+                if validity & 8
+                else 0,
+                faults=generator.getrandbits(32) if validity & 16 else 0,
+            )
+            source = c_state_from_python(packet)
+            if operation == 5:
+                source.battery_fraction = float("inf")
+                original = bytes(history)
+                assert (
+                    c_codec.mc_v0_state_history_push(
+                        ctypes.byref(history), ctypes.byref(source)
+                    )
+                    != 0
+                )
+                assert bytes(history) == original
+            else:
+                assert (
+                    c_codec.mc_v0_state_history_push(
+                        ctypes.byref(history), ctypes.byref(source)
+                    )
+                    == 0
+                )
+                expected = expected[1:] + [encode_state(packet)]
+            ctypes.memset(ctypes.byref(source), 0xA5, ctypes.sizeof(source))
+        original = bytes(history)
+        assert (
+            c_codec.mc_v0_state_history_snapshot(
+                ctypes.byref(history), ctypes.byref(window)
+            )
+            == 0
+        )
+        assert bytes(history) == original
+        assert window.valid_mask == sum(
+            1 << index for index, frame in enumerate(expected) if frame is not None
+        )
+        for sample, frame in zip(window.samples, expected, strict=True):
+            if frame is None:
+                assert bytes(sample) == bytes(ctypes.sizeof(CState))
+            else:
+                assert c_encoded_frame(c_codec, sample) == frame
+        ctypes.memset(ctypes.byref(window), 0xA5, ctypes.sizeof(window))
+        assert bytes(history) == original
+
+
 def test_c_codec_crc(c_codec):
     for data in (b"", b"123456789", bytes(range(256))):
         assert c_codec.mc_v0_crc32(c_buffer(data), len(data)) == zlib.crc32(data)
@@ -1797,7 +1876,7 @@ def test_c_codec_address_and_undefined_sanitizers(tmp_path):
         declarations.append(f"static const uint8_t vector_{index}[] = {{{values}}};")
     pointers = ",".join(f"vector_{index}" for index in range(len(GOLDEN)))
     sizes = ",".join(f"sizeof(vector_{index})" for index in range(len(GOLDEN)))
-    source = '#include "micro_classifier_codec.h"\n#include <assert.h>\n#include <stdlib.h>\n#include <string.h>\n'
+    source = '#include "micro_classifier_history.h"\n#include <assert.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
     source += "\n".join(declarations)
     source += f"\nstatic const uint8_t *const frames[] = {{{pointers}}};\n"
     source += f"static const size_t lengths[] = {{{sizes}}};\n"
@@ -1807,7 +1886,96 @@ static void receive(const mc_v0_packet *packet, void *context) {
     assert(packet->kind == MC_V0_KIND_STATE || packet->kind == MC_V0_KIND_DECISION);
     ++*count;
 }
+static void check_history(void) {
+    mc_v0_state_history history;
+    mc_v0_state_window window;
+    mc_v0_state expected[8] = {{0}};
+    mc_v0_state zero = {0};
+    mc_v0_state state = {0};
+    uint8_t present[8] = {0};
+    unsigned char before[sizeof(history)];
+    unsigned char output_before[sizeof(window)];
+    state.task_id = MC_V0_TASK_GOAL_REACHING;
+    for (size_t group = 0; group < 5; ++group) {
+        state.ages_us[group] = MC_V0_UNKNOWN_AGE_US;
+    }
+    mc_v0_state_history_init(&history);
+    for (uint32_t iteration = 0; iteration < 1024; ++iteration) {
+        unsigned operation = iteration % 19;
+        state.sequence = UINT32_MAX - iteration;
+        state.timestamp_us = iteration % 3 ? iteration * 10 : 0;
+        state.validity = iteration % 2 ? MC_V0_VALID_VELOCITY : 0;
+        state.ages_us[0] = state.validity ? iteration : MC_V0_UNKNOWN_AGE_US;
+        state.velocity_m_s[0] = state.validity ? (float)iteration / 64.0f : -0.0f;
+        if (operation == 0) {
+            mc_v0_state_history_init(&history);
+            memset(expected, 0, sizeof(expected));
+            memset(present, 0, sizeof(present));
+        } else if (operation == 4) {
+            mc_v0_state bad = state;
+            bad.goal_m[0] = NAN;
+            memcpy(before, &history, sizeof(history));
+            assert(mc_v0_state_history_push(&history, &bad) == MC_V0_ERROR_STATE);
+            assert(memcmp(before, &history, sizeof(history)) == 0);
+        } else {
+            memmove(expected, expected + 1, 7 * sizeof(expected[0]));
+            memmove(present, present + 1, 7 * sizeof(present[0]));
+            if (operation < 4) {
+                assert(mc_v0_state_history_gap(&history) == MC_V0_HISTORY_OK);
+                memset(&expected[7], 0, sizeof(expected[7]));
+                present[7] = 0;
+            } else {
+                assert(mc_v0_state_history_push(&history, &state) == MC_V0_HISTORY_OK);
+                expected[7] = state;
+                present[7] = 1;
+            }
+        }
+        memcpy(before, &history, sizeof(history));
+        assert(mc_v0_state_history_snapshot(&history, &window) == MC_V0_HISTORY_OK);
+        assert(memcmp(before, &history, sizeof(history)) == 0);
+        unsigned mask = 0;
+        for (size_t index = 0; index < 8; ++index) {
+            if (present[index]) {
+                uint8_t actual_frame[MC_V0_STATE_FRAME_SIZE];
+                uint8_t expected_frame[MC_V0_STATE_FRAME_SIZE];
+                size_t actual_written = 0, expected_written = 0;
+                assert(mc_v0_encode_state(&window.samples[index], actual_frame, sizeof(actual_frame), &actual_written) == MC_V0_ENCODE_OK);
+                assert(mc_v0_encode_state(&expected[index], expected_frame, sizeof(expected_frame), &expected_written) == MC_V0_ENCODE_OK);
+                assert(actual_written == expected_written);
+                assert(memcmp(actual_frame, expected_frame, actual_written) == 0);
+                mask |= 1u << index;
+            } else {
+                assert(memcmp(&window.samples[index], &zero, sizeof(zero)) == 0);
+            }
+        }
+        assert(window.valid_mask == mask);
+        memset(&window, 0xA5, sizeof(window));
+        assert(memcmp(before, &history, sizeof(history)) == 0);
+    }
+    for (unsigned cursor = 8; cursor < 256; ++cursor) {
+        history.next = (uint8_t)cursor;
+        memcpy(before, &history, sizeof(history));
+        memset(&window, 0xA5, sizeof(window));
+        memcpy(output_before, &window, sizeof(window));
+        assert(mc_v0_state_history_push(&history, &state) == MC_V0_ERROR_ARGUMENT);
+        assert(mc_v0_state_history_gap(&history) == MC_V0_ERROR_ARGUMENT);
+        assert(mc_v0_state_history_snapshot(&history, &window) == MC_V0_ERROR_ARGUMENT);
+        assert(memcmp(before, &history, sizeof(history)) == 0);
+        assert(memcmp(output_before, &window, sizeof(window)) == 0);
+    }
+    mc_v0_state_history_init(&history);
+    memcpy(before, &history, sizeof(history));
+    assert(mc_v0_validate_state(NULL) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_state_history_push(NULL, &state) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_state_history_push(&history, NULL) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_state_history_gap(NULL) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_state_history_snapshot(NULL, &window) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_state_history_snapshot(&history, NULL) == MC_V0_ERROR_ARGUMENT);
+    mc_v0_state_history_init(NULL);
+    assert(memcmp(before, &history, sizeof(history)) == 0);
+}
 int main(void) {
+    check_history();
     mc_v0_state state;
     mc_v0_decision decision;
     mc_v0_stream stream;
@@ -1934,6 +2102,7 @@ int main(void) {
             "c",
             "-",
             str(ROOT / "firmware/micro_classifier_codec.c"),
+            str(ROOT / "firmware/micro_classifier_history.c"),
             "-o",
             str(executable),
         ],

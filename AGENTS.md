@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §57 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §58 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -750,6 +750,19 @@ Keep this section and the Task List current; a new session resumes from them.
   and native sanitizer follow-ups remain approved work. DESIGN.md §2 and
   REVIEW.md §57 record the bounded scope and core limits.
 
+- Approved state-history package completed (2026-10-19): 1,024 seeded synthetic
+  operations match an independent Python eight-slot queue, including resets,
+  gaps, rejected states and exact serialized retained values. Native ASan/UBSan
+  passes 1,024 mixed operations, masks/copies and all 248 out-of-range uint8
+  cursors with no writes on rejection, plus null arguments and existing codec
+  safety checks. All 120 C checks, 182 interface tests and 787 repository tests
+  pass plus the known transformer expected failure; host/Cortex-M55 objects,
+  lint/format/editor/doc gates pass. DESIGN.md §2 and REVIEW.md §58 record the
+  finite-test limits. This exhausts the host-only state-history approval, not
+  broader Task 13: no ToF/tensor packing, ordering/freshness/safety policy,
+  linked firmware/board execution, episode/log/data generation or application,
+  inference/training, dependency/download, licence or accepted-default change.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -971,11 +984,12 @@ on missing tools, and continue with the next unblocked task.
   additional cases; all 104 C checks, 166 interface tests and real Cortex-M55
   object compilation pass. No broader firmware, input/policy or hardware
   authorization is implied; the full task stays blocked.
-  State-history follow-up (2026-10-19): user separately approved an eight-tick
-  host-only C reference with explicit caller gaps. Core snapshots/validation,
-  wraparound and copy semantics pass 13 cases plus two new host/Arm compile
-  checks (REVIEW.md §57); seeded/sanitizer completion is next. No ToF/tensor,
-  ordering/freshness, inference or linked-board runtime is authorized.
+  State-history result (2026-10-19): separately approved eight-tick host-only
+  reference complete with explicit gaps, masks and exact copied states. Fourteen
+  history checks plus two additional host/Arm compile cases pass; 1,024 seeded
+  Python-queue operations and native ASan/UBSan checks pass (REVIEW.md §§57-58).
+  All 120 C checks and 182 interface tests pass. No ToF/tensor, ordering/freshness,
+  inference or linked-board runtime is authorized; broader Task 13 stays blocked.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

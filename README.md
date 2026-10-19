@@ -201,9 +201,11 @@ source/history/output objects valid and nonoverlapping. Copies are detached.
 python -m pytest -q tests/test_interface.py -k 'c_history or c_codec'
 ```
 
-Core host/Cortex-M55 compile checks pass; seeded and native sanitizer follow-ups
-are next. DESIGN.md §2 and REVIEW.md §57 record approval and limitations. No ToF/
-tensor packing, inference or board integration is included.
+All 120 C checks pass, including host/Cortex-M55 compilation, a 1,024-operation
+seeded Python-queue comparison and native ASan/UBSan history checks. These are
+finite host checks, not target execution, timing, memory-fit or safety evidence.
+DESIGN.md §2 and REVIEW.md §§57-58 record approval and limitations. No ToF/tensor
+packing, inference or board integration is included.
 
 [state-history-api]: firmware/include/micro_classifier_history.h
 [state-history-source]: firmware/micro_classifier_history.c

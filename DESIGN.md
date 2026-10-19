@@ -368,11 +368,19 @@ Core checks: 13 history cases cover warmup masks, repeated wraparound, explicit
 gaps, zero placeholders, invalid-state atomicity, separate presence/sensor masks,
 float32 extremes/signed zero, source/snapshot ownership, reset, null arguments
 and damaged cursors. Both sources compile to host and Cortex-M55 objects.
-All 119 C checks, 181 interface tests and 786 repository tests pass plus the
-known transformer expected failure; lint/format pass. Seeded history and native
-sanitizer checks are the next approved follow-up. No linked firmware, board
-execution, physical/stale-data qualification, complete student input history,
-task data, model runtime/training, dependencies or hardware action is implied.
+The completed follow-up adds a 1,024-operation seeded comparison against an
+independent Python queue, with resets, gaps, rejected pushes and exact serialized
+state comparisons at every snapshot. Native ASan/UBSan passes a further 1,024
+mixed history operations, copy/mask checks, null arguments and all 248 invalid
+uint8 cursor values (8-255), with unchanged history/output on rejection, alongside
+existing codec safety checks. All 120 C checks, 182 interface tests and 787
+repository tests pass plus the known transformer expected failure; lint/format,
+editor diagnostics, documentation checks and host/Cortex-M55 objects pass.
+REVIEW.md §§57-58 record the core checkpoint and completion. These finite checks
+are not timing, SRAM-fit or formal memory-safety evidence. The approved package
+is complete, not authorization for linked firmware, board execution, physical/
+stale-data qualification, complete student input history, task data, model
+runtime/training, dependencies or hardware action.
 
 [state-history-api]: firmware/include/micro_classifier_history.h
 [state-history-source]: firmware/micro_classifier_history.c

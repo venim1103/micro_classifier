@@ -1103,6 +1103,106 @@ def test_c_math_score_confidence_uses_first_raw_mode_not_selected(
     assert confidence.value == packet.confidence
 
 
+@pytest.mark.parametrize("count", [2, 4, 5])
+def test_c_math_softmax_shift_and_permutation(c_codec, count):
+    values = (-2, -0.5, 0, 1, 3)[:count]
+    results = []
+    for logits in (values, tuple(value + 1024 for value in values), values[::-1]):
+        source = (ctypes.c_float * count)(*logits)
+        output = (ctypes.c_float * count)()
+        assert c_codec.mc_v0_softmax(source, count, output, count) == 0
+        results.append(list(output))
+    assert results[1] == results[0]
+    assert results[2][::-1] == pytest.approx(results[0], abs=5e-8, rel=1e-7)
+
+
+def test_c_math_seeded_probabilities_confidence_and_wire_parity(c_codec):
+    generator = random.Random(20261019)
+    largest = struct.unpack("<f", bytes.fromhex("ffff7f7f"))[0]
+    special = (
+        -largest,
+        -1000,
+        -100,
+        -1,
+        -(2**-149),
+        -0.0,
+        0,
+        2**-149,
+        1,
+        100,
+        1000,
+        largest,
+    )
+    frames, packets = [], []
+    for iteration in range(250):
+        answers = []
+        for question, (_, options) in QUESTIONS.items():
+            count = len(options)
+            logits = [
+                generator.choice(special)
+                if iteration % 2
+                else generator.randrange(-4096, 4097) / 32
+                for _ in options
+            ]
+            if question == 1:
+                logits[0] = 0
+            source = (ctypes.c_float * count)(*logits)
+            original = bytes(source)
+            output = (ctypes.c_float * count)()
+            if question == 1:
+                assert c_codec.mc_v0_sigmoid(source[1], output, count) == 0
+            else:
+                assert c_codec.mc_v0_softmax(source, count, output, count) == 0
+            maximum = max(source)
+            weights = [math.exp(value - maximum) for value in source]
+            expected = [weight / sum(weights) for weight in weights]
+            assert list(output) == pytest.approx(expected, abs=5e-8, rel=1e-7)
+            assert all(math.isfinite(value) and 0 <= value <= 1 for value in output)
+            assert sum(output) == pytest.approx(1, abs=1e-6)
+            assert bytes(source) == original
+            packet = Answer(question, tuple(output), generator.randrange(count))
+            native = c_decision_from_python(Decision(answers=(packet,))).answers[
+                question - 1
+            ]
+            confidence = ctypes.c_double(42)
+            assert (
+                c_codec.mc_v0_answer_confidence(
+                    ctypes.byref(native), ctypes.byref(confidence)
+                )
+                == 0
+            )
+            assert confidence.value == pytest.approx(
+                packet.confidence, abs=2e-15, rel=0
+            )
+            answers.append(packet)
+        packet = Decision(sequence=iteration, answers=tuple(answers))
+        frame = c_encoded_frame(c_codec, c_decision_from_python(packet))
+        assert frame == encode_decision(packet)
+        received = CDecision()
+        assert (
+            c_codec.mc_v0_decode_decision(
+                c_buffer(frame), len(frame), ctypes.byref(received)
+            )
+            == 0
+        )
+        assert c_encoded_frame(c_codec, received) == frame
+        frames.append(frame)
+        packets.append(decode_decision(frame))
+    wire = b"".join(frames)
+    assert FrameDecoder().feed(wire) == packets
+    stream = CStream()
+    c_codec.mc_v0_stream_init(ctypes.byref(stream))
+    assert (
+        feed_c_stream(
+            c_codec,
+            stream,
+            (wire[offset : offset + 31] for offset in range(0, len(wire), 31)),
+        )
+        == packets
+    )
+    assert stream.used == stream.rejected_frames == 0
+
+
 def test_c_codec_crc(c_codec):
     for data in (b"", b"123456789", bytes(range(256))):
         assert c_codec.mc_v0_crc32(c_buffer(data), len(data)) == zlib.crc32(data)
@@ -2089,7 +2189,7 @@ def test_c_codec_address_and_undefined_sanitizers(tmp_path):
         declarations.append(f"static const uint8_t vector_{index}[] = {{{values}}};")
     pointers = ",".join(f"vector_{index}" for index in range(len(GOLDEN)))
     sizes = ",".join(f"sizeof(vector_{index})" for index in range(len(GOLDEN)))
-    source = '#include "micro_classifier_history.h"\n#include <assert.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
+    source = '#include "micro_classifier_math.h"\n#include "micro_classifier_history.h"\n#include <assert.h>\n#include <float.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
     source += "\n".join(declarations)
     source += f"\nstatic const uint8_t *const frames[] = {{{pointers}}};\n"
     source += f"static const size_t lengths[] = {{{sizes}}};\n"
@@ -2187,7 +2287,117 @@ static void check_history(void) {
     mc_v0_state_history_init(NULL);
     assert(memcmp(before, &history, sizeof(history)) == 0);
 }
+static void check_math(void) {
+    static const size_t counts[] = {2, 4, 5};
+    static const float invalid[] = {NAN, INFINITY, -INFINITY};
+    for (size_t group = 0; group < 3; ++group) {
+        size_t count = counts[group];
+        float *logits = malloc(count * sizeof(*logits));
+        assert(logits != NULL);
+        for (size_t index = 0; index < count; ++index) {
+            logits[index] = index % 2 ? -FLT_MAX : FLT_MAX;
+        }
+        unsigned char source_before[5 * sizeof(float)];
+        memcpy(source_before, logits, count * sizeof(*logits));
+        for (size_t capacity = 0; capacity <= count + 1; ++capacity) {
+            size_t bytes = capacity * sizeof(float);
+            float *output = malloc(bytes ? bytes : 1);
+            assert(output != NULL);
+            memset(output, 0xA5, bytes);
+            mc_v0_result result = mc_v0_softmax(logits, count, output, capacity);
+            assert((result == MC_V0_MATH_OK) == (capacity >= count));
+            if (result == MC_V0_MATH_OK) {
+                double total = 0.0;
+                for (size_t index = 0; index < count; ++index) {
+                    assert(isfinite(output[index]) && output[index] >= 0 && output[index] <= 1);
+                    total += output[index];
+                }
+                assert(fabs(total - 1.0) <= 1e-6);
+            }
+            size_t start = result == MC_V0_MATH_OK ? count * sizeof(float) : 0;
+            for (size_t offset = start; offset < bytes; ++offset) {
+                assert(((unsigned char *)output)[offset] == 0xA5);
+            }
+            memset(output, 0xA5, bytes);
+            result = mc_v0_sigmoid(FLT_MAX, output, capacity);
+            assert((result == MC_V0_MATH_OK) == (capacity >= 2));
+            if (result == MC_V0_MATH_OK) {
+                assert(output[0] == 0.0f && output[1] == 1.0f);
+            }
+            start = result == MC_V0_MATH_OK ? 2 * sizeof(float) : 0;
+            for (size_t offset = start; offset < bytes; ++offset) {
+                assert(((unsigned char *)output)[offset] == 0xA5);
+            }
+            assert(memcmp(source_before, logits, count * sizeof(*logits)) == 0);
+            free(output);
+        }
+        for (size_t position = 0; position < count; ++position) {
+            for (size_t kind = 0; kind < 3; ++kind) {
+                float output[5] = {42, 42, 42, 42, 42};
+                logits[position] = invalid[kind];
+                assert(mc_v0_softmax(logits, count, output, 5) == MC_V0_ERROR_DECISION);
+                assert(mc_v0_sigmoid(invalid[kind], output, 5) == MC_V0_ERROR_DECISION);
+                for (size_t index = 0; index < 5; ++index) {
+                    assert(output[index] == 42);
+                }
+                memcpy(logits, source_before, count * sizeof(*logits));
+            }
+        }
+        free(logits);
+    }
+    float logits[5] = {0};
+    float output[5] = {42, 42, 42, 42, 42};
+    for (size_t count = 0; count < 256; ++count) {
+        memset(output, 0xA5, sizeof(output));
+        mc_v0_result result = mc_v0_softmax(logits, count, output, 5);
+        assert((result == MC_V0_MATH_OK) == (count == 2 || count == 4 || count == 5));
+        if (result != MC_V0_MATH_OK) {
+            for (size_t offset = 0; offset < sizeof(output); ++offset) {
+                assert(((unsigned char *)output)[offset] == 0xA5);
+            }
+        }
+    }
+    memset(output, 0xA5, sizeof(output));
+    assert(mc_v0_softmax(logits, SIZE_MAX, output, 5) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_softmax(NULL, 5, output, 5) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_softmax(logits, 5, NULL, 5) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_sigmoid(0, NULL, 5) == MC_V0_ERROR_ARGUMENT);
+    for (size_t offset = 0; offset < sizeof(output); ++offset) {
+        assert(((unsigned char *)output)[offset] == 0xA5);
+    }
+    mc_v0_answer answer = {0};
+    answer.question_id = MC_V0_QUESTION_CLEAR_SECTOR;
+    answer.answer_type = MC_V0_TYPE_CHOICE;
+    answer.option_count = 4;
+    answer.selected = 3;
+    answer.confidence = NAN;
+    for (size_t index = 0; index < 4; ++index) {
+        answer.probabilities[index] = 0.25f;
+    }
+    answer.probabilities[4] = NAN;
+    uint8_t *metadata[] = {&answer.question_id, &answer.answer_type, &answer.option_count, &answer.selected};
+    const uint8_t initial[] = {MC_V0_QUESTION_CLEAR_SECTOR, MC_V0_TYPE_CHOICE, 4, 3};
+    for (size_t field = 0; field < 4; ++field) {
+        for (unsigned value = 0; value < 256; ++value) {
+            *metadata[field] = (uint8_t)value;
+            unsigned char before[sizeof(answer)];
+            memcpy(before, &answer, sizeof(answer));
+            double confidence = 42;
+            int valid = field == 3 ? value < 4 : value == initial[field];
+            mc_v0_result result = mc_v0_answer_confidence(&answer, &confidence);
+            assert((result == MC_V0_MATH_OK) == valid);
+            assert(confidence == (valid ? 0.0 : 42.0));
+            assert(memcmp(before, &answer, sizeof(answer)) == 0);
+        }
+        *metadata[field] = initial[field];
+    }
+    double confidence = 42;
+    assert(mc_v0_answer_confidence(NULL, &confidence) == MC_V0_ERROR_ARGUMENT);
+    assert(mc_v0_answer_confidence(&answer, NULL) == MC_V0_ERROR_ARGUMENT);
+    assert(confidence == 42);
+}
 int main(void) {
+    check_math();
     check_history();
     mc_v0_state state;
     mc_v0_decision decision;
@@ -2316,8 +2526,10 @@ int main(void) {
             "-",
             str(ROOT / "firmware/micro_classifier_codec.c"),
             str(ROOT / "firmware/micro_classifier_history.c"),
+            str(ROOT / "firmware/micro_classifier_math.c"),
             "-o",
             str(executable),
+            "-lm",
         ],
         input=source,
         text=True,

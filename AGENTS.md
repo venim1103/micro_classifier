@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §59 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §60 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -776,6 +776,20 @@ Keep this section and the Task List current; a new session resumes from them.
   Cortex-M55 objects pass. Seeded parity/native math sanitizers remain approved
   follow-up work. DESIGN.md §6 and REVIEW.md §59 record the core and limits.
 
+- Approved decision-math package completed (2026-10-19): 1,000 synthetic
+  question outputs across 250 fault-status packets match Python normalization,
+  shared confidence, exact encoded frames, native round trips and both stream
+  decoders. Shift/permutation fixtures pass. Native ASan/UBSan checks exact
+  input/output allocations, capacities, nonfinite inputs, unsupported counts,
+  all metadata byte values, nulls and unchanged rejected outputs. All 173 C
+  checks, 235 interface tests and 840 repository tests pass plus the known
+  transformer expected failure; host/Cortex-M55 objects, unsafe-math guards,
+  lint/format/editor/doc gates pass. DESIGN.md §6 and REVIEW.md §60 record the
+  finite-check limits. This exhausts the numeric reference approval, not Task
+  13's broader firmware/runtime scope. No model/heads, calibration, thresholds,
+  smoothing/rejection policy, data/labels/training, dependencies/downloads,
+  linked firmware/board, evidence-policy or accepted-default change occurred.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1003,11 +1017,12 @@ on missing tools, and continue with the next unblocked task.
   Python-queue operations and native ASan/UBSan checks pass (REVIEW.md §§57-58).
   All 120 C checks and 182 interface tests pass. No ToF/tensor, ordering/freshness,
   inference or linked-board runtime is authorized; broader Task 13 stays blocked.
-  Decision-math follow-up (2026-10-19): user separately approved stable numeric
-  primitives and synthetic verification only. Core softmax/sigmoid and shared
-  confidence pass 45 math cases plus four new build checks; 169 C checks and
-  real host/Cortex-M55 objects pass (REVIEW.md §59). Seeded/native safety checks
-  remain approved work. No model, calibration or policy/runtime gate is opened.
+  Decision-math result (2026-10-19): separately approved softmax/sigmoid and
+  shared confidence reference complete; 49 math checks plus four new build
+  cases pass, including 1,000 seeded synthetic outputs/250 wire packets and
+  native ASan/UBSan boundaries (REVIEW.md §§59-60). All 173 C checks, 235
+  interface tests and host/Cortex-M55 objects pass. No model, calibration,
+  safety/rejection policy or linked runtime gate is opened.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

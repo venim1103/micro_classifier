@@ -194,10 +194,13 @@ first raw mode, not `selected`; noul confidence is absent (`-1`). Numeric succes
 python -m pytest -q tests/test_interface.py -k 'c_math or c_codec or c_history'
 ```
 
-Core host/Cortex-M55 and failure checks pass; seeded parity and native math
-sanitizers are next. DESIGN.md §6 and REVIEW.md §59 record approval and limits.
-No heads/model, temperature/calibration, thresholds/smoothing/rejection policy,
-training or board integration is included.
+All 173 C checks pass, including 1,000 seeded synthetic question outputs through
+both wire paths, native ASan/UBSan boundaries, host/Cortex-M55 objects and unsafe-
+math build guards. These are finite numeric checks, not cross-platform bit
+identity, calibration, task quality, timing, memory-fit or board evidence.
+DESIGN.md §6 and REVIEW.md §§59-60 record approval and limits. No heads/model,
+temperature/calibration, thresholds/smoothing/rejection policy, training or
+board integration is included.
 
 [decision-math-api]: firmware/include/micro_classifier_math.h
 [decision-math-source]: firmware/micro_classifier_math.c

@@ -2986,6 +2986,54 @@ unlabeled mode, strict abstention, quarantine and collection caps are unchanged.
 [decision-math-api]: firmware/include/micro_classifier_math.h
 [decision-math-source]: firmware/micro_classifier_math.c
 
+## 60. C Decision-Math Parity and Native Checks Completed (2026-10-19)
+
+The separately approved numeric reference package is complete. The [math
+API][decision-math-api] and [source][decision-math-source], including shared
+codec confidence, are unchanged from the §59 core checkpoint. Follow-up work
+adds synthetic verification and records limits, not calibration or robot policy.
+
+A CPU-only seeded test checks 1,000 question distributions across 250 bundled
+synthetic fault-status decisions. Inputs mix exactly representable bounded
+logits, signed zero, subnormals and finite binary32 extremes. Stable Python
+scalar references agree with binary32 outputs under test-only absolute/relative
+assertions (5e-8/1e-7), not adopted task-quality thresholds. All outputs are finite,
+bounded and satisfy the unchanged probability-sum tolerance. Public confidence
+matches Python on those serialized probabilities, including arbitrary in-range
+selections; no teacher/model was run and no labels were produced.
+
+C-encoded frames exactly match Python, native decoding/re-encoding preserves
+bytes, and both Python and C streams recover all 250 packets from the combined
+wire, the latter using 31-byte chunks. Fixed 2/4/5-option fixtures additionally
+check representable common-logit shifts and reversal equivariance. These cases
+do not prove universal floating-point invariance or cross-platform `libm` parity.
+
+The existing native ASan/UBSan harness now includes the math source. Exact input
+allocations and output capacities from zero through option-count plus one check
+softmax/sigmoid failure atomicity and untouched spare storage. Finite extremes,
+every nonfinite position, all counts 0-255 plus `SIZE_MAX`, all 256 values of
+each answer metadata byte, ignored confidence/unused probability storage and
+null pointers pass. Source/output preservation is checked; prior codec/history
+sanitizer coverage remains active. Library code still allocates no memory;
+test allocations expose short buffers rather than assert arbitrary-pointer safety.
+
+Verification: 49 math cases and four extra compile/unsafe-math cases bring the
+C slice to 173 passes and interface tests to 235. Full CPU/offline suite: 840
+passes plus the known transformer numerical expected failure. Lint, changed-file
+format, editor diagnostics, references/local targets/review sequence and diff
+whitespace pass. Host GCC 13.3 and Arm GCC 13.2 produce real math objects, the
+latter for Cortex-M55. No target math-library link/execution, formal numerical/
+memory proof, timing, SRAM-fit, calibration or physical-safety evidence follows.
+
+This exhausts the approved host-only math package. No model/heads, calibration,
+thresholds, smoothing/rejection policy, ToF/tensor preprocessing or linked
+firmware/board integration is added. No episode/log generation/application,
+actual annotations/task data/splits, teacher inference/training, dependency/
+download, licence, physical-policy or accepted-input/default change occurred.
+Existing wire/goldens, simulator and historical reports remain unchanged. Task
+13's broader runtime and Tasks 6/9/ST/board gates, strict abstention, unlabeled
+mode, quarantine and collection caps remain unchanged.
+
 ## Sources
 
 Hardware and tools:

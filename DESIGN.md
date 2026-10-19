@@ -1109,6 +1109,11 @@ preserve the winning class while changing probabilities; full expansion is
 another option but is not bit-true either. Calibrate and validate the actual
 deployed output path regardless of where probability calculation runs.
 
+Per-tick decisions can oscillate near a decision boundary. Apply hysteresis or
+a minimum dwell time to mode and steering selections on the module, document it
+in the interface contract, and report raw distributions alongside smoothed
+selections. Smoothing adds latency, so validate it in closed loop (§7).
+
 #### Host-Only Decision Math (Approved, 2026-10-19)
 
 The user separately approved host-only stable softmax/sigmoid, shared existing
@@ -1151,20 +1156,26 @@ sigmoid equivalence, existing confidence/first-mode rules, all 256 values of
 each metadata byte, invalid probabilities, unsupported counts, capacities,
 nulls and output/source preservation. Four extra build cases compile math with
 host GCC 13.3 and Cortex-M55 Arm GCC 13.2 and reject fast/finite-only math.
-All 169 C checks, 231 interface tests and 836 repository tests pass plus the
-known transformer expected failure; lint/format pass. Seeded full-path parity
-and native math sanitizer coverage are the next approved checks, not claimed
-by this checkpoint. No timing, SRAM-fit, target execution, calibration, task
-quality or physical safety evidence follows. Existing wire/goldens, normal
-inputs/defaults, mode abstention, quarantine and all data/hardware gates stay.
+Completion adds fixed shift/permutation checks and 1,000 seeded synthetic
+question outputs across 250 fault-status packets. Binary32 probabilities match
+Python stable scalar references under the existing test-only absolute/relative
+assertions (5e-8/1e-7), not an adopted model-quality tolerance. Shared confidence
+matches Python; C frames exactly match Python bytes and round-trip through
+native decoding/re-encoding and both chunked stream paths. Native ASan/UBSan
+passes exact input/output allocations, short/full/spare capacities, every
+nonfinite input position, unsupported counts including `SIZE_MAX`, all metadata
+byte values and null/unchanged-output guards, alongside prior codec/history
+checks. All 173 C checks, 235 interface tests and 840 repository tests pass plus
+the known transformer expected failure; host/Cortex-M55 objects, unsafe-math
+guards, lint/format/editor and documentation checks pass. REVIEW.md §§59-60
+record core and completion. These finite checks establish no formal numerical/
+memory guarantee, cross-platform bit identity, timing, SRAM-fit, target execution,
+calibration, task quality or physical safety. This completes the approved
+numeric reference package only. Wire/goldens, normal inputs/defaults, mode
+abstention, quarantine and all other data/hardware/runtime gates stay unchanged.
 
 [decision-math-api]: firmware/include/micro_classifier_math.h
 [decision-math-source]: firmware/micro_classifier_math.c
-
-Per-tick decisions can oscillate near a decision boundary. Apply hysteresis or
-a minimum dwell time to mode and steering selections on the module, document it
-in the interface contract, and report raw distributions alongside smoothed
-selections. Smoothing adds latency, so validate it in closed loop (§7).
 
 ### Question Catalogue and Embodiment Profiles
 

@@ -175,6 +175,39 @@ and broader firmware remain outside scope.
 [c-codec-api]: firmware/include/micro_classifier_codec.h
 [c-codec-source]: firmware/micro_classifier_codec.c
 
+## Host-Only C State History
+
+The [eight-slot history API][state-history-api] and [source][state-history-source]
+retain validated host-state samples and explicit caller-declared gaps. They are
+a host-tested reference, not complete ToF/student history or board firmware.
+
+Initialize `mc_v0_state_history` with `mc_v0_state_history_init`. For each caller-
+chosen tick, call `mc_v0_state_history_push` with a native state or explicitly
+call `mc_v0_state_history_gap`. Invalid pushes do not modify or advance history;
+null state is an error, never a gap. Obtain a copied `mc_v0_state_window` with
+`mc_v0_state_history_snapshot`. Operations return `MC_V0_HISTORY_OK` on success;
+init(null) is a no-op. The shared `mc_v0_validate_state` applies the unchanged
+wire-state validation rules independently of framing.
+
+Snapshot order is oldest-to-newest: mask bit 0 is oldest, bit 7 newest. Unfilled
+and gap slots are zero placeholders; consult `valid_mask` before using a sample.
+A present state's sensor-validity mask can still be zero. States, source ages,
+sequence and timestamps are copied unchanged. No timeout, sequence rejection,
+automatic gap insertion, interpolation, normalization or safety policy is added.
+Callers must initialize, leave internal fields alone, serialize access and keep
+source/history/output objects valid and nonoverlapping. Copies are detached.
+
+```sh
+python -m pytest -q tests/test_interface.py -k 'c_history or c_codec'
+```
+
+Core host/Cortex-M55 compile checks pass; seeded and native sanitizer follow-ups
+are next. DESIGN.md §2 and REVIEW.md §57 record approval and limitations. No ToF/
+tensor packing, inference or board integration is included.
+
+[state-history-api]: firmware/include/micro_classifier_history.h
+[state-history-source]: firmware/micro_classifier_history.c
+
 ## Simulation Label Policy Draft
 
 The [catalogue][sim-catalogue-draft] and [labeler][sim-label-draft] are approved

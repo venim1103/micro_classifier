@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §56 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §57 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -736,6 +736,20 @@ Keep this section and the Task List current; a new session resumes from them.
   linked firmware or board action occurred. This completes the approved encoder
   package; broader Task 13 and all other data/hardware gates remain blocked.
 
+- Approved (2026-10-19): host-only C eight-tick state-history reference with
+  explicit caller-declared gaps, synthetic tests, host/sanitizer/Arm checks,
+  documentation and local commits. Preserve validated host states; export
+  oldest-to-newest with leading invalid slots and masks. No inferred timeout,
+  ordering, interpolation or safety policy, ToF/tensor packing, inference,
+  board integration, data/labels/training, dependencies or interface freeze.
+  Core in `firmware/micro_classifier_history.c` shares the existing codec state
+  validator; rejected pushes do not advance history, and gaps are explicit.
+  Thirteen history tests and two additional compile checks pass: 119 C checks,
+  181 interface tests and 786 repository passes plus the known transformer
+  expected failure; lint/format and host/Cortex-M55 objects pass. Seeded history
+  and native sanitizer follow-ups remain approved work. DESIGN.md §2 and
+  REVIEW.md §57 record the bounded scope and core limits.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -942,7 +956,7 @@ on missing tools, and continue with the next unblocked task.
 11. [blocked: no trained student] Closed-loop evaluation in the simulator and one DAgger round.
 12. [blocked: no trained student] Static ONNX export, INT8 QDQ PTQ, float versus INT8 parity, calibration
     on the deployed path, and golden vectors for the firmware (M4, host side).
-13. [blocked: only host protocol tooling approved; remaining firmware out of scope]
+13. [blocked: only host protocol/state-history tooling approved; remaining firmware out of scope]
   Firmware library in C for the Cortex-M55 without the ST HAL: packet
     parsing, history buffer, heads, softmax, confidence, and rejection; host
     unit tests against the golden vectors and an `arm-none-eabi-gcc` build.
@@ -957,6 +971,11 @@ on missing tools, and continue with the next unblocked task.
   additional cases; all 104 C checks, 166 interface tests and real Cortex-M55
   object compilation pass. No broader firmware, input/policy or hardware
   authorization is implied; the full task stays blocked.
+  State-history follow-up (2026-10-19): user separately approved an eight-tick
+  host-only C reference with explicit caller gaps. Core snapshots/validation,
+  wraparound and copy semantics pass 13 cases plus two new host/Arm compile
+  checks (REVIEW.md §57); seeded/sanitizer completion is next. No ToF/tensor,
+  ordering/freshness, inference or linked-board runtime is authorized.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

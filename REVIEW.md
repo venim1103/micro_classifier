@@ -2853,6 +2853,51 @@ inference/training, dependency/download, licence, linked firmware or board actio
 occurred. Strict abstention/quarantine and exhausted collection allowances stay
 in force; broader Task 13, Tasks 6/9 and ST/board gates remain blocked.
 
+## 57. Approved Host-Only C State-History Core (2026-10-19)
+
+The user explicitly approved a host-only eight-tick C state-history reference:
+exact validated host-state retention, explicit caller-declared gaps, oldest-to-
+newest snapshots with leading invalid slots/masks, synthetic tests, host/native
+sanitizer/Arm checks, documentation and local commits. No inferred timeout,
+ordering, interpolation or safety policy, ToF/tensor packing, inference, board
+integration, data collection/labels/training, dependency or interface freeze
+is authorized. This partially opens Task 13's history tooling only.
+
+The [new API][state-history-api] and [source][state-history-source] provide init,
+push, gap and copied snapshot operations over fixed arrays with no allocation
+or HAL. Push reuses the newly exposed existing codec state validator, without
+changing its rules or wire layout. Invalid states do not advance the ring;
+explicit gap is the only missing-tick insertion. Snapshot mask bit 0 is oldest,
+bit 7 newest. Unfilled/gap slots are zero placeholders, not usable packets.
+Slot presence and sensor-validity bits are distinct. Source and snapshot copies
+are detached; ages, sequence and timestamp remain unchanged. Repeated/backward/
+wrapped metadata is retained, not interpreted as ordering or freshness proof.
+
+The caller must initialize, preserve internal fields, serialize access and
+supply valid nonoverlapping objects. Null state is an error, not an implicit
+gap; init(null) is a no-op. `MC_V0_HISTORY_OK` aliases zero without changing
+existing error values. Argument/validation errors leave history/output unchanged.
+
+Verification: 13 new history checks cover initial masks, warmup, gap clearing,
+multiple wraps, invalid pushes, separate masks, exact float32/signed-zero values,
+copy ownership/reset, null pointers and corrupt cursors. Two new compile cases
+include the history source with host GCC 13.3 and Cortex-M55 Arm GCC 13.2.
+All 119 C checks and 181 interface tests pass; full CPU/offline gate: 786 passes
+plus the known transformer expected failure, with clean lint/touched-file format.
+Seeded history-model comparisons and native history sanitizers remain the next
+approved checks, not claimed by this core checkpoint.
+
+This is not complete student-visible history or ToF alignment, tensor/normalizing
+preprocessing, application gap/timeout/sequence policy, linked firmware, SRAM
+fit, timing, target execution or safety qualification. No simulator episode/log
+application, task annotations/data/splits, teacher inference/training, dependency/
+download, licence or hardware action occurred. Strict abstention/quarantine and
+exhausted collection limits remain; broader firmware and Tasks 6/9/ST/board
+gates remain blocked.
+
+[state-history-api]: firmware/include/micro_classifier_history.h
+[state-history-source]: firmware/micro_classifier_history.c
+
 ## Sources
 
 Hardware and tools:

@@ -395,6 +395,18 @@ class CState(ctypes.Structure):
     ]
 
 
+class CStateHistory(ctypes.Structure):
+    _fields_ = [
+        ("samples", CState * 8),
+        ("valid_mask", ctypes.c_uint8),
+        ("next", ctypes.c_uint8),
+    ]
+
+
+class CStateWindow(ctypes.Structure):
+    _fields_ = [("samples", CState * 8), ("valid_mask", ctypes.c_uint8)]
+
+
 class CAnswer(ctypes.Structure):
     _fields_ = [
         ("question_id", ctypes.c_uint8),
@@ -457,6 +469,7 @@ def c_codec(tmp_path_factory):
             "-I",
             str(HEADER_PATH.parent),
             str(ROOT / "firmware/micro_classifier_codec.c"),
+            str(ROOT / "firmware/micro_classifier_history.c"),
             "-o",
             str(library),
         ],
@@ -466,6 +479,22 @@ def c_codec(tmp_path_factory):
     codec = ctypes.CDLL(str(library))
     codec.mc_v0_crc32.argtypes = [ctypes.POINTER(ctypes.c_uint8), ctypes.c_size_t]
     codec.mc_v0_crc32.restype = ctypes.c_uint32
+    codec.mc_v0_validate_state.argtypes = [ctypes.POINTER(CState)]
+    codec.mc_v0_validate_state.restype = ctypes.c_int
+    codec.mc_v0_state_history_init.argtypes = [ctypes.POINTER(CStateHistory)]
+    codec.mc_v0_state_history_init.restype = None
+    codec.mc_v0_state_history_push.argtypes = [
+        ctypes.POINTER(CStateHistory),
+        ctypes.POINTER(CState),
+    ]
+    codec.mc_v0_state_history_push.restype = ctypes.c_int
+    codec.mc_v0_state_history_gap.argtypes = [ctypes.POINTER(CStateHistory)]
+    codec.mc_v0_state_history_gap.restype = ctypes.c_int
+    codec.mc_v0_state_history_snapshot.argtypes = [
+        ctypes.POINTER(CStateHistory),
+        ctypes.POINTER(CStateWindow),
+    ]
+    codec.mc_v0_state_history_snapshot.restype = ctypes.c_int
     codec.mc_v0_decode_state.argtypes = [
         ctypes.POINTER(ctypes.c_uint8),
         ctypes.c_size_t,
@@ -559,6 +588,235 @@ def c_encoded_frame(codec, source):
     )
     assert bytes(source) == original
     return bytes(output[1 : 1 + written.value])
+
+
+def test_c_history_empty_and_initial_sample(c_codec):
+    history = CStateHistory.from_buffer_copy(b"\xa5" * ctypes.sizeof(CStateHistory))
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    assert bytes(history) == bytes(ctypes.sizeof(CStateHistory))
+    window = CStateWindow()
+    assert (
+        c_codec.mc_v0_state_history_snapshot(
+            ctypes.byref(history), ctypes.byref(window)
+        )
+        == 0
+    )
+    assert window.valid_mask == 0
+    assert all(
+        bytes(sample) == bytes(ctypes.sizeof(CState)) for sample in window.samples
+    )
+    state = c_state_from_python(State(sequence=42))
+    original = bytes(state)
+    assert (
+        c_codec.mc_v0_state_history_push(ctypes.byref(history), ctypes.byref(state))
+        == 0
+    )
+    assert bytes(state) == original
+    assert (
+        c_codec.mc_v0_state_history_snapshot(
+            ctypes.byref(history), ctypes.byref(window)
+        )
+        == 0
+    )
+    assert window.valid_mask == 0x80
+    assert all(
+        bytes(sample) == bytes(ctypes.sizeof(CState)) for sample in window.samples[:7]
+    )
+    assert c_encoded_frame(c_codec, window.samples[7]) == encode_state(
+        State(sequence=42)
+    )
+
+
+def test_c_history_wraparound_and_explicit_gaps(c_codec):
+    history = CStateHistory()
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    expected = [None] * 8
+    for tick in range(32):
+        packet = (
+            None if tick % 3 == 1 else State(sequence=tick, timestamp_us=tick * 50000)
+        )
+        if packet is None:
+            assert c_codec.mc_v0_state_history_gap(ctypes.byref(history)) == 0
+        else:
+            source = c_state_from_python(packet)
+            assert (
+                c_codec.mc_v0_state_history_push(
+                    ctypes.byref(history), ctypes.byref(source)
+                )
+                == 0
+            )
+        expected = expected[1:] + [packet]
+        window = CStateWindow()
+        original = bytes(history)
+        assert (
+            c_codec.mc_v0_state_history_snapshot(
+                ctypes.byref(history), ctypes.byref(window)
+            )
+            == 0
+        )
+        assert bytes(history) == original
+        assert window.valid_mask == sum(
+            1 << index for index, sample in enumerate(expected) if sample is not None
+        )
+        for index, sample in enumerate(expected):
+            if sample is None:
+                assert bytes(window.samples[index]) == bytes(ctypes.sizeof(CState))
+            else:
+                assert c_encoded_frame(c_codec, window.samples[index]) == encode_state(
+                    sample
+                )
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"goal_m": (float("nan"), 0, 0)},
+        {"validity": 32},
+        {"task_id": 2},
+        {"ages_us": (UINT32_MAX,) * 5},
+        {"validity": 0, "ages_us": (UINT32_MAX,) * 5, "faults": 1},
+    ],
+)
+def test_c_history_invalid_state_does_not_advance(c_codec, changes):
+    history = CStateHistory()
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    state = c_state_from_python(State())
+    assert c_codec.mc_v0_validate_state(ctypes.byref(state)) == 0
+    assert (
+        c_codec.mc_v0_state_history_push(ctypes.byref(history), ctypes.byref(state))
+        == 0
+    )
+    state = c_state_from_python(replace(State(), **changes))
+    original = bytes(history)
+    assert c_codec.mc_v0_validate_state(ctypes.byref(state)) != 0
+    assert (
+        c_codec.mc_v0_state_history_push(ctypes.byref(history), ctypes.byref(state))
+        != 0
+    )
+    assert bytes(history) == original
+
+
+def test_c_history_slot_presence_is_separate_from_sensor_validity(c_codec):
+    history = CStateHistory()
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    packet = State(validity=0, ages_us=(UINT32_MAX,) * 5)
+    state = c_state_from_python(packet)
+    assert (
+        c_codec.mc_v0_state_history_push(ctypes.byref(history), ctypes.byref(state))
+        == 0
+    )
+    window = CStateWindow()
+    assert (
+        c_codec.mc_v0_state_history_snapshot(
+            ctypes.byref(history), ctypes.byref(window)
+        )
+        == 0
+    )
+    assert window.valid_mask == 0x80
+    assert window.samples[7].validity == 0
+    assert c_encoded_frame(c_codec, window.samples[7]) == encode_state(packet)
+    for _ in range(8):
+        assert c_codec.mc_v0_state_history_gap(ctypes.byref(history)) == 0
+    assert (
+        c_codec.mc_v0_state_history_snapshot(
+            ctypes.byref(history), ctypes.byref(window)
+        )
+        == 0
+    )
+    assert window.valid_mask == 0
+    assert all(
+        bytes(sample) == bytes(ctypes.sizeof(CState)) for sample in window.samples
+    )
+
+
+def test_c_history_preserves_values_without_ordering_and_owns_copies(c_codec):
+    history = CStateHistory()
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    prototype = State(
+        validity=31,
+        ages_us=(UINT32_MAX - 1,) * 5,
+        velocity_m_s=(-0.0, 2**-149, (2 - 2**-23) * 2**127),
+        angular_velocity_rad_s=(1, -2, 3),
+        goal_m=(-4, 5, 6),
+        battery_fraction=0.5,
+        faults=UINT32_MAX,
+    )
+    packets = [
+        replace(prototype, sequence=sequence, timestamp_us=stamp)
+        for sequence, stamp in (
+            (UINT32_MAX, UINT32_MAX),
+            (0, 0),
+            (0, 2),
+            (UINT32_MAX - 1, 1),
+        )
+    ]
+    for packet in packets:
+        source = c_state_from_python(packet)
+        original = bytes(source)
+        assert (
+            c_codec.mc_v0_state_history_push(
+                ctypes.byref(history), ctypes.byref(source)
+            )
+            == 0
+        )
+        assert bytes(source) == original
+        ctypes.memset(ctypes.byref(source), 0xA5, ctypes.sizeof(source))
+    window = CStateWindow()
+    original = bytes(history)
+    assert (
+        c_codec.mc_v0_state_history_snapshot(
+            ctypes.byref(history), ctypes.byref(window)
+        )
+        == 0
+    )
+    assert window.valid_mask == 0xF0
+    assert [c_encoded_frame(c_codec, sample) for sample in window.samples[4:]] == [
+        encode_state(packet) for packet in packets
+    ]
+    ctypes.memset(ctypes.byref(window), 0xA5, ctypes.sizeof(window))
+    assert bytes(history) == original
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    assert bytes(history) == bytes(ctypes.sizeof(CStateHistory))
+
+
+def test_c_history_null_arguments_leave_objects_unchanged(c_codec):
+    history = CStateHistory()
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    state = c_state_from_python(State())
+    window = CStateWindow.from_buffer_copy(b"\xa5" * ctypes.sizeof(CStateWindow))
+    original_history, original_window = bytes(history), bytes(window)
+    assert c_codec.mc_v0_validate_state(None) != 0
+    assert c_codec.mc_v0_state_history_push(None, ctypes.byref(state)) != 0
+    assert c_codec.mc_v0_state_history_push(ctypes.byref(history), None) != 0
+    assert c_codec.mc_v0_state_history_gap(None) != 0
+    assert c_codec.mc_v0_state_history_snapshot(None, ctypes.byref(window)) != 0
+    assert c_codec.mc_v0_state_history_snapshot(ctypes.byref(history), None) != 0
+    c_codec.mc_v0_state_history_init(None)
+    assert bytes(history) == original_history
+    assert bytes(window) == original_window
+
+
+@pytest.mark.parametrize("cursor", [8, 9, 255])
+def test_c_history_rejects_damaged_cursor_without_writes(c_codec, cursor):
+    history = CStateHistory()
+    c_codec.mc_v0_state_history_init(ctypes.byref(history))
+    history.next = cursor
+    source = c_state_from_python(State())
+    window = CStateWindow.from_buffer_copy(b"\xa5" * ctypes.sizeof(CStateWindow))
+    original_history, original_window = bytes(history), bytes(window)
+    assert (
+        c_codec.mc_v0_state_history_push(ctypes.byref(history), ctypes.byref(source))
+        != 0
+    )
+    assert c_codec.mc_v0_state_history_gap(ctypes.byref(history)) != 0
+    assert (
+        c_codec.mc_v0_state_history_snapshot(
+            ctypes.byref(history), ctypes.byref(window)
+        )
+        != 0
+    )
+    assert bytes(history) == original_history
+    assert bytes(window) == original_window
 
 
 def test_c_codec_crc(c_codec):
@@ -1031,7 +1289,12 @@ def test_c_codec_all_state_validity_groups_and_binary32_extremes(c_codec):
 
 
 @pytest.mark.parametrize("compiler", ["cc", "arm-none-eabi-gcc"])
-def test_c_codec_compiles_to_host_and_cortex_m55_objects(tmp_path, compiler):
+@pytest.mark.parametrize(
+    "source_name", ["micro_classifier_codec.c", "micro_classifier_history.c"]
+)
+def test_c_codec_compiles_to_host_and_cortex_m55_objects(
+    tmp_path, compiler, source_name
+):
     if shutil.which(compiler) is None:
         pytest.skip(f"{compiler} unavailable")
     flags = ["-mcpu=cortex-m55", "-mthumb"] if compiler == "arm-none-eabi-gcc" else []
@@ -1048,7 +1311,7 @@ def test_c_codec_compiles_to_host_and_cortex_m55_objects(tmp_path, compiler):
             "-I",
             str(HEADER_PATH.parent),
             "-c",
-            str(ROOT / "firmware/micro_classifier_codec.c"),
+            str(ROOT / "firmware" / source_name),
             "-o",
             str(tmp_path / "codec.o"),
         ],

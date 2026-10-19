@@ -332,6 +332,51 @@ teachers, training, dependencies or hardware. Broader firmware gates remain.
 [wire-codec-api]: firmware/include/micro_classifier_codec.h
 [wire-codec-source]: firmware/micro_classifier_codec.c
 
+#### Host-Only State History (Approved, 2026-10-19)
+
+The user separately approved an eight-tick host-state C reference, explicit
+caller-declared gaps, synthetic tests, host/sanitizer/Arm checks, documentation
+and local commits. The [history API][state-history-api] and
+[source][state-history-source] store copied validated native host states in a
+fixed ring, without allocation or HAL. This is not ToF history, tensor packing,
+an observation adapter, inference or deployed firmware. No timeout, sequence
+ordering, interpolation, physical threshold, wire/default or interface freeze
+is adopted. The caller determines tick boundaries and calls push or gap once
+for each chosen tick; the library never infers missing ticks from metadata.
+
+`mc_v0_state_history_init` clears the ring. Push uses the shared
+`mc_v0_validate_state` contract validator: invalid states fail without mutation
+or advancement; a null state is an error, not an implicit gap. Explicit gap
+insertion advances one slot and clears its stored value/presence. Snapshot
+copies eight slots oldest-to-newest, with bit 0 oldest and bit 7 newest in
+`valid_mask`. Initial/unfilled and explicit-gap slots are zero placeholders,
+not valid state packets; always consult the mask. Slot presence differs from
+the state's own sensor-validity bits: a received all-unknown state is present.
+Values, sensor ages, sequence and timestamp are not aged, normalized, reordered
+or interpreted. Duplicate/backward/wrapped counters are preserved, not accepted
+as fresh or policy-qualified merely because they were stored.
+
+Initialize before use, do not alter internal fields, serialize access and use
+valid nonoverlapping source/history/snapshot objects. Snapshot/source changes
+cannot mutate retained history. Nonnull operations return `MC_V0_HISTORY_OK`
+(zero) on success; argument or validation errors leave affected outputs/history
+unchanged. Init accepts null as a no-op, like the stream initializer. Existing
+codec error numbers, state-validation rules, byte format and all golden frames
+are unchanged; the validator is newly exposed for sharing rather than duplicated.
+
+Core checks: 13 history cases cover warmup masks, repeated wraparound, explicit
+gaps, zero placeholders, invalid-state atomicity, separate presence/sensor masks,
+float32 extremes/signed zero, source/snapshot ownership, reset, null arguments
+and damaged cursors. Both sources compile to host and Cortex-M55 objects.
+All 119 C checks, 181 interface tests and 786 repository tests pass plus the
+known transformer expected failure; lint/format pass. Seeded history and native
+sanitizer checks are the next approved follow-up. No linked firmware, board
+execution, physical/stale-data qualification, complete student input history,
+task data, model runtime/training, dependencies or hardware action is implied.
+
+[state-history-api]: firmware/include/micro_classifier_history.h
+[state-history-source]: firmware/micro_classifier_history.c
+
 ### Decisions Required Before Scaffolding
 
 Recorded as provisional defaults on 2026-10-14 ([REVIEW.md](REVIEW.md) §10) so

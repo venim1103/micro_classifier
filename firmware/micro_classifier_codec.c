@@ -124,7 +124,10 @@ static int valid_group(uint32_t age, int valid, const float *values, size_t coun
     return 1;
 }
 
-static int valid_state(const mc_v0_state *state) {
+mc_v0_result mc_v0_validate_state(const mc_v0_state *state) {
+    if (state == NULL) {
+        return MC_V0_ERROR_ARGUMENT;
+    }
     if ((state->validity & ~UINT32_C(31)) != 0 ||
         state->task_id != MC_V0_TASK_GOAL_REACHING ||
         !valid_group(state->ages_us[0], state->validity & MC_V0_VALID_VELOCITY,
@@ -139,9 +142,9 @@ static int valid_state(const mc_v0_state *state) {
             state->ages_us[4] == MC_V0_UNKNOWN_AGE_US :
             (state->ages_us[4] != MC_V0_UNKNOWN_AGE_US || state->faults != 0)) ||
         state->battery_fraction < 0.0f || state->battery_fraction > 1.0f) {
-        return 0;
+        return MC_V0_ERROR_STATE;
     }
-    return 1;
+    return MC_V0_DECODE_OK;
 }
 
 mc_v0_result mc_v0_decode_state(const uint8_t *data, size_t length,
@@ -170,7 +173,7 @@ mc_v0_result mc_v0_decode_state(const uint8_t *data, size_t length,
     }
     decoded.battery_fraction = read_float(payload + MC_V0_STATE_BATTERY_FRACTION_OFFSET);
     decoded.faults = read32(payload + MC_V0_STATE_FAULTS_OFFSET);
-    if (!valid_state(&decoded)) {
+    if (mc_v0_validate_state(&decoded) != MC_V0_DECODE_OK) {
         return MC_V0_ERROR_STATE;
     }
     *output = decoded;
@@ -185,7 +188,7 @@ mc_v0_result mc_v0_encode_state(const mc_v0_state *state, uint8_t *output,
     if (capacity < MC_V0_STATE_FRAME_SIZE) {
         return MC_V0_ERROR_LENGTH;
     }
-    if (!valid_state(state)) {
+    if (mc_v0_validate_state(state) != MC_V0_DECODE_OK) {
         return MC_V0_ERROR_STATE;
     }
     uint8_t frame[MC_V0_STATE_FRAME_SIZE] = {0};

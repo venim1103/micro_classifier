@@ -66,6 +66,15 @@ def select_review_requests(path):
         last = request
     if last is None:
         raise ValueError("readiness episode contains no observations")
+    lines = Path(path).read_bytes().splitlines()
+    summary = json.loads(lines[-1]) if lines else None
+    if (
+        not isinstance(summary, dict)
+        or summary.get("kind") != "summary"
+        or type(summary.get("ticks")) is not int
+        or summary["ticks"] != last["source"]["tick"]
+    ):
+        raise ValueError("readiness episode requires a matching final summary")
     selected[last["source"]["tick"]] = last
     return [selected[tick] for tick in sorted(selected)]
 

@@ -2323,6 +2323,17 @@ window selection, normal-input limits, no-collection path preflight and fake-onl
 fixed-run integration. Full gate: 643 repository passes plus the known transformer
 expected failure; 101 pipeline tests, lint/format/editor/doc checks pass.
 
+Selection repair (2026-10-19): four synthetic regressions showed that an
+observation prefix without a closing summary, or with a mismatched or noninteger
+summary tick, was accepted as a final-window source. The selector now requires a
+final summary whose strict integer tick matches the last rendered observation.
+This syntactic completion guard is not full action/truth-body attestation; the
+generic prefix-capable renderer is unchanged. All 24 readiness tests and 105
+pipeline tests pass; full gate: 667 passes plus the known transformer expected
+failure, with clean lint/format/editor checks. No collection or artifact was
+regenerated. The historical report's exporter hashes still describe the original
+`dc77a44` version, not this repair; its recorded run evidence is unchanged.
+
 The readiness package is complete and its eight-episode allowance exhausted.
 No target evidence, uncertainty bound or real-input registration/coverage model
 is qualified; all first-three task annotations still require admissible evidence

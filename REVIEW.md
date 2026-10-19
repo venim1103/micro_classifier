@@ -2661,6 +2661,30 @@ whitespace and exact three-file scope checks pass. The last code gate remains
 663 passes plus the known transformer expected failure from §50; it was not
 rerun for this decision note. No code or persisted data artifact changed.
 
+## 52. Readiness Closing-Summary Validation Repair (2026-10-19)
+
+Four synthetic-only regressions reproduced a readiness-selector gap: a missing
+closing summary, a summary tick differing from the last observation, or boolean/
+float tick aliases were all accepted. The [readiness selector][readiness-tool]
+now requires a final summary with a strict integer tick matching the last
+renderer-validated observation. Existing valid selection fixtures now include
+closing summaries. The shared prefix-capable renderer and all rollout, input,
+projection and policy code remain unchanged.
+
+This is a syntactic completion guard, not independent action/truth-body
+attestation or evidence qualification. No study, collection, historical-log
+application or artifact regeneration occurred. The §49 readiness report and
+its original `dc77a44` exporter hashes remain historical run evidence; they do
+not claim this repaired selector generated those artifacts.
+
+Verification: all four reproductions failed before the guard and pass after it;
+24 readiness tests and 105 pipeline tests pass. Full CPU-only/offline suite:
+667 passes plus the known transformer expected failure. Ruff lint, touched-file
+format and editor diagnostics pass. No dependency, input/default/history/token,
+label/data/split, uncertainty-policy, inference/training or hardware scope change.
+The ST tools directory remains empty, both collection allowances exhausted,
+strict abstention/quarantine in force and all remaining Task List gates blocked.
+
 ## Sources
 
 Hardware and tools:

@@ -110,6 +110,7 @@ def test_readiness_window_selection_deduplicates_skips_and_keeps_final(
     for _ in range(final_tick):
         observation, *_ = env.step((0, 0))
         records.append({"kind": "transition", "observation": observation})
+    records.append({"kind": "summary", "ticks": final_tick})
     path = tmp_path / "fixture.jsonl"
     write_episode(path, records)
     requests = select_review_requests(path)
@@ -118,6 +119,37 @@ def test_readiness_window_selection_deduplicates_skips_and_keeps_final(
         json.loads(row["state"])["module_observation"]["history_valid"][-1]
         for row in requests
     )
+
+
+@pytest.mark.parametrize(
+    "closing_record",
+    [
+        None,
+        {"kind": "summary", "ticks": 1},
+        {"kind": "summary", "ticks": False},
+        {"kind": "summary", "ticks": 0.0},
+    ],
+)
+def test_readiness_selection_requires_matching_final_summary(tmp_path, closing_record):
+    from dataclasses import asdict
+
+    from teacher.readiness import select_review_requests
+
+    observation, _ = RoverEnv().reset(seed=1)
+    records = [
+        {
+            "schema": "micro-classifier/sim-episode/1",
+            "kind": "metadata",
+            "config": asdict(Config()),
+            "observation": observation,
+        }
+    ]
+    if closing_record is not None:
+        records.append(closing_record)
+    path = tmp_path / "incomplete-fixture.jsonl"
+    write_episode(path, records)
+    with pytest.raises(ValueError, match="summary"):
+        select_review_requests(path)
 
 
 @pytest.mark.parametrize("defect", ["empty", "too_long", "config"])

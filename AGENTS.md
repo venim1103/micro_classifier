@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §51 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §52 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -669,6 +669,16 @@ Keep this section and the Task List current; a new session resumes from them.
   task labels, evidence qualification or training is unlocked. All remaining
   Task List items remain blocked; do not re-ask the same risk-choice question
   without a new claim/domain or evidence direction from the user.
+
+- Readiness selection repair (2026-10-19): four synthetic regressions reproduced
+  admission of a missing or mismatched closing summary, including boolean/float
+  tick aliases. The selector now requires a final summary with a strict integer
+  tick matching the last rendered observation. All 24 readiness checks and 667
+  repository tests pass plus the known transformer expected failure; lint,
+  format and editor diagnostics pass. Historical readiness artifacts/report and
+  their original exporter hashes remain unchanged; no study was rerun. DESIGN.md
+  §7 and REVIEW.md §52 record the repair. No evidence-policy, input/default,
+  label/data, collection, training or hardware scope change; all gates remain.
 
 ## Task List
 

@@ -273,6 +273,10 @@ def bind_native(path):
                 ctypes.c_void_p,
             ],
         ),
+        "mc_v0_stream_flush": (
+            ctypes.c_int,
+            [ctypes.POINTER(CStream), CPacketHandler, ctypes.c_void_p],
+        ),
     }
     for name, (return_type, arguments) in signatures.items():
         function = getattr(codec, name)

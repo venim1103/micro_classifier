@@ -136,14 +136,19 @@ a nonnull callback and context to `mc_v0_stream_feed`. A zero-length chunk may
 have null data. Feed success means processing succeeded; only callbacks deliver
 validated packets, possibly none or several. The callback packet is borrowed
 only until it returns; copy anything retained. Serialize access to each stream,
-and do not feed/reset it from its callback. The framing buffer is 128 bytes plus
-fixed metadata. `rejected_frames` counts rejected candidates, not noise bytes,
-and saturates at `UINT32_MAX`. On a transport-chosen timeout, init discards
-partial input and clears counters; no threshold is imposed by this library.
+and do not feed/flush/reset it from its callback. The framing buffer is 128 bytes
+plus fixed metadata. `rejected_frames` counts rejected candidates, not noise
+bytes, and saturates at `UINT32_MAX`. On a transport-chosen inter-byte timeout,
+call `mc_v0_stream_flush` with the callback and context. It recovers complete
+valid frames hidden behind incomplete candidates before discarding remaining
+fragments, preserving counters. Python's `FrameDecoder.flush()` does the same.
+Do not reset first; init is a full reset that also clears counters. No timeout
+threshold or change to the wire format is imposed by this library.
 
 The test suite includes golden/stream parity, sanitizer checks, seeded malformed
 fixtures, tolerance edges and host/Arm compilation. DESIGN.md §2 and REVIEW.md
-§§53-56 record the host-only authorization and verification limits.
+§§53-56 record the host-only authorization and verification limits; §71 records
+the repairs. Arm checks now explicitly use `-mfloat-abi=hard -mfpu=auto`.
 
 For encoding, pass a native state/decision, writable destination, capacity and
 length pointer to `mc_v0_encode_state` or `mc_v0_encode_decision`. All pointers

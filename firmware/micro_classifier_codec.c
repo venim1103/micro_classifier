@@ -413,7 +413,7 @@ static void reject_candidate(mc_v0_stream *stream) {
 }
 
 static void process_pending(mc_v0_stream *stream, mc_v0_packet_handler handler,
-                             void *context) {
+                             void *context, int discard_incomplete) {
     while (stream->used != 0) {
         if (stream->buffer[0] != MC_V0_MAGIC_0 ||
             (stream->used > 1 && stream->buffer[1] != MC_V0_MAGIC_1)) {
@@ -421,6 +421,9 @@ static void process_pending(mc_v0_stream *stream, mc_v0_packet_handler handler,
             continue;
         }
         if (stream->used < MC_V0_HEADER_SIZE) {
+            if (discard_incomplete) {
+                stream->used = 0;
+            }
             return;
         }
         uint8_t kind = stream->buffer[MC_V0_HEADER_KIND_OFFSET];
@@ -433,6 +436,10 @@ static void process_pending(mc_v0_stream *stream, mc_v0_packet_handler handler,
         }
         size_t length = MC_V0_HEADER_SIZE + size + MC_V0_CRC_SIZE;
         if (stream->used < length) {
+            if (discard_incomplete) {
+                reject_candidate(stream);
+                continue;
+            }
             return;
         }
         mc_v0_packet packet = {0};
@@ -461,7 +468,16 @@ mc_v0_result mc_v0_stream_feed(mc_v0_stream *stream, const uint8_t *data,
     }
     for (size_t index = 0; index < length; ++index) {
         stream->buffer[stream->used++] = data[index];
-        process_pending(stream, handler, context);
+        process_pending(stream, handler, context, 0);
     }
+    return MC_V0_DECODE_OK;
+}
+
+mc_v0_result mc_v0_stream_flush(mc_v0_stream *stream, mc_v0_packet_handler handler,
+                               void *context) {
+    if (stream == NULL || handler == NULL || stream->used >= MC_V0_MAX_FRAME_SIZE) {
+        return MC_V0_ERROR_ARGUMENT;
+    }
+    process_pending(stream, handler, context, 1);
     return MC_V0_DECODE_OK;
 }

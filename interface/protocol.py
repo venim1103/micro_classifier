@@ -173,8 +173,8 @@ def finite(values):
     try:
         if not all(math.isfinite(value) for value in values):
             raise ProtocolError("non-finite state value")
-    except TypeError as error:
-        raise ProtocolError("state values must be numeric") from error
+    except (TypeError, OverflowError) as error:
+        raise ProtocolError("state values must be representable numbers") from error
 
 
 def validate_state(state):
@@ -334,6 +334,7 @@ def encode_decision(decision):
             struct.unpack("<" + "f" * len(options), probabilities),
             answer.selected,
         )
+        validate_answer(wire_answer)
         payload += (
             ANSWER.pack(
                 answer.question_id,
@@ -399,42 +400,58 @@ class FrameDecoder:
         packets = []
         for start in range(0, len(data), MAX_FRAME_SIZE):
             self.buffer.extend(data[start : start + MAX_FRAME_SIZE])
-            while self.buffer:
-                position = self.buffer.find(MAGIC)
-                if position < 0:
-                    self.buffer[:] = (
-                        self.buffer[-1:] if self.buffer[-1:] == MAGIC[:1] else b""
-                    )
-                    break
-                del self.buffer[:position]
-                if len(self.buffer) < HEADER.size:
-                    break
-                header = HEADER.unpack(self.buffer[: HEADER.size])
-                kind, size = header[2], header[3]
-                bounded = (kind == Kind.STATE and size == STATE.size) or (
-                    kind == Kind.DECISION
-                    and DECISION.size <= size <= MAX_DECISION_PAYLOAD
+            packets.extend(self._drain())
+        return packets
+
+    def flush(self):
+        """Recover complete buffered frames on caller-declared idle, then discard fragments."""
+        return self._drain(discard_incomplete=True)
+
+    def _drain(self, *, discard_incomplete=False):
+        packets = []
+        while self.buffer:
+            position = self.buffer.find(MAGIC)
+            if position < 0:
+                self.buffer[:] = (
+                    self.buffer[-1:]
+                    if not discard_incomplete and self.buffer[-1:] == MAGIC[:1]
+                    else b""
                 )
-                if not bounded:
+                break
+            del self.buffer[:position]
+            if len(self.buffer) < HEADER.size:
+                if discard_incomplete:
+                    self.buffer.clear()
+                break
+            header = HEADER.unpack(self.buffer[: HEADER.size])
+            kind, size = header[2], header[3]
+            bounded = (kind == Kind.STATE and size == STATE.size) or (
+                kind == Kind.DECISION and DECISION.size <= size <= MAX_DECISION_PAYLOAD
+            )
+            if not bounded:
+                self.rejected_frames += 1
+                del self.buffer[0]
+                continue
+            length = HEADER.size + size + CRC.size
+            if len(self.buffer) < length:
+                if discard_incomplete:
                     self.rejected_frames += 1
                     del self.buffer[0]
                     continue
-                length = HEADER.size + size + CRC.size
-                if len(self.buffer) < length:
-                    break
-                frame = bytes(self.buffer[:length])
-                try:
-                    packet = (
-                        decode_state(frame)
-                        if kind == Kind.STATE
-                        else decode_decision(frame)
-                    )
-                except ProtocolError:
-                    self.rejected_frames += 1
-                    del self.buffer[0]
-                else:
-                    packets.append(packet)
-                    del self.buffer[:length]
+                break
+            frame = bytes(self.buffer[:length])
+            try:
+                packet = (
+                    decode_state(frame)
+                    if kind == Kind.STATE
+                    else decode_decision(frame)
+                )
+            except ProtocolError:
+                self.rejected_frames += 1
+                del self.buffer[0]
+            else:
+                packets.append(packet)
+                del self.buffer[:length]
         return packets
 
 

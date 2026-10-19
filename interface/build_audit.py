@@ -190,7 +190,11 @@ def inspect_object(directory, source, target, optimization, tools):
         "-Werror",
         "-pedantic",
         "-fstack-usage",
-        *(["-mcpu=cortex-m55", "-mthumb"] if target == "arm" else []),
+        *(
+            ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-mfpu=auto"]
+            if target == "arm"
+            else []
+        ),
         "-I",
         str(ROOT / "firmware/include"),
         "-c",

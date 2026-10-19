@@ -82,5 +82,7 @@ void mc_v0_stream_init(mc_v0_stream *stream);
 mc_v0_result mc_v0_stream_feed(mc_v0_stream *stream, const uint8_t *data,
                               size_t length, mc_v0_packet_handler handler,
                               void *context);
+mc_v0_result mc_v0_stream_flush(mc_v0_stream *stream, mc_v0_packet_handler handler,
+                               void *context);
 
 #endif

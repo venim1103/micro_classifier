@@ -101,6 +101,10 @@ def test_unsupported_header_rejected_even_with_valid_crc(offset):
         {"ages_us": (UINT32_MAX,) * 5},
         {"goal_m": (float("nan"), 0, 0)},
         {"velocity_m_s": (1e100, 0, 0)},
+        {"velocity_m_s": (10**400, 0, 0)},
+        {"angular_velocity_rad_s": (0, 0, -(10**400))},
+        {"goal_m": (10**400, 0, 0)},
+        {"battery_fraction": 10**400},
         {"goal_m": (0, 0)},
         {"battery_fraction": 0.5},
         {"faults": 1},
@@ -181,6 +185,7 @@ def test_status_packets_are_explicit_and_default_is_fault(status):
         {"answers": (full_decision().answers[0],) * 4},
         {"answers": (Answer(1, (0.75, 0.75), 0),)},
         {"answers": (Answer(1, (float("nan"), 0), 0),)},
+        {"answers": (Answer(1, (10**400, 0), 0),)},
         {"answers": (Answer(2, (0.25,) * 4, 4),)},
         {"answers": (Answer(2, (0.5, 0.5), 1),)},
         {"model_version": 0},
@@ -252,9 +257,37 @@ def test_wire_round_trip_is_exact_for_non_binary_fractions():
     assert encode_decision(decode_decision(frame)) == frame
 
 
+@pytest.mark.parametrize(
+    "question_id", [QuestionId.CLEAR_SECTOR, QuestionId.SPEED_TIER]
+)
+def test_decision_encoder_rejects_probability_sum_invalid_after_binary32(question_id):
+    probabilities = (0.4453871940548014, 0.4001753419383107, 0.15443647400688784, 0)
+    assert abs(sum(probabilities) - 1) < 1e-6
+    rounded = struct.unpack("<4f", struct.pack("<4f", *probabilities))
+    assert abs(sum(rounded) - 1) > 1e-6
+    packet = Decision(answers=(Answer(question_id, probabilities, 0),))
+    with pytest.raises(ProtocolError, match="sum to one"):
+        encode_decision(packet)
+
+
 ROOT = Path(__file__).resolve().parents[1]
 HEADER_PATH = ROOT / "firmware/include/micro_classifier_protocol.h"
 GOLDEN = json.loads((ROOT / "interface/golden_vectors.json").read_text())["vectors"]
+
+
+@pytest.mark.parametrize("vector", GOLDEN, ids=lambda vector: vector["name"])
+def test_stream_flush_discards_incomplete_frames(c_codec, vector):
+    frame = bytes.fromhex(vector["hex"])
+    for length in range(len(frame)):
+        stream = FrameDecoder()
+        assert stream.feed(frame[:length]) == []
+        assert stream.flush() == []
+        assert not stream.buffer
+        assert stream.feed(encode_state(State(sequence=123))) == [State(sequence=123)]
+        native = CStream()
+        c_codec.mc_v0_stream_init(ctypes.byref(native))
+        assert feed_c_stream(c_codec, native, (frame[:length],), flush=True) == []
+        assert native.used == 0
 
 
 @pytest.mark.parametrize("vector", GOLDEN, ids=lambda vector: vector["name"])
@@ -1563,6 +1596,12 @@ def test_build_audit_real_matrix(tmp_path, c_codec, assembly):
         assert row["stack_usage"] and row["sections"]
         if row["target"] == "arm":
             assert row["elf"] == {"class_bits": 32, "machine": 40, "type": "REL"}
+            directory = Path(row["artifact_directory"])
+            command = json.loads((directory / "compile.json").read_text())["argv"]
+            assert "-mfloat-abi=hard" in command
+            assert "-mfpu=auto" in command
+            attributes = json.loads((directory / "elf.json").read_text())["stdout"]
+            assert "Tag_ABI_VFP_args: VFP registers" in attributes
     for name, record in report["artifacts"].items():
         assert native_verify.file_record(work / name) == record
 
@@ -2606,7 +2645,11 @@ def test_c_codec_compiles_to_host_and_cortex_m55_objects(
 ):
     if shutil.which(compiler) is None:
         pytest.skip(f"{compiler} unavailable")
-    flags = ["-mcpu=cortex-m55", "-mthumb"] if compiler == "arm-none-eabi-gcc" else []
+    flags = (
+        ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-mfpu=auto"]
+        if compiler == "arm-none-eabi-gcc"
+        else []
+    )
     subprocess.run(
         [
             compiler,
@@ -2627,6 +2670,14 @@ def test_c_codec_compiles_to_host_and_cortex_m55_objects(
         capture_output=True,
         check=True,
     )
+    if compiler == "arm-none-eabi-gcc":
+        attributes = subprocess.run(
+            ["arm-none-eabi-readelf", "-A", str(tmp_path / "codec.o")],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        assert "Tag_ABI_VFP_args: VFP registers" in attributes
 
 
 @pytest.mark.parametrize("flag", ["-ffast-math", "-ffinite-math-only"])
@@ -2704,7 +2755,7 @@ def test_c_codec_requires_review_when_contract_layout_changes(
     assert "static assertion failed" in result.stderr
 
 
-def feed_c_stream(codec, stream, chunks):
+def feed_c_stream(codec, stream, chunks, *, flush=False):
     captured = []
 
     def capture(packet, context):
@@ -2719,6 +2770,8 @@ def feed_c_stream(codec, stream, chunks):
             == 0
         )
         assert 0 <= stream.used < 128
+    if flush:
+        assert codec.mc_v0_stream_flush(ctypes.byref(stream), callback, 0x1234) == 0
     packets = []
     for data, context in captured:
         assert context == 0x1234
@@ -2838,6 +2891,55 @@ def test_c_codec_stream_drains_nested_packets_after_one_final_byte(c_codec):
     assert stream.used == 0
 
 
+@pytest.mark.parametrize(
+    "prefix", [b"MC\x00\x02\x68\x00", HEADER.pack(b"MC", 0, 2, 104, 0, 1, 0, 0, 0)]
+)
+@pytest.mark.parametrize(
+    "packets", [(State(sequence=7),), (Decision(sequence=7), Decision(sequence=8))]
+)
+def test_stream_idle_flush_recovers_frames_hidden_by_false_length(
+    c_codec, prefix, packets
+):
+    wire = (
+        prefix
+        + b"".join(
+            encode_state(packet)
+            if isinstance(packet, State)
+            else encode_decision(packet)
+            for packet in packets
+        )
+        + b"MC\x00"
+    )
+    for boundary in range(len(wire) + 1):
+        reference = FrameDecoder()
+        expected = reference.feed(wire[:boundary]) + reference.feed(wire[boundary:])
+        assert expected == []
+        expected += reference.flush()
+        assert expected == list(packets)
+        assert not reference.buffer
+        rejected = reference.rejected_frames
+        assert reference.flush() == []
+        assert reference.rejected_frames == rejected
+        stream = CStream()
+        c_codec.mc_v0_stream_init(ctypes.byref(stream))
+        assert (
+            feed_c_stream(
+                c_codec, stream, (wire[:boundary], wire[boundary:]), flush=True
+            )
+            == expected
+        )
+        assert stream.used == 0
+        assert stream.rejected_frames == rejected
+        assert feed_c_stream(c_codec, stream, (), flush=True) == []
+        assert stream.rejected_frames == rejected
+        following = encode_state(State(sequence=9))
+        assert (
+            feed_c_stream(c_codec, stream, (following,))
+            == reference.feed(following)
+            == [State(sequence=9)]
+        )
+
+
 def test_c_codec_stream_noise_saturation_and_explicit_reset(c_codec):
     stream = CStream()
     c_codec.mc_v0_stream_init(ctypes.byref(stream))
@@ -2854,6 +2956,9 @@ def test_c_codec_stream_noise_saturation_and_explicit_reset(c_codec):
     stream.rejected_frames = UINT32_MAX
     assert feed_c_stream(c_codec, stream, (broken + frame,)) == [State()]
     assert stream.rejected_frames == UINT32_MAX
+    assert feed_c_stream(c_codec, stream, (frame[:30],), flush=True) == []
+    assert stream.used == 0
+    assert stream.rejected_frames == UINT32_MAX
     c_codec.mc_v0_stream_init(None)
 
 
@@ -2867,6 +2972,8 @@ def test_c_codec_stream_bad_arguments_do_not_consume_input(c_codec):
     frame = c_buffer(encode_state(State()))
     original = bytes(stream)
     assert c_codec.mc_v0_stream_feed(None, frame, len(frame), callback, None) != 0
+    assert c_codec.mc_v0_stream_flush(None, callback, None) != 0
+    assert c_codec.mc_v0_stream_flush(ctypes.byref(stream), CPacketHandler(), None) != 0
     assert c_codec.mc_v0_stream_feed(ctypes.byref(stream), None, 1, callback, None) != 0
     assert (
         c_codec.mc_v0_stream_feed(
@@ -2884,6 +2991,8 @@ def test_c_codec_stream_bad_arguments_do_not_consume_input(c_codec):
         )
         != 0
     )
+    assert bytes(stream) == invalid
+    assert c_codec.mc_v0_stream_flush(ctypes.byref(stream), callback, None) != 0
     assert bytes(stream) == invalid
     assert captured == []
 
@@ -3593,8 +3702,17 @@ int main(void) {
             assert((result == MC_V0_DECODE_OK) == (length == lengths[index]));
             assert(mc_v0_stream_feed(&stream, data, length, receive, &received) == MC_V0_DECODE_OK);
             assert(stream.used < MC_V0_MAX_FRAME_SIZE);
+            assert(mc_v0_stream_flush(&stream, receive, &received) == MC_V0_DECODE_OK);
+            assert(stream.used == 0);
             free(data);
         }
+        const uint8_t false_header[20] = {'M', 'C', 0, 2, 104, 0, 0, 0, 1};
+        size_t previous = received;
+        mc_v0_stream_init(&stream);
+        assert(mc_v0_stream_feed(&stream, false_header, sizeof(false_header), receive, &received) == MC_V0_DECODE_OK);
+        assert(mc_v0_stream_feed(&stream, frames[index], lengths[index], receive, &received) == MC_V0_DECODE_OK);
+        assert(mc_v0_stream_flush(&stream, receive, &received) == MC_V0_DECODE_OK);
+        assert(received == previous + 1 && stream.used == 0);
     }
     for (size_t iteration = 0; iteration < 4096; ++iteration) {
         size_t length = iteration % 257;
@@ -3610,6 +3728,8 @@ int main(void) {
         (void)mc_v0_decode_decision(data, length, &decision);
         assert(mc_v0_stream_feed(&stream, data, length, receive, &received) == MC_V0_DECODE_OK);
         assert(stream.used < MC_V0_MAX_FRAME_SIZE);
+        assert(mc_v0_stream_flush(&stream, receive, &received) == MC_V0_DECODE_OK);
+        assert(stream.used == 0);
         free(data);
     }
     memset(&decision, 0, sizeof(decision));

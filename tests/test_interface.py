@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from interface import native_verify
+from interface import build_audit, native_verify
 from interface.native_verify import (
     CAnswer,
     CDecision,
@@ -1262,6 +1262,318 @@ def test_c_head_ignores_trailing_storage(c_codec):
         c_codec.mc_v0_dense_head(features, 1, weights, 2, biases, 2, 1, output, 2) == 0
     )
     assert list(output) == [7, 42]
+
+
+@pytest.mark.parametrize("optimization", ["-O0", "-O2", "-Os"])
+def test_native_build_optimization_parity(c_codec, tmp_path, optimization):
+    codec, record = build_native(tmp_path, optimization=optimization)
+    assert optimization in record["argv"]
+    assert native_verify.verification_evidence(
+        codec, cases=8
+    ) == native_verify.verification_evidence(c_codec, cases=8)
+
+
+@pytest.mark.parametrize("optimization", ["-O3", "-Ofast", "-O2 -ffast-math", None])
+def test_native_build_rejects_unapproved_optimization(tmp_path, optimization):
+    with pytest.raises(ValueError, match="optimization"):
+        build_native(tmp_path, optimization=optimization)
+    assert not list(tmp_path.iterdir())
+
+
+def test_build_audit_parsers_preserve_meaning():
+    assert build_audit.parse_sections(
+        "object.o  :\nsection size addr\n.text 7 0\n.bss 3 0\nTotal 10\n"
+    ) == [
+        {"name": ".text", "bytes": 7, "address": 0},
+        {"name": ".bss", "bytes": 3, "address": 0},
+    ]
+    assert build_audit.parse_undefined("exp U\nweak w\n") == [
+        {"name": "exp", "type": "U"},
+        {"name": "weak", "type": "w"},
+    ]
+    assert build_audit.parse_undefined("") == []
+    stack = build_audit.parse_stack(
+        "file:name.c:10:2:func\t16\tstatic\nother.c:3:1:dynamic_func\t8\tdynamic,bounded\n"
+    )
+    assert stack[0] == {
+        "source": "file:name.c",
+        "line": 10,
+        "column": 2,
+        "function": "func",
+        "bytes": 16,
+        "qualifier": "static",
+    }
+    assert stack[1]["qualifier"] == "dynamic,bounded"
+
+
+@pytest.mark.parametrize(
+    "kind,text",
+    [
+        ("sections", ""),
+        ("sections", "o :\nsection size addr\n.text 1 0\nTotal 2"),
+        ("sections", "o :\nsection size addr\n.text 1 0\n.text 1 0\nTotal 2"),
+        ("sections", "o :\nsection size addr\n.text -1 0\nTotal -1"),
+        ("undefined", "function T 1 2"),
+        ("undefined", "exp U\nexp U"),
+        ("stack", ""),
+        ("stack", "f.c:1:1:f\t-1\tstatic"),
+        ("stack", "f.c:1:1:f\t8\tunknown"),
+        ("stack", "f.c:0:1:f\t8\tstatic"),
+        ("stack", "f.c:1:1:f\t8\tstatic\nf.c:1:1:f\t8\tstatic"),
+    ],
+)
+def test_build_audit_rejects_malformed_tool_evidence(kind, text):
+    with pytest.raises(ValueError):
+        getattr(build_audit, f"parse_{kind}")(text)
+
+
+def test_build_audit_real_matrix(tmp_path):
+    if any(shutil.which(name) is None for name in build_audit.TOOLS.values()):
+        pytest.skip("reference build-audit tools unavailable")
+    output, work = tmp_path / "report.json", tmp_path / "build"
+    report = build_audit.run_audit(output, work, cases=8)
+    assert json.loads(output.read_text()) == report
+    assert len(report["objects"]) == 24
+    assert len(report["host_runs"]) == 3
+    assert len({run["evidence"]["result_sha256"] for run in report["host_runs"]}) == 1
+    assert report["scope"]["arm_compile_only"]
+    assert not report["scope"]["full_stack_bound"]
+    for row in report["objects"]:
+        assert row["stack_usage"] and row["sections"]
+        if row["target"] == "arm":
+            assert row["elf"] == {"class_bits": 32, "machine": 40, "type": "REL"}
+    for name, record in report["artifacts"].items():
+        assert native_verify.file_record(work / name) == record
+
+
+@pytest.mark.parametrize(
+    "cases,seed", [(0, 1), (1025, 1), (True, 1), (1, -1), (1, 2**32), (1, True)]
+)
+def test_build_audit_bad_configuration_creates_nothing(tmp_path, cases, seed):
+    with pytest.raises(ValueError):
+        build_audit.run_audit(
+            tmp_path / "report.json", tmp_path / "work", cases=cases, seed=seed
+        )
+    assert not list(tmp_path.iterdir())
+
+
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "same",
+        "report_inside",
+        "work_inside",
+        "existing_report",
+        "existing_work",
+        "report_symlink",
+        "work_symlink",
+    ],
+)
+def test_build_audit_rejects_output_paths_before_tools(tmp_path, monkeypatch, kind):
+    report, work = tmp_path / "report.json", tmp_path / "work"
+    if kind == "same":
+        work = report
+    elif kind == "report_inside":
+        report = work / "report.json"
+    elif kind == "work_inside":
+        work = report / "work"
+    elif kind == "existing_report":
+        report.write_text("original")
+    elif kind == "existing_work":
+        work.mkdir()
+    elif kind.endswith("symlink"):
+        (report if kind == "report_symlink" else work).symlink_to(tmp_path / "missing")
+    before = list(tmp_path.iterdir())
+
+    def forbidden(_name):
+        pytest.fail("preflight must reject before invoking tools")
+
+    monkeypatch.setattr(native_verify, "compiler_identity", forbidden)
+    with pytest.raises((ValueError, FileExistsError)):
+        build_audit.run_audit(report, work, cases=1)
+    assert list(tmp_path.iterdir()) == before
+    if kind == "existing_report":
+        assert report.read_text() == "original"
+
+
+def test_build_audit_missing_tool_creates_nothing(tmp_path, monkeypatch):
+    monkeypatch.setitem(
+        build_audit.TOOLS, "arm_cc", "micro-classifier-missing-compiler"
+    )
+    with pytest.raises(FileNotFoundError):
+        build_audit.run_audit(tmp_path / "report.json", tmp_path / "work", cases=1)
+    assert not list(tmp_path.iterdir())
+
+
+def test_build_audit_failed_native_verification_has_no_report(tmp_path, monkeypatch):
+    def fail(*_arguments, **_keywords):
+        raise ValueError("injected verification failure")
+
+    monkeypatch.setattr(native_verify, "verification_evidence", fail)
+    output, work = tmp_path / "report.json", tmp_path / "work"
+    with pytest.raises(ValueError, match="injected"):
+        build_audit.run_audit(output, work, cases=1)
+    assert not output.exists()
+    assert (work / "O0/host-verification/build.json").is_file()
+
+
+@pytest.mark.parametrize("failure", ["exit", "timeout", "launch"])
+def test_build_audit_command_failures_keep_diagnostics(tmp_path, monkeypatch, failure):
+    def fail(command, **_keywords):
+        if failure == "timeout":
+            raise subprocess.TimeoutExpired(
+                command, 120, output=b"partial out", stderr=b"partial err"
+            )
+        if failure == "launch":
+            raise OSError("injected launch failure")
+        return subprocess.CompletedProcess(command, 7, "partial out", "partial err")
+
+    monkeypatch.setattr(build_audit.subprocess, "run", fail)
+    output = tmp_path / "command.json"
+    with pytest.raises((OSError, subprocess.SubprocessError)):
+        build_audit.run_logged(["not-executed"], output)
+    record = json.loads(output.read_text())
+    assert record["argv"] == ["not-executed"]
+    if failure != "launch":
+        assert record["stdout"] == "partial out"
+        assert record["stderr"] == "partial err"
+    else:
+        assert "launch_error" in record
+
+
+@pytest.mark.parametrize(
+    "kind", ["not_elf", "truncated", "wrong_machine", "not_relocatable", "big_endian"]
+)
+def test_build_audit_rejects_wrong_elf_identity(tmp_path, kind):
+    data = bytearray(52)
+    data[:7] = b"\x7fELF\x01\x01\x01"
+    struct.pack_into("<HH", data, 16, 1, 40)
+    if kind == "not_elf":
+        data[0] = 0
+    elif kind == "truncated":
+        data = data[:20]
+    elif kind == "wrong_machine":
+        struct.pack_into("<H", data, 18, 62)
+    elif kind == "not_relocatable":
+        struct.pack_into("<H", data, 16, 2)
+    else:
+        data[5] = 2
+    path = tmp_path / "object.o"
+    path.write_bytes(data)
+    with pytest.raises(ValueError):
+        build_audit.elf_identity(path, "arm")
+
+
+def lightweight_audit(monkeypatch, tmp_path):
+    monkeypatch.setattr(build_audit, "OPTIMIZATIONS", ("-O0", "-O2"))
+    tool = tmp_path / "compiler"
+    tool.write_bytes(b"unchanged tool")
+    identity = {
+        "path": str(tool),
+        "version": "fake-only",
+        **native_verify.file_record(tool),
+    }
+    monkeypatch.setattr(native_verify, "compiler_identity", lambda _name: identity)
+    monkeypatch.setattr(
+        native_verify,
+        "build_native",
+        lambda *_arguments, **_keywords: (None, {"argv": []}),
+    )
+    monkeypatch.setattr(
+        native_verify,
+        "verification_evidence",
+        lambda *_arguments, **_keywords: {"result_sha256": "0" * 64},
+    )
+    monkeypatch.setattr(
+        build_audit, "inspect_object", lambda *_arguments: {"fake_only": True}
+    )
+    return tool
+
+
+@pytest.mark.parametrize("kind", ["source", "tool", "optimization", "artifact_symlink"])
+def test_build_audit_drift_and_mismatch_cannot_produce_report(
+    tmp_path, monkeypatch, kind
+):
+    tool = lightweight_audit(monkeypatch, tmp_path)
+    calls = 0
+    original = build_audit.audit_sources()
+
+    def sources():
+        nonlocal calls
+        calls += 1
+        if calls > 1 and kind == "source":
+            return {"changed": {"bytes": 0, "sha256": "0" * 64}}
+        if calls > 1 and kind == "tool":
+            tool.write_bytes(b"changed tool")
+        return original
+
+    monkeypatch.setattr(build_audit, "audit_sources", sources)
+    if kind == "optimization":
+        digests = iter(("0" * 64, "1" * 64))
+        monkeypatch.setattr(
+            native_verify,
+            "verification_evidence",
+            lambda *_arguments, **_keywords: {"result_sha256": next(digests)},
+        )
+    if kind == "artifact_symlink":
+
+        def inspect(directory, *_arguments):
+            directory.symlink_to(tool)
+            return {"fake_only": True}
+
+        monkeypatch.setattr(build_audit, "inspect_object", inspect)
+    output = tmp_path / "report.json"
+    with pytest.raises(ValueError):
+        build_audit.run_audit(output, tmp_path / "work", cases=1)
+    assert not output.exists()
+
+
+def test_build_audit_native_compile_failure_retains_command(tmp_path, monkeypatch):
+    lightweight_audit(monkeypatch, tmp_path)
+
+    def fail(*_arguments, **_keywords):
+        raise subprocess.CalledProcessError(
+            9, ["fake-cc", "-O0"], output="compile output", stderr="compile failure"
+        )
+
+    monkeypatch.setattr(native_verify, "build_native", fail)
+    output, work = tmp_path / "report.json", tmp_path / "work"
+    with pytest.raises(subprocess.CalledProcessError):
+        build_audit.run_audit(output, work, cases=1)
+    assert not output.exists()
+    record = json.loads((work / "O0/host-verification/failure.json").read_text())
+    assert record["argv"] == ["fake-cc", "-O0"]
+    assert record["stderr"] == "compile failure"
+
+
+def test_build_audit_cli_under_python_optimization(tmp_path):
+    if any(shutil.which(name) is None for name in build_audit.TOOLS.values()):
+        pytest.skip("reference build-audit tools unavailable")
+    output = tmp_path / "report.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-O",
+            "-m",
+            "interface.build_audit",
+            "--cases",
+            "1",
+            "--output",
+            str(output),
+            "--work-dir",
+            str(tmp_path / "work"),
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=120,
+    )
+    assert json.loads(result.stdout) == {
+        "status": "reference_build_checks_passed",
+        "objects": 24,
+        "host_runs": 3,
+    }
+    assert not json.loads(output.read_text())["scope"]["board_executed"]
 
 
 def test_native_verifier_seeded_reproducibility_and_scope(c_codec, tmp_path):

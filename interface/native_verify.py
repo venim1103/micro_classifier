@@ -224,7 +224,9 @@ def bind_native(path):
     return codec
 
 
-def build_native(directory, *, compiler="cc"):
+def build_native(directory, *, compiler="cc", optimization="-O2"):
+    if optimization not in ("-O0", "-O2", "-Os"):
+        raise ValueError("native optimization must be -O0, -O2 or -Os")
     directory = Path(directory).resolve()
     if not directory.is_dir():
         raise ValueError("native build requires an existing output directory")
@@ -236,7 +238,7 @@ def build_native(directory, *, compiler="cc"):
     command = [
         identity["path"],
         "-std=c11",
-        "-O2",
+        optimization,
         "-Wall",
         "-Wextra",
         "-Werror",
@@ -250,7 +252,9 @@ def build_native(directory, *, compiler="cc"):
         str(library),
         "-lm",
     ]
-    subprocess.run(command, capture_output=True, text=True, check=True, timeout=120)
+    result = subprocess.run(
+        command, capture_output=True, text=True, check=True, timeout=120
+    )
     if (
         source_records() != sources
         or file_record(identity["path"])["sha256"] != identity["sha256"]
@@ -259,6 +263,8 @@ def build_native(directory, *, compiler="cc"):
     record = {
         "compiler": identity,
         "argv": command,
+        "stdout": result.stdout,
+        "stderr": result.stderr,
         "sources": sources,
         "library": {"path": str(library), **file_record(library)},
     }

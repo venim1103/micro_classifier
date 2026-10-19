@@ -209,6 +209,27 @@ partial build artifacts may remain. Hashes are not complete-toolchain attestatio
 [native-verifier]: interface/native_verify.py
 [native-head-report]: interface/reports/native-heads-20261019.json
 
+## Offline Reference Build Audit
+
+The [build audit][reference-build-audit] uses installed host/Arm GCC and GNU
+binutils, no ST tools or board. It compares the same artificial host fixtures at
+`-O0/-O2/-Os` and inspects 24 separate host/Cortex-M55 objects for section sizes,
+undefined symbols and compiler-reported per-function stack usage. Use fresh paths:
+
+```sh
+python -m interface.build_audit --cases 128 --seed 20261019 \
+	--output .runs/reference-audit-manual.json --work-dir .runs/reference-audit-manual-build
+```
+
+Raw command logs, objects, stack files and hashes stay in the work directory;
+failed checks do not write a success report. Existing outputs are never reused.
+These are unlinked object sizes and individual compiler stack reports, not full
+call-chain bounds, deployed ROM/RAM, target execution, latency or memory fit.
+No new resource budget, model/input/policy or hardware approval is implied.
+DESIGN.md §6 and REVIEW.md §63 record authorization and verified core limits.
+
+[reference-build-audit]: interface/build_audit.py
+
 ## Host-Only C Decision Math
 
 The [math API][decision-math-api] and [source][decision-math-source] provide

@@ -1259,6 +1259,57 @@ training, input/policy or other hardware gates. REVIEW.md §§61-62 records limi
 [native-verifier]: interface/native_verify.py
 [native-head-report]: interface/reports/native-heads-20261019.json
 
+#### Offline Reference Build Audit (Approved, 2026-10-19)
+
+The user approved the complete CPU-only build-audit package: the four unchanged
+C reference modules at `-O0/-O2/-Os`, synthetic host parity, Cortex-M55 object
+inspection, compiler-reported per-function stack usage, raw evidence/hashes,
+strict fresh outputs, tests, a bounded run/independent audit, documentation and
+local commits. This does not approve target linking/execution, production heads,
+new budgets, architecture/input/history/default/policy changes, ToF/tensors,
+simulator/log/task-data/label use, inference/training, dependencies/downloads,
+ST/licence actions or board work.
+
+The [audit CLI][reference-build-audit] uses the already-installed host and Arm
+GCC/binutils. It builds three host libraries and executes the existing artificial
+head/probability/confidence/wire/history verifier with identical cases and seed.
+The complete canonical evidence must agree across optimization levels. Separate
+objects for both targets and all four sources produce a 24-object matrix using
+`-fstack-usage`; Arm adds `-mcpu=cortex-m55 -mthumb`, without linking or running.
+Little-endian relocatable ELF identity is checked; Arm must be ELF32/machine ARM.
+GNU `size` SysV section rows, `nm` undefined symbols and tab-delimited GCC `.su`
+records are parsed strictly, retaining qualifiers and rejecting malformed rows,
+duplicates and inconsistent totals. Raw `readelf` headers/sections/architecture
+attributes, all object command outputs, compiler diagnostics, objects and `.su`
+files remain available in the ignored work directory. The report records source,
+tool-driver and every artifact byte count/SHA256, flags and source/tool stability.
+
+Report/work paths must be fresh and noncontaining, with direct symlinks rejected
+before tools or creation; missing tools also reject before creation. Failed
+checks write no success report, though partial artifacts remain. Command launch,
+nonzero exit and timeout diagnostics are retained. Optimized Python uses the
+same explicit validation, not removable assertions. Local fresh-path checks are
+not a concurrent adversarial filesystem boundary; driver hashes do not attest
+assemblers, linkers, runtime libraries or the complete toolchain.
+
+Core verification: 42 audit checks plus seven native optimization checks pass,
+including a real eight-case matrix, strict preflight/parsers, failures, drift,
+cross-optimization mismatch, artifact symlinks and `python -O` CLI. All 367
+interface tests and 972 repository tests pass plus the known transformer expected
+failure; lint/format/editor diagnostics and existing native sanitizer checks pass.
+The full 1,024-case-per-optimization evidence run/independent audit is next,
+not claimed by these test fixtures. REVIEW.md §63 records this checkpoint.
+
+Per-function stack numbers are compiler output, not call-chain/full-program
+bounds: external callees, interrupts/runtime, inlining and dynamic qualifiers
+must remain explicit. Section listings include metadata and unlinked/duplicate
+helpers, not deployed ROM/RAM or SRAM-fit measurements. Undefined symbols are
+per-object requirements, not a linked dependency closure. No resource threshold,
+target math qualification, timing, formal numerical/memory guarantee or physical
+safety claim is adopted. Other Tasks 6/9/13/ST/board gates remain unchanged.
+
+[reference-build-audit]: interface/build_audit.py
+
 ### Question Catalogue and Embodiment Profiles
 
 Freeze a shared trunk on the NPU and store per-question heads as small,

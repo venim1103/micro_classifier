@@ -3146,6 +3146,56 @@ gates, unlabeled mode, strict abstention, quarantine and collection caps stay.
 
 [native-head-report]: interface/reports/native-heads-20261019.json
 
+## 63. Offline Host/Arm Build-Audit Core (2026-10-19)
+
+**Approval.** After the completed artificial-head package and a clean pushed
+baseline, the user approved the complete offline host/Arm build audit: existing
+C references at `-O0/-O2/-Os`, synthetic host parity, object sections/dependencies,
+compiler-reported per-function stack, raw evidence/hashes, strict fresh outputs,
+tests, bounded real run, independent audit, documentation and local commits.
+No target link/run, new budget, production model/blob, architecture/input/policy,
+ToF/tensors, real logs/labels/task data, inference/training, dependencies/downloads,
+ST/licence action or board work is authorized. `.devcontainer/tools` remains empty.
+
+**Implementation.** The [audit][reference-build-audit] reuses the shared native
+build/verification layer; its default stays `-O2`, with only the three approved
+optimization values accepted. Three host libraries execute matching artificial
+cases; canonical numeric/wire/history evidence must agree. Separate host/Arm
+objects for four unchanged C modules at three levels form a 24-object matrix.
+Compiler flags include `-fstack-usage`; Arm uses Cortex-M55/Thumb. No target link
+or execution occurs. Tool-driver/source identities and every artifact are hashed.
+Strict parsers preserve GNU SysV section sizes, undefined-symbol requirements and
+GCC stack qualifiers/source locations. ELF identity rejects nonrelocatable or
+wrong Arm objects; raw `readelf` attributes remain inspectable. Installed binutils
+requires `--arch-specific` (`-A`), not `--attributes`, as verified in a probe.
+
+**Failure semantics.** Report/work paths are fresh, noncontaining and not direct
+symlinks; configuration/path/missing-tool failures precede output creation.
+Command diagnostics survive launch failure, nonzero exit and timeout. Later
+failures may leave build artifacts, never a success report. Source/tool drift,
+optimization mismatch and symlink artifacts reject. Explicit checks work under
+`python -O`; hashes/freshness are not complete-toolchain attestation or protection
+against concurrent adversarial filesystem changes.
+
+**Core gates.** Forty-two audit and seven native-build checks pass, including a
+real eight-case/24-object matrix and optimized-Python CLI, parser/configuration/
+path rejection, diagnostics, injected failures and provenance mismatches. All
+367 interface tests and 972 repository tests pass plus the known transformer
+expected failure; lint/format/editor and existing ASan/UBSan gates pass. Full
+1,024-case-per-optimization run and independent report audit remain approved
+follow-up, not completed evidence at this checkpoint.
+
+Per-function stack reports are not complete call-chain bounds; external callees,
+interrupt/runtime overhead, inlining and dynamic qualifiers remain unqualified.
+Unlinked sections include metadata/duplicate helpers and are not deployed ROM/RAM
+or memory-fit evidence. Undefined symbols are not a linked dependency closure.
+No adopted size/stack/latency threshold, target math runtime, numerical/memory
+certification or physical-safety claim. No C source, wire/golden, model/input/
+history/default/token/policy change; mode abstention, quarantine, collection caps
+and broader Tasks 6/9/13/ST/board gates remain in force.
+
+[reference-build-audit]: interface/build_audit.py
+
 ## Sources
 
 Hardware and tools:

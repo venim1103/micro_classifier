@@ -16,7 +16,7 @@ Documents of record:
 
 - [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
   milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): evidence and findings. §62 is the latest update, and
+- [REVIEW.md](REVIEW.md): evidence and findings. §63 is the latest update, and
   §10 is the M0 decision template.
 
 ## Current State (2026-10-19)
@@ -825,6 +825,20 @@ Keep this section and the Task List current; a new session resumes from them.
   training, dependencies, linked firmware/board, accepted inputs/defaults or
   safety-policy change occurred.
 
+- Approved (2026-10-19): complete offline host/Arm build-audit package for the
+  four existing C reference modules at `-O0/-O2/-Os`, synthetic host parity,
+  object sections/dependencies, compiler-reported per-function stack, raw logs,
+  hashes, strict outputs, tests, a bounded run/independent audit, docs and local
+  commits. No target link/execution, new budgets, architecture/input/policy,
+  production heads, logs/data/labels, inference/training, dependencies/downloads,
+  ST/licence or board work. Core in `interface/build_audit.py` builds 24 objects
+  and three synthetic host libraries; all three agree in the eight-case test.
+  Forty-two audit and seven build-helper checks pass; all 367 interface tests,
+  972 repository tests plus known transformer expected failure, lint/format,
+  editor diagnostics and existing native sanitizers pass. Full 1,024-case per-
+  optimization run and independent evidence audit remain approved follow-up.
+  DESIGN.md §6 and REVIEW.md §63 record core scope, not board-fit evidence.
+
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
@@ -1065,6 +1079,10 @@ on missing tools, and continue with the next unblocked task.
   build checks; 238 C checks, 318 interface tests and 923 repository passes plus
   known expected failure. Production heads, training, input/runtime/policy and
   board gates stay blocked; diagnostic bounds do not freeze architecture.
+  Build-audit core (2026-10-19): separately approved host/Arm object inspection
+  and optimization parity tooling passes 49 new checks and the full 972-pass
+  suite plus known expected failure (REVIEW.md §63). Complete bounded run/audit
+  is next; no target link, complete stack bound, memory-fit gate or new budget.
 14. [blocked: ST Edge AI Core not installed] M1a compile-only experiments
     (DESIGN.md §12); prepare the scripts so they run once the tools exist.
   Partial result (2026-10-15): nine synthetic float/QDQ CPU probes and hashed

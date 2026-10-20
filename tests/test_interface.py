@@ -139,6 +139,7 @@ def full_decision():
         latency_us=2000,
         status=Status.OK,
         model_version=1,
+        catalogue_version=0,
         answers=(
             Answer(QuestionId.PATH_BLOCKED, (0.75, 0.25), 0),
             Answer(QuestionId.CLEAR_SECTOR, (0.25, 0.5, 0.125, 0.125), 0),
@@ -156,6 +157,160 @@ def test_decision_round_trip_preserves_distributions_and_separate_selections():
     assert encode_decision(decode_decision(frame)) == frame
     assert decision.answers[1].selected == 0
     assert decision.answers[1].probabilities.index(0.5) == 1
+
+
+def rules_decision():
+    return replace(
+        full_decision(),
+        catalogue_version=1,
+        model_version=0,
+        answers=full_decision().answers[:3],
+    )
+
+
+def test_rules_catalogue_complete_ok_without_a_model():
+    decision = rules_decision()
+    frame = encode_decision(decision)
+    expected = (
+        bytes.fromhex("4d4300024c000000010000002a00000050c30000")
+        + struct.pack("<IHHHH", 2000, 0, 0, 1, 7)
+        + struct.pack("<BBBB3f", 1, 1, 0, 2, -1, 0.75, 0.25)
+        + struct.pack("<BBBB5f", 2, 2, 0, 4, 1 / 3, 0.25, 0.5, 0.125, 0.125)
+        + struct.pack("<BBBB5f", 3, 3, 2, 4, 0.375, 0.125, 0.125, 0.5, 0.25)
+    )
+    assert frame == expected + struct.pack("<I", zlib.crc32(expected))
+    assert len(frame) == 100
+    assert decode_decision(frame) == decision
+    assert struct.unpack_from("<H", frame, 30)[0] == 7
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"answers": full_decision().answers},
+        {"answers": full_decision().answers[:2]},
+        {"answers": ()},
+        {"model_version": 1},
+        {"catalogue_version": 2},
+    ],
+)
+def test_rules_catalogue_rejects_incomplete_mode_and_model_claims(changes):
+    with pytest.raises(ProtocolError):
+        encode_decision(replace(rules_decision(), **changes))
+
+
+@pytest.mark.parametrize("status", list(Status)[1:])
+def test_rules_catalogue_rejections_allow_subsets_but_not_models_or_mode(status):
+    for answers in ((), rules_decision().answers[:1], rules_decision().answers):
+        decision = replace(rules_decision(), status=status, answers=answers)
+        assert decode_decision(encode_decision(decision)) == decision
+    for changes in ({"model_version": 1}, {"answers": full_decision().answers}):
+        with pytest.raises(ProtocolError):
+            encode_decision(replace(rules_decision(), status=status, **changes))
+
+
+@pytest.mark.parametrize("status", list(Status))
+@pytest.mark.parametrize("mask", range(16))
+def test_c_rules_catalogue_masks_and_streams(c_codec, status, mask):
+    packet = replace(
+        rules_decision(),
+        status=status,
+        answers=tuple(
+            answer
+            for answer in full_decision().answers
+            if mask & (1 << (answer.question_id - 1))
+        ),
+    )
+    source = c_decision_from_python(packet)
+    target = (ctypes.c_uint8 * 128)(*([0xA5] * 128))
+    written = ctypes.c_size_t(999)
+    result = c_codec.mc_v0_encode_decision(
+        ctypes.byref(source), target, len(target), ctypes.byref(written)
+    )
+    if mask > 7 or (status == Status.OK and mask != 7):
+        assert result != 0
+        assert bytes(target) == b"\xa5" * 128
+        assert written.value == 999
+        with pytest.raises(ProtocolError):
+            encode_decision(packet)
+        return
+    frame = encode_decision(packet)
+    assert result == 0
+    assert bytes(target[: written.value]) == frame
+    assert bytes(target[written.value :]) == b"\xa5" * (128 - len(frame))
+    decoded = CDecision()
+    assert (
+        c_codec.mc_v0_decode_decision(
+            c_buffer(frame), len(frame), ctypes.byref(decoded)
+        )
+        == 0
+    )
+    assert c_encoded_frame(c_codec, decoded) == frame
+    stream = FrameDecoder()
+    assert stream.feed(frame[:31]) + stream.feed(frame[31:]) == [packet]
+    native = CStream()
+    c_codec.mc_v0_stream_init(ctypes.byref(native))
+    assert feed_c_stream(c_codec, native, (frame[:31], frame[31:])) == [packet]
+
+
+@pytest.mark.parametrize("status", list(Status))
+@pytest.mark.parametrize("model", [1, 65535])
+def test_c_rules_catalogue_rejects_model_claim_without_writes(c_codec, status, model):
+    packet = replace(rules_decision(), status=status, model_version=model)
+    source = c_decision_from_python(packet)
+    before = bytes(source)
+    target = (ctypes.c_uint8 * 128)(*([0xA5] * 128))
+    written = ctypes.c_size_t(999)
+    assert (
+        c_codec.mc_v0_encode_decision(
+            ctypes.byref(source), target, len(target), ctypes.byref(written)
+        )
+        != 0
+    )
+    assert bytes(source) == before
+    assert bytes(target) == b"\xa5" * 128
+    assert written.value == 999
+
+
+def test_rules_catalogue_idle_recovery_and_legacy_identity(c_codec):
+    packet = rules_decision()
+    frame = encode_decision(packet)
+    noise = b"MC\x00\x02\x68\x00"
+    stream = FrameDecoder()
+    assert stream.feed(noise + frame) == []
+    assert stream.flush() == [packet]
+    native = CStream()
+    c_codec.mc_v0_stream_init(ctypes.byref(native))
+    assert feed_c_stream(c_codec, native, (noise + frame,), flush=True) == [packet]
+    legacy = bytearray(frame)
+    struct.pack_into("<H", legacy, 28, 0)
+    legacy = with_crc(legacy)
+    with pytest.raises(ProtocolError):
+        decode_decision(legacy)
+    output = CDecision()
+    assert (
+        c_codec.mc_v0_decode_decision(
+            c_buffer(legacy), len(legacy), ctypes.byref(output)
+        )
+        != 0
+    )
+
+
+@pytest.mark.parametrize("offset,value", [(26, 1), (28, 2), (30, 15)])
+def test_rules_catalogue_crc_valid_faults_preserve_c_outputs(c_codec, offset, value):
+    frame = bytearray(encode_decision(rules_decision()))
+    struct.pack_into("<H", frame, offset, value)
+    frame = with_crc(frame)
+    with pytest.raises(ProtocolError):
+        decode_decision(frame)
+    output = CDecision()
+    ctypes.memset(ctypes.byref(output), 0xA5, ctypes.sizeof(output))
+    before = bytes(output)
+    assert (
+        c_codec.mc_v0_decode_decision(c_buffer(frame), len(frame), ctypes.byref(output))
+        != 0
+    )
+    assert bytes(output) == before
 
 
 def test_jev_confidence_is_not_entropy_or_top_two_margin():
@@ -300,6 +455,7 @@ def test_golden_byte_vectors(vector):
         packet = State(**fields)
         encode, decode = encode_state, decode_state
     else:
+        fields.setdefault("catalogue_version", 0)
         if "answers" in fields:
             fields["answers"] = tuple(
                 Answer(
@@ -842,7 +998,10 @@ def test_c_math_sigmoid_matches_two_logit_softmax(c_codec, logit):
 @pytest.mark.parametrize("question", list(QUESTIONS))
 def test_c_math_confidence_matches_existing_codec(c_codec, question):
     count = len(QUESTIONS[question][1])
-    packet = Decision(answers=(Answer(question, (1 / count,) * count, count - 1),))
+    packet = Decision(
+        catalogue_version=0,
+        answers=(Answer(question, (1 / count,) * count, count - 1),),
+    )
     answer = c_decision_from_python(packet).answers[question - 1]
     confidence = ctypes.c_double(42)
     assert (
@@ -1058,7 +1217,9 @@ def test_c_math_seeded_probabilities_confidence_and_wire_parity(c_codec):
                 packet.confidence, abs=2e-15, rel=0
             )
             answers.append(packet)
-        packet = Decision(sequence=iteration, answers=tuple(answers))
+        packet = Decision(
+            sequence=iteration, catalogue_version=0, answers=tuple(answers)
+        )
         frame = c_encoded_frame(c_codec, c_decision_from_python(packet))
         assert frame == encode_decision(packet)
         received = CDecision()
@@ -3156,6 +3317,7 @@ def test_c_codec_seeded_bidirectional_round_trips(c_codec, kind):
                 timestamp_us=generator.getrandbits(32),
                 latency_us=generator.getrandbits(32),
                 status=status,
+                catalogue_version=0,
                 model_version=generator.randrange(1, 65536)
                 if status == Status.OK
                 else generator.randrange(65536),
@@ -3219,11 +3381,16 @@ def test_c_codec_address_and_undefined_sanitizers(tmp_path):
     if shutil.which("cc") is None:
         pytest.skip("host C compiler unavailable")
     declarations = []
-    for index, vector in enumerate(GOLDEN):
-        values = ",".join(str(value) for value in bytes.fromhex(vector["hex"]))
+    frames = [bytes.fromhex(vector["hex"]) for vector in GOLDEN]
+    frames.extend(
+        encode_decision(replace(rules_decision(), status=status)) for status in Status
+    )
+    frames.append(encode_decision(Decision()))
+    for index, frame in enumerate(frames):
+        values = ",".join(str(value) for value in frame)
         declarations.append(f"static const uint8_t vector_{index}[] = {{{values}}};")
-    pointers = ",".join(f"vector_{index}" for index in range(len(GOLDEN)))
-    sizes = ",".join(f"sizeof(vector_{index})" for index in range(len(GOLDEN)))
+    pointers = ",".join(f"vector_{index}" for index in range(len(frames)))
+    sizes = ",".join(f"sizeof(vector_{index})" for index in range(len(frames)))
     source = '#include "micro_classifier_assembly.h"\n#include "micro_classifier_heads.h"\n#include "micro_classifier_math.h"\n#include "micro_classifier_history.h"\n#include <assert.h>\n#include <float.h>\n#include <math.h>\n#include <stdlib.h>\n#include <string.h>\n'
     source += "\n".join(declarations)
     source += f"\nstatic const uint8_t *const frames[] = {{{pointers}}};\n"

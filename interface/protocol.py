@@ -56,6 +56,8 @@ ANSWER_FIELDS = (
 DECISION = struct.Struct("<" + "".join(code for _, code in DECISION_FIELDS))
 ANSWER = struct.Struct("<" + "".join(code for _, code in ANSWER_FIELDS))
 CATALOGUE_VERSION = 0
+RULES_CATALOGUE_VERSION = 1
+RULES_MODEL_VERSION = 0
 
 
 class Kind(IntEnum):
@@ -102,6 +104,12 @@ QUESTIONS = {
         ("explore", "approach", "avoid", "dock", "halt"),
     ),
 }
+RULES_QUESTIONS = {
+    question: definition
+    for question, definition in QUESTIONS.items()
+    if question != QuestionId.MODE
+}
+CATALOGUES = {CATALOGUE_VERSION: QUESTIONS, RULES_CATALOGUE_VERSION: RULES_QUESTIONS}
 MAX_DECISION_PAYLOAD = DECISION.size + sum(
     ANSWER.size + 4 * len(options) for _, options in QUESTIONS.values()
 )
@@ -158,7 +166,7 @@ class Decision:
     latency_us: int = 0
     status: int = Status.FAULT
     model_version: int = 0
-    catalogue_version: int = CATALOGUE_VERSION
+    catalogue_version: int = RULES_CATALOGUE_VERSION
     answers: tuple[Answer, ...] = ()
 
 
@@ -302,18 +310,32 @@ def validate_decision(decision):
     unsigned(decision.catalogue_version, 16, "catalogue_version")
     if decision.status not in tuple(Status):
         raise ProtocolError("unsupported decision status")
-    if decision.catalogue_version != CATALOGUE_VERSION:
+    if decision.catalogue_version not in CATALOGUES:
         raise ProtocolError("unsupported catalogue version")
+    questions = CATALOGUES[decision.catalogue_version]
+    if (
+        decision.catalogue_version == RULES_CATALOGUE_VERSION
+        and decision.model_version != RULES_MODEL_VERSION
+    ):
+        raise ProtocolError("rules catalogue requires model version zero (no model)")
     identifiers = []
     for answer in decision.answers:
         validate_answer(answer)
+        if answer.question_id not in questions:
+            raise ProtocolError("question is not in the selected catalogue")
         identifiers.append(answer.question_id)
     if identifiers != sorted(set(identifiers)):
         raise ProtocolError("answers must have unique ascending question IDs")
     if decision.status == Status.OK and (
-        identifiers != list(QUESTIONS) or decision.model_version == 0
+        identifiers != list(questions)
+        or (
+            decision.catalogue_version == CATALOGUE_VERSION
+            and decision.model_version == 0
+        )
     ):
-        raise ProtocolError("OK requires all four answers and a nonzero model version")
+        raise ProtocolError(
+            "OK requires all catalogue answers and a valid producer identity"
+        )
 
 
 def encode_decision(decision):
@@ -473,6 +495,9 @@ def c_header():
         "PROFILE_ID": PROFILE_ID,
         "PROFILE_VERSION": PROFILE_VERSION,
         "CATALOGUE_VERSION": CATALOGUE_VERSION,
+        "RULES_CATALOGUE_VERSION": RULES_CATALOGUE_VERSION,
+        "RULES_MODEL_VERSION": RULES_MODEL_VERSION,
+        "RULES_ANSWER_MASK": sum(1 << (question - 1) for question in RULES_QUESTIONS),
         "TASK_GOAL_REACHING": 1,
         "MAGIC_0": MAGIC[0],
         "MAGIC_1": MAGIC[1],

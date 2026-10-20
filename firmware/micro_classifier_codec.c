@@ -14,7 +14,8 @@ _Static_assert(sizeof(float) == 4 && FLT_RADIX == 2 && FLT_MANT_DIG == 24 &&
 _Static_assert(DBL_MANT_DIG >= 53, "Confidence validation requires binary64 precision");
 _Static_assert(MC_V0_PROTOCOL_VERSION == 0 && MC_V0_SCHEMA_VERSION == 0 &&
                MC_V0_PROFILE_ID == 1 && MC_V0_PROFILE_VERSION == 0 &&
-               MC_V0_CATALOGUE_VERSION == 0,
+               MC_V0_CATALOGUE_VERSION == 0 && MC_V0_RULES_CATALOGUE_VERSION == 1 &&
+               MC_V0_RULES_MODEL_VERSION == 0 && MC_V0_RULES_ANSWER_MASK == 7,
                "Codec supports only the provisional rover v0 contract");
 _Static_assert(MC_V0_HEADER_SIZE == 20 && MC_V0_CRC_SIZE == 4 &&
                MC_V0_STATE_PAYLOAD_SIZE == 68 && MC_V0_DECISION_PREFIX_SIZE == 12 &&
@@ -270,6 +271,13 @@ static int valid_answer(const mc_v0_answer *answer) {
 }
 
 static int valid_decision_prefix(const mc_v0_decision *decision) {
+    if (decision->catalogue_version == MC_V0_RULES_CATALOGUE_VERSION) {
+        return decision->status <= MC_V0_STATUS_FAULT &&
+               decision->model_version == MC_V0_RULES_MODEL_VERSION &&
+               (decision->answer_mask & ~MC_V0_RULES_ANSWER_MASK) == 0 &&
+               (decision->status != MC_V0_STATUS_OK ||
+                decision->answer_mask == MC_V0_RULES_ANSWER_MASK);
+    }
     return decision->status <= MC_V0_STATUS_FAULT &&
            decision->catalogue_version == MC_V0_CATALOGUE_VERSION &&
            (decision->answer_mask & ~UINT32_C(15)) == 0 &&

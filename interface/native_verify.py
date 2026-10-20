@@ -517,7 +517,9 @@ def verification_evidence(codec, *, cases=128, seed=20261019, assembly=False):
                 else max(range(len(options)), key=probabilities.__getitem__)
             )
             answer = Answer(question, tuple(probabilities), selected)
-            native = native_decision(Decision(answers=(answer,))).answers[question - 1]
+            native = native_decision(
+                Decision(catalogue_version=0, answers=(answer,))
+            ).answers[question - 1]
             confidence = ctypes.c_double()
             require(
                 codec.mc_v0_answer_confidence(
@@ -533,7 +535,12 @@ def verification_evidence(codec, *, cases=128, seed=20261019, assembly=False):
         state = State(
             sequence=case, timestamp_us=case, goal_m=(features[0], features[-1], 0)
         )
-        decision = Decision(sequence=case, timestamp_us=case, answers=tuple(answers))
+        decision = Decision(
+            sequence=case,
+            timestamp_us=case,
+            catalogue_version=0,
+            answers=tuple(answers),
+        )
         decision_native = native_decision(decision)
         if assembly:
             decision = Decision(
@@ -542,6 +549,7 @@ def verification_evidence(codec, *, cases=128, seed=20261019, assembly=False):
                 latency_us=case * 3,
                 status=case % 6,
                 model_version=1,
+                catalogue_version=0,
                 answers=tuple(answers),
             )
             metadata = native_decision(decision)

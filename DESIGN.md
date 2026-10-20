@@ -1749,10 +1749,11 @@ User-approved, configurable **simulation-only assumptions**, not measured
 physical specifications: 20 Hz decisions, nominal 15 Hz ToF acquisition
 (updated 2026-10-20 below), 0.18 m circular rover radius, 0.6 m/s forward
 speed limit, 1 m/s² acceleration/deceleration, 1.5 rad/s turn limit; 45-degree
-planar ToF, 4 m range, 0.02 m independent Gaussian noise, 2% independent
+horizontal/vertical angular ToF grid, 4 m range, 0.02 m independent Gaussian noise, 2% independent
 zone dropout, two-tick delivery latency, eight history ticks, and 400-tick
-episode limit. The eight vertical rows repeat planar rays before noise and
-dropouts; this is not VL53L8CX emulation. Constant-twist motion is checked
+episode limit. The initial model repeated planar rays vertically; the current
+fictional floor/cylinder profile is specified below. Neither is VL53L8CX
+emulation. Constant-twist motion is checked
 against swept inflated obstacles, including a conservative curved-path margin.
 Invalid commands are rejected, bounded commands are reported, and collision
 terminates the simulation instead of permitting tunneling through obstacles.
@@ -1768,8 +1769,8 @@ retains its values, mask and capture tick; its reported age grows and no extra
 noise/dropout RNG draws occur. Histories still advance every decision tick.
 
 At defaults, capture ticks begin 0, 2, 3, 4, 6, 7, 8; with two-tick latency,
-delivered sample ticks begin null, null, 0, 0, 2, 3, 4, 4, 6. Warm ages alternate
-between 0.10 and 0.15 s. This is a nominal cadence quantized to decision ticks:
+delivered sample ticks begin null, null, 0, 0, 2, 3, 4, 4, 6. Warm ages are
+0.10 or 0.15 s. This is a nominal cadence quantized to decision ticks:
 capture intervals can be 0.05 or 0.10 s, not a physical minimum inter-frame
 period of 1/15 s. No continuous-time exposure, sub-tick pose interpolation,
 clock uncertainty or hardware acquisition timing is qualified. Slower decision
@@ -1791,9 +1792,81 @@ readers. All 1,319 repository tests pass plus the known transformer xfail; lint,
 changed-file format, editor diagnostics and existing native/Arm gates pass.
 REVIEW.md §73 records the transient unrelated cleanup-test failure and rerun.
 No study episode, teacher/model run, labels/data or hardware action occurred.
-F21 remains open: floor/mount geometry, return semantics, ego-state errors and
-scene diversity still need concrete simulation assumptions. Observation/wire
-shapes, proxy formulas and other Config defaults remain unchanged.
+At that checkpoint the remaining geometry/error assumptions were unspecified;
+the follow-up below records their adoption for synthetic implementation only.
+
+#### Synthetic Geometry and Ego Errors (2026-10-20)
+
+The user approved this fictional configurable profile, not measured hardware:
+the sensor is centered horizontally at `tof_mount_height=0.15` m above a flat
+z=0 floor with `tof_mount_pitch=0` rad, floor-supported obstacle cylinders
+of `obstacle_height=0.5` m and arena walls of `wall_height=1.0` m. Optional
+`Scenario.obstacle_heights` supplies one positive height per obstacle; an empty
+tuple uses the Config default. Low/tall artificial checks use 0.05/1.0 m.
+Rover collision/dynamics stay planar: any obstacle footprint remains collidable,
+regardless of its sensor-visible height; no body height/ground clearance,
+overhang, terrain, step-climbing or 3-D motion is modeled.
+
+`tof_directions` uses eight uniformly spaced azimuths and elevations spanning
+the configured 45-degree field in each dimension, upper-to-lower rows and
+left-to-right columns. Positive pitch points downward. These are ideal angular
+point rays, not measured zone footprints, device intrinsics or integrated
+multitarget histograms. Each ray selects the nearest nonnegative floor, finite
+wall face, cylinder side or top-cap intersection. Missing surfaces and ranges
+at/above the 4 m ceiling are invalid/zero, not valid clear space. Existing
+Gaussian range noise and dropout apply only after determining surface support;
+noise-clipped supported returns may still saturate. Reflectance, sunlight,
+multipath, material response and device return-status codes remain unmodeled.
+
+Synthetic odometry is opt-in: `odometry_position_error=0` m,
+`odometry_heading_error=0` rad and `odometry_latency_ticks=0` by default.
+Nonzero position error samples independent uniform points in a disk of the
+declared radius; heading error is independent uniform on plus/minus the declared
+angle. The approved test profile uses 0.02 m and 2 degrees, with one-tick delay.
+These are artificial injected errors, not physical bounds, a drift/bias model,
+measured calibration or an adopted Gaussian risk budget. Errors affect the
+body-frame goal derived from estimated pose; speed/yaw-rate retain their ideal
+values from the same queued sample. A separate seeded RNG leaves world motion,
+reward/collision results and ToF faults unchanged. Reads consume no RNG.
+
+Delay holds the initialized tick-0 estimate during startup, then delivers queued
+ego samples; no extrapolation or temporal compensation occurs. With nonzero
+delay, observations add paired `ego_sample_tick`/`ego_age_s` metadata. Histories
+record the delivered values each decision tick; array shapes remain unchanged.
+The wire exporter puts the same age on velocity, angular velocity and goal in
+the existing fields. It rejects inconsistent/nonfinite/unrepresentable ages
+instead of marking old values fresh. Battery/fault health stays unknown.
+Full render/review checks preserve exactly these two optional input fields,
+still reject privileged fields, and do not create labels or promote scope.
+
+Stored-source compatibility is explicit: `Config.from_record` maps an absent
+mounting-height field to `None` (legacy planar rays), and an absent rate to
+`None` (legacy per-tick capture). Missing error fields retain ideal defaults.
+Exact complete pre-cadence, cadence, geometry-only and current metadata schemas
+are accepted, not arbitrary partial declarations. CLI partial config overrides
+use current defaults; replaying original sensor behavior explicitly requires
+null mounting height and null rate. Historical logs/reports/goldens and the
+diagnostic catalogue are untouched; source-keyed cache identities change normally.
+
+Shared-model diagnostics now trace matching 8x8 ranges for the synthetic profile
+(eight repeated rays for legacy mode), with explicit geometry tags and deep
+copies. Registration diagnostic arrays cover 64 rays for the new profile, eight
+for legacy mode. These references share simulator geometry, not independent
+metrology. No prior diagnostic study/report was regenerated.
+
+Geometry commit `1293c4e` passed 1,350 tests plus the known transformer xfail;
+odometry commit `059cff7` passes 1,382 plus that xfail. The 63 added cases include
+analytic floor/side/top hits, low/tall visibility, yaw/pitch, exact legacy RNG
+replay, bounded errors, physics/sensor independence, reset, wire-age rejection
+and three historical reader eras. Lint, changed-file format, editor diagnostics,
+native sanitizers and hard-float Arm checks pass. Only ephemeral test fixtures
+were generated, not study episodes, labels/datasets/splits or model runs.
+
+F21/M2 remain open: scene representativeness, sensor/device fidelity and qualified
+floor-aware rule/evidence implementation. Existing column-minimum proxies are
+unchanged diagnostics and cannot be promoted to obstacle rules merely because
+floor returns now exist. No collection, rule thresholds/rejection policy,
+training, dependency/download, ST/licence or hardware action was approved.
 
 The approved prototype objective is goal reaching without collision: reward
 is decrease in goal distance in meters, minus 0.01 per tick, plus 10 for
@@ -3808,11 +3881,14 @@ closed-loop rules baseline. Privileged simulator truth is permitted in principle
 for future geometric/predictive labels, never as student input. Observation-only
 human review remains for semantic/real-world data; all existing logs stay
 quarantined. This does not approve collection, label import, splits, training,
-Gaussian risk budgets or a sensor/hardware safety claim. Mounting, scene and
-ego-state error assumptions still need concrete specification. ST tool install,
+Gaussian risk budgets or a sensor/hardware safety claim. Fictional mounting and
+opt-in ego-error assumptions are now approved for implementation/tests (§7,
+REVIEW.md §74), not representative data or physical qualification. ST tool install,
 teacher provenance request and board procurement remain user-side actions.
 The nominal 15 Hz acquisition/variable-age portion of F21 is now implemented
-(§7, REVIEW.md §73); it does not clear the remaining geometry/evidence gates.
+(§7, REVIEW.md §73), followed by synthetic floor/height returns and opt-in ego
+errors/delay (§74). Remaining gates are reviewed scene coverage, sensor fidelity
+and a qualified floor-aware rules baseline, not more reference-math tooling.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

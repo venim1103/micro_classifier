@@ -763,8 +763,20 @@ is tick-quantized; frames are held between captures, delivery still progresses
 every tick and `tof_age_s` varies. This is not continuous-time sensor emulation.
 Stored legacy configs without `tof_rate_hz` load through `Config.from_record`
 with the original per-tick cadence; explicit `tof_rate_hz=None` also replays it.
-Other sensor geometry remains the unqualified planar prototype. No further study
-collection or training is authorized by these tooling examples.
+The current fictional profile mounts ideal point rays at 0.15 m with level
+pitch over a flat floor, 0.5 m obstacle cylinders and 1 m walls. Rows differ by
+elevation; missing/out-of-range surfaces are invalid, not clear space. Stored
+configs without `tof_mount_height` retain legacy planar geometry; explicit
+`tof_mount_height=None` also selects it. These are configurable synthetic
+assumptions, not a qualified sensor/robot model. No study collection or training
+is authorized by these tooling examples.
+
+Optional `odometry_position_error` (metres), `odometry_heading_error` (radians)
+and `odometry_latency_ticks` default to zero. They inject separately seeded
+uniform disk/heading errors and delay the delivered ego sample, not world
+physics or ToF faults. Delay holds the tick-0 estimate during startup and adds
+paired `ego_sample_tick`/`ego_age_s`; `--wire` preserves that age in existing
+state fields. Injected error limits are not measured hardware uncertainty.
 
 ```sh
 python -m sim.rover --scenario obstacle --seed 0 --episodes 4 --render
@@ -792,8 +804,10 @@ actions are not reviewed training labels. `--policy reactive` selects a
 sensor-only baseline known to collide in obstacle scenes.
 
 Physics, sensor and reward defaults are configurable simulation assumptions,
-not hardware measurements or physical safety limits. The ToF grid repeats
-2-D rays vertically, not a full VL53L8CX model. `--wire` adds a provisional
+not hardware measurements or physical safety limits. The ToF grid does not model
+VL53L8CX zone footprints, materials or return-status codes. Existing all-row-minimum
+sensor proxies are still unqualified diagnostics, not floor-aware rules.
+`--wire` adds a provisional
 contract manifest and exact CRC-protected `state_frame_hex` for every current
 observation, including reset. Decode with `decode_state(bytes.fromhex(...))`.
 The wire fields use FLU velocity/yaw rate and goal; battery/fault health remains

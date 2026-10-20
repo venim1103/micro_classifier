@@ -23,7 +23,7 @@ Documents of record:
 
 Keep this section and the Task List current; a new session resumes from them.
 
-- Latest decisions and results: REVIEW.md §§72-73 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-74 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -34,7 +34,7 @@ Keep this section and the Task List current; a new session resumes from them.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,319 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,382 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -47,12 +47,19 @@ Keep this section and the Task List current; a new session resumes from them.
   `Config.from_record` preserves legacy per-tick sampling when rate is absent.
   Eighteen new cases cover timing/reset and legacy request/provenance readers.
   No historical log/report was regenerated; source-keyed caches naturally change.
-- Remaining F21 work: floor/mount geometry, missing-return semantics, ego-state
-  errors and diverse scenes. Specify simulation mounting height/pitch, obstacle
-  vertical extent and odometry error/delay assumptions before implementing them;
-  proposed default is no invented physical values or further study collection.
-  Input tensor/wire shapes and diagnostic proxy formulas remain unchanged; the
-  simulator is still planar, not a qualified VL53L8CX/physical model.
+- User approved a fictional configurable profile plus implementation/tests only:
+  centered 0.15 m level ToF, flat floor, 0.5 m cylinders and 1 m walls; low/tall
+  artificial fixtures. `1293c4e` implements 8x8 point rays with floor/top/side
+  returns and masks missing/out-of-range rays. This is not a device emulator.
+- Opt-in synthetic odometry errors/delay complete in `059cff7`: tests use a
+  0.02 m position-error disk, +/-2 degree heading error and one-tick delay.
+  Defaults stay ideal/zero-delay; a separate RNG leaves sensor faults/physics
+  unchanged. Delayed ego ages use existing wire fields; input tensor/wire shapes
+  stay unchanged. Exact historical metadata schemas preserve legacy replay.
+- Remaining F21/M2 work: reviewed scene envelope/diversity and sensor return/error
+  qualification, then a floor-aware rules baseline. Existing all-row-minimum
+  proxies are unchanged and unqualified for floor returns; do not deploy them.
+  No study collection, labels, split, training or hardware work was authorized.
 - ST tools remain absent and no board is attached. User-side licence/install,
   procurement and sending the existing teacher provenance request remain pending.
   No new study, teacher/model run, dataset or trained student exists.
@@ -1022,7 +1029,7 @@ on missing tools, and continue with the next unblocked task.
    round-trip tests.
   Result (2026-10-15): approved provisional host-side contract, 62 focused
   tests, generated C offsets and five golden frames; no hardware freeze.
-6. [blocked: sensor/scene correction and qualified rule/evidence implementation pending]
+6. [blocked: qualified floor-aware rules/evidence and representative scene envelope pending]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
   Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
@@ -1034,7 +1041,10 @@ on missing tools, and continue with the next unblocked task.
   pilot. The older entries below are historical, not renewed approval requests.
   Follow-up (REVIEW.md §73): nominal 15 Hz capture/variable delivered ages now
   replace per-decision sampling; legacy stored configs retain original behavior.
-  Geometry/return/odometry/scene corrections and actual rules remain pending.
+  Follow-up (REVIEW.md §74): user approved fictional geometry and opt-in ego
+  errors/delay for implementation/tests only; floor/cylinder returns, missing
+  masks and age-aware state export pass 63 new cases (1,382 total). No dataset,
+  physical qualification or revised proxy rules; actual rules remain pending.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

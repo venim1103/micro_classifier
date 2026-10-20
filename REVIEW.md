@@ -4099,6 +4099,70 @@ height/pitch, obstacle vertical extent and odometry error/delay assumptions befo
 the floor/return/ego-state/scene changes. Proposed default is to retain existing
 values and not invent physical measurements. Tasks 6/9 and hardware gates remain.
 
+## 74. Synthetic F21 Geometry and Ego-State Errors (2026-10-20)
+
+The user explicitly approved three batched decisions: fictional configurable
+geometry (centered 0.15 m level ToF, flat floor, 0.5 m obstacles, 1 m walls and
+low/tall artificial fixtures); opt-in synthetic 0.02 m position and +/-2 degree
+heading errors with one-tick delay while defaults remain ideal; implementation,
+tests and local commits only. No study collection, labels, training or hardware
+work was authorized. These values are fixture assumptions, not measurements or
+physical safety/error bounds. This supersedes §73's missing-specification blocker,
+not the unaccepted Gaussian risk budget or remaining evidence/data gates.
+
+**Geometry (`1293c4e`):** [the simulator][review70-rover] uses 8x8 ideal angular
+point rays with pitched mounting, flat floor, finite-height wall faces and
+capped cylinders. Per-obstacle heights permit low/tall visibility cases while
+collision dynamics remain planar. First supported intersections are selected;
+missing/out-of-range rays are zero/invalid, never clear evidence. Geometry-tagged
+diagnostic ranges/residuals now match actual row directions and are deeply
+detached. Legacy mode retains eight planar diagnostic rays and exact sensor
+RNG/value/mask replay. New diagnostics cover 64 rays and still share geometry
+with the simulator; no independent metrology or regenerated report is implied.
+Full geometry gate: 1,350 passes plus the known transformer xfail.
+
+**Opt-in ego errors/delay (`059cff7`):** position error is uniform within an
+explicit disk and heading error uniform within the configured angular interval,
+independently redrawn per tick by a separate seeded RNG. Goal projection uses
+estimated pose; speed/yaw rate stay ideal for the same queued sample. World
+motion, reward/collisions and ToF draws are unchanged. This is not accumulated
+odometric drift, realistic velocity error, measured bounds or a calibration
+model. Startup holds the initialized tick-0 estimate; later samples are queued,
+not predicted forward. Paired sample-tick/age fields accompany delayed ego data
+and round-trip through the existing strict full renderer/review checks. Wire
+velocity/angular/goal ages now reflect delay with no byte-layout change;
+malformed, inconsistent and unrepresentable ages reject.
+
+`Config.from_record` preserves exact complete historical schema behavior:
+missing height selects planar rays, missing rate per-tick capture, and missing
+ego-error fields ideal zero-delay values. Provenance accepts complete
+pre-cadence/cadence/geometry/current field sets, never arbitrary partial configs.
+Old artifacts/goldens/catalogue are untouched, not silently migrated or newly
+qualified; source-keyed cache identities change as expected.
+
+**Verification:** the initial floor test reproduced repeated all-4 m rows
+instead of a 0.391969 m floor hit; the repaired sampler passes. Integration
+exposed planar diagnostic residuals and an artificial proxy fixture with
+nonzero masked cells; adapters/fixtures were corrected, not proxy formulas.
+Odometry tests first reproduced absent Config controls; delayed review initially
+hit the exact-field allowlist, then only the paired timing fields were admitted.
+All 1,382 tests pass plus the known transformer xfail (30.18 s), 63 more than
+§73. Coverage includes analytic surfaces/orientation, legacy replay, limits,
+reset, error bounds, sensor/physics independence, wire ages and historical
+reader round trips. Ruff, changed-file format, editor diagnostics, native
+ASan/UBSan, hard-float Arm and historical-byte preservation checks pass.
+
+Only ephemeral synthetic test fixtures ran. No actual study/data collection,
+labels/annotations/splits, teacher/model execution/training, dependencies,
+downloads, ST/licence, board action or push occurred. F21 remains partial:
+point rays lack real zone footprints, reflectance/multipath/status semantics and
+physical timing/error qualification; four existing scene families plus artificial
+height fixtures are not a representative evaluation cohort. M2 still needs a
+qualified floor-aware rule baseline and reviewed scene/evidence conventions.
+Old all-row minima will see floors; diagnostic proxies remain unchanged and
+must not be promoted to the active rules pilot. No safety/rejection thresholds,
+collection or Gaussian risk policy was selected by these implementation opt-ins.
+
 ## Sources
 
 Hardware and tools:

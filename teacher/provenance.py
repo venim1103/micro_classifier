@@ -40,16 +40,20 @@ def audit_source(path):
             or metadata.get("kind") != "metadata"
         ):
             raise ValueError("source requires simulator episode metadata first")
+        config_fields = {field.name for field in fields(Config)}
         if any(
             not isinstance(metadata.get(name), dict)
-            or set(metadata[name]) != {field.name for field in fields(model)}
-            for name, model in (("config", Config), ("scenario", Scenario))
+            or set(metadata[name]) not in allowed
+            for name, allowed in (
+                ("config", (config_fields, config_fields - {"tof_rate_hz"})),
+                ("scenario", ({field.name for field in fields(Scenario)},)),
+            )
         ):
             raise ValueError(
                 "complete declared configuration/scenario fields are required"
             )
         try:
-            config = Config(**metadata["config"])
+            config = Config.from_record(metadata["config"])
             scenario = Scenario(**metadata["scenario"])
             scenario.validate(config)
         except (TypeError, KeyError) as error:

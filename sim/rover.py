@@ -12,6 +12,7 @@ import json
 import math
 from collections import deque
 from dataclasses import asdict, dataclass
+from fractions import Fraction
 from pathlib import Path
 
 import numpy as np
@@ -35,9 +36,17 @@ class Config:
     tick_cost: float = 0.01
     success_reward: float = 10.0
     collision_cost: float = 10.0
+    tof_rate_hz: float | None = 15.0
+
+    @classmethod
+    def from_record(cls, record):
+        """Load stored configs; an absent rate means legacy per-tick acquisition."""
+        return cls(**{**record, "tof_rate_hz": record.get("tof_rate_hz")})
 
     def __post_init__(self):
         for name, value in asdict(self).items():
+            if name == "tof_rate_hz" and value is None:
+                continue
             try:
                 finite = (
                     not isinstance(value, bool)
@@ -48,6 +57,10 @@ class Config:
                 finite = False
             if not finite:
                 raise ValueError(f"{name} must be finite")
+        if self.tof_rate_hz is not None and not 0 < self.tof_rate_hz <= 15:
+            raise ValueError(
+                "8x8 ToF rate must be in (0, 15] Hz or None for legacy replay"
+            )
         positive = (
             "dt",
             "radius",
@@ -124,11 +137,31 @@ class RoverEnv:
         self.pending = deque()
         self.history = deque(maxlen=self.config.history_ticks)
         self.sensor_tick = None
+        self.sensor_phase = -1
+        self.sensor_period_ticks = (
+            None
+            if self.config.tof_rate_hz is None
+            else 1
+            / (Fraction(str(self.config.dt)) * Fraction(str(self.config.tof_rate_hz)))
+        )
         self.tof = np.zeros((8, 8), dtype=np.float32)
         self.valid = np.zeros((8, 8), dtype=bool)
-        self._sample()
+        self._update_sensor()
         self._record_history()
         return self._observation(), self._info(False, False)
+
+    def _update_sensor(self):
+        """Quantize acquisitions to decision ticks; deliver pending frames every tick."""
+        phase = (
+            self.tick
+            if self.sensor_period_ticks is None
+            else self.tick // self.sensor_period_ticks
+        )
+        if phase != self.sensor_phase:
+            self._sample()
+            self.sensor_phase = phase
+        while self.pending and self.pending[0][0] <= self.tick:
+            _, self.sensor_tick, self.tof, self.valid = self.pending.popleft()
 
     def _sample(self):
         config = self.config
@@ -147,8 +180,6 @@ class RoverEnv:
         valid = self.rng.random((8, 8)) >= config.dropout
         grid = np.where(valid, np.clip(grid, 0, config.max_range), 0).astype(np.float32)
         self.pending.append((self.tick + config.latency_ticks, self.tick, grid, valid))
-        while self.pending and self.pending[0][0] <= self.tick:
-            _, self.sensor_tick, self.tof, self.valid = self.pending.popleft()
 
     def _record_history(self):
         delta = np.asarray(self.scenario.goal) - self.position
@@ -254,7 +285,7 @@ class RoverEnv:
                 break
             self.position, self.yaw = position, yaw
         self.tick += 1
-        self._sample()
+        self._update_sensor()
         self._record_history()
         info = self._info(collision, False)
         success = not collision and info["distance_to_goal_m"] <= config.goal_tolerance

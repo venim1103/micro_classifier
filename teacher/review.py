@@ -189,7 +189,9 @@ def validate_review_packet(packet):
             observation[name] = np.asarray(observation[name])
         observation["ego"] = observation["history_ego"][-1]
         observation["goal_body_m"] = observation["ego"][2:]
-        rebuilt = prepare_request(observation, config=Config(**provenance["config"]))
+        rebuilt = prepare_request(
+            observation, config=Config.from_record(provenance["config"])
+        )
         if rebuilt["state"] != canonical(state) or rebuilt["provenance"] != provenance:
             raise ValueError("rendered state/provenance mismatch")
     except (ValueError, TypeError, KeyError, IndexError) as error:

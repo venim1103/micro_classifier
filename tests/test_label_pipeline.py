@@ -51,6 +51,28 @@ def test_request_preparation_uses_label_free_observation_validation(
     assert prepared["allowed_use"] == "fake_teacher_pipeline_tests_only"
 
 
+def test_legacy_episode_rate_is_preserved_by_readers(tmp_path):
+    from teacher.provenance import audit_source
+    from teacher.review import make_review_packet, validate_review_packet
+
+    config = Config(max_ticks=1, latency_ticks=0, tof_rate_hz=None)
+    records, _ = rollout(RoverEnv(config), policy=lambda observation: (0, 0))
+    del records[0]["config"]["tof_rate_hz"]
+    path = tmp_path / "legacy-fixture.jsonl"
+    write_episode(path, records)
+    requests = list(episode_requests(path))
+    assert len(requests) == 2
+    assert all(row["provenance"]["config"]["tof_rate_hz"] is None for row in requests)
+    assert (
+        json.loads(requests[-1]["state"])["module_observation"]["tof_sample_tick"] == 1
+    )
+    for request in requests:
+        validate_review_packet(make_review_packet(request))
+    assert (
+        audit_source(path)["episode_sha256"] == requests[0]["source"]["episode_sha256"]
+    )
+
+
 def review_request(sample):
     config, observation = sample
     prepared = prepare_request(observation, config=config)

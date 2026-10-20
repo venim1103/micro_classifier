@@ -478,7 +478,7 @@ def episode_requests(path, *, limit=None):
         or metadata.get("kind") != "metadata"
     ):
         raise ValueError("episode must start with versioned simulation metadata")
-    config = Config(**metadata["config"])
+    config = Config.from_record(metadata["config"])
     wire = "wire_contract" in metadata
     count = 0
     for line_number, line in enumerate(lines, 1):

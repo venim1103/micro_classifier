@@ -1829,14 +1829,15 @@ def test_sensor_diagnostic_trace_preserves_observations_and_rng(config):
             assert sample["diagnostic"]["status"] == "no_delivery"
         else:
             capture = sample["diagnostic"]["delivered_capture"]
-            assert capture["tick"] == traced.tick - traced.config.latency_ticks
+            assert capture["tick"] == observation["tof_sample_tick"]
+            assert capture["tick"] <= traced.tick - traced.config.latency_ticks
             assert sample["diagnostic"]["age_consistency_error_s"] == pytest.approx(0)
         plain_observation, plain_reward, plain_done, plain_timeout, plain_info = (
             plain.step(action)
         )
         observation, reward, done, timeout, info = traced.step(action)
         assert (reward, done, timeout) == (plain_reward, plain_done, plain_timeout)
-    assert len(traced.capture_trace) == 5
+    assert list(traced.capture_trace) == [0, 2, 3, 4]
     traced.reset(seed=20261019)
     assert list(traced.capture_trace) == [0]
 
@@ -2608,6 +2609,79 @@ def test_latency_dropout_and_sensor_timestamp_are_explicit():
     dropped, _ = RoverEnv(Config(dropout=1, latency_ticks=0)).reset()
     assert not dropped["tof_valid"].any()
     assert np.isfinite(dropped["tof_m"]).all()
+
+
+def test_tof_rate_delivers_pending_frames_without_a_new_capture():
+    env = RoverEnv(Config(noise_std=0, dropout=0))
+    observation, _ = env.reset()
+    delivered = [observation["tof_sample_tick"]]
+    ages = [observation["tof_age_s"]]
+    for _ in range(8):
+        observation, *_ = env.step((0, 0))
+        delivered.append(observation["tof_sample_tick"])
+        ages.append(observation["tof_age_s"])
+    assert delivered == [None, None, 0, 0, 2, 3, 4, 4, 6]
+    assert ages[2:] == pytest.approx([0.1, 0.15, 0.1, 0.1, 0.1, 0.15, 0.1])
+
+
+def test_tof_rate_holds_measurements_without_consuming_rng():
+    env = RoverEnv(Config(latency_ticks=0))
+    observation, _ = env.reset(seed=42)
+    before = deepcopy(env.rng.bit_generator.state)
+    held, *_ = env.step((0, 0))
+    assert env.rng.bit_generator.state == before
+    np.testing.assert_array_equal(held["tof_m"], observation["tof_m"])
+    np.testing.assert_array_equal(held["tof_valid"], observation["tof_valid"])
+    assert held["tof_sample_tick"] == 0
+    assert held["tof_age_s"] == pytest.approx(env.config.dt)
+
+
+@pytest.mark.parametrize(
+    "dt,rate,captures",
+    [
+        (0.05, 15, [0, 2, 3, 4, 6, 7, 8]),
+        (0.05, 10, [0, 2, 4, 6, 8]),
+        (0.1, 10, list(range(9))),
+        (0.3, 2, [0, 2, 4, 5, 7]),
+        (1.0, 15, list(range(9))),
+    ],
+)
+def test_tof_rate_phase_and_reset_are_deterministic(dt, rate, captures):
+    from sim.diagnostics import DiagnosticRoverEnv
+
+    env = DiagnosticRoverEnv(Config(dt=dt, tof_rate_hz=rate, latency_ticks=0))
+    sequences = []
+    for _ in range(2):
+        observation, _ = env.reset(seed=42)
+        sequence = [json.dumps(observation, default=json_value, sort_keys=True)]
+        for _ in range(8):
+            observation, *_ = env.step((0, 0))
+            sequence.append(json.dumps(observation, default=json_value, sort_keys=True))
+        assert list(env.capture_trace) == captures
+        sequences.append(sequence)
+    assert sequences[0] == sequences[1]
+
+
+def test_tof_rate_legacy_config_loading_keeps_per_tick_sampling():
+    from dataclasses import asdict
+
+    record = asdict(Config())
+    assert record.pop("tof_rate_hz") == 15
+    legacy = Config.from_record(record)
+    assert legacy.tof_rate_hz is None
+    env = RoverEnv(legacy)
+    env.reset(seed=42)
+    for tick in range(1, 9):
+        observation, *_ = env.step((0, 0))
+        expected = tick - legacy.latency_ticks
+        assert observation["tof_sample_tick"] == (expected if expected >= 0 else None)
+    assert Config.from_record(asdict(Config())) == Config()
+
+
+@pytest.mark.parametrize("rate", [0, -1, 15.1, 20, float("inf"), float("nan"), True])
+def test_tof_rate_rejects_unsupported_configuration(rate):
+    with pytest.raises(ValueError):
+        Config(tof_rate_hz=rate)
 
 
 def test_actions_are_bounded_and_invalid_action_does_not_advance():

@@ -23,7 +23,7 @@ Documents of record:
 
 Keep this section and the Task List current; a new session resumes from them.
 
-- Latest decisions and result: REVIEW.md §72 supersedes conflicting historical
+- Latest decisions and results: REVIEW.md §§72-73 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -34,18 +34,25 @@ Keep this section and the Task List current; a new session resumes from them.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,301 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,319 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
   predictive targets, never as student input. Observation-only human review
   remains for semantic/real-world data. Existing logs stay quarantined; no label,
   collection, split, training or Gaussian risk-budget approval is implied.
-- Next critical work is F21 sensor/scene correction before data: retain the
-  custom simulator, model 15 Hz 8x8 acquisition at 20 Hz decisions, floor/mount
-  geometry, missing returns, ages, ego-state errors and diverse scenes. Concrete
-  mounting/scene/error assumptions still need specification; do not invent
-  physical parameters. Existing Config/input/proxy behavior is unchanged.
+- F21 cadence correction complete in `71713ea`: new Config defaults to nominal
+  15 Hz ToF acquisition with 20 Hz decisions. Captures are tick-quantized;
+  pending delivery/age updates occur each tick and held frames consume no RNG.
+  `Config.from_record` preserves legacy per-tick sampling when rate is absent.
+  Eighteen new cases cover timing/reset and legacy request/provenance readers.
+  No historical log/report was regenerated; source-keyed caches naturally change.
+- Remaining F21 work: floor/mount geometry, missing-return semantics, ego-state
+  errors and diverse scenes. Specify simulation mounting height/pitch, obstacle
+  vertical extent and odometry error/delay assumptions before implementing them;
+  proposed default is no invented physical values or further study collection.
+  Input tensor/wire shapes and diagnostic proxy formulas remain unchanged; the
+  simulator is still planar, not a qualified VL53L8CX/physical model.
 - ST tools remain absent and no board is attached. User-side licence/install,
   procurement and sending the existing teacher provenance request remain pending.
   No new study, teacher/model run, dataset or trained student exists.
@@ -1025,6 +1032,9 @@ on missing tools, and continue with the next unblocked task.
   collection or data acceptance occurred. Next: specify and correct F21 before
   implementing/qualifying the actual rules baseline; mode no longer blocks this
   pilot. The older entries below are historical, not renewed approval requests.
+  Follow-up (REVIEW.md §73): nominal 15 Hz capture/variable delivered ages now
+  replace per-decision sampling; legacy stored configs retain original behavior.
+  Geometry/return/odometry/scene corrections and actual rules remain pending.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

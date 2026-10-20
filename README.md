@@ -758,6 +758,14 @@ trained student, firmware integration or board validation. See
 ticks of masked history, rewards and explicit episode termination. It uses
 the existing NumPy and SciPy dependencies; no board or teacher is needed.
 
+New configurations use nominal 15 Hz ToF capture within 20 Hz decisions. Capture
+is tick-quantized; frames are held between captures, delivery still progresses
+every tick and `tof_age_s` varies. This is not continuous-time sensor emulation.
+Stored legacy configs without `tof_rate_hz` load through `Config.from_record`
+with the original per-tick cadence; explicit `tof_rate_hz=None` also replays it.
+Other sensor geometry remains the unqualified planar prototype. No further study
+collection or training is authorized by these tooling examples.
+
 ```sh
 python -m sim.rover --scenario obstacle --seed 0 --episodes 4 --render
 python -m sim.rover --scenario slalom --seed 7 --wire

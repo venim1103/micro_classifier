@@ -1746,7 +1746,8 @@ ego-state and body-frame goal, delayed noisy ToF with validity and age, and
 eight masked history ticks. True pose and world geometry are not model inputs.
 
 User-approved, configurable **simulation-only assumptions**, not measured
-physical specifications: 20 Hz, 0.18 m circular rover radius, 0.6 m/s forward
+physical specifications: 20 Hz decisions, nominal 15 Hz ToF acquisition
+(updated 2026-10-20 below), 0.18 m circular rover radius, 0.6 m/s forward
 speed limit, 1 m/s² acceleration/deceleration, 1.5 rad/s turn limit; 45-degree
 planar ToF, 4 m range, 0.02 m independent Gaussian noise, 2% independent
 zone dropout, two-tick delivery latency, eight history ticks, and 400-tick
@@ -1755,6 +1756,44 @@ dropouts; this is not VL53L8CX emulation. Constant-twist motion is checked
 against swept inflated obstacles, including a conservative curved-path margin.
 Invalid commands are rejected, bounded commands are reported, and collision
 terminates the simulation instead of permitting tunneling through obstacles.
+
+#### Sensor Acquisition Cadence (2026-10-20)
+
+The approved F21 direction now has a first implemented correction: `Config`
+defaults to `tof_rate_hz=15.0`, distinct from the unchanged `dt=0.05` decision
+period. The scheduler uses rational decimal periods to avoid cumulative phase
+drift, captures at the first decision tick at/after a nominal deadline and
+delivers queued frames every tick, even without a new capture. A held frame
+retains its values, mask and capture tick; its reported age grows and no extra
+noise/dropout RNG draws occur. Histories still advance every decision tick.
+
+At defaults, capture ticks begin 0, 2, 3, 4, 6, 7, 8; with two-tick latency,
+delivered sample ticks begin null, null, 0, 0, 2, 3, 4, 4, 6. Warm ages alternate
+between 0.10 and 0.15 s. This is a nominal cadence quantized to decision ticks:
+capture intervals can be 0.05 or 0.10 s, not a physical minimum inter-frame
+period of 1/15 s. No continuous-time exposure, sub-tick pose interpolation,
+clock uncertainty or hardware acquisition timing is qualified. Slower decision
+loops collapse multiple deadlines to one current capture, never catch-up bursts.
+
+Explicit rates must be in (0,15] Hz. `None` denotes legacy per-tick acquisition;
+stored-source readers use `Config.from_record`, mapping an absent rate to that
+legacy behavior. New metadata includes the rate. The provenance validator accepts
+exact complete old/new config field sets, not arbitrary missing/unknown fields.
+The CLI's partial `--config` overrides use current defaults; use an explicit
+null rate to replay old cadence. Historical logs/reports remain unchanged and
+retain their original exporter hashes. Source-keyed request identities change
+under the existing cache scheme; no historical packet/cache/report is migrated
+or requalified by this code change.
+
+Eighteen new synthetic cases cover captures/delivery/ages, held RNG, varied
+decision periods, reset determinism, invalid rates and legacy request/provenance
+readers. All 1,319 repository tests pass plus the known transformer xfail; lint,
+changed-file format, editor diagnostics and existing native/Arm gates pass.
+REVIEW.md §73 records the transient unrelated cleanup-test failure and rerun.
+No study episode, teacher/model run, labels/data or hardware action occurred.
+F21 remains open: floor/mount geometry, return semantics, ego-state errors and
+scene diversity still need concrete simulation assumptions. Observation/wire
+shapes, proxy formulas and other Config defaults remain unchanged.
 
 The approved prototype objective is goal reaching without collision: reward
 is decrease in goal distance in meters, minus 0.01 per tick, plus 10 for
@@ -3772,6 +3811,8 @@ quarantined. This does not approve collection, label import, splits, training,
 Gaussian risk budgets or a sensor/hardware safety claim. Mounting, scene and
 ego-state error assumptions still need concrete specification. ST tool install,
 teacher provenance request and board procurement remain user-side actions.
+The nominal 15 Hz acquisition/variable-age portion of F21 is now implemented
+(§7, REVIEW.md §73); it does not clear the remaining geometry/evidence gates.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

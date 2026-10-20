@@ -4054,6 +4054,51 @@ M2 has not passed. No study episode, old artifact/report regeneration, live
 teacher/model run, dataset/training, dependency/download, ST or hardware action
 occurred. The next milestone is F21, not further reference-math or audit tooling.
 
+## 73. Sensor Acquisition Cadence Correction (2026-10-20)
+
+Following the approved custom-simulator/F21 direction, [the sampler][review70-rover]
+now separates nominal 15 Hz ToF acquisition from 20 Hz decisions and per-tick
+pending delivery. New Configs carry `tof_rate_hz=15.0`; explicit normal rates
+must be in (0,15] Hz. A rational phase schedule avoids accumulated drift. Held
+frames retain capture tick/mask/ranges and consume no extra RNG; their age
+increases while histories keep advancing at the decision rate. Diagnostic
+capture traces naturally contain only actual modeled captures.
+
+This is a tick-quantized approximation, not continuous-time sensor emulation:
+at defaults captures occur at ticks 0/2/3/4/6/7/8, with 0.05/0.10 s intervals.
+It models the nominal rate and held-frame ages, not a physical 1/15 s minimum
+inter-frame period, sub-tick motion/exposure or qualified clocks. Slow decision
+loops collapse missed deadlines, rather than generating catch-up bursts.
+
+`Config.from_record` interprets missing rate fields as the old per-tick model;
+an explicit null rate also selects that legacy behavior. The existing request,
+review and provenance readers use it. Strict metadata checks allow exactly the
+complete old or new config schema. Other omissions and unknown fields still
+reject. The new default intentionally changes future seeded observations/RNG
+draws; no historical artifact is rewritten or claimed to reproduce under the
+new default. Request source/cache identities change under the existing hash
+scheme; historical blank packets/reports retain their original exporter identity,
+not a silent migration or new qualification.
+
+**Verification:** tests first reproduced per-tick oversampling and RNG changes.
+Eighteen added cases cover held-frame/pending-delivery behavior and variable
+ages, reset/cadence at several decision periods, invalid rates, and old-config
+rendering/provenance using artificial temporary fixtures. All affected-slice
+checks pass. One full run had 1,318 passes, the known transformer xfail and a
+failure in unchanged `test_build_audit_timeout_terminates_descendants[parent_exited]`.
+All three isolated cleanup modes passed, then the unchanged full rerun passed
+1,319 tests plus the known xfail in 27.66 s. No cleanup code/test was modified
+or root-cause claim made. Ruff, changed-file format, editor diagnostics and
+full-suite native sanitizer/hard-float Arm gates pass. Code commit: `71713ea`.
+
+No study collection, historical report/log regeneration, labels/dataset/splits,
+teacher/model execution, training, dependency/download, ST or board action.
+Wire/tensor shapes, diagnostic proxy formulas, quarantine and safety policy stay
+unchanged. F21 is only partially repaired; next specify simulation mounting
+height/pitch, obstacle vertical extent and odometry error/delay assumptions before
+the floor/return/ego-state/scene changes. Proposed default is to retain existing
+values and not invent physical measurements. Tasks 6/9 and hardware gates remain.
+
 ## Sources
 
 Hardware and tools:

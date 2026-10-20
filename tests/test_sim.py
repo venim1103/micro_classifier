@@ -60,6 +60,173 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
     )
 
 
+def test_floor_rules_ignore_floor_without_claiming_calibrated_probabilities():
+    from interface.protocol import QuestionId, Status, decode_decision, encode_decision
+    from sim.rules import decide
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset()
+    decision = decide(observation, config=config)
+    assert decision.status == Status.OK
+    assert decision.catalogue_version == 1 and decision.model_version == 0
+    assert [answer.question_id for answer in decision.answers] == list(QuestionId)[:3]
+    assert [answer.selected for answer in decision.answers] == [0, 1, 3]
+    assert len(encode_decision(decision)) == 100
+    assert decode_decision(encode_decision(decision)) == decision
+
+
+@pytest.mark.parametrize(
+    "defect,status",
+    [
+        ("missing", 2),
+        ("stale", 2),
+        ("column", 3),
+        ("zero", 3),
+        ("masked_nonzero", 3),
+        ("below_floor", 3),
+        ("legacy", 3),
+        ("bad_age", 3),
+    ],
+)
+def test_floor_rules_reject_unsupported_evidence(defect, status):
+    from dataclasses import replace
+
+    from sim.rules import decide
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset()
+    if defect == "missing":
+        observation["tof_sample_tick"] = None
+        observation["tof_valid"][:] = False
+        observation["tof_m"][:] = 0
+    elif defect == "stale":
+        observation.update(tick=2, time_s=0.1, tof_age_s=0.1)
+    elif defect == "column":
+        observation["tof_valid"][:, 3] = False
+        observation["tof_m"][:, 3] = 0
+    elif defect == "zero":
+        observation["tof_m"][:] = 0
+    elif defect == "masked_nonzero":
+        observation["tof_m"][0, 0] = 1
+    elif defect == "below_floor":
+        observation["tof_m"][-1, 0] = 1
+    elif defect == "legacy":
+        config = replace(config, tof_mount_height=None)
+    else:
+        observation["tof_age_s"] = float("nan")
+    packet = decide(observation, config=config)
+    assert packet.status == status and not packet.answers
+
+
+def test_floor_rules_obstacle_momentum_and_privileged_fields_are_independent():
+    from sim.rules import decide
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset()
+    observation["ego"][0] = 0.6
+    observation["tof_valid"][3, 3] = True
+    observation["tof_m"][3, 3] = 0.35
+    first = decide(observation, config=config)
+    assert [answer.selected for answer in first.answers][::2] == [1, 0]
+    observation.update(
+        ground_truth={"position_m": [99, 99]},
+        action=[99, 99],
+        labels={"path_blocked": False},
+    )
+    assert decide(observation, config=config) == first
+
+
+@pytest.mark.parametrize(
+    "defect", ["absent", "crc", "sequence", "timestamp", "rejected"]
+)
+def test_floor_rules_host_brakes_on_missing_or_invalid_decisions(defect):
+    from dataclasses import replace
+
+    from interface.protocol import Status, decode_decision, encode_decision
+    from sim.rules import host_action, wire_step
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset()
+    action, state_frame, frame = wire_step(observation, config=config)
+    assert action[0] > 0
+    packet = decode_decision(frame)
+    if defect == "absent":
+        frame = None
+    elif defect == "crc":
+        frame = frame[:-1] + bytes([frame[-1] ^ 1])
+    elif defect == "sequence":
+        frame = encode_decision(replace(packet, sequence=1))
+    elif defect == "timestamp":
+        frame = encode_decision(replace(packet, timestamp_us=1))
+    else:
+        frame = encode_decision(
+            replace(packet, status=Status.REJECT_STALE_INPUT, answers=())
+        )
+    np.testing.assert_array_equal(
+        host_action(state_frame, frame, config=config), [0, 0]
+    )
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"floor_band_m": -1},
+        {"floor_band_m": None},
+        {"max_age_s": True},
+        {"max_age_s": float("nan")},
+        {"floor_band_m": 10**400},
+    ],
+)
+def test_floor_rule_settings_reject_invalid_values(settings):
+    from sim.rules import RuleSettings
+
+    with pytest.raises(ValueError):
+        RuleSettings(**settings)
+
+
+def test_floor_rules_diagnostics_are_bounded_private_and_exclusive(tmp_path):
+    from interface.protocol import decode_decision, decode_state
+    from sim.rules import run_diagnostics
+
+    output, report = tmp_path / "episodes", tmp_path / "report.json"
+    result = run_diagnostics(output, report, config=Config(max_ticks=2))
+    assert result["totals"]["episodes"] == 8
+    assert result["totals"]["ticks"] == 16
+    assert not result["training_approved"] and not result["task_labels"]
+    assert not result["rule_quality_qualified"] and not result["calibrated"]
+    for path in output.glob("*.jsonl"):
+        rows = [json.loads(line) for line in path.read_text().splitlines()]
+        assert rows[0]["policy"] == "observation_only_wire_rules"
+        for row in rows[1:-1]:
+            state = decode_state(bytes.fromhex(row["state_frame_hex"]))
+            decision = decode_decision(bytes.fromhex(row["decision_frame_hex"]))
+            assert state.sequence == decision.sequence
+            assert "ground_truth" not in row["observation"]
+            assert "reference_comparisons" not in row
+    with pytest.raises(ValueError, match="fresh"):
+        run_diagnostics(output, report)
+
+
+@pytest.mark.parametrize("direction", ["equal", "report_parent", "output_parent"])
+def test_floor_rules_diagnostic_paths_reject_before_collection(
+    tmp_path, monkeypatch, direction
+):
+    from sim import rules
+
+    def unexpected(*args):
+        raise AssertionError("must reject before collection")
+
+    monkeypatch.setattr(rules, "_diagnostic_episode", unexpected)
+    output, report = tmp_path / "output", tmp_path / "output"
+    if direction == "report_parent":
+        output = report / "nested"
+    elif direction == "output_parent":
+        report = output / "nested.json"
+    with pytest.raises(ValueError, match="nonoverlapping"):
+        rules.run_diagnostics(output, report)
+    assert not (tmp_path / "output").exists()
+
+
 @pytest.mark.parametrize("top", [0.05, 0.5, 1.0])
 def test_tof_capped_cylinder_first_hit_satisfies_analytic_surface(top):
     config = Config(noise_std=0, dropout=0, latency_ticks=0)

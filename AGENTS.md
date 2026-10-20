@@ -19,9 +19,38 @@ Documents of record:
 - [REVIEW.md](REVIEW.md): §70 is the whole-repository review (F18-F36), §71
   records independent code repairs, and §10 is the M0 decision template.
 
-## Current State (2026-10-19)
+## Current State (2026-10-20)
 
 Keep this section and the Task List current; a new session resumes from them.
+
+- Latest decisions and result: REVIEW.md §72 supersedes conflicting historical
+  pilot descriptions below. The user confirmed the decision brief and approved
+  autonomous implementation and focused local commits, not pushing.
+- The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
+  `mode` is absent from the active catalogue and stays unlabeled. Learned
+  prediction/camera questions and distillation are deferred.
+- Contract milestone complete in `c78925d`: Python decisions default to rules
+  catalogue 1, model version 0 (no trained model), complete mask 7, 100-byte full
+  frames. Python/C enforce all three answers for OK and reject mode/model claims.
+  Legacy catalogue 0, four-head synthetic references and old golden/report bytes
+  remain supported and unchanged in meaning; they are not the active pilot.
+- Full offline gate: 1,301 passes plus the known transformer xfail, 640 interface
+  checks; lint/changed-file format/editor diagnostics, native sanitizers and
+  hard-float Arm compilation pass. No deployment or task-quality result follows.
+- Privileged simulator truth is now permitted in principle for geometric and
+  predictive targets, never as student input. Observation-only human review
+  remains for semantic/real-world data. Existing logs stay quarantined; no label,
+  collection, split, training or Gaussian risk-budget approval is implied.
+- Next critical work is F21 sensor/scene correction before data: retain the
+  custom simulator, model 15 Hz 8x8 acquisition at 20 Hz decisions, floor/mount
+  geometry, missing returns, ages, ego-state errors and diverse scenes. Concrete
+  mounting/scene/error assumptions still need specification; do not invent
+  physical parameters. Existing Config/input/proxy behavior is unchanged.
+- ST tools remain absent and no board is attached. User-side licence/install,
+  procurement and sending the existing teacher provenance request remain pending.
+  No new study, teacher/model run, dataset or trained student exists.
+
+### Historical Checkpoints
 
 - Design plus INT8 Vela 2.0 9B and d3-flash teacher loaders
   ([teacher/vela_int8.py](teacher/vela_int8.py),
@@ -986,9 +1015,16 @@ on missing tools, and continue with the next unblocked task.
    round-trip tests.
   Result (2026-10-15): approved provisional host-side contract, 62 focused
   tests, generated C offsets and five golden frames; no hardware freeze.
-6. [blocked: reviewed target evidence/labels and mode semantics pending]
+6. [blocked: sensor/scene correction and qualified rule/evidence implementation pending]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
+  Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
+  mode; the complete three-answer Python/C contract passes 123 new tests. Legacy
+  diagnostic catalogue/proxies remain unchanged and unqualified, not deployed
+  rules. Privileged simulation truth is permitted in principle, but no labels,
+  collection or data acceptance occurred. Next: specify and correct F21 before
+  implementing/qualifying the actual rules baseline; mode no longer blocks this
+  pilot. The older entries below are historical, not renewed approval requests.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

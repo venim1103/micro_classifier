@@ -23,6 +23,16 @@ benchmark has been performed.
 
 ## 1. Decision Summary
 
+**Current pilot decision (2026-10-20):** the user approved a rules-first rover
+with `path_blocked`, `clear_sector` and `speed_tier`, excluding `mode` from the
+active catalogue. The complete three-question host contract is implemented
+below; the existing sensor proxies are still diagnostic, not qualified runtime
+rules. Correct the sensor/scene model before data collection. Learned predictive
+and camera questions, a student and distillation remain future work, not a
+requirement to imitate these rules. REVIEW.md §72 records the decisions and
+verification. The broader learned architecture below remains the long-term
+direction, not evidence of a trained or deployed model.
+
 Build a modular decision module: an STM32N6 board that attaches to a host robot
 (first a ground rover, later a mini-drone) and answers a fixed catalogue of
 typed questions about the robot's state and surroundings on every tick. Train
@@ -177,8 +187,9 @@ and the history window stay on the module, not in host UART frames.
 Decision payload starts with u32 processing latency in microseconds, u16
 status, u16 model version, u16 catalogue version, and u16 answer mask: a
 12-byte prefix. Latency is complete input receipt to response framing, not
-host-to-host elapsed time. Model version 0 means no model and cannot accompany
-`OK`. Catalogue version is 0. Status values 0-5 are `OK`,
+host-to-host elapsed time. Model version 0 means no model; whether it can
+accompany `OK` depends on the catalogue below. Catalogue 1 is the active
+rules-only pilot; catalogue 0 is retained for legacy compatibility. Status values 0-5 are `OK`,
 `REJECT_LOW_CONFIDENCE`, `REJECT_STALE_INPUT`, `REJECT_OUT_OF_DOMAIN`,
 `REJECT_UNSUPPORTED_SCHEMA`, `FAULT`. Default construction yields `FAULT`.
 
@@ -186,7 +197,7 @@ Answer-mask bit `question_id - 1` indicates an answer; present answers occur
 in ascending ID order. Each answer has an eight-byte prefix: u8 question ID,
 u8 type (`noul`=1, `choice`=2, `score`=3), u8 selected option index, u8 option
 count, f32 confidence; followed by count f32 probabilities. Wire identities
-follow the existing §6 bundle, not a reviewed training-label catalogue:
+follow the legacy catalogue 0 bundle, not a reviewed training-label catalogue:
 
 | ID | Question | Ordered options |
 | --- | --- | --- |
@@ -202,10 +213,49 @@ absent, represented by -1, not NaN. Received confidence must match within
 2e-6. Expected score is the probability-weighted level. A selected option may
 differ from raw argmax for future smoothing; no smoothing policy is implemented.
 
-`OK` requires all four answers and a nonzero model version. Rejection/fault
+For legacy catalogue 0, `OK` requires all four answers and a nonzero model version. Rejection/fault
 may contain a subset or none for diagnostics; **its selections are not usable
 recommendations**. Full decisions are **128 bytes**; empty rejection/fault
 frames are 36 bytes. Golden model ID 1 is synthetic, not an installed model.
+
+#### Active Rules Catalogue 1 (Approved, 2026-10-20)
+
+The user approved the three-question contract milestone and the rules-first
+pilot direction. Catalogue 1 contains only IDs 1-3 with the same types, options,
+confidence and ordering above. `OK` requires mask `0x7`. Every status requires
+model version **0**, explicitly identifying no trained model; the pair
+`(catalogue_version=1, model_version=0)` denotes the rules path. No fictitious
+model ID or five-option mode distribution is needed. Rejections/faults permit
+subsets or no answers, but never mode or a nonzero model version. Their answers
+remain unusable recommendations. This tuple declares provenance, not algorithm
+attestation, calibrated probabilities or safety qualification.
+
+Python `Decision` defaults to catalogue 1 and `FAULT`, not `OK`. In the
+[registry][wire-python], `RULES_QUESTIONS` is the active catalogue and
+`CATALOGUES` selects definitions by version. Existing `QUESTIONS` and
+`CATALOGUE_VERSION` retain their legacy meaning for diagnostic tools. C callers
+explicitly set `MC_V0_RULES_CATALOGUE_VERSION`, `MC_V0_RULES_MODEL_VERSION` and
+`MC_V0_RULES_ANSWER_MASK`. Zero-initialized C metadata remains legacy catalogue
+0, not an implicit active-catalogue selection. Consumers must check the catalogue
+and status before treating a decoded packet as an active-pilot result.
+
+Full rules decisions are **100 bytes**; empty faults/rejections remain 36 bytes
+and state frames 92 bytes. Header/schema/profile versions, CRC, field offsets,
+legacy frame bytes and the 128-byte stream capacity are unchanged. Historical
+goldens and reports remain byte-identical; four-head synthetic assembly/verifier
+fixtures explicitly select catalogue 0 and cannot emit rules-catalogue frames.
+The existing `sim/catalogue.json` is still the historical diagnostic proxy draft,
+not the active runtime catalogue or a promoted task label source.
+
+All 640 interface tests pass, including 123 new cases, exact constructed rules
+bytes, all six statuses and sixteen masks, C/Python round trips/streams, idle
+recovery, rejected-output atomicity and model/version confusion. Native ASan/
+UBSan covers rules frames, exact capacities and truncations; host/hard-float
+Cortex-M55 objects and generated header parity pass. The full offline suite has
+1,301 passes plus the known transformer xfail; lint, changed-file formatting and
+editor diagnostics pass. This resolves F19 for the active contract, not Task 6's
+rule/evidence qualification, an M2 baseline, firmware integration or deployment.
+No task data, study, labels, model inference/training or hardware action occurred.
 
 `FrameDecoder.feed` accepts byte chunks, bounds retained framing data, rejects
 corrupt/unsupported frames and resynchronizes on magic. The transport owner
@@ -407,14 +457,14 @@ provisional host-side byte contract above was subsequently approved as tooling.
 
 | Requirement | Current status |
 | --- | --- |
-| First robot frame, task, question bundle, and ground-truth policy | Provisional default: ground rover with four per-tick questions (`path_blocked` noul, `clear_sector` choice, `speed_tier` score 0-3, `mode` choice); deterministic labels for geometry/speed ceiling, reviewed human labels plus Decision 3.0 distributions for `mode` ([REVIEW.md](REVIEW.md) §10) |
+| First robot frame, task, question bundle, and ground-truth policy | Updated 2026-10-20: rules-first ground rover, three questions (`path_blocked` noul, `clear_sector` choice, `speed_tier` score 0-3), active catalogue 1; mode excluded and learned questions deferred. Privileged simulator truth permitted in principle for geometric/predictive targets, with no data-generation approval (REVIEW.md §72). |
 | Input modality and sensor set: ego-state, multizone ToF, camera, text | Provisional default: FLU ego-state from the host plus an on-module 8x8 ToF grid (`VL53L8CX` model) and an 8-tick history window first; camera in a later profile; text only for optional operator commands |
 | Languages and maximum input length (text branch only) | Provisional default: English only for optional operator command strings, at most 128 UTF-8 bytes; enumerated task IDs preferred in v0 |
 | Fixed task catalogue versus runtime-defined questions | Provisional default: fixed per-profile question catalogue stored as versioned head blobs (§6) |
 | Whether external RAM is forbidden | Provisional default: no external RAM during inference (`internal-memories-only--default`) |
 | Whether external flash for boot/storage is allowed | Provisional default: external flash allowed for cold boot and weight/head initializers; separate from inference memory |
 | Decision rate, end-to-end latency, and power, derived from the frame's speed and stopping distance (§8) | Provisional default: 20 Hz decision rate, at most 20 ms end-to-end latency from state packet to decision packet at nominal clocks (600 MHz CPU / 800 MHz NPU), below 1 W module power |
-| Required per-class recall, error costs, and rejection coverage | Provisional default: missed obstacle 20x worse than a false stop; `mode` macro-F1 ≥ 0.85 at ≥ 80% coverage; zero collisions in simulator and arena scenario suites |
+| Required per-class recall, error costs, and rejection coverage | Missed obstacle 20x worse than a false stop and zero collisions in simulator/arena scenario suites remain provisional gates; the earlier `mode` macro-F1 ≥ 0.85 at ≥ 80% coverage is dormant because mode is excluded from the active pilot, not replaced with an invented threshold. |
 | Host interface: bus, protocol, and host stack (custom MCU, PX4, ArduPilot) | Provisional default: UART at 1 Mbaud with CRC-protected binary interface contract v0; rover brakes on rejection or after 150 ms without a decision |
 | Simulator for closed-loop data and tests (§7) | Provisional default: minimal Python/NumPy 2-D rover simulator with an 8x8 ToF model, noise, dropouts, latency, and a scripted expert first; PX4 software-in-the-loop with Gazebo later |
 | Board selection and any component-origin requirements | Provisional default: STM32N6570-DK for M1b (§12), with `USE_EXTERNAL_MEMORY_DEVICES=0` |
@@ -1559,7 +1609,7 @@ configuration: sign them and verify them at boot (§10).
 
 | Profile | Example question bundle per tick |
 | --- | --- |
-| Ground rover | `path_blocked` (noul, deterministic from ToF range and speed), `clear_sector` (choice: left, centre, right, none), `speed_tier` (score 0-3), `mode` (choice: explore, approach, avoid, dock, halt) |
+| Ground rover | Active rules catalogue 1: `path_blocked` (noul), `clear_sector` (choice: left, centre, right, none), `speed_tier` (score 0-3). Actual rules still require sensor/evidence qualification; mode is excluded. |
 | Mini-drone | `path_blocked` (noul), `clear_direction` (choice, including up and down), `mode` (choice: advance, avoid, hover, return, land) |
 
 ### Later Option-Conditioned Extension
@@ -3711,6 +3761,17 @@ framework requirements conflict, grant only the device access board work needs
 needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
+
+Current critical-path checkpoint (2026-10-20, REVIEW.md §72): the active
+three-question rules contract resolves F19, not M2 task quality. The next step is
+F21 sensor/scene correction before any data collection, then a qualified
+closed-loop rules baseline. Privileged simulator truth is permitted in principle
+for future geometric/predictive labels, never as student input. Observation-only
+human review remains for semantic/real-world data; all existing logs stay
+quarantined. This does not approve collection, label import, splits, training,
+Gaussian risk budgets or a sensor/hardware safety claim. Mounting, scene and
+ego-state error assumptions still need concrete specification. ST tool install,
+teacher provenance request and board procurement remain user-side actions.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

@@ -4001,6 +4001,59 @@ or dataset was regenerated. No new collection, model inference/training,
 dependency, ST or board action occurred. F18-F21 and the remaining product/
 evidence decisions stay pending; no blocked task is promoted by these repairs.
 
+## 72. Rules-First Pilot and Three-Question Contract (2026-10-20)
+
+The user confirmed the decision brief and requested autonomous implementation
+with focused local commits, without pushing. This adopts a rules-first pilot
+with `path_blocked`, `clear_sector` and `speed_tier`, excludes mode from the
+active catalogue and defers learned predictive/camera questions and distillation.
+It permits privileged simulation truth in principle for geometric/predictive
+targets, never as student input, while retaining observation-only human review
+for semantic/real-world data and quarantine for all existing logs. No actual
+labels, collection, split acceptance, training or Gaussian risk budget is approved.
+
+The chosen simulator direction is to retain the custom simulator and correct
+F21 before training-data collection: 15 Hz 8x8 acquisition within the 20 Hz
+decision loop, floor/mount geometry, missing-return handling, realistic ages,
+ego-state errors and more diverse scenes. Concrete mounting/scene/error
+assumptions still need specification before implementation; the current sensor,
+Config, student input and diagnostic proxy behavior remain unchanged. ST licence/
+install, sending the existing teacher data-provenance request and obtaining the
+DK/ToF boards remain user-side actions, not actions performed by this approval.
+
+**Completed milestone:** [Python registry/codecs][wire-python] and [C
+codec][wire-codec-source] support active catalogue 1, IDs 1-3, full mask 7 and
+model version zero for every status. The pair identifies a rules producer with
+no trained model; it is not calibrated-quality or safety evidence. OK requires
+all three answers; rejection/fault may omit answers but cannot contain mode or
+a model claim. Full frames are 100 bytes; state frames remain 92 bytes and the
+maximum framing buffer remains 128 bytes. Header/profile/schema and CRC layouts
+are unchanged. Python defaults to a catalogue-1 fault; C callers select the
+catalogue explicitly. Consumers must not confuse legacy decoded packets with
+active-pilot results.
+
+Legacy catalogue 0, four-answer OK rules and historical golden/report bytes
+remain supported and unchanged. Four-head assembly/native-verifier fixtures now
+explicitly select catalogue 0, preserving their outputs rather than pretending
+that affine heads implement the rules. The old simulator catalogue/proxies stay
+diagnostic-only; no qualified runtime rule or simulator labeler was added.
+
+**Verification:** the initial tests reproduced rejection at the catalogue-version
+guard. After the implementation, 123 new cases cover exact rules bytes, all six
+statuses/sixteen masks, C/Python encodes/decodes and stream parity, CRC-repaired
+invalid metadata, no writes on rejection, model claims and idle recovery. The
+existing native ASan/UBSan harness additionally checks rules frames with exact
+output capacities and truncated inputs. All 640 interface checks and 1,301
+repository tests pass plus the known transformer expected failure. Repository
+Ruff, changed-file format, hard-float Arm builds, both audit matrices, generated
+header parity and editor diagnostics pass. Implementation commit: `c78925d`.
+
+F19 is resolved for the active contract. Tasks 6/9 still need corrected sensor/
+scene behavior, qualified rules/evidence and actual approved task data/evaluation;
+M2 has not passed. No study episode, old artifact/report regeneration, live
+teacher/model run, dataset/training, dependency/download, ST or hardware action
+occurred. The next milestone is F21, not further reference-math or audit tooling.
+
 ## Sources
 
 Hardware and tools:

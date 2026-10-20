@@ -1,8 +1,12 @@
 # micro_classifier
 
-A Jev-like decision module for robots on an STM32N6: typed decisions from a
-small student model distilled from open teachers. Design and feasibility
-findings: [DESIGN.md](DESIGN.md).
+A Jev-like decision module for robots on an STM32N6. The current rover pilot is
+rules-first: `path_blocked`, `clear_sector` and `speed_tier`; learned questions
+and distillation remain future work. Design and feasibility: [DESIGN.md](DESIGN.md).
+
+The three-question host contract is implemented, not a deployed rules engine:
+the sensor model and actual rule/evidence qualification are still pending.
+There is no trained student, reviewed task dataset or board measurement.
 
 Independent research review of the design: [REVIEW.md](REVIEW.md).
 
@@ -172,6 +176,16 @@ IDs/types/counts/selections are checked; absent slots are ignored. Input
 `confidence` is ignored and derived from the binary32 probabilities, matching
 Python. Re-encoding accepted noncanonical confidence may change its bytes.
 Encoding a diagnostic or fault packet does not make it a usable recommendation.
+
+The active rules catalogue is 1: set `catalogue_version` to
+`MC_V0_RULES_CATALOGUE_VERSION`, `model_version` to `MC_V0_RULES_MODEL_VERSION`
+(zero, no model), and the complete `answer_mask` to `MC_V0_RULES_ANSWER_MASK`
+(`0x7`) for OK. IDs 1-3 retain their types/options; mode is not allowed under
+any status. Rejections/faults may omit answers. Full rules frames are 100 bytes.
+Python `Decision()` defaults to a rules-catalogue fault. Legacy catalogue 0 and
+the four-head synthetic reference remain supported for compatibility, not as
+the active pilot; zero-initialized C metadata still selects catalogue 0.
+
 The completed checks include exact-capacity native sanitizers, all validity
 masks and 1,000 seeded synthetic cross-language round trips. They are host/
 compile evidence, not board runtime or safety qualification; board integration

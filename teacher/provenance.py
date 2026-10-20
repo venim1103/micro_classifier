@@ -41,7 +41,12 @@ def audit_source(path):
         ):
             raise ValueError("source requires simulator episode metadata first")
         config_fields = {field.name for field in fields(Config)}
-        before_geometry = config_fields - {
+        before_odometry = config_fields - {
+            "odometry_position_error",
+            "odometry_heading_error",
+            "odometry_latency_ticks",
+        }
+        before_geometry = before_odometry - {
             "tof_mount_height",
             "tof_mount_pitch",
             "obstacle_height",
@@ -54,7 +59,12 @@ def audit_source(path):
             for name, allowed in (
                 (
                     "config",
-                    (config_fields, before_geometry, before_geometry - {"tof_rate_hz"}),
+                    (
+                        config_fields,
+                        before_odometry,
+                        before_geometry,
+                        before_geometry - {"tof_rate_hz"},
+                    ),
                 ),
                 ("scenario", (scenario_fields, scenario_fields - {"obstacle_heights"})),
             )

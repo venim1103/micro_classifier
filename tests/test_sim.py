@@ -135,6 +135,134 @@ def test_tof_legacy_planar_sampling_preserves_values_masks_and_rng():
         observation, *_ = env.step((0, 0))
 
 
+def test_odometry_delay_holds_an_old_estimate_and_exports_its_age():
+    from interface.protocol import decode_state, encode_state
+
+    config = Config(odometry_latency_ticks=1, latency_ticks=0)
+    env = RoverEnv(config)
+    initial, _ = env.reset(seed=4)
+    first, *_ = env.step((0.6, 0.4))
+    np.testing.assert_array_equal(first["ego"], initial["ego"])
+    assert first["ego_sample_tick"] == 0
+    assert first["ego_age_s"] == pytest.approx(config.dt)
+    second, *_ = env.step((0.6, 0.4))
+    assert second["ego"][0] == pytest.approx(config.acceleration * config.dt)
+    assert second["ego_sample_tick"] == 1
+    np.testing.assert_array_equal(second["history_ego"][-1], second["ego"])
+    state = decode_state(encode_state(state_from_observation(second)))
+    assert state.ages_us[:3] == (50_000, 50_000, 50_000)
+    assert state.velocity_m_s[0] == pytest.approx(second["ego"][0])
+
+
+@pytest.mark.parametrize(
+    "position_error,heading_error", [(0.02, 0), (0, math.radians(2))]
+)
+def test_odometry_synthetic_errors_are_bounded_and_do_not_change_physics_or_tof(
+    position_error, heading_error
+):
+    from dataclasses import replace
+
+    config = Config(
+        odometry_position_error=position_error, odometry_heading_error=heading_error
+    )
+    noisy, ideal = (
+        RoverEnv(config),
+        RoverEnv(replace(config, odometry_position_error=0, odometry_heading_error=0)),
+    )
+    observation, _ = noisy.reset(seed=42)
+    reference, _ = ideal.reset(seed=42)
+    assert not np.array_equal(observation["ego"], reference["ego"])
+    for _ in range(12):
+        np.testing.assert_array_equal(observation["tof_m"], reference["tof_m"])
+        np.testing.assert_array_equal(observation["tof_valid"], reference["tof_valid"])
+        if position_error:
+            assert (
+                np.linalg.norm(observation["goal_body_m"] - reference["goal_body_m"])
+                <= position_error + 1e-6
+            )
+        else:
+            assert np.linalg.norm(observation["goal_body_m"]) == pytest.approx(
+                np.linalg.norm(reference["goal_body_m"]), abs=1e-6
+            )
+            difference = math.atan2(*observation["goal_body_m"][::-1]) - math.atan2(
+                *reference["goal_body_m"][::-1]
+            )
+            assert abs(difference) <= heading_error + 1e-6
+        observation, *outcome, info = noisy.step((0.3, 0.2))
+        reference, *expected, reference_info = ideal.step((0.3, 0.2))
+        assert outcome == expected
+        np.testing.assert_array_equal(
+            info["ground_truth"]["position_m"],
+            reference_info["ground_truth"]["position_m"],
+        )
+        assert noisy.rng.bit_generator.state == ideal.rng.bit_generator.state
+
+
+def test_odometry_combined_errors_reset_and_read_without_extra_rng():
+    config = Config(
+        odometry_position_error=0.02,
+        odometry_heading_error=math.radians(2),
+        odometry_latency_ticks=1,
+    )
+    env = RoverEnv(config)
+    snapshots = []
+    for _ in range(2):
+        observation, _ = env.reset(seed=42)
+        sequence = []
+        for _ in range(10):
+            before = deepcopy(env.odometry_rng.bit_generator.state)
+            np.testing.assert_array_equal(env._observation()["ego"], observation["ego"])
+            assert env.odometry_rng.bit_generator.state == before
+            sequence.append(json.dumps(observation, default=json_value, sort_keys=True))
+            observation, *_ = env.step((0.3, 0.4))
+        snapshots.append(sequence)
+    assert snapshots[0] == snapshots[1]
+    assert "position_m" not in observation and "yaw_rad" not in observation
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"odometry_position_error": -0.01},
+        {"odometry_position_error": float("inf")},
+        {"odometry_heading_error": -0.01},
+        {"odometry_heading_error": math.pi + 0.01},
+        {"odometry_heading_error": float("nan")},
+        {"odometry_latency_ticks": -1},
+        {"odometry_latency_ticks": 0.5},
+        {"odometry_position_error": 10**400},
+    ],
+)
+def test_odometry_rejects_invalid_configuration(settings):
+    with pytest.raises(ValueError):
+        Config(**settings)
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"ego_sample_tick": 0},
+        {"ego_age_s": 0.05},
+        {"ego_sample_tick": False, "ego_age_s": 0},
+        {"ego_sample_tick": 1.0, "ego_age_s": 0},
+        {"ego_sample_tick": -1, "ego_age_s": 0.1},
+        {"ego_sample_tick": 2, "ego_age_s": 0},
+        {"ego_sample_tick": 0, "ego_age_s": True},
+        {"ego_sample_tick": 0, "ego_age_s": float("nan")},
+        {"ego_sample_tick": 0, "ego_age_s": 10**400},
+        {"ego_sample_tick": 0, "ego_age_s": 0},
+        {"ego_sample_tick": 0, "ego_age_s": -0.05},
+        {"ego_sample_tick": 0, "ego_age_s": 1e308, "time_s": 1e308},
+    ],
+)
+def test_odometry_wire_export_rejects_malformed_age(changes):
+    env = RoverEnv()
+    observation, *_ = env.step((0, 0))
+    observation.update(changes)
+    with pytest.raises(ValueError):
+        state_from_observation(observation)
+
+
 @pytest.mark.parametrize(
     "settings",
     [

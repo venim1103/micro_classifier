@@ -51,28 +51,35 @@ def test_request_preparation_uses_label_free_observation_validation(
     assert prepared["allowed_use"] == "fake_teacher_pipeline_tests_only"
 
 
-@pytest.mark.parametrize("with_rate", [False, True])
-def test_legacy_episode_rate_is_preserved_by_readers(tmp_path, with_rate):
+@pytest.mark.parametrize("era", ["pre_cadence", "cadence", "geometry"])
+def test_legacy_episode_rate_is_preserved_by_readers(tmp_path, era):
     from teacher.provenance import audit_source
     from teacher.review import make_review_packet, validate_review_packet
 
     config = Config(
         max_ticks=1,
         latency_ticks=0,
-        tof_rate_hz=15.0 if with_rate else None,
-        tof_mount_height=None,
+        tof_rate_hz=None if era == "pre_cadence" else 15.0,
+        tof_mount_height=0.15 if era == "geometry" else None,
     )
     records, _ = rollout(RoverEnv(config), policy=lambda observation: (0, 0))
     for name in (
-        "tof_mount_height",
-        "tof_mount_pitch",
-        "obstacle_height",
-        "wall_height",
+        "odometry_position_error",
+        "odometry_heading_error",
+        "odometry_latency_ticks",
     ):
         del records[0]["config"][name]
-    if not with_rate:
+    if era != "geometry":
+        for name in (
+            "tof_mount_height",
+            "tof_mount_pitch",
+            "obstacle_height",
+            "wall_height",
+        ):
+            del records[0]["config"][name]
+        del records[0]["scenario"]["obstacle_heights"]
+    if era == "pre_cadence":
         del records[0]["config"]["tof_rate_hz"]
-    del records[0]["scenario"]["obstacle_heights"]
     path = tmp_path / "legacy-fixture.jsonl"
     write_episode(path, records)
     requests = list(episode_requests(path))
@@ -82,11 +89,12 @@ def test_legacy_episode_rate_is_preserved_by_readers(tmp_path, with_rate):
         for row in requests
     )
     assert all(
-        row["provenance"]["config"]["tof_mount_height"] is None for row in requests
+        row["provenance"]["config"]["tof_mount_height"] == config.tof_mount_height
+        for row in requests
     )
     assert json.loads(requests[-1]["state"])["module_observation"][
         "tof_sample_tick"
-    ] == (0 if with_rate else 1)
+    ] == (1 if era == "pre_cadence" else 0)
     for request in requests:
         validate_review_packet(make_review_packet(request))
     assert (
@@ -104,6 +112,30 @@ def review_request(sample):
         "frame_origin": "synthesized_from_observation",
     }
     return prepared
+
+
+def test_delayed_ego_request_and_review_preserve_acquisition_metadata():
+    from teacher.review import make_review_packet, validate_review_packet
+
+    config = Config(
+        odometry_position_error=0.02,
+        odometry_heading_error=0.03,
+        odometry_latency_ticks=1,
+    )
+    env = RoverEnv(config)
+    observation, *_ = env.step((0.3, 0.2))
+    prepared = prepare_request(observation, config=config)
+    state = json.loads(prepared["state"])
+    assert state["module_observation"]["ego_sample_tick"] == 0
+    assert state["module_observation"]["ego_age_s"] == pytest.approx(0.05)
+    assert state["host_state"]["ages_us"][:3] == [50_000] * 3
+    prepared["source"] = {
+        "episode_sha256": "2" * 64,
+        "tick": 1,
+        "line": 2,
+        "frame_origin": "synthesized_from_observation",
+    }
+    validate_review_packet(make_review_packet(prepared))
 
 
 def test_readiness_projection_preserves_input_and_hides_private_lineage(sample):

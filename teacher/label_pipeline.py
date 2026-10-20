@@ -84,6 +84,11 @@ def prepare_request(observation, *, config=None, state_frame=None):
             **{name: value.tolist() for name, value in history.items()},
         },
     }
+    if "ego_sample_tick" in observation:
+        payload["module_observation"].update(
+            ego_sample_tick=observation["ego_sample_tick"],
+            ego_age_s=observation["ego_age_s"],
+        )
     return {
         "schema": "micro-classifier/teacher-request/1",
         "state": json.dumps(

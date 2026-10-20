@@ -122,7 +122,11 @@ def validate_review_packet(packet):
         or state["axes"] != "FLU"
         or state["units"] != "metres, seconds, radians"
         or set(state["host_state"]) != {field.name for field in fields(State)}
-        or set(state["module_observation"]) != OBSERVATION_FIELDS
+        or set(state["module_observation"])
+        not in (
+            OBSERVATION_FIELDS,
+            OBSERVATION_FIELDS | {"ego_sample_tick", "ego_age_s"},
+        )
     ):
         raise ValueError("review state contains unsupported or privileged fields")
     if hashlib.sha256(canonical(state).encode()).hexdigest() != packet["state_sha256"]:

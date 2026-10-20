@@ -41,6 +41,9 @@ class Config:
     tof_mount_pitch: float = 0.0
     obstacle_height: float = 0.5
     wall_height: float = 1.0
+    odometry_position_error: float = 0.0
+    odometry_heading_error: float = 0.0
+    odometry_latency_ticks: int = 0
 
     @classmethod
     def from_record(cls, record):
@@ -75,6 +78,8 @@ class Config:
             raise ValueError("ToF mounting height must be positive or None for replay")
         if abs(self.tof_mount_pitch) >= math.pi / 2:
             raise ValueError("ToF mounting pitch must be between -pi/2 and pi/2")
+        if not 0 <= self.odometry_heading_error <= math.pi:
+            raise ValueError("odometry heading error must be in [0, pi]")
         positive = (
             "dt",
             "radius",
@@ -92,14 +97,25 @@ class Config:
             raise ValueError("invalid sensor field of view or dropout probability")
         if (
             min(
-                self.noise_std, self.tick_cost, self.success_reward, self.collision_cost
+                self.noise_std,
+                self.tick_cost,
+                self.success_reward,
+                self.collision_cost,
+                self.odometry_position_error,
             )
             < 0
         ):
             raise ValueError("noise and reward magnitudes must be nonnegative")
-        for name in ("latency_ticks", "history_ticks", "max_ticks"):
+        for name in (
+            "latency_ticks",
+            "history_ticks",
+            "max_ticks",
+            "odometry_latency_ticks",
+        ):
             value = getattr(self, name)
-            if type(value) is not int or value < (0 if name == "latency_ticks" else 1):
+            if type(value) is not int or value < (
+                0 if name in ("latency_ticks", "odometry_latency_ticks") else 1
+            ):
                 raise ValueError(f"invalid {name}")
 
 
@@ -156,6 +172,9 @@ class RoverEnv:
 
     def reset(self, *, seed=0):
         self.rng = np.random.default_rng(seed)
+        self.odometry_rng = np.random.default_rng(
+            np.random.SeedSequence(seed).spawn(1)[0]
+        )
         self.seed = seed
         self.tick = 0
         self.position = np.array(self.scenario.start[:2], dtype=np.float64)
@@ -163,6 +182,8 @@ class RoverEnv:
         self.speed = self.turn_rate = 0.0
         self.done = False
         self.pending = deque()
+        self.pending_ego = deque()
+        self.ego_sample_tick = None
         self.history = deque(maxlen=self.config.history_ticks)
         self.sensor_tick = None
         self.sensor_phase = -1
@@ -205,14 +226,38 @@ class RoverEnv:
         self.pending.append((self.tick + config.latency_ticks, self.tick, grid, valid))
 
     def _record_history(self):
-        delta = np.asarray(self.scenario.goal) - self.position
+        config = self.config
+        position = self.position.copy()
+        if config.odometry_position_error:
+            angle = self.odometry_rng.uniform(-math.pi, math.pi)
+            radius = config.odometry_position_error * math.sqrt(
+                self.odometry_rng.random()
+            )
+            position += radius * np.array([math.cos(angle), math.sin(angle)])
+        delta = np.asarray(self.scenario.goal) - position
         cosine, sine = math.cos(self.yaw), math.sin(self.yaw)
+        if config.odometry_heading_error:
+            error = self.odometry_rng.uniform(
+                -config.odometry_heading_error, config.odometry_heading_error
+            )
+            error_cosine, error_sine = math.cos(error), math.sin(error)
+            cosine, sine = (
+                cosine * error_cosine - sine * error_sine,
+                sine * error_cosine + cosine * error_sine,
+            )
         goal = np.array(
             [cosine * delta[0] + sine * delta[1], -sine * delta[0] + cosine * delta[1]],
             dtype=np.float32,
         )
         ego = np.array([self.speed, self.turn_rate, *goal], dtype=np.float32)
-        self.history.append((ego, self.tof.copy(), self.valid.copy()))
+        self.pending_ego.append(
+            (self.tick + config.odometry_latency_ticks, self.tick, ego)
+        )
+        if self.ego_sample_tick is None:
+            self.ego_sample_tick, self.ego = self.tick, ego
+        while self.pending_ego and self.pending_ego[0][0] <= self.tick:
+            _, self.ego_sample_tick, self.ego = self.pending_ego.popleft()
+        self.history.append((self.ego.copy(), self.tof.copy(), self.valid.copy()))
 
     def _observation(self):
         ego = self.history[-1][0].copy()
@@ -236,7 +281,7 @@ class RoverEnv:
             if self.sensor_tick is not None
             else self.tick + 1
         )
-        return {
+        observation = {
             "schema": "micro-classifier/sim-observation/1",
             "tick": self.tick,
             "time_s": self.tick * self.config.dt,
@@ -251,6 +296,12 @@ class RoverEnv:
             "history_tof_valid": valid_history,
             "history_valid": history_valid,
         }
+        if self.config.odometry_latency_ticks:
+            observation["ego_sample_tick"] = self.ego_sample_tick
+            observation["ego_age_s"] = (
+                self.tick - self.ego_sample_tick
+            ) * self.config.dt
+        return observation
 
     def _info(self, collision, success):
         return {
@@ -665,7 +716,9 @@ def rollout(env, policy=None):
             "policy": type(policy).__name__,
             "privileged_expert": isinstance(policy, ScriptedExpert),
             "limitations": [
-                "Planar rays repeated vertically, not VL53L8CX emulation.",
+                "Planar rays repeated vertically, not VL53L8CX emulation."
+                if env.config.tof_mount_height is None
+                else "Synthetic floor/cylinder point rays, not VL53L8CX emulation.",
                 "Simulation-only physics and rewards, not measured hardware limits.",
                 "No teacher labels, student or hardware safety validation.",
             ],
@@ -716,12 +769,40 @@ def state_from_observation(observation):
     goal = np.asarray(observation["goal_body_m"])
     if ego.shape != (4,) or goal.shape != (2,):
         raise ValueError("observation requires planar ego and goal vectors")
+    if ("ego_sample_tick" in observation) != ("ego_age_s" in observation):
+        raise ValueError("ego sample tick and age must be supplied together")
+    age = observation.get("ego_age_s", 0.0)
+    sample_tick = observation.get("ego_sample_tick", tick)
+    try:
+        finite_age = (
+            not isinstance(age, bool)
+            and isinstance(age, (int, float))
+            and math.isfinite(age)
+        )
+    except OverflowError:
+        finite_age = False
+    if (
+        not finite_age
+        or age < 0
+        or type(sample_tick) is not int
+        or not 0 <= sample_tick <= tick
+    ):
+        raise ValueError("invalid ego sample tick or age")
+    expected_age = (tick - sample_tick) / tick * seconds if tick else 0.0
+    if not math.isclose(age, expected_age, rel_tol=1e-6, abs_tol=1e-9):
+        raise ValueError("ego age and sample tick disagree")
+    if age >= UINT32_MAX / 1_000_000:
+        raise ValueError("ego age cannot be represented by the wire contract")
+    age_us = round(age * 1_000_000)
+    if age_us >= UINT32_MAX:
+        raise ValueError("ego age cannot be represented by the wire contract")
     return State(
         sequence=tick & UINT32_MAX,
         timestamp_us=round(seconds * 1_000_000) & UINT32_MAX,
         velocity_m_s=(float(ego[0]), 0.0, 0.0),
         angular_velocity_rad_s=(0.0, 0.0, float(ego[1])),
         goal_m=(float(goal[0]), float(goal[1]), 0.0),
+        ages_us=(age_us, age_us, age_us, UINT32_MAX, UINT32_MAX),
     )
 
 

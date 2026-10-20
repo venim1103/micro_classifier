@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import platform
+from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
 
@@ -15,7 +16,8 @@ from sim.rover import (
     RoverEnv,
     json_value,
     make_scenario,
-    ray_ranges,
+    tof_directions,
+    tof_ranges,
     write_episode,
 )
 
@@ -30,20 +32,20 @@ class DiagnosticRoverEnv(RoverEnv):
         return super().reset(seed=seed)
 
     def _sample(self):
-        angles = self.yaw + np.linspace(
-            self.config.field_of_view / 2, -self.config.field_of_view / 2, 8
+        ranges = np.minimum(
+            tof_ranges(self.position, self.yaw, self.scenario, self.config),
+            self.config.max_range,
         )
         capture = {
             "tick": self.tick,
             "time_s": self.tick * self.config.dt,
             "pose_m_rad": [*self.position.tolist(), float(self.yaw)],
-            "noiseless_ranges_m": ray_ranges(
-                self.position,
-                angles,
-                self.scenario.obstacles,
-                self.scenario.bounds,
-                self.config.max_range,
+            "noiseless_ranges_m": (
+                ranges[0] if self.config.tof_mount_height is None else ranges
             ).tolist(),
+            "ray_geometry": "legacy_planar"
+            if self.config.tof_mount_height is None
+            else "synthetic_floor_cylinders_8x8",
         }
         super()._sample()
         self.capture_trace[self.tick] = capture
@@ -69,13 +71,7 @@ def diagnostic_sample(env, observation):
         "status": "no_delivery" if capture is None else "delivered",
         "reference_time_s": env.tick * env.config.dt,
         "reference_pose_m_rad": reference_pose,
-        "delivered_capture": None
-        if capture is None
-        else {
-            **capture,
-            "pose_m_rad": list(capture["pose_m_rad"]),
-            "noiseless_ranges_m": list(capture["noiseless_ranges_m"]),
-        },
+        "delivered_capture": None if capture is None else deepcopy(capture),
         "valid_surface_zones": 0,
         "invalid_zones": int((~observation["tof_valid"]).sum()),
         "valid_clipped_zones": 0,
@@ -86,35 +82,33 @@ def diagnostic_sample(env, observation):
         "noiseless_registration_roundtrip_error_m": None,
     }
     if capture is not None:
-        ranges = np.asarray(capture["noiseless_ranges_m"])
+        ranges = np.broadcast_to(np.asarray(capture["noiseless_ranges_m"]), (8, 8))
         observed, valid = observation["tof_m"], observation["tof_valid"]
         surface = (ranges > 0) & (ranges < env.config.max_range)
         unclipped = (observed > 0) & (observed < env.config.max_range)
-        selected = valid & unclipped & surface[None, :]
+        selected = valid & unclipped & surface
         diagnostic["valid_surface_zones"] = int(selected.sum())
         diagnostic["valid_clipped_zones"] = int((valid & ~unclipped).sum())
-        diagnostic["valid_reference_censored_zones"] = int(
-            (valid & ~surface[None, :]).sum()
-        )
+        diagnostic["valid_reference_censored_zones"] = int((valid & ~surface).sum())
         diagnostic["range_residual_m"] = [
             [
-                float(observed[row, column] - ranges[column])
+                float(observed[row, column] - ranges[row, column])
                 if selected[row, column]
                 else None
                 for column in range(8)
             ]
             for row in range(8)
         ]
-        angles = np.linspace(
-            env.config.field_of_view / 2, -env.config.field_of_view / 2, 8
+        sensor_points = (ranges[..., None] * tof_directions(0, env.config)).reshape(
+            -1, 3
         )
-        sensor_points = ranges[:, None] * np.stack(
-            (np.cos(angles), np.sin(angles)), axis=1
-        )
+        surface = surface.ravel()
+        if env.config.tof_mount_height is None:
+            sensor_points, surface = sensor_points[:8], surface[:8]
         acquisition_pose = capture["pose_m_rad"]
         cosine, sine = math.cos(acquisition_pose[2]), math.sin(acquisition_pose[2])
         world = (
-            sensor_points @ np.array([[cosine, sine], [-sine, cosine]])
+            sensor_points[:, :2] @ np.array([[cosine, sine], [-sine, cosine]])
             + acquisition_pose[:2]
         )
         cosine, sine = math.cos(reference_pose[2]), math.sin(reference_pose[2])
@@ -122,16 +116,16 @@ def diagnostic_sample(env, observation):
         registered = (world - reference_pose[:2]) @ rotation
         restored = registered @ rotation.T + reference_pose[:2]
         diagnostic["unregistered_surface_displacement_m"] = [
-            float(np.linalg.norm(sensor_points[column] - registered[column]))
+            float(np.linalg.norm(sensor_points[column, :2] - registered[column]))
             if surface[column]
             else None
-            for column in range(8)
+            for column in range(len(surface))
         ]
         diagnostic["noiseless_registration_roundtrip_error_m"] = [
             float(np.linalg.norm(restored[column] - world[column]))
             if surface[column]
             else None
-            for column in range(8)
+            for column in range(len(surface))
         ]
         diagnostic["age_consistency_error_s"] = float(
             observation["tof_age_s"] - (observation["time_s"] - capture["time_s"])

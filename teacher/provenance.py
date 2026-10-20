@@ -41,12 +41,22 @@ def audit_source(path):
         ):
             raise ValueError("source requires simulator episode metadata first")
         config_fields = {field.name for field in fields(Config)}
+        before_geometry = config_fields - {
+            "tof_mount_height",
+            "tof_mount_pitch",
+            "obstacle_height",
+            "wall_height",
+        }
+        scenario_fields = {field.name for field in fields(Scenario)}
         if any(
             not isinstance(metadata.get(name), dict)
             or set(metadata[name]) not in allowed
             for name, allowed in (
-                ("config", (config_fields, config_fields - {"tof_rate_hz"})),
-                ("scenario", ({field.name for field in fields(Scenario)},)),
+                (
+                    "config",
+                    (config_fields, before_geometry, before_geometry - {"tof_rate_hz"}),
+                ),
+                ("scenario", (scenario_fields, scenario_fields - {"obstacle_heights"})),
             )
         ):
             raise ValueError(

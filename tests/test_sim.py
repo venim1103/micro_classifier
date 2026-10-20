@@ -28,9 +28,136 @@ from sim.rover import (
     rollout,
     state_from_observation,
     swept_collision,
+    tof_directions,
+    tof_ranges,
     with_wire_frames,
     write_episode,
 )
+
+
+def test_tof_floor_and_missing_returns_follow_synthetic_mount():
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset()
+    floor_distance = 0.15 / math.sin(config.field_of_view / 2)
+    np.testing.assert_allclose(observation["tof_m"][-1], floor_distance, rtol=1e-6)
+    assert observation["tof_valid"][-1].all()
+    assert not observation["tof_valid"][0].any()
+    assert not observation["tof_m"][0].any()
+
+
+def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
+    from dataclasses import replace
+
+    config = Config()
+    rays = tof_directions(0, config)
+    np.testing.assert_allclose(np.linalg.norm(rays, axis=-1), 1, atol=1e-15)
+    assert (rays[:, 0, 1] > 0).all() and (rays[:, -1, 1] < 0).all()
+    assert (rays[0, :, 2] > 0).all() and (rays[-1, :, 2] < 0).all()
+    down = tof_directions(0, replace(config, tof_mount_pitch=math.pi / 4))
+    assert (down[..., 2] < 0).all()
+    np.testing.assert_allclose(
+        tof_directions(math.pi / 2, config)[..., 0], -rays[..., 1], atol=1e-15
+    )
+
+
+@pytest.mark.parametrize("top", [0.05, 0.5, 1.0])
+def test_tof_capped_cylinder_first_hit_satisfies_analytic_surface(top):
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    scene = Scenario(obstacles=((3.0, 3.0, 0.5),), obstacle_heights=(top,))
+    ranges = tof_ranges(np.array(scene.start[:2]), 0, scene, config)
+    rays = tof_directions(0, config)
+    row, column = (4, 3) if top == 0.05 else (3, 3)
+    point = np.array([1, 3, 0.15]) + ranges[row, column] * rays[row, column]
+    if top == 0.05:
+        assert point[2] == pytest.approx(top)
+        assert np.linalg.norm(point[:2] - [3, 3]) < 0.5
+    else:
+        assert np.linalg.norm(point[:2] - [3, 3]) == pytest.approx(0.5)
+        assert 0 < point[2] < top
+    assert ranges[row, column] < config.max_range
+
+
+def test_tof_low_obstacles_and_tall_obstacles_have_different_row_visibility():
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    scenes = [
+        Scenario(obstacles=((3, 3, 0.5),), obstacle_heights=(top,))
+        for top in (0.05, 1.0)
+    ]
+    observations = [RoverEnv(config, scene).reset()[0] for scene in scenes]
+    assert not observations[0]["tof_valid"][0, 3]
+    assert observations[1]["tof_valid"][0, 3]
+    assert observations[0]["tof_m"][4, 3] > observations[1]["tof_m"][4, 3]
+
+
+def test_tof_geometry_rotates_with_yaw_without_changing_returns():
+    config = Config()
+    scenes = [
+        Scenario(start=(3, 3, 0), obstacles=((4, 3, 0.3),)),
+        Scenario(start=(3, 3, math.pi / 2), obstacles=((3, 4, 0.3),)),
+    ]
+    ranges = [
+        tof_ranges(np.array(scene.start[:2]), scene.start[2], scene, config)
+        for scene in scenes
+    ]
+    np.testing.assert_allclose(*ranges, rtol=1e-13, atol=1e-13)
+
+
+def test_tof_finite_wall_does_not_continue_beyond_its_arena_edge():
+    config = Config(tof_mount_pitch=-math.pi / 4, wall_height=0.1)
+    scene = Scenario()
+    ranges = tof_ranges(np.array(scene.start[:2]), 0, scene, config)
+    assert np.isinf(ranges).all()
+
+
+def test_tof_legacy_planar_sampling_preserves_values_masks_and_rng():
+    config = Config(tof_mount_height=None, tof_rate_hz=None, latency_ticks=0)
+    env = RoverEnv(config)
+    observation, _ = env.reset(seed=42)
+    rng = np.random.default_rng(42)
+    for _ in range(4):
+        angles = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)
+        ranges = ray_ranges(
+            env.position,
+            angles,
+            env.scenario.obstacles,
+            env.scenario.bounds,
+            config.max_range,
+        )
+        grid = np.broadcast_to(ranges, (8, 8)).copy()
+        grid += rng.normal(0, config.noise_std, grid.shape)
+        valid = rng.random((8, 8)) >= config.dropout
+        expected = np.where(valid, np.clip(grid, 0, config.max_range), 0).astype(
+            np.float32
+        )
+        np.testing.assert_array_equal(observation["tof_m"], expected)
+        np.testing.assert_array_equal(observation["tof_valid"], valid)
+        assert rng.bit_generator.state == env.rng.bit_generator.state
+        observation, *_ = env.step((0, 0))
+
+
+@pytest.mark.parametrize(
+    "settings",
+    [
+        {"tof_mount_height": 0},
+        {"tof_mount_height": -0.1},
+        {"tof_mount_height": float("inf")},
+        {"tof_mount_pitch": math.pi / 2},
+        {"tof_mount_pitch": -math.pi / 2},
+        {"wall_height": 0},
+        {"obstacle_height": -1},
+    ],
+)
+def test_tof_geometry_rejects_invalid_configuration(settings):
+    with pytest.raises(ValueError):
+        Config(**settings)
+
+
+@pytest.mark.parametrize(
+    "heights", [(0,), (-1,), (True,), (float("nan"),), (float("inf"),), (0.1, 0.2)]
+)
+def test_tof_geometry_rejects_invalid_obstacle_heights(heights):
+    with pytest.raises(ValueError):
+        RoverEnv(scenario=Scenario(obstacles=((3, 3, 0.2),), obstacle_heights=heights))
 
 
 @pytest.mark.parametrize("obstacle", [(2.4, 2.0, 0.01), (2.1, 2.185, 0.01)])
@@ -1878,9 +2005,9 @@ def test_sensor_diagnostic_trace_noiseless_residual_and_detached_capture():
         < 1e-12
     )
     diagnostic["delivered_capture"]["pose_m_rad"][0] = 100
-    diagnostic["delivered_capture"]["noiseless_ranges_m"][0] = 100
+    diagnostic["delivered_capture"]["noiseless_ranges_m"][0][0] = 100
     assert env.capture_trace[env.sensor_tick]["pose_m_rad"][0] != 100
-    assert env.capture_trace[env.sensor_tick]["noiseless_ranges_m"][0] != 100
+    assert env.capture_trace[env.sensor_tick]["noiseless_ranges_m"][0][0] != 100
     json.dumps(sample, default=json_value, allow_nan=False)
 
 
@@ -2089,6 +2216,7 @@ def draft_observation():
     config = Config(noise_std=0, dropout=0, latency_ticks=0)
     observation, _ = RoverEnv(config).reset(seed=5)
     observation["tof_m"] = np.full((8, 8), 2.0)
+    observation["tof_valid"] = np.ones((8, 8), dtype=bool)
     return config, observation
 
 
@@ -2603,7 +2731,8 @@ def test_latency_dropout_and_sensor_timestamp_are_explicit():
     observation, *_ = env.step([0, 0])
     assert not observation["tof_valid"].any()
     observation, *_ = env.step([0, 0])
-    assert observation["tof_valid"].all()
+    assert observation["tof_valid"].any()
+    assert not observation["tof_valid"][0].any()
     assert observation["tof_sample_tick"] == 0
     assert observation["tof_age_s"] == pytest.approx(0.1)
     dropped, _ = RoverEnv(Config(dropout=1, latency_ticks=0)).reset()

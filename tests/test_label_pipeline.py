@@ -51,21 +51,42 @@ def test_request_preparation_uses_label_free_observation_validation(
     assert prepared["allowed_use"] == "fake_teacher_pipeline_tests_only"
 
 
-def test_legacy_episode_rate_is_preserved_by_readers(tmp_path):
+@pytest.mark.parametrize("with_rate", [False, True])
+def test_legacy_episode_rate_is_preserved_by_readers(tmp_path, with_rate):
     from teacher.provenance import audit_source
     from teacher.review import make_review_packet, validate_review_packet
 
-    config = Config(max_ticks=1, latency_ticks=0, tof_rate_hz=None)
+    config = Config(
+        max_ticks=1,
+        latency_ticks=0,
+        tof_rate_hz=15.0 if with_rate else None,
+        tof_mount_height=None,
+    )
     records, _ = rollout(RoverEnv(config), policy=lambda observation: (0, 0))
-    del records[0]["config"]["tof_rate_hz"]
+    for name in (
+        "tof_mount_height",
+        "tof_mount_pitch",
+        "obstacle_height",
+        "wall_height",
+    ):
+        del records[0]["config"][name]
+    if not with_rate:
+        del records[0]["config"]["tof_rate_hz"]
+    del records[0]["scenario"]["obstacle_heights"]
     path = tmp_path / "legacy-fixture.jsonl"
     write_episode(path, records)
     requests = list(episode_requests(path))
     assert len(requests) == 2
-    assert all(row["provenance"]["config"]["tof_rate_hz"] is None for row in requests)
-    assert (
-        json.loads(requests[-1]["state"])["module_observation"]["tof_sample_tick"] == 1
+    assert all(
+        row["provenance"]["config"]["tof_rate_hz"] == config.tof_rate_hz
+        for row in requests
     )
+    assert all(
+        row["provenance"]["config"]["tof_mount_height"] is None for row in requests
+    )
+    assert json.loads(requests[-1]["state"])["module_observation"][
+        "tof_sample_tick"
+    ] == (0 if with_rate else 1)
     for request in requests:
         validate_review_packet(make_review_packet(request))
     assert (

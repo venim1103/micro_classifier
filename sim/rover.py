@@ -1,7 +1,7 @@
 """A deterministic NumPy planar rover simulator with circular obstacles.
 
 Distances are meters; angles are radians; body axes are forward/left/up.
-The 8x8 ToF grid repeats planar rays vertically and is not a VL53L8CX emulator.
+The 8x8 ToF grid uses synthetic point rays, not a VL53L8CX device model.
 """
 
 from __future__ import annotations
@@ -37,15 +37,25 @@ class Config:
     success_reward: float = 10.0
     collision_cost: float = 10.0
     tof_rate_hz: float | None = 15.0
+    tof_mount_height: float | None = 0.15
+    tof_mount_pitch: float = 0.0
+    obstacle_height: float = 0.5
+    wall_height: float = 1.0
 
     @classmethod
     def from_record(cls, record):
-        """Load stored configs; an absent rate means legacy per-tick acquisition."""
-        return cls(**{**record, "tof_rate_hz": record.get("tof_rate_hz")})
+        """Preserve acquisition and planar geometry for older stored configs."""
+        return cls(
+            **{
+                **record,
+                "tof_rate_hz": record.get("tof_rate_hz"),
+                "tof_mount_height": record.get("tof_mount_height"),
+            }
+        )
 
     def __post_init__(self):
         for name, value in asdict(self).items():
-            if name == "tof_rate_hz" and value is None:
+            if name in ("tof_rate_hz", "tof_mount_height") and value is None:
                 continue
             try:
                 finite = (
@@ -61,6 +71,10 @@ class Config:
             raise ValueError(
                 "8x8 ToF rate must be in (0, 15] Hz or None for legacy replay"
             )
+        if self.tof_mount_height is not None and self.tof_mount_height <= 0:
+            raise ValueError("ToF mounting height must be positive or None for replay")
+        if abs(self.tof_mount_pitch) >= math.pi / 2:
+            raise ValueError("ToF mounting pitch must be between -pi/2 and pi/2")
         positive = (
             "dt",
             "radius",
@@ -69,6 +83,8 @@ class Config:
             "max_turn_rate",
             "max_range",
             "goal_tolerance",
+            "obstacle_height",
+            "wall_height",
         )
         if any(getattr(self, name) <= 0 for name in positive):
             raise ValueError("time, geometry and motion limits must be positive")
@@ -94,11 +110,23 @@ class Scenario:
     start: tuple[float, float, float] = (1.0, 3.0, 0.0)
     goal: tuple[float, float] = (5.0, 3.0)
     obstacles: tuple[tuple[float, float, float], ...] = ()
+    obstacle_heights: tuple[float, ...] = ()
 
     def validate(self, config):
         if len(self.bounds) != 2 or len(self.start) != 3 or len(self.goal) != 2:
             raise ValueError("invalid scenario dimensions")
         values = [*self.bounds, *self.start, *self.goal]
+        if self.obstacle_heights and (
+            len(self.obstacle_heights) != len(self.obstacles)
+            or any(
+                isinstance(height, bool)
+                or not isinstance(height, (int, float))
+                or height <= 0
+                for height in self.obstacle_heights
+            )
+        ):
+            raise ValueError("obstacle heights must match obstacles and be positive")
+        values.extend(self.obstacle_heights)
         for obstacle in self.obstacles:
             if len(obstacle) != 3 or obstacle[2] <= 0:
                 raise ValueError("obstacles require x, y and a positive radius")
@@ -165,19 +193,14 @@ class RoverEnv:
 
     def _sample(self):
         config = self.config
-        angles = self.yaw + np.linspace(
-            config.field_of_view / 2, -config.field_of_view / 2, 8
+        grid = tof_ranges(self.position, self.yaw, self.scenario, config)
+        valid = (
+            np.ones((8, 8), dtype=bool)
+            if config.tof_mount_height is None
+            else np.isfinite(grid) & (grid < config.max_range)
         )
-        ranges = ray_ranges(
-            self.position,
-            angles,
-            self.scenario.obstacles,
-            self.scenario.bounds,
-            config.max_range,
-        )
-        grid = np.broadcast_to(ranges, (8, 8)).copy()
         grid += self.rng.normal(0, config.noise_std, grid.shape)
-        valid = self.rng.random((8, 8)) >= config.dropout
+        valid &= self.rng.random((8, 8)) >= config.dropout
         grid = np.where(valid, np.clip(grid, 0, config.max_range), 0).astype(np.float32)
         self.pending.append((self.tick + config.latency_ticks, self.tick, grid, valid))
 
@@ -324,6 +347,101 @@ def ray_ranges(position, angles, obstacles, bounds, maximum):
         ranges = np.minimum(
             ranges, np.where((discriminant >= 0) & (distance >= 0), distance, np.inf)
         )
+    return ranges
+
+
+def tof_directions(yaw, config):
+    """World-frame unit rays, upper-to-lower rows and left-to-right columns."""
+    angles = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)
+    elevation, azimuth = np.meshgrid(angles, angles, indexing="ij")
+    if config.tof_mount_height is None:
+        elevation = np.zeros((8, 8))
+    forward = np.cos(elevation) * np.cos(azimuth)
+    left = np.cos(elevation) * np.sin(azimuth)
+    up = np.sin(elevation)
+    pitch = 0 if config.tof_mount_height is None else config.tof_mount_pitch
+    cosine, sine = math.cos(pitch), math.sin(pitch)
+    forward, up = cosine * forward + sine * up, -sine * forward + cosine * up
+    cosine, sine = math.cos(yaw), math.sin(yaw)
+    return np.stack(
+        (cosine * forward - sine * left, sine * forward + cosine * left, up), axis=-1
+    )
+
+
+def tof_ranges(position, yaw, scenario, config):
+    """Synthetic first returns from a floor, finite walls and capped cylinders."""
+    if config.tof_mount_height is None:
+        angles = yaw + np.linspace(
+            config.field_of_view / 2, -config.field_of_view / 2, 8
+        )
+        ranges = ray_ranges(
+            position, angles, scenario.obstacles, scenario.bounds, config.max_range
+        )
+        return np.broadcast_to(ranges, (8, 8)).copy()
+    rays = tof_directions(yaw, config)
+    directions, up = rays[..., :2], rays[..., 2]
+    height = config.tof_mount_height
+    ranges = np.divide(-height, up, out=np.full((8, 8), np.inf), where=up < 0)
+    for axis in range(2):
+        for wall in (0.0, scenario.bounds[axis]):
+            distance = np.divide(
+                wall - position[axis],
+                directions[..., axis],
+                out=np.full((8, 8), np.inf),
+                where=directions[..., axis] != 0,
+            )
+            altitude = height + np.where(np.isfinite(distance), distance, 0) * up
+            other_axis = 1 - axis
+            across = (
+                position[other_axis]
+                + np.where(np.isfinite(distance), distance, 0)
+                * directions[..., other_axis]
+            )
+            hit = (
+                (distance >= 0)
+                & (altitude >= 0)
+                & (altitude <= config.wall_height)
+                & (across >= 0)
+                & (across <= scenario.bounds[other_axis])
+            )
+            ranges = np.minimum(ranges, np.where(hit, distance, np.inf))
+    horizontal_squared = np.sum(directions**2, axis=-1)
+    for index, (centre_x, centre_y, radius) in enumerate(scenario.obstacles):
+        top = (
+            scenario.obstacle_heights[index]
+            if scenario.obstacle_heights
+            else config.obstacle_height
+        )
+        offset = np.asarray(position) - [centre_x, centre_y]
+        projection = directions @ offset
+        discriminant = projection**2 - horizontal_squared * (
+            offset @ offset - radius**2
+        )
+        root = np.sqrt(np.maximum(discriminant, 0))
+        for sign in (-1, 1):
+            distance = np.divide(
+                -projection + sign * root,
+                horizontal_squared,
+                out=np.full((8, 8), np.inf),
+                where=horizontal_squared > 0,
+            )
+            altitude = height + np.where(np.isfinite(distance), distance, 0) * up
+            hit = (
+                (discriminant >= 0)
+                & (distance >= 0)
+                & (altitude >= 0)
+                & (altitude <= top)
+            )
+            ranges = np.minimum(ranges, np.where(hit, distance, np.inf))
+        distance = np.divide(
+            top - height, up, out=np.full((8, 8), np.inf), where=up != 0
+        )
+        relative = (
+            offset
+            + np.where(np.isfinite(distance), distance, 0)[..., None] * directions
+        )
+        hit = (distance >= 0) & (np.sum(relative**2, axis=-1) <= radius**2)
+        ranges = np.minimum(ranges, np.where(hit, distance, np.inf))
     return ranges
 
 

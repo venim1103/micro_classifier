@@ -751,6 +751,22 @@ or reviewed labels. This is a host-side draft: no physical safety thresholds,
 trained student, firmware integration or board validation. See
 [DESIGN.md](DESIGN.md) §2 for the byte specification and application duties.
 
+## Floor-Aware Rules Diagnostics
+
+[sim/rules.py][floor-rules] is a host-only observation-based heuristic, separate
+from the geometric target oracle and unchanged legacy proxies. It filters a
+configurable 0.03 m floor band, gates input ages (0.15 s by default), and loops
+model-free three-answer decisions through the wire codec and a diagnostic host
+controller. Rejected, missing or invalid decisions command simulated braking.
+One-hot outputs are not calibrated probabilities or evidence of safe clearance.
+
+The approved eight-episode run is complete: **four successes, two collisions,
+two timeouts and 25 false-clear geometric-reference comparisons**. See the
+[diagnostic report][floor-rules-report] and REVIEW.md §75. Logs are ignored and
+quarantined; no task dataset, labels, training or hardware qualification follows.
+The run authorization is exhausted; no second batch or outcome-driven tuning ran.
+The runner requires fresh, nonoverlapping `--output` and `--report` paths.
+
 ## Hardware-Free Simulation
 
 [sim/rover.py](sim/rover.py) provides a CPU-only, seeded `RoverEnv` with
@@ -817,6 +833,8 @@ The simulation JSONL container remains separately versioned. See
 [DESIGN.md](DESIGN.md) §7 for limits and the recorded smoke results.
 
 [wire-python]: interface/protocol.py
+[floor-rules]: sim/rules.py
+[floor-rules-report]: sim/reports/rules-baseline-20261020.json
 [wire-header]: firmware/include/micro_classifier_protocol.h
 [wire-golden]: interface/golden_vectors.json
 [m1a-script]: export/m1a.py

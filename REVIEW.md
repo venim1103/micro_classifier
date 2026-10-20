@@ -4163,6 +4163,71 @@ Old all-row minima will see floors; diagnostic proxies remain unchanged and
 must not be promoted to the active rules pilot. No safety/rejection thresholds,
 collection or Gaussian risk policy was selected by these implementation opt-ins.
 
+## 75. Floor-Aware Heuristic Wire Diagnostics (2026-10-20)
+
+The user explicitly approved an observation-only host diagnostic heuristic,
+separate from the adopted geometric targets, with configurable 0.03 m floor band
+and default `(latency_ticks + 1) * dt` age gate (0.15 s). The same batch approved
+eight fresh quarantined closed-loop episodes: four existing scenes times two
+seeds, at most 400 ticks each, ignored logs and a small evidence report. Oracle
+comparisons stay private diagnostics, not controller inputs or task labels.
+No collection beyond this batch, training, data/split acceptance, physical error
+or Gaussian risk policy, dependencies, ST/licence or hardware work was approved.
+
+`05a94f8` adds [the heuristic and runner][floor-rules]. Supported above-band
+hits provide horizontal column minima; columns with supported hits but no
+above-band obstacle use max-range working clearance. This is an optimistic
+diagnostic inference, not evidence that invalid/occluded rays or swept volume
+are clear. Per-column support, below-floor checks and bounded ages do not
+qualify it. No motion compensation is implemented. Sector/bearing and momentum
+speed heuristics do not implement the oracle's curved-sweep semantics.
+Admitted outputs are catalogue 1/model 0 with three one-hot answers, not calibrated
+confidence. `OK` admits heuristic inputs; it does not attest geometric correctness.
+
+The Python wire loop encodes/decodes both packet types; the diagnostic host
+brakes on rejection, absent packets, CRC failures, echo mismatch or old ego
+state. Host actions never receive the map/reference. This is neither linked C
+firmware nor a measured transport timeout; latency_us=0 is an explicitly
+unmeasured placeholder. Existing codecs, proxy formulas, targets, wire bytes
+and historical reports are unchanged.
+
+**Tests:** 24 new cases cover floor filtering, support/rejection, momentum,
+privileged-field independence, settings, rejected/corrupt/mismatched/absent
+wire decisions and fresh/nonoverlapping outputs before collection. The initial
+case reproduced the missing implementation; a misplaced tool patch was caught
+and repaired, and an artificial hit was corrected from outside to inside the
+existing braking envelope, not a formula change. After import fixes, 1,406
+tests pass plus the known transformer xfail (44.07 s). Ruff, changed-file
+format, editor diagnostics, native sanitizer and hard-float Arm gates pass.
+
+**Approved run:** unchanged normal Config, seeds 20261020/20261021, exactly
+eight episodes, 1,433 ticks. Clear and corridor succeeded twice (138 ticks each).
+Obstacle timed out twice (400 each); slalom collided at 41/40 ticks. There were
+25 heuristic clear/reference-blocked events: 5/4 in obstacle and 8/8 in slalom.
+No threshold tuning or further episodes followed. All recommendations/controls
+were fixed before the run. These correlated events are not independent task
+error probabilities or calibration/evaluation evidence on locked splits.
+
+[The report][floor-rules-report] stores settings/config, source/log hashes,
+per-episode outcomes/statuses and private oracle aggregates; full logs stay
+ignored under `sim/episodes/rules-baseline-20261020/`. Saved-evidence audit
+checked all eight hashes, 2,866 wire frames, identities, ages, summaries and
+reference aggregates without baseline/controller calls or more collection.
+Oracle aggregates were independently accumulated using the unchanged geometric
+reference and reconstructed private motion, not independently measured truth.
+
+**Conclusion:** this first floor-aware heuristic has collision and false-clear
+failures and is not a qualified rules baseline. Tasks 6/9 and F21/M2 remain
+open on evidence handling, representative scenes and qualification. Both it and
+the legacy proxies remain diagnostic-only. Proposed default: preserve this
+negative evidence, review missing/occluded-return assumptions and the scene/claim
+envelope before another baseline direction or collection approval. Eight-run
+authorization is exhausted; no labels/dataset/splits, training or hardware gate
+is cleared by completing the tooling and bounded run.
+
+[floor-rules]: sim/rules.py
+[floor-rules-report]: sim/reports/rules-baseline-20261020.json
+
 ## Sources
 
 Hardware and tools:

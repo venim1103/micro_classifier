@@ -1862,11 +1862,66 @@ and three historical reader eras. Lint, changed-file format, editor diagnostics,
 native sanitizers and hard-float Arm checks pass. Only ephemeral test fixtures
 were generated, not study episodes, labels/datasets/splits or model runs.
 
-F21/M2 remain open: scene representativeness, sensor/device fidelity and qualified
-floor-aware rule/evidence implementation. Existing column-minimum proxies are
-unchanged diagnostics and cannot be promoted to obstacle rules merely because
-floor returns now exist. No collection, rule thresholds/rejection policy,
-training, dependency/download, ST/licence or hardware action was approved.
+At the geometry checkpoint, collection and heuristic settings remained unapproved.
+The following bounded diagnostic approval does not qualify the sensor or rules.
+
+#### Floor-Aware Heuristic Wire Baseline (2026-10-20)
+
+The user approved a host-only observation-based heuristic and wire-loop tests,
+a configurable 0.03 m floor band/default `(latency_ticks + 1) * dt` age limit
+(0.15 s), and eight fresh diagnostic episodes: four existing scenes times seeds
+20261020/20261021, at most 400 ticks each. These are diagnostic settings, not
+physical error/safety bounds, a Gaussian risk convention or changed targets.
+[The heuristic][floor-rules] is implemented in `05a94f8`; legacy proxy formulas
+remain unchanged. It uses no true pose, world geometry, actions or target labels.
+
+Hits are projected to height; supported above-band hits give horizontal column
+minima. Each column must have a positive unsaturated supported hit. Columns with
+support but no above-band obstacle get max-range working clearance: an optimistic
+heuristic, not evidence that missing/occluded rays or swept volume are clear.
+Below-floor outliers, unsupported geometry, stale/absent or inconsistent inputs
+reject. No motion compensation is performed. Sector/bearing and momentum speed
+heuristics differ from the oracle's curved-sweep and at-rest semantics. Complete
+catalogue-1/model-0 one-hot answers and Jev statistics are not calibrated confidence;
+`OK` admits heuristic inputs, not geometric correctness or physical safety.
+
+The Python loop encodes/decodes state and decision frames. The diagnostic host
+checks status, catalogue, sequence/timestamp echo and ego ages; rejection,
+caller-declared absence, corruption or mismatch commands simulated braking.
+This is not linked C firmware, a real transport timeout or a new deployed
+fail-safe. Zero decision latency is an unmeasured placeholder, not a benchmark.
+
+The approved run used normal Config and the fixed baseline with no tuning.
+Oracle comparisons used private current truth after choosing actions, never
+controller inputs or task labels. Logs stay ignored/quarantined. [The report][floor-rules-report]
+records config/settings, source/log hashes, statuses and private aggregates:
+
+| Scene | Seed 20261020 | Seed 20261021 | Clear / Reference-Blocked Events (By Seed) |
+| --- | --- | --- | --- |
+| clear | success, 138 ticks | success, 138 ticks | 0 / 0 |
+| obstacle | timeout, 400 ticks | timeout, 400 ticks | 5 / 4 |
+| corridor | success, 138 ticks | success, 138 ticks | 0 / 0 |
+| slalom | collision, 41 ticks | collision, 40 ticks | 8 / 8 |
+
+Total: 1,433 ticks, four successes, two collisions, two timeouts and 25 false-clear
+reference events. These are correlated diagnostics, not independent error rates
+or locked evaluation evidence. Saved-evidence audit checked all eight hashes,
+2,866 wire frames, identities, ages, summaries and independently accumulated
+reference aggregates without baseline/controller calls or more collection.
+The audit reused the geometric oracle, not independently measured physical truth.
+
+Twenty-four new tests cover floor handling, rejection/support, momentum,
+privileged-field independence, host braking, settings and output preflight.
+Full gate: 1,406 passed plus the known transformer xfail; lint, changed-file
+format, editor diagnostics, native sanitizers and hard-float Arm checks pass.
+No historical log/report/golden was rewritten. REVIEW.md §75 records the result.
+This failed heuristic remains diagnostic-only. F21/M2 need reviewed handling of
+missing/occluded evidence, representative scenes and qualified rules. The eight-run
+authorization is exhausted; no tuning or second batch followed. No task labels,
+cohort/split acceptance, training, dependencies, ST/licence or hardware approval.
+
+[floor-rules]: sim/rules.py
+[floor-rules-report]: sim/reports/rules-baseline-20261020.json
 
 The approved prototype objective is goal reaching without collision: reward
 is decrease in goal distance in meters, minus 0.01 per tick, plus 10 for
@@ -3889,6 +3944,9 @@ The nominal 15 Hz acquisition/variable-age portion of F21 is now implemented
 (§7, REVIEW.md §73), followed by synthetic floor/height returns and opt-in ego
 errors/delay (§74). Remaining gates are reviewed scene coverage, sensor fidelity
 and a qualified floor-aware rules baseline, not more reference-math tooling.
+The first heuristic wire baseline is now measured (§7, REVIEW.md §75): four
+successes, two collisions, two timeouts and 25 clear/blocked reference mismatches.
+It remains unqualified; further collection or evidence-policy changes need review.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

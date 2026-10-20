@@ -1,0 +1,377 @@
+{
+  "schema": "micro-classifier/rules-diagnostic-report/1",
+  "allowed_use": "quarantined_heuristic_diagnostics_only",
+  "training_approved": false,
+  "task_labels": false,
+  "calibrated": false,
+  "physical_safety_claim": false,
+  "rule_quality_qualified": false,
+  "config": {
+    "dt": 0.05,
+    "radius": 0.18,
+    "max_speed": 0.6,
+    "acceleration": 1.0,
+    "max_turn_rate": 1.5,
+    "field_of_view": 0.7853981633974483,
+    "max_range": 4.0,
+    "noise_std": 0.02,
+    "dropout": 0.02,
+    "latency_ticks": 2,
+    "history_ticks": 8,
+    "max_ticks": 400,
+    "goal_tolerance": 0.25,
+    "tick_cost": 0.01,
+    "success_reward": 10.0,
+    "collision_cost": 10.0,
+    "tof_rate_hz": 15.0,
+    "tof_mount_height": 0.15,
+    "tof_mount_pitch": 0.0,
+    "obstacle_height": 0.5,
+    "wall_height": 1.0,
+    "odometry_position_error": 0.0,
+    "odometry_heading_error": 0.0,
+    "odometry_latency_ticks": 0
+  },
+  "settings": {
+    "floor_band_m": 0.03,
+    "max_age_s": null
+  },
+  "sources": {
+    "sim/rules.py": "6a1c871ea8383c9a16f07bc66553e24a4158a2a83ed8dcc4581bc0c0e7a78988",
+    "sim/rover.py": "3d185338976b9f08209162c361ab6e313dc44ac0ebde97d06f65324e3f244718",
+    "sim/labels.py": "f3a8bbb3f2731658a486006764e268a09aef79fc3aee46567c58c767ed406fdc",
+    "sim/navigation.py": "57b54a28c0823f077f942f6da7b4da701d9bc9d7cedcdcd8d2eb6c6304fb3a6a",
+    "interface/protocol.py": "54f91345baf73256e4d897d6c415e5d09ea07f85622d063c029259ff6eaa4ff6"
+  },
+  "episodes": [
+    {
+      "scene": "clear",
+      "seed": 20261020,
+      "ticks": 138,
+      "total_reward": 12.371218401193614,
+      "success": true,
+      "collision": false,
+      "timeout": false,
+      "statuses": {
+        "OK": 136,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 0,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 135,
+          "disagreed": 0,
+          "unknown": 1
+        },
+        "speed_tier": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 0,
+      "path": "sim/episodes/rules-baseline-20261020/clear-20261020.jsonl",
+      "sha256": "636485d9301adeddb48eb6dc8f9847b9d8de429cd1a4858d53dff6879d9c6c4f",
+      "state_frames": 138,
+      "decision_frames": 138
+    },
+    {
+      "scene": "clear",
+      "seed": 20261021,
+      "ticks": 138,
+      "total_reward": 12.371218401193614,
+      "success": true,
+      "collision": false,
+      "timeout": false,
+      "statuses": {
+        "OK": 136,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 0,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 135,
+          "disagreed": 0,
+          "unknown": 1
+        },
+        "speed_tier": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 0,
+      "path": "sim/episodes/rules-baseline-20261020/clear-20261021.jsonl",
+      "sha256": "681005405dd3871252f6c8b9ab587ee2d919e04fa7cc8cda17dc1791489f0424",
+      "state_frames": 138,
+      "decision_frames": 138
+    },
+    {
+      "scene": "obstacle",
+      "seed": 20261020,
+      "ticks": 400,
+      "total_reward": -2.5604232007789185,
+      "success": false,
+      "collision": false,
+      "timeout": true,
+      "statuses": {
+        "OK": 397,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 1,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 339,
+          "disagreed": 58,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 46,
+          "disagreed": 14,
+          "unknown": 337
+        },
+        "speed_tier": {
+          "matched": 382,
+          "disagreed": 15,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 5,
+      "path": "sim/episodes/rules-baseline-20261020/obstacle-20261020.jsonl",
+      "sha256": "0a5bce70aa28db1ab4b1254b8f08421aa1626dbf777da1189ec8cc08dd698b24",
+      "state_frames": 400,
+      "decision_frames": 400
+    },
+    {
+      "scene": "obstacle",
+      "seed": 20261021,
+      "ticks": 400,
+      "total_reward": -2.5613888697996825,
+      "success": false,
+      "collision": false,
+      "timeout": true,
+      "statuses": {
+        "OK": 398,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 0,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 333,
+          "disagreed": 65,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 48,
+          "disagreed": 12,
+          "unknown": 338
+        },
+        "speed_tier": {
+          "matched": 390,
+          "disagreed": 8,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 4,
+      "path": "sim/episodes/rules-baseline-20261020/obstacle-20261021.jsonl",
+      "sha256": "479ca9ca052f5c5a759425eb38d2a9c5a264d8364837d7a18db1f9eb137feb25",
+      "state_frames": 400,
+      "decision_frames": 400
+    },
+    {
+      "scene": "corridor",
+      "seed": 20261020,
+      "ticks": 138,
+      "total_reward": 12.371218401193614,
+      "success": true,
+      "collision": false,
+      "timeout": false,
+      "statuses": {
+        "OK": 136,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 0,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 135,
+          "disagreed": 0,
+          "unknown": 1
+        },
+        "speed_tier": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 0,
+      "path": "sim/episodes/rules-baseline-20261020/corridor-20261020.jsonl",
+      "sha256": "860a86a15af343ff77b3d91dfa9ff94e1d05452e45b27439d2112b3a743d7917",
+      "state_frames": 138,
+      "decision_frames": 138
+    },
+    {
+      "scene": "corridor",
+      "seed": 20261021,
+      "ticks": 138,
+      "total_reward": 12.371218401193614,
+      "success": true,
+      "collision": false,
+      "timeout": false,
+      "statuses": {
+        "OK": 136,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 0,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 135,
+          "disagreed": 0,
+          "unknown": 1
+        },
+        "speed_tier": {
+          "matched": 136,
+          "disagreed": 0,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 0,
+      "path": "sim/episodes/rules-baseline-20261020/corridor-20261021.jsonl",
+      "sha256": "7403ec79d69078a1f07e4b9a06b5a9013bfc237831fc0fac22bcafcc05ac3e69",
+      "state_frames": 138,
+      "decision_frames": 138
+    },
+    {
+      "scene": "slalom",
+      "seed": 20261020,
+      "ticks": 41,
+      "total_reward": -9.607231723629246,
+      "success": false,
+      "collision": true,
+      "timeout": false,
+      "statuses": {
+        "OK": 39,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 0,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 31,
+          "disagreed": 8,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 28,
+          "disagreed": 10,
+          "unknown": 1
+        },
+        "speed_tier": {
+          "matched": 31,
+          "disagreed": 8,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 8,
+      "path": "sim/episodes/rules-baseline-20261020/slalom-20261020.jsonl",
+      "sha256": "868dc7d3c265d86cd38665357824532a39bb647189b1095ee09cfc1f5a442551",
+      "state_frames": 41,
+      "decision_frames": 41
+    },
+    {
+      "scene": "slalom",
+      "seed": 20261021,
+      "ticks": 40,
+      "total_reward": -9.593940047162688,
+      "success": false,
+      "collision": true,
+      "timeout": false,
+      "statuses": {
+        "OK": 38,
+        "REJECT_LOW_CONFIDENCE": 0,
+        "REJECT_STALE_INPUT": 2,
+        "REJECT_OUT_OF_DOMAIN": 0,
+        "REJECT_UNSUPPORTED_SCHEMA": 0,
+        "FAULT": 0
+      },
+      "reference_comparisons": {
+        "path_blocked": {
+          "matched": 28,
+          "disagreed": 10,
+          "unknown": 0
+        },
+        "clear_sector": {
+          "matched": 24,
+          "disagreed": 13,
+          "unknown": 1
+        },
+        "speed_tier": {
+          "matched": 27,
+          "disagreed": 11,
+          "unknown": 0
+        }
+      },
+      "heuristic_false_clear_vs_reference": 8,
+      "path": "sim/episodes/rules-baseline-20261020/slalom-20261021.jsonl",
+      "sha256": "7293ae71df61998d091833d83b1d4ced537e6c69c3070677a27a019e3a486f88",
+      "state_frames": 40,
+      "decision_frames": 40
+    }
+  ],
+  "totals": {
+    "episodes": 8,
+    "ticks": 1433,
+    "success": 4,
+    "collision": 2,
+    "timeout": 2,
+    "heuristic_false_clear_vs_reference": 25
+  },
+  "limitations": [
+    "One-hot rule outputs are not calibrated probabilities or proof of clearance.",
+    "Sparse point rays, Gaussian noise and heuristic floor removal remain unqualified.",
+    "No motion compensation; age-bounded returns remain in the acquisition frame.",
+    "Oracle comparisons use privileged current truth only after the controller chooses its action.",
+    "Eight runs in four existing scene families are not independent task coverage or locked splits.",
+    "Caller-declared missing decisions brake; no serial clock, real timeout or target execution was measured.",
+    "Decision latency_us is an unmeasured diagnostic placeholder of zero, not measured execution time."
+  ]
+}

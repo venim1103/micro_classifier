@@ -23,7 +23,7 @@ Documents of record:
 
 Keep this section and the Task List current; a new session resumes from them.
 
-- Latest decisions and results: REVIEW.md §§72-74 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-75 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -34,7 +34,7 @@ Keep this section and the Task List current; a new session resumes from them.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,382 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,406 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -56,13 +56,22 @@ Keep this section and the Task List current; a new session resumes from them.
   Defaults stay ideal/zero-delay; a separate RNG leaves sensor faults/physics
   unchanged. Delayed ego ages use existing wire fields; input tensor/wire shapes
   stay unchanged. Exact historical metadata schemas preserve legacy replay.
-- Remaining F21/M2 work: reviewed scene envelope/diversity and sensor return/error
-  qualification, then a floor-aware rules baseline. Existing all-row-minimum
-  proxies are unchanged and unqualified for floor returns; do not deploy them.
-  No study collection, labels, split, training or hardware work was authorized.
+- User approved a separate observation-only heuristic, a configurable 0.03 m
+  floor band/default 0.15 s age limit and eight diagnostic wire-loop episodes.
+  `05a94f8` implements `sim/rules.py`; one-hot selections are not calibrated
+  confidence or proof of clearance. Host-only Python, not embedded firmware.
+- Bounded run complete: 4 successes, 2 collisions, 2 timeouts; 25 heuristic clear
+  outputs disagreed with blocked geometric references. All 2,866 wire frames,
+  eight log hashes and private comparison aggregates audited. Report:
+  `sim/reports/rules-baseline-20261020.json`; logs stay ignored/quarantined.
+  The eight-run approval is exhausted; no tuning or second batch occurred.
+- Remaining F21/M2 work: missing/occluded-return evidence, representative scene
+  envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
+  heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
+  accepted dataset/splits, training, Gaussian risk policy or hardware approval.
 - ST tools remain absent and no board is attached. User-side licence/install,
   procurement and sending the existing teacher provenance request remain pending.
-  No new study, teacher/model run, dataset or trained student exists.
+  No teacher/model run, accepted task dataset or trained student exists.
 
 ### Historical Checkpoints
 
@@ -1045,6 +1054,10 @@ on missing tools, and continue with the next unblocked task.
   errors/delay for implementation/tests only; floor/cylinder returns, missing
   masks and age-aware state export pass 63 new cases (1,382 total). No dataset,
   physical qualification or revised proxy rules; actual rules remain pending.
+  Follow-up (REVIEW.md §75): separate floor-aware heuristic/wire loop and the
+  approved eight diagnostics completed (4 success/2 collision/2 timeout; 25
+  false-clear reference comparisons). Not qualified runtime rules or labels;
+  reviewed evidence/scene requirements still block completion. No more collection.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.
@@ -1182,6 +1195,10 @@ on missing tools, and continue with the next unblocked task.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.
+  Current diagnostic result (2026-10-20, REVIEW.md §75): an observation-only
+  heuristic now closes the wire loop on eight quarantined simulation episodes,
+  with collisions/timeouts and geometric disagreements. This is not a locked
+  evaluation cohort, task-quality clearance, classical-model fit or calibration.
   Approved (2026-10-16): CPU-only metric and split-validation
   tooling with synthetic fixtures only; no real labeling, training, dataset
   generation, metric-threshold changes or claim of locked task splits.

@@ -639,6 +639,277 @@ def test_synthetic_c1_low_foreground_does_not_hide_tall_background(c1_history):
         assert captures[1]["tof_m"][0, 0, 3] != captures[0]["tof_m"][0, 0, 3]
 
 
+@pytest.mark.parametrize("speed", [0, 0.2, 0.6])
+@pytest.mark.parametrize("turn", [-1.5, 0, 1.5])
+@pytest.mark.parametrize("pieces", [4, 16])
+@pytest.mark.parametrize("braking_turn", [-1.5, 0, 1.5])
+def test_synthetic_c1_curved_centerline_encloses_independent_path(
+    speed, turn, pieces, braking_turn
+):
+    from sim.diagnostics import _c1_curved_centerline
+
+    config, age = Config(), 0.15
+    points, error = _c1_curved_centerline(
+        speed, turn, age, config, pieces, braking_turn
+    )
+    assert points.shape[1:] == (2,)
+    assert 2 <= len(points) <= 2 * pieces + 1
+    assert np.all(points[0] == 0)
+    assert 0 < error < 0.01
+    starts, steps = points[:-1], np.diff(points, axis=0)
+    squared = np.sum(steps * steps, axis=1)
+    nodes, weights = np.polynomial.legendre.leggauss(32)
+    reaction, braking = age + config.dt, speed / config.acceleration
+    for elapsed in np.linspace(0, reaction + braking, 129):
+        reference = np.zeros(2)
+        for duration, deceleration, angular_rate, initial_yaw in (
+            (min(elapsed, reaction), 0, turn, 0),
+            (
+                max(0, elapsed - reaction),
+                config.acceleration,
+                braking_turn,
+                turn * reaction,
+            ),
+        ):
+            times = (nodes + 1) * duration / 2
+            speeds = speed - deceleration * times
+            headings = initial_yaw + angular_rate * times
+            reference += (
+                duration
+                / 2
+                * np.array(
+                    [
+                        np.dot(weights, speeds * np.cos(headings)),
+                        np.dot(weights, speeds * np.sin(headings)),
+                    ]
+                )
+            )
+        relative = reference - starts
+        fractions = np.divide(
+            np.sum(relative * steps, axis=1),
+            squared,
+            out=np.zeros_like(squared),
+            where=squared > 0,
+        )
+        residual = relative - np.clip(fractions, 0, 1)[:, None] * steps
+        assert np.linalg.norm(residual, axis=1).min() <= error
+        if elapsed == reaction + braking:
+            assert np.linalg.norm(reference - points[-1]) <= error
+
+
+@pytest.mark.parametrize("turn", [-1.5, 1.5])
+@pytest.mark.parametrize("yaw", [0, 0.37, math.pi / 2, math.pi, -math.pi / 2])
+@pytest.mark.parametrize("braking_turn", [-1.5, 0, 1.5])
+def test_synthetic_c1_curved_tube_excludes_with_obstacle_behind(
+    turn, yaw, braking_turn
+):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    center = np.array([2, 2]) - 0.6 * np.array([math.cos(yaw), math.sin(yaw)])
+    scene = Scenario(start=(2, 2, yaw), goal=(5, 2), obstacles=((*center, 0.30),))
+    acquired, acquired_yaw = integrate([2, 2], yaw, 0.6, turn, -0.15)
+    assert not swept_collision(acquired, [2, 2], 0.18, scene.obstacles, scene.bounds)
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*acquired, acquired_yaw],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": scene.start,
+        "speed": 0.6,
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+    reference = evaluate_synthetic(
+        scene, speed=0.6, turn_rate=turn, tof_age_s=0.15, synthetic_test_only=True
+    )
+    maneuver = reference["maneuvers"][
+        {-1.5: "right", 0: "centre", 1.5: "left"}[braking_turn]
+    ]
+    assert maneuver["status"] == "clear"
+    assert probe_synthetic_c1_enclosure([record], **settings)["status"] == "unknown"
+    result = probe_synthetic_c1_enclosure(
+        [record],
+        turn_rate=turn,
+        curved_segments=16,
+        braking_turn_rate=braking_turn,
+        **settings,
+    )
+    assert result["status"] == "excluded_under_fixture_assumptions", result
+    assert result["schema"] == "micro-classifier/synthetic-c1-curved-enclosure/1"
+    assert "sweep_enclosure_radius_m" not in result
+    assert "straight_centerline_length_m" not in result
+    assert result["centerline_error_allowance_m"] > 0
+    assert result["curved_tube_radius_m"] > 0.18
+    assert result["numerically_certified"] is False
+    assert result["assumed_turn_rate_rad_s"] == turn
+    assert result["assumed_braking_turn_rate_rad_s"] == braking_turn
+    endpoint = np.array(result["curved_centerline_body_m"][-1]) @ np.array(
+        [[math.cos(yaw), math.sin(yaw)], [-math.sin(yaw), math.cos(yaw)]]
+    ) + np.array(scene.start[:2])
+    assert math.dist(endpoint, maneuver["endpoint_m"]) <= (
+        result["centerline_error_allowance_m"] + maneuver["endpoint_error_bound_m"]
+    )
+    if braking_turn == 0:
+        assert result == probe_synthetic_c1_enclosure(
+            [record], turn_rate=turn, curved_segments=16, **settings
+        )
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("curved_segments", True),
+        ("curved_segments", -1),
+        ("curved_segments", 129),
+        ("curved_segments", 16.0),
+        ("curved_segments", "16"),
+        ("curved_segments", np.inf),
+        ("curved_segments", 10**400),
+        ("curved_segments", 0),
+        ("turn_rate", None),
+        ("braking_turn_rate", True),
+        ("braking_turn_rate", np.nan),
+        ("braking_turn_rate", np.inf),
+        ("braking_turn_rate", 1.50001),
+        ("braking_turn_rate", -1.50001),
+        ("braking_turn_rate", "0"),
+        ("braking_turn_rate", 10**400),
+    ],
+)
+def test_synthetic_c1_curved_tube_rejects_malformed_controls(c1_history, field, value):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "speed": 0.6,
+        "turn_rate": 1.5,
+        "curved_segments": 16,
+        "braking_turn_rate": 0.0,
+        "synthetic_test_only": True,
+        field: value,
+    }
+    with pytest.raises(ValueError):
+        probe_synthetic_c1_enclosure(c1_history, **settings)
+
+
+@pytest.mark.parametrize("pieces", [1, 128])
+def test_synthetic_c1_curved_tube_keeps_exhausted_budget_unknown(c1_history, pieces):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    result = probe_synthetic_c1_enclosure(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        turn_rate=1.5,
+        curved_segments=pieces,
+        current_body_clear=True,
+        controlled_envelope=True,
+        max_cells=0,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["reason"] == "cell_budget_exhausted"
+    assert result["fixture_enclosure_excluded"] is False
+
+
+@pytest.mark.parametrize("side", [-1, 1])
+@pytest.mark.parametrize("radius", [0.05, 0.30])
+def test_synthetic_c1_curved_tube_does_not_inherit_straight_clearance(side, radius):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(
+        start=(2, 2, 0),
+        goal=(5, 2),
+        obstacles=((2.28, 2 + side * (radius + 0.22), radius),),
+        obstacle_heights=(0.05,),
+    )
+    turn = side * 1.5
+    acquired, acquired_yaw = integrate([2, 2], 0, 0.6, turn, -0.15)
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*acquired, acquired_yaw],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    for candidate, expected in ((0, "false"), (turn, "true")):
+        assert (
+            evaluate_synthetic(
+                scene,
+                speed=0.6,
+                turn_rate=candidate,
+                tof_age_s=0.15,
+                synthetic_test_only=True,
+            )["answers"]["path_blocked"]
+            == expected
+        )
+    result = probe_synthetic_c1_enclosure(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.6,
+        turn_rate=turn,
+        curved_segments=16,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["fixture_enclosure_excluded"] is False
+
+
+@pytest.mark.parametrize("side", [-1, 1])
+@pytest.mark.parametrize("yaw", [0, math.pi / 2])
+def test_synthetic_c1_curved_tube_cannot_exclude_a_side_wall(side, yaw):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    position = np.array([3, 3]) + side * 2.77 * np.array(
+        [-math.sin(yaw), math.cos(yaw)]
+    )
+    scene = Scenario(start=(*position, yaw), goal=(3, 3))
+    turn = side * 1.5
+    acquired, acquired_yaw = integrate(position, yaw, 0.6, turn, -0.15)
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*acquired, acquired_yaw],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    for candidate, expected in ((0, "false"), (turn, "true")):
+        assert (
+            evaluate_synthetic(
+                scene,
+                speed=0.6,
+                turn_rate=candidate,
+                tof_age_s=0.15,
+                synthetic_test_only=True,
+            )["answers"]["path_blocked"]
+            == expected
+        )
+    result = probe_synthetic_c1_enclosure(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.6,
+        turn_rate=turn,
+        curved_segments=16,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["reason"] == "axis_aligned_wall_support_incomplete"
+    assert result["fixture_enclosure_excluded"] is False
+
+
 @pytest.mark.parametrize("yaw", [0, 0.37, math.pi / 2, math.pi, -math.pi / 2])
 def test_synthetic_c1_straight_capsule_excludes_with_obstacle_behind(yaw):
     from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
@@ -853,7 +1124,7 @@ def test_synthetic_c1_enclosure_preserves_clear_turning_frames(c1_history, yaw, 
 @pytest.mark.parametrize("radius", [0.05, 0.30])
 @pytest.mark.parametrize("height", [0.05, 1.0])
 @pytest.mark.parametrize("turn", [-1.5, 0, 1.5])
-@pytest.mark.parametrize("enclosure_turn", [None, 0])
+@pytest.mark.parametrize("enclosure_turn", [None, 0, -1.5, 1.5])
 def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
     radius, height, turn, enclosure_turn
 ):
@@ -880,7 +1151,7 @@ def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
     reference = evaluate_synthetic(
         scene,
         speed=0.6,
-        turn_rate=turn if enclosure_turn is None else 0,
+        turn_rate=turn if enclosure_turn is None else enclosure_turn,
         tof_age_s=0.15,
         synthetic_test_only=True,
     )
@@ -891,6 +1162,7 @@ def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
         reference_pose_m_rad=[2, 2, 0],
         speed=0.6,
         turn_rate=enclosure_turn,
+        curved_segments=16 if enclosure_turn not in (None, 0) else 0,
         current_body_clear=True,
         controlled_envelope=True,
         synthetic_test_only=True,
@@ -921,7 +1193,7 @@ def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
 
 @pytest.mark.parametrize("radius", [0.05, 0.30])
 @pytest.mark.parametrize("height", [0.05, 1.0])
-@pytest.mark.parametrize("enclosure_turn", [None, 0])
+@pytest.mark.parametrize("enclosure_turn", [None, 0, -1.5, 1.5])
 def test_synthetic_c1_enclosure_keeps_masked_world_aliases_unknown(
     c1_history, radius, height, enclosure_turn
 ):
@@ -982,6 +1254,7 @@ def test_synthetic_c1_enclosure_keeps_masked_world_aliases_unknown(
             reference_pose_m_rad=[2, 2, 0],
             speed=0.6,
             turn_rate=enclosure_turn,
+            curved_segments=16 if enclosure_turn not in (None, 0) else 0,
             current_body_clear=True,
             controlled_envelope=True,
             synthetic_test_only=True,
@@ -1007,7 +1280,7 @@ def test_synthetic_c1_enclosure_keeps_masked_world_aliases_unknown(
         ("reference_pose_m_rad", [3, 2, 0], "unsupported_capture_to_reference_motion"),
     ],
 )
-@pytest.mark.parametrize("enclosure_turn", [None, 0])
+@pytest.mark.parametrize("enclosure_turn", [None, 0, -1.5, 1.5])
 def test_synthetic_c1_enclosure_preserves_unknown_on_missing_support(
     c1_history, field, value, reason, enclosure_turn
 ):
@@ -1018,6 +1291,7 @@ def test_synthetic_c1_enclosure_preserves_unknown_on_missing_support(
         "reference_pose_m_rad": [2, 2, 0],
         "speed": 0.6,
         "turn_rate": enclosure_turn,
+        "curved_segments": 16 if enclosure_turn not in (None, 0) else 0,
         "current_body_clear": True,
         "controlled_envelope": True,
         "synthetic_test_only": True,

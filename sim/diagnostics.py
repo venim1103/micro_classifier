@@ -289,6 +289,35 @@ def _c1_low_free_segments(record, inspection, reference_pose_m_rad, config):
     return np.stack((starts, ends), axis=1), guard
 
 
+def _c1_curved_centerline(speed, turn_rate, age, config, pieces, braking_turn_rate=0.0):
+    position = np.zeros(2)
+    points, yaw, error, deviation = [position.copy()], 0.0, 0.0, 0.0
+    roundoff = 64 * np.finfo(float).eps * max(1.0, config.max_range)
+    for duration, deceleration, angular_rate in (
+        (age + config.dt, 0.0, turn_rate),
+        (speed / config.acceleration, config.acceleration, braking_turn_rate),
+    ):
+        if duration == 0:
+            continue
+        seconds = duration / pieces
+        for _ in range(pieces):
+            midpoint_speed = max(0, speed - deceleration * seconds / 2)
+            midpoint_yaw = yaw + angular_rate * seconds / 2
+            position = position + seconds * midpoint_speed * np.array(
+                [math.cos(midpoint_yaw), math.sin(midpoint_yaw)]
+            )
+            error += (
+                2 * deceleration * abs(angular_rate) + speed * angular_rate**2
+            ) * seconds**3 / 24 + roundoff
+            deviation = max(
+                deviation, (deceleration + speed * abs(angular_rate)) * seconds**2 / 8
+            )
+            points.append(position.copy())
+            speed = max(0, speed - deceleration * seconds)
+            yaw += angular_rate * seconds
+    return np.asarray(points), error + deviation
+
+
 def probe_synthetic_c1_enclosure(
     history,
     *,
@@ -296,6 +325,8 @@ def probe_synthetic_c1_enclosure(
     reference_pose_m_rad,
     speed,
     turn_rate=None,
+    curved_segments=0,
+    braking_turn_rate=None,
     current_body_clear=False,
     controlled_envelope=False,
     max_cells=32768,
@@ -304,7 +335,7 @@ def probe_synthetic_c1_enclosure(
     config=None,
     synthetic_test_only=False,
 ):
-    """Exclude a disk or declared-straight capsule under controlled-fixture assumptions."""
+    """Exclude a declared fixture disk, straight capsule or bounded curved tube."""
     if synthetic_test_only is not True:
         raise ValueError("C1 enclosure requires synthetic_test_only=True")
     config = _c1_config(config)
@@ -315,6 +346,21 @@ def probe_synthetic_c1_enclosure(
         turn_rate = float(_c1_array([turn_rate], (1,))[0])
         if abs(turn_rate) > config.max_turn_rate:
             raise ValueError("C1 turn rate is outside the simulated motion limits")
+    if type(curved_segments) is not int or not 0 <= curved_segments <= 128:
+        raise ValueError("C1 curved segments require an integer from zero through 128")
+    curved = curved_segments > 0
+    if curved and turn_rate is None:
+        raise ValueError("C1 curved enclosure requires a declared turn rate")
+    if braking_turn_rate is not None:
+        braking_turn_rate = float(_c1_array([braking_turn_rate], (1,))[0])
+        if abs(braking_turn_rate) > config.max_turn_rate:
+            raise ValueError(
+                "C1 braking turn rate is outside the simulated motion limits"
+            )
+        if not curved:
+            raise ValueError("C1 braking turn declaration requires the curved opt-in")
+    if curved and braking_turn_rate is None:
+        braking_turn_rate = 0.0
     for value, lower, upper in (
         (max_cells, 0, 65536),
         (max_depth, 0, 12),
@@ -346,7 +392,15 @@ def probe_synthetic_c1_enclosure(
             "declared_speed_and_reference_braking_model": True,
         },
     }
-    if turn_rate is not None:
+    if curved:
+        result.update(
+            schema="micro-classifier/synthetic-c1-curved-enclosure/1",
+            assumed_turn_rate_rad_s=turn_rate,
+            assumed_braking_turn_rate_rad_s=braking_turn_rate,
+            assumed_segments_per_phase=curved_segments,
+        )
+        result["assumptions"]["declared_reaction_and_braking_turns"] = True
+    elif turn_rate is not None:
         result.update(
             schema="micro-classifier/synthetic-c1-straight-enclosure/1",
             assumed_turn_rate_rad_s=turn_rate,
@@ -362,7 +416,7 @@ def probe_synthetic_c1_enclosure(
     if inspection["status"] != "registered_fixture":
         result["reason"] = inspection["reason"]
         return result
-    if turn_rate is not None and turn_rate != 0:
+    if turn_rate is not None and turn_rate != 0 and not curved:
         result["reason"] = "unsupported_straight_maneuver"
         return result
     if current_body_clear is not True:
@@ -405,8 +459,21 @@ def probe_synthetic_c1_enclosure(
         return result
     distance = speed * (age + config.dt) + speed * speed / (2 * config.acceleration)
     body_bound = config.radius + distance + guard
-    straight = turn_rate is not None
-    if straight:
+    straight = turn_rate is not None and not curved
+    if curved:
+        curve_points, curve_error = _c1_curved_centerline(
+            speed, turn_rate, age, config, curved_segments, braking_turn_rate
+        )
+        tube_radius = config.radius + curve_error + guard
+        body_bound += curve_error
+        curve_starts, curve_steps = curve_points[:-1], np.diff(curve_points, axis=0)
+        curve_squared = np.sum(curve_steps * curve_steps, axis=1)
+        result.update(
+            curved_centerline_body_m=curve_points.tolist(),
+            centerline_error_allowance_m=curve_error,
+            curved_tube_radius_m=tube_radius,
+        )
+    elif straight:
         result.update(
             straight_centerline_length_m=distance,
             capsule_radius_m=config.radius + guard,
@@ -419,13 +486,15 @@ def probe_synthetic_c1_enclosure(
     )
     wall_tip = distance * np.array([cosine, sine]) if straight else np.zeros(2)
     wall_radius = config.radius + guard if straight else body_bound
+    wall_min = np.minimum(0, wall_tip) - wall_radius - guard
+    wall_max = np.maximum(0, wall_tip) + wall_radius + guard
+    if curved:
+        world_curve = curve_points @ np.array([[cosine, sine], [-sine, cosine]])
+        wall_min = world_curve.min(axis=0) - tube_radius - guard
+        wall_max = world_curve.max(axis=0) + tube_radius + guard
     if not (
-        np.all(
-            world_relative.min(axis=0) < np.minimum(0, wall_tip) - wall_radius - guard
-        )
-        and np.all(
-            world_relative.max(axis=0) > np.maximum(0, wall_tip) + wall_radius + guard
-        )
+        np.all(world_relative.min(axis=0) < wall_min)
+        and np.all(world_relative.max(axis=0) > wall_max)
     ):
         result["reason"] = "axis_aligned_wall_support_incomplete"
         return result
@@ -446,6 +515,21 @@ def probe_synthetic_c1_enclosure(
             norm, cell_radius = math.hypot(center_x, center_y), math.sqrt(2) * half
             if norm - cell_radius > extent + guard:
                 continue
+            if curved:
+                curve_relative = center - curve_starts
+                curve_fractions = np.divide(
+                    np.sum(curve_relative * curve_steps, axis=1),
+                    curve_squared,
+                    out=np.zeros_like(curve_squared),
+                    where=curve_squared > 0,
+                )
+                curve_residual = (
+                    curve_relative
+                    - np.clip(curve_fractions, 0, 1)[:, None] * curve_steps
+                )
+                curve_separation = float(np.linalg.norm(curve_residual, axis=1).min())
+                if curve_separation - cell_radius > tube_radius + upper + guard:
+                    continue
             if (
                 straight
                 and math.hypot(center_x - min(max(center_x, 0), distance), center_y)
@@ -489,7 +573,9 @@ def probe_synthetic_c1_enclosure(
             )
     result.update(
         status="excluded_under_fixture_assumptions",
-        reason="all_allowed_cylinder_centers_and_axis_aligned_walls_excluded_from_straight_capsule"
+        reason="all_allowed_cylinder_centers_and_axis_aligned_walls_excluded_from_curved_tube"
+        if curved
+        else "all_allowed_cylinder_centers_and_axis_aligned_walls_excluded_from_straight_capsule"
         if straight
         else "all_allowed_cylinder_centers_and_axis_aligned_walls_excluded",
         fixture_enclosure_excluded=True,

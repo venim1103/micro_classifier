@@ -7,6 +7,7 @@ import math
 import platform
 from copy import deepcopy
 from dataclasses import asdict, replace
+from itertools import pairwise
 from pathlib import Path
 
 import numpy as np
@@ -238,6 +239,224 @@ def inspect_synthetic_c1_history(
         reason="declared_exact_static_assumptions_only",
         points_body_m=np.where(valid[..., None], points, 0),
         point_valid=valid.copy(),
+    )
+    return result
+
+
+def _c1_low_free_segments(record, inspection, reference_pose_m_rad, config):
+    reference = _c1_array(reference_pose_m_rad, (3,)).astype(float)
+    pose = record["capture_poses_m_rad"][0]
+    cosine, sine = math.cos(reference[2]), math.sin(reference[2])
+    origin = np.array(
+        [
+            *((pose[:2] - reference[:2]) @ np.array([[cosine, -sine], [sine, cosine]])),
+            config.tof_mount_height,
+        ]
+    )
+    ranges, valid = record["tof_m"], inspection["point_valid"]
+    directions = np.divide(
+        inspection["points_body_m"] - origin,
+        ranges[..., None],
+        out=np.zeros((8, 8, 8, 3)),
+        where=valid[..., None],
+    )
+    guard = (
+        256
+        * np.finfo(float).eps
+        * max(1.0, config.max_range, *np.abs(reference), *np.abs(pose))
+    )
+    downward = -directions[..., 2]
+    near = (
+        np.divide(
+            config.tof_mount_height - 0.05,
+            downward,
+            out=np.full((8, 8, 8), np.inf),
+            where=downward > 0,
+        )
+        + guard
+    )
+    floor = np.divide(
+        config.tof_mount_height,
+        downward,
+        out=np.full((8, 8, 8), -np.inf),
+        where=downward > 0,
+    )
+    lower_range = np.nextafter(ranges, np.float32(0)).astype(float)
+    far = np.minimum(lower_range, floor) - guard
+    selected = valid & (downward > 0) & (far > near)
+    starts = origin + near[selected, None] * directions[selected]
+    ends = origin + far[selected, None] * directions[selected]
+    return np.stack((starts, ends), axis=1), guard
+
+
+def probe_synthetic_c1_enclosure(
+    history,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    speed,
+    current_body_clear=False,
+    controlled_envelope=False,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Exclude an all-turn sweep enclosure under explicit controlled-fixture assumptions."""
+    if synthetic_test_only is not True:
+        raise ValueError("C1 enclosure requires synthetic_test_only=True")
+    config = _c1_config(config)
+    speed = float(_c1_array([speed], (1,))[0])
+    if not 0 <= speed <= config.max_speed:
+        raise ValueError("C1 speed is outside the simulated motion limits")
+    for value, lower, upper in (
+        (max_cells, 0, 65536),
+        (max_depth, 0, 12),
+        (radius_bands, 1, 16),
+    ):
+        if type(value) is not int or not lower <= value <= upper:
+            raise ValueError("C1 enclosure work limits require bounded integers")
+    result = {
+        "schema": "micro-classifier/synthetic-c1-enclosure/1",
+        "allowed_use": "controlled_synthetic_qualification_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "status": "unknown",
+        "reason": "current_body_clear_not_established",
+        "fixture_enclosure_excluded": False,
+        "cells_checked": 0,
+        "radius_interval_m": [0.05, 0.30],
+        "height_interval_m": [0.05, 1.0],
+        "assumed_current_body_clear": current_body_clear is True,
+        "assumed_controlled_envelope": controlled_envelope is True,
+        "assumptions": {
+            "static_floor_supported_cylinders": True,
+            "axis_aligned_arena_walls_height_m": 1.0,
+            "declared_exact_pose_and_first_return_model": True,
+            "envelope_membership_independently_established": controlled_envelope
+            is True,
+            "declared_speed_and_reference_braking_model": True,
+        },
+    }
+    inspection = inspect_synthetic_c1_history(
+        history,
+        reference_tick=reference_tick,
+        reference_pose_m_rad=reference_pose_m_rad,
+        config=config,
+        synthetic_test_only=True,
+    )
+    if inspection["status"] != "registered_fixture":
+        result["reason"] = inspection["reason"]
+        return result
+    if current_body_clear is not True:
+        return result
+    if controlled_envelope is not True:
+        result["reason"] = "controlled_envelope_not_established"
+        return result
+    if (
+        config.radius,
+        config.acceleration,
+        config.max_speed,
+        config.max_turn_rate,
+        config.max_range,
+        config.wall_height,
+    ) != (0.18, 1, 0.6, 1.5, 4, 1):
+        result["reason"] = "unsupported_dynamics_or_wall_profile"
+        return result
+    reference = _c1_array(reference_pose_m_rad, (3,)).astype(float)
+    record = history[-1]
+    pose = record["capture_poses_m_rad"][0]
+    age = inspection["latest_age_ticks"] * config.dt
+    yaw_delta = math.atan2(math.sin(pose[2]), math.cos(pose[2])) - math.atan2(
+        math.sin(reference[2]), math.cos(reference[2])
+    )
+    yaw_delta = math.atan2(math.sin(yaw_delta), math.cos(yaw_delta))
+    motion_guard = (
+        256 * np.finfo(float).eps * max(1.0, *np.abs(reference), *np.abs(pose))
+    )
+    if (
+        math.hypot(float(pose[0]) - reference[0], float(pose[1]) - reference[1])
+        > config.max_speed * age + motion_guard
+        or abs(yaw_delta) > config.max_turn_rate * age + motion_guard
+    ):
+        result["reason"] = "unsupported_capture_to_reference_motion"
+        return result
+    segments, guard = _c1_low_free_segments(record, inspection, reference, config)
+    result["free_segment_count"] = len(segments)
+    if not len(segments):
+        result["reason"] = "no_low_height_free_segments"
+        return result
+    distance = speed * (age + config.dt) + speed * speed / (2 * config.acceleration)
+    body_bound = config.radius + distance + guard
+    result["sweep_enclosure_radius_m"] = body_bound
+    cosine, sine = math.cos(reference[2]), math.sin(reference[2])
+    world_relative = segments[..., :2].reshape(-1, 2) @ np.array(
+        [[cosine, sine], [-sine, cosine]]
+    )
+    if not (
+        np.all(world_relative.min(axis=0) < -body_bound - guard)
+        and np.all(world_relative.max(axis=0) > body_bound + guard)
+    ):
+        result["reason"] = "axis_aligned_wall_support_incomplete"
+        return result
+    starts = segments[:, 0, :2]
+    steps = segments[:, 1, :2] - starts
+    squared = np.sum(steps * steps, axis=1)
+    radii = np.linspace(0.05, 0.30, radius_bands + 1)
+    for lower, upper in pairwise(radii):
+        extent = body_bound + upper + guard
+        pending = [(0.0, 0.0, extent, 0)]
+        while pending:
+            if result["cells_checked"] >= max_cells:
+                result["reason"] = "cell_budget_exhausted"
+                return result
+            center_x, center_y, half, depth = pending.pop()
+            result["cells_checked"] += 1
+            center = np.array([center_x, center_y])
+            norm, cell_radius = math.hypot(center_x, center_y), math.sqrt(2) * half
+            if norm - cell_radius > extent + guard:
+                continue
+            if norm + cell_radius < config.radius + lower - guard:
+                continue
+            relative = center - starts
+            fractions = np.divide(
+                np.sum(relative * steps, axis=1),
+                squared,
+                out=np.zeros_like(squared),
+                where=squared > 0,
+            )
+            residual = relative - np.clip(fractions, 0, 1)[:, None] * steps
+            separation = float(np.linalg.norm(residual, axis=1).min())
+            if separation + cell_radius < lower - guard:
+                continue
+            if depth >= max_depth:
+                result.update(
+                    reason="unexcluded_center_cell",
+                    unresolved_cell={
+                        "center_m": center.tolist(),
+                        "half_width_m": half,
+                        "radius_interval_m": [float(lower), float(upper)],
+                    },
+                )
+                return result
+            child = half / 2
+            pending.extend(
+                (
+                    center_x + horizontal * child,
+                    center_y + vertical * child,
+                    child,
+                    depth + 1,
+                )
+                for horizontal in (-1, 1)
+                for vertical in (-1, 1)
+            )
+    result.update(
+        status="excluded_under_fixture_assumptions",
+        reason="all_allowed_cylinder_centers_and_axis_aligned_walls_excluded",
+        fixture_enclosure_excluded=True,
     )
     return result
 

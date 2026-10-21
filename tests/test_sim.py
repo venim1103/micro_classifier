@@ -496,6 +496,321 @@ def test_synthetic_c1_is_not_a_normal_input(c1_history):
         prepare_request(c1_history[-1], config=Config())
 
 
+def test_synthetic_c1_low_segments_stop_before_surfaces(c1_history):
+    from sim.diagnostics import _c1_low_free_segments, inspect_synthetic_c1_history
+
+    result = inspect_synthetic_c1_history(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        synthetic_test_only=True,
+    )
+    config = Config(**c1_history[-1]["config"])
+    segments, guard = _c1_low_free_segments(
+        c1_history[-1],
+        result,
+        [2, 2, 0],
+        config,
+    )
+    assert len(segments) > 0
+    assert segments.shape[1:] == (2, 3)
+    assert np.all(segments[..., 2] > 0)
+    assert np.all(segments[..., 2] < 0.05)
+    assert np.all(segments[:, 0, 2] > segments[:, 1, 2])
+    assert guard > 0
+    shifted = inspect_synthetic_c1_history(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[3, 2, 0],
+        synthetic_test_only=True,
+    )
+    other, _ = _c1_low_free_segments(c1_history[-1], shifted, [3, 2, 0], config)
+    assert other[..., 0] == pytest.approx(segments[..., 0] - 1)
+    assert other[..., 1:] == pytest.approx(segments[..., 1:])
+
+
+def test_synthetic_c1_enclosure_excludes_empty_straight_fixture(c1_history):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    result = probe_synthetic_c1_enclosure(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "excluded_under_fixture_assumptions", result
+    assert result["fixture_enclosure_excluded"] is True
+    assert result["sweep_enclosure_radius_m"] == pytest.approx(0.48)
+    assert result["cells_checked"] <= 32768
+    assert result["free_space_qualified"] is False
+    assert result["numerically_certified"] is False
+
+
+@pytest.mark.parametrize("radius", [0.05, 0.30])
+@pytest.mark.parametrize("height", [0.05, 1.0])
+@pytest.mark.parametrize("turn", [-1.5, 0, 1.5])
+def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
+    radius, height, turn
+):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(
+        start=(2, 2, 0),
+        goal=(5, 2),
+        obstacles=((2.2 + radius, 2, radius),),
+        obstacle_heights=(height,),
+    )
+    records = []
+    for tick in (14, 15, 16, 16, 18, 19, 20, 20):
+        position, yaw = integrate([2, 2], 0, 0.6, turn, (tick - 23) * 0.05)
+        records.append(
+            capture_synthetic_c1_views(
+                scene,
+                pose_m_rad=[*position, yaw],
+                capture_tick=tick,
+                synthetic_test_only=True,
+            )
+        )
+    reference = evaluate_synthetic(
+        scene,
+        speed=0.6,
+        turn_rate=turn,
+        tof_age_s=0.15,
+        synthetic_test_only=True,
+    )
+    assert reference["answers"]["path_blocked"] == "true"
+    result = probe_synthetic_c1_enclosure(
+        records,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["fixture_enclosure_excluded"] is False
+    assert result["cells_checked"] <= 32768
+    from sim.diagnostics import _c1_low_free_segments, inspect_synthetic_c1_history
+
+    inspected = inspect_synthetic_c1_history(
+        records,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        synthetic_test_only=True,
+    )
+    segments, _ = _c1_low_free_segments(
+        records[-1],
+        inspected,
+        [2, 2, 0],
+        Config(**records[-1]["config"]),
+    )
+    center = np.array([0.2 + radius, 0])
+    for start, end in segments[..., :2]:
+        step = end - start
+        fraction = np.clip(np.dot(center - start, step) / np.dot(step, step), 0, 1)
+        assert np.linalg.norm(center - start - fraction * step) > radius
+
+
+@pytest.mark.parametrize(
+    "field,value,reason",
+    [
+        ("max_cells", 0, "cell_budget_exhausted"),
+        ("max_depth", 0, "unexcluded_center_cell"),
+        ("current_body_clear", False, "current_body_clear_not_established"),
+        ("current_body_clear", 1, "current_body_clear_not_established"),
+        ("current_body_clear", "true", "current_body_clear_not_established"),
+        ("controlled_envelope", False, "controlled_envelope_not_established"),
+        ("controlled_envelope", 1, "controlled_envelope_not_established"),
+        ("controlled_envelope", "true", "controlled_envelope_not_established"),
+        ("reference_pose_m_rad", [3, 2, 0], "unsupported_capture_to_reference_motion"),
+    ],
+)
+def test_synthetic_c1_enclosure_preserves_unknown_on_missing_support(
+    c1_history, field, value, reason
+):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "speed": 0.6,
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+        field: value,
+    }
+    result = probe_synthetic_c1_enclosure(c1_history, **settings)
+    assert result["status"] == "unknown"
+    assert result["reason"] == reason
+    assert result["fixture_enclosure_excluded"] is False
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("speed", True),
+        ("speed", np.nan),
+        ("speed", np.inf),
+        ("speed", -0.1),
+        ("speed", 0.7),
+        ("max_cells", True),
+        ("max_cells", -1),
+        ("max_cells", 65537),
+        ("max_depth", True),
+        ("max_depth", -1),
+        ("max_depth", 13),
+        ("radius_bands", True),
+        ("radius_bands", 0),
+        ("radius_bands", 17),
+        ("synthetic_test_only", 1),
+        ("synthetic_test_only", False),
+    ],
+)
+def test_synthetic_c1_enclosure_rejects_malformed_controls(c1_history, field, value):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "speed": 0.6,
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+        field: value,
+    }
+    with pytest.raises(ValueError):
+        probe_synthetic_c1_enclosure(c1_history, **settings)
+
+
+def test_synthetic_c1_enclosure_does_not_attest_the_object_domain(c1_history):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+
+    outside_domain = Scenario(start=(2, 2, 0), obstacles=((2.4, 2, 0.005),))
+    records = [
+        capture_synthetic_c1_views(
+            outside_domain,
+            pose_m_rad=record["capture_poses_m_rad"][0],
+            capture_tick=int(record["capture_ticks"][0]),
+            synthetic_test_only=True,
+        )
+        for record in c1_history
+    ]
+    for original, other in zip(c1_history, records, strict=True):
+        assert np.array_equal(original["tof_m"], other["tof_m"])
+    result = probe_synthetic_c1_enclosure(
+        records,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["fixture_enclosure_excluded"] is True
+    assert result["radius_interval_m"] == [0.05, 0.30]
+    assert (
+        result["assumptions"]["envelope_membership_independently_established"] is True
+    )
+    assert result["real_input_qualified"] is False
+    assert result["free_space_qualified"] is False
+
+
+def test_synthetic_c1_enclosure_keeps_stale_or_malformed_history_unknown(c1_history):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "speed": 0.6,
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+    for records in ([], [c1_history[0]], c1_history * 2):
+        result = probe_synthetic_c1_enclosure(records, **settings)
+        assert result["status"] == "unknown"
+        assert result["fixture_enclosure_excluded"] is False
+
+
+def test_synthetic_c1_enclosure_cannot_clear_a_near_wall():
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(start=(5.7, 2, 0), goal=(4, 2))
+    records = []
+    for tick in (14, 15, 16, 16, 18, 19, 20, 20):
+        position, yaw = integrate([5.7, 2], 0, 0.6, 0, (tick - 23) * 0.05)
+        records.append(
+            capture_synthetic_c1_views(
+                scene,
+                pose_m_rad=[*position, yaw],
+                capture_tick=tick,
+                synthetic_test_only=True,
+            )
+        )
+    result = probe_synthetic_c1_enclosure(
+        records,
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.6,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["reason"] == "axis_aligned_wall_support_incomplete"
+    assert result["fixture_enclosure_excluded"] is False
+    assert (
+        evaluate_synthetic(
+            scene,
+            speed=0.6,
+            turn_rate=0,
+            tof_age_s=0.15,
+            synthetic_test_only=True,
+        )["answers"]["path_blocked"]
+        == "true"
+    )
+
+
+def test_synthetic_c1_enclosure_has_independent_sampled_center_support(c1_history):
+    from sim.diagnostics import _c1_low_free_segments, inspect_synthetic_c1_history
+
+    result = inspect_synthetic_c1_history(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        synthetic_test_only=True,
+    )
+    segments, _ = _c1_low_free_segments(
+        c1_history[-1],
+        result,
+        [2, 2, 0],
+        Config(**c1_history[-1]["config"]),
+    )
+    checked = 0
+    for radius in (0.05, 0.133, 0.30):
+        for horizontal in np.linspace(-0.78, 0.78, 19):
+            for vertical in np.linspace(-0.78, 0.78, 19):
+                center = np.array([horizontal, vertical])
+                distance = np.linalg.norm(center)
+                if not 0.18 + radius < distance <= 0.48 + radius:
+                    continue
+                separations = []
+                for start, end in segments[..., :2]:
+                    step = end - start
+                    fraction = np.clip(
+                        np.dot(center - start, step) / np.dot(step, step), 0, 1
+                    )
+                    separations.append(np.linalg.norm(center - start - fraction * step))
+                assert min(separations) < radius
+                checked += 1
+    assert checked > 100
+
+
 def test_floor_rules_ignore_floor_without_claiming_calibrated_probabilities():
     from interface.protocol import QuestionId, Status, decode_decision, encode_decision
     from sim.rules import decide

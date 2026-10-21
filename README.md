@@ -775,6 +775,16 @@ unchanged. Frozen-log replay still has false-clears and high rejection, not
 closed-loop or safety clearance. See [REVIEW.md](REVIEW.md) §76; no new run or
 data-collection allowance follows from this opt-in.
 
+Synthetic counterexamples now show identical complete histories with opposite
+turning-clearance answers, even for a normal-sized cylinder and ideal inputs.
+The next direction is coverage-first design, not further threshold tuning.
+Requirements and the remaining sensing/scene decisions are in
+[DESIGN.md][coverage-design] §7 and [REVIEW.md][coverage-review] §77; no sensor/input change
+or new collection is approved yet.
+
+[coverage-design]: DESIGN.md
+[coverage-review]: REVIEW.md
+
 ## Hardware-Free Simulation
 
 [sim/rover.py](sim/rover.py) provides a CPU-only, seeded `RoverEnv` with

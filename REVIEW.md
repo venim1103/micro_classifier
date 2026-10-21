@@ -4301,6 +4301,65 @@ direction needs review of missing/occluded-space evidence, swept-body coverage
 and scene/claim envelope. No new collection, labels/datasets/splits, inference/
 training, dependencies/downloads, ST/licence, board work or push occurred.
 
+## 77. Full-Input Ambiguity and Coverage-First Requirements (2026-10-21)
+
+After §76's unsuccessful registered candidate, the next approved synthetic-test
+follow-up checks whether registration alone could resolve missing evidence.
+`a673056` adds two mirrored ordinary-cylinder counterexamples to the existing
+test module; no runtime, threshold, sensor default or artifact changed.
+
+**Fixture:** ideal ego, zero noise/dropout, the current floor/cylinder geometry,
+45-degree field, nominal 15 Hz acquisition, two-tick delivery and all eight
+history slots. At tick 23 the rover is at (2,2,0), traveling at 0.6 m/s with
+turn rate +/-1.5 rad/s. Compare an empty world with one containing a radius-0.3 m,
+height-0.5 m cylinder at (2.3,2+/-0.47). Constant-twist historical poses are
+constructed analytically within the existing motion limits, after startup can
+reach cruise speed; retained poses do not overlap the cylinder. Actual capture
+ticks and held delivery are represented in each historical sensor grid.
+Reset-to-current rollout reachability was not validated.
+
+The full renderer's output strings match exactly between the two worlds,
+including host state, current ToF/masks/age and all input histories. The adopted
+geometric reference nevertheless gives `path_blocked=false` without the cylinder
+and `true` with it for both mirrors. Initial checks passed; fixture time was
+then moved from tick 15 to 23 to keep cruising history after feasible startup,
+and the same checks passed again. This is synthetic ideal-model evidence, not
+a new episode, annotation or measured sensor/hardware claim.
+
+**Implication:** an input-only method cannot distinguish these specific worlds.
+The issue is not solely Gaussian noise, tiny objects or an unregistered frame.
+Different thresholds or learning cannot add the absent information; probabilistic
+outputs may express uncertainty but no prior/calibrated error rate is inferred.
+This does not establish that all inputs are ambiguous or prove a particular
+larger-FoV design sufficient. Rejection remains appropriate for unresolved
+evidence; always rejecting alone is not useful task-quality clearance.
+
+**Explicit user direction:** after seeing the counterexample, the user chose
+"Define wider sensing/coverage requirements first" over proposing a narrower
+motion/claim envelope or pausing for hardware. The authorization is design-only
+in existing documents, not a chosen sensor, purchase, input-schema change or
+new episode. DESIGN.md §7 now requires a concrete candidate to address the
+whole swept body, between/behind-ray support, vertical/floor compatibility,
+acquisition/retention and motion, return/error qualification and explicit
+information/contract changes. The existing aliased fixtures must become
+distinguishable through added observations, not privileged decision inputs;
+additional domain/coverage tests still remain necessary.
+
+No minimum obstacle size, numerical hardware FoV, map/history format, scan
+strategy, safety/failure budget or evidence-policy criterion was adopted.
+The proposed unknown/rejection criterion remains for review. The next product
+decision is a concrete coverage/retention candidate with its scene and timing/
+error evidence, before separately authorizing implementation or collection.
+Existing geometric targets, wire/input shapes, heuristic defaults, Gaussian
+abstention policy and all quarantine/data/hardware gates remain unchanged.
+
+**Verification:** two focused regressions pass; full offline suite 1,434 passes
+plus the known transformer xfail (29.46 s). Ruff, changed-file format and editor
+diagnostics pass; full-suite native sanitizer/hard-float Arm gates pass. Runtime
+modules and all historical reports/goldens are unchanged. No new study run,
+labels/dataset/splits, model inference/training, dependencies/downloads,
+ST/licence, hardware action or agent push occurred.
+
 ## Sources
 
 Hardware and tools:

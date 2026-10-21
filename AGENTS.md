@@ -23,7 +23,7 @@ Documents of record:
 
 Keep this section and the Task List current; a new session resumes from them.
 
-- Latest decisions and results: REVIEW.md §§72-76 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-77 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -34,7 +34,7 @@ Keep this section and the Task List current; a new session resumes from them.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,432 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,434 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -73,6 +73,16 @@ Keep this section and the Task List current; a new session resumes from them.
   four false-clears (two new), six false-blocked and 1,213 rejections. Of the old
   25 false-clears, three become blocked, 20 reject and two remain clear. This is
   not quality clearance or candidate closed-loop evidence; no tuning/new runs.
+- `a673056` adds mirrored full-history aliases: the current ideal sensor/ego
+  input is byte-identical with/without a normal 0.3 m-radius cylinder, yet the
+  curved-braking geometric answer differs. This is not just a noise, small-object
+  or registration problem; a deterministic input-only method cannot distinguish
+  these pairs. Abstention remains necessary where evidence is ambiguous.
+- User chose coverage-first design work, not a third heuristic or narrower
+  targets. DESIGN.md §7 / REVIEW.md §77 define coverage requirements; no new
+  FoV, sensor, scene-size limits, history/map format or input change is adopted.
+  Next: review a concrete coverage candidate and its domain/timing/error evidence
+  before implementation/collection. ST tools and all task-data gates remain.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -1069,6 +1079,9 @@ on missing tools, and continue with the next unblocked task.
   Follow-up (2026-10-21, REVIEW.md §76): approved opt-in registration/tests and
   frozen-log diagnostics are complete. High rejection and four false-clears
   remain; the default/report are unchanged and no new trajectory was collected.
+  Follow-up (REVIEW.md §77): ideal full-input aliases now cover normal-sized
+  cylinders and turning sweeps. User selected coverage-first design; requirements
+  are recorded, but no sensing/input redesign or collection is authorized yet.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

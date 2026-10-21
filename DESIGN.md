@@ -1953,6 +1953,59 @@ REVIEW.md §76 records provenance and limitations. Missing/occluded-space policy
 swept-volume evidence, representative scenes and physical qualification still
 block F21/M2; no collection, labels, training or hardware scope was opened.
 
+#### Coverage Requirements and Observability (2026-10-21)
+
+`a673056` supplies two mirrored artificial counterexamples using the current
+floor/cylinder model, 45-degree field, nominal 15 Hz capture, two-tick delivery
+and complete eight-tick history. Noise/dropout are zero and ego state is ideal.
+At current pose (2,2,0), speed 0.6 m/s and turn rate +/-1.5 rad/s, a cylinder
+at (2.3, 2+/-0.47) with radius 0.3 m/default height 0.5 m remains unseen in
+every delivered history frame. Current/history ego, ToF values/masks/ages and
+the entire rendered host/module input are identical to the world without it,
+but the adopted curved-braking reference answers blocked versus clear.
+The constructed history is at tick 23, after cruise speed can be reached;
+retained historical poses do not overlap the obstacle. These are fixtures,
+not validated reset-to-current rollouts, new episodes, labels or representative
+task-frequency measurements.
+
+Consequently, neither thresholds, registration nor an input-only learner can
+always identify the correct world from this input. A probabilistic answer may
+represent ambiguity but cannot create the missing evidence; no prior or calibrated
+risk is established here. This does not prove all inputs ambiguous or all sensing
+designs inadequate. The earlier narrow-ray examples and these normal-cylinder
+examples must remain distinct from a universal impossibility claim.
+
+The user selected **coverage-first design requirements** before another runtime
+baseline. Existing geometric targets, input/wire shapes and defaults remain in
+force. No wider FoV, extra sensor, obstacle-size bound, scan/mapper, longer
+history or physical operating restriction is selected by this decision.
+
+| Coverage Requirement | Evidence a Concrete Candidate Must Supply |
+| --- | --- |
+| Full motion footprint | Account for the circular body's reaction/braking sweep under each claimed straight/turning maneuver, including its side extent, not just forward sector minima or center rays. |
+| Spatial support | Explain which occupied and free regions follow from actual observations; eight supported bearings or floor-only returns do not certify the space between/behind rays. State any minimum object size/shape/height assumptions explicitly for review. |
+| Vertical compatibility | Show how the chosen mounting/view and return model observe permitted low/tall obstacles and separate floor support from obstacle/free-space evidence. Do not silently exempt objects using the 0.03 m diagnostic floor band. |
+| Time and motion | Identify acquisition times, delivery/ego ages, transform uncertainty and retention for every observation used. Scanning or accumulating views must account for body motion and changing/occluded evidence, not assume old views are current. |
+| Return/error qualification | Treat missing, clipped, occluded, unsupported or unqualified returns as unknown. Define sensor status/material/scene and error evidence before using observations as clearance support; sigma is not a hard bound and the Gaussian risk convention stays unaccepted. |
+| Retained information and contract | State what extra observations or retained state make the aliased worlds distinguishable and where they live. Any sensor, history/map, tensor, wire/profile or timing-contract change needs separate approval and versioning review. |
+
+For a proposed candidate, first demonstrate the added information on the mirrored
+aliases without privileged geometry entering the decision input. Then test other
+blind regions and the declared scene/obstacle envelope; fixing these two pairs
+is necessary evidence, not general coverage qualification. A proposed admission
+criterion is that unresolved allowed worlds intersecting the claimed sweep stay
+unknown/rejected, rather than inheriting max-range clearance. This criterion is
+for evidence-policy review, not a runtime change or a newly adopted quantitative
+risk/safety threshold. Always rejecting may preserve uncertainty, but cannot
+alone satisfy M2's useful task-quality requirement.
+
+Next decision: a concrete sensing/retention candidate plus declared domain,
+time/error evidence and qualification method. Only then consider a separate
+implementation or collection authorization. No devices were chosen or purchased,
+no numerical hardware coverage/safety limits frozen, no data accepted and no
+additional run authorized. Two new regressions pass with the full 1,434-test
+gate plus the known transformer xfail. REVIEW.md §77 records the decision.
+
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
 
@@ -3962,7 +4015,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-20, REVIEW.md §72): the active
+Current critical-path checkpoint (2026-10-21, REVIEW.md §77): the active
 three-question rules contract resolves F19, not M2 task quality. The next step is
 F21 sensor/scene correction before any data collection, then a qualified
 closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -3980,6 +4033,11 @@ and a qualified floor-aware rules baseline, not more reference-math tooling.
 The first heuristic wire baseline is now measured (§7, REVIEW.md §75): four
 successes, two collisions, two timeouts and 25 clear/blocked reference mismatches.
 It remains unqualified; further collection or evidence-policy changes need review.
+The registered candidate also remains unqualified (§76). Full-input aliases now
+demonstrate normal cylinders hidden from turning sweeps even with ideal inputs.
+The user selected coverage-first requirements (§7/§77), not another threshold
+change; review a concrete sensing/retention design and scene/evidence envelope
+before approving its implementation or collecting further task diagnostics.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

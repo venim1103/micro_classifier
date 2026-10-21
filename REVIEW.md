@@ -4450,6 +4450,85 @@ suite was not rerun for this design-only checkpoint; the last full gate remains
 Next: obtain the bounded prototype/experimental-representation authorization,
 or revise the candidate; do not start collection or change accepted inputs.
 
+## 79. Approved Synthetic C1 Visibility Prototype (2026-10-21)
+
+After §78's proposal was committed in `6ebb4f1`, the user explicitly selected
+**"Approve synthetic prototype only"**. Scope includes a separate opt-in
+experimental multi-view representation, bounded synthetic fixtures, per-view
+capture/pose declarations, timing/unsupported-evidence checks and legacy parity.
+It excludes production input/runtime integration, a new wire/profile contract,
+minimum-size adoption, episodes/task data, tuning, learning, dependencies and
+hardware. The approval is not a new closed-loop diagnostic batch.
+
+`a3df1f5` implements two fixture APIs in the existing `sim/diagnostics.py`:
+`capture_synthetic_c1_views` and `inspect_synthetic_c1_history`. Explicit literal
+opt-in is required before reading fixture inputs. The new schema carries
+configuration, eight capture ticks/poses, binary32 8x8x8 ranges and masks, with
+synthetic-only/training-disabled/real-input-unqualified/free-space-unqualified
+metadata and no scenario or answer fields. Existing diagnostic functions/classes
+are AST-identical to the previous source; no normal simulator or codec adapter
+was added or changed.
+
+Inspection is bounded to eight consecutive decision snapshots and the declared
+ideal profile. It rejects malformed scope/config/arrays, numeric booleans,
+unsupported injected errors, view timing/pose mismatch, off-cadence/future
+captures, invalid/saturated/masked ranges, descending acquisition order and
+changed held captures. The default three-tick age limit is an artificial
+assumption, not a hardware policy; older retained records never make the latest
+capture fresh. Only latest supported endpoints are registered, with zeroed
+invalid outputs and detached result arrays. A registered fixture is not a clear
+decision, a map or certified registration; unsupported evidence stays unknown.
+
+**Pinned evidence:** both mirrored normal histories retain 317 changed entries;
+the near-floor current-pose fixture gains four entries; the complete 5 mm-radius
+slender-cylinder history remains byte-identical in range/mask arrays while its
+straight-braking reference differs. No minimum obstacle size was adopted to
+remove the counterexample. Independent translation/rotation assertions test the
+returned point coordinates. The normal full-input renderer rejects the new
+representation, and ordinary Config defaults remain unchanged.
+
+**Checks and repair history:**
+
+- The editor test runner was disabled; focused tests ran through pytest instead.
+- Initial capture slice: two passes; history/guard slice: 24 passes.
+- Expanded boundary slice exposed one genuine defect: 45 passes and one failure
+  because a range just below 4 m rounded to 4 m but remained valid. The producer
+  now rechecks the stored float32 value and masks/zeroes ceiling/overflow values;
+  the same slice then passed all 46 cases. No range tolerance was relaxed.
+- Final focused slice: `python -m pytest -q tests/test_sim.py -k synthetic_c1
+  --tb=short`, 61 passes. Changed files were formatted only.
+- The first full code run passed 1,495 plus the known transformer xfail, but
+  Ruff found SIM102 in a nested held-frame condition. Combining that condition
+  repaired the style failure without changing the rejection predicate.
+- After repair: 61 focused passes, `ruff check .`, changed-file format check,
+  full suite 1,495 passes plus the known xfail (30.26 s, 71 existing ONNX/Torch
+  warnings), and `git diff --check` pass. No skips were reported; existing
+  interface/native sanitizer/hard-float Arm controls ran in that full suite.
+- Editor diagnostics are clean for both changed Python files. AST comparison
+  preserves all eight existing top-level diagnostic functions/classes and all
+  173 existing simulator test functions/classes. Runtime, wire, golden and
+  historical data/report paths outside the opt-in addition are unchanged.
+- The handover link check caught an undefined source-reference label; an explicit
+  local definition repaired it before the documentation checkpoint.
+
+Only ordinary ephemeral unit fixtures were used; no episode/log/report, task
+label/cohort/split, teacher/model, download/dependency, ST/licence or board action
+occurred. No raw artifact or process remains to clean up. Synthetic point
+registration and Python tests do not establish linked firmware, memory/stack
+fit, device timing, negative-space qualification or representative quality.
+
+**Remaining decision:** retain the unrestricted positive-radius object domain
+and its unknown regions, or explicitly review a detectable-object envelope
+before further clearance qualification. DESIGN.md §7 proposes a concrete,
+unaccepted controlled-simulation option: cylinder radii 0.05-0.30 m, heights
+0.05-1.0 m, existing 1 m walls, static flat-floor scenes and unchanged motion/
+question meanings. This would still require whole-sweep exclusion evidence;
+the prototype has not proved that domain covered, and missing hits cannot
+attest domain membership. No such restriction or physical claim is adopted.
+Further qualification implementation, integration and collection need approval;
+this completes the bounded synthetic-prototype authorization. ST/board and all
+task-data/learning/risk-policy gates remain.
+
 ## Sources
 
 Hardware and tools:

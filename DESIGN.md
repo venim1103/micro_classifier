@@ -2096,6 +2096,66 @@ No episodes, labels, model run, new dependency or hardware action follows from
 preparing this candidate. Results and the precise next approval belong in
 REVIEW.md rather than being presented as adopted architecture here.
 
+#### C1 Synthetic Visibility Prototype (2026-10-21)
+
+The user separately approved the synthetic prototype and experimental
+representation only. `a3df1f5` adds `capture_synthetic_c1_views` and
+`inspect_synthetic_c1_history` in [sim/diagnostics.py][c1-prototype-source].
+Both require the literal `synthetic_test_only=True`. There is no controller,
+dataset, wire or normal observation adapter, and no episode-running CLI.
+This implements fixture tooling, not adoption of C1 as a sensor or rules baseline.
+
+Captures use schema `micro-classifier/synthetic-c1-views/1`, eight fixed yaw
+offsets and the proposed 22.5-degree pitch. They declare their complete Config,
+eight acquisition ticks/poses and 8x8x8 binary32 ranges with boolean masks.
+Only the declared ideal profile is supported: no range noise/dropout or ego
+error/delay, fixed 45-degree local field and 0.15 m height, nominal 15 Hz capture,
+20 Hz decision clock, two-tick delivery and eight-slot history. Stored ranges
+must remain positive, finite and below the ceiling after binary32 conversion;
+rounding to the ceiling invalidates and zeroes the corresponding sample.
+World geometry and target answers are not included in the bundle.
+
+Inspection accepts at most eight consecutive decision snapshots. It checks the
+experimental identity and scope, exact configuration metadata, nominal capture
+cadence, complete simultaneous view poses/ticks, delivery eligibility, ordered
+acquisitions, unchanged repeated captures, strict range/mask consistency and
+the latest age. `max_age_ticks=3` is an explicit artificial fixture assumption,
+configurable from zero to eight, not an accepted hardware freshness rule.
+Old snapshots do not extend this limit. Only the latest supported endpoints
+are registered into the supplied reference body frame; this is not accumulated
+free space, an occupancy map or a method for filling historical blind regions.
+
+Success is tagged `registered_fixture` under declared exact static assumptions;
+unsupported evidence stays `unknown` with no points. Both outcomes retain
+`training_approved=False`, `real_input_qualified=False` and
+`free_space_qualified=False`. These flags are declarations and guards, not
+attestation that arbitrary caller-supplied poses or metadata are true. No
+`clear`/`blocked` decision, label, calibrated confidence or qualified free-volume
+claim is produced. Physical mounting, noise/errors, asynchronous scans,
+moving scenes and actual clocks remain outside qualification.
+
+Sixty-one bounded tests reproduce the normal mirrors, near-floor gain and
+complete slender-cylinder alias; check registration, malformed/unsupported
+inputs and held/stale/mismatched data; and demonstrate that the normal renderer
+rejects this experimental representation. All 1,495 repository tests pass plus
+the known transformer xfail; REVIEW.md §79 records actual checks and repairs.
+Original diagnostic/simulator function bodies, inputs/defaults and historical
+wire/golden/report meanings remain unchanged.
+
+**Next decision candidate, unaccepted:** a controlled simulation envelope could
+limit floor-supported cylinder radii to 0.05-0.30 m and heights to 0.05-1.0 m,
+with the existing 1.0 m walls and static flat-floor scenes. These values are a
+concrete review option, not physical detection limits or a guarantee that C1
+covers that envelope. The geometric question meanings and motion limits would
+not change. Qualification would still need to prove which entire swept regions
+exclude all allowed obstacle placements, or retain unknown; a sampled layout
+grid alone is not such a proof. Envelope membership must be an independently
+declared scene condition, never inferred from missing hits. Alternatively keep
+all current positive-radius obstacles admissible and require richer sensing
+evidence before any useful general clear-space claim. Neither alternative,
+new qualification implementation nor collection is adopted by this prototype.
+
+[c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
 

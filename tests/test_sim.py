@@ -141,6 +141,361 @@ def test_full_synthetic_history_can_hide_a_normal_cylinder_from_a_turning_sweep(
     assert references == ["false", "true"]
 
 
+@pytest.mark.parametrize("side", [-1, 1])
+def test_synthetic_c1_capture_distinguishes_normal_history_aliases(side):
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    scene = Scenario(
+        start=(2, 2, 0), goal=(5, 2), obstacles=((2.3, 2 + side * 0.47, 0.3),)
+    )
+    empty = Scenario(start=scene.start, goal=scene.goal)
+    differences = 0
+    for capture_tick in (14, 15, 16, 16, 18, 19, 20, 20):
+        position, yaw = integrate(
+            [2, 2], 0, 0.6, side * 1.5, (capture_tick - 23) * 0.05
+        )
+        settings = {
+            "pose_m_rad": [*position, yaw],
+            "capture_tick": capture_tick,
+            "synthetic_test_only": True,
+        }
+        first = capture_synthetic_c1_views(empty, **settings)
+        second = capture_synthetic_c1_views(scene, **settings)
+        assert second["tof_m"].shape == (8, 8, 8)
+        assert second["tof_m"].dtype == np.float32
+        assert second["free_space_qualified"] is False
+        assert second["training_approved"] is False
+        assert "scenario" not in second
+        differences += np.count_nonzero(
+            (first["tof_m"] != second["tof_m"])
+            | (first["tof_valid"] != second["tof_valid"])
+        )
+    assert differences == 317
+
+
+@pytest.fixture
+def c1_history():
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    records = []
+    for tick in (14, 15, 16, 16, 18, 19, 20, 20):
+        position, yaw = integrate([2, 2], 0, 0.6, 0, (tick - 23) * 0.05)
+        records.append(
+            capture_synthetic_c1_views(
+                Scenario(start=(2, 2, 0)),
+                pose_m_rad=[*position, yaw],
+                capture_tick=tick,
+                synthetic_test_only=True,
+            )
+        )
+    return records
+
+
+def test_synthetic_c1_history_registers_without_qualifying_free_space(c1_history):
+    from sim.diagnostics import inspect_synthetic_c1_history
+
+    result = inspect_synthetic_c1_history(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "registered_fixture"
+    assert result["unique_capture_count"] == 6
+    assert result["latest_age_ticks"] == 3
+    assert result["free_space_qualified"] is False
+    assert result["real_input_qualified"] is False
+    valid = result["point_valid"].copy()
+    assert result["points_body_m"].shape == (8, 8, 8, 3)
+    assert np.all(result["points_body_m"][~valid] == 0)
+    result["point_valid"][:] = False
+    assert np.any(c1_history[-1]["tof_valid"])
+    shifted = inspect_synthetic_c1_history(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[3, 2, 0],
+        synthetic_test_only=True,
+    )
+    assert shifted["points_body_m"][valid, 0] == pytest.approx(
+        result["points_body_m"][valid, 0] - 1
+    )
+    rotated = inspect_synthetic_c1_history(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, math.pi / 2],
+        synthetic_test_only=True,
+    )
+    assert rotated["points_body_m"][valid, 0] == pytest.approx(
+        result["points_body_m"][valid, 1]
+    )
+    assert rotated["points_body_m"][valid, 1] == pytest.approx(
+        -result["points_body_m"][valid, 0]
+    )
+
+
+def test_synthetic_c1_preserves_the_complete_slender_alias(c1_history):
+    from sim.diagnostics import capture_synthetic_c1_views
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),))
+    for record in c1_history:
+        other = capture_synthetic_c1_views(
+            scene,
+            pose_m_rad=record["capture_poses_m_rad"][0],
+            capture_tick=int(record["capture_ticks"][0]),
+            synthetic_test_only=True,
+        )
+        assert np.array_equal(record["tof_m"], other["tof_m"])
+        assert np.array_equal(record["tof_valid"], other["tof_valid"])
+    answers = [
+        evaluate_synthetic(
+            world,
+            speed=0.6,
+            turn_rate=0,
+            tof_age_s=0.15,
+            synthetic_test_only=True,
+        )["answers"]["path_blocked"]
+        for world in (Scenario(start=scene.start), scene)
+    ]
+    assert answers == ["false", "true"]
+
+
+def test_synthetic_c1_downward_views_reveal_the_near_low_fixture():
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    empty = Scenario(start=(2, 2, 0))
+    scene = Scenario(
+        start=empty.start, obstacles=((2.21, 2, 0.02),), obstacle_heights=(0.05,)
+    )
+    settings = {"pose_m_rad": [2, 2, 0], "capture_tick": 0, "synthetic_test_only": True}
+    first = capture_synthetic_c1_views(empty, **settings)
+    second = capture_synthetic_c1_views(scene, **settings)
+    assert np.count_nonzero(first["tof_m"] != second["tof_m"]) == 4
+    for index in range(8):
+        assert np.array_equal(
+            tof_ranges([2, 2], index * math.pi / 4, empty, Config()),
+            tof_ranges([2, 2], index * math.pi / 4, scene, Config()),
+        )
+
+
+def test_synthetic_c1_masks_ranges_rounding_to_the_ceiling(monkeypatch):
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    monkeypatch.setattr(
+        "sim.diagnostics.tof_ranges",
+        lambda *args: np.full((8, 8), np.nextafter(4.0, 0)),
+    )
+    record = capture_synthetic_c1_views(
+        Scenario(),
+        pose_m_rad=[2, 2, 0],
+        capture_tick=0,
+        synthetic_test_only=True,
+    )
+    assert not np.any(record["tof_valid"])
+    assert np.all(record["tof_m"] == 0)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("noise_std", 0.02),
+        ("dropout", 0.02),
+        ("odometry_position_error", 0.02),
+        ("odometry_heading_error", 0.01),
+        ("odometry_latency_ticks", 1),
+        ("tof_mount_height", None),
+        ("field_of_view", math.pi / 3),
+        ("tof_rate_hz", None),
+        ("latency_ticks", 1),
+        ("dt", 0.1),
+        ("history_ticks", 4),
+    ],
+)
+def test_synthetic_c1_rejects_unqualified_profiles(field, value):
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    config = Config(**{"noise_std": 0, "dropout": 0, field: value})
+    with pytest.raises(ValueError, match="profile"):
+        capture_synthetic_c1_views(
+            Scenario(),
+            pose_m_rad=[2, 2, 0],
+            capture_tick=0,
+            config=config,
+            synthetic_test_only=True,
+        )
+
+
+@pytest.mark.parametrize(
+    "pose,tick",
+    [
+        ([2, 2, np.nan], 0),
+        ([2, 2, np.inf], 0),
+        ([2, 2], 0),
+        ([True, False, True], 0),
+        ([2, 2, 10**400], 0),
+        ([True, 2, 0], 0),
+        ([2, 2, 0], True),
+        ([2, 2, 0], -1),
+        ([2, 2, 0], 2**32),
+        ([2, 2, 0], 1),
+    ],
+)
+def test_synthetic_c1_capture_rejects_malformed_pose_or_tick(pose, tick):
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    with pytest.raises(ValueError):
+        capture_synthetic_c1_views(
+            Scenario(),
+            pose_m_rad=pose,
+            capture_tick=tick,
+            synthetic_test_only=True,
+        )
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "schema",
+        "scope",
+        "extra_truth",
+        "config",
+        "view_tick",
+        "view_pose",
+        "range_nan",
+        "range_ceiling",
+        "mask_type",
+        "shape",
+        "held_changed",
+        "empty",
+        "too_many",
+        "old",
+        "future",
+        "off_cadence",
+        "no_support",
+    ],
+)
+def test_synthetic_c1_history_rejects_unsupported_evidence(c1_history, fault):
+    from sim.diagnostics import inspect_synthetic_c1_history
+
+    record = c1_history[-1]
+    if fault == "schema":
+        record["schema"] = "micro-classifier/sim-observation/1"
+    elif fault == "scope":
+        record["free_space_qualified"] = 0
+    elif fault == "extra_truth":
+        record["scenario"] = {}
+    elif fault == "config":
+        record["config"]["noise_std"] = 0.02
+    elif fault == "view_tick":
+        record["capture_ticks"][0] += 1
+    elif fault == "view_pose":
+        record["capture_poses_m_rad"][0, 0] += 0.1
+    elif fault == "range_nan":
+        record["tof_m"][0, 0, 0] = np.nan
+    elif fault == "range_ceiling":
+        record["tof_valid"][0, 0, 0] = True
+        record["tof_m"][0, 0, 0] = 4
+    elif fault == "mask_type":
+        record["tof_valid"] = record["tof_valid"].astype(np.uint8)
+    elif fault == "shape":
+        record["tof_m"] = record["tof_m"][0]
+    elif fault == "held_changed":
+        row, column = np.argwhere(record["tof_valid"][0])[0]
+        record["tof_m"][0, row, column] += np.float32(0.001)
+    elif fault == "empty":
+        c1_history.clear()
+    elif fault == "too_many":
+        c1_history.append(record)
+    elif fault == "old":
+        c1_history = [c1_history[0]]
+    elif fault == "future":
+        c1_history = [record]
+        record["capture_ticks"][:] = 23
+    elif fault == "off_cadence":
+        c1_history = [record]
+        record["capture_ticks"][:] = 21
+    elif fault == "no_support":
+        c1_history = [record]
+        record["tof_valid"][:] = False
+        record["tof_m"][:] = 0
+    result = inspect_synthetic_c1_history(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["points_body_m"] is None
+    assert result["free_space_qualified"] is False
+
+
+@pytest.mark.parametrize("opt_in", [False, None, 1, "true"])
+def test_synthetic_c1_requires_explicit_opt_in(opt_in):
+    from sim.diagnostics import capture_synthetic_c1_views, inspect_synthetic_c1_history
+
+    with pytest.raises(ValueError, match="synthetic_test_only"):
+        capture_synthetic_c1_views(
+            object(), pose_m_rad=None, capture_tick=None, synthetic_test_only=opt_in
+        )
+    with pytest.raises(ValueError, match="synthetic_test_only"):
+        inspect_synthetic_c1_history(
+            object(),
+            reference_tick=None,
+            reference_pose_m_rad=None,
+            synthetic_test_only=opt_in,
+        )
+
+
+@pytest.mark.parametrize("config", [False, 0, {}, "ideal"])
+def test_synthetic_c1_rejects_non_config_arguments(config):
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    with pytest.raises(ValueError, match="Config instance"):
+        capture_synthetic_c1_views(
+            Scenario(),
+            pose_m_rad=[2, 2, 0],
+            capture_tick=0,
+            config=config,
+            synthetic_test_only=True,
+        )
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("reference_tick", True),
+        ("reference_tick", -1),
+        ("reference_tick", 2**32),
+        ("max_age_ticks", True),
+        ("max_age_ticks", -1),
+        ("max_age_ticks", 9),
+        ("reference_pose_m_rad", [2, 2, np.nan]),
+        ("reference_pose_m_rad", [True, 2, 0]),
+    ],
+)
+def test_synthetic_c1_rejects_malformed_reference(c1_history, field, value):
+    from sim.diagnostics import inspect_synthetic_c1_history
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "synthetic_test_only": True,
+        field: value,
+    }
+    with pytest.raises(ValueError):
+        inspect_synthetic_c1_history(c1_history, **settings)
+
+
+def test_synthetic_c1_is_not_a_normal_input(c1_history):
+    from teacher.label_pipeline import prepare_request
+
+    assert Config().tof_mount_pitch == 0
+    assert Config().noise_std == 0.02
+    assert Config().history_ticks == 8
+    with pytest.raises(ValueError):
+        prepare_request(c1_history[-1], config=Config())
+
+
 def test_floor_rules_ignore_floor_without_claiming_calibrated_probabilities():
     from interface.protocol import QuestionId, Status, decode_decision, encode_decision
     from sim.rules import decide

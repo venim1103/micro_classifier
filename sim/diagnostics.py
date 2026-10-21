@@ -6,7 +6,7 @@ import json
 import math
 import platform
 from copy import deepcopy
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 import numpy as np
@@ -22,6 +22,224 @@ from sim.rover import (
 )
 
 SCENES = ("clear", "obstacle", "corridor", "slalom")
+C1_SCHEMA = "micro-classifier/synthetic-c1-views/1"
+
+
+def _c1_config(config):
+    if config is not None and not isinstance(config, Config):
+        raise ValueError("C1 config must be a Config instance")
+    config = replace(
+        config or Config(noise_std=0, dropout=0), tof_mount_pitch=math.pi / 8
+    )
+    if (
+        config.field_of_view != math.pi / 4
+        or config.tof_mount_height != 0.15
+        or config.dt != 0.05
+        or config.latency_ticks != 2
+        or config.tof_rate_hz != 15
+        or config.history_ticks != 8
+        or any(
+            (
+                config.noise_std,
+                config.dropout,
+                config.odometry_position_error,
+                config.odometry_heading_error,
+                config.odometry_latency_ticks,
+            )
+        )
+    ):
+        raise ValueError("C1 requires its declared ideal geometry/timing/error profile")
+    return config
+
+
+def _c1_array(value, shape, kinds="iuf"):
+    array = np.asarray(value)
+    if array.shape != shape or array.dtype.kind not in kinds:
+        raise ValueError("invalid C1 array shape or numeric type")
+    if kinds != "b" and any(
+        isinstance(item, (bool, np.bool_))
+        for item in np.asarray(value, dtype=object).flat
+    ):
+        raise ValueError("C1 numeric evidence must not contain booleans")
+    if not np.all(np.isfinite(array)) or np.any(np.abs(array) > np.finfo(float).max):
+        raise ValueError("C1 arrays must be finite")
+    return array
+
+
+def capture_synthetic_c1_views(
+    scenario, *, pose_m_rad, capture_tick, config=None, synthetic_test_only=False
+):
+    """Create an isolated ideal fixture, never a normal simulator observation."""
+    if synthetic_test_only is not True:
+        raise ValueError("C1 capture requires synthetic_test_only=True")
+    config = _c1_config(config)
+    if type(capture_tick) is not int or not 0 <= capture_tick <= 0xFFFFFFFF:
+        raise ValueError("C1 capture tick must be a u32 integer")
+    if capture_tick and capture_tick * 3 // 4 == (capture_tick - 1) * 3 // 4:
+        raise ValueError("C1 capture tick does not follow nominal acquisition cadence")
+    pose = _c1_array(pose_m_rad, (3,)).astype(float)
+    scenario.validate(config)
+    ranges = np.stack(
+        [
+            tof_ranges(pose[:2], pose[2] + index * math.pi / 4, scenario, config)
+            for index in range(8)
+        ]
+    )
+    valid = np.isfinite(ranges) & (ranges > 0) & (ranges < config.max_range)
+    with np.errstate(over="ignore", invalid="ignore"):
+        stored = np.where(valid, ranges, 0).astype(np.float32)
+    valid &= np.isfinite(stored) & (stored > 0) & (stored < config.max_range)
+    stored[~valid] = 0
+    return {
+        "schema": C1_SCHEMA,
+        "allowed_use": "synthetic_visibility_fixtures_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "config": asdict(config),
+        "capture_ticks": np.full(8, capture_tick, dtype=np.uint32),
+        "capture_poses_m_rad": np.tile(pose, (8, 1)),
+        "tof_m": stored,
+        "tof_valid": valid,
+    }
+
+
+def inspect_synthetic_c1_history(
+    history,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    max_age_ticks=3,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Inspect bounded declared-exact fixtures; endpoints never qualify free volume."""
+    if synthetic_test_only is not True:
+        raise ValueError("C1 inspection requires synthetic_test_only=True")
+    config = _c1_config(config)
+    if (
+        type(reference_tick) is not int
+        or not 0 <= reference_tick <= 0xFFFFFFFF
+        or type(max_age_ticks) is not int
+        or not 0 <= max_age_ticks <= 8
+    ):
+        raise ValueError("C1 reference/age ticks require bounded integers")
+    reference = _c1_array(reference_pose_m_rad, (3,)).astype(float)
+    result = {
+        "schema": "micro-classifier/synthetic-c1-inspection/1",
+        "allowed_use": "synthetic_visibility_fixtures_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "status": "unknown",
+        "reason": "unsupported_history",
+        "points_body_m": None,
+        "point_valid": None,
+        "unique_capture_count": 0,
+        "assumed_max_age_ticks": max_age_ticks,
+    }
+    if not isinstance(history, (list, tuple)) or not 1 <= len(history) <= 8:
+        return result
+    previous = None
+    unique = set()
+    try:
+        for index, record in enumerate(history):
+            if not isinstance(record, dict) or set(record) != {
+                "schema",
+                "allowed_use",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "config",
+                "capture_ticks",
+                "capture_poses_m_rad",
+                "tof_m",
+                "tof_valid",
+            }:
+                return result
+            if (
+                record["schema"] != C1_SCHEMA
+                or record["allowed_use"] != result["allowed_use"]
+                or any(
+                    record[key] is not False
+                    for key in (
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                    )
+                )
+                or json.dumps(record["config"], sort_keys=True, allow_nan=False)
+                != json.dumps(asdict(config), sort_keys=True, allow_nan=False)
+            ):
+                return result
+            ticks = _c1_array(record["capture_ticks"], (8,), "iu")
+            poses = _c1_array(record["capture_poses_m_rad"], (8, 3))
+            ranges = _c1_array(record["tof_m"], (8, 8, 8), "f")
+            valid = _c1_array(record["tof_valid"], (8, 8, 8), "b")
+            tick = int(ticks[0])
+            snapshot_tick = reference_tick - len(history) + 1 + index
+            if (
+                not np.all(ticks == tick)
+                or tick > 0xFFFFFFFF
+                or tick > snapshot_tick - config.latency_ticks
+                or (tick != 0 and tick * 3 // 4 == (tick - 1) * 3 // 4)
+                or not np.all(poses == poses[0])
+                or ranges.dtype != np.float32
+                or np.any(valid & ((ranges <= 0) | (ranges >= config.max_range)))
+                or np.any(~valid & (ranges != 0))
+            ):
+                return result
+            if previous is not None and (
+                tick < previous[0]
+                or (
+                    tick == previous[0]
+                    and not all(
+                        np.array_equal(first, second)
+                        for first, second in zip(
+                            (poses, ranges, valid), previous[1:], strict=True
+                        )
+                    )
+                )
+            ):
+                return result
+            previous = tick, poses, ranges, valid
+            unique.add(tick)
+    except (TypeError, ValueError, OverflowError):
+        return result
+    result["unique_capture_count"] = len(unique)
+    age = reference_tick - tick
+    result["latest_age_ticks"] = age
+    if age > max_age_ticks:
+        result["reason"] = "stale_capture"
+        return result
+    directions = np.stack(
+        [tof_directions(index * math.pi / 4, config) for index in range(8)]
+    )
+    points = ranges[..., None].astype(float) * directions
+    points[..., 2] += config.tof_mount_height
+    acquired_yaw = math.atan2(math.sin(poses[0, 2]), math.cos(poses[0, 2]))
+    reference_yaw = math.atan2(math.sin(reference[2]), math.cos(reference[2]))
+    cosine, sine = (
+        math.cos(acquired_yaw - reference_yaw),
+        math.sin(acquired_yaw - reference_yaw),
+    )
+    reference_cosine, reference_sine = math.cos(reference_yaw), math.sin(reference_yaw)
+    with np.errstate(over="ignore", invalid="ignore"):
+        points[..., :2] = points[..., :2] @ np.array(
+            [[cosine, sine], [-sine, cosine]]
+        ) + (poses[0, :2] - reference[:2]) @ np.array(
+            [[reference_cosine, -reference_sine], [reference_sine, reference_cosine]]
+        )
+    if not np.all(np.isfinite(points)) or not np.any(valid):
+        result["reason"] = "unsupported_points"
+        return result
+    result.update(
+        status="registered_fixture",
+        reason="declared_exact_static_assumptions_only",
+        points_body_m=np.where(valid[..., None], points, 0),
+        point_valid=valid.copy(),
+    )
+    return result
 
 
 class DiagnosticRoverEnv(RoverEnv):

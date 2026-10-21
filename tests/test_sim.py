@@ -549,6 +549,39 @@ def test_synthetic_c1_enclosure_excludes_empty_straight_fixture(c1_history):
     assert result["numerically_certified"] is False
 
 
+@pytest.mark.parametrize("yaw", [0, 0.37, math.pi / 2, math.pi - 0.01, -math.pi + 0.01])
+@pytest.mark.parametrize("turn", [-1.5, 0, 1.5])
+def test_synthetic_c1_enclosure_preserves_clear_turning_frames(c1_history, yaw, turn):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+
+    scene = Scenario(start=(2, 2, yaw))
+    records = []
+    for original in c1_history:
+        tick = int(original["capture_ticks"][0])
+        position, acquired_yaw = integrate([2, 2], yaw, 0.6, turn, (tick - 23) * 0.05)
+        records.append(
+            capture_synthetic_c1_views(
+                scene,
+                pose_m_rad=[*position, acquired_yaw],
+                capture_tick=tick,
+                synthetic_test_only=True,
+            )
+        )
+    result = probe_synthetic_c1_enclosure(
+        records,
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.6,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "excluded_under_fixture_assumptions", result
+    assert result["fixture_enclosure_excluded"] is True
+    assert result["sweep_enclosure_radius_m"] == pytest.approx(0.48)
+    assert result["cells_checked"] <= 32768
+
+
 @pytest.mark.parametrize("radius", [0.05, 0.30])
 @pytest.mark.parametrize("height", [0.05, 1.0])
 @pytest.mark.parametrize("turn", [-1.5, 0, 1.5])
@@ -614,6 +647,78 @@ def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
         step = end - start
         fraction = np.clip(np.dot(center - start, step) / np.dot(step, step), 0, 1)
         assert np.linalg.norm(center - start - fraction * step) > radius
+
+
+@pytest.mark.parametrize("radius", [0.05, 0.30])
+@pytest.mark.parametrize("height", [0.05, 1.0])
+def test_synthetic_c1_enclosure_keeps_masked_world_aliases_unknown(
+    c1_history, radius, height
+):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(
+        start=(2, 2, 0),
+        goal=(5, 2),
+        obstacles=((2.2 + radius, 2, radius),),
+        obstacle_heights=(height,),
+    )
+    masked_histories = [[], []]
+    removed = 0
+    for empty in c1_history:
+        blocked = capture_synthetic_c1_views(
+            scene,
+            pose_m_rad=empty["capture_poses_m_rad"][0],
+            capture_tick=int(empty["capture_ticks"][0]),
+            synthetic_test_only=True,
+        )
+        shared = (
+            empty["tof_valid"]
+            & blocked["tof_valid"]
+            & (empty["tof_m"] == blocked["tof_m"])
+        )
+        removed += int((empty["tof_valid"] & ~shared).sum())
+        assert shared.any()
+        for history, record in zip(masked_histories, (empty, blocked), strict=True):
+            history.append(
+                dict(
+                    record,
+                    tof_m=np.where(shared, record["tof_m"], np.float32(0)),
+                    tof_valid=shared.copy(),
+                )
+            )
+        assert np.array_equal(
+            masked_histories[0][-1]["tof_m"], masked_histories[1][-1]["tof_m"]
+        )
+        assert np.array_equal(
+            masked_histories[0][-1]["tof_valid"],
+            masked_histories[1][-1]["tof_valid"],
+        )
+    assert removed > 0
+    for turn in (-1.5, 0, 1.5):
+        reference = evaluate_synthetic(
+            scene,
+            speed=0.6,
+            turn_rate=turn,
+            tof_age_s=0.15,
+            synthetic_test_only=True,
+        )
+        assert reference["answers"]["path_blocked"] == "true"
+    results = [
+        probe_synthetic_c1_enclosure(
+            history,
+            reference_tick=23,
+            reference_pose_m_rad=[2, 2, 0],
+            speed=0.6,
+            current_body_clear=True,
+            controlled_envelope=True,
+            synthetic_test_only=True,
+        )
+        for history in masked_histories
+    ]
+    assert results[0] == results[1]
+    assert results[0]["status"] == "unknown"
+    assert results[0]["fixture_enclosure_excluded"] is False
 
 
 @pytest.mark.parametrize(

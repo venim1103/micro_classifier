@@ -4360,6 +4360,96 @@ modules and all historical reports/goldens are unchanged. No new study run,
 labels/dataset/splits, model inference/training, dependencies/downloads,
 ST/licence, hardware action or agent push occurred.
 
+## 78. Concrete Multi-View Candidate and Its Remaining Blind Spot (2026-10-21)
+
+The user requested continued autonomous work after the workflow update in
+`9d97a3e`. The first unblocked prerequisite was §77's design-only coverage
+candidate, not adoption of sensors, another heuristic or new collection.
+DESIGN.md §7 now proposes **C1**: eight simultaneous fictional 8x8 views at
+45-degree yaw increments, each using the existing local field and actual 3-D
+rotation with 22.5-degree downward pitch at height 0.15 m. The first model has
+coincident optical origins, exact poses, zero noise/dropout, nominal 15 Hz
+tick-quantized capture and two-tick delivery. These are candidate fixture
+parameters, not measured timing, accepted hardware or a buildable eight-device
+mount. No runtime/config/observation/profile/codec change was implemented.
+
+The proposal compares simultaneous views with fewer forward/side views,
+sequential scanning, wider imaging and longer retention. It retains the
+existing eight decision snapshots, proposes per-view capture/pose identity
+and explicitly keeps unsupported/missing/occluded space unknown. Downward
+pitch is evaluated as a visibility candidate, not accepted floor classification
+or a physical error/safety requirement. Device footprints, mounting offsets,
+interference, transport/synchronization and return/error qualification remain
+unmeasured. A future experimental representation needs separate authorization
+and identity; old single-view artifacts must keep their meaning.
+
+**Bounded, read-only arithmetic and geometry:** Python 3.12.3 at
+`/opt/venv/bin/python`, with `PYTHONDONTWRITEBYTECODE=1`, used existing
+`Config`, `Scenario`, `integrate`, `tof_ranges` and `evaluate_synthetic`.
+No `RoverEnv.step`, controller, renderer/schema adapter, model, network or file
+output was invoked. The calculation reconstructs the existing analytic local
+history, evaluates eight yaw-offset copies of the existing point grid, masks
+nonfinite/range-at-or-above-ceiling values and stores supported ranges as
+binary32 before comparing with the obstacle-absent world:
+
+- Both radius-0.3 m/height-0.5 m mirrors from §77: the original single-view
+  histories remain identical; C1 differs in 317 of 4,096 view/history entries
+  for each mirror. Counts include held-frame repetitions, not independent hits.
+- A radius-0.02 m/height-0.05 m cylinder centered at (2.21,2), viewed at
+  (2,2,0): eight level views remain identical to the empty world; C1 changes
+  four of 512 entries. This is current-pose visibility only, not a trajectory.
+- A radius-0.005 m/height-0.5 m cylinder at (2.4,2), using the same local
+  history timing but zero turn: all C1 histories remain identical to the empty
+  world, yet the straight-braking reference changes from `false` to `true`.
+  This remains a counterexample, not a numerical failure to tune away.
+- Eight delivered history slots use capture ticks
+  `(14,15,16,16,18,19,20,20)`, only six distinct acquisitions. No full
+  reset-to-current rollout reachability was validated for either history type.
+
+At speed 0.6 m/s, age 0.15 s and dt 0.05 s, `_sweep` gives 0.20 s reaction,
+0.60 s braking and 0.30 m path length. Adding radius 0.18 m encloses the body
+sweep within 0.48 m of its initial center, not the centers/extents of all
+potential colliding obstacles or sensing uncertainty. The resulting 0.80 s
+horizon is not a required history duration or adopted freshness rule.
+The existing artificial 2-degree heading-error example alone has a 0.139619 m
+rotation lever at 4 m (`2*r*sin(angle/2)`), before range, translation, mounting
+or timing errors. It is not an accepted physical bound or Gaussian conversion.
+
+**Calculated resource floor, not measured fit:** eight snapshots of 512 float32
+ranges, byte masks and per-view u32 capture ticks occupy 20,736 bytes before
+ego/pose/error/calibration/container/workspace/copy overhead. A bundle's
+range/mask payload is 2,560 bytes, or 38,400 bytes/s at nominal 15 Hz, before
+status, framing or bus overhead. No bus benchmark, target memory/stack check,
+latency measurement, NPU graph or physical device feasibility follows.
+
+**Outcome and recommendation:** the normal aliases and near-floor fixture
+gain information, but the slender-obstacle alias falsifies any claim that C1
+alone resolves current unrestricted clearance. Do not adopt a minimum obstacle
+size, promote C1, or narrow the existing geometric meanings implicitly.
+Recommend a separately approved opt-in **synthetic visibility prototype** with
+an explicitly experimental multi-view representation, exact fixtures first,
+per-view timing/registration rejection checks and preserved default/legacy
+paths. Preserve all positive-radius objects as admissible; unresolved ones
+remain unknown. A minimum-size/qualified-volume policy and physical sensor
+selection remain separate review decisions, not prerequisites to writing this
+proposal and not authorized by it.
+
+Acceptance for that proposed prototype: reproduce both gained-view cases and
+the complete slender alias; expose only observations to evidence calculations,
+not private world geometry; treat held captures, missing views, mismatched
+clocks/poses and unsupported errors explicitly; keep existing input/wire/golden
+bytes and defaults unchanged; and claim neither negative-space qualification
+nor closed-loop/task quality. Scope excludes new episodes/logs, labels/data/
+splits, threshold tuning, inference/training, dependencies/downloads and
+hardware/ST/licence actions. Temporary in-memory arrays were released with
+the calculation process; no new data or report file needs cleanup.
+
+Documentation content/reference/local-target/whitespace checks pass. The code
+suite was not rerun for this design-only checkpoint; the last full gate remains
+1,434 passes plus the known transformer xfail, not new C1 runtime evidence.
+Next: obtain the bounded prototype/experimental-representation authorization,
+or revise the candidate; do not start collection or change accepted inputs.
+
 ## Sources
 
 Hardware and tools:

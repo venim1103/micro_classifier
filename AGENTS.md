@@ -118,7 +118,7 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest decisions and results: REVIEW.md §§72-77 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-78 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -176,8 +176,12 @@ from them. Historical details below are reference material, not new approvals.
 - User chose coverage-first design work, not a third heuristic or narrower
   targets. DESIGN.md §7 / REVIEW.md §77 define coverage requirements; no new
   FoV, sensor, scene-size limits, history/map format or input change is adopted.
-  Next: prepare a concrete coverage candidate and its domain/timing/error evidence
-  for review within the design-only scope, before implementation/collection.
+  C1 draft is now prepared (REVIEW.md §78): eight simultaneous virtual views
+  with 22.5-degree downward pitch distinguish the normal aliases, but still
+  miss a 5 mm-radius cylinder on the straight braking path. Not an adopted
+  sensor, schema, minimum object size or qualified clearance method.
+  Next: approval of a bounded opt-in synthetic visibility prototype and its
+  experimental representation, or candidate revision. No new collection;
   ST tools and all task-data gates remain.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
@@ -1126,11 +1130,12 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current authorized preparation: develop the concrete coverage/retention proposal
-from [DESIGN.md][design] §7 and [REVIEW.md][review] §77. The implementation and
-collection gate in Task 6 does not block this design-only prerequisite. Present
-the candidate and its unresolved choices for approval; do not adopt a sensor,
-operating restriction, input change or evidence policy by preparing the proposal.
+Current preparation complete: [DESIGN.md][design] §7 and [REVIEW.md][review] §78
+contain the concrete C1 coverage/retention proposal and bounded read-only checks,
+including its unresolved slender-obstacle alias. A synthetic visibility prototype
+with an experimental representation is proposed, not yet approved. Do not adopt
+a sensor, operating restriction, input change or evidence policy from the draft;
+new collection and Task 6 qualification remain blocked.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1184,6 +1189,9 @@ operating restriction, input change or evidence policy by preparing the proposal
   Follow-up (REVIEW.md §77): ideal full-input aliases now cover normal-sized
   cylinders and turning sweeps. User selected coverage-first design; requirements
   are recorded, but no sensing/input redesign or collection is authorized yet.
+  Follow-up (REVIEW.md §78): concrete C1 ring/retention candidate and read-only
+  geometry/resource checks are documented. It separates normal aliases but keeps
+  a slender-cylinder alias; prototype/representation approval remains pending.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

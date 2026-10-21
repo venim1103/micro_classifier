@@ -2006,6 +2006,96 @@ no numerical hardware coverage/safety limits frozen, no data accepted and no
 additional run authorized. Two new regressions pass with the full 1,434-test
 gate plus the known transformer xfail. REVIEW.md §77 records the decision.
 
+#### C1: Simultaneous Multi-View Coverage Candidate (Draft, 2026-10-21)
+
+**Proposal, not adoption or implementation.** To make §77's coverage-first
+direction concrete, first evaluate an artificial eight-view ring with bounded
+pose/time-tagged retention. Do not select or purchase eight physical devices.
+The purpose is to expose what information is still missing before selecting
+hardware or proposing qualified rules. Existing simulator defaults, observation
+schemas, UART bytes, geometric targets and both diagnostic heuristics stay intact.
+
+| Candidate Component | Proposed Artificial Configuration |
+| --- | --- |
+| View geometry | Eight copies of the existing 8x8 point-ray grid, centered at body yaw offsets 0, 45, 90, 135, 180, 225, 270 and 315 degrees. Each uses the existing 45-degree local angular field, centered horizontally at height 0.15 m, with 22.5-degree downward pitch. Coincident optical origins are a simplifying fixture, not a buildable mounting claim. |
+| Coordinate convention | Apply the actual pitch/yaw rotation in `tof_directions`, not independent additions to azimuth and elevation. The nominal ring is not a proof of continuous angular support or of device zone footprints. |
+| Timing | All eight views share an acquisition pose/tick in the first ideal calculation, nominal 15 Hz tick-quantized capture and two-tick delivery at 20 Hz decisions. This assumes synchronization; it is not measured bus/exposure timing. A sequential physical scan is a separate candidate, not implicitly equivalent. |
+| Retention | At most eight decision snapshots, each retaining all eight views, masks, acquisition identity and associated pose/time evidence. Repeated held acquisitions do not create new viewpoints or independent samples. A longer history or persistent occupancy map is not part of this first proposal. |
+| Evidence use | Keep ray endpoints, missing returns and any explicitly justified along-ray information separate. Unsupported volume stays unknown; do not give floor-only, masked, saturated, occluded or old regions max-range clearance. A hit is not automatically a blocked witness for the complete maneuver. |
+| Initial domain | Static, floor-supported artificial cylinders and finite walls over the existing flat floor; first use exact poses and zero range noise/dropout. Check the existing 0.05/0.5/1 m height fixtures and normal-cylinder aliases. These are test conditions, not accepted minimum obstacle dimensions or a physical operating envelope. |
+| Information boundary | A separate experimental module-side multi-view representation would be required; the present single 8x8 observation cannot carry the proposal. No tensor, renderer, cache identity, state/decision codec or profile version is changed by this draft. |
+
+The downward tilt is a candidate for near-floor visibility, not a declared cure
+for low obstacles. Finite vertical and horizontal rays can still miss slender
+objects; nearer surfaces can occlude farther ones. Any usable negative/clear
+claim must address those allowed objects and the swept body, not just distinguish
+the two existing counterexamples. Until a scene/return/error envelope supports
+such a claim, the proposed result for unsupported regions is unknown, not clear.
+This remains an evidence-policy proposal, not a newly deployed rejection rule.
+
+At the current maximum speed, age 0.15 s and decision period 0.05 s, the
+reference's reaction time is 0.20 s, braking time 0.60 s and centerline path
+length 0.30 m. Adding the 0.18 m body radius gives a conservative 0.48 m radial
+enclosure of the swept body about its initial center. That is a useful geometric
+check region, not a sensor range requirement: an obstacle outside it can extend
+into it, and sensing/registration uncertainty is not included. The 0.80 s
+reaction/braking horizon is not the input-history duration or a stale-data limit.
+Do not extrapolate these figures to delayed ego estimates or physical braking.
+
+For a transparent storage estimate, eight snapshots of 512 binary32 ranges use
+16,384 bytes, plus 4,096 bytes for one-byte-per-ray masks and 256 bytes for one
+u32 acquisition tick per view/snapshot: 20,736 bytes before ego/pose/error data,
+mounting calibration, container/alignment overhead, workspace and copies.
+This is eight times the range/mask payload of the current eight-slot single-view
+arrays, not measured embedded RAM fit. A synchronized bundle's range/mask payload
+is 2,560 bytes; at nominal 15 Hz it is 38,400 bytes/s before framing/status or
+bus overhead. This is a representation calculation, not I2C/UART bandwidth,
+device throughput or NPU feasibility evidence.
+
+Alternatives remain visible rather than silently adopted: three forward/side
+views are cheaper but leave a rear-side information boundary for turning sweeps;
+rotating one view reduces simultaneous hardware but adds scan age, ego-motion
+and moving-scene assumptions. A wider single imager may avoid inter-view timing
+but needs its own near-field, angular-resolution, material and error evidence.
+Longer history alone does not add views when the rover never observes a region.
+The proposed default is the artificial simultaneous ring as a diagnostic
+information study, not a hardware recommendation or a narrower target.
+
+Read-only calculations using the existing ray/intersection functions now give
+the following bounded results. Differences count binary32 range/mask entries,
+not independent detections, calibrated confidence or task accuracy:
+
+| Artificial Comparison | Original / Level Layout | C1 Tilted Ring |
+| --- | --- | --- |
+| Each mirrored normal-cylinder history from §77 | No differences in the original single view | 317 changed entries among 4,096 view/history entries, for each mirror |
+| Radius 0.02 m, height 0.05 m cylinder at (2.21,2), current pose (2,2,0) | No differences with eight level views | Four changed entries among 512 current-view entries |
+| Radius 0.005 m, height 0.5 m cylinder at (2.4,2), straight-moving constructed history | Not needed as a control for this C1 limit | No differences in all eight views/history slots, while the straight-braking reference changes from clear to blocked |
+
+The delivered capture ticks in the eight history slots are
+14, 15, 16, 16, 18, 19, 20, 20: six distinct acquisitions, not eight independent
+views in time. The small-cylinder history uses the same tick/capture convention
+as §77 but zero turn; no reset-to-current rollout was validated. The near-floor
+comparison is a current-pose fixture only, not a delivered-history or closed-loop
+result. All calculations use noiseless ideal geometry; no new source API, study
+episode, artifact or task label was produced.
+
+**Decision consequence:** C1 separates the original normal-cylinder aliases
+but is insufficient for an unrestricted clearance claim under the current
+positive-radius cylinder model. Do not promote it to a clear/blocked heuristic
+or quietly exclude the 5 mm fixture. A minimum obstacle envelope or a qualified
+volume-observation model would require an explicit product/evidence decision;
+until then unresolved cases must remain unknown in any proposed evaluator.
+The recommended next scope is a separate, opt-in synthetic visibility prototype
+retaining both successes and misses, not deployment or a new closed-loop batch.
+Approval must explicitly cover its experimental multi-view representation;
+the present single-view observation and profile do not become multi-view by
+reusing their identifiers. Any later approved prototype must enforce
+per-view timing and error provenance, reject unsupported evidence, preserve
+legacy defaults/bytes and disclose input/profile changes before integration.
+No episodes, labels, model run, new dependency or hardware action follows from
+preparing this candidate. Results and the precise next approval belong in
+REVIEW.md rather than being presented as adopted architecture here.
+
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
 

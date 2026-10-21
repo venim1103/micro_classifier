@@ -60,6 +60,87 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
     )
 
 
+@pytest.mark.parametrize("side", [-1, 1])
+def test_full_synthetic_history_can_hide_a_normal_cylinder_from_a_turning_sweep(side):
+    from sim.navigation import evaluate_synthetic
+    from teacher.label_pipeline import prepare_request
+
+    config = Config(noise_std=0, dropout=0)
+    speed, turn = 0.6, side * 1.5
+    current_tick = 23
+    scenes = [
+        Scenario(start=(2, 2, 0), goal=(5, 2)),
+        Scenario(
+            start=(2, 2, 0), goal=(5, 2), obstacles=((2.3, 2 + side * 0.47, 0.3),)
+        ),
+    ]
+    captures = (0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 22, 23)
+    rendered, references = [], []
+    for scene in scenes:
+        scene.validate(config)
+        ego_history, tof_history, valid_history = [], [], []
+        for tick in range(current_tick - config.history_ticks + 1, current_tick + 1):
+            position, yaw = integrate(
+                [2, 2], 0, speed, turn, (tick - current_tick) * config.dt
+            )
+            assert not swept_collision(
+                position, position, config.radius, scene.obstacles, scene.bounds
+            )
+            delta = np.asarray(scene.goal) - position
+            cosine, sine = math.cos(yaw), math.sin(yaw)
+            ego_history.append(
+                [
+                    speed,
+                    turn,
+                    cosine * delta[0] + sine * delta[1],
+                    -sine * delta[0] + cosine * delta[1],
+                ]
+            )
+            sample_tick = max(
+                capture
+                for capture in captures
+                if capture <= tick - config.latency_ticks
+            )
+            capture_position, capture_yaw = integrate(
+                [2, 2], 0, speed, turn, (sample_tick - current_tick) * config.dt
+            )
+            ranges = tof_ranges(capture_position, capture_yaw, scene, config)
+            valid = np.isfinite(ranges) & (ranges < config.max_range)
+            tof_history.append(np.where(valid, ranges, 0).astype(np.float32))
+            valid_history.append(valid)
+        ego_history = np.asarray(ego_history, dtype=np.float32)
+        tof_history = np.asarray(tof_history)
+        valid_history = np.asarray(valid_history)
+        observation = {
+            "schema": "micro-classifier/sim-observation/1",
+            "tick": current_tick,
+            "time_s": current_tick * config.dt,
+            "ego": ego_history[-1],
+            "goal_body_m": ego_history[-1, 2:],
+            "tof_m": tof_history[-1],
+            "tof_valid": valid_history[-1],
+            "tof_age_s": (current_tick - sample_tick) * config.dt,
+            "tof_sample_tick": sample_tick,
+            "history_ego": ego_history,
+            "history_tof_m": tof_history,
+            "history_tof_valid": valid_history,
+            "history_valid": np.ones(config.history_ticks, dtype=bool),
+        }
+        rendered.append(prepare_request(observation, config=config)["state"])
+        references.append(
+            evaluate_synthetic(
+                scene,
+                speed=speed,
+                turn_rate=turn,
+                tof_age_s=observation["tof_age_s"],
+                config=config,
+                synthetic_test_only=True,
+            )["answers"]["path_blocked"]
+        )
+    assert rendered[0] == rendered[1]
+    assert references == ["false", "true"]
+
+
 def test_floor_rules_ignore_floor_without_claiming_calibrated_probabilities():
     from interface.protocol import QuestionId, Status, decode_decision, encode_decision
     from sim.rules import decide

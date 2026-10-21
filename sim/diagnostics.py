@@ -295,6 +295,7 @@ def probe_synthetic_c1_enclosure(
     reference_tick,
     reference_pose_m_rad,
     speed,
+    turn_rate=None,
     current_body_clear=False,
     controlled_envelope=False,
     max_cells=32768,
@@ -303,13 +304,17 @@ def probe_synthetic_c1_enclosure(
     config=None,
     synthetic_test_only=False,
 ):
-    """Exclude an all-turn sweep enclosure under explicit controlled-fixture assumptions."""
+    """Exclude a disk or declared-straight capsule under controlled-fixture assumptions."""
     if synthetic_test_only is not True:
         raise ValueError("C1 enclosure requires synthetic_test_only=True")
     config = _c1_config(config)
     speed = float(_c1_array([speed], (1,))[0])
     if not 0 <= speed <= config.max_speed:
         raise ValueError("C1 speed is outside the simulated motion limits")
+    if turn_rate is not None:
+        turn_rate = float(_c1_array([turn_rate], (1,))[0])
+        if abs(turn_rate) > config.max_turn_rate:
+            raise ValueError("C1 turn rate is outside the simulated motion limits")
     for value, lower, upper in (
         (max_cells, 0, 65536),
         (max_depth, 0, 12),
@@ -341,6 +346,12 @@ def probe_synthetic_c1_enclosure(
             "declared_speed_and_reference_braking_model": True,
         },
     }
+    if turn_rate is not None:
+        result.update(
+            schema="micro-classifier/synthetic-c1-straight-enclosure/1",
+            assumed_turn_rate_rad_s=turn_rate,
+        )
+        result["assumptions"]["straight_reaction_and_braking"] = turn_rate == 0
     inspection = inspect_synthetic_c1_history(
         history,
         reference_tick=reference_tick,
@@ -350,6 +361,9 @@ def probe_synthetic_c1_enclosure(
     )
     if inspection["status"] != "registered_fixture":
         result["reason"] = inspection["reason"]
+        return result
+    if turn_rate is not None and turn_rate != 0:
+        result["reason"] = "unsupported_straight_maneuver"
         return result
     if current_body_clear is not True:
         return result
@@ -391,14 +405,27 @@ def probe_synthetic_c1_enclosure(
         return result
     distance = speed * (age + config.dt) + speed * speed / (2 * config.acceleration)
     body_bound = config.radius + distance + guard
-    result["sweep_enclosure_radius_m"] = body_bound
+    straight = turn_rate is not None
+    if straight:
+        result.update(
+            straight_centerline_length_m=distance,
+            capsule_radius_m=config.radius + guard,
+        )
+    else:
+        result["sweep_enclosure_radius_m"] = body_bound
     cosine, sine = math.cos(reference[2]), math.sin(reference[2])
     world_relative = segments[..., :2].reshape(-1, 2) @ np.array(
         [[cosine, sine], [-sine, cosine]]
     )
+    wall_tip = distance * np.array([cosine, sine]) if straight else np.zeros(2)
+    wall_radius = config.radius + guard if straight else body_bound
     if not (
-        np.all(world_relative.min(axis=0) < -body_bound - guard)
-        and np.all(world_relative.max(axis=0) > body_bound + guard)
+        np.all(
+            world_relative.min(axis=0) < np.minimum(0, wall_tip) - wall_radius - guard
+        )
+        and np.all(
+            world_relative.max(axis=0) > np.maximum(0, wall_tip) + wall_radius + guard
+        )
     ):
         result["reason"] = "axis_aligned_wall_support_incomplete"
         return result
@@ -418,6 +445,13 @@ def probe_synthetic_c1_enclosure(
             center = np.array([center_x, center_y])
             norm, cell_radius = math.hypot(center_x, center_y), math.sqrt(2) * half
             if norm - cell_radius > extent + guard:
+                continue
+            if (
+                straight
+                and math.hypot(center_x - min(max(center_x, 0), distance), center_y)
+                - cell_radius
+                > config.radius + upper + 2 * guard
+            ):
                 continue
             if norm + cell_radius < config.radius + lower - guard:
                 continue
@@ -455,7 +489,9 @@ def probe_synthetic_c1_enclosure(
             )
     result.update(
         status="excluded_under_fixture_assumptions",
-        reason="all_allowed_cylinder_centers_and_axis_aligned_walls_excluded",
+        reason="all_allowed_cylinder_centers_and_axis_aligned_walls_excluded_from_straight_capsule"
+        if straight
+        else "all_allowed_cylinder_centers_and_axis_aligned_walls_excluded",
         fixture_enclosure_excluded=True,
     )
     return result

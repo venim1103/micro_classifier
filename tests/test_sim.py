@@ -639,6 +639,164 @@ def test_synthetic_c1_low_foreground_does_not_hide_tall_background(c1_history):
         assert captures[1]["tof_m"][0, 0, 3] != captures[0]["tof_m"][0, 0, 3]
 
 
+@pytest.mark.parametrize("yaw", [0, 0.37, math.pi / 2, math.pi, -math.pi / 2])
+def test_synthetic_c1_straight_capsule_excludes_with_obstacle_behind(yaw):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    forward = np.array([math.cos(yaw), math.sin(yaw)])
+    acquired = np.array([2, 2]) - 0.09 * forward
+    center = np.array([2, 2]) - 0.6 * forward
+    scene = Scenario(start=(2, 2, yaw), goal=(5, 2), obstacles=((*center, 0.30),))
+    assert not swept_collision(acquired, [2, 2], 0.18, scene.obstacles, scene.bounds)
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*acquired, yaw],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": scene.start,
+        "speed": 0.6,
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+    assert (
+        evaluate_synthetic(
+            scene, speed=0.6, turn_rate=0, tof_age_s=0.15, synthetic_test_only=True
+        )["answers"]["path_blocked"]
+        == "false"
+    )
+    default = probe_synthetic_c1_enclosure([record], **settings)
+    assert default["status"] == "unknown"
+    result = probe_synthetic_c1_enclosure([record], turn_rate=0, **settings)
+    assert result["status"] == "excluded_under_fixture_assumptions", result
+    assert result["schema"] == "micro-classifier/synthetic-c1-straight-enclosure/1"
+    assert result["straight_centerline_length_m"] == pytest.approx(0.30)
+    assert result["capsule_radius_m"] == pytest.approx(0.18)
+    assert "sweep_enclosure_radius_m" not in result
+    assert result["free_space_qualified"] is False
+    assert result["numerically_certified"] is False
+
+
+@pytest.mark.parametrize("turn", [-1.5, -1e-15, 1e-15, 1.5])
+def test_synthetic_c1_straight_capsule_rejects_nonzero_turns(c1_history, turn):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    result = probe_synthetic_c1_enclosure(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        turn_rate=turn,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["reason"] == "unsupported_straight_maneuver"
+    assert result["fixture_enclosure_excluded"] is False
+    assert "straight_centerline_length_m" not in result
+
+
+@pytest.mark.parametrize("turn", [True, "0", np.nan, np.inf, -np.inf, 2, -2, 10**400])
+def test_synthetic_c1_straight_capsule_rejects_malformed_turns(c1_history, turn):
+    from sim.diagnostics import probe_synthetic_c1_enclosure
+
+    with pytest.raises(ValueError):
+        probe_synthetic_c1_enclosure(
+            c1_history,
+            reference_tick=23,
+            reference_pose_m_rad=[2, 2, 0],
+            speed=0.6,
+            turn_rate=turn,
+            synthetic_test_only=True,
+        )
+
+
+@pytest.mark.parametrize(
+    "pose",
+    [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
+)
+def test_synthetic_c1_straight_capsule_cannot_exclude_a_forward_wall(pose):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(start=pose, goal=(3, 3))
+    acquired = np.asarray(pose[:2]) - 0.09 * np.array(
+        [math.cos(pose[2]), math.sin(pose[2])]
+    )
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*acquired, pose[2]],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    assert (
+        evaluate_synthetic(
+            scene, speed=0.6, turn_rate=0, tof_age_s=0.15, synthetic_test_only=True
+        )["answers"]["path_blocked"]
+        == "true"
+    )
+    result = probe_synthetic_c1_enclosure(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=pose,
+        speed=0.6,
+        turn_rate=0,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["reason"] == "axis_aligned_wall_support_incomplete"
+    assert result["fixture_enclosure_excluded"] is False
+
+
+@pytest.mark.parametrize(
+    "offset",
+    [
+        (0.15, 0.229999),
+        (0.15, -0.229999),
+        (0.529999, 0),
+        (0.3 + 0.229999 / math.sqrt(2), 0.229999 / math.sqrt(2)),
+    ],
+)
+def test_synthetic_c1_straight_capsule_keeps_near_contact_unknown(offset):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(
+        start=(2, 2, 0),
+        goal=(5, 2),
+        obstacles=((2 + offset[0], 2 + offset[1], 0.05),),
+        obstacle_heights=(0.05,),
+    )
+    record = capture_synthetic_c1_views(
+        scene, pose_m_rad=[1.91, 2, 0], capture_tick=20, synthetic_test_only=True
+    )
+    assert (
+        evaluate_synthetic(
+            scene, speed=0.6, turn_rate=0, tof_age_s=0.15, synthetic_test_only=True
+        )["answers"]["path_blocked"]
+        == "true"
+    )
+    result = probe_synthetic_c1_enclosure(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        turn_rate=0,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["fixture_enclosure_excluded"] is False
+
+
 def test_synthetic_c1_enclosure_excludes_empty_straight_fixture(c1_history):
     from sim.diagnostics import probe_synthetic_c1_enclosure
 
@@ -695,8 +853,9 @@ def test_synthetic_c1_enclosure_preserves_clear_turning_frames(c1_history, yaw, 
 @pytest.mark.parametrize("radius", [0.05, 0.30])
 @pytest.mark.parametrize("height", [0.05, 1.0])
 @pytest.mark.parametrize("turn", [-1.5, 0, 1.5])
+@pytest.mark.parametrize("enclosure_turn", [None, 0])
 def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
-    radius, height, turn
+    radius, height, turn, enclosure_turn
 ):
     from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
     from sim.navigation import evaluate_synthetic
@@ -721,7 +880,7 @@ def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
     reference = evaluate_synthetic(
         scene,
         speed=0.6,
-        turn_rate=turn,
+        turn_rate=turn if enclosure_turn is None else 0,
         tof_age_s=0.15,
         synthetic_test_only=True,
     )
@@ -731,6 +890,7 @@ def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
         reference_tick=23,
         reference_pose_m_rad=[2, 2, 0],
         speed=0.6,
+        turn_rate=enclosure_turn,
         current_body_clear=True,
         controlled_envelope=True,
         synthetic_test_only=True,
@@ -761,8 +921,9 @@ def test_synthetic_c1_enclosure_never_clears_blocked_envelope_fixtures(
 
 @pytest.mark.parametrize("radius", [0.05, 0.30])
 @pytest.mark.parametrize("height", [0.05, 1.0])
+@pytest.mark.parametrize("enclosure_turn", [None, 0])
 def test_synthetic_c1_enclosure_keeps_masked_world_aliases_unknown(
-    c1_history, radius, height
+    c1_history, radius, height, enclosure_turn
 ):
     from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
     from sim.navigation import evaluate_synthetic
@@ -820,6 +981,7 @@ def test_synthetic_c1_enclosure_keeps_masked_world_aliases_unknown(
             reference_tick=23,
             reference_pose_m_rad=[2, 2, 0],
             speed=0.6,
+            turn_rate=enclosure_turn,
             current_body_clear=True,
             controlled_envelope=True,
             synthetic_test_only=True,
@@ -845,8 +1007,9 @@ def test_synthetic_c1_enclosure_keeps_masked_world_aliases_unknown(
         ("reference_pose_m_rad", [3, 2, 0], "unsupported_capture_to_reference_motion"),
     ],
 )
+@pytest.mark.parametrize("enclosure_turn", [None, 0])
 def test_synthetic_c1_enclosure_preserves_unknown_on_missing_support(
-    c1_history, field, value, reason
+    c1_history, field, value, reason, enclosure_turn
 ):
     from sim.diagnostics import probe_synthetic_c1_enclosure
 
@@ -854,6 +1017,7 @@ def test_synthetic_c1_enclosure_preserves_unknown_on_missing_support(
         "reference_tick": 23,
         "reference_pose_m_rad": [2, 2, 0],
         "speed": 0.6,
+        "turn_rate": enclosure_turn,
         "current_body_clear": True,
         "controlled_envelope": True,
         "synthetic_test_only": True,

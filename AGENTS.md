@@ -1,4 +1,4 @@
-# Agent Instructions
+# Project Agent Workflow
 
 These instructions apply to any AI assistant working in this repository.
 
@@ -8,20 +8,115 @@ micro_classifier builds a Jev-like **robot decision module**: an STM32N6 board
 (N657: Cortex-M55 with the Neural-ART NPU) that attaches to a host robot, first
 a ground rover and later a mini-drone. On every tick it answers a fixed
 catalogue of typed questions (`choice`, `noul`, `score`) with probability
-distributions, using a small INT8 student distilled from open teacher models.
-The host's own controller keeps actuation, inner loops, interlocks, and
-fail-safes.
+distributions. The active rover pilot is rules-first; a small INT8 student and
+distillation from open teachers remain longer-term work, not current capability.
+The host's own controller keeps actuation, inner loops, interlocks, and fail-safes.
 
 Documents of record:
 
-- [DESIGN.md](DESIGN.md): architecture, decisions, budgets, gates, and
-  milestones (§12). Read §1, §2, §4, §6, and §12 before any task.
-- [REVIEW.md](REVIEW.md): §70 is the whole-repository review (F18-F36), §71
-  records independent code repairs, and §10 is the M0 decision template.
+- [DESIGN.md][design]: architecture, accepted decisions, contracts, budgets and
+  milestones (§12).
+- [REVIEW.md][review]: dated decisions, evidence, failed checks and handovers.
+  §70 is the whole-repository review; newer checkpoints supersede historical
+  descriptions where explicitly stated.
+
+## Start With Context
+
+- Read Current State and the newest relevant checkpoint in [REVIEW.md][review]
+  before continuing implementation. Use [DESIGN.md][design] §§1, 2 and 12 for
+  active scope and gates; read §4 for teacher work, §6 for numerical/architecture
+  work and §7 for sensor, coverage and data work before editing those areas.
+- Check the actual worktree, nearby implementation/tests and applicable local
+  instructions. Preserve user changes, including editor settings and untracked
+  files. After an interrupted tool call, verify its outcome before repeating it.
+- Verify selected environments, cached files, pinned revisions, available tools
+  and resource budgets rather than assuming they survived a restart. Reuse
+  existing caches and environments; do not duplicate downloads or checkouts.
+- Distinguish proposed, approved, implemented, tested, integrated and measured
+  work. A historical approval or completed bounded run is not renewed permission.
+
+## Documentation Audience
+
+- [README.md][readme] is the public introduction: capabilities, maturity limits,
+  documentation links and licensing. Do not add routine progress updates, test
+  counts, commit histories or session handovers. This rule does not request a
+  separate cleanup of existing documentation.
+- Keep architecture, accepted requirements, contracts and rationale in
+  [DESIGN.md][design]. Keep changing status, discussions, commands/results,
+  failed-check history, evidence limits and next-session handovers in dated
+  [REVIEW.md][review] updates. Preserve earlier failures and historical evidence.
+- Use [.devcontainer/README.md][container-guide] for reusable environment/setup
+  instructions. Use existing documents rather than creating new Markdown files
+  unless asked. Use reference-style links and check their targets.
+- Keep stable workflow rules here. Replace Current State and task summaries as
+  they change rather than appending more historical checkpoints to this file.
+
+## Work Independently
+
+- The user prefers autonomous implementation within the agreed scope. Make
+  routine implementation, regression-test, formatting and local verification
+  decisions without asking for permission at every step.
+- Work through the first unblocked task, finish its exit condition, verify it,
+  record a useful checkpoint, commit locally and continue with the next approved
+  task. A progress report or completed commit is not itself a reason to stop.
+- If implementation needs a product decision, finish the already-authorized
+  prerequisites first. Within an approved design-only scope, prepare a concrete
+  candidate, tradeoffs, assumptions, proposed default and acceptance checks for
+  review. Do not stop at a generic "design review needed" when that proposal is
+  still authorized work. Preparing a proposal does not authorize adopting it,
+  changing the runtime or collecting data.
+- Keep edits small and local. Form a concrete, falsifiable hypothesis from the
+  owning code and a nearby test; make the smallest useful edit and immediately
+  run a focused check before expanding scope. Reuse existing tests/helpers and
+  avoid unrelated cleanup, peripheral tooling or repeated audits merely to fill
+  time while the critical path is blocked.
+- Mark a blocked task with the precise missing decision/tool/input, then continue
+  with other genuinely unblocked work. When only approval-blocked work remains,
+  ask a small, batched question with a recommendation instead of inventing scope.
+- Give concise progress updates: what changed, what was verified and what
+  remains. Do not spawn subagents unless the user explicitly requests delegation.
+- Respect requests to pause, stop or finish for the day. A terminal notification,
+  status question or documentation-only request does not authorize resuming
+  paused implementation or starting a different pilot task.
+
+## Verification and Commits
+
+- Prefer bounded synthetic fixtures for routine arithmetic, codec and integration
+  checks. Default tests must need neither downloads nor a GPU and must not
+  implicitly start model inference, task-data collection or training.
+- After a substantive edit, run the cheapest behavior-scoped check first. Before
+  each source checkpoint commit, run focused checks for the changed behavior and
+  the default gate from the repository root:
+
+```sh
+python -m pytest -q && ruff check . && git diff --check
+```
+
+- Run `ruff format --check <changed Python files>` as well. Leave unrelated
+  formatting alone, including `.devcontainer/smoke.py`.
+- For C/native/runtime changes, ensure the applicable Python/C parity, host,
+  ASan/UBSan and Cortex-M55 hard-float compilation controls actually ran; use
+  the existing interface tests and documented opt-in gates. Report skips and
+  missing prerequisites accurately. Host tests and Arm objects are not linked
+  firmware, board execution, stack/memory-fit or task-quality evidence.
+- Do not relax tolerances, assertions, deadlines, token/tensor bounds or safety
+  checks to obtain green results. Diagnose a failed check before rerunning it;
+  a substantive repair permits a new focused check and gate. Preserve the known
+  transformer QDQ xfail rather than adjusting its bound.
+- Do not rerun an unchanged successful gate merely for reassurance. For
+  documentation/instruction-only changes, validate scoped content, references,
+  local targets and whitespace; state that the code suite was not rerun.
+- Scoped local checkpoint commits are authorized. Commit meaningful tested
+  increments periodically, not every probe and not only at the end of a large
+  task. Review the diff and stage only files belonging to that checkpoint.
+- Use Conventional Commit subjects (`type(scope): imperative summary`, with scope
+  optional) and a real bullet body. Do not push, create branches or rewrite
+  history unless explicitly requested. Never revert another person's changes.
 
 ## Current State (2026-10-21)
 
-Keep this section and the Task List current; a new session resumes from them.
+Keep this section and the Task List concise and current; a new session resumes
+from them. Historical details below are reference material, not new approvals.
 
 - Latest decisions and results: REVIEW.md §§72-77 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
@@ -81,8 +176,9 @@ Keep this section and the Task List current; a new session resumes from them.
 - User chose coverage-first design work, not a third heuristic or narrower
   targets. DESIGN.md §7 / REVIEW.md §77 define coverage requirements; no new
   FoV, sensor, scene-size limits, history/map format or input change is adopted.
-  Next: review a concrete coverage candidate and its domain/timing/error evidence
-  before implementation/collection. ST tools and all task-data gates remain.
+  Next: prepare a concrete coverage candidate and its domain/timing/error evidence
+  for review within the design-only scope, before implementation/collection.
+  ST tools and all task-data gates remain.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -1030,6 +1126,12 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
+Current authorized preparation: develop the concrete coverage/retention proposal
+from [DESIGN.md][design] §7 and [REVIEW.md][review] §77. The implementation and
+collection gate in Task 6 does not block this design-only prerequisite. Present
+the candidate and its unresolved choices for approval; do not adopt a sensor,
+operating restriction, input change or evidence policy by preparing the proposal.
+
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
    §10. Use the defaults for unanswered items, marked as provisional.
@@ -1332,24 +1434,33 @@ on missing tools, and continue with the next unblocked task.
 
 ## Autonomy and Escalation
 
-Work through the Task List autonomously. Do not stop for status updates or
-routine confirmations: finish a task, verify it, commit it, and start the next.
-
-Ask the user first, batching questions and proposing a default, for:
+The autonomous workflow above does not waive these approval boundaries. Ask
+first, batching related decisions and proposing a default, for:
 
 - Product decisions: requirements, M0 items, metric thresholds, safety
   behaviour, and changes to accepted decisions in DESIGN.md or to a frozen
-  interface contract.
+  interface contract. Draft alternatives and acceptance checks first when that
+  preparation is already within scope; do not silently adopt the proposal.
+- New study episodes, task labels/imports, dataset/cohort/split acceptance,
+  teacher labeling, training, outcome-driven tuning, or uncertainty/risk-policy
+  adoption not covered by a current explicit authorization. Exhausted bounded
+  run approvals stay exhausted; synthetic unit fixtures are not task data.
 - Running third-party model code at a revision the user has not approved; new
+  model experiments beyond the exact approved runtime/resource/run scope; new
   or upgraded dependencies; changes to `.devcontainer`.
 - Downloads other than approved model revisions, and any download that would
   leave less than about 20 GB of free disk space.
 - Deleting files or data you did not create, pushing or rewriting git history,
   and anything involving accounts, licences, payments, or contacting people.
+- Hardware access/integration or privileged/host-level changes outside the
+  agreed scope. Do not alter clocks, networking, TLS/security or privilege
+  settings as a testing workaround.
 
-When a task is blocked, record the question in the Task List and continue with
-the next unblocked task. After three failed approaches to the same problem,
-record what was tried and move on.
+Prepare authorized prerequisites before asking. Explain the precise action,
+expected evidence, resource budget and cleanup plan where relevant; never ask
+for passwords, tokens or other secrets. Do not re-ask settled decisions without
+new evidence or a new claim/domain. After three failed approaches to the same
+problem, record what was tried and the blocker, then move to other approved work.
 
 ## Hardware
 
@@ -1416,20 +1527,12 @@ record what was tried and move on.
   described as running on the module.
 - Safety: the module only recommends. No design may let module output or
   silence stop a drone's motors in flight, and host fail-safes stay independent.
-- Documentation: record decisions and measurements in DESIGN.md and add dated
-  review updates to REVIEW.md rather than rewriting its history. Do not create
-  new Markdown files unless asked. Use reference-style links and check that
-  every reference resolves.
-- Ask the user for product decisions, with a proposed default, instead of
-  inventing requirements.
-- Git: small, focused commits with a one-line summary and a bullet body. Never
-  push, force-push, or rewrite history without the user's approval.
-  Use Conventional Commit subjects from now on:
-  `<type>(optional-scope): imperative summary`, for example
-  `feat(sim): add seeded episode replay`. Choose an appropriate standard type:
-  `feat`, `fix`, `test`, `docs`, `refactor`, `perf`, `build`, `ci`, `chore`,
-  `style`, or `revert`. Keep the existing bullet body convention. Do not
-  rewrite older commits merely to add a type prefix.
+- Documentation: follow the audience split above. Accepted design/contract
+  changes belong in DESIGN.md; changing measurements, decisions under discussion
+  and handovers in dated REVIEW.md updates. Do not rewrite review history.
+- Put Python code in the existing top-level packages by area (`interface/`,
+  `sim/`, `teacher/`, `export/`, or an approved new area), C code in `firmware/`,
+  and generated data in ignored directories. Reuse local conventions/helpers.
 
 ## Commands
 
@@ -1441,20 +1544,26 @@ record what was tried and move on.
 - Container checks: `python .devcontainer/smoke.py` (add `--network` for TLS).
 - INT8 Vela validation:
   `python -m teacher.validate_vela_int8 --output teacher/reports/<name>.json`.
+  This is an opt-in model run, not part of the default gate or automatic approval
+  to repeat a historical experiment. Check current authorization first.
 - Environment: Python 3.12 virtual environment at `/opt/venv` with PyTorch and
   Transformers (Qwen3.5 support built in).
 
-## Way of Working
+## Leave a Clear Handoff
 
-- Loop: take the first unblocked task, restate its exit condition, implement
-  it, verify it (tests, lint, and a real run where possible), record
-  measurements and decisions in DESIGN.md, commit locally, and update the Task
-  List and Current State. Then continue with the next task.
-- Run jobs longer than about 10 minutes in the background with logs in an
-  ignored directory, and work on CPU tasks meanwhile. Run one GPU job at a time.
-- Put new Python code in top-level packages by area (for example `interface/`,
-  `sim/`, `student/`, and `export/`), C code in `firmware/`, and generated data
-  in ignored directories.
-- When only blocked tasks remain, or at the end of a session, report what
-  changed, how it was verified (commands and results), open questions with
-  proposed defaults, and the next step.
+- At meaningful checkpoints, add a dated [REVIEW.md][review] update with the
+  actual change, commands/results, failed-check history, evidence limits,
+  artifact retention/cleanup and next concrete action. Update accepted design
+  decisions in [DESIGN.md][design] and the concise Current State/Task List here.
+- Keep raw logs for long-running authorized jobs in ignored directories. Run
+  large-memory/GPU jobs serially, one GPU job at a time, and report measured
+  resource use without presenting process counters as hardware guarantees.
+- When done or genuinely blocked, report the outcome, commit IDs, verification,
+  remaining boundaries and worktree state. Do not end an otherwise unblocked
+  implementation task merely by proposing its next routine step, and do not
+  continue into the next implementation slice after a stop or pause request.
+
+[design]: DESIGN.md
+[review]: REVIEW.md
+[readme]: README.md
+[container-guide]: .devcontainer/README.md

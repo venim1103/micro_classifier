@@ -2257,6 +2257,67 @@ evaluation. `a3124f9` changes tests only. REVIEW.md §81 records 123 C1 passes,
 1,557 repository passes plus the known xfail and restart recovery. All prior
 assumptions, qualification flags and runtime/data gates remain unchanged.
 
+#### C1 Geometric Occlusion and Straight Capsule (2026-10-21)
+
+The ideal first-return model now has explicit occlusion checks, not just
+constructed missing masks. A 0.5 m-tall foreground cylinder hides either a
+0.05 m or 1.0 m-tall background cylinder across the bounded history, although
+the background is visible by itself. Independent ray/circle entry arithmetic
+checks a foreground return, and direct segment/circle distances keep every
+claimed low-height free prefix outside both footprints. Lowering the foreground
+to 0.05 m exposes the tall background to an upper ray. These are finite ideal
+geometry fixtures, not physical optical/occlusion qualification or an
+opposite-task-answer alias. REVIEW.md §82 records the evidence and limits.
+
+The experimental `probe_synthetic_c1_enclosure` additionally accepts optional
+`turn_rate=0` for the adopted reference's **straight reaction and straight
+braking** case. Omission or `None` preserves the original all-turn disk and
+result schema. Any finite nonzero turn request within the motion limits,
+including a near-zero one, stays unknown; invalid, nonfinite or out-of-range
+declarations raise ValueError.
+The supplied zero is a trusted fixture declaration for both phases, not a turn
+estimate derived from poses or proof of future control behavior. No geometric
+question definition, runtime input or accepted physical profile changes.
+
+For this case the centerline is the body-frame segment S from (0,0) to (L,0),
+where L = v*(age+dt) + v*v/(2*A), and the swept circular body is its radius-b
+capsule. The continuous center-cell exclusion remains bounded over the same
+entire cylinder-radius interval. In addition to the previous tests, a cell with
+center c and half-diagonal q can be discarded when
+`distance(c,S)-q > b+r1+2*guard`, because no cylinder of radius at most r1 in
+that cell can intersect the expanded capsule. The square search still covers
+the original bounding disk, so the smaller query region is not clipped out.
+Free-prefix exclusion and the independent current-body-clear assumption are
+otherwise unchanged. Strict inequalities and the same work/depth limits retain
+unknown for unresolved cells.
+
+The declared arena-wall check uses the capsule's world-axis extrema: project
+its endpoint to p, then require supported free points beyond
+`min(0,p)-b` and `max(0,p)+b`, with outward numerical allowances. This is still
+conditional on the existing axis-aligned rectangular outer walls. The margins
+remain implementation allowances, not certified floating-point or physical
+error bounds.
+
+Straight results use the distinct experimental schema
+`micro-classifier/synthetic-c1-straight-enclosure/1`, with
+`straight_centerline_length_m`, `capsule_radius_m` and the declared turn rate.
+They deliberately omit `sweep_enclosure_radius_m`: a successful capsule result
+must not be interpreted as excluding the old disk. The status is still
+`excluded_under_fixture_assumptions` or unknown, never a robot question answer.
+Training, real-input, free-space qualification and numerical-certification flags
+remain false. The normal renderer, sensor captures, wire and heuristic are
+unchanged; no runtime consumer or task-label path was added.
+
+The first useful capsule fixtures contain a cylinder behind the rover: the
+straight geometric reference is clear and the capsule can be excluded, while
+the larger default disk remains unknown. Rotated positives, forward-wall and
+near-contact blocked cases, missing-return aliases, strict declarations and
+default compatibility are recorded in REVIEW.md §83. This advances only the
+straight conditional synthetic case. Curved maneuver-specific coverage,
+independent domain/return/error evidence, numerical certification where needed
+and representative task evaluation remain open; integration and collection
+remain outside this qualification scope.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4267,10 +4328,10 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-21, REVIEW.md §77): the active
-three-question rules contract resolves F19, not M2 task quality. The next step is
-F21 sensor/scene correction before any data collection, then a qualified
-closed-loop rules baseline. Privileged simulator truth is permitted in principle
+Current critical-path checkpoint (2026-10-21, REVIEW.md §83): the active
+three-question rules contract resolves F19, not M2 task quality. The remaining
+critical step is F21 sensor/scene evidence qualification before data collection,
+then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
 for future geometric/predictive labels, never as student input. Observation-only
 human review remains for semantic/real-world data; all existing logs stay
 quarantined. This does not approve collection, label import, splits, training,
@@ -4285,11 +4346,15 @@ and a qualified floor-aware rules baseline, not more reference-math tooling.
 The first heuristic wire baseline is now measured (§7, REVIEW.md §75): four
 successes, two collisions, two timeouts and 25 clear/blocked reference mismatches.
 It remains unqualified; further collection or evidence-policy changes need review.
-The registered candidate also remains unqualified (§76). Full-input aliases now
+The registered candidate also remains unqualified (§76). Full-input aliases
 demonstrate normal cylinders hidden from turning sweeps even with ideal inputs.
-The user selected coverage-first requirements (§7/§77), not another threshold
-change; review a concrete sensing/retention design and scene/evidence envelope
-before approving its implementation or collecting further task diagnostics.
+Following the user's coverage-first choice, the C1 prototype and controlled
+synthetic qualification now include continuous-center exclusion, ideal occlusion
+checks and an optional straight-only capsule (§7; REVIEW.md §§78-83). These are conditional
+fixture results, not an adopted runtime sensor/input profile or task-quality
+clearance. Curved maneuver-specific coverage, independent domain/return/error
+evidence and required numerical qualification remain open. Do not collect task
+diagnostics or integrate the prototype merely because its synthetic checks pass.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

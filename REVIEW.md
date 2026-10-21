@@ -4690,6 +4690,124 @@ representative task evaluation remain open. Collection and runtime integration
 remain outside the current authorization; do not replace those gates with more
 parameter checks or interpret this checkpoint as renewed run approval.
 
+## 82. Ideal Geometric C1 Occlusion Checks (2026-10-21)
+
+The user requested continued autonomous work and periodic local commits. The
+worktree was clean at `8ceb96c`, also the local `origin/main` reference; no fetch
+or push was performed. This continuation stays within §80's ideal controlled
+synthetic qualification, not physical sensing, collection or runtime integration.
+The next local gap was genuine first-return occlusion rather than §81's
+constructed missing-data masks. The owning `tof_ranges` implementation, scene
+constraints and nearby free-prefix tests were read before editing.
+
+**Test-only checkpoint `e6488f2`:** three cases in the existing simulator test
+file use disjoint 0.30 m-radius cylinders at (2.5,2) and (3.2,2), current rover
+pose (2,2,0) and the existing eight-snapshot straight fixture. A 0.5 m-tall
+foreground hides either a 0.05 m or 1.0 m-tall background. Full capture ranges
+and masks match the foreground-only world; the background on its own changes
+the empty capture, so this is not merely a permanently unobserved object.
+
+Independent closest-approach ray/circle arithmetic reconstructs a foreground
+entry range exactly after binary32 storage. Direct segment/circle calculations
+keep all claimed low-height free prefixes strictly outside both footprints.
+The enclosure probe stays unknown. The contrast lowers the foreground to
+0.05 m: a selected upper ray then reaches the tall background and matches its
+background-only return rather than the low foreground's return. Neither capture
+nor probe source was changed. No opposite-task-answer pair, general optical
+qualification or physical return-membership claim is established by these cases.
+
+The two occlusion cases passed first, then all three cases passed after the
+height contrast was added. Ruff caught C408 in the new settings dictionary
+before the full suite ran; replacing `dict(...)` with the equivalent literal
+repaired the style without changing geometry, assertions or tolerances. The
+three focused cases passed again. Final lint, changed-file format, editor and
+whitespace checks passed; `python -m pytest -q` reported 1,560 passes plus the
+known transformer xfail, 71 existing warnings, no reported skips, 37.11 s.
+All pre-existing test function/class bodies were AST-identical; the source
+checkpoint added only two new test functions (110 lines, three cases).
+
+No episode, persisted log/report/data, model/inference/training, dependency,
+download, risk policy, hardware or integration action occurred. Fixture arrays
+are ephemeral. These checks support only the ideal cylinder/floor ray model;
+independent physical domain/return/error evidence and task-quality gates remain.
+
+## 83. Opt-In Straight C1 Capsule Qualification (2026-10-21)
+
+After the occlusion checkpoint, continued ideal synthetic qualification addresses
+useful maneuver-specific coverage without changing defaults or adopting runtime
+rules. The old all-turn disk can reject a straight-clear path because it also
+includes space behind the rover. The existing geometric reference `_sweep`
+confirms an exact straight capsule only when both reaction and braking turns
+are zero. Symbol references resolved probe callers to synthetic tests; Pylance
+reported all ten then-resolved call sites compatible before the optional change.
+
+**Source checkpoint `562e3d2`:** `probe_synthetic_c1_enclosure` accepts optional
+`turn_rate=0`, representing a declared straight reference maneuver in both
+phases. The original omitted/None path remains the all-turn disk. Finite nonzero
+turn requests, even +/-1e-15 rad/s, return unknown; booleans, nonfinite,
+unrepresentable and out-of-motion-limit values reject. This is not a tolerance
+for treating a slow curve as straight or an estimate inferred from old poses.
+The trusted declaration is explicit in the assumptions, like speed, exact poses,
+current-body clearance and controlled-domain membership; it is not attestation.
+
+DESIGN.md §7 records the capsule centerline, the 1-Lipschitz whole-cell outside
+test for every radius band and the world-axis wall extrema. The original
+bounding square still contains the full expanded capsule. Free-prefix tubes,
+strict margins, current-body exclusion and all work limits are unchanged.
+No Scenario or target answer enters the probe. The separate
+`micro-classifier/synthetic-c1-straight-enclosure/1` schema contains capsule
+radius and straight centerline length, deliberately not the disk-radius field.
+Successful exclusion is conditional on those assumptions; all training,
+real-input, free-space qualification and numerical-certification flags stay false.
+No controller, question-answer distribution, wire or task-label path is added.
+
+**Meaningful checks:** five rotated fixtures contain a rear 0.30 m-radius
+cylinder; capture-to-current motion is body-collision-free, the independent
+straight reference is clear, the old disk remains unknown, and the new capsule
+is excluded. Four cardinal forward-wall cases remain unknown with a blocked
+reference. Four near-contact side/tip/end-cap fixtures also stay unknown with
+blocked references; these are finite inward-offset cases, not a proof of exact
+floating-point tangency. Four nonzero and eight malformed turn declarations
+retain strict rejection. The twelve blocked-cylinder fixtures, four missing-data
+aliases and nine unsupported-evidence controls now run for both disk and capsule.
+There are fifty additional cases beyond §82, not a representative task cohort.
+
+**Actual checks and failures:** the initial rear-obstacle regression verified
+the default unknown and clear straight reference, then intentionally failed
+with TypeError for the not-yet-supported `turn_rate` keyword. The optional
+branch made that case pass. Subsequent focused risk checks passed 71 cases;
+the final capsule-only slice passed 25, then all 176 C1 cases passed after
+formatting the two touched files. No geometric tolerance, work budget or
+assertion was relaxed. No further failure occurred in this source increment.
+
+Before committing, a read-only in-memory comparison with the committed
+`e6488f2` probe checked eighteen canonical default result objects: empty,
+front-obstacle and rear-obstacle captures crossed with normal, zero-cell,
+zero-depth, missing-domain, missing-body-clear and stale settings. They match
+exactly, including statuses, reasons, counts and fields. This is finite default
+compatibility evidence, not a proof for all inputs. Pylance reported all sixteen
+resolved call sites compatible with the new optional signature, and editor
+diagnostics are clean. AST comparison limited changed existing bodies to the
+owning probe and three reused test families; other simulator/reference, capture,
+inspection, firmware/wire and historical evidence code remained unchanged.
+
+The final default gate `python -m pytest -q && ruff check . && git diff --check`
+passed: 1,610 tests plus the unchanged transformer xfail, 71 existing warnings,
+no reported skips, 35.16 s. Changed-file format checks passed. Documentation-only
+follow-up validates references, local targets, fences and whitespace rather than
+rerunning that successful source gate.
+
+No episodes, persisted fixture/log/report artifacts, task labels/cohorts/splits,
+teacher/model run, training, new dependency/download, risk adoption, hardware,
+runtime integration or push occurred. No process or new raw artifact needs
+cleanup. This is useful conditional straight-only evidence, not a complete
+three-question baseline or permission to narrow a curved target. Curved
+maneuver-specific exclusion remains unimplemented, and physical domain/return/
+error evidence, any required numerical certification and representative task
+quality are still open. Existing collection, integration and Task 6/9 gates
+remain; a capsule result must never be promoted to whole-disk or general-turn
+clearance.
+
 ## Sources
 
 Hardware and tools:

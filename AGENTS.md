@@ -118,7 +118,7 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest decisions and results: REVIEW.md §§72-81 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-83 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -129,7 +129,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,557 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,610 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -196,11 +196,15 @@ from them. Historical details below are reference material, not new approvals.
   baseline or global restriction of simulator objects. Runtime/wire/defaults
   are unchanged. Domain/return/error evidence and task-quality gates remain;
   no collection, integration, risk-budget or hardware approval follows.
-  `a3124f9` adds four controlled-size missing-return aliases and fifteen clear
-  turning/rotated-frame cases (REVIEW.md §81). The probe correctly stays unknown
-  for identical masked empty/blocked inputs; retained valid rays are insufficient
-  by themselves. These are artificial missing-data fixtures, not a physical
-  dropout/occluder model. No runtime source or accepted profile changed.
+  Missing-return aliases stay unknown and clear turning frames pass (§81).
+  `e6488f2` adds ideal geometric occlusion/prefix checks with a height contrast
+  (§82), not physical optical evidence. `562e3d2` adds explicit `turn_rate=0`
+  capsule exclusion with a separate experimental result schema (§83); defaults
+  remain the old disk. Rear-obstacle straight-clear fixtures now exclude, while
+  nonzero turns, blocked/masked/wall/near-contact cases stay unknown. Fifty new
+  cases, 18 exact default comparisons and resolved-caller checks pass. The zero
+  turn is a declaration for both reaction and braking, not an inferred fact;
+  neither the surrounding disk nor any curved maneuver is qualified by it.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -1148,15 +1152,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §81 record
-the approved controlled-envelope synthetic exclusion prototype. It excludes a
-conservative whole-sweep enclosure only under explicit ideal domain/current-body
-assumptions, and otherwise stays unknown. Numerical certification, independent
-domain/return/error evidence, useful maneuver-specific coverage and task quality
-remain open. Do not promote it into runtime rules or infer a physical minimum
-object size; collection, integration and Task 6 qualification gates stay in force.
-Return-mask aliases and clear turning-frame checks now pass without changing
-the probe; this does not establish physical missingness or occlusion evidence.
+Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §§82-83
+record ideal geometric occlusion checks and optional straight-only capsule
+exclusion. The default disk and normal inputs/wire remain unchanged; the new
+schema makes no whole-disk or curved claim. Exact zero turn for both phases,
+domain membership and current-body clearance are explicit fixture assumptions.
+Numerical certification, curved maneuver-specific coverage, independent physical
+domain/return/error evidence and task quality remain open. Do not promote these
+results into runtime rules or infer a physical minimum object size; collection,
+integration and Task 6 qualification gates stay in force.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1219,9 +1223,11 @@ the probe; this does not establish physical missingness or occlusion evidence.
   Follow-up (REVIEW.md §80): user approved the controlled synthetic envelope;
   `d1ad3a2` adds conditional continuous-center exclusion with 43 new cases. Not
   certified, measured, integrated or task-qualified; old aliases remain intact.
-  Return/frame follow-up (REVIEW.md §81): `a3124f9` adds 19 synthetic cases;
-  masked empty/blocked aliases remain unknown and clear turning frames exclude
-  under the same conditions. No actual dropout/occlusion process is qualified.
+  Latest qualification (REVIEW.md §§81-83): masked aliases stay unknown and
+  ideal geometric occlusion/prefix checks pass. `562e3d2` adds opt-in zero-turn
+  capsule exclusion, including straight-clear rear-obstacle fixtures; the
+  default disk remains unchanged. No physical return process, curved maneuver,
+  complete question bundle or runtime integration is qualified.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

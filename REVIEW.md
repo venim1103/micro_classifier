@@ -4808,6 +4808,110 @@ quality are still open. Existing collection, integration and Task 6/9 gates
 remain; a capsule result must never be promoted to whole-disk or general-turn
 clearance.
 
+## 84. Opt-In Two-Phase C1 Curved Tube (2026-10-21)
+
+Continued the already-approved controlled synthetic qualification after the
+user reported more than 300 GB available. The source increment needs no new
+episode, data collection, model assets or dependencies. The synthetic envelope
+remains static flat floor, existing rectangular outer walls, cylinder radii
+0.05-0.30 m and heights 0.05-1.0 m; it is not a global object restriction or
+physical minimum. Source checkpoint: `65fecf0`.
+
+**Contract and construction:** `probe_synthetic_c1_enclosure` has an explicit
+`curved_segments=1..128` opt-in. `turn_rate` declares the reaction angular rate;
+`braking_turn_rate` declares the braking rate and defaults to zero. Both remain
+within existing motion limits. Centre braking is straight after the reaction
+turn; explicit +/-1.5 rad/s braking matches the existing left/right references.
+The declarations are not inferred from sensor history or evidence of future
+control. Without this opt-in, the original disk and zero-turn capsule remain
+unchanged, including rejection of nonzero straight requests. A braking declaration
+without the curved opt-in rejects.
+
+The bounded midpoint polyline has at most 257 vertices. DESIGN.md §7 records
+the endpoint quadrature and chord-deviation bounds used to expand its tube.
+Continuous center cells outside that expanded tube can be discarded using the
+1-Lipschitz distance bound; the full search square also expands by the error
+allowance. World-axis extrema of the expanded polyline, not straight extrema,
+control wall support. Free-prefix geometry, cylinder-radius bands, current-body
+clearance and work/depth caps remain unchanged. No Scenario, oracle answer or
+privileged target enters the probe. Unsupported evidence, blocked/unresolved
+cells, missing support and exhausted budgets remain unknown, never inferred
+clearance from missing returns.
+
+The new schema is `micro-classifier/synthetic-c1-curved-enclosure/1`. It records
+both declared phase rates, segment count, body-frame polyline, centerline error
+allowance and tube radius. It contains neither a disk-radius nor straight-length
+field. Success remains `excluded_under_fixture_assumptions`; training, real-input,
+free-space qualification and numerical-certification flags are false. A result
+concerns only that declared maneuver. Defaults, runtime inputs, wire, heuristic,
+navigation oracle and historical artifacts remain unchanged.
+
+**Meaningful checks:** 54 cases compare the centerline enclosure against
+independent 32-node Gauss-Legendre integration at 129 times, crossing three
+speeds, three reaction turns, three braking turns and two subdivisions. Thirty
+rear-obstacle positives cover five headings, both reaction-turn directions and
+centre/left/right braking. The corresponding independent geometric maneuvers
+are clear, their endpoint differences fit the combined allowances, and the
+larger default disk stays unknown. Explicit zero braking reproduces omitted
+braking exactly. Four low-cylinder cases and four rotated side-wall cases are
+straight-clear but curved-blocked: the probe stays unknown, including the
+wall-support reason. Sixteen malformed/missing-opt-in controls reject; two
+zero-cell controls cover minimum/maximum segment counts. Existing blocked,
+masked-world-alias and missing-support families gain 24, eight and eighteen
+curved cases respectively. Total: 160 new cases, not representative task data.
+
+**Failures and correction:** the first 18 centerline checks and two curved
+positives passed; the expanded risk slice then passed 138 cases. Eight new
+maneuver-discriminating fixtures subsequently failed their independent reference
+assertion before probing: the reference said clear where the test expected
+blocked. Inspection of `evaluate_synthetic` showed that `path_blocked` uses the
+current turn during reaction but zero turn during braking. The first prototype
+had incorrectly assumed the same rate in both phases. The repair separated the
+phase rates, defaulted braking to centre, independently integrated both phases
+in tests and reconstructed the discriminating geometry for the adopted target.
+All 62 phase/path checks then passed. No target, assertion, tolerance, work cap
+or safety bound was weakened to make the tests green.
+
+The intermediate complete C1 slice passed 308 cases. The final phase-control
+slice passed 46 cases after adding public left/right braking, endpoint comparisons
+and malformed braking declarations. The required final gate
+`python -m pytest -q && ruff check . && git diff --check` passed: 1,770 tests plus
+the unchanged transformer xfail, 71 existing warnings, no reported skips,
+37.74 s. Changed-file `ruff format --check` and editor diagnostics passed.
+Pylance reported all 23 resolved probe callers signature-compatible. An isolated
+read-only comparison with `77623ea` checked 36 canonical full-result objects:
+empty/front/rear scenes, disk/straight modes and normal/zero-cell/zero-depth/
+missing-body/missing-domain/stale controls. All fields, statuses, reasons and
+counts match exactly. Other diagnostics top-level AST nodes are unchanged.
+These finite checks are not universal compatibility or numerical certification.
+
+**Storage handover:** the earlier user-authorized cleanup used the installed
+Hugging Face cache manager, including its shared-blob handling, to remove cached
+Vela-2.0-9B, d3-flash and d3-mini pinned packages. Actual allocated recovery was
+41.440 GiB; the remaining HF cache was 1.9 MiB. Source, reports, quarantined logs
+and the Python environment were preserved; no host/WSL disk compaction occurred.
+Teacher/tokenizer cache-availability assumptions are stale. Any future authorized
+use requires restoring the pinned assets and re-verifying manifests; added free
+space is not renewed permission for downloads, model experiments or inference.
+
+No episode, persisted fixture/log/report/data, task label/cohort/split, teacher
+or model run, training, dependency/download, risk-policy adoption, hardware,
+runtime integration or push occurred in this increment. Fixture arrays and
+compatibility namespaces were ephemeral; no new raw artifact needs cleanup.
+Documentation-only follow-up checks references, targets, fences and whitespace
+without rerunning the unchanged successful source gate. The initial documentation
+validator incorrectly required a literal self-reference to §84 in this review
+entry; the corrected check validates the numbered heading instead. Next
+substantive gates remain independent domain/return/registration-error evidence, numerical
+qualification where needed and representative task quality. This completes the
+conditional ideal curved prototype, not the three-question rules baseline or
+Task 6/9. Collection and integration still require their existing approvals.
+
+Session paused at the user's request after this documentation checkpoint. No
+background job is running. Resume from this section and the actual worktree
+only after a new continuation request; a notification or available disk space
+does not authorize more implementation, collection, integration or model work.
+
 ## Sources
 
 Hardware and tools:

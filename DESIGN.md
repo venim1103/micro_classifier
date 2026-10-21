@@ -2318,6 +2318,56 @@ independent domain/return/error evidence, numerical certification where needed
 and representative task evaluation remain open; integration and collection
 remain outside this qualification scope.
 
+#### C1 Two-Phase Curved Tube (2026-10-21)
+
+Within the same controlled synthetic envelope, the experimental probe now
+accepts `curved_segments=1..128` together with a declared `turn_rate` for
+reaction and optional `braking_turn_rate` for braking. Each phase has its own
+constant angular rate within the existing +/-1.5 rad/s limits. Omitted braking
+turn means zero: this matches the adopted centre maneuver, which keeps the
+current turn through reaction and then brakes straight. Explicit +/-1.5 braking
+turns match the existing left/right maneuvers. These are declarations, not
+predictions inferred from acquisition poses or qualification of future control.
+No target meaning changes. Without the explicit positive segment count the
+old disk/straight behavior remains unchanged; a braking-turn declaration without
+that opt-in rejects rather than silently selecting a different query.
+
+The body-frame centerline uses midpoint integration over reaction duration
+`age+dt` and braking duration `v/A`, retaining at most `2*curved_segments+1`
+points. For a step of duration h, initial speed u, deceleration a and angular
+rate w, the second-derivative bound on velocity gives midpoint endpoint error
+at most `(2*a*abs(w)+u*w*w)*h**3/24` in exact arithmetic. The position curve's
+deviation from its chord is at most `(a+u*abs(w))*h*h/8`. Summed endpoint
+allowances plus the maximum chord allowance and implementation roundoff margins
+give E. The polyline P expanded by `b+E+guard` encloses the declared reference
+sweep under these assumptions. This is an algebraic construction with numerical
+allowances, not certified floating-point arithmetic or a physical error bound.
+
+The continuous cylinder-center search uses the existing full radius bands,
+low-height free prefixes and independently declared current-body clearance.
+For a cell center c and half-diagonal q, the additional outside test is
+`distance(c,P)-q > b+E+r1+2*guard`. Distance to the union of polyline segments
+is 1-Lipschitz, so the whole cell is excluded, not merely its sampled center.
+The bounding square expands by E, and world-axis wall extrema come from all
+polyline vertices expanded by `b+E` and numerical margins. Thus neither the
+cylinder search nor the wall check substitutes the narrower straight capsule.
+Existing cell/depth/radius limits and strict unknown-on-exhaustion remain.
+
+Curved results use `micro-classifier/synthetic-c1-curved-enclosure/1`, declaring
+both phase rates and segments per phase, with `curved_centerline_body_m`,
+`centerline_error_allowance_m` and `curved_tube_radius_m`. Neither the disk-radius
+nor straight-length field is present. A conditional exclusion concerns only the
+declared maneuver, not every turn or the whole disk. Training, real-input,
+free-space qualification and numerical-certification flags remain false.
+
+REVIEW.md §84 records independent quadrature checks, rotated clear maneuvers,
+straight-clear/curved-blocked cylinders and side walls, masked/blocked unknowns,
+strict controls and finite compatibility evidence. The default runtime sensor,
+observation, heuristic, wire and geometric oracle remain unchanged. Independent
+domain/return/error evidence, numerical certification where required and
+representative task quality still gate integration and collection; this is not
+a complete three-question rules baseline.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4328,7 +4378,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-21, REVIEW.md §83): the active
+Current critical-path checkpoint (2026-10-21, REVIEW.md §84): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4350,11 +4400,12 @@ The registered candidate also remains unqualified (§76). Full-input aliases
 demonstrate normal cylinders hidden from turning sweeps even with ideal inputs.
 Following the user's coverage-first choice, the C1 prototype and controlled
 synthetic qualification now include continuous-center exclusion, ideal occlusion
-checks and an optional straight-only capsule (§7; REVIEW.md §§78-83). These are conditional
-fixture results, not an adopted runtime sensor/input profile or task-quality
-clearance. Curved maneuver-specific coverage, independent domain/return/error
-evidence and required numerical qualification remain open. Do not collect task
-diagnostics or integrate the prototype merely because its synthetic checks pass.
+checks, an optional straight capsule and an explicit two-phase curved tube
+(§7; REVIEW.md §§78-84). These are conditional fixture results, not an adopted
+runtime sensor/input profile or task-quality clearance. Independent domain/
+return/error evidence, required numerical qualification and representative task
+quality remain open. Do not collect task diagnostics or integrate the prototype
+merely because its synthetic checks pass.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

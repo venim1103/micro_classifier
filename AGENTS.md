@@ -118,7 +118,9 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest decisions and results: REVIEW.md §§72-83 supersede conflicting historical
+- Session paused at the user's request; no background job is running. Await a
+  new continuation request before resuming from REVIEW.md §84.
+- Latest decisions and results: REVIEW.md §§72-84 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -129,7 +131,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,610 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,770 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -205,6 +207,13 @@ from them. Historical details below are reference material, not new approvals.
   cases, 18 exact default comparisons and resolved-caller checks pass. The zero
   turn is a declaration for both reaction and braking, not an inferred fact;
   neither the surrounding disk nor any curved maneuver is qualified by it.
+  `65fecf0` adds separate opt-in curved tubes with declared reaction and braking
+  rates (§84). Omitted braking turn means zero, matching the centre reference;
+  explicit left/right braking also passes. The whole-cell search and wall bounds
+  expand a bounded polyline by its numerical allowance. All 160 new cases,
+  36 exact disk/straight comparisons and 23 resolved callers pass; default paths
+  stay unchanged. This is conditional ideal evidence, not numerical certification,
+  physical clearance, a complete question bundle or runtime integration.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -212,6 +221,10 @@ from them. Historical details below are reference material, not new approvals.
 - ST tools remain absent and no board is attached. User-side licence/install,
   procurement and sending the existing teacher provenance request remain pending.
   No teacher/model run, accepted task dataset or trained student exists.
+- User-authorized cache cleanup removed the three pinned teacher packages;
+  reports, quarantined logs and the environment remain. Teacher/tokenizer work
+  needs asset restoration and manifest verification; old offline cache checks
+  must not be assumed still valid. More disk space renews no experiment approval.
 
 ### Historical Checkpoints
 
@@ -1152,15 +1165,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §§82-83
-record ideal geometric occlusion checks and optional straight-only capsule
-exclusion. The default disk and normal inputs/wire remain unchanged; the new
-schema makes no whole-disk or curved claim. Exact zero turn for both phases,
-domain membership and current-body clearance are explicit fixture assumptions.
-Numerical certification, curved maneuver-specific coverage, independent physical
-domain/return/error evidence and task quality remain open. Do not promote these
-results into runtime rules or infer a physical minimum object size; collection,
-integration and Task 6 qualification gates stay in force.
+Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §84 record
+optional two-phase curved-tube exclusion after the occlusion/straight checkpoints.
+The default disk, straight API and normal inputs/wire remain unchanged. Curved
+queries require an explicit positive segment count and separate phase turns;
+omitted braking turn is zero, not the reaction rate. Domain membership and
+current-body clearance remain independent fixture declarations. Numerical
+certification, independent physical domain/return/error evidence and task quality
+remain open. Do not promote these conditional results into runtime rules or
+infer a physical minimum object size; collection, integration and Task 6 gates
+stay in force. Teacher assets are no longer cached after authorized cleanup.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1223,11 +1237,16 @@ integration and Task 6 qualification gates stay in force.
   Follow-up (REVIEW.md §80): user approved the controlled synthetic envelope;
   `d1ad3a2` adds conditional continuous-center exclusion with 43 new cases. Not
   certified, measured, integrated or task-qualified; old aliases remain intact.
-  Latest qualification (REVIEW.md §§81-83): masked aliases stay unknown and
+  Qualification (REVIEW.md §§81-83): masked aliases stay unknown and
   ideal geometric occlusion/prefix checks pass. `562e3d2` adds opt-in zero-turn
   capsule exclusion, including straight-clear rear-obstacle fixtures; the
   default disk remains unchanged. No physical return process, curved maneuver,
   complete question bundle or runtime integration is qualified.
+  Latest qualification (REVIEW.md §84): `65fecf0` adds explicit curved tubes for
+  separate reaction/braking turns, with centre/left/right reference comparisons
+  and 160 new cases. Default disk/straight results match exactly in 36 checks.
+  Unknown blocked/masked/wall/budget outcomes remain; physical evidence, numerical
+  certification, representative task quality and integration are still blocked.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

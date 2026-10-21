@@ -23,6 +23,7 @@ from sim.labels import stopping_envelope, validate_observation
 from sim.rover import (
     Config,
     RoverEnv,
+    integrate,
     make_scenario,
     state_from_observation,
     tof_directions,
@@ -34,8 +35,11 @@ from sim.rover import (
 class RuleSettings:
     floor_band_m: float = 0.03
     max_age_s: float | None = None
+    register_motion: bool = False
 
     def __post_init__(self):
+        if type(self.register_motion) is not bool:
+            raise ValueError("motion registration must be an explicit boolean")
         for value in (self.floor_band_m, self.max_age_s):
             if value is None and self.max_age_s is None:
                 continue
@@ -49,6 +53,61 @@ class RuleSettings:
                 raise ValueError("rule settings must be finite nonnegative numbers")
         if self.floor_band_m is None:
             raise ValueError("floor band is required")
+
+
+def _registered_columns(observation, config, rays, supported, obstacles):
+    tick, captured = observation["tick"], observation["tof_sample_tick"]
+    age_ticks = tick - captured
+    if (
+        config.odometry_latency_ticks
+        or observation.get("ego_sample_tick", tick) != tick
+        or age_ticks >= config.history_ticks
+        or not math.isclose(
+            observation["time_s"], tick * config.dt, rel_tol=1e-6, abs_tol=1e-9
+        )
+    ):
+        raise ValueError("registration requires synchronous visible motion history")
+    history = np.asarray(observation["history_ego"])
+    valid = np.asarray(observation["history_valid"])
+    if (
+        history.shape != (config.history_ticks, 4)
+        or history.dtype.kind not in "iuf"
+        or not np.isfinite(history).all()
+        or valid.shape != (config.history_ticks,)
+        or valid.dtype.kind != "b"
+        or not valid[-(age_ticks + 1) :].all()
+        or not np.array_equal(history[-1], observation["ego"])
+    ):
+        raise ValueError("registration history is incomplete or inconsistent")
+    motion = history[len(history) - age_ticks :]
+    speed_limit = max(config.max_speed, float(np.float32(config.max_speed)))
+    turn_limit = max(config.max_turn_rate, float(np.float32(config.max_turn_rate)))
+    if (
+        (motion[:, 0] < 0).any()
+        or (motion[:, 0] > speed_limit).any()
+        or (np.abs(motion[:, 1]) > turn_limit).any()
+    ):
+        raise ValueError("registration motion exceeds the simulated domain")
+    position, yaw = np.zeros(2), 0.0
+    for sample in motion:
+        position, yaw = integrate(
+            position, yaw, float(sample[0]), float(sample[1]), config.dt
+        )
+    cosine, sine = math.cos(yaw), math.sin(yaw)
+    points = np.asarray(observation["tof_m"])[..., None] * rays[..., :2]
+    current = (points - position) @ np.array([[cosine, -sine], [sine, cosine]])
+    distances = np.linalg.norm(current, axis=-1)
+    bearings = np.arctan2(current[..., 1], current[..., 0])
+    half_view = config.field_of_view / 2
+    usable = supported & (distances > 0) & (np.abs(bearings) <= half_view + 1e-12)
+    columns = np.rint((half_view - bearings) * 7 / config.field_of_view).astype(int)
+    columns = np.clip(columns, 0, 7)
+    if not np.bincount(columns[usable], minlength=8).all():
+        raise ValueError("registered returns do not support every current column")
+    clearances = np.full(8, config.max_range)
+    selected = usable & obstacles
+    np.minimum.at(clearances, columns[selected], distances[selected])
+    return clearances
 
 
 def decide(observation, *, config=None, settings=None):
@@ -93,6 +152,13 @@ def decide(observation, *, config=None, settings=None):
     obstacles = supported & (heights > settings.floor_band_m)
     horizontal = ranges * np.linalg.norm(rays[..., :2], axis=-1)
     columns = np.min(np.where(obstacles, horizontal, config.max_range), axis=0)
+    if settings.register_motion:
+        try:
+            columns = _registered_columns(
+                observation, config, rays, supported, obstacles
+            )
+        except (TypeError, ValueError, KeyError, OverflowError):
+            return rejected
     sectors = [
         float(np.min(columns[indices]))
         for indices in ([0, 1, 2], [2, 3, 4, 5], [5, 6, 7])

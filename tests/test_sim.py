@@ -75,6 +75,185 @@ def test_floor_rules_ignore_floor_without_claiming_calibrated_probabilities():
     assert decode_decision(encode_decision(decision)) == decision
 
 
+@pytest.fixture
+def motion_rule_observation():
+    config = Config(noise_std=0, dropout=0, latency_ticks=2)
+    observation, _ = RoverEnv(Config(noise_std=0, dropout=0, latency_ticks=0)).reset()
+    observation.update(tick=3, time_s=0.15, tof_sample_tick=0, tof_age_s=0.15)
+    observation["ego"] = np.array([0.6, 0, 4, 0], dtype=np.float32)
+    observation["goal_body_m"] = observation["ego"][2:].copy()
+    observation["history_valid"][-4:] = True
+    observation["history_ego"][-4:] = observation["ego"]
+    observation["tof_valid"][3, 3] = True
+    observation["tof_m"][3, 3] = 0.53
+    return config, observation
+
+
+def test_motion_registered_rules_shift_old_hits_before_stopping_check(
+    motion_rule_observation,
+):
+    from sim.rules import RuleSettings, decide
+
+    config, observation = motion_rule_observation
+    original = decide(observation, config=config)
+    registered = decide(
+        observation, config=config, settings=RuleSettings(register_motion=True)
+    )
+    assert original.status == registered.status == 0
+    assert original.answers[0].selected == 0
+    assert registered.answers[0].selected == 1
+    assert registered.answers[2].selected == 0
+
+
+@pytest.mark.parametrize("turn", [0.0, -0.1, 0.1])
+def test_motion_registered_rules_match_independent_interval_composition(
+    motion_rule_observation, turn
+):
+    from sim.rules import _registered_columns
+
+    config, observation = motion_rule_observation
+    observation["ego"][1] = turn
+    observation["history_ego"][-4:] = observation["ego"]
+    ranges = observation["tof_m"]
+    rays = tof_directions(0, config)
+    supported = observation["tof_valid"] & (ranges > 0) & (ranges < config.max_range)
+    obstacles = supported & (config.tof_mount_height + ranges * rays[..., 2] > 0.03)
+    columns = _registered_columns(observation, config, rays, supported, obstacles)
+    angle = float(observation["ego"][1]) * 3 * config.dt
+    speed = float(observation["ego"][0])
+    translation = (
+        np.array([speed * 3 * config.dt, 0])
+        if not angle
+        else speed
+        / float(observation["ego"][1])
+        * np.array([math.sin(angle), 1 - math.cos(angle)])
+    )
+    hit = float(ranges[3, 3]) * rays[3, 3, :2] - translation
+    expected_distance = math.hypot(*hit)
+    expected_bearing = math.atan2(hit[1], hit[0]) - angle
+    column = round(
+        (config.field_of_view / 2 - expected_bearing) * 7 / config.field_of_view
+    )
+    assert columns[column] == pytest.approx(expected_distance, abs=1e-12)
+    assert np.count_nonzero(columns < config.max_range) == 1
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "missing_history",
+        "shape",
+        "dtype",
+        "mask_dtype",
+        "gap",
+        "current_mismatch",
+        "nan",
+        "speed",
+        "negative_speed",
+        "turn",
+        "short_window",
+        "clock",
+        "delayed_config",
+        "delayed_metadata",
+    ],
+)
+def test_motion_registered_rules_reject_unsupported_motion(
+    motion_rule_observation, defect
+):
+    from dataclasses import replace
+
+    from interface.protocol import Status
+    from sim.rules import RuleSettings, decide
+
+    config, observation = motion_rule_observation
+    if defect == "missing_history":
+        del observation["history_ego"]
+    elif defect == "shape":
+        observation["history_ego"] = np.zeros((8, 3))
+    elif defect == "dtype":
+        observation["history_ego"] = observation["history_ego"].astype(str)
+    elif defect == "mask_dtype":
+        observation["history_valid"] = observation["history_valid"].astype(int)
+    elif defect == "gap":
+        observation["history_valid"][-2] = False
+    elif defect == "current_mismatch":
+        observation["history_ego"][-1, 0] = 0
+    elif defect in ("nan", "speed", "negative_speed", "turn"):
+        value = {"nan": float("nan"), "speed": 2, "negative_speed": -1, "turn": 2}[
+            defect
+        ]
+        observation["history_ego"][-2, int(defect == "turn")] = value
+    elif defect == "short_window":
+        config = replace(config, history_ticks=2)
+    elif defect == "clock":
+        observation["time_s"] = 0.16
+    elif defect == "delayed_config":
+        config = replace(config, odometry_latency_ticks=1)
+    else:
+        observation.update(ego_sample_tick=2, ego_age_s=0.05)
+    decision = decide(
+        observation, config=config, settings=RuleSettings(register_motion=True)
+    )
+    assert decision.status == Status.REJECT_OUT_OF_DOMAIN and not decision.answers
+
+
+def test_motion_registered_rules_reject_turns_without_current_column_support(
+    motion_rule_observation,
+):
+    from interface.protocol import Status
+    from sim.rules import RuleSettings, decide, wire_step
+
+    config, observation = motion_rule_observation
+    observation["ego"][:2] = [0, 1.5]
+    observation["history_ego"][-4:] = observation["ego"]
+    settings = RuleSettings(register_motion=True)
+    assert decide(observation, config=config).status == Status.OK
+    assert (
+        decide(observation, config=config, settings=settings).status
+        == Status.REJECT_OUT_OF_DOMAIN
+    )
+    action, *_ = wire_step(observation, config=config, settings=settings)
+    np.testing.assert_array_equal(action, [0, 0])
+
+
+def test_motion_registered_rules_are_detached_and_ignore_privileged_fields(
+    motion_rule_observation,
+):
+    from sim.rules import RuleSettings, decide
+
+    config, observation = motion_rule_observation
+    before = json.dumps(observation, default=json_value, sort_keys=True)
+    settings = RuleSettings(register_motion=True)
+    expected = decide(observation, config=config, settings=settings)
+    assert json.dumps(observation, default=json_value, sort_keys=True) == before
+    observation.update(
+        ground_truth={"position_m": [99, 99]},
+        action=[99, 99],
+        labels={"path_blocked": False},
+    )
+    assert decide(observation, config=config, settings=settings) == expected
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, "true", np.bool_(True)])
+def test_motion_registered_rules_require_an_explicit_boolean(value):
+    from sim.rules import RuleSettings
+
+    with pytest.raises(ValueError):
+        RuleSettings(register_motion=value)
+
+
+def test_motion_registered_rules_zero_age_preserves_original_decision():
+    from sim.rules import RuleSettings, decide
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    observation, _ = RoverEnv(config).reset()
+    before = json.dumps(observation, default=json_value, sort_keys=True)
+    assert decide(
+        observation, config=config, settings=RuleSettings(register_motion=True)
+    ) == decide(observation, config=config)
+    assert json.dumps(observation, default=json_value, sort_keys=True) == before
+
+
 @pytest.mark.parametrize(
     "defect,status",
     [

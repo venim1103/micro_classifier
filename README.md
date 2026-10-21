@@ -767,6 +767,14 @@ quarantined; no task dataset, labels, training or hardware qualification follows
 The run authorization is exhausted; no second batch or outcome-driven tuning ran.
 The runner requires fresh, nonoverlapping `--output` and `--report` paths.
 
+`RuleSettings(register_motion=True)` enables a separate diagnostic candidate
+that registers delayed hits from synchronous visible ego history and rebins
+current bearings. Missing history, delayed odometry or missing current-column
+support reject. The default remains the original heuristic; thresholds are
+unchanged. Frozen-log replay still has false-clears and high rejection, not
+closed-loop or safety clearance. See [REVIEW.md](REVIEW.md) §76; no new run or
+data-collection allowance follows from this opt-in.
+
 ## Hardware-Free Simulation
 
 [sim/rover.py](sim/rover.py) provides a CPU-only, seeded `RoverEnv` with

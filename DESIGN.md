@@ -1920,6 +1920,39 @@ missing/occluded evidence, representative scenes and qualified rules. The eight-
 authorization is exhausted; no tuning or second batch followed. No task labels,
 cohort/split acceptance, training, dependencies, ST/licence or hardware approval.
 
+#### Opt-In Motion Registration (2026-10-21)
+
+Following read-only inspection of the frozen failures, the user approved an
+opt-in registration candidate, synthetic tests and existing-log diagnostics
+only. `RuleSettings(register_motion=True)` in `ebdb9d8` uses the visible ego
+history convention: sample t contains the applied speed/yaw rate over the
+interval ending at t. It composes planar motion from acquisition to current
+tick, transforms supported hits into the current body frame and rebins nearest
+column bearings within the configured view. The floor band, age gate, original
+default, target definitions and optimistic floor-only working clearance remain
+unchanged. This is host Python diagnostic logic, not an embedded runtime.
+
+Registration requires complete finite synchronous history covering capture
+through the current sample, matching current ego data and valid simulated
+motion. Missing/malformed/gapped history, inconsistent timing, delayed odometry
+without per-history acquisition times, or unsupported current columns reject.
+This neither fills missing space nor proves clearance of a swept rover body.
+It assumes the simulator's interval-motion convention, not measured real
+odometry accuracy, static-scene qualification or a physical error budget.
+
+On all 1,433 frozen observations, the default path reproduces the original
+decision frames byte-for-byte. The opt-in candidate admits 220 frames, rejects
+1,213 and has four false-clear/six false-blocked private reference comparisons.
+Three of the old 25 false-clears become blocked, 20 reject and two stay clear;
+two additional false-clears occur. These selected replay counts are not a
+comparable task error rate or a candidate closed-loop success/collision result.
+No new episodes or tuning followed. The original report/logs remain unchanged.
+Twenty-six synthetic cases and the full gate pass: 1,432 tests plus the known
+transformer xfail, lint/format/editor/native sanitizer/hard-float Arm checks.
+REVIEW.md §76 records provenance and limitations. Missing/occluded-space policy,
+swept-volume evidence, representative scenes and physical qualification still
+block F21/M2; no collection, labels, training or hardware scope was opened.
+
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
 

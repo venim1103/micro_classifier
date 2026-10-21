@@ -19,11 +19,11 @@ Documents of record:
 - [REVIEW.md](REVIEW.md): §70 is the whole-repository review (F18-F36), §71
   records independent code repairs, and §10 is the M0 decision template.
 
-## Current State (2026-10-20)
+## Current State (2026-10-21)
 
 Keep this section and the Task List current; a new session resumes from them.
 
-- Latest decisions and results: REVIEW.md §§72-75 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-76 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -34,7 +34,7 @@ Keep this section and the Task List current; a new session resumes from them.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,406 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,432 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -65,6 +65,14 @@ Keep this section and the Task List current; a new session resumes from them.
   eight log hashes and private comparison aggregates audited. Report:
   `sim/reports/rules-baseline-20261020.json`; logs stay ignored/quarantined.
   The eight-run approval is exhausted; no tuning or second batch occurred.
+- Approved tests/read-only follow-up: `ebdb9d8` adds opt-in
+  `RuleSettings(register_motion=True)`; default remains the original heuristic.
+  Complete synchronous ego history registers/rebins delayed hits; gaps, delayed
+  odometry and lost current-column support reject. All 1,433 saved default
+  decisions reproduce byte-for-byte. Candidate replay admits only 220 frames:
+  four false-clears (two new), six false-blocked and 1,213 rejections. Of the old
+  25 false-clears, three become blocked, 20 reject and two remain clear. This is
+  not quality clearance or candidate closed-loop evidence; no tuning/new runs.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -1058,6 +1066,9 @@ on missing tools, and continue with the next unblocked task.
   approved eight diagnostics completed (4 success/2 collision/2 timeout; 25
   false-clear reference comparisons). Not qualified runtime rules or labels;
   reviewed evidence/scene requirements still block completion. No more collection.
+  Follow-up (2026-10-21, REVIEW.md §76): approved opt-in registration/tests and
+  frozen-log diagnostics are complete. High rejection and four false-clears
+  remain; the default/report are unchanged and no new trajectory was collected.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

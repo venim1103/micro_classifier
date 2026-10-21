@@ -4228,6 +4228,79 @@ is cleared by completing the tooling and bounded run.
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
 
+## 76. Opt-In Motion Registration and Frozen-Log Check (2026-10-21)
+
+Read-only investigation of §75's unchanged eight logs found that all 25
+false-clear events had central above-floor hits: the max-range fallback alone
+does not explain them. Nineteen occurred while turning; since capture the rover
+had moved 0.0225-0.09 m and rotated by up to 8.59 degrees. Thirteen had at least
+one central fallback column, but none lacked every central above-floor hit.
+These are event features, not a unique causal attribution or independent error
+rates. All five original source hashes and eight log hashes matched before
+implementation; no host-controller call, episode or data write was involved.
+
+The user explicitly approved (1) a separate opt-in motion-registration candidate
+using visible history, updated bearings and rejection for unsupported history,
+while retaining the original default/floor/age settings; and (2) synthetic tests
+plus read-only checks on the existing logs, not new episodes, outcome-driven
+threshold tuning, labels or training. This does not adopt missing/occluded-space
+clearance assumptions, a Gaussian risk budget or a new physical safety policy.
+
+**Implementation (`ebdb9d8`):** `RuleSettings.register_motion` is a strict boolean
+defaulting false. The opt-in composes applied velocity/yaw-rate history using
+the simulator's end-of-interval sample convention, transforms captured hits into
+the current body frame and assigns nearest current-view column bearings.
+Complete finite history, its validity mask, current-value agreement, matching
+clock/Config and support for all current columns are required. Delayed odometry
+is unsupported because per-history acquisition times are absent. These cases
+reject with no answers; the existing diagnostic host then commands braking.
+This does not provide missing-space evidence, swept-volume coverage or a real
+sensor/odometry uncertainty model. Floor-only support still uses the original
+optimistic max-range working clearance, not proof that space is clear.
+
+**Synthetic checks:** 26 new cases first reproduced the absent opt-in, then
+cover delayed-hit translation, independent straight/curved interval formulas,
+zero-age equivalence, history gaps/types/limits/timing, delayed ego rejection,
+lost-column rejection/braking, no mutation, privileged-field independence and
+explicit boolean opt-in. Full offline gate: 1,432 passed plus the known
+transformer xfail (35.69 s), Ruff, changed-file format, editor diagnostics,
+native sanitizers and hard-float Arm checks. No simulator/oracle/proxy/wire
+implementation or threshold was changed by this slice.
+
+**Frozen-log comparison:** all eight log hashes matched the original report;
+unchanged source hashes matched on disk and the original rules hash matched
+its `05a94f8` Git source. The new default reproduced all 1,433 saved decision
+frames byte-for-byte. Opt-in outputs on those exact observations:
+
+| Result | Count |
+| --- | --- |
+| Admitted (`OK`) | 220 |
+| Out-of-domain / stale rejection | 1,197 / 16 |
+| Admitted path matches / false-blocked / false-clear | 210 / 6 / 4 |
+| Original 25 false-clears now blocked / rejected / still clear | 3 / 20 / 2 |
+| Additional false-clears not present in the original path | 2 |
+
+Clear and corridor each admit only 36/138 frames per seed. Obstacle admits
+28/400 and 30/400 with no false-clears among those admitted; slalom admits
+10/41 and 8/40 with 3/1 false-clears. Registration reconstructed from visible
+float32 history differed from saved ideal private relative motion by at most
+3.5763e-9 m and 2.2598e-9 rad. These finite shared-simulator checks are not
+physical uncertainty bounds, certification or independent metrology.
+
+The check invoked neither a simulator step nor host action and wrote no new
+data/report; only existing observations were evaluated. Private oracle results
+remain diagnostic comparisons, not labels. The frozen report SHA-256 remains
+`2238debe9810901f672aafa92dc7b33d3950517e5b383a5ee7e93f2e1b75b261`.
+
+**Conclusion:** motion registration is implemented, not a successful baseline.
+The drop in admitted comparisons and two new false-clears preclude calling the
+smaller count a task-quality improvement. Original-controller trajectories do
+not establish candidate closed-loop outcomes. No tuning followed this result;
+the default and all historical artifacts remain unchanged. Further baseline
+direction needs review of missing/occluded-space evidence, swept-body coverage
+and scene/claim envelope. No new collection, labels/datasets/splits, inference/
+training, dependencies/downloads, ST/licence, board work or push occurred.
+
 ## Sources
 
 Hardware and tools:

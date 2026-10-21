@@ -118,7 +118,7 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest decisions and results: REVIEW.md §§72-79 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-80 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -129,7 +129,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,495 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,538 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -185,10 +185,17 @@ from them. Historical details below are reference material, not new approvals.
   experimental-only data, endpoint registration and no free-space/decision
   qualification. Sixty-one new tests preserve both gains and the slender alias;
   existing APIs/defaults/normal inputs/wire are unchanged (REVIEW.md §79).
-  Next: a reviewed object/return evidence envelope before further clearance
-  qualification. The proposed controlled-simulation dimensions in DESIGN.md §7
-  are unaccepted; no collection, physical claim or domain restriction follows.
-  ST tools and all task-data gates remain.
+  User then approved synthetic-only qualification with radii 0.05-0.30 m and
+  heights 0.05-1.0 m in static flat-floor scenes with existing outer walls.
+  `d1ad3a2` adds a bounded conditional all-turn sweep-enclosure exclusion;
+  exact low-height ray prefixes exclude continuous cylinder-center cells, not
+  just samples. Independent envelope membership and a collision-free current
+  body must be explicitly declared. Forty-three new cases preserve unknown
+  blocked/budget/stale cases and the out-of-envelope alias (REVIEW.md §80).
+  This is not numerical certification, physical clearance, a complete rules
+  baseline or global restriction of simulator objects. Runtime/wire/defaults
+  are unchanged. Domain/return/error evidence and task-quality gates remain;
+  no collection, integration, risk-budget or hardware approval follows.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -1136,12 +1143,13 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current authorized package complete: [DESIGN.md][design] §7 and
-[REVIEW.md][review] §79 record the approved synthetic-only C1 prototype and its
-unresolved slender-obstacle alias. No further clearance qualification or runtime
-integration is authorized. Review the proposed object/evidence envelope before
-the next implementation slice; do not adopt dimensions, sensor/input changes or
-an evidence policy from the draft. Collection and Task 6 qualification stay blocked.
+Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §80 record
+the approved controlled-envelope synthetic exclusion prototype. It excludes a
+conservative whole-sweep enclosure only under explicit ideal domain/current-body
+assumptions, and otherwise stays unknown. Numerical certification, independent
+domain/return/error evidence, useful maneuver-specific coverage and task quality
+remain open. Do not promote it into runtime rules or infer a physical minimum
+object size; collection, integration and Task 6 qualification gates stay in force.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1201,6 +1209,9 @@ an evidence policy from the draft. Collection and Task 6 qualification stay bloc
   Follow-up (REVIEW.md §79): separately approved synthetic C1 prototype complete
   in `a3df1f5`, 61 new cases, with unchanged normal inputs/defaults/wire. Still no
   qualified clearance or adopted object envelope; further work needs that review.
+  Follow-up (REVIEW.md §80): user approved the controlled synthetic envelope;
+  `d1ad3a2` adds conditional continuous-center exclusion with 43 new cases. Not
+  certified, measured, integrated or task-qualified; old aliases remain intact.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

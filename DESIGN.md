@@ -2142,18 +2142,92 @@ the known transformer xfail; REVIEW.md §79 records actual checks and repairs.
 Original diagnostic/simulator function bodies, inputs/defaults and historical
 wire/golden/report meanings remain unchanged.
 
-**Next decision candidate, unaccepted:** a controlled simulation envelope could
-limit floor-supported cylinder radii to 0.05-0.30 m and heights to 0.05-1.0 m,
-with the existing 1.0 m walls and static flat-floor scenes. These values are a
-concrete review option, not physical detection limits or a guarantee that C1
-covers that envelope. The geometric question meanings and motion limits would
-not change. Qualification would still need to prove which entire swept regions
-exclude all allowed obstacle placements, or retain unknown; a sampled layout
-grid alone is not such a proof. Envelope membership must be an independently
-declared scene condition, never inferred from missing hits. Alternatively keep
-all current positive-radius obstacles admissible and require richer sensing
-evidence before any useful general clear-space claim. Neither alternative,
-new qualification implementation nor collection is adopted by this prototype.
+The controlled-envelope option originally proposed here was subsequently approved
+for synthetic qualification only, as recorded below. The unrestricted simulator
+and original 5 mm fixture remain supported. This is not a physical minimum-size
+claim or adoption of that domain for the active runtime.
+
+#### Controlled Synthetic C1 Enclosure Exclusion (2026-10-21)
+
+The user agreed to the preceding scoped request for synthetic-only clearance
+qualification with cylinder radii 0.05-0.30 m, heights 0.05-1.0 m, existing 1 m
+outer arena walls, static flat-floor scenes and unchanged motion/question
+meanings. No new episodes, physical deployment, risk policy or runtime integration
+was requested or approved. The envelope is an explicit fixture precondition;
+missing returns cannot establish its membership.
+
+`d1ad3a2` adds `probe_synthetic_c1_enclosure` to the existing experimental
+[diagnostics module][c1-prototype-source]. In addition to literal
+`synthetic_test_only=True`, callers must declare `current_body_clear=True` and
+`controlled_envelope=True`. Omitting either yields unknown. The collision-free
+body condition matches a valid synthetic start, not an inference from a blind
+near-field region. Both declarations and the supplied speed are trusted fixture
+assumptions, not attested sensor facts or new host safety interlocks.
+
+The observation-only calculation uses the existing bounded C1 history inspector
+and **only the latest supported acquisition**. It does not consume a Scenario,
+world obstacle list, bounds, target answer or privileged collision result.
+For each supported ray, it retains the segment strictly below 0.05 m and above
+the floor, ending before both the floor and the preceding representable binary32
+range. A scale-aware floating-point allowance shrinks the interval. Under the
+declared exact first-return model, an allowed floor-supported cylinder whose
+footprint covers any point of that segment would have interrupted the ray; such
+center placements are inconsistent with the observation. Neither a floor point
+alone nor the absence of a return supplies this exclusion.
+
+Let the latest age be a, decision period dt, declared speed v, deceleration A
+and body radius b. The adopted reference's centerline path length is
+L = v*(a+dt) + v*v/(2*A). A disk of radius b+L about the current center encloses
+the entire circular-body reaction/braking sweep for any permitted turn direction;
+there is no endpoint-only or straight-sector substitution. Numerical allowances
+expand the enclosure. The fixed 0.6 m/s, age-0.15 s fixture gives b+L = 0.48 m
+before that expansion. A failure to exclude this deliberately larger region
+does not establish collision of a particular maneuver.
+
+To cover **continuous** cylinder placements rather than just a sampled grid:
+
+- Partition the entire allowed radius interval into adjacent bands [r0,r1].
+  All potentially colliding centers lie within the sweep enclosure expanded by
+  r1. Centers strictly within b+r0 are inconsistent with the separately declared
+  collision-free current body.
+- Cover the remaining center region by square cells. For center c and
+  half-diagonal q, distance to a ray segment is 1-Lipschitz, so
+  distance(c,segment)+q < r0 excludes every center in that cell for every radius
+  in the band. Strict margins preserve contact cases as unresolved.
+- Subdivide cells that cannot yet be excluded. Any unresolved depth-limited
+  cell or exhausted global cell budget returns unknown; success requires no
+  remaining cell in any radius band. The default eight bands, depth ten and
+  32,768 checked cells are work limits, not safety tolerances. Hard maxima are
+  sixteen bands, depth twelve and 65,536 cells.
+- For the declared axis-aligned rectangular arena, low-height free points must
+  extend beyond the body enclosure in both directions of both world axes.
+  Convexity then puts all four outer walls outside that enclosure. This does
+  not qualify arbitrary internal walls, overhangs, nonconvex rooms or terrain.
+
+The result is `excluded_under_fixture_assumptions` with
+`fixture_enclosure_excluded=True`, or `unknown`. It is not a robot `OK`, clear/
+blocked answer, probability, calibrated confidence, task label or accepted map.
+`free_space_qualified`, `real_input_qualified`, `training_approved` and
+`numerically_certified` all remain false. The geometric argument is conditional;
+the scale-aware allowances are not a formally certified interval-arithmetic
+implementation or a physical uncertainty bound. Existing single-view inputs,
+C1 capture/inspection APIs, heuristics, wire and default Config are unchanged.
+
+Forty-three new bounded cases include a conditionally excluded empty moving
+fixture; twelve blocked cases spanning minimum/maximum radii and heights with
+straight/left/right braking; a near-wall blocked reference; strict declarations,
+stale/budget/control rejection; direct cylinder/free-segment separation; and an
+independently computed sampled-center cross-check. The sampled cross-check is
+not the continuous-coverage argument. The 5 mm-radius alias still produces the
+same observations as the empty case, demonstrating that falsely declaring the
+domain can invalidate the conditional conclusion. It is preserved, not relabeled.
+
+All 104 C1 cases and 1,538 repository tests pass plus the known transformer xfail.
+REVIEW.md §80 records verification, failed-check repairs and limits. This is
+ideal controlled-fixture exclusion evidence, not completion of F21/M2 or the
+three-question rules baseline. Independent domain/return/error evidence,
+numerical certification where required, useful maneuver-specific coverage and
+representative task evaluation remain open; no collection or deployment follows.
 
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py

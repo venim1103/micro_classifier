@@ -4529,6 +4529,103 @@ Further qualification implementation, integration and collection need approval;
 this completes the bounded synthetic-prototype authorization. ST/board and all
 task-data/learning/risk-policy gates remain.
 
+## 80. Approved Controlled-Envelope Synthetic Exclusion (2026-10-21)
+
+The preceding request proposed synthetic-only clearance qualification for
+cylinder radii 0.05-0.30 m, heights 0.05-1.0 m, existing 1 m outer walls and
+static flat-floor scenes, without episodes, physical deployment or runtime
+integration. The user replied "yes please just continue autonomius!" and
+requested fewer routine permission prompts. This approves that scoped synthetic
+work, not new datasets, risk budgets, noisy/physical sensor qualification,
+deployment, hardware, dependencies or model work. Existing unrestricted objects
+and historical counterexamples are not removed or globally redefined.
+
+The actual worktree was clean at `050eac3`; the two files mentioned in the
+intervening-edit reminder matched their committed contents. Current C1 APIs and
+the nearby synthetic sweep/reference were read before editing. The local
+hypothesis was that below-minimum-height first-return prefixes could exclude
+all allowed cylinder centers in a conservative whole-body sweep enclosure,
+without requiring world geometry as decision evidence.
+
+**Implementation checkpoint `d1ad3a2`:** add private low-height free-segment
+construction and `probe_synthetic_c1_enclosure` to `sim/diagnostics.py`. The
+probe accepts only the experimental history, reference tick/pose, declared speed
+and bounded work controls. Literal synthetic opt-in, independent controlled
+envelope membership and a collision-free current body are explicit preconditions.
+None is inferred from missing hits, labels, a map or a privileged Scenario.
+Supported exact C1 history, physical-motion bounds and the existing fixed
+radius/speed/braking/range/wall profile are checked; stale, malformed,
+unsupported or exhausted evidence stays unknown.
+
+**Exclusion argument and limits:** DESIGN.md §7 records the low-height prefixes,
+preceding-float32 return limit, body enclosure b+v*(age+dt)+v²/(2*A), radius
+bands and continuous center-cell coverage. A cell is excluded only when its
+whole half-diagonal lies inside a free-segment radius tube or inside a region
+already ruled out by the current-body assumption; outside cells are separated
+conservatively. Remaining cells subdivide or force unknown. The outer wall
+check uses the declared rectangular/axis-aligned arena and free points beyond
+the enclosure on all four axes. No individual turning path, clear sector or
+speed tier is substituted for the larger all-turn body enclosure.
+
+The default work cap is 32,768 cells across eight radius bands, with maximum
+depth ten; hard input caps are 65,536 cells, sixteen bands and depth twelve.
+These cap computation, not the physical error probability. The positive status
+is `excluded_under_fixture_assumptions`, not a wire decision. All training,
+real-input, free-space qualification and numerical-certification flags remain
+false. Floating-point margins are not formal interval arithmetic; the result
+remains conditional geometric prototype evidence, not a certified sensor or
+physical clearance statement.
+
+**Bounded evidence:**
+
+- The empty straight-moving ideal fixture excludes the full conservative
+  0.48 m-radius body enclosure within the unchanged default work budget.
+- Twelve blocked fixtures combine radii 0.05/0.30 m, heights 0.05/1.0 m and
+  turn rates -1.5/0/+1.5 rad/s. All reference answers are blocked and all probe
+  results remain unknown, never falsely excluded. Direct independent segment/
+  cylinder calculations also keep every claimed low-height prefix outside
+  each actual cylinder footprint.
+- A near-wall straight-braking fixture remains unknown with incomplete wall
+  support and a blocked geometric reference. Independent sampled-center
+  calculations cross-check the empty case; samples are not used to assert
+  whole-region coverage.
+- Missing/type-aliased domain/current-body declarations, work exhaustion,
+  unsupported reference motion, stale/malformed history, invalid speeds and
+  malformed work controls reject or stay unknown as specified.
+- The old 5 mm-radius alias is preserved. It can match the empty observations
+  and satisfy the conditional computation if a caller falsely asserts the
+  larger-object domain. This deliberately pins non-attestation of domain
+  membership; it is not evidence that small objects are safe or excluded.
+
+**Verification and failed checks:** the low-prefix slice passed first, then the
+empty enclosure slice passed without changing its work budget or tolerances.
+The first independent-prefix cross-check edit accidentally placed its assertion
+inside the empty test, producing one `NameError` with 42 other passes. Moving
+the assertion to its intended blocked-cylinder fixture gave 43 focused passes;
+the algorithm was unchanged by that repair. Ruff subsequently required adjacent
+radius bounds to use `itertools.pairwise` (RUF007); that equivalent iterator
+repair preceded the final gate.
+
+Final commands: focused `python -m pytest -q tests/test_sim.py -k synthetic_c1
+--tb=short` (104 passes), `ruff check .`, changed-file format check, full
+`python -m pytest -q --tb=short` (1,538 passes plus the known transformer xfail,
+34.21 s, 71 existing ONNX/Torch warnings) and `git diff --check`. No skips were
+reported; existing interface/native sanitizer/hard-float Arm controls ran in the
+full suite. Editor diagnostics are clean. All twelve existing diagnostic and
+186 existing test top-level function/class bodies are AST-identical to
+`050eac3`; defaults, old C1 functions, simulator/rules/reference, firmware/wire
+and historical data/report paths remain unchanged.
+
+No episodes, new log/report/data artifact, labels/cohort/splits, teacher/model,
+download/dependency, ST/licence or board action occurred. Temporary fixture
+arrays are discarded by pytest; no long-running process or raw artifact needs
+cleanup. This meaningful source checkpoint completes the conditional-enclosure
+prototype slice, not F21/M2 quality qualification or runtime integration.
+Further work must preserve its explicit assumptions and unknown results;
+independent domain/return/error evidence, any required numerical certification
+and representative task evaluation remain gates. Do not promote this result
+to the three-question pilot merely because the synthetic gate is green.
+
 ## Sources
 
 Hardware and tools:

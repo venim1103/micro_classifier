@@ -2229,6 +2229,34 @@ three-question rules baseline. Independent domain/return/error evidence,
 numerical certification where required, useful maneuver-specific coverage and
 representative task evaluation remain open; no collection or deployment follows.
 
+#### C1 Missing-Return and Turning-Frame Checks (2026-10-21)
+
+The controlled object envelope does not make partial return coverage sufficient
+for clearance. Constructed missing-data fixtures now pair an empty scene with a
+blocked scene for each combination of 0.05/0.30 m cylinder radius and 0.05/1.0 m
+height. Each pair shares acquisition poses/ticks and configuration; only rays
+whose valid ranges agree in both worlds are retained. Nonempty valid support
+remains in every snapshot, but all delivered range/mask histories become
+identical. The blocked reference remains blocked for straight, left and right
+braking. The unchanged exclusion probe returns identical unknown results for
+both members, rather than inferring free space through the missing rays.
+
+These are bounded artificial missing-data fixtures, not evidence that the ideal
+zero-dropout capture producer emits these masks, not a physical occluder model,
+and not measured dropout rates or probabilities. No missingness policy or sensor
+profile is adopted. They pin the existing rule that unsupported rays supply no
+free prefix. Counting remaining valid rays, assuming independent missingness or
+filling gaps from the other world would not resolve the identical-input pair.
+
+Fifteen additional positive cases use five headings and straight/left/right
+acquisition motion, including crossings of the principal heading boundary.
+The empty fixture still excludes the same 0.48 m all-turn enclosure under the
+original work limits. This checks useful registration paths that blocked-only
+cases cannot establish; it is not a maneuver-specific algorithm or quality
+evaluation. `a3124f9` changes tests only. REVIEW.md §81 records 123 C1 passes,
+1,557 repository passes plus the known xfail and restart recovery. All prior
+assumptions, qualification flags and runtime/data gates remain unchanged.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json

@@ -4626,6 +4626,70 @@ independent domain/return/error evidence, any required numerical certification
 and representative task evaluation remain gates. Do not promote this result
 to the three-question pilot merely because the synthetic gate is green.
 
+## 81. Restart Recovery and C1 Return/Frame Qualification (2026-10-21)
+
+The user reported a laptop restart and requested checking recovery, then
+continuing autonomously with periodic local commits. The worktree was clean at
+`f6e4479`, with the expected source/handover history intact. The local
+`origin/main` reference also pointed there; no fetch or push was performed.
+Terminal Python remained `/opt/venv/bin/python`, version 3.12.3, with 482G free
+as displayed by `df -h`. No model/cache download, dependency install or device
+access was necessary. ST availability and attached hardware were not rechecked
+or used; this is CPU-only synthetic qualification within the scope of §80.
+
+**Checkpoint `a3124f9`:** add nineteen cases to the existing simulator test file;
+no production source, C1 API, Config, wire, heuristic or geometric reference
+changed. Nearby probe/history code and tests established two local checks:
+missing returns must not turn a blocked-but-indistinguishable world into an
+excluded enclosure, and clear turning frames must retain useful registration.
+
+**Missing-return counterexamples:** four fixtures combine the approved minimum/
+maximum cylinder radii and heights. For every snapshot, construct both the
+empty and blocked exact captures at the same pose/tick. Keep only rays valid
+with identical ranges in both, and zero/mask the rest in both copies. Some rays
+are removed and some valid support remains in every snapshot. The complete
+eight-snapshot range/mask histories then match; common configuration, scope and
+acquisition metadata are unchanged. The blocked scene's geometric reference is
+blocked for all three tested turn rates (-1.5/0/+1.5 rad/s). Both input histories
+produce equal unknown probe results, never an excluded enclosure.
+
+This is a constructed correlated missing-data counterexample, not a sampled
+sensor failure process, accepted dropout model or actual occluder experiment.
+The ideal capture producer still has zero dropout. No frequency, probability,
+physical confidence level or missingness-independence claim follows. Within the
+controlled object sizes, a nonempty set of returns alone is still insufficient;
+the continuous enclosure must actually be excluded from supported evidence.
+
+**Turning-frame positives:** five headings (0, 0.37, pi/2 and either side of
+the principal-angle boundary) cross three acquisition turn rates. All fifteen
+empty-world cases exclude the same conservative 0.48 m enclosure with the
+unchanged 32,768-cell budget. Acquisitions use the existing exact local motion
+reference and may cross the principal heading boundary. The probe remains
+all-turn/conditional; this adds neither a maneuver-specific method nor runtime
+integration. These fixtures are not independent task cohorts or representative
+navigation success evidence.
+
+**Actual verification:** the four missing-return cases passed first, then the
+fifteen turning-frame cases passed; neither required a source repair or relaxed
+assertion. Final focused command `python -m pytest -q tests/test_sim.py -k
+synthetic_c1 --tb=short` passed 123 cases. The default repository gate
+`python -m pytest -q && ruff check . && git diff --check` passed: 1,557 tests,
+the unchanged transformer xfail, 71 existing ONNX/Torch warnings, no reported
+skips, 39.15 s. `ruff format --check tests/test_sim.py` and editor diagnostics
+also passed. No failed check occurred in this increment. The reviewed source
+diff contains only 105 added test lines; documentation-only follow-up validates
+references, local targets and whitespace without repeating the successful gate.
+
+No episodes, persisted fixture/log/report artifacts, accepted labels/data/splits,
+inference/training, new dependency/download, risk policy, hardware or push
+occurred. Pytest discards the fixture arrays; no long-running process or new raw
+artifact needs cleanup. These checks strengthen conditional synthetic evidence,
+not F21/M2 completion. Independently established domain/return/error evidence,
+actual occlusion qualification, any required numerical certification and
+representative task evaluation remain open. Collection and runtime integration
+remain outside the current authorization; do not replace those gates with more
+parameter checks or interpret this checkpoint as renewed run approval.
+
 ## Sources
 
 Hardware and tools:

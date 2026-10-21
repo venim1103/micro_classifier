@@ -529,6 +529,116 @@ def test_synthetic_c1_low_segments_stop_before_surfaces(c1_history):
     assert other[..., 1:] == pytest.approx(segments[..., 1:])
 
 
+@pytest.mark.parametrize("background_height", [0.05, 1.0])
+def test_synthetic_c1_geometric_occlusion_stops_free_prefixes(
+    c1_history, background_height
+):
+    from sim.diagnostics import (
+        _c1_low_free_segments,
+        capture_synthetic_c1_views,
+        inspect_synthetic_c1_history,
+        probe_synthetic_c1_enclosure,
+    )
+
+    foreground, background = (2.5, 2, 0.30), (3.2, 2, 0.30)
+    scenes = (
+        Scenario(start=(2, 2, 0), obstacles=(foreground,), obstacle_heights=(0.5,)),
+        Scenario(
+            start=(2, 2, 0),
+            obstacles=(foreground, background),
+            obstacle_heights=(0.5, background_height),
+        ),
+        Scenario(
+            start=(2, 2, 0),
+            obstacles=(background,),
+            obstacle_heights=(background_height,),
+        ),
+    )
+    records, visible_without_foreground = [], 0
+    for empty in c1_history:
+        captures = [
+            capture_synthetic_c1_views(
+                scene,
+                pose_m_rad=empty["capture_poses_m_rad"][0],
+                capture_tick=int(empty["capture_ticks"][0]),
+                synthetic_test_only=True,
+            )
+            for scene in scenes
+        ]
+        assert np.array_equal(captures[0]["tof_m"], captures[1]["tof_m"])
+        assert np.array_equal(captures[0]["tof_valid"], captures[1]["tof_valid"])
+        visible_without_foreground += np.count_nonzero(
+            (captures[2]["tof_m"] != empty["tof_m"])
+            | (captures[2]["tof_valid"] != empty["tof_valid"])
+        )
+        records.append(captures[1])
+    assert visible_without_foreground > 0
+    config = Config(**records[-1]["config"])
+    ray = tof_directions(0, config)[1, 3]
+    horizontal_speed = math.hypot(*ray[:2])
+    direction = ray[:2] / horizontal_speed
+    offset = np.asarray(foreground[:2]) - records[-1]["capture_poses_m_rad"][0, :2]
+    along = float(offset @ direction)
+    lateral = float(offset[0] * direction[1] - offset[1] * direction[0])
+    expected = (along - math.sqrt(foreground[2] ** 2 - lateral**2)) / horizontal_speed
+    assert 0 < config.tof_mount_height + expected * ray[2] < 0.5
+    assert records[-1]["tof_valid"][0, 1, 3]
+    assert records[-1]["tof_m"][0, 1, 3] == np.float32(expected)
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "synthetic_test_only": True,
+    }
+    inspected = inspect_synthetic_c1_history(records, **settings)
+    assert inspected["status"] == "registered_fixture"
+    segments, _ = _c1_low_free_segments(records[-1], inspected, [2, 2, 0], config)
+    assert len(segments) > 0
+    for obstacle in (foreground, background):
+        center = np.asarray(obstacle[:2]) - [2, 2]
+        for start, end in segments[..., :2]:
+            step = end - start
+            fraction = np.clip(np.dot(center - start, step) / np.dot(step, step), 0, 1)
+            assert np.linalg.norm(center - start - fraction * step) > obstacle[2]
+    result = probe_synthetic_c1_enclosure(
+        records,
+        speed=0.6,
+        current_body_clear=True,
+        controlled_envelope=True,
+        **settings,
+    )
+    assert result["status"] == "unknown"
+    assert result["fixture_enclosure_excluded"] is False
+
+
+def test_synthetic_c1_low_foreground_does_not_hide_tall_background(c1_history):
+    from sim.diagnostics import capture_synthetic_c1_views
+
+    foreground, background = (2.5, 2, 0.30), (3.2, 2, 0.30)
+    scenes = (
+        Scenario(start=(2, 2, 0), obstacles=(foreground,), obstacle_heights=(0.05,)),
+        Scenario(
+            start=(2, 2, 0),
+            obstacles=(foreground, background),
+            obstacle_heights=(0.05, 1.0),
+        ),
+        Scenario(start=(2, 2, 0), obstacles=(background,), obstacle_heights=(1.0,)),
+    )
+    for empty in c1_history:
+        captures = [
+            capture_synthetic_c1_views(
+                scene,
+                pose_m_rad=empty["capture_poses_m_rad"][0],
+                capture_tick=int(empty["capture_ticks"][0]),
+                synthetic_test_only=True,
+            )
+            for scene in scenes
+        ]
+        assert captures[1]["tof_valid"][0, 0, 3]
+        assert captures[1]["tof_m"][0, 0, 3] == captures[2]["tof_m"][0, 0, 3]
+        assert captures[0]["tof_m"][0, 0, 3] == empty["tof_m"][0, 0, 3]
+        assert captures[1]["tof_m"][0, 0, 3] != captures[0]["tof_m"][0, 0, 3]
+
+
 def test_synthetic_c1_enclosure_excludes_empty_straight_fixture(c1_history):
     from sim.diagnostics import probe_synthetic_c1_enclosure
 

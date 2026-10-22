@@ -2708,6 +2708,109 @@ unchanged. REVIEW.md §89 records 64 new checks, 13 reused complete scene record
 completes the approved package, not the independent clock/registration/arena-axis,
 domain/body-clear, return-process, numerical, resource or task-quality gates.
 
+#### Simulation-First C1 Evidence-Source Plan (2026-10-22)
+
+**Approved preparation only; all mechanisms below are proposals.** Following
+REVIEW.md §89, the user approved a design-only, simulation-first qualification
+plan for registration, timing, arena axes and domain/body clearance. This adds
+no source provider, evidence schema, audit implementation, fixture run or
+runtime path. REVIEW.md §90 records this preparation and its approval boundary.
+The proposed claim is deliberately narrow: consistency of a named
+ideal-simulator source with one declared fixture input and its preconditions.
+It is not physical metrology, numerical certification, independent task truth
+or qualification of the current live host input. The earlier general evidence
+plan still applies; this section specifies the missing source and binding work.
+
+**Two separate evidence lanes.** Candidate-side records contain only the
+already-proposed raw ranges/masks, timing, relative registration, body-frame
+goal and explicitly declared fixture provenance. Private qualification records
+may contain complete Scenario geometry, exact source poses, simulator event
+times and independent reference calculations. Bind them for an audit, but
+never merge the private fields into the candidate input, student/teacher
+renderer or blind human-review packet. Matching hashes establish identity,
+not correct physics, a truthful sensor, independent lineage or admissible data.
+No accepted family/cohort/split is created by a successful source comparison.
+
+| Evidence | Proposed Ideal-Simulation Source and Cross-Check | Unresolved Beyond That Claim |
+| --- | --- | --- |
+| Relative registration | Named capture/reference event poses from the fixture source; independently compose the relative transform in the private audit and compare its declared numerical enclosure with the candidate record. Retain source coordinate scale, axes, units and transform direction. | Shared simulator truth is not an ego estimator or physical pose reference. Reusing the converter as its own reference is circular. Nonzero transform uncertainty is unsupported by the current query API. |
+| Timing | A private source event ledger binds acquisition identity, delivery event, host sample and decision reference to one simulator clock epoch and tick period. Check the complete held/delivery sequence, not just equal timestamps. | Nominal cadence, receipt time or an age-zero State alone does not establish a clock mapping. No physical synchronization, drift model or timestamp-wrap convention is selected. |
+| Arena axes | Declared rectangular Scenario axes in the private reference frame, composed into the same reference body frame as the relative input. Cross-check sign, units and reference-pose identity. | A fixture yaw is not localization against a physical arena. Arbitrary walls, rotated scene geometry and an unknown arena frame remain outside the existing wall exclusion claim. |
+| Controlled domain | Private inspection of all declared fixture objects and boundaries against the already-approved static flat-floor cylinder/wall envelope, including omitted, hidden and occluded objects. | C1 rays cannot certify that no out-of-envelope object exists. A domain audit is oracle-assisted qualification metadata, not observation evidence or an adopted restriction on normal simulator objects. |
+| Current-body clearance | Private independent contact-inclusive circle/cylinder and boundary comparison at the exact reference event, retaining uncertainty/tangency as unresolved where applicable. | Absence of an occupied witness is not clearance. Conditioning acceptance on privileged body truth is oracle-assisted admission and cannot be reported as an autonomous observation-only baseline. |
+| Goal/motion and return model | Exact source state/frame values, versioned ideal ray/first-return configuration and source identities bind the input to the audit. Check supplied body-goal and motion against that record without exposing target answers. | The source shares simulator geometry; this does not validate device zones, materials, optics, braking capability, real odometry or task labels. |
+
+**Proposed binding record, private to qualification.** Identify the source
+revision and relevant code/configuration identities, fixture identity, clock
+epoch, capture batch and reference event. Bind the exact candidate payload,
+host frame, profile/calibration identity and private reference record. Include
+per-array shape, dtype, byte order and an explicit contiguous traversal order before
+hashing range/mask/tick/relative-pose arrays; do not rely on Python equality of
+booleans/integers, approximate float equality or mutable dictionary identity.
+Bind the supplied numerical scale and arithmetic allowance as provenance too.
+Invalidate the binding on any changed payload or dependency. These are proposed
+record semantics, not newly allocated fields in the experimental input or wire.
+
+The host frame means the exact binary32 bytes and the values obtained from
+decoding those bytes, not the higher-precision State object passed to an encoder.
+The current relative prototype calls `encode_state` for validation but continues
+using the original object; §89 therefore established no decoding equivalence.
+A future audit must retain both sides of a round trip and any goal/motion change.
+If exact fixture goal binding or an existing bound no longer holds, report the
+mismatch/unresolved evidence rather than rounding the goal, widening a tolerance
+or declaring the decoded state interchangeable. No wire adapter is authorized.
+
+**Lifecycle and failure rules for review.** A held batch keeps its original
+acquisition identity/time and byte-identical raw ranges, masks and source
+acquisition pose. Relative poses may change with the reference event; recompute
+and bind them to that event without rewriting acquisition evidence. A new
+delivery is not a fresh exposure. Repeated payload bytes under another source,
+clock epoch or calibration do not inherit a binding. Reject mixed-view clocks,
+reference-event substitution, configuration drift, timestamp reversal and
+missing delivery lineage. After a reset or wrap, require a newly reviewed epoch
+mapping and rebind every dependency; do not join across it by numeric proximity.
+No interpolation, older-batch fallback, persistent occupancy map or host-state
+freshness policy is adopted. The artificial `tick*50000` mapping fits a u32 host
+timestamp only through tick 85,899; tick 85,900 exceeds it. That arithmetic fact
+does not define modular ordering or qualify reset/wrap handling.
+
+**Audit outcomes are not decision outcomes.** A proposed source-consistent
+verdict means only that the bound ideal fixture records match their declared
+references under stated assumptions. An inconsistent verdict retains which
+dependency failed; unresolved means a required source, allowance or independent
+reference is missing. All three remain training-disabled, real-input-unqualified
+and numerically uncertified. A private domain/body audit may veto a proposed
+claim, but cannot manufacture a clear/blocked answer, replace unknown or satisfy
+the existing query's literal preconditions by silently injecting oracle flags.
+Any future experiment using oracle-assisted admission must name and report that
+conditioning separately, including rejections; it cannot establish observation-
+only runtime coverage or representative task quality.
+
+**Acceptance and stopping conditions.** Before implementing an audit, review
+the evidence lane/owner matrix and binding semantics. A bounded audit prototype
+should demonstrate a matching record and mutations of each bound dependency,
+including identical payload/different lineage, valid wire encoding with changed
+decoded values, held-record tampering, clock-epoch substitution, reversed frame
+composition, arena-axis mismatch and source-scale loss. It must also retain
+body-contact/domain failures privately, with no truth in candidate-side output
+and no coordinator/teacher/training calls. Independent reference arithmetic
+cannot call the producer/converter being audited. Matching records alone do
+not qualify numerical bounds; uncertainty without a justified enclosure remains
+unresolved. Stop at a precise source/claim mismatch rather than inventing an
+error budget, removing out-of-envelope fixtures or outcome-driven tuning.
+
+**Recommended next bounded scope, not yet approved:** a CPU-only, private
+synthetic source-binding audit helper and tests, using at most eight already-
+existing complete scene records and 32 audit cases, with zero coordinator
+queries. Reuse current packages/test helpers, source records and scalar geometry
+references; no new Scenario geometry, episode, log replay, persisted artifact,
+CLI, schema adoption, normal input consumer, collection or runtime integration.
+The output would be diagnostic source consistency and explicit missing-evidence
+reasons only, not labels or decisions. An audit passing would complete that
+bounded tooling scope, not approve the source model for deployment. Physical
+qualification still requires a separately reviewed sensor/reference/collection
+direction; the settled synthetic envelope and strict abstention do not change.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4718,7 +4821,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §89): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §90): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4760,6 +4863,11 @@ synthetic compatibility package. That package was separately approved and is
 now complete (§89), with conservative source-scale and arena-axis preservation.
 No runtime profile, evidence source, collection or integration is qualified or
 adopted by either the design draft or its synthetic compatibility checks.
+The design-only simulation-first source plan is now prepared (§7; REVIEW.md
+§90). It separates candidate input from private truth, proposes exact payload/
+event binding and invalidation, and limits any next audit to source consistency,
+not task decisions. Its eight-scene/32-case audit implementation is proposed,
+not authorized; physical sources and all earlier integration/data gates remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

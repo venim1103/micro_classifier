@@ -118,19 +118,19 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- User requested autonomous continuation and explicitly approved both staged
-  synthetic-only witness/question-feasibility tasks (REVIEW.md §§86-87). Both
-  stages are complete within the approved 32-geometry-fixture cap. The latest
-  continuation approved a design-only C1 input/evidence-qualification proposal,
-  now prepared in DESIGN.md §7 / REVIEW.md §88, not adoption or implementation.
-  The user then accepted the separately proposed bounded relative-frame/body-goal
-  prototype. `cfb76f3` completes it: 64 new checks, 13 reused scene records,
-  30 paired comparisons, at most six motion queries per call (REVIEW.md §89).
-  This approval is exhausted; collection, sensing adoption and runtime integration
-  remain unauthorized. Actual registration/clock/arena-axis/domain/body-clear
-  evidence is still missing; fixture flags and scale metadata are not attestation.
+- Latest approved deliverable: the design-only, simulation-first C1 evidence-
+  source plan is prepared (DESIGN.md §7 / REVIEW.md §90). It separates private
+  truth from candidate input and proposes source/event/payload binding, not
+  runtime qualification. A proposed private audit helper, at most eight reused
+  scenes / 32 audit cases / zero coordinator queries, still needs approval.
+  Prior staged witnesses/questions and relative compatibility are complete;
+  `cfb76f3` adds 64 checks, 13 reused scenes and 30 pairs (§89). Those bounded
+  approvals are exhausted. Actual registration/clock/arena-axis/domain/body-clear
+  evidence is missing; source hashes and fixture flags are not attestation.
+  No collection, sensing/profile adoption, audit implementation or runtime
+  integration is authorized by this design-only continuation.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-89 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-90 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1186,16 +1186,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §89 complete the
-approved bounded synthetic relative-input package in `cfb76f3`: 64 new checks,
-13 reused scene records, 30 paired comparisons, 59 total relative API calls and
-maximum six unique motions per call. Legacy source/test AST nodes are unchanged.
-The 1,909-pass gate plus known xfail passes. This establishes bounded fixture
-compatibility only, not live-wire or evidence-source qualification. Registration,
-clock, arena-axis, domain/body-clear and physical return sources remain missing;
-numerical/resource/task-quality gates are open. No further run, implementation,
-collection, input/profile adoption or integration follows automatically. Task 6/9,
-absent teacher assets and ST/board gates remain blocked. No background job.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §90 complete the
+approved design-only simulation-first evidence-source plan. The next candidate,
+not approved, is a private synthetic source-binding audit: at most eight reused
+complete scenes / 32 cases / zero coordinator queries, no new geometry or rollouts.
+Private domain/body truth must not become candidate input or autonomous
+observation-only admission. No source, physical/numerical bound, clock mapping,
+runtime profile, collection or integration is adopted. Source gate remains
+`cfb76f3`'s 1,909 passes plus known xfail, not rerun for this documentation work.
+Task 6/9, missing source evidence, teacher assets and ST/board remain blocked.
+No background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1281,6 +1281,9 @@ absent teacher assets and ST/board gates remain blocked. No background job.
   in `cfb76f3` (§89), within 13 reused scenes / 30 pairs. All 64 new checks and
   1,909 repository tests plus known xfail pass; this does not qualify the input
   sources, live wire, runtime rules, physical bounds or representative task quality.
+  Source plan (REVIEW.md §90): the approved design-only simulation-first plan is
+  prepared. Exact payload/event binding and private truth separation are proposed;
+  its bounded audit helper/tests are not approved or implemented.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

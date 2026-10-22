@@ -5301,6 +5301,73 @@ abstention and the already-approved synthetic envelope remain settled. Scoped
 document references, local targets, fences, status and whitespace are checked
 without presenting the earlier source gate as newly rerun evidence.
 
+## 90. Simulation-First C1 Evidence-Source Plan Prepared (2026-10-22)
+
+The user accepted the immediately preceding recommendation for a **design-only,
+simulation-first evidence-source qualification plan** for registration, timing,
+arena axes and domain/body clearance. Collection and integration remain excluded;
+this does not renew §89's completed prototype approval or authorize another
+implementation. Preparation and local checkpoint commits are the current scope.
+
+The worktree began clean at `ee20b14`, also the local `origin/main` reference
+after the user's push. The reported source/test edits have no current diff;
+their current contents and §89 were checked before editing. This continuation
+changes only DESIGN.md, this review and the concise AGENTS.md handoff. No source
+or test repair was attempted and no unchanged successful code gate was rerun.
+
+**Concrete proposal in DESIGN.md §7:** qualify only consistency of named ideal-
+simulator fixture sources, not physical sensing or an observation-only runtime.
+An evidence/owner matrix names capture/reference poses, simulator events, arena
+axes, complete domain geometry, reference-body contact and source state/return
+configuration. Each row states its independent cross-check and what the shared
+model cannot establish. Two lanes keep candidate input separate from private
+truth. Hash equality binds records but cannot attest truth, independent lineage,
+data acceptance or correct physics. Using private domain/body truth for admission
+must be reported as oracle-assisted conditioning, never silently supplied as
+student/teacher input or autonomous clearance evidence.
+
+The proposed private binding record identifies exact input/host-frame bytes,
+array shape/dtype/byte order, source/config/calibration identity, batch/reference
+events, clock epoch and numerical provenance. Mutating any dependency invalidates
+the binding. Held captures keep acquisition time and source pose; relative poses
+are rebound when the reference event changes. Equal payloads with different
+lineage cannot inherit a binding. Reset/wrap, missing delivery lineage, view-clock or
+frame mismatch stay unresolved rather than being bridged by nominal cadence.
+Proposed outcomes are source-consistent, inconsistent or unresolved under fixture
+assumptions, not a question answer or an automatically qualified source.
+
+**Source-grounded constraints:** the current relative query calls `encode_state`
+for validation and then reads the original higher-precision State, not a decoded
+binary32 frame. A source audit therefore needs an explicit round-trip comparison
+and must retain changes or failed exact goal binding, not loosen them. The
+`reference_tick*50000` fixture mapping fits u32 microseconds through tick 85,899;
+85,900 is out of range. This is arithmetic, not a newly chosen modular clock
+or rollover policy. No current timing, equality, error or numerical guard changed.
+
+**Recommended next scope, not approved:** isolated CPU-only private source-
+binding audit helper/tests, at most eight reused complete scene records and
+32 audit cases, zero coordinator queries. Proposed cases bind a matching source
+and mutate every dependency, including same payload/different lineage, decoded
+value changes, clock epochs, reversed transforms, arena axes and source scale.
+Keep body/domain failures private; output diagnostic consistency/reasons only.
+No new geometry, episode/log replay, artifact persistence, CLI, input/schema
+adoption, runtime consumer, labels/data/splits, training or hardware. A successful
+bounded audit would complete that tooling scope only; physical qualification
+still needs its own claim/reference/collection direction and evidence.
+
+**Verification and handoff:** scoped documentation links/local targets, fences,
+section ordering, source AST checks, timestamp arithmetic, diagnostics and
+whitespace pass. The AST check confirms the encode call's unused return and
+absence of a decode call in the current relative query. No code suite, fixture,
+new episode, data collection, log replay, download, model/training or hardware
+operation ran. The last source gate remains §89's 1,909 passes plus the known
+xfail, not newly rerun evidence. No background job or raw artifact needs cleanup;
+agent commits remain local, with no push. This design-only deliverable is complete.
+The proposed audit implementation requires its own explicit scope approval.
+Previously adopted strict abstention, synthetic envelope and risk decisions
+remain settled; Task 6/9 and all physical/numerical/task-quality/runtime gates
+remain open.
+
 ## Sources
 
 Hardware and tools:

@@ -78,13 +78,16 @@ def test_synthetic_c1_source_binding_fingerprint():
     assert _c1_source_binding_digest(np.float64(5)) != _c1_source_binding_digest(
         np.array(5.0)
     )
+    assert _c1_source_binding_digest({"frame": b"first"}) != _c1_source_binding_digest(
+        {"frame": b"second"}
+    )
 
 
 @pytest.fixture
 def c1_source(c1_history):
     from dataclasses import asdict
 
-    from interface.protocol import State
+    from interface.protocol import State, encode_state
     from sim.diagnostics import prepare_synthetic_c1_relative_input
 
     scene = Scenario(start=(2, 2, 0))
@@ -105,6 +108,7 @@ def c1_source(c1_history):
         "reference_pose_m_rad": [2.0, 2.0, 0.0],
         "fixture_goal_m": list(scene.goal),
         "fixture_state": asdict(state),
+        "host_frame": encode_state(state),
         "arena_yaw_rad": 0.0,
         "config": deepcopy(relative["config"]),
         "scenario": asdict(scene),
@@ -161,6 +165,7 @@ def c1_source(c1_history):
 def test_synthetic_c1_source_binding_audit(c1_source, monkeypatch, case):
     from dataclasses import asdict, replace
 
+    from interface.protocol import encode_state
     from sim import diagnostics
 
     relative, state, source = c1_source
@@ -170,6 +175,7 @@ def test_synthetic_c1_source_binding_audit(c1_source, monkeypatch, case):
             {
                 "relative_input": relative,
                 "fixture_state": asdict(state),
+                "host_frame": encode_state(state),
                 "private_source": source,
             }
         )
@@ -190,6 +196,7 @@ def test_synthetic_c1_source_binding_audit(c1_source, monkeypatch, case):
         )
         state = replace(state, goal_m=(3.015625, 1, 0))
         source["fixture_state"] = asdict(state)
+        source["host_frame"] = encode_state(state)
     elif case in ("changed_payload", "mask", "held_tamper"):
         index = tuple(np.argwhere(record["tof_valid"])[0])
         if case == "mask":
@@ -246,7 +253,7 @@ def test_synthetic_c1_source_binding_audit(c1_source, monkeypatch, case):
     elif case == "goal_binding":
         relative["fixture_goal_body_m"][0] = 2.0
     elif case == "motion_binding":
-        source["fixture_state"]["velocity_m_s"] = (0.25, 0, 0)
+        source["host_frame"] = encode_state(replace(state, velocity_m_s=(0.25, 0, 0)))
     elif case == "outside_domain":
         source["scenario"] = asdict(
             Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),))
@@ -352,6 +359,8 @@ def test_synthetic_c1_source_binding_audit(c1_source, monkeypatch, case):
         assert result["reason"] == "unsupported_candidate_scope_or_profile"
     elif case == "epoch":
         assert result["reason"] == "reference_clock_epoch_mismatch"
+    elif case == "motion_binding":
+        assert result["reason"] == "private_host_frame_mismatch"
     elif case == "outside_domain":
         assert result["reason"] == "private_domain_not_established"
     elif case == "body_contact":

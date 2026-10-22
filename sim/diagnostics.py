@@ -984,10 +984,12 @@ def _audit_synthetic_c1_source_binding(
     if type(expected_binding) is not str or len(expected_binding) != 64:
         return stop("missing_source_binding")
     try:
+        host_frame = encode_state(fixture_state)
         binding = _c1_source_binding_digest(
             {
                 "relative_input": relative_input,
                 "fixture_state": asdict(fixture_state),
+                "host_frame": host_frame,
                 "private_source": private_source,
             }
         )
@@ -1003,6 +1005,7 @@ def _audit_synthetic_c1_source_binding(
             "reference_pose_m_rad",
             "fixture_goal_m",
             "fixture_state",
+            "host_frame",
             "arena_yaw_rad",
             "config",
             "scenario",
@@ -1062,7 +1065,7 @@ def _audit_synthetic_c1_source_binding(
             or fixture_state.timestamp_us != tick * 50000
         ):
             return stop("reference_clock_mismatch")
-        decoded = decode_state(encode_state(fixture_state))
+        decoded = decode_state(host_frame)
         for field in (
             "velocity_m_s",
             "angular_velocity_rad_s",
@@ -1075,6 +1078,10 @@ def _audit_synthetic_c1_source_binding(
                 result["host_changed_fields"] += (field,)
         if result["host_changed_fields"]:
             return stop("host_round_trip_changed")
+        if type(private_source["host_frame"]) is not bytes or (
+            private_source["host_frame"] != host_frame
+        ):
+            return stop("private_host_frame_mismatch", "inconsistent_source_record")
         if _c1_source_binding_digest(
             asdict(fixture_state)
         ) != _c1_source_binding_digest(private_source["fixture_state"]):

@@ -819,6 +819,157 @@ def test_synthetic_c1_curved_tube_keeps_exhausted_budget_unknown(c1_history, pie
     assert result["fixture_enclosure_excluded"] is False
 
 
+@pytest.mark.parametrize("turn", [-1.5, 0, 1.5])
+@pytest.mark.parametrize("braking_turn", [-1.5, 0, 1.5])
+@pytest.mark.parametrize("yaw", [0, 0.37])
+def test_synthetic_c1_occupied_witness_supports_visible_blockage(
+    turn, braking_turn, yaw
+):
+    from sim.diagnostics import (
+        capture_synthetic_c1_views,
+        probe_synthetic_c1_occupied_witness,
+    )
+    from sim.navigation import evaluate_synthetic
+
+    forward = np.array([math.cos(yaw), math.sin(yaw)])
+    center = np.array([2, 2]) + 0.6 * forward
+    scene = Scenario(
+        start=(2, 2, yaw),
+        goal=(5, 2),
+        obstacles=((*center, 0.30),),
+        obstacle_heights=(0.05 if braking_turn == 0 else 1.0,),
+    )
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*(np.array([2, 2]) - 0.09 * forward), yaw],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    reference = evaluate_synthetic(
+        scene, speed=0.6, turn_rate=turn, tof_age_s=0.15, synthetic_test_only=True
+    )
+    assert (
+        reference["maneuvers"][{-1.5: "right", 0: "centre", 1.5: "left"}[braking_turn]][
+            "status"
+        ]
+        == "blocked"
+    )
+    result = probe_synthetic_c1_occupied_witness(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.6,
+        turn_rate=turn,
+        braking_turn_rate=braking_turn,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "blocked_under_fixture_assumptions", result
+    assert result["fixture_blocked_witness"] is True
+    assert result["witness_indices"]
+    assert result["occupied_point_error_upper_m"] > 0
+    for field in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+    ):
+        assert result[field] is False
+
+
+@pytest.mark.parametrize("keep_floor", [False, True])
+def test_synthetic_c1_occupied_witness_rejects_rounded_floor_and_missing(keep_floor):
+    from sim.diagnostics import (
+        capture_synthetic_c1_views,
+        inspect_synthetic_c1_history,
+        probe_synthetic_c1_occupied_witness,
+    )
+
+    scene = Scenario(start=(2, 2, 0), goal=(5, 2))
+    record = capture_synthetic_c1_views(
+        scene, pose_m_rad=[1.91, 2, 0], capture_tick=20, synthetic_test_only=True
+    )
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": scene.start,
+        "synthetic_test_only": True,
+    }
+    inspection = inspect_synthetic_c1_history([record], **settings)
+    points = inspection["points_body_m"]
+    floor = (
+        record["tof_valid"]
+        & (points[..., 2] > 0)
+        & (points[..., 2] < 1e-6)
+        & (np.linalg.norm(points[..., :2], axis=-1) < 0.17)
+    )
+    assert np.any(floor)
+    record["tof_valid"] = floor if keep_floor else np.zeros_like(floor)
+    record["tof_m"][~record["tof_valid"]] = 0
+    result = probe_synthetic_c1_occupied_witness(
+        [record], speed=0.6, turn_rate=0, controlled_envelope=True, **settings
+    )
+    assert result["status"] == "unknown"
+    assert result["fixture_blocked_witness"] is False
+    assert not result["witness_indices"]
+    assert result.get("occupied_return_count", 0) == 0
+    if keep_floor:
+        assert result["reason"] == "no_qualified_occupied_returns"
+
+
+@pytest.mark.parametrize(
+    "field,value,reason",
+    [
+        ("controlled_envelope", False, "controlled_envelope_not_established"),
+        ("controlled_envelope", 1, "controlled_envelope_not_established"),
+        ("reference_tick", 24, "stale_capture"),
+        ("reference_pose_m_rad", [3, 2, 0], "unsupported_capture_to_reference_motion"),
+        ("history", [], "unsupported_history"),
+        ("synthetic_test_only", False, None),
+        ("reference_tick", True, None),
+        ("curved_segments", 0, None),
+        ("curved_segments", True, None),
+        ("curved_segments", 129, None),
+        ("speed", -0.01, None),
+        ("speed", 0.61, None),
+        ("turn_rate", True, None),
+        ("turn_rate", np.inf, None),
+        ("turn_rate", 1.50001, None),
+        ("braking_turn_rate", None, None),
+        ("braking_turn_rate", 10**400, None),
+    ],
+)
+def test_synthetic_c1_occupied_witness_rejects_unsupported_evidence(
+    field, value, reason
+):
+    from sim.diagnostics import (
+        capture_synthetic_c1_views,
+        probe_synthetic_c1_occupied_witness,
+    )
+
+    scene = Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.6, 2, 0.30),))
+    record = capture_synthetic_c1_views(
+        scene, pose_m_rad=[1.91, 2, 0], capture_tick=20, synthetic_test_only=True
+    )
+    settings = {
+        "history": [record],
+        "reference_tick": 23,
+        "reference_pose_m_rad": scene.start,
+        "speed": 0.6,
+        "turn_rate": 0,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+        field: value,
+    }
+    if reason is None:
+        with pytest.raises(ValueError):
+            probe_synthetic_c1_occupied_witness(**settings)
+    else:
+        result = probe_synthetic_c1_occupied_witness(**settings)
+        assert result["status"] == "unknown"
+        assert result["reason"] == reason
+        assert result["fixture_blocked_witness"] is False
+
+
 @pytest.mark.parametrize("side", [-1, 1])
 @pytest.mark.parametrize("radius", [0.05, 0.30])
 def test_synthetic_c1_coarse_curve_preserves_off_polyline_collision(side, radius):
@@ -901,6 +1052,7 @@ def test_synthetic_c1_outer_curve_tube_is_not_a_blocked_witness(side, radius):
         _c1_curved_centerline,
         capture_synthetic_c1_views,
         probe_synthetic_c1_enclosure,
+        probe_synthetic_c1_occupied_witness,
     )
     from sim.navigation import evaluate_synthetic
 
@@ -943,6 +1095,20 @@ def test_synthetic_c1_outer_curve_tube_is_not_a_blocked_witness(side, radius):
     assert result["status"] == "unknown"
     assert result["fixture_enclosure_excluded"] is False
     assert result["cells_checked"] > 0
+
+    witness = probe_synthetic_c1_occupied_witness(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=speed,
+        turn_rate=turn,
+        braking_turn_rate=turn,
+        curved_segments=1,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert witness["status"] == "unknown"
+    assert witness["fixture_blocked_witness"] is False
 
 
 @pytest.mark.parametrize("side", [-1, 1])

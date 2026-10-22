@@ -583,6 +583,139 @@ def probe_synthetic_c1_enclosure(
     return result
 
 
+def probe_synthetic_c1_occupied_witness(
+    history,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    speed,
+    turn_rate,
+    braking_turn_rate=0.0,
+    curved_segments=16,
+    controlled_envelope=False,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Probe occupied returns inside a declared maneuver, never its outer tube."""
+    if synthetic_test_only is not True:
+        raise ValueError("C1 witness requires synthetic_test_only=True")
+    config = _c1_config(config)
+    speed, turn_rate, braking_turn_rate = map(
+        float, _c1_array([speed, turn_rate, braking_turn_rate], (3,))
+    )
+    if not (
+        0 <= speed <= config.max_speed
+        and abs(turn_rate) <= config.max_turn_rate
+        and abs(braking_turn_rate) <= config.max_turn_rate
+    ):
+        raise ValueError("C1 witness motion exceeds the simulated limits")
+    if type(curved_segments) is not int or not 1 <= curved_segments <= 128:
+        raise ValueError("C1 witness requires one through 128 segments per phase")
+    result = {
+        "schema": "micro-classifier/synthetic-c1-occupied-witness/1",
+        "allowed_use": "controlled_synthetic_qualification_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "status": "unknown",
+        "reason": "controlled_envelope_not_established",
+        "fixture_blocked_witness": False,
+        "witness_indices": [],
+        "assumed_controlled_envelope": controlled_envelope is True,
+        "assumed_turn_rate_rad_s": turn_rate,
+        "assumed_braking_turn_rate_rad_s": braking_turn_rate,
+        "assumed_segments_per_phase": curved_segments,
+        "assumptions": {
+            "declared_exact_pose_and_first_return_model": True,
+            "static_floor_supported_cylinders_and_axis_aligned_walls": True,
+            "range_rounding_and_transform_allowances_only": True,
+            "declared_reaction_and_braking_turns": True,
+        },
+    }
+    inspection = inspect_synthetic_c1_history(
+        history,
+        reference_tick=reference_tick,
+        reference_pose_m_rad=reference_pose_m_rad,
+        config=config,
+        synthetic_test_only=True,
+    )
+    if inspection["status"] != "registered_fixture":
+        result["reason"] = inspection["reason"]
+        return result
+    if controlled_envelope is not True:
+        return result
+    if (
+        config.radius,
+        config.acceleration,
+        config.max_speed,
+        config.max_turn_rate,
+        config.max_range,
+        config.wall_height,
+    ) != (0.18, 1, 0.6, 1.5, 4, 1):
+        result["reason"] = "unsupported_dynamics_or_wall_profile"
+        return result
+    reference = _c1_array(reference_pose_m_rad, (3,)).astype(float)
+    record = history[-1]
+    pose = record["capture_poses_m_rad"][0]
+    age = inspection["latest_age_ticks"] * config.dt
+    guard = (
+        256
+        * np.finfo(float).eps
+        * max(1.0, config.max_range, *np.abs(reference), *np.abs(pose))
+    )
+    yaw_delta = math.atan2(math.sin(pose[2]), math.cos(pose[2])) - math.atan2(
+        math.sin(reference[2]), math.cos(reference[2])
+    )
+    yaw_delta = math.atan2(math.sin(yaw_delta), math.cos(yaw_delta))
+    if (
+        math.hypot(float(pose[0]) - reference[0], float(pose[1]) - reference[1])
+        > config.max_speed * age + guard
+        or abs(yaw_delta) > config.max_turn_rate * age + guard
+    ):
+        result["reason"] = "unsupported_capture_to_reference_motion"
+        return result
+    if guard >= config.radius:
+        result["reason"] = "unsupported_numerical_scale"
+        return result
+    ranges = record["tof_m"]
+    lower = np.nextafter(ranges, np.float32(0)).astype(float)
+    upper = np.nextafter(ranges, np.float32(np.inf)).astype(float)
+    errors = np.maximum(ranges.astype(float) - lower, upper - ranges) + guard
+    points = inspection["points_body_m"]
+    occupied = (
+        inspection["point_valid"]
+        & (points[..., 2] - errors > guard)
+        & (points[..., 2] + errors < config.wall_height - guard)
+    )
+    result["occupied_return_count"] = int(np.count_nonzero(occupied))
+    if not np.any(occupied):
+        result["reason"] = "no_qualified_occupied_returns"
+        return result
+    centerline, curve_error = _c1_curved_centerline(
+        speed, turn_rate, age, config, curved_segments, braking_turn_rate
+    )
+    differences = points[occupied][:, None, :2] - centerline[None, :, :]
+    distances = np.hypot(differences[..., 0], differences[..., 1])
+    supported = np.any(
+        distances + errors[occupied, None] + curve_error + guard < config.radius,
+        axis=1,
+    )
+    result.update(
+        reason="no_strict_inner_footprint_witness",
+        centerline_error_allowance_m=curve_error,
+        occupied_point_error_upper_m=float(errors[occupied].max()),
+        witness_indices=np.argwhere(occupied)[supported].tolist(),
+    )
+    if np.any(supported):
+        result.update(
+            status="blocked_under_fixture_assumptions",
+            reason="occupied_return_enclosure_inside_maneuver_body",
+            fixture_blocked_witness=True,
+        )
+    return result
+
+
 class DiagnosticRoverEnv(RoverEnv):
     """Keep acquisition references outside the unchanged student observations."""
 

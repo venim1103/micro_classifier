@@ -2368,13 +2368,16 @@ domain/return/error evidence, numerical certification where required and
 representative task quality still gate integration and collection; this is not
 a complete three-question rules baseline.
 
-#### Proposed C1 Question-Level Qualification (2026-10-22; Unaccepted)
+#### Approved C1 Synthetic Question-Level Package (2026-10-22)
 
-The next candidate is a separate, host-only synthetic evidence prototype, not
+The user explicitly approved both stages below, with Stage B conditional on
+Stage A's checks passing (REVIEW.md §86). This is a separate, host-only
+synthetic evidence prototype, not
 a runtime replacement or new target definition. The approved cylinder/height/
 floor/wall envelope and ideal acquisition assumptions would stay unchanged.
 REVIEW.md §85 records the completed prerequisite checks and the pending scope
-decision. Neither stage below is implemented or approved by this proposal.
+proposal as it stood then; §86 supersedes its approval-blocked status. Stage A
+is implemented below; Stage B remains authorized follow-up, not completed work.
 
 **Stage A: positive occupied-point evidence.** An outer tube can exclude a
 collision when every allowed obstacle is excluded from it. Membership of a
@@ -2425,7 +2428,7 @@ flags stay false. The normal rules, codecs, defaults, input/history and existing
 artifacts must remain unchanged. No controller, exporter or log adapter belongs
 to this candidate scope.
 
-**Proposed bounded work and checks:** at most 32 distinct hand-constructed
+**Approved bounded work and checks:** at most 32 distinct hand-constructed
 geometry fixtures, CPU-only and ephemeral; invalid-input and arithmetic tests
 may reuse them. Keep the existing per-query work/segment/depth limits and at
 most six maneuver/capacity queries per fixture. Require visible blocked
@@ -2438,11 +2441,33 @@ commits. No episode rollout, collection, persistence of task data, split,
 teacher/inference/training, dependency/download, risk adoption, runtime/wire
 integration or hardware work would be authorized.
 
-**Proposed default:** approve Stage A first and Stage B only after its focused
+**Adopted sequence:** Stage A first and Stage B only after its focused
 checks pass, within this single synthetic-only package. If Stage A cannot
 justify its hit/trajectory enclosures, record that blocker and do not manufacture
-question answers. This scope decision is distinct from the already-approved
+question answers. This implementation scope is distinct from the already-approved
 object envelope; neither sensor adoption nor physical qualification is requested.
+
+Stage A is implemented in the opt-in `probe_synthetic_c1_occupied_witness`.
+It reuses the strict latest-history inspection and motion/profile rejection.
+One full neighboring float32 step on either side of a stored range, plus the
+existing source-scale transform guard, encloses rounding and supplies a
+conservative isotropic point allowance. Only complete height enclosures
+strictly between floor and wall-height limits count as occupied returns.
+The complete XY point allowance plus the existing trajectory allowance and
+guard must fit strictly inside the body radius at a centerline vertex. That
+trajectory allowance includes chord deviation as well as endpoint error, so
+the vertex check can reject more than necessary; it never expands the positive
+support region. Excessive numerical scale stays unknown. These remain
+assumption-based implementation allowances, not certified numerical bounds,
+measured errors or a newly accepted uncertainty/risk policy.
+
+The separate `micro-classifier/synthetic-c1-occupied-witness/1` result reports
+`blocked_under_fixture_assumptions` or unknown, occupied count, witness view/
+row/column indices and point/trajectory allowances. It never emits clear or
+question probabilities. All qualification/training flags remain false. Existing
+exclusion, capture and runtime APIs are unchanged. REVIEW.md §86 records the
+above-floor rounding counterexample, visible blocked and unsupported evidence
+checks; Stage A passing is not completion of Stage B or a runtime baseline.
 
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -4454,7 +4479,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §85): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §86): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4483,9 +4508,11 @@ return/error evidence, required numerical qualification and representative task
 quality remain open. Do not collect task diagnostics or integrate the prototype
 merely because its synthetic checks pass.
 The one-segment allowance and outer-versus-inner evidence checks are complete
-(§7; REVIEW.md §85). A separate positive-witness/question-level synthetic package
-is proposed, not adopted or implemented. Its scope decision is pending; the
-existing controlled object envelope does not need to be re-approved.
+(§7; REVIEW.md §85). The user then approved a separate staged positive-witness/
+question-level synthetic package (§86). Stage A occupied-return witnesses now
+pass; Stage B is the next authorized task, not a complete question baseline.
+The approved object envelope, no-collection/runtime boundaries and physical/
+numerical/task-quality gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

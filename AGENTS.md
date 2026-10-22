@@ -118,10 +118,11 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- User requested autonomous continuation on 2026-10-22. REVIEW.md §85 records
-  completed synthetic prerequisites and a concrete new-scope proposal pending
-  approval. No background job is running; no runtime or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-85 supersede conflicting historical
+- User requested autonomous continuation and explicitly approved both staged
+  synthetic-only witness/question-feasibility tasks (REVIEW.md §86). Stage A
+  passes; continue with Stage B within the approved 32-geometry-fixture cap.
+  No background job is running; no runtime integration or collection is authorized.
+- Latest decisions and results: REVIEW.md §§72-86 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -132,7 +133,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,778 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,815 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -218,8 +219,12 @@ from them. Historical details below are reference material, not new approvals.
   `cc7f961` and `afd0f0f` add eight one-segment counterexamples (§85): actual
   collisions outside the unexpanded polyline stay unknown, and occupied points
   inside an outer tube do not imply collision. Runtime/bounds remain unchanged.
-  A staged occupied-point witness and question-feasibility package is proposed
-  in DESIGN.md §7, not implemented or adopted; scope approval is pending.
+  The user then approved the staged package in DESIGN.md §7 (§86). `d82fca3`
+  adds Stage A occupied-return witnesses: complete above-floor rounding/transform
+  enclosures and strict inner-body containment, never outer-tube membership.
+  All 37 new cases pass, including low cylinders and rounded-floor abstention.
+  This remains synthetic-only, not numerical/physical certification or runtime
+  rules; the authorized question-feasibility coordinator is still to implement.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -1171,14 +1176,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §85 record
-coarse-step and outer-versus-inner C1 evidence checks. Existing APIs, runtime,
-inputs/wire and numerical bounds remain unchanged. A concrete staged synthetic
-positive-witness/question-level feasibility package awaits scope approval; do
-not implement it on the strength of this proposal alone. The approved object
-envelope is unchanged and need not be re-asked. Numerical certification,
-independent physical evidence, representative quality, collection, integration
-and Task 6/9 gates remain open. Teacher assets are no longer cached.
+Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §86 record
+explicit approval of the staged synthetic package and completion of Stage A
+occupied-return evidence in `d82fca3`. Next authorized task: Stage B conservative
+question feasibility, within 32 distinct hand-constructed geometries and six
+maneuver/capacity queries per fixture. Keep the oracle in test assertions only,
+goals fixture-only, unknown/conflict abstention and all normal inputs/wire/rules
+unchanged. Numerical/physical certification, representative task quality,
+collection, integration and Task 6/9 gates remain open. Teacher assets are absent.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1251,10 +1256,12 @@ and Task 6/9 gates remain open. Teacher assets are no longer cached.
   and 160 new cases. Default disk/straight results match exactly in 36 checks.
   Unknown blocked/masked/wall/budget outcomes remain; physical evidence, numerical
   certification, representative task quality and integration are still blocked.
-  Latest prerequisite checks (REVIEW.md §85): eight one-segment counterexamples
+  Prerequisite checks (REVIEW.md §85): eight one-segment counterexamples
   pass in `cc7f961`/`afd0f0f`, with no runtime or bound change. A concrete
-  positive-witness/question-feasibility proposal is ready; that new inference
-  scope is approval-blocked, not an adopted baseline or renewed collection.
+  positive-witness/question-feasibility proposal was prepared, not then approved.
+  Latest scope/result (REVIEW.md §86): user explicitly approved both stages;
+  Stage A `d82fca3` passes 37 new tests and the 1,815-pass gate. Stage B is now
+  authorized synthetic-only follow-up, not runtime/data approval or task completion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

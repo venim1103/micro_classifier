@@ -4995,6 +4995,77 @@ inference/training, dependency, hardware or accepted-policy change occurred.
 Documentation-only follow-up validates references, targets, fences and whitespace
 without rerunning the unchanged successful code gate.
 
+## 86. Approved C1 Package and Stage A Witnesses (2026-10-22)
+
+After §85 was committed in `f95086d`, the user explicitly selected **Approve
+both stages** in the batched scope question. Stage A occupied-point evidence
+comes first; Stage B question feasibility may proceed only after its checks
+pass. DESIGN.md §7 now records the adopted implementation scope: CPU-only,
+at most 32 distinct hand-constructed geometry fixtures, at most six maneuver/
+capacity queries per fixture and existing work limits. No episode rollout,
+task data/labels/splits, runtime/wire integration, calibrated probabilities,
+training, dependency/download, risk-policy or hardware approval is implied.
+The object envelope remains the previously approved one, not a new restriction.
+
+**Stage A source `d82fca3`:** separate opt-in
+`probe_synthetic_c1_occupied_witness` reuses strict C1 latest-history inspection,
+config/dynamics limits, declared controlled envelope and acquisition/reference
+motion compatibility. It takes no Scenario, oracle answer or privileged geometry.
+Stored float32 ranges receive a full predecessor/successor rounding enclosure
+and the existing source-scale transformation guard. Complete transformed height
+enclosures must lie strictly above the floor and below the wall-height limit.
+All unsupported, masked, stale, floor-adjacent and uncontained returns abstain.
+
+At centerline vertices, the entire assumed XY hit ball plus the existing
+trajectory allowance and guard must fit strictly within radius b. This uses
+the inner inequality from §7, never an outer expanded-tube membership test.
+The shared allowance includes chord deviation as well as endpoint error, making
+the vertex check deliberately conservative. No bound is changed or certified.
+The separate experimental schema reports conditional blocked witnesses or
+unknown, point indices and allowances, never clear or calibrated probabilities.
+Training, real-input, free-space and numerical-certification flags stay false.
+
+**Actual checks:** the initial visible straight blocked test passed immediately.
+Expanded reaction/braking turns and rotated registration passed with the separate
+geometry oracle blocked. Low 0.05 m cylinders are covered for centre braking;
+1 m cylinders cover turning braking. A floor fixture selects valid, very near
+points whose rounded nominal height is positive but whose enclosure meets the
+floor: both retained-floor and fully masked variants remain unknown with no
+occupied count. Seventeen malformed/undeclared/stale/impossible-motion controls
+reject or abstain. All four pre-existing outer-tube clear-world fixtures remain
+unknown when also passed to the new witness API. Total: 37 new parameter cases
+and one intentionally extended existing test family; no reference target changes.
+
+A repeated Scene assignment initially placed the low-height variant in the
+older rear-obstacle test instead of the new witness test. A local diff/read
+check caught this before the gate; the old fixture was restored and the intended
+new fixture updated. The same focused slice passed 41 checks after that repair.
+No failed behavior, assertion relaxation or limit increase was needed. The
+final gate `python -m pytest -q && ruff check . && git diff --check` passed:
+1,815 tests plus the known transformer xfail, 71 existing warnings, no reported
+skips, 38.73 s. Changed-file format and editor diagnostics pass. Pylance reports
+all five resolved witness callers compatible. AST comparison with `f95086d`
+confirms the only runtime change is the new function; prior module/test nodes
+remain unchanged except the intentionally extended outer-tube family.
+
+The package so far uses ten distinct scene geometries: four visible positive
+variations, one default-height rejection scene, one empty floor scene and four
+reused outer-tube scenes. Phase-control/invalid-input variations reuse these;
+they are not new episodes or task data. Fixture arrays are ephemeral, no raw
+artifact needs cleanup and no agent push occurred. Existing exclusion, capture,
+inspection, normal observations/wire, heuristic, oracle and artifacts remain
+unchanged. Point/trajectory enclosures are conditional numerical allowances,
+not formal certification, measured uncertainty or physical qualification.
+
+Stage A's focused and default gates satisfy the approved prerequisite for
+Stage B. The next authorized task is the separate conservative synthetic
+question-feasibility coordinator, preserving unknown/conflict abstention and
+existing target ranking/momentum semantics. It is not implemented at this
+checkpoint. Other numerical/physical, representative task-quality, collection,
+integration, ST, teacher-assets and board gates remain unchanged. Documentation
+checks validate references, local targets, fences and status without rerunning
+the unchanged successful code gate.
+
 ## Sources
 
 Hardware and tools:

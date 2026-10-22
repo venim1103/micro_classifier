@@ -60,6 +60,252 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
     )
 
 
+def test_synthetic_c1_source_recorder_owns_capture():
+    from interface.protocol import State
+    from sim.diagnostics import _SyntheticC1SourceRecorder
+
+    recorder = _SyntheticC1SourceRecorder(
+        Scenario(start=(2, 2, 0)), synthetic_test_only=True
+    )
+    pose = np.array([2.0, 2.0, 0.0])
+    goal = [3, 1, 0]
+    for tick in range(20, 24):
+        recorder.record_tick(
+            tick,
+            pose_m_rad=pose,
+            fixture_state=State(timestamp_us=tick * 50000, goal_m=goal),
+        )
+    pose[0], goal[0] = 99, 99
+    bundle = recorder.snapshot()
+    events = bundle["private_source"]["history"]
+    assert [event["snapshot_tick"] for event in events] == [22, 23]
+    assert [event["delivery_tick"] for event in events] == [22, 22]
+    assert events[0]["capture_id"] == events[1]["capture_id"]
+    assert bundle["fixture_state"].goal_m == [3, 1, 0]
+    assert bundle["private_source"]["reference_pose_m_rad"] == [2.0, 2.0, 0.0]
+    assert recorder.audit(bundle)["status"] == "consistent_under_fixture_assumptions"
+    binding = bundle["binding_sha256"]
+    bundle["private_source"]["history"][0]["capture"]["tof_m"][:] = 0
+    assert recorder.snapshot()["binding_sha256"] == binding
+    assert recorder.audit(bundle)["status"] == "inconsistent_source_record"
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "cadence",
+        "bounded_history",
+        "reference_event",
+        "candidate_copy",
+        "private_copy",
+        "source_manifest",
+        "foreign_recorder",
+        "file_drift",
+        "invalid_tick",
+        "bad_state_timestamp",
+        "warmup",
+        "opt_in",
+        "binary32_change",
+        "outside_domain",
+        "body_contact",
+    ],
+)
+def test_synthetic_c1_source_recorder_boundaries(monkeypatch, case):
+    from dataclasses import asdict
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("a private recorder must not query decisions or collect episodes")
+
+    for name in (
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "write_episode",
+        "RoverEnv",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    scene = (
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),))
+        if case == "outside_domain"
+        else Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),))
+        if case == "body_contact"
+        else Scenario(start=(2, 2, 0))
+    )
+    recorder = diagnostics._SyntheticC1SourceRecorder(scene, synthetic_test_only=True)
+    goal = (scene.goal[0] - 2, scene.goal[1] - 2, 0)
+
+    def record(owner, tick, timestamp=None):
+        owner.record_tick(
+            tick,
+            pose_m_rad=[2, 2, 0],
+            fixture_state=State(
+                timestamp_us=tick * 50000 if timestamp is None else timestamp,
+                velocity_m_s=(0.6 if case == "binary32_change" else 0, 0, 0),
+                goal_m=goal,
+            ),
+        )
+
+    if case == "warmup":
+        with pytest.raises(ValueError, match="delivered"):
+            recorder.snapshot()
+    for tick in range(
+        20, 36 if case == "bounded_history" else 23 if case == "warmup" else 24
+    ):
+        record(recorder, tick)
+        assert len(recorder._history) <= 8
+        assert len(recorder._pending) <= 2
+        if case == "warmup" and tick < 22:
+            with pytest.raises(ValueError, match="delivered"):
+                recorder.snapshot()
+    bundle = recorder.snapshot()
+    assert (
+        diagnostics._c1_source_binding_digest(bundle["source_files"])
+        == bundle["private_source"]["producer_identity"]
+    )
+    assert set(bundle["source_files"]) == {
+        "sim/diagnostics.py",
+        "sim/rover.py",
+        "interface/protocol.py",
+    }
+    assert all(len(value) == 64 for value in bundle["source_files"].values())
+    assert "scenario" not in bundle["relative_input"]
+    assert "source_files" not in bundle["relative_input"]
+    assert all(
+        bundle[key] is False
+        for key in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+        )
+    )
+    if case == "cadence":
+        assert [
+            event["capture"]["capture_ticks"][0]
+            for event in bundle["private_source"]["history"]
+        ] == [20, 20]
+        assert [event["delivery_tick"] for event in recorder._pending] == [24, 25]
+    elif case == "bounded_history":
+        assert len(bundle["private_source"]["history"]) == 8
+        assert [
+            event["snapshot_tick"] for event in bundle["private_source"]["history"]
+        ] == list(range(28, 36))
+    elif case == "reference_event":
+        old = bundle
+        record(recorder, 24)
+        with pytest.raises(ValueError, match="current reference"):
+            recorder.audit(old)
+        bundle = recorder.snapshot()
+        assert bundle["private_source"]["reference_tick"] == 24
+        assert bundle["binding_sha256"] != old["binding_sha256"]
+        assert recorder.audit(old)["status"] == "inconsistent_source_record"
+    elif case in ("candidate_copy", "private_copy", "source_manifest"):
+        if case == "candidate_copy":
+            bundle["relative_input"]["fixture_goal_body_m"][0] += 1
+        elif case == "private_copy":
+            bundle["private_source"]["scenario"]["name"] = "rewritten-source"
+        else:
+            bundle["source_files"]["sim/rover.py"] = "0" * 64
+            bundle["private_source"]["producer_identity"] = (
+                diagnostics._c1_source_binding_digest(bundle["source_files"])
+            )
+        bundle["binding_sha256"] = diagnostics._c1_source_binding_digest(
+            {
+                "relative_input": bundle["relative_input"],
+                "fixture_state": asdict(bundle["fixture_state"]),
+                "host_frame": encode_state(bundle["fixture_state"]),
+                "private_source": bundle["private_source"],
+            }
+        )
+    elif case == "foreign_recorder":
+        other = diagnostics._SyntheticC1SourceRecorder(scene, synthetic_test_only=True)
+        for tick in range(20, 24):
+            record(other, tick)
+        foreign = other.snapshot()
+        assert (
+            foreign["private_source"]["clock_epoch"]
+            != bundle["private_source"]["clock_epoch"]
+        )
+        bundle = foreign
+    elif case == "file_drift":
+        changed = dict(bundle["source_files"], **{"sim/rover.py": "0" * 64})
+        monkeypatch.setattr(recorder, "_source_files", lambda: changed)
+        with pytest.raises(ValueError, match="source files changed"):
+            recorder.snapshot()
+    elif case == "invalid_tick":
+        for tick in (True, 23, 25, 85900):
+            with pytest.raises(ValueError, match="fixture ticks"):
+                record(recorder, tick)
+        assert recorder.snapshot()["binding_sha256"] == bundle["binding_sha256"]
+    elif case == "bad_state_timestamp":
+        with pytest.raises(ValueError, match="timestamp"):
+            record(recorder, 24, timestamp=1200001)
+        assert recorder.snapshot()["binding_sha256"] == bundle["binding_sha256"]
+    elif case == "opt_in":
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._SyntheticC1SourceRecorder(scene, synthetic_test_only=1)
+        bundle["training_approved"] = True
+        with pytest.raises(ValueError, match="unsupported private"):
+            recorder.audit(bundle)
+        bundle["training_approved"] = False
+    for name in (
+        "capture_synthetic_c1_views",
+        "prepare_synthetic_c1_relative_input",
+        "inspect_synthetic_c1_history",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    result = recorder.audit(bundle)
+    assert result["status"] == (
+        "inconsistent_source_record"
+        if case
+        in (
+            "candidate_copy",
+            "private_copy",
+            "source_manifest",
+            "foreign_recorder",
+            "file_drift",
+        )
+        else "unresolved_source_evidence"
+        if case
+        in (
+            "binary32_change",
+            "outside_domain",
+            "body_contact",
+        )
+        else "consistent_under_fixture_assumptions"
+    )
+    assert set(result) == {
+        "allowed_use",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "status",
+        "reason",
+        "binding_sha256",
+        "host_changed_fields",
+    }
+    assert all(
+        result[key] is False
+        for key in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+        )
+    )
+    if case == "binary32_change":
+        assert result["reason"] == "host_round_trip_changed"
+    elif case == "outside_domain":
+        assert result["reason"] == "private_domain_not_established"
+    elif case == "body_contact":
+        assert result["reason"] == "private_body_clearance_not_established"
+
+
 def test_synthetic_c1_source_binding_fingerprint():
     from sim.diagnostics import _c1_source_binding_digest
 

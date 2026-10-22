@@ -918,6 +918,184 @@ def probe_synthetic_c1_questions(
     return result
 
 
+class _SyntheticC1SourceRecorder:
+    """Own ideal fixture events in memory, without a rollout or runtime consumer."""
+
+    def __init__(self, scenario, *, synthetic_test_only=False):
+        from uuid import uuid4
+
+        from sim.rover import Scenario
+
+        if synthetic_test_only is not True:
+            raise ValueError("C1 recorder requires synthetic_test_only=True")
+        if not isinstance(scenario, Scenario):
+            raise TypeError("C1 recorder requires a fixture Scenario")
+        self._config = _c1_config(None)
+        self._scenario = deepcopy(scenario)
+        self._scenario.validate(self._config)
+        self._identities = self._source_files()
+        self._epoch = uuid4().hex
+        self._pending = []
+        self._history = []
+        self._latest = None
+        self._current = None
+        self._binding = None
+
+    @staticmethod
+    def _source_files():
+        root = Path(__file__).resolve().parent.parent
+        return {
+            name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+            for name in ("sim/diagnostics.py", "sim/rover.py", "interface/protocol.py")
+        }
+
+    def record_tick(self, tick, *, pose_m_rad, fixture_state):
+        from interface.protocol import State, encode_state
+
+        if (
+            type(tick) is not int
+            or not 0 <= tick <= 0xFFFFFFFF // 50000
+            or (self._current is not None and tick != self._current[0] + 1)
+        ):
+            raise ValueError(
+                "C1 recorder requires consecutive nonwrapping fixture ticks"
+            )
+        if not isinstance(fixture_state, State):
+            raise TypeError("C1 recorder requires a fixture State")
+        pose = _c1_array(pose_m_rad, (3,)).astype(float).copy()
+        state = deepcopy(fixture_state)
+        frame = encode_state(state)
+        if state.timestamp_us != tick * 50000:
+            raise ValueError("C1 recorder State timestamp must match the fixture tick")
+        pending = list(self._pending)
+        if tick == 0 or tick % 4 != 1:
+            capture = capture_synthetic_c1_views(
+                self._scenario,
+                pose_m_rad=pose,
+                capture_tick=tick,
+                synthetic_test_only=True,
+            )
+            pending.append(
+                {
+                    "clock_epoch": self._epoch,
+                    "capture_id": f"{self._epoch}:{tick}",
+                    "delivery_tick": tick + self._config.latency_ticks,
+                    "capture": deepcopy(capture),
+                }
+            )
+        ready = [event for event in pending if event["delivery_tick"] <= tick]
+        latest = ready[-1] if ready else self._latest
+        history = list(self._history)
+        if latest is not None:
+            history.append({**latest, "snapshot_tick": tick})
+        self._pending = [event for event in pending if event["delivery_tick"] > tick]
+        self._history = history[-self._config.history_ticks :]
+        self._latest = latest
+        self._current = tick, pose, state, frame
+        self._binding = None
+
+    def snapshot(self):
+        if self._current is None or not self._history:
+            raise ValueError("C1 recorder needs a delivered fixture capture")
+        if self._source_files() != self._identities:
+            raise ValueError("C1 recorder source files changed; use a new recorder")
+        tick, pose, state, frame = self._current
+        source = {
+            "producer_identity": _c1_source_binding_digest(self._identities),
+            "calibration_identity": _c1_source_binding_digest(asdict(self._config)),
+            "clock_epoch": self._epoch,
+            "reference_epoch": self._epoch,
+            "reference_tick": tick,
+            "reference_pose_m_rad": pose.tolist(),
+            "fixture_goal_m": list(self._scenario.goal),
+            "fixture_state": asdict(state),
+            "host_frame": frame,
+            "arena_yaw_rad": 0.0,
+            "config": asdict(self._config),
+            "scenario": asdict(self._scenario),
+            "history": deepcopy(self._history),
+        }
+        relative = prepare_synthetic_c1_relative_input(
+            [event["capture"] for event in self._history],
+            reference_tick=tick,
+            reference_pose_m_rad=pose,
+            fixture_goal_m=self._scenario.goal,
+            synthetic_test_only=True,
+        )
+        binding = _c1_source_binding_digest(
+            {
+                "relative_input": relative,
+                "fixture_state": asdict(state),
+                "host_frame": frame,
+                "private_source": source,
+            }
+        )
+        self._binding = binding
+        return {
+            "allowed_use": "private_synthetic_source_record_only",
+            "training_approved": False,
+            "real_input_qualified": False,
+            "free_space_qualified": False,
+            "numerically_certified": False,
+            "relative_input": relative,
+            "fixture_state": deepcopy(state),
+            "private_source": source,
+            "source_files": dict(self._identities),
+            "binding_sha256": binding,
+        }
+
+    def audit(self, bundle):
+        if self._binding is None:
+            raise ValueError(
+                "C1 recorder needs a snapshot of its current reference event"
+            )
+        if (
+            type(bundle) is not dict
+            or set(bundle)
+            != {
+                "allowed_use",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "relative_input",
+                "fixture_state",
+                "private_source",
+                "source_files",
+                "binding_sha256",
+            }
+            or bundle["allowed_use"] != "private_synthetic_source_record_only"
+            or any(
+                bundle[key] is not False
+                for key in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                )
+            )
+        ):
+            raise ValueError("unsupported private C1 source bundle")
+        result = _audit_synthetic_c1_source_binding(
+            bundle["relative_input"],
+            fixture_state=bundle["fixture_state"],
+            private_source=bundle["private_source"],
+            expected_binding=self._binding,
+            synthetic_test_only=True,
+        )
+        if (
+            bundle["binding_sha256"] != self._binding
+            or _c1_source_binding_digest(bundle["source_files"])
+            != _c1_source_binding_digest(self._identities)
+            or self._source_files() != self._identities
+        ):
+            result.update(
+                status="inconsistent_source_record",
+                reason="recorder_identity_or_binding_mismatch",
+            )
+        return result
+
+
 def _c1_source_binding_digest(record):
     """Fingerprint private fixture evidence, not attest its truth or independence."""
 

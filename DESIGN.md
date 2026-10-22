@@ -2973,6 +2973,132 @@ or runtime integration. This would refine the unresolved motion row of the
 existing source plan, not repeat the completed source-binding/ownership work
 or qualify physical sensing, numerical bounds or task quality.
 
+#### Proposed C1 Fixture Motion-Source Contract (2026-10-22)
+
+**Design-only preparation approved; contract and implementation not adopted.**
+REVIEW.md §94 records this refinement of the source plan's unresolved motion
+row. The proposed claim is that one private fixture owner produced the seed,
+poses, acquisition/reference events and host motion from one named ideal
+kinematic model. It is not a claim of physical dynamics, measured odometry,
+collision-free motion, braking capability or qualified runtime input. The
+existing recorder and §93 composition checks do not establish this claim.
+
+**Recommended first model:** one constant planar twist per bounded fixture
+epoch, using the existing [constant-twist integrator][c1-motion-source] for
+production only. This isolates pose/host-motion causality without adopting the
+larger environment's control and termination model. An owner copies one existing
+Scenario and owns an explicit seed tick/pose, fixed forward speed and yaw rate,
+ideal profile and epoch.
+After seeding, callers cannot supply replacement poses, host motion, goal
+vectors or timestamps. The owner derives each pose and original fixture State,
+then supplies them to the unchanged private recorder. Other protocol fields
+remain explicit validated fixture settings, not a new host or freshness policy.
+Bind seed/model/version, exact twist values, event order, State, encoded bytes
+and the recorder's event/binding identity; returned copies cannot replace the
+owner's retained anchor. File hashes still do not attest loaded code or physics.
+
+| Event | Proposed Meaning and Owner | Required Check |
+| --- | --- | --- |
+| Seed `k0` | Owner-declared initial pose and constant twist at one clock origin; no preceding trajectory is claimed. | Literal fixture opt-in, finite supported planar values and profile identity. Initial nonzero speed is not an acceleration-from-rest result. |
+| Advance to `k` | Consecutive nonwrapping tick, one interval after `k-1`; apply the owned twist, then capture/reference the resulting pose. | State at `k` names the twist applied during `(k-1, k]`, not a target command, finite-difference estimate or next-interval promise. |
+| Acquisition `c` | Existing ideal cadence produces all eight views at the owner's pose at `c`. | Exact event identity, synchronized view ticks, acquisition pose and raw payload stay bound. No backward pose inference from a later State. |
+| Delivery/hold at `k` | Existing two-tick delivery and held snapshots; reference pose continues advancing. | Receipt is not exposure. Held capture ID/time/pose/ranges/masks stay fixed; relative registration changes with the reference. |
+| Host sample at `k` | Owner emits forward FLU velocity, z yaw rate, body-frame goal and `k*50000` microseconds from that same event. | Zero fixture ego ages and existing planar/validity rules; preserve original State, exact frame bytes and decoded values separately. |
+
+The interval-ending convention follows the non-collision kinematic portion of
+`RoverEnv.step`, which selects applied motion before integration and records
+the incremented tick afterward. The proposed owner is **not** a RoverEnv
+adapter: it omits target-speed clipping, acceleration ramps, collision stopping,
+reward, termination and sensor/ego faults. Those omissions define its narrow
+kinematic claim, not revised simulator or robot dynamics. A varying-twist or
+action-driven provider is an alternative only after a separate model/transition
+contract; do not mix profiles or infer acceleration from this first model.
+
+For pose `p=(x,y)` and heading `theta`, the defining equations use elapsed
+model time from the seed, not the absolute host timestamp:
+
+$$
+\dot p(s)=v\,(\cos\theta(s),\sin\theta(s)),\qquad
+\dot\theta(s)=\omega,\qquad s_k=(k-k_0)/20.
+$$
+
+The clock truth is integer microseconds; the integrator's binary64 `dt=0.05`
+is not exactly the rational `1/20`. Retain both rather than silently identifying
+them. Require seed and all later ticks in `0..85899`, with a new owner/epoch
+instead of wrapping or joining reset histories. Heading comparisons must respect
+equivalent orientations across the wrap boundary, without discarding source
+scale or admitting unsupported large-yaw arithmetic. Fixed-world Scenario goal
+is privately transformed at each current
+pose; a held ToF frame does not hold the current goal or host sample fixed.
+
+**Independent checker, not producer self-comparison.** A future private checker
+must reconstruct from seed and total elapsed ticks without calling `integrate`,
+the motion owner, recorder, capture producer or relative converter as its
+reference. Straight motion can use exact rational arithmetic plus explicit
+enclosures of time conversion and binary64 operations. Curved motion needs an
+independent scalar integral with justified truncation and roundoff enclosures;
+agreement of two floating answers or sampled residuals is not an enclosure.
+Compare every retained event, not just the last endpoint; check both world
+translation and orientation and independently bind host speed/rate to the
+governing interval. Missing arithmetic evidence is unresolved, never a guessed
+epsilon, numerical certification or a newly adopted error/risk policy.
+Negative reference controls must include a freshly owner-bound, deliberately
+fault-injected producer result, so a reference mismatch is not tested only as
+digest rejection. That test mechanism does not permit caller re-signing to
+replace the owner's retained anchor.
+
+**Separate verdicts:** ownership/event consistency, kinematic-reference evidence
+and the existing source/wire audit must remain distinguishable. A source-owner
+match alone cannot establish the mathematical trajectory. Conversely, motion
+evidence cannot waive `host_round_trip_changed` or exact goal registration.
+Even binary32-exact speeds/rates can yield a nonrepresentable moving or rotated
+body goal. Retain the original and decoded values and report that source audit
+unresolved; do not round a goal, change geometry, widen a bound or substitute
+decoded motion to obtain admission. No positive curved-motion qualification is
+available without its independent enclosure. All outcomes remain diagnostic,
+training-disabled, real-input-unqualified and numerically uncertified, with
+zero question queries in the first proposed prototype. Domain/current-body
+checks stay private and oracle-assisted; none of these verdicts creates their
+literal declarations or overrides an unknown/conflict question outcome.
+
+**Proposed 16-case acceptance matrix, not executed:**
+
+| Case | Required Discriminating Check |
+| --- | --- |
+| Seed/stationary | No invented pre-seed history; zero twist leaves pose fixed. |
+| Straight | Owner's pose and host speed share an interval; independent rational/enclosure reference. |
+| Left curve | Positive yaw rate binds pose/host/captures; missing enclosure stays unresolved. |
+| Right curve | Mirrored negative yaw rate, with the same evidence requirements. |
+| Moving reference/held capture | Acquisition identity/time/pose and raw bytes stay fixed while reference and goal advance. |
+| Heading wrap | Equivalent orientations do not become a spurious full revolution. |
+| Stationary pose/nonzero speed | Freshly bound injected producer fault fails the independent translation check. |
+| Wrong pose/yaw | Displaced or wrong-sign rotated event fails the reference comparison. |
+| Wrong host twist | Host speed/rate cannot name a different interval or target command. |
+| Gap/reversal | Missing or reversed tick is not interpolated or silently joined. |
+| Epoch substitution | Numerically matching ticks from another origin do not inherit continuity. |
+| Rewritten hold | New receipt/reference cannot refresh acquisition metadata. |
+| Goal binding | Current body goal must correspond to the same owned pose and fixed world goal. |
+| Wire round trip | Changed original/decoded fields retain the existing unresolved verdict. |
+| Missing numerical evidence | Matching floating outputs alone cannot produce positive motion qualification. |
+| Foreign/re-signed copies | Another owner or a recomputed caller digest cannot replace the retained anchor. |
+
+Positive controls must satisfy their stated evidence level, with curved or
+wire-unresolved controls remaining so. Rejected requests cannot advance owner
+state/seal where applicable; private geometry must not enter candidate input.
+These are future requirements, not tests, passed results or quality thresholds.
+
+**Next bounded implementation candidate, not approved:** an additive private
+constant-twist fixture owner and independent diagnostic checker, at most four
+reused complete scenes, 16 cases, two owners per case and eight consecutive ticks
+per owner (at most 256 successful fixture ticks), zero question queries.
+Keep existing recorders/APIs and historical fixtures unchanged;
+do not claim positive curved qualification without the enclosure above. No new
+geometry, RoverEnv episode/log replay, persistence, CLI, normal input/wire/profile
+adoption, collection, labels or runtime integration. Recommended default remains
+no implementation until that distinct package is approved. The design-only
+approval is exhausted when this contract and handoff are recorded.
+
+[c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4983,7 +5109,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §93): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §94): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5039,8 +5165,12 @@ physical or dynamics qualification. The separately approved tests-only condition
 composition is now complete in `0c3de54` (§93): 16 cases, four reused scenes,
 eight coordinator calls and at most six motions per call. Source and existing
 tests remain unchanged; oracle-assisted fixture admission is not runtime policy.
-A design-only motion-source contract is proposed, not approved; earlier
-physical/numerical/task-quality and integration/data gates remain.
+The separately approved design-only motion-source contract is now prepared
+(§7; REVIEW.md §94): a proposed bounded constant-twist owner, interval-ending
+host semantics, independent arithmetic evidence and distinct motion/wire
+verdicts. The contract is not adopted or implemented. A four-scene/16-case,
+zero-query private prototype is proposed, not approved; earlier physical/
+numerical/task-quality and integration/data gates remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

@@ -118,21 +118,22 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: `0c3de54` adds tests-only recorder/audit/
-  question composition (DESIGN.md §7 / REVIEW.md §93): 16 cases, four reused
-  complete scenes, 10 question-wrapper calls and eight coordinator calls with
-  at most six unique motions each. Six source-rejected cases make zero question
-  calls; unknown/conflict cases abstain. Runtime source and all pre-existing
-  test AST nodes are unchanged. Admission is explicitly oracle-assisted fixture
-  conditioning, not observation-only runtime policy or qualified task evidence.
-  The recorder in `76aa712` still owns events/bindings, not measured dynamics.
-  All bounded approvals are exhausted. The next proposal, not approved, is a
-  design-only fixture motion-source contract: bind pose/tick and host motion,
-  define held/reference semantics and independent rejection checks. No code,
-  new geometry, rollout, persistence, input adoption or integration is proposed.
-  Physical/numerical/task-quality and collection gates remain open.
+- Latest approved package complete: design-only fixture motion-source contract
+  (DESIGN.md §7 / REVIEW.md §94). Proposed default: one private constant-twist
+  owner per bounded epoch, interval-ending host samples, held acquisition versus
+  moving reference semantics, independent arithmetic checks and separate motion/
+  wire verdicts. No contract adoption, source/test change or fixture run occurred.
+  Missing curved enclosures and changed binary32/goal values stay unresolved.
+  Prior composition `0c3de54` and recorder `76aa712` remain fixture tooling,
+  not verified dynamics or autonomous runtime admission.
+  All bounded approvals are exhausted. Next proposed, not approved: additive
+  private motion owner/checker, four reused scenes / 16 cases / at most two
+  owners per case / eight ticks per owner (256 total) / zero question queries.
+  No new geometry, rollout/log replay, persistence, normal input/profile
+  adoption, collection or integration. Physical/numerical/task-quality gates
+  remain open; private body/domain admission remains oracle-assisted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-93 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-94 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1188,15 +1189,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §93 complete the
-approved tests-only composition in `0c3de54`: 16 cases / four reused scenes /
-eight coordinator calls / at most six motions each; 1,973 passes plus known
-xfail. Oracle-assisted fixture admission is not qualified runtime input or a
-verified motion source. No runtime code changed. Next proposed, not approved:
-design-only pose/tick/host-motion contract and independent rejection checks,
-without code, collection or integration. Task 6/9, physical/numerical/task-quality
-evidence, teacher assets and ST/board remain blocked. All bounded scopes are
-exhausted; no background job or cleanup is pending.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §94 complete
+the approved design-only motion-source contract preparation. Constant-twist
+ownership, interval-ending samples and independent motion/wire checks are
+proposed, not adopted or implemented. No source/test change or fixture run.
+Next proposed, not approved: private owner/checker, four reused scenes / 16
+cases / two owners per case / eight ticks per owner / zero question queries,
+no new geometry, rollout, persistence, input adoption or integration. Task 6/9,
+physical/numerical/task-quality evidence, teacher assets and ST/board remain
+blocked. Last code gate remains 1,973 passes plus known xfail, not newly rerun.
+All bounded scopes are exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1298,7 +1300,13 @@ exhausted; no background job or cleanup is pending.
   rejected records stop before questions; unknown/conflict cases abstain.
   Explicit oracle-assisted fixture conditioning is not runtime qualification.
   This scope is exhausted; a design-only motion-source contract is proposed,
-  not approved. No code, geometry, collection or integration follows automatically.
+  and its subsequently approved preparation is complete below. No code,
+  geometry, collection or integration follows automatically.
+  Motion-source plan (REVIEW.md §94): proposed constant-twist owner with exact
+  event/host binding, interval-ending samples, independent reference checks and
+  distinct motion/wire verdicts. No implementation or qualification occurred.
+  The four-scene/16-case, zero-query private prototype is not approved; earlier
+  code/run scopes are exhausted and physical/numerical/task-quality gates remain.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

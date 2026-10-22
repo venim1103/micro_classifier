@@ -5648,6 +5648,88 @@ new geometry, rollout/log replay, persistence, input adoption, collection or
 runtime integration is proposed. That design-only scope needs separate approval;
 no further implementation or study run follows from completing these tests.
 
+## 94. Fixture Motion-Source Contract Prepared (2026-10-22)
+
+The user's continuation accepted the immediately preceding **design-only**
+motion-source contract proposal: fixture pose/timestamp/host-motion ownership
+and independent rejection checks, no implementation, collection or runtime
+integration. The worktree began clean at `660bdd7`; the reported test edits had
+no current diff. Current State, §93, the source plan and actual motion/recorder/
+host-audit/test paths were inspected. This completes preparation only; the
+contract, provider, arithmetic bounds and next prototype remain unadopted.
+
+**Local evidence and hypothesis:** §93's test records explicitly use the same
+`[2,2,0]` pose at successive ticks while declaring nonzero speed/rate. Passing
+ownership/source comparison therefore does not establish one motion process.
+`RoverEnv.step` updates applied motion before `integrate`, increments tick
+afterward and then records sensor/history state. The default host exporter
+reads the current ego/goal sample; it is not an independent motion reference.
+The proposed contract can align with that interval-ending convention without
+adopting RoverEnv's acceleration, collision, reward or termination model. A
+read-only AST ordering check disconfirms an opposite update convention and
+confirms this anchor. No simulation or new numerical experiment was run.
+
+**Candidate prepared in DESIGN.md §7:** recommend an additive private owner
+for one constant planar twist and bounded epoch, with copied Scenario, owned
+seed/ticks/pose/host motion and retained event binding. No replacement pose,
+motion, timestamp or body-goal caller input after seeding. The host sample at
+`k` names motion during `(k-1,k]`; the seed claims no prior trajectory or
+acceleration from rest. Acquisition uses the owner's event pose, delivery keeps
+the old acquisition identity, and held captures stay fixed while reference
+pose and current body goal move. Preserve existing nonwrapping ticks through
+85,899, ideal cadence/delivery, frame convention and wire validation. Integer
+50,000-microsecond time and binary64 0.05 must not silently become identical
+arithmetic inputs.
+
+An independent checker must reconstruct from seed/elapsed time rather than use
+the producer, integrator, recorder or converter as its reference. Straight
+arithmetic requires explicit rational/roundoff enclosures; curves require an
+independent integral with justified truncation and floating-point enclosure.
+Absent evidence stays unresolved, with no guessed epsilon or newly selected
+uncertainty/risk policy. A deliberately faulty but freshly owner-bound producer
+control must reach the reference comparison, not merely fail a payload hash.
+All proposed arithmetic evidence remains distinct from numerical certification.
+
+Ownership, kinematic-reference evidence and the existing source/wire audit are
+separate verdicts. Binary32-exact speed/rate does not guarantee an exactly
+representable moving/rotated goal. Existing `host_round_trip_changed` and goal
+binding failures remain unresolved, without rounding, decoded-value substitution
+or widened bounds. Domain/current-body checks stay private and oracle-assisted;
+no motion verdict creates literal runtime preconditions, task truth or answers.
+Training/real-input/free-space/numerical-certification flags remain false.
+
+**Tradeoff/default and acceptance:** constant twist isolates the missing causal
+pose/host relation; an action-driven or varying-twist provider would require a
+separate transition contract and broader evidence. Recommend the narrower model
+for review, not silent adoption. The concrete 16-case future matrix covers seed/
+stationary, straight, both curves, moving-reference hold, heading wrap, injected
+nonphysical motion, wrong pose/yaw/twist, clock gaps/reversal/epochs, rewritten
+hold, goal/wire mismatches, missing numeric evidence and foreign/re-signed
+copies. Curved or wire-unresolved controls must remain so. No case was executed,
+no counterexample generated and no positive evidence count is claimed.
+
+**Verification:** scoped document/reference/local-target/fence/math/whitespace
+and editor checks, plus read-only source-anchor checks. The first draft passes
+those checks; no failed check, bound change or source repair occurred. Only
+DESIGN.md, REVIEW.md and Current State/Task List in AGENTS.md change. Stable
+workflow rules and all prior review history are preserved. No code suite was
+rerun: the last actual source gate remains §93's **1,973 passes, one known
+transformer xfail, 71 warnings, no reported skips, 43.40 s**, not fresh evidence
+for this proposal. The known QDQ failure and all historical artifacts remain.
+
+**Next bounded candidate, not approved:** private constant-twist fixture owner
+and independent diagnostic checker; at most four reused complete scenes, 16
+cases, two owners per case and eight consecutive ticks per owner (at most 256
+successful fixture ticks), zero question queries. Existing source APIs/fixtures
+stay unchanged; no positive curved qualification without the required enclosure.
+No new geometry, RoverEnv episode/log replay, persistence, CLI, normal input/
+profile/wire adoption, collection, labels/dataset/splits, model experiment,
+training, dependency/download, licence, hardware or runtime integration. The
+design-only package is complete and exhausted; implementation needs separate
+approval. Task 6/9, physical/numerical/resource/task-quality and ST/board gates
+remain blocked. Strict abstention, synthetic envelope and Gaussian-risk choices
+remain settled. No background job or cleanup is pending; no agent push occurred.
+
 ## Sources
 
 Hardware and tools:

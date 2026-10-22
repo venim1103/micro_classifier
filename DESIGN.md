@@ -2368,6 +2368,82 @@ domain/return/error evidence, numerical certification where required and
 representative task quality still gate integration and collection; this is not
 a complete three-question rules baseline.
 
+#### Proposed C1 Question-Level Qualification (2026-10-22; Unaccepted)
+
+The next candidate is a separate, host-only synthetic evidence prototype, not
+a runtime replacement or new target definition. The approved cylinder/height/
+floor/wall envelope and ideal acquisition assumptions would stay unchanged.
+REVIEW.md §85 records the completed prerequisite checks and the pending scope
+decision. Neither stage below is implemented or approved by this proposal.
+
+**Stage A: positive occupied-point evidence.** An outer tube can exclude a
+collision when every allowed obstacle is excluded from it. Membership of a
+point in that same tube cannot establish collision: it may lie outside the
+actual swept body. Clear-world counterexamples now preserve this distinction.
+A candidate blocked witness instead needs both:
+
+- Independently justified obstacle membership under the declared ideal model.
+  Use only a valid, nonsaturated latest first return whose complete transformed
+  height enclosure is strictly above the floor and within the declared object/
+  wall domain. Floor-adjacent, masked, missing or unsupported returns abstain.
+  Nominal positive height alone is not enough. Bound the float32 range rounding
+  interval and transformation allowance; do not substitute Gaussian sigma,
+  posterior confidence or a new physical uncertainty policy.
+- Strict containment of the complete registered XY hit enclosure within a
+  body disk at a declared maneuver time. For nominal hit p with assumed radius
+  e and numerical center q with trajectory allowance E, require
+  `distance(p,q)+e+E+guard < b`. Vertices with bounded endpoint error provide
+  the first candidate times. This deliberately shrinks the admissible region;
+  `distance(p,q) < b+E` is not a blocked witness. If the bound cannot be
+  justified, remain unknown; sampling times affects completeness, not permission
+  to infer occupancy or clearance from missing witnesses.
+
+All such evidence would remain conditional on the artificial return, pose,
+motion and domain declarations, not certified arithmetic or real sensing.
+Clearance still needs the existing independent current-body-clear declaration.
+Any incompatible witness, exclusion or declaration must report a contradiction
+and abstain, not silently prioritize one conclusion. No new input is accepted
+merely because privileged fixture geometry could supply it.
+
+**Stage B: question-level feasibility.** A separately opted-in diagnostic
+coordinator would combine exclusion, blocked witnesses and unknown, preserving
+the adopted geometric meanings and separate reaction/braking rates. The
+geometry oracle is permitted only in test assertions, never as evidence input.
+Fixture-only goal coordinates would be explicitly declared for sector-ranking
+checks, not added to the normal module input or claimed available on-device.
+
+| Question | Conservative candidate admission |
+| --- | --- |
+| `path_blocked` | Centre maneuver: an exclusion supports false, an occupied-point witness supports true; absent or contradictory evidence stays unknown. |
+| `clear_sector` | At rest, abstain. Initially require all three maneuver states resolved; choose only the adopted bound-separated goal ranking or its existing exact left/right tie convention. Overlapping/unresolved ranks abstain. `none` requires all three blocked, not merely no known-clear option. |
+| `speed_tier` | Query each existing momentum-preserving speed `max(current_speed, max_speed*tier/3)` with centre braking. Initially require all three capacity states resolved, then select the highest clear tier; zero requires all three blocked. An unknown higher tier cannot be silently turned into a lower maximum. |
+
+Candidate values would be diagnostic-only, not calibrated probabilities,
+catalogue/wire decisions, accepted task labels or a complete baseline. `mode`
+remains absent. All training, real-input, free-space and numerical-certification
+flags stay false. The normal rules, codecs, defaults, input/history and existing
+artifacts must remain unchanged. No controller, exporter or log adapter belongs
+to this candidate scope.
+
+**Proposed bounded work and checks:** at most 32 distinct hand-constructed
+geometry fixtures, CPU-only and ephemeral; invalid-input and arithmetic tests
+may reuse them. Keep the existing per-query work/segment/depth limits and at
+most six maneuver/capacity queries per fixture. Require visible blocked
+witnesses and clear exclusions against resolved independent references, both
+outer-tube counterexamples to abstain as blocked evidence, floor/rounded-height
+and missing-return abstention, contradiction rejection, all-option unknown
+propagation, at-rest/tie handling and momentum cases. Reuse current tests and
+helpers; run focused checks, default gates and compatibility checks before local
+commits. No episode rollout, collection, persistence of task data, split,
+teacher/inference/training, dependency/download, risk adoption, runtime/wire
+integration or hardware work would be authorized.
+
+**Proposed default:** approve Stage A first and Stage B only after its focused
+checks pass, within this single synthetic-only package. If Stage A cannot
+justify its hit/trajectory enclosures, record that blocker and do not manufacture
+question answers. This scope decision is distinct from the already-approved
+object envelope; neither sensor adoption nor physical qualification is requested.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4378,7 +4454,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-21, REVIEW.md §84): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §85): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4406,6 +4482,10 @@ runtime sensor/input profile or task-quality clearance. Independent domain/
 return/error evidence, required numerical qualification and representative task
 quality remain open. Do not collect task diagnostics or integrate the prototype
 merely because its synthetic checks pass.
+The one-segment allowance and outer-versus-inner evidence checks are complete
+(§7; REVIEW.md §85). A separate positive-witness/question-level synthetic package
+is proposed, not adopted or implemented. Its scope decision is pending; the
+existing controlled object envelope does not need to be re-approved.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

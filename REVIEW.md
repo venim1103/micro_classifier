@@ -4912,6 +4912,89 @@ background job is running. Resume from this section and the actual worktree
 only after a new continuation request; a notification or available disk space
 does not authorize more implementation, collection, integration or model work.
 
+## 85. Coarse C1 Evidence Checks and Next-Scope Proposal (2026-10-22)
+
+The user explicitly resumed autonomous work and local checkpoints after the
+pause. Restart checks found a clean worktree at `d1065d3`, also the local
+origin/main pointer, Python 3.12.3 at `/opt/venv/bin/python`, and 545 GB available
+on the workspace filesystem. No cache restoration, download or new experiment
+was inferred from that space. Existing synthetic qualification permission and
+all collection/runtime/data/hardware boundaries remain unchanged.
+
+**Coarse-step prerequisite, `cc7f961`:** the public curved query permits one
+segment per phase, while prior geometric checks used four/sixteen; the existing
+one-segment budget test stopped before searching geometry. Four new fixtures
+cover both turn directions and both cylinder-radius limits, with 0.05 m height.
+An independently integrated true endpoint lies inside the obstacle footprint
+expanded by the body radius. The obstacle is nevertheless outside the unexpanded
+midpoint polyline footprint, while inside its numerical expansion. The current
+body is clear. The corresponding left/right geometric reference is blocked,
+and the probe reaches the cell search, remains unknown and reports at least
+the required expanded tube radius. No runtime code or numerical bound changed.
+
+All four focused checks passed immediately. A bounded, ephemeral mutation
+control then retained the real allowance during fixture construction but
+returned zero allowance inside the probe. Every mutant still stayed unknown
+with `unexcluded_center_cell`; the radius assertion caught the missing allowance.
+This is not evidence that the omitted margin produced false clearance in these
+worlds, nor a proof that the cell predicate alone is mutation-sensitive. The
+control is deliberately unsafe test instrumentation, not an alternate API or
+accepted bound. It left no file or configuration change. The default gate then
+passed 1,774 tests plus the known transformer xfail, 71 existing warnings, no
+reported skips, 38.68 s; lint, changed-file format, editor and whitespace passed.
+
+**Evidence-direction prerequisite, `afd0f0f`:** four further coarse fixtures
+construct an occupied cylinder surface inside the expanded outer tube, yet
+the independently checked matching maneuver is clear. Both turn directions and
+both radius limits are covered, with a clear current body. The probe searches
+cells and remains unknown. Thus membership in an outer numerical enclosure
+cannot be inverted into a positive blocked witness. These are ideal geometric
+surface counterexamples, not a claim that the selected surface point itself
+was a delivered sensor return or physical optical evidence.
+
+All four focused counterexamples passed. After formatting, the required final
+gate `python -m pytest -q && ruff check . && git diff --check` passed 1,778 tests
+plus the unchanged transformer xfail, 71 existing warnings, no reported skips,
+51.09 s. `ruff format --check tests/test_sim.py` and editor diagnostics passed.
+Only two new parameterized test functions changed across these checkpoints;
+the entire runtime, capture, inspection, geometric reference, API, inputs/wire,
+bounds, historical artifacts and prior test bodies remain unchanged. There was
+no unexpected failing check, tolerance relaxation or outcome-driven rule tuning.
+The source increments total 126 test lines/eight cases, not a dataset or study.
+
+**Concrete next-scope proposal, not approval:** DESIGN.md §7 specifies two
+stages for a separate synthetic-only prototype: occupied-point membership plus
+strict inner-footprint containment first; a question-feasibility coordinator
+only after those checks pass. The outer tube remains clearance-only evidence.
+The candidate preserves the adopted centre/left/right reaction/braking meanings,
+goal-ranking/tie convention and momentum-preserving speed capacities. It must
+not interpret no known-clear option as sector `none`, missing higher-tier
+evidence as a lower maximum, or a nominal above-floor hit as occupied proof.
+Conflicts abstain. Fixture-only goals would not change or qualify module inputs.
+The proposal includes at most 32 distinct hand-constructed geometry fixtures,
+existing per-query work limits, at most six queries per fixture, and explicit
+positive/negative/unknown, floor, ambiguity, contradiction and ranking checks.
+
+Proposed default is the staged package with CPU-only ephemeral tests and local
+commits; no rollout, log adapter/exporter, task data/labels/splits, probability
+or calibration claims, teacher/model run, training, dependency/download, risk
+adoption, runtime/wire integration or hardware. This is a new evidence-inference
+and coordinator scope, not routine further exclusion qualification; it remains
+unimplemented pending the user's decision. The controlled object envelope is
+already approved and must not be re-asked. If point or trajectory enclosures
+cannot be justified, record that blocker rather than manufacture outputs.
+
+All authorized prerequisites for this candidate are now prepared. Remaining
+implementation requires that scope decision; independent physical domain/
+return/error evidence, numerical qualification where needed, representative
+task quality and Task 6/9/collection/integration gates remain open. ST tools,
+board access, teacher provenance and approved asset restoration are still
+separate blockers/actions. No process, new raw artifact or fixture output needs
+cleanup. Agent commits are local; no push, new episode, persisted task data,
+inference/training, dependency, hardware or accepted-policy change occurred.
+Documentation-only follow-up validates references, targets, fences and whitespace
+without rerunning the unchanged successful code gate.
+
 ## Sources
 
 Hardware and tools:

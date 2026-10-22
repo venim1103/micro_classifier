@@ -113,14 +113,15 @@ python -m pytest -q && ruff check . && git diff --check
   optional) and a real bullet body. Do not push, create branches or rewrite
   history unless explicitly requested. Never revert another person's changes.
 
-## Current State (2026-10-21)
+## Current State (2026-10-22)
 
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Session paused at the user's request; no background job is running. Await a
-  new continuation request before resuming from REVIEW.md §84.
-- Latest decisions and results: REVIEW.md §§72-84 supersede conflicting historical
+- User requested autonomous continuation on 2026-10-22. REVIEW.md §85 records
+  completed synthetic prerequisites and a concrete new-scope proposal pending
+  approval. No background job is running; no runtime or collection is authorized.
+- Latest decisions and results: REVIEW.md §§72-85 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -131,7 +132,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,770 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,778 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -214,6 +215,11 @@ from them. Historical details below are reference material, not new approvals.
   36 exact disk/straight comparisons and 23 resolved callers pass; default paths
   stay unchanged. This is conditional ideal evidence, not numerical certification,
   physical clearance, a complete question bundle or runtime integration.
+  `cc7f961` and `afd0f0f` add eight one-segment counterexamples (§85): actual
+  collisions outside the unexpanded polyline stay unknown, and occupied points
+  inside an outer tube do not imply collision. Runtime/bounds remain unchanged.
+  A staged occupied-point witness and question-feasibility package is proposed
+  in DESIGN.md §7, not implemented or adopted; scope approval is pending.
 - Remaining F21/M2 work: missing/occluded-return evidence, representative scene
   envelope/diversity and sensor/rule qualification. Keep both this unsuccessful
   heuristic and the unchanged legacy proxies diagnostic-only. No task labels,
@@ -1165,16 +1171,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §84 record
-optional two-phase curved-tube exclusion after the occlusion/straight checkpoints.
-The default disk, straight API and normal inputs/wire remain unchanged. Curved
-queries require an explicit positive segment count and separate phase turns;
-omitted braking turn is zero, not the reaction rate. Domain membership and
-current-body clearance remain independent fixture declarations. Numerical
-certification, independent physical domain/return/error evidence and task quality
-remain open. Do not promote these conditional results into runtime rules or
-infer a physical minimum object size; collection, integration and Task 6 gates
-stay in force. Teacher assets are no longer cached after authorized cleanup.
+Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §85 record
+coarse-step and outer-versus-inner C1 evidence checks. Existing APIs, runtime,
+inputs/wire and numerical bounds remain unchanged. A concrete staged synthetic
+positive-witness/question-level feasibility package awaits scope approval; do
+not implement it on the strength of this proposal alone. The approved object
+envelope is unchanged and need not be re-asked. Numerical certification,
+independent physical evidence, representative quality, collection, integration
+and Task 6/9 gates remain open. Teacher assets are no longer cached.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1247,6 +1251,10 @@ stay in force. Teacher assets are no longer cached after authorized cleanup.
   and 160 new cases. Default disk/straight results match exactly in 36 checks.
   Unknown blocked/masked/wall/budget outcomes remain; physical evidence, numerical
   certification, representative task quality and integration are still blocked.
+  Latest prerequisite checks (REVIEW.md §85): eight one-segment counterexamples
+  pass in `cc7f961`/`afd0f0f`, with no runtime or bound change. A concrete
+  positive-witness/question-feasibility proposal is ready; that new inference
+  scope is approval-blocked, not an adopted baseline or renewed collection.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

@@ -2376,8 +2376,9 @@ synthetic evidence prototype, not
 a runtime replacement or new target definition. The approved cylinder/height/
 floor/wall envelope and ideal acquisition assumptions would stay unchanged.
 REVIEW.md §85 records the completed prerequisite checks and the pending scope
-proposal as it stood then; §86 supersedes its approval-blocked status. Stage A
-is implemented below; Stage B remains authorized follow-up, not completed work.
+proposal as it stood then; §86 supersedes its approval-blocked status. Both
+stages are implemented below; REVIEW.md §87 records the completed bounded
+package, not runtime adoption or task-quality clearance.
 
 **Stage A: positive occupied-point evidence.** An outer tube can exclude a
 collision when every allowed obstacle is excluded from it. Membership of a
@@ -2467,7 +2468,39 @@ row/column indices and point/trajectory allowances. It never emits clear or
 question probabilities. All qualification/training flags remain false. Existing
 exclusion, capture and runtime APIs are unchanged. REVIEW.md §86 records the
 above-floor rounding counterexample, visible blocked and unsupported evidence
-checks; Stage A passing is not completion of Stage B or a runtime baseline.
+checks; those results alone were not completion of Stage B or a runtime baseline.
+
+Stage B is implemented in the separate opt-in `probe_synthetic_c1_questions`
+in the [diagnostic prototype][c1-prototype-source]. It accepts C1 history,
+declared reference motion, literal body-clear/domain assumptions and explicit
+`fixture_goal_m`, never a Scenario or oracle answer. Its separate
+`micro-classifier/synthetic-c1-question-feasibility/1` result contains the three
+candidate values, per-query exclusion/witness evidence, named-query statuses
+and a unique-motion count. There are six named queries: centre/left/right and
+the three adopted momentum-preserving tier capacities. Repeated speed/braking
+pairs reuse evaluation but return independent nested evidence copies. Existing
+per-query cell, depth, radius-band and segment caps are unchanged.
+
+The table's conservative admission rules are implemented without adding a
+probability, `mode`, codec decision or controller. Sector endpoints use the
+shared bounded centerline and source-scale goal/reference allowance; overlapping
+distance intervals abstain except for the existing exact symmetric left/right
+tie rule. At rest, sector choice remains unknown. Unknown capacity states do
+not establish a maximum tier. A clear exclusion and blocked witness for the
+same query invalidate the complete bundle. Stage A also exposes a boolean
+`fixture_current_body_witness` when strict support occurs at the initial
+centerline vertex; a positive result contradicts the required body-clear
+declaration and likewise suppresses every candidate. Absence of that flag is
+not independent proof that the body is clear. Existing Stage A fields retain
+their meaning, with exact canonical regression comparisons recorded in §87.
+
+Resolved results are `resolved_under_fixture_assumptions`; partial evidence
+retains per-question nulls, and detected conflicts report
+`inconsistent_fixture_evidence` with all candidates null. Training, real-input,
+free-space and numerical-certification flags remain false. The approved bounded
+package is complete, but does not adopt C1 as a runtime sensing/input profile,
+qualify physical/numerical bounds or establish representative question quality.
+Further collection, task data or integration still needs separate authorization.
 
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -4479,7 +4512,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §86): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §87): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4509,8 +4542,9 @@ quality remain open. Do not collect task diagnostics or integrate the prototype
 merely because its synthetic checks pass.
 The one-segment allowance and outer-versus-inner evidence checks are complete
 (§7; REVIEW.md §85). The user then approved a separate staged positive-witness/
-question-level synthetic package (§86). Stage A occupied-return witnesses now
-pass; Stage B is the next authorized task, not a complete question baseline.
+question-level synthetic package (§86). Both stages now pass (§87): conditional
+occupied-return witnesses and conservative three-question candidate admission.
+The bounded package is complete, not a qualified runtime question baseline.
 The approved object envelope, no-collection/runtime boundaries and physical/
 numerical/task-quality gates remain unchanged.
 

@@ -5066,6 +5066,79 @@ integration, ST, teacher-assets and board gates remain unchanged. Documentation
 checks validate references, local targets, fences and status without rerunning
 the unchanged successful code gate.
 
+## 87. C1 Synthetic Question Feasibility Complete (2026-10-22)
+
+Stage A's passing checkpoint in §86 satisfied the prerequisite for the already
+approved Stage B. Source `5c643f7` completes that bounded package with the
+separate opt-in `probe_synthetic_c1_questions`; no new approval was assumed.
+It receives history, declared motion/body/domain assumptions and an explicitly
+fixture-only goal, never Scenario geometry or an oracle answer. The independent
+geometry reference remains confined to test assertions. Normal observations,
+history, Config defaults, rules, catalogue, codecs/wire and artifacts are unchanged.
+
+**Candidate semantics:** six named queries cover centre/left/right braking and
+the three existing momentum-preserving capacity speeds. Matching motion queries
+share evaluation but return independent nested evidence copies. Centre clear/
+blocked evidence supports a diagnostic false/true candidate. All three maneuver
+states must resolve before sector ranking; all three capacity states must resolve
+before a maximum tier. At rest sector choice abstains. Bound-overlapping goal
+ranks abstain except for the adopted exact symmetric left/right tie. Missing
+witnesses never establish clear; unknown higher capacities never become a lower
+maximum. No probability, mode answer, runtime decision or label is emitted.
+
+Stage A adds only the `fixture_current_body_witness` boolean, computed with the
+same strict hit-enclosure containment at the initial centerline vertex. Its
+presence contradicts the separately required body-clear declaration. Either
+that contradiction or simultaneous clear/blocked evidence for one query
+invalidates every candidate, rather than choosing a preferred conclusion.
+Absence of the flag is not body-clear evidence. All training, real-input,
+free-space and numerical-certification flags stay false; neither numerical
+allowances nor adopted target meanings were relaxed or changed.
+
+**Checks and failure history:** 30 new parameter cases cover eight complete
+clear/blocked bundles across four fixture goals, a momentum-limited tier-2
+case, rest/budget/domain/body/stale abstention, two fake-only unknown-propagation
+controls, two fake-only conflict controls, a near-tie, a real current-body
+contradiction and ten malformed controls. The real-conflict fixture initially
+failed before capture because its Scenario start was colliding: 70 passed,
+one failed with `start or goal is not in free space`. The repair kept a valid
+earlier Scenario start and acquisition pose, then declared the later colliding
+reference pose. No validator, assertion, deadline, numerical bound or work cap
+was relaxed. The same focused slice then passed all 71 checks, including Stage A
+and the reused outer-tube counterexamples.
+
+An instrumented capture wrapper counted 19 distinct complete Scenario records
+in that combined slice, including start, goal and height declarations. Twelve
+additional canonical comparisons used four scene declarations, for a conservative
+package total no greater than 23 of the approved 32 (some declarations overlap).
+Each coordinator call has six named queries, with three unique motions in the
+full-speed fixtures and five in the momentum fixture. These are ephemeral CPU
+unit fixtures, not rollouts, collected observations or task data. Per-query
+cell/depth/radius/segment bounds remain unchanged.
+
+After formatting, the required gate passed:
+`python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`.
+Actual result: **1,845 passed, one known transformer xfail, 71 existing warnings,
+no reported skips, 39.97 s**. Editor diagnostics are clean; all eight resolved
+coordinator callers are signature-compatible. Twelve canonical Stage A results
+exactly match `005aba7` after removing only the added current-body boolean.
+AST comparison confirms all other prior diagnostic runtime nodes are unchanged.
+No unchanged successful source gate was repeated for documentation-only edits.
+
+**Outcome and remaining gates:** both explicitly approved stages are complete.
+This is conditional ideal synthetic question feasibility, not certified
+arithmetic, physical sensor qualification, representative task quality, a
+complete runtime rules baseline or completion of Task 6/9. The next critical
+dependency is review of a sensing/input and evidence-qualification direction:
+C1 is still an experimental virtual profile, not an adopted runtime input.
+The approved envelope and strict abstention remain settled; do not re-ask them
+or silently start another heuristic/run while scope is blocked. Collection,
+integration, labels/data/splits, risk-policy, training, dependencies and hardware
+remain unauthorized. ST tools/board and restored teacher assets remain separate
+missing prerequisites. No background job, new raw artifact or fixture output
+needs cleanup; commits are local, with no agent push. Documentation-only checks
+validate references, local targets, fences, section ordering and whitespace.
+
 ## Sources
 
 Hardware and tools:

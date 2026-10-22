@@ -821,6 +821,81 @@ def test_synthetic_c1_curved_tube_keeps_exhausted_budget_unknown(c1_history, pie
 
 @pytest.mark.parametrize("side", [-1, 1])
 @pytest.mark.parametrize("radius", [0.05, 0.30])
+def test_synthetic_c1_coarse_curve_preserves_off_polyline_collision(side, radius):
+    from sim.diagnostics import (
+        _c1_curved_centerline,
+        capture_synthetic_c1_views,
+        probe_synthetic_c1_enclosure,
+    )
+    from sim.navigation import evaluate_synthetic
+
+    config, speed, age, pieces = Config(), 0.6, 0.15, 1
+    turn = side * config.max_turn_rate
+    points, error = _c1_curved_centerline(speed, turn, age, config, pieces, turn)
+    nodes, weights = np.polynomial.legendre.leggauss(32)
+    times = (nodes + 1) * speed / (2 * config.acceleration)
+    speeds = speed - config.acceleration * times
+    headings = turn * (age + config.dt + times)
+    reaction_end, _ = integrate([0, 0], 0, speed, turn, age + config.dt)
+    endpoint = reaction_end + speed / (2 * config.acceleration) * np.array(
+        [
+            np.dot(weights, speeds * np.cos(headings)),
+            np.dot(weights, speeds * np.sin(headings)),
+        ]
+    )
+    starts, steps = points[:-1], np.diff(points, axis=0)
+    squared = np.sum(steps * steps, axis=1)
+    fractions = np.clip(np.sum((endpoint - starts) * steps, axis=1) / squared, 0, 1)
+    closest = starts + fractions[:, None] * steps
+    nearest = closest[np.linalg.norm(endpoint - closest, axis=1).argmin()]
+    outward = (endpoint - nearest) / np.linalg.norm(endpoint - nearest)
+    center = endpoint + outward * (config.radius + radius - 0.001)
+    fractions = np.clip(np.sum((center - starts) * steps, axis=1) / squared, 0, 1)
+    separation = np.linalg.norm(
+        center - starts - fractions[:, None] * steps, axis=1
+    ).min()
+    assert separation > config.radius + radius
+    assert separation < config.radius + radius + error
+    assert np.linalg.norm(center) > config.radius + radius
+    scene = Scenario(
+        start=(2, 2, 0),
+        goal=(5, 2),
+        obstacles=((*(center + [2, 2]), radius),),
+        obstacle_heights=(0.05,),
+    )
+    reference = evaluate_synthetic(
+        scene, speed=speed, turn_rate=turn, tof_age_s=age, synthetic_test_only=True
+    )
+    assert (
+        reference["maneuvers"]["left" if side > 0 else "right"]["status"] == "blocked"
+    )
+    acquired, acquired_yaw = integrate([2, 2], 0, speed, turn, -age)
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*acquired, acquired_yaw],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    result = probe_synthetic_c1_enclosure(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=speed,
+        turn_rate=turn,
+        braking_turn_rate=turn,
+        curved_segments=pieces,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["fixture_enclosure_excluded"] is False
+    assert result["cells_checked"] > 0
+    assert result["curved_tube_radius_m"] >= config.radius + error
+
+
+@pytest.mark.parametrize("side", [-1, 1])
+@pytest.mark.parametrize("radius", [0.05, 0.30])
 def test_synthetic_c1_curved_tube_does_not_inherit_straight_clearance(side, radius):
     from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
     from sim.navigation import evaluate_synthetic

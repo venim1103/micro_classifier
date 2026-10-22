@@ -896,6 +896,57 @@ def test_synthetic_c1_coarse_curve_preserves_off_polyline_collision(side, radius
 
 @pytest.mark.parametrize("side", [-1, 1])
 @pytest.mark.parametrize("radius", [0.05, 0.30])
+def test_synthetic_c1_outer_curve_tube_is_not_a_blocked_witness(side, radius):
+    from sim.diagnostics import (
+        _c1_curved_centerline,
+        capture_synthetic_c1_views,
+        probe_synthetic_c1_enclosure,
+    )
+    from sim.navigation import evaluate_synthetic
+
+    config, speed, age = Config(), 0.6, 0.15
+    turn = side * config.max_turn_rate
+    points, error = _c1_curved_centerline(speed, turn, age, config, 1, turn)
+    surface = points[-1] + np.array([config.radius + error / 2, 0])
+    center = surface + np.array([radius, 0])
+    assert np.linalg.norm(surface - points[-1]) < config.radius + error
+    assert np.linalg.norm(center) > config.radius + radius
+    scene = Scenario(
+        start=(2, 2, 0),
+        goal=(5, 2),
+        obstacles=((*(center + [2, 2]), radius),),
+        obstacle_heights=(0.05,),
+    )
+    reference = evaluate_synthetic(
+        scene, speed=speed, turn_rate=turn, tof_age_s=age, synthetic_test_only=True
+    )
+    assert reference["maneuvers"]["left" if side > 0 else "right"]["status"] == "clear"
+    acquired, acquired_yaw = integrate([2, 2], 0, speed, turn, -age)
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[*acquired, acquired_yaw],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    result = probe_synthetic_c1_enclosure(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=speed,
+        turn_rate=turn,
+        braking_turn_rate=turn,
+        curved_segments=1,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["fixture_enclosure_excluded"] is False
+    assert result["cells_checked"] > 0
+
+
+@pytest.mark.parametrize("side", [-1, 1])
+@pytest.mark.parametrize("radius", [0.05, 0.30])
 def test_synthetic_c1_curved_tube_does_not_inherit_straight_clearance(side, radius):
     from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_enclosure
     from sim.navigation import evaluate_synthetic

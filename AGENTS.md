@@ -123,11 +123,14 @@ from them. Historical details below are reference material, not new approvals.
   stages are complete within the approved 32-geometry-fixture cap. The latest
   continuation approved a design-only C1 input/evidence-qualification proposal,
   now prepared in DESIGN.md §7 / REVIEW.md §88, not adoption or implementation.
-  A proposed bounded relative-frame/body-goal compatibility prototype needs
-  separate approval; collection, sensing adoption and runtime integration remain
-  unauthorized. Do not treat the generic continuation as approval of that package.
+  The user then accepted the separately proposed bounded relative-frame/body-goal
+  prototype. `cfb76f3` completes it: 64 new checks, 13 reused scene records,
+  30 paired comparisons, at most six motion queries per call (REVIEW.md §89).
+  This approval is exhausted; collection, sensing adoption and runtime integration
+  remain unauthorized. Actual registration/clock/arena-axis/domain/body-clear
+  evidence is still missing; fixture flags and scale metadata are not attestation.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-88 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-89 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -138,7 +141,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,845 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,909 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1183,16 +1186,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §88 prepare the
-approved design-only C1 input/evidence proposal. Proposed next package, not yet
-approved: isolated synthetic relative-frame/body-goal compatibility, at most
-16 reused scene records / 64 paired comparisons, no new geometry or rollouts.
-Registration, clock, domain/body-clear and physical return evidence remain
-unqualified; a true flag is not a source. Prior Stage A `d82fca3` / Stage B
-`5c643f7` are complete (71 combined tests; conservative at most 23/32 scenes).
-Normal inputs/wire/rules stay unchanged. No new implementation, collection,
-profile adoption or runtime integration is authorized. Task 6/9, numerical/
-physical/task-quality, absent teacher assets and ST/board gates remain open.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §89 complete the
+approved bounded synthetic relative-input package in `cfb76f3`: 64 new checks,
+13 reused scene records, 30 paired comparisons, 59 total relative API calls and
+maximum six unique motions per call. Legacy source/test AST nodes are unchanged.
+The 1,909-pass gate plus known xfail passes. This establishes bounded fixture
+compatibility only, not live-wire or evidence-source qualification. Registration,
+clock, arena-axis, domain/body-clear and physical return sources remain missing;
+numerical/resource/task-quality gates are open. No further run, implementation,
+collection, input/profile adoption or integration follows automatically. Task 6/9,
+absent teacher assets and ST/board gates remain blocked. No background job.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1274,7 +1277,10 @@ physical/task-quality, absent teacher assets and ST/board gates remain open.
   conditional synthetic evidence, not runtime/data approval or task completion.
   Next proposal (REVIEW.md §88): a latest-batch/relative-frame input boundary
   and qualification sequence are prepared, not adopted. Its separate bounded
-  synthetic compatibility implementation still needs approval.
+  synthetic compatibility implementation was subsequently approved and completed
+  in `cfb76f3` (§89), within 13 reused scenes / 30 pairs. All 64 new checks and
+  1,909 repository tests plus known xfail pass; this does not qualify the input
+  sources, live wire, runtime rules, physical bounds or representative task quality.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

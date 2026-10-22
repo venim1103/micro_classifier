@@ -2504,9 +2504,10 @@ Further collection, task data or integration still needs separate authorization.
 
 #### C1 Input and Evidence Qualification Proposal (2026-10-22)
 
-**Design-only; not adopted.** After the completed synthetic package, the user
-approved preparation of this proposal, not a runtime schema, sensor purchase,
-measurement campaign, new fixtures or implementation. Keep the active host
+**Runtime design not adopted.** After the completed synthetic package, the user
+approved preparation of this proposal, then separately its bounded synthetic
+input-compatibility implementation (REVIEW.md §89). Neither approval adopts a
+runtime schema, sensor purchase or measurement campaign. Keep the active host
 state/decision contract, single-view observations, question meanings, approved
 synthetic envelope and strict abstention unchanged. The candidate below is a
 reviewable boundary for a future module-local input, not an adapter already
@@ -2623,7 +2624,7 @@ inputs, reopen collection or authorize runtime/wire integration. If the missing
 domain/body/registration evidence has no credible owner, do not pursue that
 candidate as a runtime solution merely because its synthetic answers resolve.
 
-**Proposed next implementation authorization, not yet granted:** an isolated,
+**Approved bounded implementation authorization (2026-10-22):** an isolated,
 CPU-only synthetic relative-frame/body-goal compatibility prototype and tests.
 Use at most 16 already-existing complete scene records and 64 paired old/new
 coordinator comparisons, with no new scene coordinates, starts, goals or object
@@ -2631,7 +2632,8 @@ heights. Numerical frame changes operate on copies of existing input records,
 not new Scenarios or collected histories. Keep at most six maneuver/capacity
 queries per call and existing work limits. Reuse current tests/helpers; do not
 add a CLI, output artifact, log adapter, normal observation consumer or native
-runtime port. This is a new bounded package, not reuse of an exhausted approval.
+runtime port. This was a separate bounded package, not reuse of an exhausted
+approval; the implementation and checks are now complete below.
 
 The proposed logical boundary carries raw ranges/masks, fixed-profile identity,
 batch/reference timing, acquisition origin/heading relative to the reference
@@ -2654,6 +2656,57 @@ clear/blocked conclusion from previously unsupported numerical evidence.
 Legacy functions/defaults/bytes and existing tests remain unchanged; synthetic
 goals and oracle comparisons stay test-only. Passing would establish input
 compatibility only, not the provenance or physical qualification of that input.
+
+#### C1 Synthetic Relative Input Compatibility (2026-10-22)
+
+The separately approved bounded package is implemented in
+`prepare_synthetic_c1_relative_input` and `probe_synthetic_c1_relative_questions`
+in the [diagnostic prototype][c1-prototype-source]. Both require explicit
+synthetic opt-in and retain false training/real-input/free-space/numerical-
+certification flags. The first function converts existing exact fixtures into
+independently owned raw range/mask arrays, capture ticks, acquisition poses
+relative to a reference body, a fixture body-frame goal and profile metadata.
+It does not observe motion, estimate poses or create new sensing evidence.
+
+Two additional fixture dependencies must survive a coordinate change: the
+declared arena axes relative to the body, because the wall exclusion assumes
+axis-aligned walls, and the original coordinate scale used by numerical guards.
+The relative record carries `fixture_arena_yaw_rad` and
+`numerical_source_scale`; neither is an attested runtime source. Missing or
+inconsistent provenance rejects. Ordinary common-translation and quarter-turn
+coordinate copies are tested without creating a transformed Scenario. Arbitrary
+wall orientations are not newly qualified by this coordinate test.
+
+The query function accepts only a synthetic `State`-shaped fixture. Existing
+wire validation checks its structure, then the prototype requires planar motion,
+the three valid velocity/angular/goal groups with zero ages, exact goal binding
+and the artificial sample timestamp `reference_tick*50000` microseconds.
+Nonzero transform, heading or clock error remains unsupported. These are ideal
+fixture restrictions, not a selected physical freshness/clock policy or an
+integration of the live host transport. Binary32 wire-decoding equivalence,
+clock wrapping and real ego-estimator behavior are not qualified by these tests.
+
+To reuse every legacy geometric function unchanged, the bridge reconstructs a
+canonical axis-aligned computational frame. Its power-of-two translation is
+at least four times the retained numerical source scale, so small relative
+coordinates do not erase the older source-scale guards. It rejects excessive
+scale before the embedding and retains strict bounded capture-motion checks.
+Sector ranking uses the supplied body-frame goal directly, so rounding in the
+canonical embedding cannot manufacture the exact left/right tie convention.
+This is a conservative implementation allowance and tested compatibility
+construction, not a floating-point enclosure certificate or a new uncertainty
+policy. It can abstain more often than the old fixture path; no universal
+equivalence or claim of improved evidence follows.
+
+Schemas `micro-classifier/synthetic-c1-relative-input/1` and
+`micro-classifier/synthetic-c1-relative-questions/1` are experimental only.
+The query result contains candidate values, conditional evidence and numerical
+provenance; no probabilities, wire decision, controller, log consumer or exporter
+is added. All legacy source/test nodes, defaults, bytes and artifacts remain
+unchanged. REVIEW.md §89 records 64 new checks, 13 reused complete scene records,
+30 paired comparisons and at most six unique motion queries per call. This
+completes the approved package, not the independent clock/registration/arena-axis,
+domain/body-clear, return-process, numerical, resource or task-quality gates.
 
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -4665,7 +4718,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §88): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §89): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4703,8 +4756,10 @@ numerical/task-quality gates remain unchanged.
 A design-only C1 input/evidence proposal is now prepared (§7; REVIEW.md §88).
 It recommends a module-local latest-batch/relative-frame boundary, identifies
 missing registration/domain/body evidence and specifies a separate bounded
-synthetic compatibility package for approval. Neither that implementation nor
-any runtime profile, source qualification or collection is adopted by the draft.
+synthetic compatibility package. That package was separately approved and is
+now complete (§89), with conservative source-scale and arena-axis preservation.
+No runtime profile, evidence source, collection or integration is qualified or
+adopted by either the design draft or its synthetic compatibility checks.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

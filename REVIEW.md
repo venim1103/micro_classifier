@@ -5212,6 +5212,95 @@ bounded candidate requires an explicit new scope approval. Collection, runtime/
 wire/profile adoption, task data/labels/splits and physical/numerical/task-quality
 gates remain unchanged.
 
+## 89. Bounded C1 Relative Input Compatibility Complete (2026-10-22)
+
+The user's latest continuation accepted the immediately preceding explicit
+request for the bounded synthetic compatibility prototype: at most 16 existing
+complete scenes, 64 paired comparisons and six motion queries per call, with
+no new geometry, collection or runtime integration. This supersedes §88's
+implementation-blocked status only for that package. The worktree began clean
+at `e178ddd`, also the local `origin/main` reference after the user's push.
+Source checkpoint `cfb76f3` completes the authorized implementation and tests.
+
+**Implemented boundary:** `prepare_synthetic_c1_relative_input` reuses existing
+history/profile validation and converts exact fixture poses/goals to relative
+poses and a body-frame fixture goal. Ranges/masks/ticks are independently copied.
+It retains the original numerical source scale, so normalization cannot erase
+the evidence limitation of large world coordinates. No Scenario, world obstacle
+list or target answer appears in the relative record.
+
+`probe_synthetic_c1_relative_questions` validates experimental identity/scope,
+configuration, synthetic State structure, three planar motion/goal validity
+groups with zero age and the exact artificial tick-to-microsecond clock. The
+body-frame goal must match its fixture binding. Unsupported transform/heading/
+clock errors, missing body/domain declarations, malformed timing and records
+reject or remain unknown before motion queries. All training, real-input,
+free-space and numerical-certification flags remain false. This is not a live
+host handler or a binary32 wire-decoding/estimator qualification.
+
+**Frame and arithmetic dependencies:** the existing wall proof assumes arena
+axes, so the relative input explicitly retains their fixture yaw relative to
+the body. This is not an observed arena orientation. To reuse every old
+geometric function unchanged, the bridge embeds the relative records in a
+canonical computational frame with a power-of-two offset at least four times
+the retained source scale. Existing source-scale numerical guards therefore
+do not disappear merely because the payload is local. Excessive scale abstains
+before embedding. The capture-motion precheck stays strict, and sector ranking
+uses the supplied body-frame goal rather than a rounded reconstructed world
+goal, preserving near-tie abstention and the adopted exact tie convention.
+The construction is conditional and conservative, not certified arithmetic or
+universal frame invariance. It may add abstentions; no physical bound or risk
+policy is adopted. No old tolerance, assertion, work limit or target changed.
+
+**Actual checks:** 64 new parameter cases comprise 16 clear/blocked goal/frame
+pairs, eight momentum/rest/tie/conflict/rotation/held/scale comparisons, six
+stale/future/reversal/profile/reset/early-delivery pairs, 29 malformed or
+unsupported-evidence controls, four converter rejection cases and one converter
+ownership/boundary check. The 28 ordinary/unsupported pairs assert matching
+candidate values and admission status; two large-scale cases explicitly require
+unknown rather than claiming improved evidence after normalization.
+
+The expanded slice initially passed 53 checks and failed the held-change case:
+the selected element was a masked zero, so multiplying by 0.9 changed nothing.
+A Pylance-selected `/opt/venv/bin/python` snippet confirmed `0.0 / False` at
+that index and identified a valid nonzero return. Selecting the first valid
+index repaired the fixture; the same slice passed, with no validation relaxation.
+After formatting, lint reported TRY004 for the new type guard's ValueError and
+I001 for a local import separator. The guard now raises TypeError for a non-State
+object and the imports are separated. Lint and the same focused slice then passed.
+
+An instrumented combined run passed **135 checks**, including 71 neighboring
+legacy cases. It verified that all **13** complete new-slice scene declarations
+are members of the old-slice declarations, including start/goal/height metadata.
+No new geometry was created by coordinate copies of existing input arrays.
+It counted **30 paired comparisons**, **59 total relative API calls** (including
+rejections), at most **six unique motion queries per call** and at most six named
+query results. All caps remain within the explicit approval. AST comparison
+against `e178ddd` shows every pre-existing runtime and test node unchanged;
+only two source functions and the new test/fixture nodes were added.
+
+The final source gate was:
+`python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`.
+Actual result: **1,909 passed, one known transformer xfail, 71 existing warnings,
+no reported skips, 48.06 s**. Editor diagnostics are clean. All six resolved
+converter callers and five relative-query callers are signature-compatible.
+No unchanged successful code gate is rerun for the documentation-only handoff.
+
+**Outcome and blockers:** the bounded package is complete; its scope is not
+renewed by finishing a commit. No raw artifact, rollout, persisted task data,
+log replay, teacher/model run, training, dependency/download or hardware action
+occurred. No background job or cleanup is pending; agent commits are local and
+no push occurred. Normal Config, observations, catalogue/rules, wire/golden
+bytes and historical artifacts remain unchanged. This is bounded synthetic
+input compatibility, not Task 6/9 completion, runtime input/profile adoption,
+clock/registration/arena-axis or domain/body-clear evidence, physical return
+qualification, certified numerics, measured target fit/timing or representative
+task quality. Those missing sources and claims need a separately reviewed
+qualification direction before further implementation or collection. Strict
+abstention and the already-approved synthetic envelope remain settled. Scoped
+document references, local targets, fences, status and whitespace are checked
+without presenting the earlier source gate as newly rerun evidence.
+
 ## Sources
 
 Hardware and tools:

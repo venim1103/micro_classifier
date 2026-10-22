@@ -5730,6 +5730,102 @@ approval. Task 6/9, physical/numerical/resource/task-quality and ST/board gates
 remain blocked. Strict abstention, synthetic envelope and Gaussian-risk choices
 remain settled. No background job or cleanup is pending; no agent push occurred.
 
+## 95. Bounded Private Motion Owner/Checker Complete (2026-10-22)
+
+The user's continuation accepted the immediately preceding private prototype:
+at most four reused complete scenes, 16 cases, two owners per case and eight
+ticks per owner, zero question queries, no collection or runtime integration.
+The worktree began clean at `94f2722`; Current State, §94, the contract and
+actual recorder/motion/test paths were inspected. `fe21517` checkpoints the
+completed source/tests. This supersedes the prototype-blocked status in §94
+only for that bounded package, not normal contract/profile adoption.
+
+**Implementation:** `_SyntheticC1MotionOwner` copies its seed and Scenario and
+fixes one planar constant twist. It derives pose, current body goal, interval-
+ending State and encoded bytes, calls the unchanged recorder, and retains at
+most eight consecutive events. Later calls accept only the next tick. Invalid
+tick, gap, reversal, wrap or ninth-event requests do not advance the owner or
+invalidate an existing seal. Snapshots copy private source and motion records;
+the owner retains its own outer binding. Foreign, re-signed, stale or malformed
+returned records cannot replace it. The State is serialized into that binding,
+without changing the existing source digest or recorder.
+
+The independent `_check_synthetic_c1_motion` checks event ticks/host twist/frame,
+seed, current reference and acquisition poses without using production motion,
+capture or conversion as its reference. For zero yaw rate and zero seed heading,
+exact rational arithmetic and outward binary64 endpoint conversion enclose the
+speed/time product, rational `v/20` clock interpretation and repeated coordinate
+additions. Body-goal subtraction has an independent outward enclosure too.
+This is a narrow diagnostic binary64/zero-heading arithmetic claim, not formal
+whole-program certification, sensor uncertainty or a physical dynamics bound.
+No tolerance, deadline, work cap, safety check or risk convention is relaxed.
+
+Nonzero turn or seed heading stays unresolved: no independent curved/rotated
+enclosure is implemented. Wrap controls exercise event generation without
+claiming its trigonometric arithmetic qualified. Ownership, motion evidence and
+the old source/wire audit are separate. A newly owner-bound stalled-motion
+producer passes the old source audit but fails independent straight translation.
+Straight reference evidence can pass while the source audit reports changed
+binary32 goal values. No value is rounded, decoded substitution made, geometry
+changed or old audit guard widened to obtain admission. Private body/domain
+conditioning remains oracle-assisted and all qualification flags remain false.
+
+**Cases and measured bounds:** the 16 new cases cover stationary, straight,
+left/right, moving-reference hold, heading wrap, stalled and wrong-pose injected
+producers, wrong host twist, rejected ticks/cap, epoch/held metadata substitution,
+wrong goal, wire change, missing heading enclosure and foreign/re-signed/malformed
+records. Scene dictionaries, including start/goal/height metadata, are verified
+against old declarations: **four complete scenes reused**, no new geometry.
+The final instrumented pass has **17 owners**, at most two in any case, each with **eight successful
+ticks**: **136 total**, below 256. Transient work includes **102 capture batches,
+21 returned snapshots, 19 owner audits and 15 independent checks**. Outcomes
+are **five motion-consistent, six motion-inconsistent, four motion-unresolved
+and four outer-ownership rejections**. Among the 15 source audits, two are
+source-consistent, 12 retain host-round-trip rejection and one rejects unsupported
+candidate scope. These counts describe controls/repeats, not independent task
+examples or coverage estimates. **Zero question queries** is enforced by failing
+sentinels, as are episode writing and RoverEnv construction. Audit consumption
+also forbids integrator/capture/inspection/conversion calls.
+
+AST comparison against `94f2722` verifies all pre-existing source/test nodes
+unchanged: only the private class, checker and one parameterized test are added.
+Language-server references show the class definition and two test construction
+sites, no runtime consumer. Editor diagnostics are clean.
+
+**Failure history:** the first stationary test failed with the expected missing
+class ImportError. The initial implementation then reached snapshot creation
+but failed because the old typed digest does not accept a State dataclass.
+Serializing that field only in the new outer binding made the same check pass;
+the old digest/recorder were not altered. The expanded 16 cases passed. Review
+then identified a missing nested State could escape as KeyError; the new owner
+now rejects it and the existing foreign case covers that control without new
+owners/scenes/ticks/cases. The same focused matrix and final instrumentation
+pass. No unexpected behavior was hidden or failing bound changed.
+
+Source checkpoint gate:
+`python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`.
+Actual result: **1,989 passed, one known transformer xfail, 71 existing warnings,
+no reported skips, 68.73 s**. Lint, scoped format, whitespace and editor checks
+pass. Historical artifacts and the transformer QDQ failure remain unchanged.
+The documentation-only handoff does not rerun this unchanged successful gate.
+
+**Outcome and next boundary:** the bounded package is complete and exhausted.
+No episode/log replay or persisted source/audit artifact, labels/dataset/splits,
+model/teacher experiment, training, dependency/download, licence, hardware,
+linked firmware or normal input/profile/runtime integration occurred. Existing
+wire/catalogue/rules/defaults and every pre-existing function remain unchanged.
+Commits are local, no agent push; no background job or cleanup is pending.
+Task 6/9, physical/numerical/resource/task-quality and ST/board gates remain open.
+Strict abstention, the synthetic envelope and Gaussian-risk choices are settled.
+
+Recommended next scope, **not approved**, is a design-only independent curved/
+rotated reference-enclosure contract: define exact comparison quantities, elapsed
+time and angle conventions, truncation/roundoff evidence, fault controls and
+unresolved behavior while retaining separate wire/goal admission. No code,
+fixture run, dependency, new geometry, collection or integration is proposed.
+That preparation needs separate approval; unused tick/owner budget does not
+authorize another implementation or study run.
+
 ## Sources
 
 Hardware and tools:

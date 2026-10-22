@@ -3098,6 +3098,65 @@ adoption, collection, labels or runtime integration. Recommended default remains
 no implementation until that distinct package is approved. The design-only
 approval is exhausted when this contract and handoff are recorded.
 
+#### Private C1 Motion Owner and Checker (2026-10-22)
+
+The user separately approved the preceding bounded private prototype. It is
+complete in `fe21517`; REVIEW.md §95 supersedes the implementation-blocked
+status only for that package, not normal input adoption or numerical/physical
+qualification. `_SyntheticC1MotionOwner` and `_check_synthetic_c1_motion` in the
+[diagnostic prototype][c1-prototype-source] are additive private tooling. All
+pre-existing source/test AST nodes are unchanged. No question, episode, normal
+input consumer, CLI, persistence, model or runtime path is added.
+
+The owner copies its seed/Scenario, fixes one supported planar twist and derives
+at most eight consecutive events, host State and frame bytes. After construction,
+callers supply only the next tick, not replacement pose/motion/goal/timestamp.
+It uses the existing integrator for production and the unchanged private recorder
+for capture/delivery/hold ownership. Snapshots copy the motion ledger and private
+source bundle and retain an independent outer anchor. Foreign, stale, re-signed
+or malformed returned records cannot replace that anchor. Invalid advances,
+including a ninth tick, do not advance the event or invalidate an existing seal.
+
+The independent checker never uses the motion producer, integrator, recorder,
+capture or relative converter as its reference. It checks every retained event's
+clock, State twist and encoded frame, then binds current reference and acquired
+poses to those events. Positive reference evidence is deliberately limited to
+zero yaw rate and zero seed heading. Exact `Fraction` arithmetic and directed
+binary64 endpoint conversion enclose the speed/time product, rational `v/20`
+clock interpretation and successive coordinate additions; body-goal subtraction
+is similarly enclosed. This is bounded diagnostic arithmetic under the stated
+binary64/zero-heading operations, not whole-program numerical certification or
+a physical error bound. No sampled tolerance or guessed epsilon is used.
+
+Nonzero turn or seed heading remains `unresolved_motion_evidence`: no independent
+trigonometric/integral enclosure has been implemented. Heading-wrap controls
+verify event generation and preserve that unresolved verdict, not positive curved
+qualification. Ownership consistency, motion evidence and the old source/wire
+audit remain separate. A freshly owner-bound stalled producer can pass the old
+source audit yet fail the motion reference; conversely, straight motion can pass
+the reference and still have `host_round_trip_changed` for its current goal.
+No goal is rounded, decoded State substituted or old guard weakened. Private
+domain/body checks remain oracle-assisted, never candidate-side runtime evidence.
+
+Sixteen new cases reuse four complete scenes and make zero question queries.
+The final instrumented pass measures 17 owners, eight successful ticks each (136 total),
+102 capture batches, 21 returned snapshots, 19 owner audits and 15 independent
+checks. Audit calls include five motion-consistent, six motion-inconsistent,
+four motion-unresolved and four outer-ownership rejections. Repeated snapshots
+and foreign/stale/malformed controls explain why audit count is not case count.
+These are in-memory fixtures, not episodes, representative task data or physical
+dynamics. All training/real-input/free-space/numerical-certification flags remain
+false. The full gate passes 1,989 tests plus the known transformer xfail (§95).
+
+**Next candidate, not approved:** design-only independent reference-enclosure
+contract for curved and nonzero-heading motion. Specify the mathematical quantity,
+seed-relative versus absolute time, angle wrapping, justified truncation/roundoff
+bounds, fault controls and unresolved behavior; retain separate exact wire/goal
+admission. No code, fixture run, new dependency, geometry, rollout/log replay,
+persistence, normal input/profile adoption, collection or runtime integration.
+The completed owner/checker scope is exhausted and does not authorize that work
+or qualify numerical, physical, resource or representative task-quality gates.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5109,7 +5168,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §94): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §95): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5168,9 +5227,14 @@ tests remain unchanged; oracle-assisted fixture admission is not runtime policy.
 The separately approved design-only motion-source contract is now prepared
 (§7; REVIEW.md §94): a proposed bounded constant-twist owner, interval-ending
 host semantics, independent arithmetic evidence and distinct motion/wire
-verdicts. The contract is not adopted or implemented. A four-scene/16-case,
-zero-query private prototype is proposed, not approved; earlier physical/
-numerical/task-quality and integration/data gates remain.
+verdicts. It is not adopted as a normal input contract. A four-scene/16-case,
+zero-query private prototype was separately approved and is now complete in
+`fe21517` (§95). It owns bounded events and provides independent zero-heading
+straight reference bounds; curves/rotated headings and changed wire/goal values
+remain unresolved. No normal profile/runtime adoption or source qualification
+follows. A design-only curved/rotated reference-enclosure contract is proposed,
+not approved; earlier physical/numerical/task-quality and integration/data gates
+remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

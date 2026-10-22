@@ -918,6 +918,351 @@ def probe_synthetic_c1_questions(
     return result
 
 
+class _SyntheticC1MotionOwner:
+    """Own a bounded constant-twist fixture, not a simulator rollout."""
+
+    def __init__(
+        self,
+        scenario,
+        *,
+        seed_tick,
+        pose_m_rad,
+        speed,
+        turn_rate,
+        synthetic_test_only=False,
+    ):
+        if synthetic_test_only is not True:
+            raise ValueError("C1 motion owner requires synthetic_test_only=True")
+        if type(seed_tick) is not int or not 0 <= seed_tick <= 85899:
+            raise ValueError("C1 motion owner requires a nonwrapping seed tick")
+        pose = _c1_array(pose_m_rad, (3,)).astype(float).copy()
+        if any(isinstance(value, (bool, np.bool_)) for value in (speed, turn_rate)):
+            raise ValueError("C1 motion owner requires numeric twist values")
+        speed, turn_rate = map(float, _c1_array([speed, turn_rate], (2,)))
+        config = _c1_config(None)
+        if (
+            not 0 <= speed <= config.max_speed
+            or abs(turn_rate) > config.max_turn_rate
+            or abs(pose[2]) > math.pi
+        ):
+            raise ValueError("unsupported C1 motion seed or twist")
+        self._recorder = _SyntheticC1SourceRecorder(scenario, synthetic_test_only=True)
+        self._seed_tick = seed_tick
+        self._seed_pose = pose.copy()
+        self._speed = speed
+        self._turn_rate = turn_rate
+        self._events = []
+        self._binding = None
+        self._record(seed_tick, pose)
+
+    def _record(self, tick, pose):
+        from interface.protocol import State, encode_state
+
+        heading = math.atan2(math.sin(pose[2]), math.cos(pose[2]))
+        cosine, sine = math.cos(heading), math.sin(heading)
+        delta_x, delta_y = np.asarray(self._recorder._scenario.goal) - pose[:2]
+        state = State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(self._speed, 0.0, 0.0),
+            angular_velocity_rad_s=(0.0, 0.0, self._turn_rate),
+            goal_m=(
+                float(delta_x * cosine + delta_y * sine),
+                float(delta_y * cosine - delta_x * sine),
+                0.0,
+            ),
+        )
+        event = {
+            "tick": tick,
+            "pose_m_rad": pose.tolist(),
+            "fixture_state": asdict(state),
+            "host_frame": encode_state(state),
+        }
+        self._recorder.record_tick(tick, pose_m_rad=pose, fixture_state=state)
+        self._events.append(event)
+        self._binding = None
+
+    def advance(self, tick):
+        from sim.rover import integrate
+
+        if (
+            type(tick) is not int
+            or tick != self._events[-1]["tick"] + 1
+            or tick > 85899
+            or len(self._events) >= 8
+        ):
+            raise ValueError("C1 motion owner requires bounded consecutive ticks")
+        previous = self._events[-1]["pose_m_rad"]
+        position, heading = integrate(
+            previous[:2], previous[2], self._speed, self._turn_rate, 0.05
+        )
+        pose = _c1_array([*position, heading], (3,)).astype(float)
+        if abs(pose[2]) > math.pi:
+            raise ValueError("unsupported C1 motion heading")
+        self._record(tick, pose)
+
+    def snapshot(self):
+        source = self._recorder.snapshot()
+        motion = {
+            "model": "constant_twist_interval_ending_v1",
+            "clock_epoch": self._recorder._epoch,
+            "seed_tick": self._seed_tick,
+            "seed_pose_m_rad": self._seed_pose.tolist(),
+            "speed_m_s": self._speed,
+            "turn_rate_rad_s": self._turn_rate,
+            "tick_period_us": 50000,
+            "tick_period_s": 0.05,
+            "fixture_goal_m": list(self._recorder._scenario.goal),
+            "events": deepcopy(self._events),
+        }
+        self._binding = _c1_source_binding_digest(
+            {
+                "motion": motion,
+                "source": {**source, "fixture_state": asdict(source["fixture_state"])},
+            }
+        )
+        return {
+            "allowed_use": "private_synthetic_motion_record_only",
+            "training_approved": False,
+            "real_input_qualified": False,
+            "free_space_qualified": False,
+            "numerically_certified": False,
+            "motion": motion,
+            "source": source,
+            "binding_sha256": self._binding,
+        }
+
+    def audit(self, bundle):
+        if self._binding is None:
+            raise ValueError("C1 motion owner needs a current snapshot")
+        if (
+            type(bundle) is not dict
+            or set(bundle)
+            != {
+                "allowed_use",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "motion",
+                "source",
+                "binding_sha256",
+            }
+            or bundle["allowed_use"] != "private_synthetic_motion_record_only"
+            or any(
+                bundle[key] is not False
+                for key in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                )
+            )
+        ):
+            raise ValueError("unsupported private C1 motion bundle")
+        result = {
+            "allowed_use": "private_synthetic_motion_audit_only",
+            "training_approved": False,
+            "real_input_qualified": False,
+            "free_space_qualified": False,
+            "numerically_certified": False,
+            "ownership_status": "inconsistent_source_record",
+            "motion_status": "unresolved_motion_evidence",
+            "motion_reason": "owner_binding_mismatch",
+            "events_checked": 0,
+            "source_audit": None,
+        }
+        try:
+            binding = _c1_source_binding_digest(
+                {
+                    "motion": bundle["motion"],
+                    "source": {
+                        **bundle["source"],
+                        "fixture_state": asdict(bundle["source"]["fixture_state"]),
+                    },
+                }
+            )
+        except (KeyError, ValueError, TypeError, OverflowError):
+            return result
+        if bundle["binding_sha256"] != self._binding or binding != self._binding:
+            return result
+        result["ownership_status"] = "consistent_under_fixture_assumptions"
+        checked = _check_synthetic_c1_motion(bundle["motion"], bundle["source"])
+        result.update(
+            motion_status=checked["status"],
+            motion_reason=checked["reason"],
+            events_checked=checked["events_checked"],
+            source_audit=self._recorder.audit(bundle["source"]),
+        )
+        return result
+
+
+def _check_synthetic_c1_motion(motion, source):
+    """Check private event references independently; unsupported curves abstain."""
+    from fractions import Fraction
+
+    from interface.protocol import State, encode_state
+
+    result = {
+        "status": "unresolved_motion_evidence",
+        "reason": "unsupported_motion_record",
+        "events_checked": 0,
+    }
+
+    def inconsistent(reason):
+        result.update(status="inconsistent_motion_record", reason=reason)
+        return result
+
+    def rational(value):
+        return Fraction.from_float(float(value))
+
+    def outward(lower, upper):
+        rounded_lower, rounded_upper = float(lower), float(upper)
+        if rational(rounded_lower) > lower:
+            rounded_lower = math.nextafter(rounded_lower, -math.inf)
+        if rational(rounded_upper) < upper:
+            rounded_upper = math.nextafter(rounded_upper, math.inf)
+        return rational(rounded_lower), rational(rounded_upper)
+
+    try:
+        if type(motion) is not dict or set(motion) != {
+            "model",
+            "clock_epoch",
+            "seed_tick",
+            "seed_pose_m_rad",
+            "speed_m_s",
+            "turn_rate_rad_s",
+            "tick_period_us",
+            "tick_period_s",
+            "fixture_goal_m",
+            "events",
+        }:
+            return result
+        if (
+            motion["model"] != "constant_twist_interval_ending_v1"
+            or type(motion["seed_tick"]) is not int
+            or not 0 <= motion["seed_tick"] <= 85899
+            or type(motion["tick_period_us"]) is not int
+            or motion["tick_period_us"] != 50000
+            or type(motion["tick_period_s"]) is not float
+            or motion["tick_period_s"] != 0.05
+        ):
+            return result
+        seed = _c1_array(motion["seed_pose_m_rad"], (3,)).astype(float)
+        speed, turn = map(
+            float, _c1_array([motion["speed_m_s"], motion["turn_rate_rad_s"]], (2,))
+        )
+        if not 0 <= speed <= 0.6 or abs(turn) > 1.5 or abs(seed[2]) > math.pi:
+            return result
+        events = motion["events"]
+        if type(events) is not list or not 1 <= len(events) <= 8:
+            return result
+        private = source["private_source"]
+        if (
+            type(motion["clock_epoch"]) is not str
+            or not motion["clock_epoch"]
+            or private["clock_epoch"] != motion["clock_epoch"]
+            or private["reference_epoch"] != motion["clock_epoch"]
+        ):
+            return inconsistent("motion_clock_epoch_mismatch")
+        goal = _c1_array(motion["fixture_goal_m"], (2,)).astype(float)
+        if not np.array_equal(goal, private["fixture_goal_m"]) or not np.array_equal(
+            goal, private["scenario"]["goal"]
+        ):
+            return inconsistent("motion_world_goal_mismatch")
+        straight = turn == 0 and seed[2] == 0
+        step_lower, step_upper = outward(
+            rational(speed) * rational(0.05), rational(speed) * rational(0.05)
+        )
+        step_lower = min(step_lower, rational(speed) / 20)
+        step_upper = max(step_upper, rational(speed) / 20)
+        lower = upper = rational(seed[0])
+        retained = {}
+        for index, event in enumerate(events):
+            if type(event) is not dict or set(event) != {
+                "tick",
+                "pose_m_rad",
+                "fixture_state",
+                "host_frame",
+            }:
+                return result
+            tick = event["tick"]
+            if (
+                type(tick) is not int
+                or tick != motion["seed_tick"] + index
+                or tick > 85899
+            ):
+                return inconsistent("motion_tick_discontinuity")
+            pose = _c1_array(event["pose_m_rad"], (3,)).astype(float)
+            state = State(**event["fixture_state"])
+            if (
+                state.timestamp_us != tick * 50000
+                or state.velocity_m_s != (speed, 0, 0)
+                or state.angular_velocity_rad_s != (0, 0, turn)
+                or state.ages_us[:3] != (0, 0, 0)
+                or state.validity & 7 != 7
+            ):
+                return inconsistent("host_twist_or_clock_mismatch")
+            if (
+                type(event["host_frame"]) is not bytes
+                or encode_state(state) != event["host_frame"]
+            ):
+                return inconsistent("motion_host_frame_mismatch")
+            if index == 0 and not np.array_equal(pose, seed):
+                return inconsistent("motion_seed_mismatch")
+            if straight:
+                if index:
+                    lower, upper = outward(lower + step_lower, upper + step_upper)
+                if (
+                    not lower <= rational(pose[0]) <= upper
+                    or pose[1] != seed[1]
+                    or pose[2] != 0
+                ):
+                    return inconsistent("straight_reference_mismatch")
+                for axis in (0, 1):
+                    expected = rational(goal[axis]) - rational(pose[axis])
+                    goal_lower, goal_upper = outward(expected, expected)
+                    if (
+                        not goal_lower <= rational(state.goal_m[axis]) <= goal_upper
+                        or state.goal_m[2] != 0
+                    ):
+                        return inconsistent("motion_body_goal_mismatch")
+            retained[tick] = pose
+            result["events_checked"] += 1
+        if (
+            private["reference_tick"] != events[-1]["tick"]
+            or not np.array_equal(
+                private["reference_pose_m_rad"], retained[events[-1]["tick"]]
+            )
+            or _c1_source_binding_digest(private["fixture_state"])
+            != _c1_source_binding_digest(events[-1]["fixture_state"])
+            or private["host_frame"] != events[-1]["host_frame"]
+        ):
+            return inconsistent("motion_reference_event_mismatch")
+        for event in private["history"]:
+            capture = event["capture"]
+            ticks = _c1_array(capture["capture_ticks"], (8,), "iu")
+            poses = _c1_array(capture["capture_poses_m_rad"], (8, 3))
+            if (
+                event["clock_epoch"] != motion["clock_epoch"]
+                or int(ticks[0]) not in retained
+                or not np.all(ticks == ticks[0])
+                or not np.all(poses == retained[int(ticks[0])])
+            ):
+                return inconsistent("motion_acquisition_event_mismatch")
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return result
+    result.update(
+        status="consistent_under_fixture_assumptions"
+        if straight
+        else "unresolved_motion_evidence",
+        reason="rational_straight_enclosure"
+        if straight
+        else "independent_curved_or_heading_enclosure_missing",
+    )
+    return result
+
+
 class _SyntheticC1SourceRecorder:
     """Own ideal fixture events in memory, without a rollout or runtime consumer."""
 

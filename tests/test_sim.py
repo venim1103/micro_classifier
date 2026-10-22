@@ -63,6 +63,245 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
 @pytest.mark.parametrize(
     "case",
     [
+        "stationary",
+        "straight",
+        "left",
+        "right",
+        "held",
+        "wrap",
+        "stalled",
+        "wrong_pose",
+        "wrong_twist",
+        "gap",
+        "epoch",
+        "rewritten_hold",
+        "goal",
+        "wire",
+        "missing_numeric",
+        "foreign",
+    ],
+)
+def test_synthetic_c1_motion_owner(monkeypatch, case):
+    from dataclasses import asdict
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics, rover
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("motion fixtures must not query questions or collect episodes")
+
+    for name in (
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "RoverEnv",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    scene = (
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.6, 2, 0.30),))
+        if case == "wrong_pose"
+        else Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),))
+        if case == "goal"
+        else Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),))
+        if case == "wire"
+        else Scenario(start=(2, 2, 0), goal=(5, 2))
+    )
+    speed = 0 if case == "stationary" else 0.6 if case == "wire" else 0.5
+    turn = 0.5 if case in ("left", "wrap") else -0.5 if case == "right" else 0
+    seed = np.array(
+        [
+            2,
+            2,
+            math.pi - 0.01
+            if case == "wrap"
+            else 0.25
+            if case == "missing_numeric"
+            else 0,
+        ]
+    )
+    owner = diagnostics._SyntheticC1MotionOwner(
+        scene,
+        seed_tick=20,
+        pose_m_rad=seed,
+        speed=speed,
+        turn_rate=turn,
+        synthetic_test_only=True,
+    )
+    seed[:] = 99
+    original_integrate = rover.integrate
+    original_record = owner._record
+
+    def faulty_integrate(position, heading, *settings):
+        if case == "stalled":
+            return np.asarray(position), heading
+        moved, angle = original_integrate(position, heading, *settings)
+        return moved + [0, 0.01], angle + 0.01
+
+    def faulty_record(tick, pose):
+        original_record(tick, pose)
+        event = owner._events[-1]
+        if case == "wrong_twist":
+            event["fixture_state"]["angular_velocity_rad_s"] = (0, 0, 0.25)
+        else:
+            event["fixture_state"]["goal_m"] = (99, 0, 0)
+        event["host_frame"] = encode_state(State(**event["fixture_state"]))
+
+    if case in ("stalled", "wrong_pose"):
+        monkeypatch.setattr(rover, "integrate", faulty_integrate)
+    elif case in ("wrong_twist", "goal"):
+        monkeypatch.setattr(owner, "_record", faulty_record)
+    for tick in range(21, 28):
+        owner.advance(tick)
+        if tick == 26 and case in ("held", "gap"):
+            previous = owner.snapshot()
+            if case == "gap":
+                for invalid in (True, 26, 28, 85900):
+                    with pytest.raises(ValueError, match="bounded consecutive"):
+                        owner.advance(invalid)
+                assert owner.snapshot()["binding_sha256"] == previous["binding_sha256"]
+    if case in ("epoch", "rewritten_hold"):
+        owner._recorder._history = deepcopy(owner._recorder._history)
+        if case == "epoch":
+            owner._recorder._history[-1]["clock_epoch"] = "substituted-epoch"
+        else:
+            owner._recorder._history[-1]["capture"]["capture_ticks"] += 1
+    bundle = owner.snapshot()
+    assert len(bundle["motion"]["events"]) == 8
+    assert bundle["motion"]["tick_period_us"] == 50000
+    assert bundle["motion"]["tick_period_s"] == 0.05
+    assert bundle["motion"]["seed_pose_m_rad"][:2] == [2, 2]
+    assert all(
+        event["tick"] == 20 + index
+        for index, event in enumerate(bundle["motion"]["events"])
+    )
+    if case == "held":
+        old = previous["source"]["private_source"]["history"][-1]
+        current = bundle["source"]["private_source"]["history"][-1]
+        assert old["capture_id"] == current["capture_id"]
+        for field in ("capture_ticks", "capture_poses_m_rad", "tof_m", "tof_valid"):
+            assert np.array_equal(old["capture"][field], current["capture"][field])
+        assert (
+            previous["source"]["private_source"]["reference_pose_m_rad"]
+            != bundle["source"]["private_source"]["reference_pose_m_rad"]
+        )
+        assert (
+            previous["source"]["fixture_state"].goal_m
+            != bundle["source"]["fixture_state"].goal_m
+        )
+        assert owner.audit(previous)["ownership_status"] == "inconsistent_source_record"
+    if case == "wrap":
+        assert bundle["motion"]["events"][0]["pose_m_rad"][2] > 0
+        assert bundle["motion"]["events"][1]["pose_m_rad"][2] < 0
+    if case == "gap":
+        with pytest.raises(ValueError, match="bounded consecutive"):
+            owner.advance(28)
+        assert owner.snapshot()["binding_sha256"] == bundle["binding_sha256"]
+    if case == "foreign":
+        other = diagnostics._SyntheticC1MotionOwner(
+            scene,
+            seed_tick=20,
+            pose_m_rad=[2, 2, 0],
+            speed=speed,
+            turn_rate=turn,
+            synthetic_test_only=True,
+        )
+        for tick in range(21, 28):
+            other.advance(tick)
+        assert (
+            owner.audit(other.snapshot())["ownership_status"]
+            == "inconsistent_source_record"
+        )
+        bundle["motion"]["speed_m_s"] = 0.125
+        bundle["binding_sha256"] = diagnostics._c1_source_binding_digest(
+            {
+                "motion": bundle["motion"],
+                "source": {
+                    **bundle["source"],
+                    "fixture_state": asdict(bundle["source"]["fixture_state"]),
+                },
+            }
+        )
+    for name in (
+        "capture_synthetic_c1_views",
+        "prepare_synthetic_c1_relative_input",
+        "inspect_synthetic_c1_history",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(rover, "integrate", forbidden)
+    result = owner.audit(bundle)
+    assert set(result) == {
+        "allowed_use",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "ownership_status",
+        "motion_status",
+        "motion_reason",
+        "events_checked",
+        "source_audit",
+    }
+    assert all(
+        result[field] is False
+        for field in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+        )
+    )
+    assert "scenario" not in bundle["source"]["relative_input"]
+    if case == "foreign":
+        assert result["ownership_status"] == "inconsistent_source_record"
+        assert result["source_audit"] is None
+        del bundle["source"]["fixture_state"]
+        assert owner.audit(bundle)["ownership_status"] == "inconsistent_source_record"
+        return
+    assert result["ownership_status"] == "consistent_under_fixture_assumptions"
+    if case in (
+        "stalled",
+        "wrong_pose",
+        "wrong_twist",
+        "epoch",
+        "rewritten_hold",
+        "goal",
+    ):
+        assert result["motion_status"] == "inconsistent_motion_record"
+        assert (
+            result["motion_reason"]
+            == {
+                "stalled": "straight_reference_mismatch",
+                "wrong_pose": "straight_reference_mismatch",
+                "wrong_twist": "host_twist_or_clock_mismatch",
+                "epoch": "motion_acquisition_event_mismatch",
+                "rewritten_hold": "motion_acquisition_event_mismatch",
+                "goal": "motion_body_goal_mismatch",
+            }[case]
+        )
+    else:
+        assert result["events_checked"] == 8
+        assert result["motion_status"] == (
+            "unresolved_motion_evidence"
+            if case in ("left", "right", "wrap", "missing_numeric")
+            else "consistent_under_fixture_assumptions"
+        )
+    if case in ("stationary", "stalled"):
+        assert (
+            result["source_audit"]["status"] == "consistent_under_fixture_assumptions"
+        )
+    if case == "wire":
+        assert result["source_audit"]["reason"] == "host_round_trip_changed"
+        assert "velocity_m_s" in result["source_audit"]["host_changed_fields"]
+    if case == "straight":
+        assert result["source_audit"]["reason"] == "host_round_trip_changed"
+        assert "goal_m" in result["source_audit"]["host_changed_fields"]
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
         "clear",
         "blocked",
         "left_turn",

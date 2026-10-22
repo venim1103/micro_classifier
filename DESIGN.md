@@ -2932,6 +2932,47 @@ adoption, physical uncertainty policy or data/quality claim is proposed. This
 would test composition only; actual pose/motion, physical sensing/clock/arena/
 domain/body evidence, numerical/resource and task-quality gates remain open.
 
+#### Tests-Only C1 Recorder Composition (2026-10-22)
+
+The user separately approved that bounded tests-only package. It is complete
+in `0c3de54`; REVIEW.md §93 supersedes the preceding composition-blocked status
+only for those checks. One parameterized test adds 16 cases over four complete
+pre-existing scenes. Runtime source and every pre-existing test AST node remain
+unchanged. The test harness audits the recorder-owned snapshot before calling
+the existing relative question wrapper; it is not an implemented runtime
+admission pipeline. Private Scenario, source manifests and frame records stay
+out of the candidate-side call. Literal body/domain declarations are explicitly
+oracle-assisted fixture conditioning, never inferred observation-only evidence.
+
+Ten source-consistent cases reach the question wrapper; eight reach its
+coordinator, seven using four unique motions and one using the maximum six.
+Matching exclusion/witness calls verify caching and the per-call bound. Six
+resolved cases agree with the existing synthetic geometric reference. Missing
+literal declarations and zero-cell budgets remain unknown; an explicitly
+injected contradictory witness clears all candidates rather than overriding
+clear evidence. The conflict is a test fault, not an observed sensor result.
+Six source-rejected cases make zero question calls: binary32 change, unsupported
+domain, body contact, re-signed candidate mutation, stale reference and foreign
+ownership. Held data retain acquisition identity and time across reference ticks.
+All training/real-input/free-space/numerical-certification flags remain false.
+
+Instrumented transient work is 70 successful explicit fixture ticks, 53 capture
+batches and 19 returned snapshots, with no episode, log replay or persisted
+source/audit artifact. These are hand-authored fixtures, not dynamically verified
+trajectories or representative task cases. In particular, owned capture poses
+and a declared host velocity do not establish that one motion process produced
+both. The full gate passes 1,973 tests plus the known transformer xfail (§93).
+
+**Next candidate, not approved:** design-only fixture motion-source contract.
+Specify pose/tick/host-velocity and angular-rate ownership and binding, held
+acquisition versus current-reference semantics, and independent straight/turn/
+held controls and inconsistent-history rejection checks. Keep binary32-changing
+States unresolved; propose no rounding or uncertainty policy. No implementation,
+new geometry, rollout/log replay, persistence, input/profile adoption, collection
+or runtime integration. This would refine the unresolved motion row of the
+existing source plan, not repeat the completed source-binding/ownership work
+or qualify physical sensing, numerical bounds or task quality.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4942,7 +4983,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §92): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §93): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4994,8 +5035,12 @@ input qualification. The proposed producer-owned synthetic recorder is not
 approved by the audit's completion. The separately approved private recorder is
 now complete in `76aa712` (§92), with 16 cases, three reused scenes and zero
 decision queries. Its owned event/binding records are fixture provenance, not
-physical or dynamics qualification. Tests-only conditional composition is the
-next proposal, not an authorization; earlier integration/data gates remain.
+physical or dynamics qualification. The separately approved tests-only conditional
+composition is now complete in `0c3de54` (§93): 16 cases, four reused scenes,
+eight coordinator calls and at most six motions per call. Source and existing
+tests remain unchanged; oracle-assisted fixture admission is not runtime policy.
+A design-only motion-source contract is proposed, not approved; earlier
+physical/numerical/task-quality and integration/data gates remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

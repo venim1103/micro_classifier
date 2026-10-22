@@ -118,21 +118,21 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: `76aa712` adds the private producer-owned
-  C1 fixture recorder (DESIGN.md §7 / REVIEW.md §92): 16 cases, three reused
-  complete scenes, zero decision queries and unchanged pre-existing AST nodes.
-  It owns copied acquisition/delivery/reference records and a retained audit
-  anchor; source-file/profile hashes and generated epochs replace caller labels.
-  This is in-memory fixture provenance, not loaded-code attestation, dynamics,
-  physical clock/pose/domain/body evidence or qualified runtime input.
-  All bounded approvals are exhausted. The next proposal, not approved, is
-  tests-only recorder/audit/question compatibility: four reused scenes / 16
-  cases / at most six unique motions per coordinator call, explicitly oracle-
-  assisted fixture admission, no new geometry/rollouts/persistence/runtime code.
-  Numerical/task-quality, collection and integration gates remain open; no
-  profile/input adoption or further implementation follows automatically.
+- Latest approved package complete: `0c3de54` adds tests-only recorder/audit/
+  question composition (DESIGN.md §7 / REVIEW.md §93): 16 cases, four reused
+  complete scenes, 10 question-wrapper calls and eight coordinator calls with
+  at most six unique motions each. Six source-rejected cases make zero question
+  calls; unknown/conflict cases abstain. Runtime source and all pre-existing
+  test AST nodes are unchanged. Admission is explicitly oracle-assisted fixture
+  conditioning, not observation-only runtime policy or qualified task evidence.
+  The recorder in `76aa712` still owns events/bindings, not measured dynamics.
+  All bounded approvals are exhausted. The next proposal, not approved, is a
+  design-only fixture motion-source contract: bind pose/tick and host motion,
+  define held/reference semantics and independent rejection checks. No code,
+  new geometry, rollout, persistence, input adoption or integration is proposed.
+  Physical/numerical/task-quality and collection gates remain open.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-92 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-93 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -143,7 +143,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,957 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,973 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1188,15 +1188,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §92 complete the
-approved private recorder in `76aa712`: 16 cases / three reused scenes / zero
-decision queries; 1,957 passes plus known xfail. It seals producer-owned fixture
-events, not physical/dynamics evidence or observation-only runtime admission.
-The next candidate, not approved, is tests-only conditional recorder/audit/question
-composition: four reused scenes / 16 cases / at most six motions per call, no new
-geometry/rollouts/persistence/runtime code. No collection, input/profile adoption
-or integration follows automatically. Task 6/9, physical/numerical/task-quality
-evidence, teacher assets and ST/board remain blocked. No background job or cleanup.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §93 complete the
+approved tests-only composition in `0c3de54`: 16 cases / four reused scenes /
+eight coordinator calls / at most six motions each; 1,973 passes plus known
+xfail. Oracle-assisted fixture admission is not qualified runtime input or a
+verified motion source. No runtime code changed. Next proposed, not approved:
+design-only pose/tick/host-motion contract and independent rejection checks,
+without code, collection or integration. Task 6/9, physical/numerical/task-quality
+evidence, teacher assets and ST/board remain blocked. All bounded scopes are
+exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1291,8 +1291,14 @@ evidence, teacher assets and ST/board remain blocked. No background job or clean
   Source recorder (REVIEW.md §92): separately approved `76aa712` adds owned
   fixture events, source-file identities and a retained binding. All 16 cases
   pass without decision queries; three scenes are reused. Not physical source
-  qualification, dynamics evidence or runtime integration. Composition is proposed,
-  not approved; the prior audit and recorder scopes are exhausted.
+  qualification, dynamics evidence or runtime integration. The separately approved
+  composition result follows; prior audit and recorder scopes are exhausted.
+  Composition (REVIEW.md §93): `0c3de54` adds 16 tests over four reused scenes,
+  with 10 wrapper/eight coordinator calls and at most six motions each. Six
+  rejected records stop before questions; unknown/conflict cases abstain.
+  Explicit oracle-assisted fixture conditioning is not runtime qualification.
+  This scope is exhausted; a design-only motion-source contract is proposed,
+  not approved. No code, geometry, collection or integration follows automatically.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

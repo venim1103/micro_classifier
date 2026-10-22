@@ -5559,6 +5559,95 @@ dataset/task-quality claim. That separate scope needs approval; no unused budget
 or general continuation silently renews the completed recorder package. Previously
 settled strict abstention, synthetic envelope and Gaussian-risk decisions remain.
 
+## 93. Tests-Only Recorder/Audit/Question Composition Complete (2026-10-22)
+
+The user's continuation accepted the immediately preceding explicit proposal:
+tests-only composition over at most four reused complete scenes and 16 cases,
+at most six unique motions per coordinator call, explicitly oracle-assisted
+fixture admission, no collection or runtime changes. The worktree began clean
+at `b4335af`; the reported diagnostics/test edits had no current diff. Their
+actual recorder, audit and question paths and nearby fixtures were inspected
+before editing. `0c3de54` checkpoints the completed tests. This supersedes §92's
+composition-blocked status only for this bounded package.
+
+**Change:** one parameterized test in `tests/test_sim.py` connects the existing
+recorder snapshot, owner-anchored private audit and conditional relative question
+wrapper. No runtime/source API, adapter, CLI, persistence or production admission
+path is implemented. Test-level admission is explicitly oracle-assisted:
+source-consistent private records permit conditional fixture declarations, not
+observation-only body/domain inference or an adopted runtime policy. Candidate
+calls contain the relative payload and fixture State/settings only; private
+Scenario, source manifest and host-frame records are not passed. All existing
+qualification flags stay false and `mode` remains absent.
+
+The 16 cases cover clear/blocked, left/right reaction turns, a six-motion low-speed
+case, held acquisition with a new reference, zero-cell abstention, missing literal
+body/domain declarations, injected conflicting witness evidence, binary32 change,
+out-of-domain geometry, current body contact, a re-signed candidate mutation,
+stale reference and foreign recorder ownership. Six resolved cases match the
+existing synthetic geometric reference. This shares the declared artificial
+scene, not independent physical metrology or representative task evidence.
+The conflict control injects a positive witness against actual clear evidence;
+it is a deliberate test fault, not an observed source inconsistency. All candidate
+values remain absent for unknown/conflict cases; no default or bound is relaxed.
+
+**Measured bounded work:** an instrumented focused run passes **16 cases** and
+compares complete scene dictionaries, including goal/start/height metadata,
+against existing declarations. Exactly **four complete scenes are reused**.
+There are **70 successful explicit fixture ticks, 53 capture batches and
+19 returned snapshots**. Of 16 final audits, **10 are source-consistent, three
+unresolved and three inconsistent**. A separate invalidated-reference exception
+is exercised before snapshotting the new reference seal. The six rejected cases
+make **zero question calls**. The 10 admitted cases make **10 relative-wrapper
+calls**; absent literal declarations stop two before the coordinator. There are
+**eight coordinator calls**, seven with four unique motions and one with six:
+**34 matched exclusion/witness motion pairs** in total. Assertions check the
+actual call keys, caching, equality of both motion lists and the per-call cap.
+Capture/conversion are failing sentinels after source preparation; episode writing
+and RoverEnv construction are forbidden. No episode/log replay, new geometry,
+source/audit export, task label or representative cohort is created.
+
+AST comparison against `b4335af` verifies that all pre-existing test nodes are
+unchanged and only the new parameterized function is added. Runtime source is
+unchanged. The terminal test interpreter is `/opt/venv/bin/python`; no environment
+or dependency was changed. Editor diagnostics are clean.
+
+**Failure history and gates:** the initial single-case check passed source audit
+and question resolution but failed the test's mistaken boolean expectation:
+the catalogue value is the string `"false"`, not Python `False`. Correcting
+that assertion made the same focused check pass. No runtime repair, weakened
+assertion, tolerance change or outcome-driven tuning followed. All 16 cases
+passed on expansion and again under instrumentation after scoped formatting.
+Focused Ruff and whitespace checks pass. The source checkpoint gate was
+`python -m pytest -q && ruff check . && ruff format --check tests/test_sim.py && git diff --check`:
+**1,973 passed, one known transformer xfail, 71 existing warnings, no reported
+skips, 43.40 s**. The known transformer QDQ bound and historical failures/artifacts
+remain unchanged. The documentation-only handoff does not rerun this unchanged
+successful code gate.
+
+**Outcome and next boundary:** the approved composition package is complete and
+exhausted. No runtime input/profile/sensor adoption, collection, log use, labels/
+dataset/splits, teacher/model experiment, training, dependency/download, licence,
+hardware or linked firmware action occurred. Commits are local; no agent push,
+background job or cleanup is pending. File hashes and recorder ownership do not
+prove loaded-code authority, measured clocks/poses or a dynamically consistent
+history. Explicit capture poses and nonzero host motion in these fixtures are
+not asserted to share a motion process. Private body/domain admission stays
+oracle-assisted; physical/numerical/resource and task-quality gates and Task 6/9
+remain open. Normal defaults/input/wire/rules and every runtime function remain
+unchanged. Strict abstention, the synthetic envelope and Gaussian-risk decisions
+are not reopened.
+
+Recommended next scope, **not approved**, is a design-only fixture motion-source
+contract: define pose/tick/host-velocity and angular-rate ownership/binding,
+held-acquisition/current-reference semantics and independent straight/turn/held
+controls plus inconsistent-history rejection checks. Keep binary32-changing
+States unresolved, with no new rounding/error/risk policy. This refines the
+unresolved motion source in §90, not another binding/ownership audit. No code,
+new geometry, rollout/log replay, persistence, input adoption, collection or
+runtime integration is proposed. That design-only scope needs separate approval;
+no further implementation or study run follows from completing these tests.
+
 ## Sources
 
 Hardware and tools:

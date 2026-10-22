@@ -60,6 +60,304 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
     )
 
 
+def test_synthetic_c1_source_binding_fingerprint():
+    from sim.diagnostics import _c1_source_binding_digest
+
+    record = {"epoch": "fixture-epoch", "ranges": np.array([0.5], dtype="<f4")}
+    original = _c1_source_binding_digest(record)
+    assert original == _c1_source_binding_digest(deepcopy(record))
+    record["epoch"] = "different-epoch"
+    assert original != _c1_source_binding_digest(record)
+    record["epoch"] = "fixture-epoch"
+    record["ranges"] = record["ranges"].astype(">f4")
+    assert original != _c1_source_binding_digest(record)
+    assert _c1_source_binding_digest({"value": True}) != _c1_source_binding_digest(
+        {"value": 1}
+    )
+    assert _c1_source_binding_digest(np.float64(5)) != _c1_source_binding_digest(5.0)
+    assert _c1_source_binding_digest(np.float64(5)) != _c1_source_binding_digest(
+        np.array(5.0)
+    )
+
+
+@pytest.fixture
+def c1_source(c1_history):
+    from dataclasses import asdict
+
+    from interface.protocol import State
+    from sim.diagnostics import prepare_synthetic_c1_relative_input
+
+    scene = Scenario(start=(2, 2, 0))
+    state = State(timestamp_us=1150000, velocity_m_s=(0.5, 0, 0), goal_m=(3, 1, 0))
+    relative = prepare_synthetic_c1_relative_input(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        fixture_goal_m=scene.goal,
+        synthetic_test_only=True,
+    )
+    source = {
+        "producer_identity": "declared-ideal-fixture-producer",
+        "calibration_identity": "declared-ideal-c1-profile",
+        "clock_epoch": "fixture-epoch-0",
+        "reference_epoch": "fixture-epoch-0",
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2.0, 2.0, 0.0],
+        "fixture_goal_m": list(scene.goal),
+        "fixture_state": asdict(state),
+        "arena_yaw_rad": 0.0,
+        "config": deepcopy(relative["config"]),
+        "scenario": asdict(scene),
+        "history": [
+            {
+                "clock_epoch": "fixture-epoch-0",
+                "capture_id": f"capture-{int(record['capture_ticks'][0])}",
+                "delivery_tick": int(record["capture_ticks"][0]) + 2,
+                "snapshot_tick": 16 + index,
+                "capture": deepcopy(record),
+            }
+            for index, record in enumerate(c1_history)
+        ],
+    }
+    return relative, state, source
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "consistent",
+        "array_shape",
+        "reference_rebind",
+        "changed_payload",
+        "mask",
+        "endian",
+        "boolean_tick",
+        "missing_identity",
+        "changed_identity",
+        "calibration",
+        "epoch",
+        "missing_binding",
+        "missing_delivery",
+        "capture_epoch",
+        "reused_capture_id",
+        "late_delivery",
+        "view_clock",
+        "reversed_capture_time",
+        "held_tamper",
+        "changed_reference",
+        "inverse_transform",
+        "arena",
+        "scale",
+        "velocity_round_trip",
+        "goal_round_trip",
+        "goal_binding",
+        "motion_binding",
+        "outside_domain",
+        "body_contact",
+        "private_payload_leak",
+        "opt_in",
+    ],
+)
+def test_synthetic_c1_source_binding_audit(c1_source, monkeypatch, case):
+    from dataclasses import asdict, replace
+
+    from sim import diagnostics
+
+    relative, state, source = c1_source
+
+    def binding():
+        return diagnostics._c1_source_binding_digest(
+            {
+                "relative_input": relative,
+                "fixture_state": asdict(state),
+                "private_source": source,
+            }
+        )
+
+    original_binding = binding()
+    event = source["history"][3]
+    record = relative["history"][3]
+    if case == "array_shape":
+        record["tof_m"] = record["tof_m"].reshape(8, 64)
+    elif case == "reference_rebind":
+        source["reference_pose_m_rad"][0] = 1.984375
+        relative = diagnostics.prepare_synthetic_c1_relative_input(
+            [entry["capture"] for entry in source["history"]],
+            reference_tick=23,
+            reference_pose_m_rad=source["reference_pose_m_rad"],
+            fixture_goal_m=source["fixture_goal_m"],
+            synthetic_test_only=True,
+        )
+        state = replace(state, goal_m=(3.015625, 1, 0))
+        source["fixture_state"] = asdict(state)
+    elif case in ("changed_payload", "mask", "held_tamper"):
+        index = tuple(np.argwhere(record["tof_valid"])[0])
+        if case == "mask":
+            record["tof_valid"][index] = False
+            record["tof_m"][index] = 0
+        else:
+            record["tof_m"][index] *= 0.9
+        if case == "held_tamper":
+            event["capture"]["tof_m"] = record["tof_m"].copy()
+    elif case == "endian":
+        record["tof_m"] = record["tof_m"].astype(">f4")
+    elif case == "boolean_tick":
+        relative["reference_tick"] = True
+    elif case == "missing_identity":
+        del source["producer_identity"]
+    elif case == "changed_identity":
+        source["producer_identity"] = "changed-lineage"
+    elif case == "calibration":
+        source["calibration_identity"] = "changed-profile"
+        source["config"]["wall_height"] = 2.0
+    elif case == "epoch":
+        source["reference_epoch"] = "different-reference-epoch"
+    elif case == "missing_delivery":
+        del event["delivery_tick"]
+    elif case == "capture_epoch":
+        event["clock_epoch"] = "different-epoch"
+    elif case == "reused_capture_id":
+        event["capture_id"] = source["history"][0]["capture_id"]
+    elif case == "late_delivery":
+        event["delivery_tick"] += 1
+    elif case == "view_clock":
+        event["capture"]["capture_ticks"][1] += 1
+    elif case == "reversed_capture_time":
+        event["capture"]["capture_ticks"][:] = 14
+        event["delivery_tick"] = 16
+    elif case == "changed_reference":
+        source["reference_pose_m_rad"][0] = 2.01
+    elif case == "inverse_transform":
+        record["capture_poses_body_m_rad"][:, 0] *= -1
+    elif case == "arena":
+        relative["fixture_arena_yaw_rad"] = 0.1
+    elif case == "scale":
+        relative["numerical_source_scale"] = 1.0
+    elif case in ("velocity_round_trip", "goal_round_trip"):
+        state = replace(
+            state,
+            **(
+                {"velocity_m_s": (0.6, 0, 0)}
+                if case == "velocity_round_trip"
+                else {"goal_m": (3 + 1e-12, 1, 0)}
+            ),
+        )
+        source["fixture_state"] = asdict(state)
+    elif case == "goal_binding":
+        relative["fixture_goal_body_m"][0] = 2.0
+    elif case == "motion_binding":
+        source["fixture_state"]["velocity_m_s"] = (0.25, 0, 0)
+    elif case == "outside_domain":
+        source["scenario"] = asdict(
+            Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),))
+        )
+    elif case == "body_contact":
+        source["scenario"] = asdict(
+            Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),))
+        )
+    elif case == "private_payload_leak":
+        relative["scenario"] = deepcopy(source["scenario"])
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("a private source audit must not run a producer or decision query")
+
+    for name in (
+        "prepare_synthetic_c1_relative_input",
+        "capture_synthetic_c1_views",
+        "inspect_synthetic_c1_history",
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    frozen = binding()
+    expected = (
+        None
+        if case == "missing_binding"
+        else original_binding
+        if case in ("changed_identity", "endian")
+        else frozen
+    )
+    if case == "opt_in":
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._audit_synthetic_c1_source_binding(
+                relative,
+                fixture_state=state,
+                private_source=source,
+                expected_binding=expected,
+            )
+        return
+    result = diagnostics._audit_synthetic_c1_source_binding(
+        relative,
+        fixture_state=state,
+        private_source=source,
+        expected_binding=expected,
+        synthetic_test_only=True,
+    )
+    assert binding() == frozen
+    assert result["status"] == (
+        "consistent_under_fixture_assumptions"
+        if case in ("consistent", "reference_rebind")
+        else "inconsistent_source_record"
+        if case
+        in (
+            "changed_identity",
+            "endian",
+            "changed_payload",
+            "mask",
+            "capture_epoch",
+            "reused_capture_id",
+            "late_delivery",
+            "view_clock",
+            "reversed_capture_time",
+            "held_tamper",
+            "arena",
+            "scale",
+            "goal_binding",
+            "motion_binding",
+        )
+        else "unresolved_source_evidence"
+    )
+    assert set(result) == {
+        "allowed_use",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "status",
+        "reason",
+        "binding_sha256",
+        "host_changed_fields",
+    }
+    assert result["allowed_use"] == "private_synthetic_source_audit_only"
+    assert all(
+        result[key] is False
+        for key in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+        )
+    )
+    if case in ("velocity_round_trip", "goal_round_trip"):
+        assert result["reason"] == "host_round_trip_changed"
+        assert result["host_changed_fields"] == (
+            ("velocity_m_s",) if case == "velocity_round_trip" else ("goal_m",)
+        )
+    elif case == "held_tamper":
+        assert result["reason"] == "held_capture_changed"
+    elif case == "calibration":
+        assert result["reason"] == "unsupported_candidate_scope_or_profile"
+    elif case == "epoch":
+        assert result["reason"] == "reference_clock_epoch_mismatch"
+    elif case == "outside_domain":
+        assert result["reason"] == "private_domain_not_established"
+    elif case == "body_contact":
+        assert result["reason"] == "private_body_clearance_not_established"
+
+
 @pytest.fixture
 def c1_relative(c1_history):
     from interface.protocol import State

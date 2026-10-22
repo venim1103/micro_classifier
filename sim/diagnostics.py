@@ -918,6 +918,383 @@ def probe_synthetic_c1_questions(
     return result
 
 
+def _c1_source_binding_digest(record):
+    """Fingerprint private fixture evidence, not attest its truth or independence."""
+
+    def pack(value):
+        if isinstance(value, (np.ndarray, np.generic)):
+            array = np.asarray(value)
+            if array.dtype.kind not in "biuf" or not np.all(np.isfinite(array)):
+                raise ValueError("source binding requires finite numeric arrays")
+            return {
+                "kind": "array" if isinstance(value, np.ndarray) else "numpy_scalar",
+                "dtype": array.dtype.str,
+                "shape": array.shape,
+                "order": "C",
+                "sha256": hashlib.sha256(array.tobytes(order="C")).hexdigest(),
+            }
+        if type(value) is dict:
+            if any(type(key) is not str for key in value):
+                raise ValueError("source binding keys must be strings")
+            return {key: pack(item) for key, item in value.items()}
+        if type(value) in (list, tuple):
+            return {type(value).__name__: [pack(item) for item in value]}
+        if type(value) is bytes:
+            return {"bytes": value.hex()}
+        if value is None or type(value) in (str, bool, int, float):
+            return {type(value).__name__: value}
+        raise ValueError("unsupported private source binding value")
+
+    return hashlib.sha256(
+        json.dumps(pack(record), sort_keys=True, allow_nan=False).encode("ascii")
+    ).hexdigest()
+
+
+def _audit_synthetic_c1_source_binding(
+    relative_input,
+    *,
+    fixture_state,
+    private_source,
+    expected_binding,
+    synthetic_test_only=False,
+):
+    """Compare private ideal fixtures, never supply evidence to a decision query."""
+    from interface.protocol import State, decode_state, encode_state
+
+    if synthetic_test_only is not True:
+        raise ValueError("C1 source audit requires synthetic_test_only=True")
+    result = {
+        "allowed_use": "private_synthetic_source_audit_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "status": "unresolved_source_evidence",
+        "reason": "unsupported_source_record",
+        "binding_sha256": None,
+        "host_changed_fields": (),
+    }
+
+    def stop(reason, status="unresolved_source_evidence"):
+        result.update(reason=reason, status=status)
+        return result
+
+    if not isinstance(fixture_state, State):
+        raise TypeError("C1 source audit requires a synthetic State")
+    if type(expected_binding) is not str or len(expected_binding) != 64:
+        return stop("missing_source_binding")
+    try:
+        binding = _c1_source_binding_digest(
+            {
+                "relative_input": relative_input,
+                "fixture_state": asdict(fixture_state),
+                "private_source": private_source,
+            }
+        )
+        result["binding_sha256"] = binding
+        if binding != expected_binding:
+            return stop("source_binding_mismatch", "inconsistent_source_record")
+        if type(private_source) is not dict or set(private_source) != {
+            "producer_identity",
+            "calibration_identity",
+            "clock_epoch",
+            "reference_epoch",
+            "reference_tick",
+            "reference_pose_m_rad",
+            "fixture_goal_m",
+            "fixture_state",
+            "arena_yaw_rad",
+            "config",
+            "scenario",
+            "history",
+        }:
+            return stop("missing_source_record_fields")
+        if any(
+            type(private_source[key]) is not str or not private_source[key]
+            for key in ("producer_identity", "calibration_identity", "clock_epoch")
+        ):
+            return stop("missing_source_identity")
+        if private_source["reference_epoch"] != private_source["clock_epoch"]:
+            return stop("reference_clock_epoch_mismatch")
+        config = _c1_config(None)
+        config_digest = _c1_source_binding_digest(asdict(config))
+        if type(relative_input) is not dict or set(relative_input) != {
+            "schema",
+            "allowed_use",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "status",
+            "reason",
+            "reference_tick",
+            "config",
+            "history",
+            "fixture_goal_body_m",
+            "fixture_arena_yaw_rad",
+            "numerical_source_scale",
+        }:
+            return stop("unsupported_candidate_fields")
+        if (
+            relative_input["schema"] != "micro-classifier/synthetic-c1-relative-input/1"
+            or relative_input["allowed_use"]
+            != "controlled_synthetic_qualification_only"
+            or relative_input["status"] != "relative_fixture"
+            or any(
+                relative_input[key] is not False
+                for key in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                )
+            )
+            or _c1_source_binding_digest(relative_input["config"]) != config_digest
+            or _c1_source_binding_digest(private_source["config"]) != config_digest
+        ):
+            return stop("unsupported_candidate_scope_or_profile")
+        tick = relative_input["reference_tick"]
+        if (
+            type(tick) is not int
+            or not 0 <= tick <= 85899
+            or type(private_source["reference_tick"]) is not int
+            or private_source["reference_tick"] != tick
+            or fixture_state.timestamp_us != tick * 50000
+        ):
+            return stop("reference_clock_mismatch")
+        decoded = decode_state(encode_state(fixture_state))
+        for field in (
+            "velocity_m_s",
+            "angular_velocity_rad_s",
+            "goal_m",
+            "battery_fraction",
+        ):
+            original = np.asarray(getattr(fixture_state, field), dtype=np.float64)
+            restored = np.asarray(getattr(decoded, field), dtype=np.float64)
+            if original.tobytes() != restored.tobytes():
+                result["host_changed_fields"] += (field,)
+        if result["host_changed_fields"]:
+            return stop("host_round_trip_changed")
+        if _c1_source_binding_digest(
+            asdict(fixture_state)
+        ) != _c1_source_binding_digest(private_source["fixture_state"]):
+            return stop("private_host_state_mismatch", "inconsistent_source_record")
+        velocity = _c1_array(fixture_state.velocity_m_s, (3,))
+        angular = _c1_array(fixture_state.angular_velocity_rad_s, (3,))
+        host_goal = _c1_array(fixture_state.goal_m, (3,))
+        if (
+            fixture_state.validity & 7 != 7
+            or fixture_state.ages_us[:3] != (0, 0, 0)
+            or np.any(velocity[1:])
+            or np.any(angular[:2])
+            or host_goal[2] != 0
+            or not 0 <= velocity[0] <= config.max_speed
+            or abs(angular[2]) > config.max_turn_rate
+        ):
+            return stop("unsupported_fixture_host_state")
+        goal_body = _c1_array(relative_input["fixture_goal_body_m"], (2,))
+        if not np.array_equal(host_goal[:2], goal_body):
+            return stop("host_goal_binding_mismatch", "inconsistent_source_record")
+        reference = _c1_array(private_source["reference_pose_m_rad"], (3,))
+        world_goal = _c1_array(private_source["fixture_goal_m"], (2,))
+        yaw = math.atan2(math.sin(reference[2]), math.cos(reference[2]))
+        cosine, sine = math.cos(yaw), math.sin(yaw)
+        delta_x, delta_y = world_goal - reference[:2]
+        if not np.array_equal(
+            goal_body,
+            [delta_x * cosine + delta_y * sine, delta_y * cosine - delta_x * sine],
+        ):
+            return stop("unresolved_goal_registration")
+        arena = _c1_array(
+            [private_source["arena_yaw_rad"], relative_input["fixture_arena_yaw_rad"]],
+            (2,),
+        )
+        if arena[0] != 0 or arena[1] != -yaw:
+            return stop("arena_axis_mismatch", "inconsistent_source_record")
+        history, source_history = relative_input["history"], private_source["history"]
+        if (
+            type(history) is not list
+            or type(source_history) is not list
+            or not 1 <= len(history) == len(source_history) <= 8
+        ):
+            return stop("unsupported_source_history")
+        previous = None
+        capture_ids = {}
+        scale = max(1.0, config.max_range, *np.abs(reference), *np.abs(world_goal))
+        relative_scale = max(1.0, *np.abs(goal_body))
+        for index, (record, event) in enumerate(
+            zip(history, source_history, strict=True)
+        ):
+            if type(event) is not dict or set(event) != {
+                "clock_epoch",
+                "capture_id",
+                "delivery_tick",
+                "snapshot_tick",
+                "capture",
+            }:
+                return stop("missing_capture_lineage")
+            if type(record) is not dict or set(record) != {
+                "capture_ticks",
+                "capture_poses_body_m_rad",
+                "tof_m",
+                "tof_valid",
+            }:
+                return stop("unsupported_candidate_capture")
+            capture = event["capture"]
+            if type(capture) is not dict or set(capture) != {
+                "schema",
+                "allowed_use",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "config",
+                "capture_ticks",
+                "capture_poses_m_rad",
+                "tof_m",
+                "tof_valid",
+            }:
+                return stop("unsupported_private_capture")
+            if (
+                capture["schema"] != C1_SCHEMA
+                or capture["allowed_use"] != "synthetic_visibility_fixtures_only"
+                or any(
+                    capture[key] is not False
+                    for key in (
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                    )
+                )
+                or _c1_source_binding_digest(capture["config"]) != config_digest
+            ):
+                return stop("private_capture_profile_mismatch")
+            ticks = _c1_array(capture["capture_ticks"], (8,), "iu")
+            poses = _c1_array(capture["capture_poses_m_rad"], (8, 3))
+            ranges = _c1_array(capture["tof_m"], (8, 8, 8), "f")
+            valid = _c1_array(capture["tof_valid"], (8, 8, 8), "b")
+            captured = int(ticks[0])
+            snapshot = tick - len(history) + 1 + index
+            due = snapshot - config.latency_ticks
+            expected_capture = due - (due % 4 == 1)
+            if (
+                event["clock_epoch"] != private_source["clock_epoch"]
+                or type(event["snapshot_tick"]) is not int
+                or event["snapshot_tick"] != snapshot
+                or type(event["delivery_tick"]) is not int
+                or event["delivery_tick"] != captured + config.latency_ticks
+                or captured != expected_capture
+                or not np.all(ticks == captured)
+                or ticks.dtype != np.uint32
+                or not np.all(poses == poses[0])
+                or ranges.dtype != np.float32
+                or np.any(valid & ((ranges <= 0) | (ranges >= config.max_range)))
+                or np.any(~valid & (ranges != 0))
+            ):
+                return stop(
+                    "capture_clock_or_payload_mismatch", "inconsistent_source_record"
+                )
+            capture_id = event["capture_id"]
+            if type(capture_id) is not str or not capture_id:
+                return stop("missing_capture_identity")
+            if capture_id in capture_ids and capture_ids[capture_id] != captured:
+                return stop("reused_capture_identity", "inconsistent_source_record")
+            capture_ids[capture_id] = captured
+            fingerprint = _c1_source_binding_digest(capture)
+            if (
+                previous is not None
+                and captured == previous[0]
+                and (capture_id != previous[1] or fingerprint != previous[2])
+            ):
+                return stop("held_capture_changed", "inconsistent_source_record")
+            previous = captured, capture_id, fingerprint
+            for key in ("capture_ticks", "tof_m", "tof_valid"):
+                shape = (8,) if key == "capture_ticks" else (8, 8, 8)
+                kinds = (
+                    "iu"
+                    if key == "capture_ticks"
+                    else "b"
+                    if key == "tof_valid"
+                    else "f"
+                )
+                candidate = _c1_array(record[key], shape, kinds)
+                if _c1_source_binding_digest(candidate) != _c1_source_binding_digest(
+                    capture[key]
+                ):
+                    return stop(
+                        "candidate_payload_mismatch", "inconsistent_source_record"
+                    )
+            relative_poses = _c1_array(record["capture_poses_body_m_rad"], (8, 3))
+            delta_x, delta_y = poses[0, :2] - reference[:2]
+            acquired = math.atan2(math.sin(poses[0, 2]), math.cos(poses[0, 2]))
+            heading = math.atan2(math.sin(acquired - yaw), math.cos(acquired - yaw))
+            expected_pose = [
+                delta_x * cosine + delta_y * sine,
+                delta_y * cosine - delta_x * sine,
+                heading,
+            ]
+            if relative_poses.dtype != np.float64 or not np.all(
+                relative_poses == expected_pose
+            ):
+                return stop("unresolved_capture_registration")
+            scale = max(scale, float(np.abs(poses).max()))
+            relative_scale = max(relative_scale, float(np.abs(relative_poses).max()))
+        declared_scale = _c1_array([relative_input["numerical_source_scale"]], (1,))[0]
+        if declared_scale != max(scale, relative_scale):
+            return stop("numerical_source_scale_mismatch", "inconsistent_source_record")
+        if 1024 * np.finfo(float).eps * declared_scale >= config.radius:
+            return stop("unsupported_numerical_scale")
+        scene = private_source["scenario"]
+        if type(scene) is not dict or set(scene) != {
+            "name",
+            "bounds",
+            "start",
+            "goal",
+            "obstacles",
+            "obstacle_heights",
+        }:
+            return stop("unsupported_private_domain")
+        bounds = _c1_array(scene["bounds"], (2,))
+        _c1_array(scene["start"], (3,))
+        _c1_array(scene["goal"], (2,))
+        obstacles = (
+            _c1_array(scene["obstacles"], (len(scene["obstacles"]), 3))
+            if scene["obstacles"]
+            else np.empty((0, 3))
+        )
+        heights = (
+            _c1_array(scene["obstacle_heights"], (len(obstacles),))
+            if scene["obstacle_heights"]
+            else np.full(len(obstacles), config.obstacle_height)
+        )
+        if (
+            np.any(bounds <= 2 * config.radius)
+            or np.any((obstacles[:, 2] < 0.05) | (obstacles[:, 2] > 0.30))
+            or np.any((heights < 0.05) | (heights > 1.0))
+            or config.wall_height != 1.0
+        ):
+            return stop("private_domain_not_established")
+        guard = 256 * np.finfo(float).eps * max(scale, *bounds, 1.0)
+        clearances = [
+            *reference[:2] - config.radius,
+            *(bounds - reference[:2] - config.radius),
+        ]
+        clearances.extend(
+            math.hypot(center_x - reference[0], center_y - reference[1])
+            - radius
+            - config.radius
+            for center_x, center_y, radius in obstacles
+        )
+        if min(clearances) <= guard:
+            return stop("private_body_clearance_not_established")
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return stop("malformed_private_source_or_candidate")
+    result.update(
+        status="consistent_under_fixture_assumptions",
+        reason="bound_ideal_source_records_only",
+    )
+    return result
+
+
 def prepare_synthetic_c1_relative_input(
     history,
     *,

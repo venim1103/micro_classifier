@@ -5466,6 +5466,99 @@ That implementation needs separate approval; Task 6/9 and the source/numerical/
 resource/task-quality/runtime gates remain open. Strict abstention, the synthetic
 object envelope and the unaccepted Gaussian risk policy remain settled.
 
+## 92. Private Producer-Owned C1 Recorder Complete (2026-10-22)
+
+The user's continuation accepted the immediately preceding explicit recorder
+proposal: at most four reused complete scenes and 16 source-record cases, zero
+decision queries, no collection or runtime integration. This supersedes §91's
+recorder-blocked status only for that bounded prototype. The worktree began
+clean at `9c9542c`, also the local `origin/main` reference after the user's push.
+The reported source/test changes had no current diff; their actual contents,
+Current State and §91 were inspected before editing. `76aa712` checkpoints the
+approved implementation and tests.
+
+**Implemented ownership:** `_SyntheticC1SourceRecorder` requires literal
+synthetic opt-in, copies its Scenario and each explicit pose/State, retains the
+encoded host frame and calls the existing ideal C1 capture producer at acquisition
+ticks. It owns acquisition IDs, delayed delivery and held snapshots rather than
+accepting replacement source records. History is bounded to eight delivered
+entries; the supported consecutive-tick profile has at most two pending captures
+in the exercised cases. Initial no-delivery snapshots reject. Gaps, reversal,
+boolean/out-of-u32-time-range ticks and mismatched State timestamps reject
+without advancing the existing event or seal. A successful new tick invalidates
+the previous binding until the new reference event is snapshotted.
+
+The recorder hashes the local diagnostics, rover and protocol source files and
+the ideal configuration instead of using caller-written identity strings. A
+generated local epoch separates recorder instances and capture identities; held
+snapshots keep their acquisition identity/time. These are on-disk identities and
+process-local bookkeeping, not authenticated loaded code, external clock evidence
+or a security boundary against arbitrary in-process mutation. Poses and host
+State remain explicit artificial inputs, not measurements or a verified dynamics
+history. No physical calibration, bounds or source policy is adopted.
+
+`snapshot` returns copies, with candidate-side input separate from private
+Scenario/event/frame/file records. The recorder retains its own expected digest;
+`audit` uses that anchor, not a caller's re-signed binding. Changed candidate,
+private geometry/identity or file-manifest copies, foreign bundles and file drift
+reject. Repeated snapshots of an unchanged reference keep the same binding.
+Audit consumption does not regenerate captures or call the registration producer.
+Qualification flags stay false and no question candidate or probability is emitted.
+Existing binary32-rounding, domain and body-clearance failures remain unresolved.
+
+**Focused checks and failure history:** the first ownership test failed with
+the expected missing-class ImportError, then passed after implementation. The
+complete 16-case slice passed before and after formatting, with focused lint,
+format and whitespace checks clean. No unexpected failing check, tolerance/
+assertion relaxation or outcome-driven tuning occurred. The cases cover caller
+pose/State and returned-data ownership, held cadence, history/pending bounds,
+reference invalidation, re-signed payloads, foreign ownership, source drift,
+rejected ticks/timestamps, warmup, opt-in/scope, binary32 changes and private
+out-of-domain/body-contact failures. No existing behavior was repaired or changed.
+
+An instrumented combined run passes **19 checks**: **16 new cases** and three
+neighboring legacy cases. It verifies **three complete reused scene records**,
+including start/goal/height metadata, as a subset of the old declarations and
+**zero decision queries**. Actual in-memory fixture work in the new slice is
+**80 successful explicit ticks, 60 capture batches, 21 returned snapshots and
+18 distinct bindings**; paired ownership/reference controls and unchanged-event
+repeats explain why snapshot count is not case count. History never exceeds eight
+entries and pending captures never exceed two. These are bounded hand-authored
+unit fixtures, not a new RoverEnv episode, log replay or representative cohort.
+Question functions, episode writing and RoverEnv construction are failing sentinels
+in boundary tests; capture/conversion/inspection are also blocked during audit.
+AST comparison against `9c9542c` confirms all pre-existing source/test nodes
+unchanged: only one private class and two test functions were added.
+
+The source checkpoint gate was
+`python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`.
+Actual result: **1,957 passed, one known transformer xfail, 71 existing warnings,
+no reported skips, 44.56 s**. Editor diagnostics are clean. Language-server
+references identify the class definition, one test import and four constructor
+sites, with no runtime consumer. No unchanged successful code gate is rerun for
+the documentation-only handoff.
+
+**Outcome and next boundary:** the recorder package is complete and exhausted.
+No new scene geometry, rollout, persisted source/audit artifact, task data/labels/
+splits, live teacher/model experiment, training, dependency/download, licence or
+hardware action occurred. Defaults, normal input/wire/catalogue/rules, all legacy
+functions and historical artifacts remain unchanged. No background job or cleanup
+is pending; agent commits remain local and no push occurred. Qualified physical
+pose/clock/arena/domain/body sources, numerical/resource and representative task
+quality remain missing; Task 6/9 is not completed by owned fixture bookkeeping.
+
+Recommended next scope, **not approved**, is tests-only recorder-to-audit-to-
+question-feasibility compatibility, at most four reused complete scenes and
+16 cases, with at most six unique motion queries per coordinator call. Only
+source-consistent cases would reach conditional question checks; literal body/
+domain declarations must be reported as oracle-assisted fixture admission, not
+sensor-derived clearance or a runtime policy. Keep geometry private and unknown/
+conflict outcomes intact. No new geometry, rollout/log replay, persistence,
+runtime/source implementation, input adoption, physical uncertainty policy or
+dataset/task-quality claim. That separate scope needs approval; no unused budget
+or general continuation silently renews the completed recorder package. Previously
+settled strict abstention, synthetic envelope and Gaussian-risk decisions remain.
+
 ## Sources
 
 Hardware and tools:

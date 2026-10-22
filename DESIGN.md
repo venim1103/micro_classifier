@@ -2872,6 +2872,66 @@ input and normal simulator/wire behavior. Any such implementation needs its own
 approval; it would still not establish physical sources or resolve binary32
 input uncertainty. No automatic continuation, input adoption or deployment follows.
 
+#### Private C1 Fixture Source Recorder (2026-10-22)
+
+The user separately approved the preceding four-scene/16-case recorder package.
+It is complete in `76aa712`; REVIEW.md §92 supersedes that proposal's blocked
+status for this bounded prototype only. `_SyntheticC1SourceRecorder` in the
+[diagnostic prototype][c1-prototype-source] requires literal synthetic opt-in
+and owns a copied Scenario, explicit fixture tick/pose/State events and their
+encoded host frames. It calls the existing ideal capture producer on acquisition
+ticks, records delivery and held snapshots, and retains at most eight delivered
+history entries. Under the supported consecutive-tick cadence, tests observe at
+most two pending captures. No RoverEnv rollout, normal consumer, CLI, persistent
+record format or public/deployed schema is added.
+
+Recorder-created epochs and capture IDs distinguish acquisitions from held data
+and other recorder instances. Local hashes of the diagnostics, rover and protocol
+source files replace test-authored producer strings; the ideal configuration's
+typed digest supplies profile identity. Those hashes identify on-disk files,
+not authenticated loaded code or a physical calibration. The epoch is a local
+identifier, not clock synchronization evidence. Poses and State remain explicit
+fixture inputs, not measured or dynamically inferred state. This is process-local
+provenance bookkeeping, not a security boundary against arbitrary in-process code.
+
+Snapshots copy candidate-side input separately from private source geometry,
+events, frame bytes and source-file identities. The recorder retains the current
+binding independently of returned dictionaries and passes its own anchor to the
+existing private audit. Re-signing a changed candidate/private record or manifest
+does not replace that anchor. A successful new tick invalidates the old seal;
+another snapshot is required for the new reference event. Repeated snapshots of
+one unchanged event retain the same binding. Foreign bundles and source-file
+drift reject. Missing deliveries, gaps/reversal, boolean ticks, overflowing fixture
+timestamps and timestamp mismatches cannot create a fresh admissible record.
+No wrapping, interpolation, reset continuity or physical clock policy is adopted.
+
+All audit qualification flags remain false. Body/domain truth stays in private
+records; candidate-side input receives neither Scenario geometry nor the file
+manifest. Audit consumption does not recapture or rerun registration producers,
+and it makes no decision queries. Binary32 changes and unsupported domain/body
+evidence remain unresolved through the unchanged audit. No goal is rounded,
+limit widened, evidence assumed from missing rays or runtime rule changed.
+
+Sixteen new cases use three complete pre-existing scenes. The instrumented
+19-check combined run verifies that reuse and zero decision queries; its actual
+in-memory work is 80 successful explicit fixture ticks, 60 capture batches and
+21 returned snapshots across 18 bindings, including paired ownership/reference
+controls and repeated snapshots. These are unit fixtures, not collected episodes
+or representative samples. All pre-existing source/test AST nodes are unchanged.
+The full gate passes 1,957 tests plus the known transformer xfail (§92).
+
+**Remaining boundary and next candidate, not approved:** tests-only bounded
+recorder-to-audit-to-question-feasibility compatibility, at most four reused
+complete scenes and 16 cases, at most six unique motions per coordinator call.
+Only source-consistent fixture cases would reach the question checks. Literal
+body/domain declarations must be explicitly identified as oracle-assisted
+fixture admission, not inferred sensor evidence or a runtime policy. Keep private
+geometry out of the candidate input; preserve unknown/conflict outcomes. No new
+geometry, rollout/log replay, persistence, runtime/source implementation, input
+adoption, physical uncertainty policy or data/quality claim is proposed. This
+would test composition only; actual pose/motion, physical sensing/clock/arena/
+domain/body evidence, numerical/resource and task-quality gates remain open.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4882,7 +4942,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §91): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §92): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4931,7 +4991,11 @@ not task decisions. The subsequently approved audit package is now complete
 in `04492d7` / `d483d14` (§91): 32 cases, 31 audit calls, three reused scenes
 and zero audit coordinator queries. It checks declared records, not producer authority or live
 input qualification. The proposed producer-owned synthetic recorder is not
-approved; physical sources and all earlier integration/data gates remain.
+approved by the audit's completion. The separately approved private recorder is
+now complete in `76aa712` (§92), with 16 cases, three reused scenes and zero
+decision queries. Its owned event/binding records are fixture provenance, not
+physical or dynamics qualification. Tests-only conditional composition is the
+next proposal, not an authorization; earlier integration/data gates remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

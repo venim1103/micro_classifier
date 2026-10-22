@@ -5368,6 +5368,104 @@ Previously adopted strict abstention, synthetic envelope and risk decisions
 remain settled; Task 6/9 and all physical/numerical/task-quality/runtime gates
 remain open.
 
+## 91. Private C1 Source-Binding Audit Complete (2026-10-22)
+
+The user's continuation accepted the immediately preceding explicit proposal:
+CPU-only private audit helper/tests, at most eight reused complete scenes and
+32 cases, zero coordinator queries, no collection or runtime integration. This
+supersedes §90's implementation-blocked status only for that bounded package.
+The worktree began clean at `debac99`, also the local `origin/main` reference
+after the user's push. Source checkpoint `04492d7` implements the core;
+`d483d14` completes the explicit exact-frame binding correction described below.
+
+**Implementation:** `_c1_source_binding_digest` fingerprints candidate, original
+State, exact encoded host-frame bytes and private-source records with type-
+preserving scalar/container handling, numeric array dtype/shape/byte order and
+explicit C-order bytes. NumPy scalars
+are distinct from Python scalars and zero-dimensional arrays. The expected
+digest is caller-supplied; neither it nor a matching identity string attests
+the source, complete geometry, independent lineage or correct physical sensing.
+
+`_audit_synthetic_c1_source_binding` requires literal synthetic opt-in and checks
+the typed binding, exact ideal profile, reference/clock epoch, capture identity,
+nominal acquisition/delivery/snapshot sequence, view clocks and unchanged held
+capture bytes/source poses. Independent scalar composition checks reference-
+relative poses, goal and arena axes without calling capture/inspection/conversion
+or geometric question functions. Exact arithmetic disagreement stays unresolved;
+no tolerance or uncertainty bound is introduced or relaxed. Numerical scale
+must match its source/relative provenance and remain supported. Private scalar
+domain and reference-body checks reject unsupported cylinders/walls or unresolved
+contact clearance, without setting coordinator flags or returning geometry.
+
+The original State is actually encoded and decoded, and the bytes must match
+the separately supplied private host frame. Changed velocity, angular,
+goal or battery floating fields remain unresolved, with field names only.
+The `0.6` velocity and sub-binary32 goal-offset controls expose this limitation;
+the audit does not round goals, widen motion limits or modify the old query.
+Other results contain only status/reason, binding digest and false training,
+real-input, free-space and numerical-certification flags. No question candidates,
+probabilities, labels, raw geometry or target answers are emitted.
+
+**Failure history and focused verification:** the first identity test failed
+with the expected missing-helper ImportError, then passed after implementation.
+The expanded slice initially had one pass and 31 failures before source checks:
+the digest rejected an unsupported scalar type. A bounded runtime inspection
+identified `relative.numerical_source_scale` as `numpy.float64(5.0)`. Explicit
+NumPy scalar handling preserves dtype/bytes and its distinction from a 0-D
+array; the same 32 cases then passed. Profile/reference-epoch controls were
+strengthened within the same case count to rebind mutated records and exercise
+independent comparisons, not just digest mismatch. Formatting, the same focused
+slice and focused lint/format/whitespace checks pass. No assertion, work cap,
+target meaning, numerical guard or default changed.
+
+An instrumented combined run passes **35 checks**: **32 new cases** (one identity
+case and 31 audit cases), plus three neighboring legacy cases. It observes
+**31 audit calls**, including the missing-opt-in rejection, **zero audit
+coordinator queries** and **three complete scene records** that are members of
+the neighboring old declarations, including start/goal/height metadata. Held
+capture mutation selects a valid nonzero return, avoiding the earlier masked-zero
+test trap. Input bindings remain unchanged after auditing; a strict result-key
+check excludes private payloads. Producers, inspectors, converters, question
+functions and episode writing are replaced by failing sentinels during each
+audit. AST comparison against `debac99` confirms every pre-existing source/test
+node unchanged; only two private helpers and three test/fixture nodes are added.
+
+The source checkpoint gate was
+`python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`.
+The first result was **1,941 passed, one known transformer xfail, 71 existing
+warnings, no reported skips, 47.69 s**. During the handoff review against §90,
+the digest was found to cover the original State but not explicitly its exact
+wire bytes. The local `d483d14` correction adds those bytes and compares them
+against a private reference frame. The existing motion-binding case now uses
+a separately encoded, CRC-valid different-motion frame; no case or geometry was
+added. The same 32 cases and the full source gate pass again after that substantive
+repair: **1,941 passed, one known transformer xfail, 71 existing warnings, no
+reported skips, 45.16 s**. Editor diagnostics are clean; language-server
+references find only the definition and two test call sites for the audit.
+No unchanged successful code gate is rerun for the documentation-only handoff.
+
+**Outcome and next boundary:** the package is complete and its approval is
+exhausted. Source events, poses, state and producer/calibration identities are
+still declared fixtures, not producer-owned attestations. Matching them does
+not establish actual range generation, a consistent dynamics history, physical
+registration/clock/arena/domain/body evidence, certified arithmetic or task
+quality. Private truth cannot become student/teacher input or autonomous
+observation-only admission. Defaults, normal observations, wire/golden bytes,
+catalogue/rules and historical artifacts remain unchanged. No new scene geometry,
+episode/log replay, persisted audit artifact, live teacher/model experiment, training,
+dependency/download, licence or hardware action occurred. No background job or
+cleanup is pending; agent commits remain local, with no push.
+
+Recommended next scope, **not approved**, is a producer-owned private synthetic
+source recorder: at most four reused complete scenes and 16 source-record cases,
+zero coordinator queries, no new geometry, rollouts/log replay or persistence.
+It would bind actual fixture producer/reference events rather than test-authored
+identity strings, without adopting C1 or changing normal runtime inputs. It
+would still not qualify physical sources or resolve binary32 input uncertainty.
+That implementation needs separate approval; Task 6/9 and the source/numerical/
+resource/task-quality/runtime gates remain open. Strict abstention, the synthetic
+object envelope and the unaccepted Gaussian risk policy remain settled.
+
 ## Sources
 
 Hardware and tools:

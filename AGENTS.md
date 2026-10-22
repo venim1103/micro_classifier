@@ -118,19 +118,21 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved deliverable: the design-only, simulation-first C1 evidence-
-  source plan is prepared (DESIGN.md §7 / REVIEW.md §90). It separates private
-  truth from candidate input and proposes source/event/payload binding, not
-  runtime qualification. A proposed private audit helper, at most eight reused
-  scenes / 32 audit cases / zero coordinator queries, still needs approval.
-  Prior staged witnesses/questions and relative compatibility are complete;
-  `cfb76f3` adds 64 checks, 13 reused scenes and 30 pairs (§89). Those bounded
-  approvals are exhausted. Actual registration/clock/arena-axis/domain/body-clear
-  evidence is missing; source hashes and fixture flags are not attestation.
-  No collection, sensing/profile adoption, audit implementation or runtime
-  integration is authorized by this design-only continuation.
+- Latest approved package complete: `04492d7` / `d483d14` add the private
+  synthetic C1 source-binding audit (DESIGN.md §7 / REVIEW.md §91): 32 cases,
+  31 audit calls,
+  three reused complete scenes and zero audit coordinator queries. Existing
+  source/test AST nodes are unchanged. Typed binding, source/reference clocks,
+  held captures, independent scalar registration, actual wire round trips and
+  private domain/body checks remain diagnostic-only. Caller-supplied identities,
+  events and hashes are not producer attestation or dynamics/physical evidence.
+  A producer-owned private fixture recorder is proposed, not approved: four
+  reused scenes / 16 source-record cases / zero queries, no rollouts/persistence.
+  All prior bounded approvals are exhausted. Actual qualified source evidence,
+  numerical/task-quality and runtime integration gates remain open. No collection,
+  profile/input adoption or further implementation is automatically authorized.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-90 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-91 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -141,7 +143,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,909 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 1,941 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1186,16 +1188,17 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §90 complete the
-approved design-only simulation-first evidence-source plan. The next candidate,
-not approved, is a private synthetic source-binding audit: at most eight reused
-complete scenes / 32 cases / zero coordinator queries, no new geometry or rollouts.
-Private domain/body truth must not become candidate input or autonomous
-observation-only admission. No source, physical/numerical bound, clock mapping,
-runtime profile, collection or integration is adopted. Source gate remains
-`cfb76f3`'s 1,909 passes plus known xfail, not rerun for this documentation work.
-Task 6/9, missing source evidence, teacher assets and ST/board remain blocked.
-No background job or cleanup is pending.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §91 complete the
+approved private source-binding audit in `04492d7` / `d483d14`: 32 cases /
+31 audit calls / three reused scenes / zero audit coordinator queries;
+1,941 passes plus known
+xfail. Private geometry and caller-supplied identities do not attest sources,
+qualify dynamics/physical inputs or permit observation-only runtime admission.
+The next candidate, not approved, is a private producer-owned synthetic recorder:
+four reused scenes / 16 cases / zero queries, no new geometry/rollouts/persistence.
+No data collection, input/profile adoption, runtime integration or further run
+is authorized by completing the audit. Task 6/9, missing source evidence,
+teacher assets and ST/board remain blocked. No background job or cleanup pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1283,7 +1286,10 @@ No background job or cleanup is pending.
   sources, live wire, runtime rules, physical bounds or representative task quality.
   Source plan (REVIEW.md §90): the approved design-only simulation-first plan is
   prepared. Exact payload/event binding and private truth separation are proposed;
-  its bounded audit helper/tests are not approved or implemented.
+  its bounded audit helper/tests were subsequently approved and completed in
+  `04492d7` / `d483d14` (§91), with 32 cases and no audit coordinator queries.
+  This verifies declared records, not source authority, physical inputs or
+  complete task rules.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

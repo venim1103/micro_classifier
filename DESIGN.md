@@ -2811,6 +2811,67 @@ bounded tooling scope, not approve the source model for deployment. Physical
 qualification still requires a separately reviewed sensor/reference/collection
 direction; the settled synthetic envelope and strict abstention do not change.
 
+#### Private C1 Source-Binding Audit (2026-10-22)
+
+The user separately approved the preceding bounded helper/test package. It is
+complete through `04492d7` and `d483d14`; REVIEW.md §91 supersedes the plan's
+implementation-blocked status for that package only. Two private functions in the
+[diagnostic prototype][c1-prototype-source] add no CLI, public/deployed schema,
+normal input consumer or decision path. `_c1_source_binding_digest` binds typed
+candidate, State, exact host-frame bytes and private-source records. Numeric
+array/scalar dtype, shape, byte order and C-order bytes survive hashing; Python
+boolean/integer aliases,
+NumPy scalars, zero-dimensional arrays and different lineages remain distinct.
+The expected digest is caller-supplied, not a signature or an attestation.
+
+`_audit_synthetic_c1_source_binding` requires literal synthetic opt-in and checks
+that binding before comparing the declared records. It validates the existing
+ideal profile, clock/reference epoch, acquisition/capture identities, delivery
+and snapshot sequence, per-view clocks and held-capture identity/bytes. Scalar
+frame composition independently checks relative poses, goal and arena axes
+without calling the capture producer, inspector or converter. These comparisons
+require exact agreement; arithmetic disagreement stays unresolved, with no new
+tolerance, uncertainty budget or claim of certified numerical enclosure. Source
+scale must be retained. The private geometry check rejects unsupported cylinder/
+wall domains and unresolved reference-body clearance, including near contact.
+It neither repairs an input nor supplies body/domain flags to a coordinator.
+
+The host State is actually encoded and decoded, and the exact bytes must match
+the separately supplied private host frame. Any changed floating field is
+reported by name and remains unresolved, including the tested `0.6` velocity
+and a goal offset below binary32 resolution. No value is rounded to force goal
+binding, no speed limit is widened and the old relative query is unchanged.
+Returned information is limited to audit status/reason, binding digest, changed
+field names and false training/real-input/free-space/numerical-certification
+flags. No Scenario, ranges, poses, target answer or decision candidate is returned.
+
+The package has 32 new cases: one typed-identity case and 31 audit cases/calls,
+using three complete scene records already present in neighboring tests. Several
+controls recompute the digest after mutation to exercise the independent checks,
+not merely hash rejection. An instrumented 35-check combined run verifies those
+scene identities, the 32-case/31-call count and zero audit coordinator queries.
+Every pre-existing source/test AST node is unchanged. The full gate passes
+1,941 tests plus the known transformer xfail; REVIEW.md §91 records details.
+
+**Evidence limit:** producer/calibration identities, events, poses and state
+are still separately declared fixture records, not sealed producer-owned
+evidence. Matching records do not prove that the named source emitted them,
+that the private geometry is complete, that ranges follow its return process,
+or that a physically consistent dynamics history generated the state. Private
+domain/body checks cannot be promoted into autonomous observation-only admission.
+No physical clock/registration, wire-input equivalence for changed values,
+numerical certification, task cohort/quality, collection or runtime integration
+is qualified. This completes and exhausts the bounded audit approval.
+
+**Next candidate, not approved:** a producer-owned, private synthetic source
+recorder, limited to four reused complete scenes and 16 source-record cases,
+zero coordinator queries, no new geometry, episode/log replay or persistence.
+It would bind actual fixture capture/reference events and source identities
+instead of test-authored identity strings, remaining separate from candidate
+input and normal simulator/wire behavior. Any such implementation needs its own
+approval; it would still not establish physical sources or resolve binary32
+input uncertainty. No automatic continuation, input adoption or deployment follows.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4821,7 +4882,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §90): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §91): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4866,8 +4927,11 @@ adopted by either the design draft or its synthetic compatibility checks.
 The design-only simulation-first source plan is now prepared (§7; REVIEW.md
 §90). It separates candidate input from private truth, proposes exact payload/
 event binding and invalidation, and limits any next audit to source consistency,
-not task decisions. Its eight-scene/32-case audit implementation is proposed,
-not authorized; physical sources and all earlier integration/data gates remain.
+not task decisions. The subsequently approved audit package is now complete
+in `04492d7` / `d483d14` (§91): 32 cases, 31 audit calls, three reused scenes
+and zero audit coordinator queries. It checks declared records, not producer authority or live
+input qualification. The proposed producer-owned synthetic recorder is not
+approved; physical sources and all earlier integration/data gates remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

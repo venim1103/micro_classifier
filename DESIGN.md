@@ -2502,6 +2502,159 @@ package is complete, but does not adopt C1 as a runtime sensing/input profile,
 qualify physical/numerical bounds or establish representative question quality.
 Further collection, task data or integration still needs separate authorization.
 
+#### C1 Input and Evidence Qualification Proposal (2026-10-22)
+
+**Design-only; not adopted.** After the completed synthetic package, the user
+approved preparation of this proposal, not a runtime schema, sensor purchase,
+measurement campaign, new fixtures or implementation. Keep the active host
+state/decision contract, single-view observations, question meanings, approved
+synthetic envelope and strict abstention unchanged. The candidate below is a
+reviewable boundary for a future module-local input, not an adapter already
+available in the [diagnostic prototype][c1-prototype-source]. REVIEW.md §88
+records scope, source checks and the decision needed to advance it.
+
+**Proposed default: synchronized latest-batch evidence.** Retain the artificial
+eight-view geometry as a reference candidate only. Require one complete,
+identified batch with a common acquisition time and qualified relative poses;
+reject partial or asynchronous batches rather than treating a scan as
+simultaneous. Repeated delivery of a held batch does not refresh its acquisition
+time or add support. Preserve the existing at-most-eight-snapshot validation
+boundary for future compatibility checks, but use only the latest supported
+acquisition for geometric evidence. Do not adopt a temporal free-space map,
+longer history, point merging or an older-batch fallback. This limits the proof
+obligation and retained evidence, at the cost of rejecting regions that older
+views might have helped resolve. Removing old snapshots from the existing
+prototype would itself be a separate reviewed implementation change.
+
+| Logical Input | Proposed Owner and Qualification Obligation |
+| --- | --- |
+| 512 raw ranges and validity/status | Module-local acquisition; preserve per-ray identity, units, range ceiling and distinction between an occupied return and missing/clipped/unsupported evidence. A vendor status-to-validity mapping needs its own return-process evidence. |
+| View geometry and calibration identity | Versioned module/embodiment configuration; ray directions, origins, mounting and their uncertainty must match the qualified profile. The current coincident-origin ring is not a buildable mount or device-zone model. |
+| Batch identity, acquisition and delivery times | Acquisition owner plus a documented mapping to the decision clock; simultaneous means established timing, not eight equal caller-supplied integers. Missing synchronization evidence rejects the synchronized candidate. |
+| Acquisition-to-reference transform | A named ego/motion source with clock, translation and heading uncertainty, including dropouts/resets. The current fixture's exact world poses are not available from the UART state packet and must not be silently imported from simulator truth. |
+| Current speed, yaw rate and body-frame goal | Existing valid host state groups, with their ages and FLU convention (§2). Align each to the same decision reference; do not substitute the current world-frame `fixture_goal_m` argument or treat aged odometry as current. |
+| Maneuver/embodiment parameters | Reviewed profile, including body footprint, braking model and separate reaction/braking turns. These are declared hypothetical maneuvers, not inferred promises about host actuation or physical stopping capability. |
+| Domain membership and current-body clearance | Independent evidence with a stated owner, scope, validity interval and failure behavior. Neither can be established by an unexplained true flag or by absence of a C1 blocked witness. Until qualified, no complete runtime bundle is admitted. |
+
+The current UART already carries velocity, yaw rate and a body-frame goal,
+not absolute acquisition/reference poses or C1 images. Prefer a module-local
+relative transform and body-frame goal boundary for a future prototype, with
+an explicit qualified source rather than a new absolute-pose requirement.
+Integrating host velocities is not exact registration: accumulated uncertainty,
+missing history, host/module clock mapping and resets must be accounted for.
+No such estimator or clock protocol is selected here. If adequate registration
+cannot be established with current inputs, return to profile/contract review;
+do not add fields, assume zero drift or move the decision calculation to the host.
+
+**Qualification sequence and exits.** Apply the existing evidence-qualification
+plan below to this candidate, rather than treating synthetic success as sensor
+qualification. Each later executable or collection stage needs explicit scope.
+
+1. **Input/evidence boundary review:** agree the logical fields, owners, timing
+  reference and supported claim. Trace every argument currently supplied by a
+  fixture to an admissible source or an explicit unresolved dependency. Exit:
+  no world geometry, oracle answer, world-frame fixture goal or unexplained
+  body-clear/domain flag can enter a proposed runtime evidence path.
+2. **Isolated synthetic compatibility proposal:** specify, before implementing,
+  equivalence checks between an explicitly declared relative transform/body
+  goal and the old exact-pose/world-goal fixtures. Include common translation/
+  rotation, held/delayed data, time resets, inconsistent view/calibration
+  identities, invalid host groups and transform uncertainty. Exit: preserved
+  candidate semantics and legacy bytes, with unknown for unsupported evidence;
+  equivalence would still not qualify the source of those inputs.
+3. **Return/domain/registration evidence review:** choose a physical or explicitly
+  ideal-simulation claim and admissible independent references, collection
+  conditions, error treatment and lineage. Real devices need zone/return,
+  material, interference, timing and mounting evidence, not point-ray analogy.
+  Exit: justified occupied-return and free-prefix enclosures plus independently
+  established domain/body preconditions. No Gaussian failure convention or
+  numeric physical bounds are adopted by this plan.
+4. **Numerical and bounded-runtime review:** justify transformations, float32
+  rounding, floor separation, whole-cell exclusion, inner witnesses and goal
+  ranking, including overflow/tangency and contradiction abstention. Size the
+  full workspace, retained evidence and copies; establish applicable target
+  timing and exhaustion behavior before integration. Exit: a named numerical
+  claim and measured applicable resource evidence, not just host test passes.
+5. **Representative task-quality protocol:** prospectively define scene/domain
+  diversity, failure/abstention categories, independent cohort lineage and
+  useful coverage/quality gates. Preserve the 5 mm out-of-envelope alias and
+  occluded/missing-return unknowns. Exit: an approved evaluation protocol before
+  collection, followed by actual reviewed evidence under a separate approval;
+  the earlier 32-fixture package and eight diagnostic runs are not renewed.
+6. **Integration decision:** only after the relevant exits, decide whether to
+  adopt a versioned input/profile and qualified rule path. Separately resolve
+  partial-candidate rejection under the complete three-answer contract; do not
+  fabricate one-hot confidence or serialize unknown as `none`/tier zero. Host
+  actuation and fail-safes remain independent; no linked firmware or board work
+  is authorized by passing an earlier stage.
+
+**Resource worksheet, not a budget or measurement.** At the current Python
+array dtypes, one prototype batch's range/mask/tick/pose arrays contain
+`512*4 + 512*1 + 8*4 + 8*3*8 = 2,784` bytes; eight stored snapshots contain
+22,272 bytes (21.75 KiB), before Config, objects, alignment, copies or workspace.
+The earlier 20,736-byte estimate omitted poses and remains a range/mask/tick
+subtotal. Packing masks to 64 bytes and sharing one binary32 pose and u32 tick
+would give `2,048 + 64 + 12 + 4 = 2,128` bytes per synchronized batch before
+status, calibration, uncertainty and framing. That is an alternative encoding
+estimate, not a selected format, qualified pose precision or UART requirement;
+on-module sensor traffic is not the host state frame.
+
+Retained range bytes alone do not bound algorithm memory. At the coordinator's
+default 16 segments per phase there are at most 33 centerline vertices; a
+512-return by 33-vertex XY float64 difference array alone contains 270,336 bytes,
+before distances, masks and expression temporaries. A future bounded native
+design could stream comparisons instead, but no such port, stack/RAM fit or
+latency is established. Six queries at the existing default 32,768-cell cap
+permit up to 196,608 searched cells per decision before reuse; that is a work
+limit, not evidence of meeting a 20 Hz deadline. Do not reduce caps or numerical
+allowances simply to claim fit, or assume a data-layout change removes the cost.
+
+**Alternatives and decision for review.** A sequential scan or accumulated map
+may reduce sensor count or improve coverage, but adds view-age, ego uncertainty,
+scene-change and retention proof obligations that the current implementation
+does not handle. A physical simultaneous ring avoids scan accumulation but
+requires buildable mounting, synchronization and multi-device optical evidence.
+A wider single sensor changes resolution, returns and near-field coverage and
+needs a fresh information study. Recommend the latest-batch, relative-frame
+boundary for an isolated synthetic input-compatibility prototype first, with
+trusted declarations still visibly fixture-only. Approval would need to specify
+that bounded prototype and its checks; it would not adopt C1, qualify real
+inputs, reopen collection or authorize runtime/wire integration. If the missing
+domain/body/registration evidence has no credible owner, do not pursue that
+candidate as a runtime solution merely because its synthetic answers resolve.
+
+**Proposed next implementation authorization, not yet granted:** an isolated,
+CPU-only synthetic relative-frame/body-goal compatibility prototype and tests.
+Use at most 16 already-existing complete scene records and 64 paired old/new
+coordinator comparisons, with no new scene coordinates, starts, goals or object
+heights. Numerical frame changes operate on copies of existing input records,
+not new Scenarios or collected histories. Keep at most six maneuver/capacity
+queries per call and existing work limits. Reuse current tests/helpers; do not
+add a CLI, output artifact, log adapter, normal observation consumer or native
+runtime port. This is a new bounded package, not reuse of an exhausted approval.
+
+The proposed logical boundary carries raw ranges/masks, fixed-profile identity,
+batch/reference timing, acquisition origin/heading relative to the reference
+body, body-frame goal, speed and reaction turn. Current-body/domain declarations
+remain explicitly synthetic preconditions, not new host flags. Keep ideal
+exact-transform assumptions; nonzero or unqualified transform/time/return errors
+remain unsupported rather than borrowing the deterministic witness argument.
+Any arithmetic allowance needed when converting old fixture coordinates must
+retain its source-scale provenance. Small normalized coordinates cannot justify
+discarding cancellation/rounding uncertainty or weakening the old source guard.
+If that allowance cannot be justified, abstain and record the non-equivalence.
+
+Acceptance checks should cover common coordinate translation/rotation, held and
+delayed batches, invalid/aged goals and motion groups, timestamp gaps/resets,
+mismatched view/profile identity, large-coordinate cancellation, near ties and
+contradictions. Compare candidate values and admission/conflict statuses with
+the old fixture path where numerical support is equivalent; world-coordinate
+trace fields need not match. A normalization alone must not create a positive
+clear/blocked conclusion from previously unsupported numerical evidence.
+Legacy functions/defaults/bytes and existing tests remain unchanged; synthetic
+goals and oracle comparisons stay test-only. Passing would establish input
+compatibility only, not the provenance or physical qualification of that input.
+
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
 [floor-rules-report]: sim/reports/rules-baseline-20261020.json
@@ -4512,7 +4665,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §87): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §88): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -4547,6 +4700,11 @@ occupied-return witnesses and conservative three-question candidate admission.
 The bounded package is complete, not a qualified runtime question baseline.
 The approved object envelope, no-collection/runtime boundaries and physical/
 numerical/task-quality gates remain unchanged.
+A design-only C1 input/evidence proposal is now prepared (§7; REVIEW.md §88).
+It recommends a module-local latest-batch/relative-frame boundary, identifies
+missing registration/domain/body evidence and specifies a separate bounded
+synthetic compatibility package for approval. Neither that implementation nor
+any runtime profile, source qualification or collection is adopted by the draft.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

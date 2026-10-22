@@ -120,10 +120,14 @@ from them. Historical details below are reference material, not new approvals.
 
 - User requested autonomous continuation and explicitly approved both staged
   synthetic-only witness/question-feasibility tasks (REVIEW.md §§86-87). Both
-  stages are complete within the approved 32-geometry-fixture cap. Further
-  collection, sensing/input adoption or runtime integration needs explicit scope.
+  stages are complete within the approved 32-geometry-fixture cap. The latest
+  continuation approved a design-only C1 input/evidence-qualification proposal,
+  now prepared in DESIGN.md §7 / REVIEW.md §88, not adoption or implementation.
+  A proposed bounded relative-frame/body-goal compatibility prototype needs
+  separate approval; collection, sensing adoption and runtime integration remain
+  unauthorized. Do not treat the generic continuation as approval of that package.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-87 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-88 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1179,16 +1183,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 and [REVIEW.md][review] §§86-87 record
-completion of the approved staged synthetic package: Stage A `d82fca3`, Stage B
-`5c643f7`. The 71-case combined slice uses 19 distinct complete scene records;
-four additional parity declarations keep the conservative total at most 23/32.
-Six named queries per coordinator call preserve unknown/conflict abstention;
-oracle assertions and goals stay fixture-only. Normal inputs/wire/rules remain
-unchanged. No further implementation or run is authorized by this exhausted
-package. Numerical/physical qualification, representative task quality,
-collection, sensing/input adoption, integration and Task 6/9 gates remain open.
-Teacher assets are absent; ST tools and board work remain blocked.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §88 prepare the
+approved design-only C1 input/evidence proposal. Proposed next package, not yet
+approved: isolated synthetic relative-frame/body-goal compatibility, at most
+16 reused scene records / 64 paired comparisons, no new geometry or rollouts.
+Registration, clock, domain/body-clear and physical return evidence remain
+unqualified; a true flag is not a source. Prior Stage A `d82fca3` / Stage B
+`5c643f7` are complete (71 combined tests; conservative at most 23/32 scenes).
+Normal inputs/wire/rules stay unchanged. No new implementation, collection,
+profile adoption or runtime integration is authorized. Task 6/9, numerical/
+physical/task-quality, absent teacher assets and ST/board gates remain open.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1268,6 +1272,9 @@ Teacher assets are absent; ST tools and board work remain blocked.
   Stage A `d82fca3` adds 37 cases and Stage B `5c643f7` adds 30. The full gate
   passes 1,845 tests plus the known xfail. Candidate question feasibility is
   conditional synthetic evidence, not runtime/data approval or task completion.
+  Next proposal (REVIEW.md §88): a latest-batch/relative-frame input boundary
+  and qualification sequence are prepared, not adopted. Its separate bounded
+  synthetic compatibility implementation still needs approval.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

@@ -5139,6 +5139,79 @@ missing prerequisites. No background job, new raw artifact or fixture output
 needs cleanup; commits are local, with no agent push. Documentation-only checks
 validate references, local targets, fences, section ordering and whitespace.
 
+## 88. C1 Input and Evidence Qualification Proposal (2026-10-22)
+
+The user's continuation accepted the preceding recommendation for a **design-only
+C1 input/evidence-qualification proposal**, with autonomous local commits. It
+does not authorize adopting a schema, implementing a new adapter, collecting
+data or integrating runtime rules. The previously approved Stage A/B package
+is complete and exhausted. No settled object-envelope, target or Gaussian-risk
+decision was reopened.
+
+**Current-state/source checks:** the worktree was clean at `bc562ab`, also the
+local `origin/main` reference after the user's push. The reported intervening
+source edits have no current uncommitted diff. Both diagnostic/test contents
+were inspected before new edits; this continuation changes documentation only.
+The first targeted shell search found `rg` unavailable; editor search/read tools
+supplied the same bounded context, without installing anything. No code check
+failed. The most recent code gate remains §87's 1,845 passes plus the known
+xfail; it is not newly measured evidence for this proposal.
+
+The owning code exposes two boundaries that a runtime wrapper would not solve:
+the coordinator accepts world-frame `fixture_goal_m` and declared exact poses,
+whereas the UART state contains a body-frame goal and no absolute pose. Also,
+the inspector validates up to eight snapshots but registers and qualifies only
+the latest supported acquisition. History length is not accumulated free space.
+The current true domain/body-clear declarations have no qualified runtime source.
+
+**Prepared candidate:** DESIGN.md §7 now proposes a module-local, synchronized
+latest batch with explicit acquisition/reference identity, relative registration,
+body-frame host goal and a traceable owner for each evidence input. Retain held
+capture ages and reject asynchronous/mismatched/unsupported evidence. Keep
+calibration, time/transform uncertainty, return/status mapping and domain/body
+preconditions separate from range arrays. No global pose is silently sourced
+from simulator truth, and integrating velocity is not assumed exact. The
+normal UART, single-view input, catalogue and host safety boundary stay intact.
+
+The proposal applies the older six-stage evidence plan to C1: review input
+ownership; specify isolated synthetic compatibility; qualify return/domain/
+registration evidence; establish numerical/resource claims; approve a
+representative evaluation protocol before collection; then separately decide
+integration. Each has explicit exits. A relative boundary is recommended over
+a new absolute-pose requirement, but it does not make registration evidence
+available. Missing domain/body/clock evidence can block the runtime candidate
+even when all synthetic question answers resolve.
+
+**Resource arithmetic, not a fit claim:** current range/mask/tick/float64-pose
+arrays total 2,784 bytes per batch, or 22,272 bytes for eight snapshots before
+objects/workspace/copies. The old 20,736-byte estimate remains correct as a
+subtotal excluding poses. A possible compact representation totals 2,128 bytes
+before status/calibration/uncertainty; no encoding is selected. A default
+512-return by 33-vertex XY float64 intermediate alone contains 270,336 bytes;
+six default query caps permit 196,608 cell searches before reuse. Neither is
+measured peak RAM, WCET, embedded fit or a reason to weaken allowances/work caps.
+
+**Concrete next-scope candidate, not approved:** CPU-only relative-frame/body-
+goal compatibility tooling/tests, at most 16 reused complete scene records and
+64 paired old/new comparisons; no new scene geometry, rollout, CLI, artifacts,
+normal input consumer or native runtime. Keep the six-query and existing work
+limits. Proposed acceptance covers coordinate changes, delayed/held inputs,
+invalid goal/motion, clock gaps/resets, identity mismatch, large-coordinate
+cancellation, near ties and conflicts. Compare supported candidate/admission
+semantics, not literal world-coordinate trace fields. Preserve source-scale
+arithmetic allowances; normalization cannot turn unsupported numerical evidence
+into clear/blocked claims. Unqualified nonzero errors stay unsupported. This
+would test input compatibility, not qualify the input's source or adopt C1.
+
+**Verification and handoff:** scoped reference/local-target, fence, section-order,
+source-boundary, arithmetic and whitespace checks validate the documentation.
+No suite, synthetic fixture, new episode, log replay, download, model/training,
+hardware or background job was run; no raw artifact needs cleanup. No agent
+push occurred. The design-only deliverable is complete; implementation of the
+bounded candidate requires an explicit new scope approval. Collection, runtime/
+wire/profile adoption, task data/labels/splits and physical/numerical/task-quality
+gates remain unchanged.
+
 ## Sources
 
 Hardware and tools:

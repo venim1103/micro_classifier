@@ -60,6 +60,250 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
     )
 
 
+@pytest.mark.parametrize(
+    "case",
+    [
+        "clear",
+        "blocked",
+        "left_turn",
+        "right_turn",
+        "low_speed",
+        "held_reference",
+        "zero_cells",
+        "missing_body",
+        "missing_domain",
+        "conflict",
+        "binary32_change",
+        "outside_domain",
+        "body_contact",
+        "candidate_copy",
+        "stale_reference",
+        "foreign_recorder",
+    ],
+)
+def test_synthetic_c1_recorder_question_composition(monkeypatch, case):
+    from dataclasses import asdict
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics
+    from sim.navigation import evaluate_synthetic
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("fixture composition must not collect episodes or recapture")
+
+    for name in ("write_episode", "RoverEnv"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    scene = (
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),))
+        if case == "outside_domain"
+        else Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),))
+        if case == "body_contact"
+        else Scenario(
+            start=(2, 2, 0),
+            goal=(5, 2),
+            obstacles=((2.6, 2, 0.30),) if case == "blocked" else (),
+        )
+    )
+    recorder = diagnostics._SyntheticC1SourceRecorder(scene, synthetic_test_only=True)
+    speed = 0.6 if case == "binary32_change" else 0.125 if case == "low_speed" else 0.5
+    turn = 0.5 if case == "left_turn" else -0.5 if case == "right_turn" else 0
+
+    def record(owner, tick):
+        owner.record_tick(
+            tick,
+            pose_m_rad=[2, 2, 0],
+            fixture_state=State(
+                timestamp_us=tick * 50000,
+                velocity_m_s=(speed, 0, 0),
+                angular_velocity_rad_s=(0, 0, turn),
+                goal_m=(3, 0, 0),
+            ),
+        )
+
+    for tick in range(20, 24):
+        record(recorder, tick)
+    bundle = recorder.snapshot()
+    if case == "held_reference":
+        events = bundle["private_source"]["history"]
+        assert [event["snapshot_tick"] for event in events] == [22, 23]
+        assert events[0]["capture_id"] == events[1]["capture_id"]
+        record(recorder, 24)
+        bundle = recorder.snapshot()
+        assert bundle["relative_input"]["reference_tick"] == 24
+        assert (
+            bundle["relative_input"]["history"][-1]["capture_ticks"].tolist()
+            == [22] * 8
+        )
+    elif case == "candidate_copy":
+        bundle["relative_input"]["fixture_goal_body_m"][0] += 1
+        bundle["binding_sha256"] = diagnostics._c1_source_binding_digest(
+            {
+                "relative_input": bundle["relative_input"],
+                "fixture_state": asdict(bundle["fixture_state"]),
+                "host_frame": encode_state(bundle["fixture_state"]),
+                "private_source": bundle["private_source"],
+            }
+        )
+    elif case == "stale_reference":
+        record(recorder, 24)
+        with pytest.raises(ValueError, match="current reference"):
+            recorder.audit(bundle)
+        recorder.snapshot()
+    elif case == "foreign_recorder":
+        other = diagnostics._SyntheticC1SourceRecorder(scene, synthetic_test_only=True)
+        for tick in range(20, 24):
+            record(other, tick)
+        bundle = other.snapshot()
+
+    for name in ("capture_synthetic_c1_views", "prepare_synthetic_c1_relative_input"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    question_calls, coordinator_calls = [], []
+    motion_calls = {"exclusion": [], "witness": []}
+    original_question = diagnostics.probe_synthetic_c1_relative_questions
+    original_coordinator = diagnostics.probe_synthetic_c1_questions
+    original_exclusion = diagnostics.probe_synthetic_c1_enclosure
+    original_witness = diagnostics.probe_synthetic_c1_occupied_witness
+    oracle_assisted_fixture_admission = False
+
+    def question(relative_input, **settings):
+        assert oracle_assisted_fixture_admission is True
+        assert relative_input is bundle["relative_input"]
+        assert settings["fixture_state"] is bundle["fixture_state"]
+        assert set(relative_input).isdisjoint(
+            {"scenario", "private_source", "source_files", "host_frame"}
+        )
+        assert set(settings) == {
+            "fixture_state",
+            "fixture_current_body_clear",
+            "fixture_controlled_envelope",
+            "synthetic_test_only",
+            "max_cells",
+        }
+        for capture in relative_input["history"]:
+            assert set(capture) == {
+                "capture_ticks",
+                "capture_poses_body_m_rad",
+                "tof_m",
+                "tof_valid",
+            }
+        question_calls.append(relative_input["reference_tick"])
+        return original_question(relative_input, **settings)
+
+    def coordinator(history, **settings):
+        assert oracle_assisted_fixture_admission is True
+        coordinator_calls.append(settings["reference_tick"])
+        return original_coordinator(history, **settings)
+
+    def exclusion(history, **settings):
+        motion_calls["exclusion"].append(
+            (settings["speed"], settings["braking_turn_rate"])
+        )
+        assert len(motion_calls["exclusion"]) <= 6
+        return original_exclusion(history, **settings)
+
+    def witness(history, **settings):
+        motion_calls["witness"].append(
+            (settings["speed"], settings["braking_turn_rate"])
+        )
+        assert len(motion_calls["witness"]) <= 6
+        result = original_witness(history, **settings)
+        if case == "conflict":
+            result["fixture_blocked_witness"] = True
+        return result
+
+    monkeypatch.setattr(diagnostics, "probe_synthetic_c1_relative_questions", question)
+    monkeypatch.setattr(diagnostics, "probe_synthetic_c1_questions", coordinator)
+    monkeypatch.setattr(diagnostics, "probe_synthetic_c1_enclosure", exclusion)
+    monkeypatch.setattr(diagnostics, "probe_synthetic_c1_occupied_witness", witness)
+    audit = recorder.audit(bundle)
+    for output in (bundle, audit):
+        assert all(
+            output[key] is False
+            for key in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+            )
+        )
+    assert question_calls == coordinator_calls == []
+    assert motion_calls == {"exclusion": [], "witness": []}
+    if case in ("binary32_change", "outside_domain", "body_contact"):
+        assert audit["status"] == "unresolved_source_evidence"
+        assert (
+            audit["reason"]
+            == {
+                "binary32_change": "host_round_trip_changed",
+                "outside_domain": "private_domain_not_established",
+                "body_contact": "private_body_clearance_not_established",
+            }[case]
+        )
+        if case == "binary32_change":
+            assert audit["host_changed_fields"] == ("velocity_m_s",)
+        return
+    if case in ("candidate_copy", "stale_reference", "foreign_recorder"):
+        assert audit["status"] == "inconsistent_source_record"
+        return
+    assert audit["status"] == "consistent_under_fixture_assumptions"
+    oracle_assisted_fixture_admission = True
+    result = diagnostics.probe_synthetic_c1_relative_questions(
+        bundle["relative_input"],
+        fixture_state=bundle["fixture_state"],
+        fixture_current_body_clear=1 if case == "missing_body" else True,
+        fixture_controlled_envelope=case != "missing_domain",
+        max_cells=0 if case == "zero_cells" else 32768,
+        synthetic_test_only=True,
+    )
+    assert len(question_calls) == 1
+    assert motion_calls["exclusion"] == motion_calls["witness"]
+    assert len(set(motion_calls["exclusion"])) == len(motion_calls["exclusion"])
+    assert result["unique_motion_queries"] == len(motion_calls["exclusion"]) <= 6
+    assert all(
+        result[key] is False
+        for key in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+        )
+    )
+    assert "mode" not in result["candidate_values"]
+    if case in ("missing_body", "missing_domain"):
+        assert result["status"] == "unknown"
+        assert result["reason"] == "fixture_body_or_domain_not_established"
+        assert coordinator_calls == []
+    else:
+        assert len(coordinator_calls) == 1
+        assert result["unique_motion_queries"] == (6 if case == "low_speed" else 4)
+        assert set(result["queries"]) == {
+            "centre",
+            "left",
+            "right",
+            "tier_1",
+            "tier_2",
+            "tier_3",
+        }
+        if case in ("zero_cells", "conflict"):
+            assert result["status"] == (
+                "unknown" if case == "zero_cells" else "inconsistent_fixture_evidence"
+            )
+        else:
+            reference = evaluate_synthetic(
+                scene,
+                speed=speed,
+                turn_rate=turn,
+                tof_age_s=(0.10 if case == "held_reference" else 0.15),
+                synthetic_test_only=True,
+            )["answers"]
+            assert result["status"] == "resolved_under_fixture_assumptions"
+            assert result["candidate_values"] == {
+                name: reference[name]
+                for name in ("path_blocked", "clear_sector", "speed_tier")
+            }
+    if case in ("missing_body", "missing_domain", "zero_cells", "conflict"):
+        assert all(value is None for value in result["candidate_values"].values())
+
+
 def test_synthetic_c1_source_recorder_owns_capture():
     from interface.protocol import State
     from sim.diagnostics import _SyntheticC1SourceRecorder

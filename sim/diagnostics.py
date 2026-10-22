@@ -918,6 +918,392 @@ def probe_synthetic_c1_questions(
     return result
 
 
+def prepare_synthetic_c1_relative_input(
+    history,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    fixture_goal_m,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Convert existing exact fixtures, not observations, to a relative boundary."""
+    if synthetic_test_only is not True:
+        raise ValueError("C1 relative input requires synthetic_test_only=True")
+    config = _c1_config(config)
+    reference = _c1_array(reference_pose_m_rad, (3,)).astype(float)
+    goal = _c1_array(fixture_goal_m, (2,)).astype(float)
+    result = {
+        "schema": "micro-classifier/synthetic-c1-relative-input/1",
+        "allowed_use": "controlled_synthetic_qualification_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "status": "unknown",
+        "reason": "unsupported_history",
+        "reference_tick": reference_tick,
+        "config": asdict(config),
+        "history": [],
+        "fixture_goal_body_m": None,
+        "fixture_arena_yaw_rad": None,
+        "numerical_source_scale": None,
+    }
+    inspection = inspect_synthetic_c1_history(
+        history,
+        reference_tick=reference_tick,
+        reference_pose_m_rad=reference,
+        config=config,
+        synthetic_test_only=True,
+    )
+    if inspection["status"] != "registered_fixture":
+        result["reason"] = inspection["reason"]
+        return result
+    scale = max(
+        1.0,
+        config.max_range,
+        *np.abs(reference),
+        *np.abs(goal),
+        *(float(np.abs(record["capture_poses_m_rad"]).max()) for record in history),
+    )
+    result["numerical_source_scale"] = scale
+    if 256 * np.finfo(float).eps * scale >= config.radius:
+        result["reason"] = "unsupported_numerical_scale"
+        return result
+    yaw = math.atan2(math.sin(reference[2]), math.cos(reference[2]))
+    rotation = np.array(
+        [[math.cos(yaw), -math.sin(yaw)], [math.sin(yaw), math.cos(yaw)]]
+    )
+    with np.errstate(over="ignore", invalid="ignore"):
+        relative_goal = (goal - reference[:2]) @ rotation
+        for record in history:
+            poses = record["capture_poses_m_rad"]
+            headings = np.arctan2(np.sin(poses[:, 2]), np.cos(poses[:, 2])) - yaw
+            relative_poses = np.column_stack(
+                (
+                    (poses[:, :2] - reference[:2]) @ rotation,
+                    np.arctan2(np.sin(headings), np.cos(headings)),
+                )
+            )
+            if not np.all(np.isfinite(relative_poses)):
+                result.update(history=[], reason="unsupported_relative_coordinates")
+                return result
+            result["history"].append(
+                {
+                    "capture_ticks": record["capture_ticks"].copy(),
+                    "capture_poses_body_m_rad": relative_poses,
+                    "tof_m": record["tof_m"].copy(),
+                    "tof_valid": record["tof_valid"].copy(),
+                }
+            )
+    if not np.all(np.isfinite(relative_goal)):
+        result.update(history=[], reason="unsupported_relative_coordinates")
+        return result
+    result.update(
+        status="relative_fixture",
+        reason="declared_exact_relative_fixture_only",
+        fixture_goal_body_m=relative_goal.tolist(),
+        fixture_arena_yaw_rad=-yaw,
+        numerical_source_scale=max(
+            scale,
+            float(np.abs(relative_goal).max()),
+            *(
+                float(np.abs(record["capture_poses_body_m_rad"]).max())
+                for record in result["history"]
+            ),
+        ),
+    )
+    return result
+
+
+def probe_synthetic_c1_relative_questions(
+    relative_input,
+    *,
+    fixture_state,
+    fixture_current_body_clear=False,
+    fixture_controlled_envelope=False,
+    fixture_transform_error_m=0.0,
+    fixture_heading_error_rad=0.0,
+    fixture_clock_error_s=0.0,
+    curved_segments=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Compare declared exact relative fixtures, never consume a live host state."""
+    from interface.protocol import State, encode_state
+
+    if synthetic_test_only is not True:
+        raise ValueError("C1 relative questions require synthetic_test_only=True")
+    config = _c1_config(config)
+    errors = _c1_array(
+        [fixture_transform_error_m, fixture_heading_error_rad, fixture_clock_error_s],
+        (3,),
+    )
+    if np.any(errors < 0):
+        raise ValueError("C1 fixture errors must be nonnegative")
+    for value, lower, upper in (
+        (curved_segments, 1, 128),
+        (max_cells, 0, 65536),
+        (max_depth, 0, 12),
+        (radius_bands, 1, 16),
+    ):
+        if type(value) is not int or not lower <= value <= upper:
+            raise ValueError("C1 relative work controls require bounded integers")
+    result = {
+        "schema": "micro-classifier/synthetic-c1-relative-questions/1",
+        "allowed_use": "controlled_synthetic_qualification_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "status": "unknown",
+        "reason": "unsupported_relative_input",
+        "candidate_values": {
+            "path_blocked": None,
+            "clear_sector": None,
+            "speed_tier": None,
+        },
+        "queries": {},
+        "unique_motion_queries": 0,
+        "numerical_source_scale": None,
+        "canonical_guard_scale": None,
+    }
+    if np.any(errors):
+        result["reason"] = "unqualified_transform_or_clock_error"
+        return result
+    if not isinstance(relative_input, dict) or set(relative_input) != {
+        "schema",
+        "allowed_use",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "status",
+        "reason",
+        "reference_tick",
+        "config",
+        "history",
+        "fixture_goal_body_m",
+        "fixture_arena_yaw_rad",
+        "numerical_source_scale",
+    }:
+        return result
+    if (
+        relative_input["schema"] != "micro-classifier/synthetic-c1-relative-input/1"
+        or relative_input["allowed_use"] != result["allowed_use"]
+        or any(
+            relative_input[key] is not False
+            for key in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+            )
+        )
+    ):
+        return result
+    if relative_input["status"] != "relative_fixture":
+        result["reason"] = relative_input["reason"]
+        return result
+    if not isinstance(fixture_state, State):
+        raise TypeError("C1 fixture_state must be a synthetic State")
+    encode_state(fixture_state)
+    tick = relative_input["reference_tick"]
+    if type(tick) is not int or not 0 <= tick <= 0xFFFFFFFF:
+        raise ValueError("C1 reference tick requires a u32 integer")
+    if (
+        fixture_state.validity & 7 != 7
+        or fixture_state.ages_us[:3] != (0, 0, 0)
+        or fixture_state.timestamp_us != tick * 50000
+    ):
+        result["reason"] = "unsupported_host_validity_age_or_clock"
+        return result
+    velocity = _c1_array(fixture_state.velocity_m_s, (3,))
+    angular = _c1_array(fixture_state.angular_velocity_rad_s, (3,))
+    goal = _c1_array(fixture_state.goal_m, (3,))
+    if np.any(velocity[1:]) or np.any(angular[:2]) or goal[2] != 0:
+        result["reason"] = "unsupported_nonplanar_host_state"
+        return result
+    if not np.array_equal(
+        goal[:2], _c1_array(relative_input["fixture_goal_body_m"], (2,))
+    ):
+        result["reason"] = "fixture_goal_binding_mismatch"
+        return result
+    if (
+        not 0 <= velocity[0] <= config.max_speed
+        or abs(angular[2]) > config.max_turn_rate
+    ):
+        raise ValueError("C1 fixture motion exceeds the simulated limits")
+    if (
+        fixture_current_body_clear is not True
+        or fixture_controlled_envelope is not True
+    ):
+        result["reason"] = "fixture_body_or_domain_not_established"
+        return result
+    if json.dumps(
+        relative_input["config"], sort_keys=True, allow_nan=False
+    ) != json.dumps(asdict(config), sort_keys=True, allow_nan=False):
+        return result
+    scale, arena_yaw = map(
+        float,
+        _c1_array(
+            [
+                relative_input["numerical_source_scale"],
+                relative_input["fixture_arena_yaw_rad"],
+            ],
+            (2,),
+        ),
+    )
+    if scale < max(1, config.max_range, *np.abs(goal)) or abs(arena_yaw) > math.pi:
+        return result
+    result["numerical_source_scale"] = scale
+    if 1024 * np.finfo(float).eps * scale >= config.radius:
+        result["reason"] = "unsupported_numerical_scale"
+        return result
+    anchor = math.ldexp(1.0, math.frexp(scale)[1] + 2)
+    result.update(numerical_source_scale=scale, canonical_guard_scale=anchor)
+    if 256 * np.finfo(float).eps * anchor >= config.radius:
+        result["reason"] = "unsupported_numerical_scale"
+        return result
+    yaw = -arena_yaw
+    rotation = np.array(
+        [[math.cos(yaw), math.sin(yaw)], [-math.sin(yaw), math.cos(yaw)]]
+    )
+    history = relative_input["history"]
+    if not isinstance(history, (list, tuple)) or not 1 <= len(history) <= 8:
+        return result
+    canonical = []
+    for record in history:
+        if not isinstance(record, dict) or set(record) != {
+            "capture_ticks",
+            "capture_poses_body_m_rad",
+            "tof_m",
+            "tof_valid",
+        }:
+            return result
+        poses = _c1_array(record["capture_poses_body_m_rad"], (8, 3)).astype(float)
+        if np.abs(poses).max() > scale or np.any(np.abs(poses[:, 2]) > math.pi):
+            return result
+        world_poses = np.column_stack(
+            (
+                anchor + poses[:, :2] @ rotation,
+                poses[:, 2] + yaw,
+            )
+        )
+        canonical.append(
+            {
+                "schema": C1_SCHEMA,
+                "allowed_use": "synthetic_visibility_fixtures_only",
+                "training_approved": False,
+                "real_input_qualified": False,
+                "free_space_qualified": False,
+                "config": asdict(config),
+                "capture_ticks": record["capture_ticks"],
+                "capture_poses_m_rad": world_poses,
+                "tof_m": record["tof_m"],
+                "tof_valid": record["tof_valid"],
+            }
+        )
+    inspection = inspect_synthetic_c1_history(
+        canonical,
+        reference_tick=tick,
+        reference_pose_m_rad=[anchor, anchor, yaw],
+        config=config,
+        synthetic_test_only=True,
+    )
+    if inspection["status"] != "registered_fixture":
+        result["reason"] = inspection["reason"]
+        return result
+    age = inspection["latest_age_ticks"] * config.dt
+    motion_guard = 64 * np.finfo(float).eps
+    if (
+        math.hypot(*poses[0, :2]) > config.max_speed * age + motion_guard
+        or abs(poses[0, 2]) > config.max_turn_rate * age + motion_guard
+    ):
+        result["reason"] = "unsupported_capture_to_reference_motion"
+        return result
+    world_goal = anchor + goal[:2] @ rotation
+    evidence = probe_synthetic_c1_questions(
+        canonical,
+        reference_tick=tick,
+        reference_pose_m_rad=[anchor, anchor, yaw],
+        speed=float(velocity[0]),
+        turn_rate=float(angular[2]),
+        fixture_goal_m=world_goal,
+        current_body_clear=True,
+        controlled_envelope=True,
+        curved_segments=curved_segments,
+        max_cells=max_cells,
+        max_depth=max_depth,
+        radius_bands=radius_bands,
+        config=config,
+        synthetic_test_only=True,
+    )
+    for key in (
+        "status",
+        "reason",
+        "candidate_values",
+        "queries",
+        "unique_motion_queries",
+    ):
+        result[key] = evidence[key]
+    if result["status"] != "inconsistent_fixture_evidence" and result["queries"]:
+        states = {name: row["status"] for name, row in result["queries"].items()}
+        names = ("centre", "left", "right")
+        clear = [name for name in names if states[name] == "clear"]
+        if (
+            velocity[0] > 0
+            and all(states[name] != "unknown" for name in names)
+            and clear
+        ):
+            ranks = {}
+            for name in clear:
+                points, error = _c1_curved_centerline(
+                    float(velocity[0]),
+                    float(angular[2]),
+                    age,
+                    config,
+                    curved_segments,
+                    result["queries"][name]["braking_turn_rate_rad_s"],
+                )
+                ranks[name] = (
+                    math.dist(points[-1], goal[:2]),
+                    error
+                    + 256 * np.finfo(float).eps * max(anchor, *np.abs(world_goal)),
+                )
+            best = min(clear, key=lambda name: ranks[name][0])
+            upper = sum(ranks[best])
+            contenders = [
+                name
+                for name, (distance, error) in ranks.items()
+                if distance - error <= upper
+            ]
+            result["candidate_values"]["clear_sector"] = (
+                best
+                if len(contenders) == 1
+                else "left"
+                if set(contenders) == {"left", "right"}
+                and angular[2] == 0
+                and goal[1] == 0
+                else None
+            )
+            count = sum(
+                value is not None for value in result["candidate_values"].values()
+            )
+            result.update(
+                status="resolved_under_fixture_assumptions"
+                if count == 3
+                else "partial_fixture_evidence",
+                reason="conditional_candidate_values_only"
+                if count == 3
+                else "relative_goal_rank_unresolved",
+            )
+    return result
+
+
 class DiagnosticRoverEnv(RoverEnv):
     """Keep acquisition references outside the unchanged student observations."""
 

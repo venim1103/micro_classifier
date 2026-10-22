@@ -60,6 +60,260 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
     )
 
 
+@pytest.fixture
+def c1_relative(c1_history):
+    from interface.protocol import State
+    from sim.diagnostics import prepare_synthetic_c1_relative_input
+
+    relative = prepare_synthetic_c1_relative_input(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        fixture_goal_m=[5, 2],
+        synthetic_test_only=True,
+    )
+    return relative, {
+        "fixture_state": State(
+            timestamp_us=1150000, velocity_m_s=(0.6, 0, 0), goal_m=(3, 0, 0)
+        ),
+        "fixture_current_body_clear": True,
+        "fixture_controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "momentum",
+        "rest",
+        "near_tie",
+        "body_conflict",
+        "rotated",
+        "held",
+        "large",
+        "lost_scale",
+    ],
+)
+def test_synthetic_c1_relative_special_comparisons(case):
+    from interface.protocol import State
+    from sim.diagnostics import (
+        capture_synthetic_c1_views,
+        prepare_synthetic_c1_relative_input,
+        probe_synthetic_c1_questions,
+        probe_synthetic_c1_relative_questions,
+    )
+
+    speed = 0.2 if case == "momentum" else 0 if case == "rest" else 0.6
+    yaw = 0.37 if case == "rotated" else 0
+    goal = (0.5, 2 + 1e-12) if case == "near_tie" else (5, 2)
+    obstacles = (
+        ((2.7, 2, 0.30),)
+        if case == "momentum"
+        else ((2.4, 2, 0.30),)
+        if case == "body_conflict"
+        else ()
+    )
+    if case == "rotated":
+        obstacles = ((2 + 0.6 * math.cos(yaw), 2 + 0.6 * math.sin(yaw), 0.30),)
+    scene = Scenario(
+        start=(1, 1, 0) if case == "body_conflict" else (2, 2, yaw),
+        goal=goal,
+        obstacles=obstacles,
+        obstacle_heights=(1.0,) if case == "rotated" else (),
+    )
+    forward = np.array([math.cos(yaw), math.sin(yaw)])
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[
+            *(
+                np.array([2, 2]) - speed * 0.15 * forward
+                if case == "momentum"
+                else np.array([2, 2]) - 0.09 * forward
+            ),
+            yaw,
+        ],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    reference = np.array([2.0, 2.0, yaw])
+    world_goal = np.array(goal, dtype=float)
+    if case in ("large", "lost_scale"):
+        offset = 1e12 if case == "large" else 1e16
+        reference[:2] += offset
+        world_goal += offset
+        record["capture_poses_m_rad"][:, :2] += offset
+    history = [deepcopy(record), record] if case == "held" else [record]
+    old = probe_synthetic_c1_questions(
+        history,
+        reference_tick=23,
+        reference_pose_m_rad=reference,
+        fixture_goal_m=world_goal,
+        speed=speed,
+        turn_rate=0,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    relative = prepare_synthetic_c1_relative_input(
+        history,
+        reference_tick=23,
+        reference_pose_m_rad=reference,
+        fixture_goal_m=world_goal,
+        synthetic_test_only=True,
+    )
+    result = probe_synthetic_c1_relative_questions(
+        relative,
+        fixture_state=State(
+            timestamp_us=1150000,
+            velocity_m_s=(speed, 0, 0),
+            goal_m=(*(relative["fixture_goal_body_m"] or [3, 0]), 0),
+        ),
+        fixture_current_body_clear=True,
+        fixture_controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    if case in ("large", "lost_scale"):
+        assert all(value is None for value in result["candidate_values"].values())
+        assert result["reason"] == "unsupported_numerical_scale"
+    else:
+        assert result["candidate_values"] == old["candidate_values"]
+        assert result["status"] == old["status"]
+    if case == "momentum":
+        assert result["candidate_values"]["speed_tier"] == "2"
+    elif case in ("rest", "near_tie"):
+        assert result["candidate_values"]["clear_sector"] is None
+    elif case == "body_conflict":
+        assert result["status"] == "inconsistent_fixture_evidence"
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "missing_goal",
+        "aged_goal",
+        "aged_velocity",
+        "aged_angular",
+        "clock_offset",
+        "clock_reset",
+        "lateral_speed",
+        "roll_rate",
+        "nonplanar_goal",
+        "goal_binding",
+        "task",
+        "opt_in",
+        "body_flag",
+        "domain_flag",
+        "missing_scale",
+        "low_scale",
+        "infinite_scale",
+        "huge_scale",
+        "boolean_arena",
+        "arena_range",
+        "profile",
+        "schema",
+        "scope",
+        "held_change",
+        "view_clock",
+        "translation_error",
+        "heading_error",
+        "clock_error",
+        "work_boolean",
+    ],
+)
+def test_synthetic_c1_relative_rejects_unsupported_evidence(c1_relative, case):
+    from dataclasses import replace
+
+    from sim.diagnostics import probe_synthetic_c1_relative_questions
+
+    relative, settings = c1_relative
+    state = settings["fixture_state"]
+    rejected = case in (
+        "task",
+        "opt_in",
+        "infinite_scale",
+        "boolean_arena",
+        "work_boolean",
+    )
+    if case == "missing_goal":
+        settings["fixture_state"] = replace(
+            state,
+            validity=3,
+            ages_us=(0, 0, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF),
+            goal_m=(0, 0, 0),
+        )
+    elif case.startswith("aged_"):
+        index = {"aged_velocity": 0, "aged_angular": 1, "aged_goal": 2}[case]
+        ages = list(state.ages_us)
+        ages[index] = 1
+        settings["fixture_state"] = replace(state, ages_us=tuple(ages))
+    elif case in ("clock_offset", "clock_reset"):
+        settings["fixture_state"] = replace(
+            state, timestamp_us=1150001 if case == "clock_offset" else 0
+        )
+    elif case == "lateral_speed":
+        settings["fixture_state"] = replace(state, velocity_m_s=(0.6, 0.01, 0))
+    elif case == "roll_rate":
+        settings["fixture_state"] = replace(state, angular_velocity_rad_s=(0.01, 0, 0))
+    elif case in ("nonplanar_goal", "goal_binding"):
+        settings["fixture_state"] = replace(
+            state, goal_m=(3, 0, 0.01) if case == "nonplanar_goal" else (2, 0, 0)
+        )
+    elif case == "task":
+        settings["fixture_state"] = replace(state, task_id=2)
+    elif case == "opt_in":
+        settings["synthetic_test_only"] = False
+    elif case in ("body_flag", "domain_flag"):
+        settings[
+            "fixture_current_body_clear"
+            if case == "body_flag"
+            else "fixture_controlled_envelope"
+        ] = 1
+    elif case == "missing_scale":
+        del relative["numerical_source_scale"]
+    elif case in ("low_scale", "infinite_scale", "huge_scale"):
+        relative["numerical_source_scale"] = {
+            "low_scale": 1,
+            "infinite_scale": np.inf,
+            "huge_scale": 1e308,
+        }[case]
+    elif case in ("boolean_arena", "arena_range"):
+        relative["fixture_arena_yaw_rad"] = True if case == "boolean_arena" else 4
+    elif case == "profile":
+        relative["config"]["wall_height"] = 2
+    elif case == "schema":
+        relative["schema"] = "unqualified"
+    elif case == "scope":
+        relative["training_approved"] = True
+    elif case == "held_change":
+        relative["history"] = [
+            deepcopy(relative["history"][-1]),
+            relative["history"][-1],
+        ]
+        changed = tuple(np.argwhere(relative["history"][0]["tof_valid"])[0])
+        relative["history"][0]["tof_m"][changed] *= 0.9
+    elif case == "view_clock":
+        relative["history"][-1]["capture_ticks"][0] -= 1
+    elif case in ("translation_error", "heading_error", "clock_error"):
+        settings[
+            {
+                "translation_error": "fixture_transform_error_m",
+                "heading_error": "fixture_heading_error_rad",
+                "clock_error": "fixture_clock_error_s",
+            }[case]
+        ] = 0.001
+    else:
+        settings["max_cells"] = True
+    if rejected:
+        with pytest.raises(ValueError):
+            probe_synthetic_c1_relative_questions(relative, **settings)
+    else:
+        result = probe_synthetic_c1_relative_questions(relative, **settings)
+        assert result["status"] == "unknown"
+        assert all(value is None for value in result["candidate_values"].values())
+        assert result["queries"] == {}
+
+
 @pytest.mark.parametrize("side", [-1, 1])
 def test_full_synthetic_history_can_hide_a_normal_cylinder_from_a_turning_sweep(side):
     from sim.navigation import evaluate_synthetic
@@ -1254,6 +1508,177 @@ def test_synthetic_c1_question_feasibility_rejects_malformed_controls(
     }
     with pytest.raises(ValueError):
         probe_synthetic_c1_questions(c1_history, **settings)
+
+
+@pytest.mark.parametrize(
+    "case", ["stale", "future", "reversal", "profile", "reset", "early_delivery"]
+)
+def test_synthetic_c1_relative_temporal_compatibility(c1_history, case):
+    from interface.protocol import State
+    from sim.diagnostics import (
+        prepare_synthetic_c1_relative_input,
+        probe_synthetic_c1_questions,
+        probe_synthetic_c1_relative_questions,
+    )
+
+    history = deepcopy(c1_history)
+    tick = 24 if case == "stale" else 19 if case == "reset" else 23
+    if case == "future":
+        history[-1]["capture_ticks"][:] = 24
+    elif case == "reversal":
+        history = [deepcopy(history[-1]), history[-1]]
+        history[-1]["capture_ticks"][:] = 19
+    elif case == "profile":
+        history[-1]["config"]["tof_mount_pitch"] = 0
+    elif case == "early_delivery":
+        history = [deepcopy(history[-1]), deepcopy(history[-1]), history[-1]]
+    old = probe_synthetic_c1_questions(
+        history,
+        reference_tick=tick,
+        reference_pose_m_rad=[2, 2, 0],
+        fixture_goal_m=[5, 2],
+        speed=0.6,
+        turn_rate=0,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    relative = prepare_synthetic_c1_relative_input(
+        history,
+        reference_tick=tick,
+        reference_pose_m_rad=[2, 2, 0],
+        fixture_goal_m=[5, 2],
+        synthetic_test_only=True,
+    )
+    result = probe_synthetic_c1_relative_questions(
+        relative,
+        fixture_state=State(
+            timestamp_us=tick * 50000, velocity_m_s=(0.6, 0, 0), goal_m=(3, 0, 0)
+        ),
+        fixture_current_body_clear=True,
+        fixture_controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["candidate_values"] == old["candidate_values"]
+    assert result["status"] == old["status"] == "unknown"
+    assert result["reason"] == old["reason"]
+    assert result["queries"] == {}
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("synthetic_test_only", False),
+        ("fixture_goal_m", [True, 2]),
+        ("fixture_goal_m", [np.inf, 2]),
+        ("reference_tick", True),
+    ],
+)
+def test_synthetic_c1_relative_input_rejects_malformed(c1_history, field, value):
+    from sim.diagnostics import prepare_synthetic_c1_relative_input
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "fixture_goal_m": [5, 2],
+        "synthetic_test_only": True,
+        field: value,
+    }
+    with pytest.raises(ValueError):
+        prepare_synthetic_c1_relative_input(c1_history, **settings)
+
+
+def test_synthetic_c1_relative_input_preserves_boundary(c1_history):
+    from sim.diagnostics import prepare_synthetic_c1_relative_input
+
+    relative = prepare_synthetic_c1_relative_input(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        fixture_goal_m=[5, 2],
+        synthetic_test_only=True,
+    )
+    assert relative["status"] == "relative_fixture"
+    assert relative["fixture_goal_body_m"] == [3, 0]
+    assert relative["numerical_source_scale"] == 5
+    assert relative["fixture_arena_yaw_rad"] == 0
+    assert "reference_pose_m_rad" not in relative
+    for original, converted in zip(c1_history, relative["history"], strict=True):
+        assert np.array_equal(converted["tof_m"], original["tof_m"])
+        assert not np.shares_memory(converted["tof_valid"], original["tof_valid"])
+        assert "capture_poses_m_rad" not in converted
+        assert converted["capture_poses_body_m_rad"][0, :2] == pytest.approx(
+            original["capture_poses_m_rad"][0, :2] - [2, 2]
+        )
+
+
+@pytest.mark.parametrize("blocked", [False, True])
+@pytest.mark.parametrize("goal", [(5, 2), (2, 5), (2, 0.5), (0.5, 2)])
+@pytest.mark.parametrize("frame", [0, math.pi / 2])
+def test_synthetic_c1_relative_questions_match_existing_input(blocked, goal, frame):
+    from interface.protocol import State
+    from sim.diagnostics import (
+        capture_synthetic_c1_views,
+        prepare_synthetic_c1_relative_input,
+        probe_synthetic_c1_questions,
+        probe_synthetic_c1_relative_questions,
+    )
+
+    scene = Scenario(
+        start=(2, 2, 0), goal=goal, obstacles=((2.6, 2, 0.30),) if blocked else ()
+    )
+    record = capture_synthetic_c1_views(
+        scene,
+        pose_m_rad=[1.91, 2, 0],
+        capture_tick=20,
+        synthetic_test_only=True,
+    )
+    rotation = np.array(
+        [[math.cos(frame), math.sin(frame)], [-math.sin(frame), math.cos(frame)]]
+    )
+    shift = np.array([8, -4]) if frame else np.zeros(2)
+    reference = [*(np.array(scene.start[:2]) @ rotation + shift), frame]
+    world_goal = np.array(goal) @ rotation + shift
+    record["capture_poses_m_rad"][:, :2] = (
+        record["capture_poses_m_rad"][:, :2] @ rotation + shift
+    )
+    record["capture_poses_m_rad"][:, 2] += frame
+    history = [record]
+    relative = prepare_synthetic_c1_relative_input(
+        history,
+        reference_tick=23,
+        reference_pose_m_rad=reference,
+        fixture_goal_m=world_goal,
+        synthetic_test_only=True,
+    )
+    old = probe_synthetic_c1_questions(
+        history,
+        reference_tick=23,
+        reference_pose_m_rad=reference,
+        fixture_goal_m=world_goal,
+        speed=0.6,
+        turn_rate=0,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    result = probe_synthetic_c1_relative_questions(
+        relative,
+        fixture_state=State(
+            timestamp_us=1150000,
+            velocity_m_s=(0.6, 0, 0),
+            goal_m=(*relative["fixture_goal_body_m"], 0),
+        ),
+        fixture_current_body_clear=True,
+        fixture_controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["candidate_values"] == old["candidate_values"]
+    assert result["status"] == old["status"]
+    if frame == 0:
+        assert result["status"] == "resolved_under_fixture_assumptions"
+    assert result["canonical_guard_scale"] >= 4 * result["numerical_source_scale"]
+    assert result["unique_motion_queries"] == old["unique_motion_queries"] == 3
 
 
 @pytest.mark.parametrize("side", [-1, 1])

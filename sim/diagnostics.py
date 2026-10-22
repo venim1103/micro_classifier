@@ -918,6 +918,261 @@ def probe_synthetic_c1_questions(
     return result
 
 
+def _reference_synthetic_c1_motion(motion, *, synthetic_test_only=False):
+    """Enclose fixture mathematics, not library errors or source authority."""
+    from fractions import Fraction
+
+    if synthetic_test_only is not True:
+        raise ValueError("C1 reference requires synthetic_test_only=True")
+    result = {
+        "allowed_use": "private_synthetic_motion_reference_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "status": "unresolved_mathematical_reference",
+        "reason": "unsupported_motion_record",
+        "motion_status": "unresolved_motion_evidence",
+        "clocks": {},
+    }
+    bit_limit = 65536
+    order = 32
+
+    def bounded(value):
+        if (
+            max(value.numerator.bit_length(), value.denominator.bit_length())
+            > bit_limit
+        ):
+            raise ArithmeticError("rational_work_limit")
+        return value
+
+    def scalar(value):
+        if type(value) not in (int, float):
+            raise ValueError("unsupported_reference_scalar")
+        if type(value) is int and value.bit_length() > bit_limit:
+            raise ArithmeticError("rational_work_limit")
+        if type(value) is float and not math.isfinite(value):
+            raise ValueError("unsupported_reference_scalar")
+        return bounded(Fraction(value))
+
+    def vector(value, length):
+        if type(value) not in (list, tuple) or len(value) != length:
+            raise ValueError("unsupported_reference_vector")
+        return tuple(scalar(item) for item in value)
+
+    def add(left, right):
+        if (
+            max(
+                left.numerator.bit_length() + right.denominator.bit_length(),
+                right.numerator.bit_length() + left.denominator.bit_length(),
+            )
+            + 1
+            > bit_limit
+            or left.denominator.bit_length() + right.denominator.bit_length()
+            > bit_limit
+        ):
+            raise ArithmeticError("rational_work_limit")
+        return bounded(left + right)
+
+    def multiply(left, right):
+        if (
+            left.numerator.bit_length() + right.numerator.bit_length() > bit_limit
+            or left.denominator.bit_length() + right.denominator.bit_length()
+            > bit_limit
+        ):
+            raise ArithmeticError("rational_work_limit")
+        return bounded(left * right)
+
+    def powers(value, count):
+        values = [Fraction(1)]
+        for _ in range(count - 1):
+            values.append(multiply(values[-1], value))
+        return values
+
+    def interval_add(left, right):
+        return add(left[0], right[0]), add(left[1], right[1])
+
+    def interval_scale(interval, factor):
+        values = [multiply(endpoint, factor) for endpoint in interval]
+        return min(values), max(values)
+
+    def trig(heading, sine):
+        values = powers(heading, order + 1)
+        total = Fraction(0)
+        for degree in range(1 if sine else 0, order, 2):
+            coefficient = Fraction((-1) ** (degree // 2), math.factorial(degree))
+            total = add(total, multiply(coefficient, values[degree]))
+        tail = multiply(abs(values[order]), Fraction(1, math.factorial(order)))
+        return add(total, -tail), add(total, tail)
+
+    def pi_interval():
+        intervals = []
+        for denominator in (5, 239):
+            values = powers(Fraction(1, denominator), 2 * order + 2)
+            partial = Fraction(0)
+            for index in range(order):
+                partial = add(
+                    partial,
+                    multiply(
+                        values[2 * index + 1], Fraction((-1) ** index, 2 * index + 1)
+                    ),
+                )
+            tail = multiply(values[2 * order + 1], Fraction(1, 2 * order + 1))
+            intervals.append((partial, add(partial, tail)))
+        return interval_add(
+            interval_scale(intervals[0], Fraction(16)),
+            interval_scale(intervals[1], Fraction(-4)),
+        )
+
+    def circular(heading, pi_bounds):
+        if -pi_bounds[0] < heading < pi_bounds[0]:
+            return ((0, (heading, heading)),)
+        turns = 1 if heading >= 0 else -1
+        shifted = interval_add(
+            (heading, heading), interval_scale(pi_bounds, Fraction(-2 * turns))
+        )
+        if abs(heading) > pi_bounds[1]:
+            return ((turns, shifted),)
+        return ((0, (heading, heading)), (turns, shifted))
+
+    try:
+        if type(motion) is not dict or set(motion) != {
+            "model",
+            "clock_epoch",
+            "seed_tick",
+            "seed_pose_m_rad",
+            "speed_m_s",
+            "turn_rate_rad_s",
+            "tick_period_us",
+            "tick_period_s",
+            "fixture_goal_m",
+            "events",
+        }:
+            return result
+        if (
+            motion["model"] != "constant_twist_interval_ending_v1"
+            or type(motion["clock_epoch"]) is not str
+            or not motion["clock_epoch"]
+            or type(motion["seed_tick"]) is not int
+            or not 0 <= motion["seed_tick"] <= 85899
+            or type(motion["tick_period_us"]) is not int
+            or motion["tick_period_us"] != 50000
+            or type(motion["tick_period_s"]) is not float
+            or motion["tick_period_s"] != 0.05
+        ):
+            return result
+        seed = vector(motion["seed_pose_m_rad"], 3)
+        speed, turn = vector([motion["speed_m_s"], motion["turn_rate_rad_s"]], 2)
+        goal = vector(motion["fixture_goal_m"], 2)
+        if (
+            not 0 <= speed <= Fraction(0.6)
+            or abs(turn) > Fraction(3, 2)
+            or abs(seed[2]) > Fraction(math.pi)
+        ):
+            return result
+        events = motion["events"]
+        if type(events) is not list or not 1 <= len(events) <= 8:
+            return result
+        stored = []
+        for offset, event in enumerate(events):
+            if (
+                type(event) is not dict
+                or set(event) != {"tick", "pose_m_rad", "fixture_state", "host_frame"}
+                or type(event["tick"]) is not int
+                or event["tick"] != motion["seed_tick"] + offset
+                or event["tick"] > 85899
+            ):
+                return result
+            pose = vector(event["pose_m_rad"], 3)
+            if abs(pose[2]) > Fraction(math.pi):
+                return result
+            stored.append(pose)
+        pi_bounds = pi_interval()
+        heading_powers = powers(seed[2], order)
+        turn_powers = powers(turn, order)
+        clocks = {}
+        for name, period in (
+            ("nominal_us", Fraction(1, 20)),
+            ("binary64_step", Fraction(0.05)),
+        ):
+            references = []
+            for offset, pose in enumerate(stored):
+                elapsed = multiply(Fraction(offset), period)
+                heading = add(seed[2], multiply(turn, elapsed))
+                phase = max(abs(seed[2]), abs(heading))
+                if phase > 4:
+                    raise ValueError("unsupported_reference_phase")
+                time_powers = powers(elapsed, order + 1)
+                totals = [Fraction(0), Fraction(0)]
+                for degree in range(order):
+                    integral = Fraction(0)
+                    for exponent in range(degree + 1):
+                        term = multiply(
+                            heading_powers[degree - exponent], turn_powers[exponent]
+                        )
+                        term = multiply(term, time_powers[exponent + 1])
+                        integral = add(
+                            integral,
+                            multiply(
+                                term,
+                                Fraction(math.comb(degree, exponent), exponent + 1),
+                            ),
+                        )
+                    coefficient = Fraction(
+                        (-1) ** (degree // 2), math.factorial(degree)
+                    )
+                    totals[degree % 2] = add(
+                        totals[degree % 2], multiply(coefficient, integral)
+                    )
+                phase_power = powers(phase, order + 1)[order]
+                tail = multiply(
+                    multiply(speed, elapsed),
+                    multiply(phase_power, Fraction(1, math.factorial(order))),
+                )
+                positions = []
+                for axis, total in enumerate(totals):
+                    centre = add(seed[axis], multiply(speed, total))
+                    positions.append((add(centre, -tail), add(centre, tail)))
+                cosine, sine = trig(pose[2], False), trig(pose[2], True)
+                delta = [add(goal[axis], -pose[axis]) for axis in (0, 1)]
+                body_goal = (
+                    interval_add(
+                        interval_scale(cosine, delta[0]), interval_scale(sine, delta[1])
+                    ),
+                    interval_add(
+                        interval_scale(cosine, delta[1]),
+                        interval_scale(sine, -delta[0]),
+                    ),
+                )
+                clock_delta = multiply(
+                    Fraction(offset), abs(add(Fraction(0.05), -Fraction(1, 20)))
+                )
+                references.append(
+                    {
+                        "tick": motion["seed_tick"] + offset,
+                        "elapsed_s": elapsed,
+                        "position_m": tuple(positions),
+                        "unwrapped_heading_rad": (heading, heading),
+                        "circular_heading_rad": circular(heading, pi_bounds),
+                        "body_goal_m": body_goal,
+                        "clock_discrepancy_m": multiply(speed, clock_delta),
+                        "clock_discrepancy_rad": multiply(abs(turn), clock_delta),
+                    }
+                )
+            clocks[name] = references
+        result.update(
+            status="enclosed_mathematical_reference",
+            reason="rational_integral_with_analytic_tail_only",
+            clocks=clocks,
+            pi_rad=pi_bounds,
+        )
+    except ArithmeticError:
+        result["reason"] = "rational_work_limit"
+    except (ValueError, TypeError, KeyError, OverflowError):
+        return result
+    return result
+
+
 class _SyntheticC1MotionOwner:
     """Own a bounded constant-twist fixture, not a simulator rollout."""
 

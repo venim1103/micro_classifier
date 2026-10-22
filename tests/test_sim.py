@@ -64,6 +64,320 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
     "case",
     [
         "stationary",
+        "rotated",
+        "left",
+        "right",
+        "tiny",
+        "clocks",
+        "wrap",
+        "held",
+        "wrong_position",
+        "wrong_yaw",
+        "goal",
+        "wire",
+        "missing_primitive",
+        "overlap",
+        "limits",
+        "foreign",
+    ],
+)
+def test_synthetic_c1_rational_reference(monkeypatch, case):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("rational references must not consume production computations")
+
+    for name in (
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "RoverEnv",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    scene = (
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.6, 2, 0.30),))
+        if case == "wrong_position"
+        else Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),))
+        if case == "goal"
+        else Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),))
+        if case == "wire"
+        else Scenario(start=(2, 2, 0), goal=(5, 2))
+    )
+    speed = 0 if case == "stationary" else 0.6 if case == "wire" else 0.5
+    turn = (
+        -0.5
+        if case == "right"
+        else 2**-40
+        if case == "tiny"
+        else 0
+        if case in ("stationary", "rotated", "clocks", "wire")
+        else 0.5
+    )
+    heading = (
+        math.pi - 0.01 if case == "wrap" else 0.25 if case in ("rotated", "goal") else 0
+    )
+    owner = diagnostics._SyntheticC1MotionOwner(
+        scene,
+        seed_tick=20,
+        pose_m_rad=[2, 2, heading],
+        speed=speed,
+        turn_rate=turn,
+        synthetic_test_only=True,
+    )
+    original_integrate = rover.integrate
+
+    def faulty_integrate(*arguments):
+        position, yaw = original_integrate(*arguments)
+        return (
+            (position + [0, 0.02], yaw)
+            if case == "wrong_position"
+            else (position, yaw - 0.1)
+        )
+
+    if case in ("wrong_position", "wrong_yaw"):
+        monkeypatch.setattr(rover, "integrate", faulty_integrate)
+    for tick in range(21, 28):
+        owner.advance(tick)
+        if tick == 26 and case == "held":
+            previous = owner.snapshot()
+    bundle = owner.snapshot()
+    before = owner.audit(bundle)
+    motion = bundle["motion"]
+    motion_before = deepcopy(motion)
+
+    def reference_for(record):
+        with monkeypatch.context() as blocked:
+            for name in (
+                "capture_synthetic_c1_views",
+                "prepare_synthetic_c1_relative_input",
+                "inspect_synthetic_c1_history",
+                "_check_synthetic_c1_motion",
+            ):
+                blocked.setattr(diagnostics, name, forbidden)
+            blocked.setattr(rover, "integrate", forbidden)
+            for name in ("sin", "cos", "atan2"):
+                blocked.setattr(math, name, forbidden)
+            blocked.setattr(np, "sinc", forbidden)
+            return diagnostics._reference_synthetic_c1_motion(
+                record, synthetic_test_only=True
+            )
+
+    def trig_interval(angle, sine):
+        total = sum(
+            Fraction((-1) ** (degree // 2), math.factorial(degree)) * angle**degree
+            for degree in range(1 if sine else 0, 48, 2)
+        )
+        tail = abs(angle) ** 48 / math.factorial(48)
+        return total - tail, total + tail
+
+    def scale(interval, factor):
+        endpoints = [endpoint * factor for endpoint in interval]
+        return min(endpoints), max(endpoints)
+
+    def subtract(left, right):
+        return left[0] - right[1], left[1] - right[0]
+
+    reference = reference_for(motion)
+    assert reference["status"] == "enclosed_mathematical_reference"
+    assert reference["motion_status"] == "unresolved_motion_evidence"
+    assert all(
+        reference[name] is False
+        for name in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+        )
+    )
+    seed_heading, exact_speed, exact_turn = map(Fraction, (heading, speed, turn))
+    for clock in ("nominal_us", "binary64_step"):
+        assert len(reference["clocks"][clock]) == 8
+        period = Fraction(1, 20) if clock == "nominal_us" else Fraction(0.05)
+        for offset, event in enumerate(reference["clocks"][clock]):
+            elapsed = offset * period
+            phase = seed_heading + exact_turn * elapsed
+            assert event["elapsed_s"] == elapsed
+            assert event["unwrapped_heading_rad"] == (phase, phase)
+            for axis in (0, 1):
+                if exact_turn:
+                    start = trig_interval(seed_heading, axis == 0)
+                    end = trig_interval(phase, axis == 0)
+                    oracle = scale(
+                        subtract(end, start) if axis == 0 else subtract(start, end),
+                        exact_speed / exact_turn,
+                    )
+                else:
+                    oracle = scale(
+                        trig_interval(seed_heading, axis == 1), exact_speed * elapsed
+                    )
+                lower, upper = event["position_m"][axis]
+                if offset and speed:
+                    assert lower <= 2 + oracle[0] <= 2 + oracle[1] <= upper
+                else:
+                    assert lower == upper == 2
+            assert event["clock_discrepancy_m"] == exact_speed * offset * abs(
+                Fraction(0.05) - Fraction(1, 20)
+            )
+            assert event["clock_discrepancy_rad"] == abs(exact_turn) * offset * abs(
+                Fraction(0.05) - Fraction(1, 20)
+            )
+            pose = tuple(map(Fraction, motion["events"][offset]["pose_m_rad"]))
+            delta = (Fraction(5) - pose[0], Fraction(2) - pose[1])
+            cosine, sine = trig_interval(pose[2], False), trig_interval(pose[2], True)
+            for axis, terms in enumerate(
+                (
+                    (scale(cosine, delta[0]), scale(sine, delta[1])),
+                    (scale(cosine, delta[1]), scale(sine, -delta[0])),
+                )
+            ):
+                oracle = (terms[0][0] + terms[1][0], terms[0][1] + terms[1][1])
+                lower, upper = event["body_goal_m"][axis]
+                assert lower <= oracle[0] <= oracle[1] <= upper
+    assert owner.audit(bundle) == before
+    assert motion == motion_before
+    if case == "stationary":
+        assert all(
+            event["position_m"] == ((Fraction(2), Fraction(2)),) * 2
+            for event in reference["clocks"]["nominal_us"]
+        )
+    if case in ("left", "right"):
+        mirrored = deepcopy(motion)
+        mirrored["turn_rate_rad_s"] = -turn
+        other = reference_for(mirrored)
+        for event, reflected in zip(
+            reference["clocks"]["nominal_us"],
+            other["clocks"]["nominal_us"],
+            strict=True,
+        ):
+            assert event["position_m"][0] == reflected["position_m"][0]
+            assert event["position_m"][1] == (
+                4 - reflected["position_m"][1][1],
+                4 - reflected["position_m"][1][0],
+            )
+    if case == "tiny":
+        last = reference["clocks"]["nominal_us"][-1]
+        assert last["position_m"][0][0] < Fraction(2) + exact_speed * Fraction(7, 20)
+        assert last["position_m"][1][0] > 2
+    if case == "clocks":
+        nominal = reference["clocks"]["nominal_us"][-1]
+        binary = reference["clocks"]["binary64_step"][-1]
+        assert nominal["elapsed_s"] != binary["elapsed_s"]
+        assert (
+            binary["position_m"][0][0] - nominal["position_m"][0][0]
+            == binary["clock_discrepancy_m"]
+            > 0
+        )
+    if case == "wrap":
+        assert (
+            motion["events"][0]["pose_m_rad"][2]
+            > 0
+            > motion["events"][1]["pose_m_rad"][2]
+        )
+        assert reference["clocks"]["nominal_us"][-1]["circular_heading_rad"][0][0] == 1
+        mirrored = deepcopy(motion)
+        mirrored["seed_pose_m_rad"][2] *= -1
+        mirrored["turn_rate_rad_s"] *= -1
+        assert (
+            reference_for(mirrored)["clocks"]["nominal_us"][-1]["circular_heading_rad"][
+                0
+            ][0]
+            == -1
+        )
+        lower, upper = reference["pi_rad"]
+        assert lower < Fraction(22, 7) and upper > Fraction(3)
+    if case == "held":
+        old_capture = previous["source"]["private_source"]["history"][-1]
+        new_capture = bundle["source"]["private_source"]["history"][-1]
+        assert old_capture["capture_id"] == new_capture["capture_id"]
+        old = reference_for(previous["motion"])["clocks"]["nominal_us"][-1]
+        new = reference["clocks"]["nominal_us"][-1]
+        assert old["position_m"] != new["position_m"]
+        assert old["body_goal_m"] != new["body_goal_m"]
+    if case in ("wrong_position", "wrong_yaw"):
+        event = reference["clocks"]["nominal_us"][-1]
+        pose = motion["events"][-1]["pose_m_rad"]
+        interval = (
+            event["position_m"][1]
+            if case == "wrong_position"
+            else event["unwrapped_heading_rad"]
+        )
+        assert (
+            not interval[0]
+            <= Fraction(pose[1 if case == "wrong_position" else 2])
+            <= interval[1]
+        )
+        assert before["ownership_status"] == "consistent_under_fixture_assumptions"
+        assert before["motion_status"] == "unresolved_motion_evidence"
+    if case == "wire":
+        assert before["source_audit"]["reason"] == "host_round_trip_changed"
+        assert "velocity_m_s" in before["source_audit"]["host_changed_fields"]
+    if case == "missing_primitive":
+        assert (
+            before["motion_status"]
+            == reference["motion_status"]
+            == "unresolved_motion_evidence"
+        )
+    if case == "overlap":
+        lower, upper = reference["clocks"]["nominal_us"][-1]["position_m"][0]
+        assert lower < upper
+        partial = ((lower + upper) / 2, (lower + upper) / 2)
+        containing = (lower - 1, upper + 1)
+        disjoint = (upper + 1, upper + 2)
+        assert max(lower, partial[0]) <= min(upper, partial[1])
+        assert not partial[0] <= lower <= upper <= partial[1]
+        assert containing[0] <= lower <= upper <= containing[1]
+        assert max(lower, disjoint[0]) > min(upper, disjoint[1])
+        assert reference["motion_status"] == "unresolved_motion_evidence"
+    if case == "limits":
+        for opt_in in (False, None, 1):
+            with pytest.raises(ValueError, match="synthetic_test_only"):
+                diagnostics._reference_synthetic_c1_motion(
+                    motion, synthetic_test_only=opt_in
+                )
+        for field, value in (
+            ("seed_tick", True),
+            ("speed_m_s", float("nan")),
+            ("turn_rate_rad_s", 2),
+            ("seed_pose_m_rad", [2, 2, 5]),
+            ("events", motion["events"] + [motion["events"][-1]]),
+            ("fixture_goal_m", [False, 2]),
+            ("tick_period_s", 0.1),
+        ):
+            invalid = deepcopy(motion)
+            invalid[field] = value
+            rejected = reference_for(invalid)
+            assert rejected["status"] == "unresolved_mathematical_reference"
+            assert rejected["clocks"] == {}
+        oversized = deepcopy(motion)
+        oversized["seed_pose_m_rad"][0] = 1 << 65536
+        assert reference_for(oversized)["reason"] == "rational_work_limit"
+    if case == "foreign":
+        other = diagnostics._SyntheticC1MotionOwner(
+            scene,
+            seed_tick=20,
+            pose_m_rad=[2, 2, heading],
+            speed=speed,
+            turn_rate=turn,
+            synthetic_test_only=True,
+        )
+        for tick in range(21, 28):
+            other.advance(tick)
+        foreign = other.snapshot()
+        assert (
+            reference_for(foreign["motion"])["status"]
+            == "enclosed_mathematical_reference"
+        )
+        assert owner.audit(foreign)["ownership_status"] == "inconsistent_source_record"
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "stationary",
         "straight",
         "left",
         "right",

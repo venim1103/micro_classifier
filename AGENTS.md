@@ -118,22 +118,21 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only independent curved/rotated
-  reference contract (DESIGN.md §7 / REVIEW.md §96). Proposed rational integral
-  and analytic tail keep nominal/binary clocks, circular heading and producer
-  error evidence separate. Missing NumPy/libm allowances remain unresolved;
-  overlap alone is not positive consistency. No source/test edit or fixture run,
-  contract adoption, runtime integration or numerical qualification occurred.
-  Prior `fe21517` retains its zero-heading straight checks and all curve/wire
-  limitations; private body/domain conditioning remains oracle-assisted.
-  All bounded approvals are exhausted. Next proposed, not approved: reference-
-  only private helper, 16 cases / four reused complete scenes / at most two
-  owners per case / eight ticks per owner / zero question queries; preserve all
-  prior source/test AST nodes and motion verdicts. No new geometry, dependency,
-  collection, input adoption or integration; primitive-error qualification is
-  separate, not implicitly approved.
+- Latest approved package complete: `1bb89fe` adds the private rational motion
+  reference (DESIGN.md §7 / REVIEW.md §97): 16 cases, four reused complete scenes,
+  17 owners, 136 ticks and zero question queries. Exact integral/tail, separate
+  nominal/binary clocks, circular heading and stored-pose goal bounds are
+  mathematical references only. Every old source/test AST node and checker
+  verdict stays unchanged; missing NumPy/libm error evidence remains unresolved.
+  Helper qualification flags stay false; source/wire and ownership remain
+  separate, with private body/domain conditioning still oracle-assisted.
+  All bounded approvals are exhausted. Next proposed, not approved: design-only
+  primitive-error evidence/operation-ledger plan, covering required independent
+  evidence, operand domains, repeated-error propagation and invalidation. No
+  allowance adoption, code, fixture run, dependency, collection, input adoption
+  or runtime integration follows from that proposal.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-96 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-97 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -144,7 +143,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 1,989 passes plus the known transformer xfail, 640 interface
+- Full offline gate: 2,005 passes plus the known transformer xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1189,16 +1188,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §96 complete
-the approved design-only curved/rotated reference contract. Rational integral/
-tail, distinct clocks and circular heading are proposed; implementation-error
-bounds remain separate and missing evidence stays unresolved. No source/test
-edit or fixture run; last code gate remains 1,989 passes plus known xfail, not
-newly rerun. Next proposed, not approved: private reference-only helper, four
-reused scenes / 16 cases / two owners per case / eight ticks per owner / zero
-queries; keep old AST nodes/checker verdicts unchanged. No dependency, collection,
-input adoption or integration. Task 6/9, physical/numerical/task-quality,
-teacher assets and ST/board remain blocked.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §97 complete
+the approved private rational reference in `1bb89fe`: 16 cases / four reused
+scenes / 17 owners / 136 ticks / zero queries; full gate 2,005 passes plus known
+xfail. Exact references do not qualify primitive errors, motion, source/wire or
+physical inputs; old AST nodes/checker verdicts stay unchanged. Next proposed,
+not approved: design-only primitive-error evidence/operation-ledger plan, no
+allowance adoption, code, fixtures, dependencies, collection or integration.
+Task 6/9, physical/numerical/task-quality, teacher assets and ST/board remain
+blocked.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
@@ -1316,9 +1314,14 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   source/code scopes remain exhausted, with no further fixture run implied.
   Reference plan (REVIEW.md §96): independent rational integral/tail, two clocks,
   circular heading and separate implementation-error evidence are proposed.
-  No implementation, fixture execution or qualification. Next reference-only
-  helper (four reused scenes / 16 cases / zero queries) is not approved; old
-  curve/source/wire verdicts and all broader gates stay unchanged.
+  No implementation, fixture execution or qualification occurred in that scope.
+  The separately approved bounded helper result follows; earlier scopes remain
+  exhausted, and old curve/source/wire verdicts and all broader gates stay unchanged.
+  Rational reference (REVIEW.md §97): `1bb89fe` adds 16 cases/four reused scenes,
+  17 owners/eight ticks each and zero queries. Rational trajectory/heading/goal
+  bounds remain mathematical only; old AST nodes and motion verdicts are intact.
+  All scopes exhausted; a design-only primitive-error evidence plan is proposed,
+  not approved, with no allowance, implementation, fixture or integration implied.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

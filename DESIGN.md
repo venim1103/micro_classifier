@@ -3316,6 +3316,54 @@ Alternative: first qualify primitive implementation bounds, which needs its own
 evidence/tool/domain scope; it is not authorized here. This design preparation
 is complete and exhausted, not permission to implement either alternative.
 
+#### Private Rational Motion Reference Complete (2026-10-22)
+
+The user separately approved the bounded reference-only package, completed in
+`1bb89fe` (REVIEW.md §97). `_reference_synthetic_c1_motion` is an additive
+private helper in the [diagnostic prototype][c1-prototype-source], with literal
+synthetic opt-in. Every pre-existing source/test AST node is unchanged. The
+owner, motion checker, recorder, source audit, question paths and normal
+simulator/wire/input defaults are not modified or integrated with this helper.
+
+The helper returns exact `Fraction` position intervals for both seed-relative
+clock lanes, exact unwrapped heading, independently enclosed circular branches,
+and body-goal intervals from the supplied stored pose and fixed world goal.
+It uses the 32-term rational integral/analytic tail and Machin pi construction
+above. No integrator, capture, converter, sinc or floating trigonometric result
+is used as its reference. Input/domain/event bounds and conservative preflight
+checks enforce the fixed eight-event/two-clock/32-term/65,536-bit work limits;
+unsupported records or arithmetic growth return an unresolved reference with
+no partial clock output. Those limits are host-tool controls, not measured
+memory/time guarantees or embedded resource qualification.
+
+`enclosed_mathematical_reference` means only that the declared mathematical
+quantity is enclosed. `motion_status` remains `unresolved_motion_evidence` for
+every helper result, and all qualification flags remain false. The helper does
+not authenticate ownership, State content or frame bytes. Foreign or deliberately
+faulty motion records can still define mathematical references; the unchanged
+owner/source audit and missing primitive-error evidence are separate. Injected
+wrong-position/yaw records lie outside the bare reference in the new controls,
+but are not thereby newly rejected as qualified producer comparisons. No guessed
+allowance, positive curved-motion admission or source/wire relaxation is added.
+
+Sixteen tests reuse four complete scenes. One final instrumented pass measures
+17 owners, 136 successful ticks, 102 captures, 18 snapshots, 33 owner audits and
+32 helper calls: 21 enclosed references, eight unresolved references and three
+expected opt-in exceptions. At most two owners occur in a case, with eight ticks
+per owner and zero question queries. Exact higher-order endpoint identities
+cross-check translation independently of the binomial integral; separate goal
+and reflection/clock/wrap controls preserve the reference/source distinction.
+Partial-overlap assertions exercise the proposed interval logic as rational
+identities, not a newly adopted comparison API or error policy. These bounded
+fixtures are not task data, physical evidence or numerical certification.
+
+The full source gate passes 2,005 tests plus the known transformer xfail (§97).
+The package is complete and exhausted. Next proposed, not approved: design-only
+primitive-error evidence/operation-ledger plan for the existing integrator and
+goal normalization, specifying required evidence, domains, accumulated-error
+propagation, invalidation and unresolved outcomes. No new primitive allowance,
+code, fixture run, dependency, collection or runtime integration is implied.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5327,7 +5375,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §96): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §97): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5394,9 +5442,13 @@ remain unresolved. No normal profile/runtime adoption or source qualification
 follows. The separately approved design-only curved/rotated reference contract
 is now prepared (§96): exact rational integral/tail, distinct clocks and circular
 heading conventions, separate implementation-error evidence and conservative
-three-way comparison. It is not adopted, implemented or tested. A bounded
-reference-only helper is proposed, not approved; existing curved verdicts and
-physical/numerical/task-quality and integration/data gates remain unchanged.
+three-way comparison. It is not adopted as a normal input or producer-error
+contract. The separately approved reference-only helper is complete in
+`1bb89fe` (§97), with 16 cases, four reused scenes and zero question queries.
+It encloses mathematical references only; old motion/source verdicts and all
+qualification flags remain unchanged. A design-only primitive-error evidence
+plan is proposed, not approved; physical/numerical/task-quality and integration/
+data gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

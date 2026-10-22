@@ -5909,6 +5909,99 @@ input/profile adoption, collection, model/data/training, dependency/download,
 runtime, ST/licence or board work is unlocked. No job or cleanup is pending;
 the agent does not push. The design-only scope is complete and exhausted.
 
+## 97. Bounded Rational Motion Reference Complete (2026-10-22)
+
+The user's continuation approved the preceding bounded private reference-only
+helper: 16 cases, at most four reused complete scenes, two owners per case and
+eight ticks per owner, zero question queries. Work began clean at `9f29392`;
+the actual implementation, nearby tests and §96 were read. Source checkpoint
+`1bb89fe` completes this package, superseding its implementation-blocked status
+in §96 only. It does not adopt a primitive-error policy or normal input contract.
+
+**Implementation:** `_reference_synthetic_c1_motion` returns exact rational
+translation intervals, unwrapped heading, circular heading branches and current
+body-goal intervals. It computes each of two seed-relative clock lanes from the
+declared seed/twist and elapsed event count, using the fixed 32-term integrated
+Taylor polynomial and analytic remainder. It never divides by yaw rate. Machin
+pi bounds use independent rational alternating sums, not floating trig/modulo.
+The current goal transform uses the same supplied stored pose/world goal, not
+an ideal or decoded substitution. Exact fractions are returned; no displayed
+floating endpoint can shrink the decision interval.
+
+Literal synthetic opt-in, strict scalar/shape/tick/profile checks, at most eight
+events and conservative rational-operation preflights bound the work. Numerator/
+denominator growth beyond 65,536 bits returns unresolved with no partial clock
+output. Bit caps are not measured memory or timing guarantees. Schema fields
+for State/frame are retained in the input, but this mathematical helper does not
+authenticate their content or ownership. Existing owner and source/wire audit
+remain responsible for their distinct checks, with no caller-anchor replacement.
+
+Every result keeps `motion_status=unresolved_motion_evidence` and all numerical/
+real-input/free-space/training flags false. An enclosed mathematical reference
+is not a supported error bound for NumPy/libm or a motion-consistency verdict.
+Freshly bound injected position/yaw faults are outside the bare reference in
+the controls, yet the unchanged curved checker remains unresolved. Foreign
+records can define mathematical references while the owner still rejects them.
+Original/decoded wire changes remain rejected by the existing source audit.
+Private body/domain conditioning remains oracle-assisted; no question/runtime
+or physical qualification follows.
+
+**Checks and scope:** one new 16-case parameterized test covers stationary and
+rotated straight motion, mirrored curves, tiny turn, both clocks, wrap directions,
+held capture, fresh position/yaw faults, goal, wire, missing primitive evidence,
+interval-overlap identities, input/work limits and foreign ownership. The
+integral is cross-checked against 48-term rational endpoint identities rather
+than the production midpoint/sinc formula. Goal intervals and exact reflection
+also have independent checks. Interval-overlap identities are controls, not a
+new comparison API or adopted allowance. Input immutability and unchanged audit
+results are asserted. Failing sentinels forbid question/coordinator/witness,
+episode/RoverEnv calls and production integration/capture/conversion/trig during
+reference evaluation. All pre-existing source/test AST nodes match `9f29392`.
+Language-server usages show the definition and two new test call sites only;
+editor diagnostics are clean. Four full Scenario values match old declarations,
+including their defaults, rather than just sharing scene names.
+
+The final instrumented matrix passes all 16 cases and measures **17 owners,
+136 ticks, 102 captures, 18 snapshots, 33 owner audits and 32 helper calls**.
+The 32 calls yield **21 enclosed mathematical references, eight unresolved
+references and three expected opt-in exceptions**. There are at most two
+owners per case and eight successful ticks per owner, below the 256-tick matrix
+cap; no extra scene or question query. Copies/mirrors/invalid records explain
+why helper calls exceed case count. These are per-pass transient unit fixtures,
+not independent task cohorts, collection, persisted reports or physical evidence.
+
+**Failure history:** the first stationary check failed with the expected missing
+helper AttributeError. The helper then passed that same check; the expanded
+16-case matrix passed immediately. Review strengthened the input-copy and
+partial-overlap assertions within the same cases/budgets, and the matrix passed
+again before formatting and final instrumentation. No tolerance, deadline,
+source/wire guard, risk budget or known xfail was changed to obtain success.
+
+Source checkpoint gate:
+`python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`.
+Actual result: **2,005 passed, one known transformer xfail, 71 existing warnings,
+no reported skips, 49.24 s**. Lint, scoped format, whitespace and editor checks
+pass. The unchanged successful source gate is not rerun for this docs handoff.
+Historical reports/artifacts, wire/catalogue/rules/defaults and all older
+functions/tests remain unchanged. No teacher/student experiment, labels/dataset/splits, training,
+dependency/download, hardware, licence, linked firmware or runtime integration.
+Commits remain local; no agent push, background job or cleanup is pending.
+
+Documentation-only validation checks 480 reference uses, 143 local targets,
+fences/math, sections 1-97, preserved review history and stable workflow rules,
+source/test bytes, bounded-case construction and recorded counts. Whitespace
+and editor diagnostics pass. The default gate's existing untrained export
+probes are synthetic verification, not a new teacher/student experiment.
+
+**Next boundary:** this bounded package is complete and exhausted. Recommended
+next scope, not approved, is a design-only primitive-error evidence/operation-
+ledger plan for the existing integrator and goal normalization: specify required
+independent evidence, operand domains, accumulated-error propagation, invalidation
+and unresolved outcomes. Preparing that plan would not adopt an allowance or
+authorize code, fixtures, dependencies, collection or integration. Physical/
+numerical/task-quality, Tasks 6/9, teacher assets and ST/board gates stay blocked;
+strict abstention, the synthetic envelope and Gaussian-risk decisions stay settled.
+
 ## Sources
 
 Hardware and tools:

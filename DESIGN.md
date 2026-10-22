@@ -3157,6 +3157,165 @@ persistence, normal input/profile adoption, collection or runtime integration.
 The completed owner/checker scope is exhausted and does not authorize that work
 or qualify numerical, physical, resource or representative task-quality gates.
 
+#### Independent Curved/Rotated Reference Contract Draft (2026-10-22)
+
+The user's continuation approved preparation of this **design-only** contract
+(REVIEW.md §96), not its adoption, implementation or execution. The owner,
+checker, tests and source/wire guards in `fe21517` remain unchanged. Recommended
+default: first construct a bounded, independent rational reference; do not turn
+an enclosed mathematical endpoint into positive evidence about NumPy/libm,
+physical motion, a question answer or runtime admission.
+
+**Reference quantity and clocks.** Interpret the finite stored seed coordinates,
+heading, speed and yaw rate as exact binary rational numbers. For event offset
+`n=k-k0`, with `0<=n<=7`, enclose the ideal constant-twist solution
+
+$$
+\Theta(s)=\theta_0+\omega s,\qquad
+p(s)=p_0+v\int_0^s
+  (\cos(\theta_0+\omega u),\sin(\theta_0+\omega u))\,du.
+$$
+
+Produce separately identified references for `s_us=n/20` and `s_64=n*d`, where
+`d` is the exact rational value of stored binary64 `0.05`. Neither is absolute
+`k*50000` time; the latter remains the host clock/epoch binding. Do not choose
+whichever reference fits the observed endpoint. The clock discrepancy has
+derived componentwise bounds `v*n*abs(d-1/20)` for translation and
+`abs(omega)*n*abs(d-1/20)` for unwrapped heading. These are arithmetic terms,
+not new sensor, risk or physical uncertainty budgets. Keep both reference
+records and account for this discrepancy explicitly in any later comparison.
+
+**Independent rational integral.** Proposed fixed order is `N=32`, not an
+outcome-tuned precision setting. For `f=sin` or `cos`, use
+
+$$
+T_f(z)=\sum_{j=0}^{N-1} a_{f,j}z^j,\qquad
+a_{f,j}=f^{(j)}(0)/j!,\qquad
+|f(z)-T_f(z)|\le |z|^N/N!.
+$$
+
+The derivative cycle at zero gives exact coefficients in `0,+1/j!,-1/j!`;
+the real derivatives have absolute value at most one, giving the Lagrange
+remainder above. Integrate each term exactly, without division by yaw rate:
+
+$$
+I_j(s)=\sum_{\ell=0}^j {j\choose\ell}
+ h^{j-\ell}\omega^\ell\frac{s^{\ell+1}}{\ell+1},\qquad
+Q_f(s)=v\sum_{j=0}^{N-1}a_{f,j}I_j(s).
+$$
+
+Here `h` denotes the exact stored seed heading `theta0`.
+
+For `A=max(abs(theta0),abs(theta0+omega*s))<=4`, each displacement component
+is enclosed by `Q_f(s) +/- v*s*A**N/N!`. The affine phase reaches its largest
+absolute value at an endpoint, so this bound covers the entire integration
+interval. The current seed/twist/seven-interval domain fits that phase limit;
+check it exactly rather than relying on a rounded estimate. Add exact seed
+coordinates to the enclosure; large common offsets must not remove allowances.
+Zero speed/time gives exact zero displacement. Zero or arbitrarily small yaw
+rate needs no special quotient, sinc approximation or cancellation workaround.
+
+All coefficients, integrals, tails and interval endpoints remain rational.
+Any optional binary64 presentation converts each endpoint outward and retains
+the exact interval as authority; it cannot shrink the interval used to decide.
+Proposed hard limits are eight events, two clock branches, 32 Taylor terms and
+65,536 bits for each rational numerator/denominator, including intermediates.
+Preflight operand sizes before allocation; unsupported growth, domain, shape,
+nonfinite input or exhausted work yields unresolved, not automatic refinement.
+These are proposed host-tool limits, not measured time/memory or MCU budgets.
+
+**Heading and wrap.** Preserve unwrapped `Theta(s)` as the mathematical
+quantity. A stored heading is compared on the circle, not by subtracting wrapped
+numbers across `+pi/-pi`. For a future circular comparison, independently enclose
+real pi using `pi=16*atan(1/5)-4*atan(1/239)` with alternating rational arctangent
+partial sums and their next-term bounds. The identity follows the tangent
+addition formula with the quadrant fixed by `3<pi<4`. Proposed 32 terms per
+arctangent are fixed; integer wrap branches must be justified with these bounds,
+not selected by a floating remainder. Retain both adjacent branches at a cut;
+if more branches or insufficient separation are needed, remain unresolved.
+The producer's binary64 `math.pi`, rounded modulo operations and normalization
+are not exact real-pi reduction. A matching wrapped value alone is not evidence
+that the implemented reduction or `atan2(sin(yaw),cos(yaw))` is bounded.
+
+**Implementation evidence is a separate prerequisite.** The current integrator
+forms a rounded step angle and midpoint, evaluates `np.sinc(angle/(2*math.pi))`
+and `math.cos`/`math.sin`, multiplies/adds coordinates, then wraps heading.
+The owner also normalizes yaw and rotates the fixed world goal. A rational
+ideal reference does not bound these library operations automatically. A future
+operation ledger must identify actual operand domains, binary64 rounding and
+underflow behavior, NumPy/libm implementation/version and independently supported
+absolute error bounds for sinc, trig and atan2, including normalization/modulo
+branches. Repeated pose/heading errors propagate from the seed through every
+step; a fresh exact reference at each step must not reset accumulated error.
+Documented supported primitive bounds, not guessed one-ulp assumptions or
+agreement with another call to the same library, must justify each allowance.
+Without them, report the mathematical enclosure separately and retain
+`unresolved_motion_evidence`; do not silently assume correct rounding.
+
+If a later independently justified allowance `E>=0` exists for a scalar target
+whose reference is `R=[L,U]`, use conservative three-way comparison of stored
+value `y`: consistent only if the **whole** reference satisfies
+`R subset [y-E,y+E]`; inconsistent only if those intervals are disjoint;
+otherwise unresolved. Mere overlap is not a positive check. Apply the rule to
+each position component and supported circular-heading branch, for every
+retained event. Report the binary-step-time and nominal-clock lanes separately;
+the nominal allowance must additionally include the derived clock discrepancy.
+No allowance or positive curved comparison is adopted by this draft. Existing
+zero-heading straight checks remain unchanged, not routed through the new draft.
+
+**Goal and source binding.** Independently enclose `R(-r)*(g-p_stored)` from
+the same stored event pose/heading `r` and private fixed world goal `g`, using
+rational sine/cosine bounds and exact subtraction/products. This is a separate
+goal-transform reference, not a goal inferred from a different ideal pose.
+Actual normalization/trig/operation allowances are still required to compare
+the original State. The old source audit must independently retain its exact
+original/decoded State and frame checks. No rounded goal, decoded substitution,
+new geometry or widened guard may erase `host_round_trip_changed`. Acquisition
+and held-reference lineage, retained owner anchor, body/domain assumptions and
+all false qualification flags stay unchanged; no reference can manufacture
+candidate-side evidence or override an unknown/conflict question.
+
+**Proposed acceptance checks, not executed:**
+
+| Control | Discriminating Requirement |
+| --- | --- |
+| Seed/stationary | Exact seed and zero displacement, no pre-seed motion. |
+| Rotated straight | Nonzero heading, zero turn; independent constant-direction integral identity. |
+| Left curve | Positive-turn reference encloses the integral with the stated analytic tail. |
+| Right curve | Exact reflection identity at zero seed heading, not a second producer comparison. |
+| Tiny nonzero turn | No division by yaw rate; preserve convergence to the straight limit. |
+| Two clocks | Seed-relative nominal and binary-step references stay distinct, with derived discrepancy. |
+| Wrap in either direction | Adjacent real-pi branches retained; no spurious full-turn error or nearest-fit branch. |
+| Held capture | Old acquisition event/bytes stay fixed while current reference and goal move. |
+| Freshly bound wrong position | Deliberate producer fault outside justified bounds rejects, not merely a digest mismatch. |
+| Freshly bound wrong yaw | Wrong sign/phase is distinguished when supported allowances separate it; otherwise unresolved. |
+| Goal transform | Same stored pose/world goal, independent rotation enclosure and separate normalization evidence. |
+| Wire difference | Original/decoded goal or twist changes still fail the unchanged source audit. |
+| Missing primitive evidence | Reference can be enclosed while motion stays unresolved; matching outputs do not pass. |
+| Interval boundary/overlap | Whole-reference containment, disjointness and ambiguous overlap take distinct verdicts. |
+| Domain/work/input limits | Oversized rationals, unsupported phase, malformed/nonfinite values and caps fail closed. |
+| Foreign/stale record | Retained anchors/epochs and acquisition identity cannot be replaced by caller signing. |
+
+A proof/operation ledger and independently checked coefficients/remainders are
+required; sampled quadrature residuals may diagnose but cannot replace a bound.
+Negative motion controls must reach the reference after genuine owner binding.
+Without supported producer allowances their required verdict is unresolved,
+not an invented inconsistent/consistent result. No checks in this table ran.
+
+**Next package proposed, not approved:** a private rational-reference helper and
+16 synthetic-only checks in the existing diagnostic/test files, at most four
+complete reused scenes, two owners per case and eight ticks per owner (256
+successful fixture ticks per matrix pass), zero question queries. Return exact
+translation/heading/goal references or an explicit unresolved reason; do not
+modify the existing owner/checker, recorder, verdicts or prior test functions.
+No positive curved-motion admission, operation-error policy, dependency, new
+geometry, episodes/log replay, persistence, normal input/profile change,
+collection or integration. Keep all prior AST nodes unchanged. Source checks
+and the normal offline gate would follow only a separate implementation approval.
+Alternative: first qualify primitive implementation bounds, which needs its own
+evidence/tool/domain scope; it is not authorized here. This design preparation
+is complete and exhausted, not permission to implement either alternative.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5168,7 +5327,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §95): the active
+Current critical-path checkpoint (2026-10-22, REVIEW.md §96): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5232,9 +5391,12 @@ zero-query private prototype was separately approved and is now complete in
 `fe21517` (§95). It owns bounded events and provides independent zero-heading
 straight reference bounds; curves/rotated headings and changed wire/goal values
 remain unresolved. No normal profile/runtime adoption or source qualification
-follows. A design-only curved/rotated reference-enclosure contract is proposed,
-not approved; earlier physical/numerical/task-quality and integration/data gates
-remain.
+follows. The separately approved design-only curved/rotated reference contract
+is now prepared (§96): exact rational integral/tail, distinct clocks and circular
+heading conventions, separate implementation-error evidence and conservative
+three-way comparison. It is not adopted, implemented or tested. A bounded
+reference-only helper is proposed, not approved; existing curved verdicts and
+physical/numerical/task-quality and integration/data gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

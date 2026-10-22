@@ -5826,6 +5826,89 @@ fixture run, dependency, new geometry, collection or integration is proposed.
 That preparation needs separate approval; unused tick/owner budget does not
 authorize another implementation or study run.
 
+## 96. Independent Curved/Rotated Reference Contract Prepared (2026-10-22)
+
+The user's continuation approved the preceding **design-only** enclosure-contract
+proposal. Preparation started from a clean worktree at `8bfa7ef`; actual source,
+tests, §95 and DESIGN.md §§1, 2, 7 and 12 were read. The reported intervening
+source/test edits leave no current worktree diff. No source/test changes, fixture
+runs, imports of simulation code, dependencies or implementation were authorized
+or performed by this preparation. Earlier package approvals stay exhausted.
+
+**Local hypothesis and check:** the `straight` condition in the private checker
+directly limits positive arithmetic evidence to zero turn and zero seed heading.
+The nearby integrator uses binary64 midpoint/sinc/trig, rounded updates and
+binary64-pi wrapping, while the owner separately normalizes yaw and rotates its
+goal. An independent exact integral alone therefore cannot justify a positive
+verdict about every stored curved/rotated result. A targeted source read checks
+that branch and actual operation sequence; documentation checks bind the draft
+to those facts, preserve prior source/test bytes and keep the missing-evidence
+outcome unresolved. No runtime experiment was needed or run.
+
+**Concrete proposed default in DESIGN.md §7:** independently enclose the ideal
+constant-twist integral from exact binary-rational seed/twist values, for each
+of at most eight events. Keep `n/20` and `n*float64(0.05)` as separate rational
+time branches; absolute host time is not elapsed model time. A fixed 32-term
+sine/cosine Taylor polynomial is integrated exactly by the binomial formula;
+the derivative bound gives componentwise tail `v*s*A**32/32!`, with checked
+phase limit `A<=4`. No division by yaw rate or sampled-error tolerance is needed.
+Zero time/speed, zero/tiny turn and nonzero seed heading have explicit meanings.
+Exact intervals remain authoritative; any displayed float endpoints round out.
+Proposed caps are two clock branches, eight events, 32 terms and 65,536-bit
+intermediate rational numerators/denominators, checked before allocation. These
+are unmeasured host-tool proposals, not runtime or board resource evidence.
+
+Unwrapped heading remains exact; a future circular comparison uses independent
+Machin-identity/alternating-arctangent pi bounds and both adjacent cut branches.
+The producer's floating pi/modulo/atan2 operations are not assumed exact. Future
+implementation allowances need an independent operation ledger for the actual
+NumPy/libm primitives, domains, rounding/underflow, repeated-step propagation
+and goal normalization. No one-ulp promise, correctly-rounded libm assumption,
+new tolerance or risk convention is adopted. Missing primitive evidence leaves
+motion unresolved even when the mathematical reference is enclosed.
+
+With a justified scalar allowance, proposed positive consistency requires the
+whole reference inside the stored value's allowed interval; disjointness rejects
+and mere overlap remains unresolved. Current zero-heading straight checks stay
+unchanged. Goal rotation is referenced from the same stored pose/world goal,
+not substituted ideal or decoded values. Ownership, mathematical reference,
+producer consistency and existing wire/source verdicts remain separate. Changed
+wire goals/twists and private oracle-assisted body/domain assumptions keep all
+prior limitations; numerical/physical/free-space/training flags stay false.
+
+The draft includes 16 **unexecuted** acceptance controls: stationary seed,
+rotated straight, mirrored curves, tiny turn, both clocks/wrap directions,
+held capture, freshly bound faulty position/yaw, independent goal, wire changes,
+missing primitive evidence, overlap classification, limits and foreign records.
+Freshly bound faults cannot be claimed rejected without bounds separating them.
+This is a contract/checklist, not a passed matrix, measured qualification or
+new task-quality evidence. The previous 1,989-pass/known-xfail code gate in §95
+is unchanged historical evidence, not rerun for these documentation edits.
+
+Documentation validation checked 479 reference uses, 143 local targets, balanced
+fences/math, section order 1-96, all prior review history, stable workflow rules
+and unchanged source/test bytes. Exact rational coefficient/tangent identities
+were checked without simulation imports or motion records; they are algebra
+checks, not execution or qualification of the proposed helper. The initial
+whitespace check found an accidental tab replacing the Taylor equation's theta
+command; the first repair retained it and failed the focused check again. The
+equation now uses `h` for the same seed heading to avoid that transcription
+issue, not a changed bound or failed motion fixture. Editor diagnostics reported
+no errors.
+
+**Next concrete package, not approved:** add only a private rational-reference
+helper and 16 checks in the existing files; reuse at most four complete scenes,
+two owners per case/eight ticks per owner (256 ticks per matrix pass), zero
+question queries. Preserve every pre-existing source/test AST node, including
+the current motion checker and its unresolved curves. It would return bounded
+mathematical references/unresolved reasons, not adopt a producer-error policy
+or positively admit curved motion. A separate primitive-bound qualification is
+the alternative and needs its own evidence/tool scope. Neither is authorized
+by preparing this contract. No new geometry, episode/log replay, persistence,
+input/profile adoption, collection, model/data/training, dependency/download,
+runtime, ST/licence or board work is unlocked. No job or cleanup is pending;
+the agent does not push. The design-only scope is complete and exhausted.
+
 ## Sources
 
 Hardware and tools:

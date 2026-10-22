@@ -118,22 +118,22 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: `fe21517` adds the private constant-twist
-  fixture owner/checker (DESIGN.md §7 / REVIEW.md §95): 16 cases, four reused
-  scenes, 17 owners, 136 successful ticks and zero question queries. All prior
-  source/test AST nodes are unchanged. Owner-derived events/State and retained
-  anchors are separate from independent zero-heading straight rational bounds.
-  Freshly bound nonphysical motion rejects; curves/nonzero headings stay
-  unresolved without an independent enclosure. Changed wire/goal values still
-  fail the unchanged source audit. No physical/numerical/task-quality or runtime
-  admission follows; private body/domain conditioning remains oracle-assisted.
-  All bounded approvals are exhausted. Next proposed, not approved: design-only
-  independent curved/rotated motion-enclosure contract, covering elapsed-time,
-  heading wrapping, truncation/roundoff and unresolved outcomes. No source/test
-  edit, fixture run, dependency, input adoption, collection or integration is
-  proposed by that preparation.
+- Latest approved package complete: design-only independent curved/rotated
+  reference contract (DESIGN.md §7 / REVIEW.md §96). Proposed rational integral
+  and analytic tail keep nominal/binary clocks, circular heading and producer
+  error evidence separate. Missing NumPy/libm allowances remain unresolved;
+  overlap alone is not positive consistency. No source/test edit or fixture run,
+  contract adoption, runtime integration or numerical qualification occurred.
+  Prior `fe21517` retains its zero-heading straight checks and all curve/wire
+  limitations; private body/domain conditioning remains oracle-assisted.
+  All bounded approvals are exhausted. Next proposed, not approved: reference-
+  only private helper, 16 cases / four reused complete scenes / at most two
+  owners per case / eight ticks per owner / zero question queries; preserve all
+  prior source/test AST nodes and motion verdicts. No new geometry, dependency,
+  collection, input adoption or integration; primitive-error qualification is
+  separate, not implicitly approved.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-95 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-96 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1189,15 +1189,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §95 complete
-the approved private motion owner/checker in `fe21517`: 16 cases / four reused
-scenes / 17 owners / 136 ticks / zero question queries; 1,989 passes plus known
-xfail. Zero-heading straight reference evidence is bounded; curved/rotated
-motion and changed wire/goal values remain unresolved. No runtime admission,
-physical evidence or task-quality claim follows. Next proposed, not approved:
-design-only independent curved/rotated reference-enclosure contract, no code,
-fixtures, dependencies, input adoption, collection or integration. Task 6/9,
-physical/numerical/task-quality, teacher assets and ST/board remain blocked.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §96 complete
+the approved design-only curved/rotated reference contract. Rational integral/
+tail, distinct clocks and circular heading are proposed; implementation-error
+bounds remain separate and missing evidence stays unresolved. No source/test
+edit or fixture run; last code gate remains 1,989 passes plus known xfail, not
+newly rerun. Next proposed, not approved: private reference-only helper, four
+reused scenes / 16 cases / two owners per case / eight ticks per owner / zero
+queries; keep old AST nodes/checker verdicts unchanged. No dependency, collection,
+input adoption or integration. Task 6/9, physical/numerical/task-quality,
+teacher assets and ST/board remain blocked.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
@@ -1311,8 +1312,13 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   scenes, 17 owners/eight ticks each and zero question queries. Rational straight
   evidence and source/wire verdicts remain distinct; unsupported curves/heading
   evidence stays unresolved. No runtime adoption, task data or physical claim.
-  All scopes are exhausted; a design-only independent curved/rotated reference
-  enclosure is proposed, not approved, with no code or fixture run implied.
+  The separately approved design-only reference contract is prepared below;
+  source/code scopes remain exhausted, with no further fixture run implied.
+  Reference plan (REVIEW.md §96): independent rational integral/tail, two clocks,
+  circular heading and separate implementation-error evidence are proposed.
+  No implementation, fixture execution or qualification. Next reference-only
+  helper (four reused scenes / 16 cases / zero queries) is not approved; old
+  curve/source/wire verdicts and all broader gates stay unchanged.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

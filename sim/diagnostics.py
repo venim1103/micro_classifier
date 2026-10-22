@@ -621,6 +621,7 @@ def probe_synthetic_c1_occupied_witness(
         "status": "unknown",
         "reason": "controlled_envelope_not_established",
         "fixture_blocked_witness": False,
+        "fixture_current_body_witness": False,
         "witness_indices": [],
         "assumed_controlled_envelope": controlled_envelope is True,
         "assumed_turn_rate_rad_s": turn_rate,
@@ -697,14 +698,15 @@ def probe_synthetic_c1_occupied_witness(
     )
     differences = points[occupied][:, None, :2] - centerline[None, :, :]
     distances = np.hypot(differences[..., 0], differences[..., 1])
-    supported = np.any(
-        distances + errors[occupied, None] + curve_error + guard < config.radius,
-        axis=1,
+    support_at_vertices = (
+        distances + errors[occupied, None] + curve_error + guard < config.radius
     )
+    supported = np.any(support_at_vertices, axis=1)
     result.update(
         reason="no_strict_inner_footprint_witness",
         centerline_error_allowance_m=curve_error,
         occupied_point_error_upper_m=float(errors[occupied].max()),
+        fixture_current_body_witness=bool(np.any(support_at_vertices[:, 0])),
         witness_indices=np.argwhere(occupied)[supported].tolist(),
     )
     if np.any(supported):
@@ -713,6 +715,206 @@ def probe_synthetic_c1_occupied_witness(
             reason="occupied_return_enclosure_inside_maneuver_body",
             fixture_blocked_witness=True,
         )
+    return result
+
+
+def probe_synthetic_c1_questions(
+    history,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    speed,
+    turn_rate,
+    fixture_goal_m,
+    current_body_clear=False,
+    controlled_envelope=False,
+    curved_segments=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Combine conditional C1 evidence into fixture-only candidate values."""
+    if synthetic_test_only is not True:
+        raise ValueError("C1 question feasibility requires synthetic_test_only=True")
+    config = _c1_config(config)
+    speed, turn_rate = map(float, _c1_array([speed, turn_rate], (2,)))
+    goal = _c1_array(fixture_goal_m, (2,)).astype(float)
+    reference = _c1_array(reference_pose_m_rad, (3,)).astype(float)
+    if not 0 <= speed <= config.max_speed or abs(turn_rate) > config.max_turn_rate:
+        raise ValueError("C1 question motion exceeds the simulated limits")
+    for value, lower, upper in (
+        (curved_segments, 1, 128),
+        (max_cells, 0, 65536),
+        (max_depth, 0, 12),
+        (radius_bands, 1, 16),
+    ):
+        if type(value) is not int or not lower <= value <= upper:
+            raise ValueError("C1 question work controls require bounded integers")
+    result = {
+        "schema": "micro-classifier/synthetic-c1-question-feasibility/1",
+        "allowed_use": "controlled_synthetic_qualification_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "status": "unknown",
+        "reason": "current_body_clear_not_established",
+        "candidate_values": {
+            "path_blocked": None,
+            "clear_sector": None,
+            "speed_tier": None,
+        },
+        "fixture_goal_m": goal.tolist(),
+        "queries": {},
+        "unique_motion_queries": 0,
+    }
+    inspection = inspect_synthetic_c1_history(
+        history,
+        reference_tick=reference_tick,
+        reference_pose_m_rad=reference,
+        config=config,
+        synthetic_test_only=True,
+    )
+    if inspection["status"] != "registered_fixture":
+        result["reason"] = inspection["reason"]
+        return result
+    if current_body_clear is not True:
+        return result
+    if controlled_envelope is not True:
+        result["reason"] = "controlled_envelope_not_established"
+        return result
+    cache = {}
+    motions = [
+        ("centre", speed, 0.0),
+        ("left", speed, config.max_turn_rate),
+        ("right", speed, -config.max_turn_rate),
+        *[
+            (f"tier_{tier}", max(speed, config.max_speed * tier / 3), 0.0)
+            for tier in (1, 2, 3)
+        ],
+    ]
+    for name, query_speed, braking_turn in motions:
+        key = query_speed, braking_turn
+        if key not in cache:
+            settings = {
+                "reference_tick": reference_tick,
+                "reference_pose_m_rad": reference,
+                "speed": query_speed,
+                "turn_rate": turn_rate,
+                "braking_turn_rate": braking_turn,
+                "curved_segments": curved_segments,
+                "controlled_envelope": True,
+                "config": config,
+                "synthetic_test_only": True,
+            }
+            exclusion = probe_synthetic_c1_enclosure(
+                history,
+                current_body_clear=True,
+                max_cells=max_cells,
+                max_depth=max_depth,
+                radius_bands=radius_bands,
+                **settings,
+            )
+            witness = probe_synthetic_c1_occupied_witness(history, **settings)
+            clear = exclusion["fixture_enclosure_excluded"] is True
+            blocked = witness["fixture_blocked_witness"] is True
+            contradictory = (clear and blocked) or witness[
+                "fixture_current_body_witness"
+            ]
+            cache[key] = {
+                "status": "contradiction"
+                if contradictory
+                else "clear"
+                if clear
+                else "blocked"
+                if blocked
+                else "unknown",
+                "speed_m_s": query_speed,
+                "braking_turn_rate_rad_s": braking_turn,
+                "exclusion": exclusion,
+                "witness": witness,
+            }
+        result["queries"][name] = deepcopy(cache[key])
+    result["unique_motion_queries"] = len(cache)
+    states = {name: row["status"] for name, row in result["queries"].items()}
+    if "contradiction" in states.values():
+        result.update(
+            status="inconsistent_fixture_evidence",
+            reason="contradictory_fixture_evidence",
+        )
+        return result
+    candidates = result["candidate_values"]
+    candidates["path_blocked"] = {"clear": "false", "blocked": "true"}.get(
+        states["centre"]
+    )
+    sector_names = ("centre", "left", "right")
+    if speed > 0 and all(states[name] != "unknown" for name in sector_names):
+        clear_names = [name for name in sector_names if states[name] == "clear"]
+        if not clear_names:
+            candidates["clear_sector"] = "none"
+        else:
+            yaw = math.atan2(math.sin(reference[2]), math.cos(reference[2]))
+            cosine, sine = math.cos(yaw), math.sin(yaw)
+            with np.errstate(over="ignore", invalid="ignore"):
+                relative_goal = (goal - reference[:2]) @ np.array(
+                    [[cosine, -sine], [sine, cosine]]
+                )
+            if np.all(np.isfinite(relative_goal)):
+                distances, errors = {}, {}
+                guard = (
+                    256
+                    * np.finfo(float).eps
+                    * max(1.0, *np.abs(goal), *np.abs(reference))
+                )
+                for name in clear_names:
+                    row = result["queries"][name]
+                    points, allowance = _c1_curved_centerline(
+                        speed,
+                        turn_rate,
+                        inspection["latest_age_ticks"] * config.dt,
+                        config,
+                        curved_segments,
+                        row["braking_turn_rate_rad_s"],
+                    )
+                    distances[name] = math.dist(points[-1], relative_goal)
+                    errors[name] = allowance + guard
+                if all(math.isfinite(value) for value in distances.values()):
+                    best = min(clear_names, key=distances.__getitem__)
+                    upper = distances[best] + errors[best]
+                    contenders = [
+                        name
+                        for name in clear_names
+                        if distances[name] - errors[name] <= upper
+                    ]
+                    if len(contenders) == 1:
+                        candidates["clear_sector"] = best
+                    elif (
+                        set(contenders) == {"left", "right"}
+                        and turn_rate == 0
+                        and relative_goal[1] == 0
+                    ):
+                        candidates["clear_sector"] = "left"
+    tier_names = ("tier_1", "tier_2", "tier_3")
+    if all(states[name] != "unknown" for name in tier_names):
+        candidates["speed_tier"] = str(
+            max(
+                (tier for tier in (1, 2, 3) if states[f"tier_{tier}"] == "clear"),
+                default=0,
+            )
+        )
+    count = sum(value is not None for value in candidates.values())
+    result.update(
+        status="resolved_under_fixture_assumptions"
+        if count == 3
+        else "partial_fixture_evidence"
+        if count
+        else "unknown",
+        reason="conditional_candidate_values_only"
+        if count
+        else "unresolved_fixture_evidence",
+    )
     return result
 
 

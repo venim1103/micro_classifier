@@ -866,6 +866,7 @@ def test_synthetic_c1_occupied_witness_supports_visible_blockage(
     )
     assert result["status"] == "blocked_under_fixture_assumptions", result
     assert result["fixture_blocked_witness"] is True
+    assert result["fixture_current_body_witness"] is False
     assert result["witness_indices"]
     assert result["occupied_point_error_upper_m"] > 0
     for field in (
@@ -968,6 +969,291 @@ def test_synthetic_c1_occupied_witness_rejects_unsupported_evidence(
         assert result["status"] == "unknown"
         assert result["reason"] == reason
         assert result["fixture_blocked_witness"] is False
+
+
+@pytest.mark.parametrize("blocked", [False, True])
+@pytest.mark.parametrize("goal", [(5, 2), (2, 5), (2, 0.5), (0.5, 2)])
+def test_synthetic_c1_question_feasibility_matches_resolved_fixture(blocked, goal):
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_questions
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(
+        start=(2, 2, 0), goal=goal, obstacles=((2.6, 2, 0.30),) if blocked else ()
+    )
+    record = capture_synthetic_c1_views(
+        scene, pose_m_rad=[1.91, 2, 0], capture_tick=20, synthetic_test_only=True
+    )
+    result = probe_synthetic_c1_questions(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.6,
+        turn_rate=0,
+        fixture_goal_m=scene.goal,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    expected = evaluate_synthetic(
+        scene, speed=0.6, tof_age_s=0.15, synthetic_test_only=True
+    )["answers"]
+    assert result["status"] == "resolved_under_fixture_assumptions", result
+    assert result["candidate_values"] == {
+        name: expected[name] for name in ("path_blocked", "clear_sector", "speed_tier")
+    }
+    assert len(result["queries"]) == 6
+    assert result["unique_motion_queries"] == 3
+    assert "mode" not in result["candidate_values"]
+    assert result["training_approved"] is False
+    result["queries"]["centre"]["witness"]["witness_indices"].append([7, 7, 7])
+    assert [7, 7, 7] not in result["queries"]["tier_3"]["witness"]["witness_indices"]
+
+
+def test_synthetic_c1_question_feasibility_keeps_momentum_capacity():
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_questions
+    from sim.navigation import evaluate_synthetic
+
+    scene = Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.7, 2, 0.30),))
+    record = capture_synthetic_c1_views(
+        scene, pose_m_rad=[1.97, 2, 0], capture_tick=20, synthetic_test_only=True
+    )
+    result = probe_synthetic_c1_questions(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.2,
+        turn_rate=0,
+        fixture_goal_m=scene.goal,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    reference = evaluate_synthetic(
+        scene, speed=0.2, tof_age_s=0.15, synthetic_test_only=True
+    )["answers"]
+    assert reference["speed_tier"] == "2"
+    assert result["candidate_values"] == {
+        name: reference[name] for name in ("path_blocked", "clear_sector", "speed_tier")
+    }
+    assert result["unique_motion_queries"] == 5
+    assert [
+        result["queries"][f"tier_{tier}"]["speed_m_s"] for tier in (1, 2, 3)
+    ] == pytest.approx([0.2, 0.4, 0.6])
+
+
+@pytest.mark.parametrize(
+    "case", ["rest", "zero_cells", "missing_domain", "missing_body", "stale"]
+)
+def test_synthetic_c1_question_feasibility_preserves_abstention(c1_history, case):
+    from sim.diagnostics import probe_synthetic_c1_questions
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "speed": 0.6,
+        "turn_rate": 0,
+        "fixture_goal_m": [5, 2],
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+    if case == "rest":
+        settings["speed"] = 0
+    elif case == "zero_cells":
+        settings["max_cells"] = 0
+    elif case == "missing_domain":
+        settings["controlled_envelope"] = False
+    elif case == "missing_body":
+        settings["current_body_clear"] = 1
+    else:
+        settings["reference_tick"] = 24
+    result = probe_synthetic_c1_questions(c1_history, **settings)
+    if case == "rest":
+        assert result["candidate_values"] == {
+            "path_blocked": "false",
+            "clear_sector": None,
+            "speed_tier": "3",
+        }
+    else:
+        assert all(value is None for value in result["candidate_values"].values())
+        assert result["status"] == "unknown"
+
+
+@pytest.mark.parametrize("unknown", ["sector", "tier"])
+def test_synthetic_c1_question_feasibility_does_not_rank_unknowns(
+    c1_history, monkeypatch, unknown
+):
+    from sim import diagnostics
+
+    def state(settings):
+        if unknown == "sector":
+            return "unknown" if settings["braking_turn_rate"] > 0 else "blocked"
+        if 0.3 < settings["speed"] < 0.5:
+            return "unknown"
+        return "blocked" if settings["speed"] > 0.5 else "clear"
+
+    monkeypatch.setattr(
+        diagnostics,
+        "probe_synthetic_c1_enclosure",
+        lambda history, **settings: {
+            "fixture_enclosure_excluded": state(settings) == "clear"
+        },
+    )
+    monkeypatch.setattr(
+        diagnostics,
+        "probe_synthetic_c1_occupied_witness",
+        lambda history, **settings: {
+            "fixture_blocked_witness": state(settings) == "blocked",
+            "fixture_current_body_witness": False,
+        },
+    )
+    result = diagnostics.probe_synthetic_c1_questions(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.2,
+        turn_rate=0,
+        fixture_goal_m=[5, 2],
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    if unknown == "sector":
+        assert result["candidate_values"] == {
+            "path_blocked": "true",
+            "clear_sector": None,
+            "speed_tier": "0",
+        }
+    else:
+        assert result["candidate_values"] == {
+            "path_blocked": "false",
+            "clear_sector": "centre",
+            "speed_tier": None,
+        }
+
+
+@pytest.mark.parametrize("current_body", [False, True])
+def test_synthetic_c1_question_feasibility_rejects_conflicts(
+    c1_history, monkeypatch, current_body
+):
+    from sim import diagnostics
+
+    monkeypatch.setattr(
+        diagnostics,
+        "probe_synthetic_c1_enclosure",
+        lambda *args, **kwargs: {"fixture_enclosure_excluded": not current_body},
+    )
+    monkeypatch.setattr(
+        diagnostics,
+        "probe_synthetic_c1_occupied_witness",
+        lambda *args, **kwargs: {
+            "fixture_blocked_witness": True,
+            "fixture_current_body_witness": current_body,
+        },
+    )
+    result = diagnostics.probe_synthetic_c1_questions(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        turn_rate=0,
+        fixture_goal_m=[5, 2],
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "inconsistent_fixture_evidence"
+    assert all(value is None for value in result["candidate_values"].values())
+
+
+def test_synthetic_c1_question_feasibility_keeps_near_tie_unknown(c1_history):
+    from sim.diagnostics import probe_synthetic_c1_questions
+    from sim.navigation import evaluate_synthetic
+
+    goal = (0.5, 2 + 1e-12)
+    scene = Scenario(start=(2, 2, 0), goal=goal)
+    assert (
+        evaluate_synthetic(scene, speed=0.6, tof_age_s=0.15, synthetic_test_only=True)[
+            "answers"
+        ]["clear_sector"]
+        is None
+    )
+    result = probe_synthetic_c1_questions(
+        c1_history,
+        reference_tick=23,
+        reference_pose_m_rad=scene.start,
+        speed=0.6,
+        turn_rate=0,
+        fixture_goal_m=goal,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert result["candidate_values"] == {
+        "path_blocked": "false",
+        "clear_sector": None,
+        "speed_tier": "3",
+    }
+
+
+def test_synthetic_c1_question_feasibility_detects_current_body_conflict():
+    from sim.diagnostics import capture_synthetic_c1_views, probe_synthetic_c1_questions
+
+    scene = Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),))
+    record = capture_synthetic_c1_views(
+        scene, pose_m_rad=[1.91, 2, 0], capture_tick=20, synthetic_test_only=True
+    )
+    result = probe_synthetic_c1_questions(
+        [record],
+        reference_tick=23,
+        reference_pose_m_rad=[2, 2, 0],
+        speed=0.6,
+        turn_rate=0,
+        fixture_goal_m=scene.goal,
+        current_body_clear=True,
+        controlled_envelope=True,
+        synthetic_test_only=True,
+    )
+    assert (
+        result["queries"]["centre"]["witness"]["fixture_current_body_witness"] is True
+    )
+    assert result["status"] == "inconsistent_fixture_evidence"
+    assert all(value is None for value in result["candidate_values"].values())
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("fixture_goal_m", [True, 2]),
+        ("fixture_goal_m", [np.inf, 2]),
+        ("fixture_goal_m", [2]),
+        ("curved_segments", True),
+        ("curved_segments", 0),
+        ("max_cells", 65537),
+        ("radius_bands", 0),
+        ("speed", True),
+        ("turn_rate", np.inf),
+        ("synthetic_test_only", False),
+    ],
+)
+def test_synthetic_c1_question_feasibility_rejects_malformed_controls(
+    c1_history, field, value
+):
+    from sim.diagnostics import probe_synthetic_c1_questions
+
+    settings = {
+        "reference_tick": 23,
+        "reference_pose_m_rad": [2, 2, 0],
+        "speed": 0.6,
+        "turn_rate": 0,
+        "fixture_goal_m": [5, 2],
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+        field: value,
+    }
+    with pytest.raises(ValueError):
+        probe_synthetic_c1_questions(c1_history, **settings)
 
 
 @pytest.mark.parametrize("side", [-1, 1])

@@ -6233,6 +6233,155 @@ remain blocked. No collection, input adoption or runtime admission follows.
 [primitive-integrator]: sim/rover.py
 [primitive-owner]: sim/diagnostics.py
 
+## 100. Primitive Primary-Source Review (2026-11-03)
+
+The user's continuation approved the preceding bounded review of official
+primary-source pages for P1-P7/G1-G3. Work began clean at `91dd455`; §99,
+DESIGN.md §§1, 2, 7 and 12, Current State and the local motion/goal consumers
+were checked. This scope permits existing-document updates and page retrieval,
+not source-package downloads/checkouts, dependencies, numerical/model/fixture
+execution, code changes, collection or integration. Earlier review history,
+source bytes, unresolved checker/wire verdicts and qualification flags stay
+unchanged; historical gates are not refreshed by this review.
+
+**Local hypothesis and discriminating check:** tagged source can explain the
+ordered C-double/NumPy wrapper operations, but it need not guarantee their
+uniform errors or match the installed distribution build. The initial
+[CPython v3.12.3 float source][primitive-cpython-float] and
+[NumPy v2.2.6 wrapper source][primitive-numpy-sinc] pages identify the relevant
+upstream versions. Operation-specific source and documented accuracy statements
+will discriminate semantics from guarantees. CPython upstream v3.12.3 is not
+the Ubuntu source package `3.12.3-1ubuntu0.17`; likewise an upstream NumPy tag
+is not a reconstructed wheel build. No arithmetic run is needed for this
+source/documentation check, and no unverified build equivalence is assumed.
+
+**Primary-source evidence and version boundaries:** the release-tagged
+[CPython math wrappers][primitive-cpython-math], NumPy
+[scalar arithmetic][primitive-numpy-scalar],
+[real elementwise loops][primitive-numpy-arithmetic] and
+[trigonometric dispatch][primitive-numpy-trig] were read alongside the
+float/sinc sources above. These are upstream implementation descriptions,
+not independently attested installed build sources. The maintained
+[Python 3.12 math manual][primitive-python-math-doc] currently identifies
+3.12.16, whereas the inspected interpreter reports 3.12.3. NumPy's
+[sinc manual][primitive-numpy-sinc-doc],
+[array conversion][primitive-numpy-asarray-doc] and
+[promotion manual][primitive-numpy-promotion-doc] identify the 2.2.0 manual;
+the separately read implementation tag is v2.2.6. Series documentation,
+release source and the installed patched binary/wheel are distinct evidence.
+No examples on those pages were executed.
+
+The [Ubuntu Python source-package page][primitive-ubuntu-python] confirms
+`3.12.3-1ubuntu0.17` for Noble, with published amd64 builds and the latest
+tarfile/HTML-parser security changes. The
+[Ubuntu glibc source-package page][primitive-ubuntu-glibc] confirms
+`2.39-0ubuntu8.4`, published amd64 builds and an assert-function security
+change. Both pages list original source archives and separate Debian patch
+archives; none was retrieved. Their latest changelog entries do not establish
+the cumulative patch set, relevant generated code, build flags or equivalence
+to the §99 executable/library hashes. NumPy's v2.2.6 sources likewise do not
+reconstruct the installed GCC-10.2.1 manylinux wheel. These correspondence gaps
+remain separate from mathematical error qualification.
+
+**Accuracy policy, not an allowance:** the
+[glibc 2.39 math-error manual][primitive-glibc-errors] says correctly rounded
+results are not its general libm goal, apart from specified operations such as
+sqrt/fma/rint and conversions. Its general goal is an exact-input result within
+a few ulps before rounding in the current direction, and it explicitly notes
+bugs that violate those goals. Its table reports errors exposed by existing
+tests, not exhaustive maxima, and covers round-to-nearest only. For x86_64
+double, sin/cos list 1; atan2/fmod list `-`, meaning no known error, not a proof
+of zero error. The page's 4-ulp x86_64 libmvec statement does not identify this
+producer's sine path. None of these numbers is adopted as a bound.
+
+Python's math manual describes mostly platform-C-library wrappers and
+exception handling; it supplies no blanket correctly rounded or one-ulp
+sin/cos/atan2 contract. Its special accuracy statements for `hypot` and
+IEEE `remainder` do not apply to this integrator's trig or `%` expressions.
+NumPy's normalized sinc definition, zero-limit statement and example output
+are not a uniform implementation-error guarantee. Source C operators alone
+do not prove rounding, subnormal behavior, absence of contraction or closure
+of the producer's propagated input domains.
+
+**Same ten rows:** each row retains the §98 operation order and the §99
+owner-derived types/consumers. This table records semantics actually found in
+the cited pages and the remaining qualification obligation. All ten rows are
+unresolved for uniform producer-error qualification; no extra primitive,
+implementation substitution or supported-input restriction is adopted.
+
+| Row | Primary-Source Finding | Remaining Obligation |
+| --- | --- | --- |
+| P1 | [CPython float source][primitive-cpython-float] extracts float storage into C doubles, multiplies and stores a Python float; owner twist and duration are Python floats. | Patched-build correspondence, actual FP rounding/subnormal/overflow behavior and independently justified multiplication error over the computed domain. |
+| P2 | The same float source implements separate division and addition using C-double operators, matching stored-heading `yaw+angle/2`. | Ordered division/addition errors including cancellation and inherited heading/angle errors; no source-level exact-rounding claim is adopted. |
+| P3 | Float operations evaluate `2*math.pi` then division; [math initialization][primitive-cpython-math] creates pi from `Py_MATH_PI`. §99 records the installed constant's bytes. | Stored-versus-real pi error and the two operation errors with argument-domain closure; do not cancel stored pi against a later wrapper constant without proof. |
+| P4 | [v2.2.6 sinc][primitive-numpy-sinc] converts with asanyarray, substitutes `1.0e-20` where x equals zero, multiplies by pi and returns sin(y)/y. The [double trig dispatch source][primitive-numpy-trig] disables SIMD double sin/cos and calls `npy_sin`/`npy_cos` in unary loops. | Conversion/where and dtype routing, zero substitution, multiply/sin/divide errors and installed loop/libm correspondence. No sinc value or exact-one result was measured; the adjacent float32 1.49-ulp source comment is not a double bound. |
+| P5 | Initial speed-duration multiplication uses CPython; [NumPy scalar arithmetic][primitive-numpy-scalar] has C-operator real floating helpers, Python-scalar conversions and generic/ufunc fallback paths. | Establish the sinc result's scalar/0-D routing and compiled path, then compose both products with sinc error; dtype documentation alone does not measure that path. |
+| P6 | [CPython math][primitive-cpython-math] converts inputs, calls scalar C sin/cos and handles exceptions. [NumPy real loops][primitive-numpy-arithmetic] separate reductions from elementwise arithmetic; the real SIMD branch requires length greater than twice its lane count, otherwise scalar C-operator fallback. A length-two real loop cannot enter that SIMD branch. | Attest the installed generated short-array loop and libm IFUNC, then justify trig/product/addition errors and local-to-global propagation. The source-level length condition is not an execution trace or a statement about complex loops. |
+| P7 | [float_rem][primitive-cpython-float] uses fmod, adds the divisor when the nonzero remainder has the wrong sign, and uses divisor-signed zero otherwise. The number slot maps `%` to this wrapper. | Native versioned fmod path and each surrounding addition/subtraction error, cut branches and circular error. `%` is not raw fmod or `math.remainder`; the separate divmod comment that fmod is typically exact is not a uniform theorem. |
+| G1 | [math_2/m_atan2][primitive-cpython-math] convert arguments and handle NaNs, infinities and signed-zero/axis cases before the ordinary platform atan2 call. sin/cos use math_1. This normalization is goal-only, not the next stored motion heading. | Input conversion, trig/norm separation and atan2/cut error evidence for the installed paths; no raw atan2 guarantee covers the entire wrapper automatically. |
+| G2 | [asarray documentation][primitive-numpy-asarray-doc] confirms inferred dtype. [Promotion documentation][primitive-numpy-promotion-doc] distinguishes NumPy precision from weak Python-scalar precision; [real loops][primitive-numpy-arithmetic] describe subtraction and [math wrappers][primitive-cpython-math] describe trig. | Identify each supported stored goal representation, conversion/promotion and subtraction precision, then qualify trig and magnitudes. The float64 pose cast and Scenario annotation do not force goal dtype. |
+| G3 | [NumPy scalar source][primitive-numpy-scalar] describes real products/sums and conversion to Python float through PyFloat_FromDouble; the owner orders its component operations before State conversion. | Establish the promoted component dtype, compiled rounding/contraction and any narrowing into C double, then enclose cancellation and goal lever-arm error. Original/decoded binary32 wire verdicts remain separate. |
+
+**Dispatch distinction:** the [tagged glibc entry source][primitive-glibc-sincos]
+installs x86_64 sin/cos IFUNC redirects. Its
+[selector][primitive-glibc-selector] chooses the FMA variant when FMA and AVX2
+are usable, then FMA4, AVX and SSE2 alternatives. This describes upstream
+selection logic, not the inspected process's resolved target. Combined with
+NumPy's disabled double SIMD trig source, it explains why a reported AVX2
+NumPy target does not establish use of vector trig or its advertised accuracy.
+The source-level short-array arithmetic fallback also sharpens §99's dispatch
+gap without retrospectively claiming its actual loops were observed. No live
+rounding-mode, FTZ/DAZ, resolved symbol or machine-code qualification occurred.
+
+**Outcome and next boundary:** the approved same-ten-row review is complete;
+source semantics are better identified, but independent uniform bounds,
+computed-domain closure, installed source/build correspondence and actual FP
+evidence remain missing. Old checker/motion/source/wire verdicts and all
+qualification/training flags are unchanged. No runtime admission, input
+adoption, collection, task labels or Task 6/9 completion follows.
+
+Next candidate, **not approved**: a documentation-only qualification protocol
+for these same ten rows, specifying the source/build proof, FP assumptions,
+independent per-operation reference/error argument and domain-closure checks
+needed before allowances can be proposed. Recommended default: prepare that
+protocol without acquiring packages, changing the environment, executing
+numerical/model/fixture studies, changing code or adopting a bound. Acceptance
+would be an explicit evidence/check matrix and stop conditions, not numerical
+qualification. Matching-source acquisition or a bounded numerical study would
+still require separate authorization. No background job, raw output artifact,
+cleanup or additional approved task remains.
+
+**Verification:** the initial scoped static check passed tagged-source anchors,
+separate build correspondence and preservation of earlier review/source bytes.
+The completed ledger check passed its ten-row order, 29 reference uses, explicit
+qualification boundaries, byte-identical prior review and unchanged tracked
+Python/C/header files relative to `91dd455`; `git diff --check` passed. The
+three-document handoff check passed 515 reference uses, 62 distinct
+reference-defined local targets, balanced fences/display math, review sections
+1-100, current checkpoints and preserved workflow/history. Editor diagnostics
+report no errors in all three documents. The first handoff patch was rejected
+for duplicate file headers; grouping its hunks under one header per file
+applied successfully and the preservation checks passed. No
+numerical primitive, producer, simulator fixture/episode or model was run;
+the default suite and native/fixture gates are not rerun. Web results were read
+in the session only, with no source archive or raw report persisted in the repo.
+
+[primitive-cpython-float]: https://github.com/python/cpython/blob/v3.12.3/Objects/floatobject.c
+[primitive-numpy-sinc]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/lib/_function_base_impl.py
+[primitive-cpython-math]: https://github.com/python/cpython/blob/v3.12.3/Modules/mathmodule.c
+[primitive-python-math-doc]: https://docs.python.org/3.12/library/math.html
+[primitive-numpy-sinc-doc]: https://numpy.org/doc/2.2/reference/generated/numpy.sinc.html
+[primitive-numpy-asarray-doc]: https://numpy.org/doc/2.2/reference/generated/numpy.asarray.html
+[primitive-numpy-promotion-doc]: https://numpy.org/doc/2.2/reference/arrays.promotion.html
+[primitive-numpy-scalar]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/_core/src/umath/scalarmath.c.src
+[primitive-numpy-arithmetic]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/_core/src/umath/loops_arithm_fp.dispatch.c.src
+[primitive-numpy-trig]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/_core/src/umath/loops_trigonometric.dispatch.cpp
+[primitive-glibc-errors]: https://sourceware.org/glibc/manual/2.39/html_node/Errors-in-Math-Functions.html
+[primitive-glibc-sincos]: https://github.com/bminor/glibc/blob/glibc-2.39/sysdeps/x86_64/fpu/multiarch/s_sin.c
+[primitive-glibc-selector]: https://github.com/bminor/glibc/blob/glibc-2.39/sysdeps/x86_64/fpu/multiarch/ifunc-avx-fma4.h
+[primitive-ubuntu-python]: https://launchpad.net/ubuntu/+source/python3.12/3.12.3-1ubuntu0.17
+[primitive-ubuntu-glibc]: https://launchpad.net/ubuntu/+source/glibc/2.39-0ubuntu8.4
+
 ## Sources
 
 Hardware and tools:

@@ -3520,6 +3520,22 @@ same-ten-row primary-source review is proposed, not approved (§99), with no
 checkout/package download, dependency, numerical execution or implementation.
 Runtime, collection, input adoption and physical/task-quality gates stay closed.
 
+**Separately approved primary-source review outcome (2026-11-03):** REVIEW.md
+§100 completes the same ten-row review of official release-source/documentation
+pages. CPython scalar operations and `%` sign correction, goal-only atan2
+branches, NumPy sinc zero substitution, scalar/promotion paths and short-array
+fallback conditions are now cited. Tagged NumPy double sin/cos dispatch calls
+scalar libm; an AVX2 target label does not establish vector trig. Glibc's accuracy
+goals and known-test maxima do not provide uniform producer-error bounds.
+Maintained manuals, upstream tags and installed Ubuntu/manylinux builds remain
+distinct; source/build correspondence, actual FP behavior and computed-domain
+closure are still unqualified. No allowance, code/test change or numerical run
+occurred, and old verdicts/flags remain unchanged. This review is exhausted.
+Next proposed, not approved: a documentation-only same-row qualification
+protocol specifying the missing build/FP/reference/domain evidence and stop
+conditions, without package acquisition, environment changes, numerical studies,
+implementation or bound adoption. Collection/runtime and broader gates stay closed.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5531,7 +5547,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §99): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §100): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5608,10 +5624,14 @@ rows, supported-domain/evidence identity requirements, accumulated-error and
 goal-only normalization rules. It adopts no allowance and qualifies no primitive.
 The separately approved ten-row read-only implementation identity/source audit
 is complete (§99): current project/wrapper/native identities and specific gaps,
-not uniform primitive-error guarantees or producer qualification. A same-row
-primary-source review is proposed, not approved; no numerical execution or
-source download follows. Physical/numerical/task-quality and integration/data
-gates remain.
+not uniform primitive-error guarantees or producer qualification. The separately
+approved same-row primary-source review is complete (§100), identifying scalar,
+wrapper/dispatch semantics and accuracy-policy limits without numerical runs
+or source-package acquisition. Matching-build/FP/domain and uniform-error
+qualification still remain. Next proposed, not approved: a documentation-only
+same-row qualification protocol; no acquisition, numerical execution, code or
+bound adoption follows. Physical/numerical/task-quality and integration/data
+gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

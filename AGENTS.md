@@ -118,22 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: ten-row read-only primitive implementation
-  identity/source audit (DESIGN.md §7 / REVIEW.md §99). Project/wrapper/native
-  paths, hashes/build metadata and precise gaps are recorded; installed sinc
-  substitutes a tiny nonzero argument at zero and goal dtype is inferred.
-  Reported dispatch does not attest actual loops/IFUNCs or live FP state.
-  Uniform error guarantees remain missing; no allowances, numerical/fixture run,
-  source/test change or qualification occurred. Old checker/wire verdicts and
-  flags stay unchanged; `1bb89fe` remains mathematical reference tooling only.
-  Historical gates do not qualify a restarted environment. All approved scopes
-  are exhausted. Next proposed, not approved: same-ten-row primary-source review
-  via official source/documentation pages, no checkout/package download,
-  dependency, numerical/model/fixture execution or implementation change.
-  Source/build correspondence and error qualification remain separate; no
-  collection, input adoption or runtime integration is implied.
+- Latest approved package complete: ten-row official primary-source review
+  (DESIGN.md §7 / REVIEW.md §100), following §99's installed identity audit.
+  Python modulo/atan2 branches, sinc zero substitution, NumPy scalar/promotion
+  paths and short-array fallback conditions are cited. Tagged double sin/cos
+  dispatch calls scalar libm; AVX2 labels do not establish vector trig.
+  Glibc accuracy goals/test maxima are not uniform producer-error guarantees.
+  Upstream/manual/installed-build correspondence, actual FP behavior and domain
+  closure remain unqualified. No allowances, numerical/fixture run, source/test
+  change or old verdict/flag change; `1bb89fe` remains mathematical reference only.
+  Historical gates do not qualify a restarted environment. All scopes exhausted.
+  Next proposed, not approved: documentation-only same-ten-row qualification
+  protocol with evidence/check matrix and stop conditions; no package acquisition,
+  environment/dependency change, numerical/model/fixture run, code or bound adoption.
+  Source/build proof and error qualification remain separate; no collection,
+  input adoption or runtime integration is implied.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-99 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-100 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1189,16 +1190,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §99 complete
-the approved ten-row read-only implementation identity/source audit. Current
-paths/build hashes, wrapper branches and unresolved source/dispatch/FP/error
-gaps are recorded, not qualified primitive allowances. No source/tests or
-numerical/fixture run; prior `1bb89fe` and the 2,005-pass/known-xfail source gate
-remain historical, not rerun. Next proposed, not approved: same-ten-row official
-primary-source review, no checkout/package download, dependency, numeric/model/
-fixture execution, implementation, collection or integration. Old verdicts and
-broader Task 6/9, physical/numerical/task-quality, teacher assets and ST/board
-gates remain unchanged.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §100 completes
+the approved ten-row official primary-source review. Scalar/wrapper/dispatch
+semantics and accuracy-policy limits are cited, not uniform primitive allowances
+or installed-build/FP/domain qualification. No source/test or numerical/fixture
+run; `1bb89fe` and the 2,005-pass/known-xfail gate remain historical, not rerun.
+Next proposed, not approved: documentation-only same-row qualification protocol
+with build/FP/reference/domain evidence and stop conditions; no acquisition,
+environment/dependency change, numeric/model/fixture execution, code, bound
+adoption, collection or integration. Old verdicts and broader Task 6/9,
+physical/numerical/task-quality, teacher assets and ST/board gates stay unchanged.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
@@ -1331,6 +1332,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   numerical execution, source/test changes or admission. Next same-row official
   primary-source review is proposed, not approved; no dependency, source-package
   download, collection or integration follows. Old verdicts stay unchanged.
+  Primary-source follow-up (REVIEW.md §100): the separately approved ten-row
+  official-page review is complete. Scalar/wrapper/dispatch semantics and public
+  accuracy-policy limits are cited; build/FP/domain and uniform errors remain
+  unqualified. No numerical/fixture execution, code or allowance/verdict change.
+  Next proposed, not approved: documentation-only same-row qualification protocol,
+  not acquisition, numerical studies, implementation, collection or integration.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

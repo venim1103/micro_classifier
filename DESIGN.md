@@ -3364,6 +3364,147 @@ goal normalization, specifying required evidence, domains, accumulated-error
 propagation, invalidation and unresolved outcomes. No new primitive allowance,
 code, fixture run, dependency, collection or runtime integration is implied.
 
+#### Primitive-Error Evidence Plan Draft (2026-11-03)
+
+The user's continuation approved this **design-only** preparation (REVIEW.md
+§98), not adoption of bounds, an implementation, a fixture run or qualification.
+The current [integrator][c1-motion-source] and private owner/reference/checker
+in the [diagnostic prototype][c1-prototype-source] remain unchanged. Recommended
+default: keep every unsupported primitive row unresolved. A rational enclosure
+of the ideal motion is independent mathematical evidence, not evidence that a
+particular installed NumPy/libm path obeys a numerical error guarantee.
+
+**Claim and evidence identity.** A future ledger must name the exact operation,
+real target, input domain, units, dtype/shape, rounding points, evidence source
+and result interval. Distinguish an assumed contract, an independently justified
+implementation bound and an observed residual; only the second can support an
+implemented error allowance. A sampled maximum is not a uniform bound and
+agreement with another call into the same library is not independent evidence.
+No error numbers, acceptance tolerance, risk budget or confidence level is
+selected here. Numerical consistency remains distinct from source ownership,
+wire equivalence, physical error and task-quality qualification.
+
+Evidence must bind project/source revisions, actual loaded Python and NumPy
+modules, native libraries and dispatched paths, platform/ABI, build options,
+dtype/shape and floating-point state. Version strings/file hashes alone do not
+prove which implementation ran or its error. Record any FMA/contraction,
+extended intermediates, vector dispatch, rounding mode and gradual-underflow/
+flush-to-zero behavior that affects the claim. An installed source inspection
+or formal/vendor bound must cover the actual wrapper and kernel/domain, not
+just a function with a similar name. These identities are requirements for a
+future authorized audit, not verified properties of the restarted environment.
+Do not modify floating-point mode, clocks, libraries or host settings to fit them.
+
+**Source-bound operation ledger, proposed:** `d` denotes the exact binary64
+value of `0.05`, `pi64` the exact binary64 constant and `r` a stored heading.
+`fl` below identifies a required verified rounding enclosure, not an assumed
+correctly-rounded machine operation. Preserve the source's evaluation order.
+
+| Row | Current Expression and Real Target | Required Evidence and Domain |
+| --- | --- | --- |
+| P1 | `a=fl(omega*d)`; exact target `omega*d`. | Owned finite twist/profile and scalar multiplication rounding; include subnormal/zero cases. |
+| P2 | `m=fl(r+fl(a/2))`; target `r+omega*d/2`. | Division/addition and propagated angle error; midpoint domain comes from the stored-heading and prior-error enclosure. |
+| P3 | `q=fl(a/fl(2*pi64))`; target `(omega*d)/(2*pi)`. | Constant error, multiplication/division, positive denominator enclosure and each input error; real pi comes from the independent rational reference. |
+| P4 | `s=np.sinc(q)`; target `sin(pi*q)/(pi*q)`, with value 1 at zero. | Actual normalized-sinc wrapper/kernel, dtype/shape and any zero/small-argument branch; treat as opaque until its complete bound or decomposition is supported. |
+| P5 | `D=fl(fl(v*d)*s)`; target `v*d*sinc((omega*d)/(2*pi))`. | Product rounding, propagated sinc/argument/constant error and finite-result checks; no unproved cancellation of the wrapper's pi with P3. |
+| P6 | `cos(m), sin(m)` and `p+ D*(cos(m),sin(m))`. | Scalar libm trig bounds plus actual NumPy coordinate multiplication/addition and array dtype/dispatch; retain coordinate magnitude and cancellation. |
+| P7 | `(r+a+pi64) % (2*pi64) - pi64`; target circular `r+omega*d`. | Each addition/subtraction, real-pi discrepancy, floating remainder semantics/branch and accumulated heading error; no bare wrapped subtraction. |
+| G1 | `h=atan2(sin(r),cos(r))`; target orientation equivalent to `r`. | Both trig bounds, atan2 kernel/quadrant/cut and norm bounded away from zero; ambiguous branches stay unresolved. |
+| G2 | `delta=g-p_stored`; `cos(h),sin(h)`. | Same owned world goal/stored pose, subtraction rounding and normalization/trig propagation; not a substituted ideal pose. |
+| G3 | `(delta_x*cos(h)+delta_y*sin(h), delta_y*cos(h)-delta_x*sin(h))`. | Every product/sum and any verified contraction, goal lever arm and cancellation; original State and decoded frame remain separate. |
+
+For supported scalar rounding, use exact-operation interval endpoints and a
+verified rounding enclosure, including signed zero and underflow. A relative
+normal-number bound alone is insufficient near zero. Overflow, unsupported
+mode, nonfinite intermediate or missing dtype/dispatch evidence yields
+unresolved. Propagate operand uncertainty before adding the operation's own
+error; keep constant, input, primitive and rounding contributions separately
+identified so none is omitted or counted twice.
+
+**Domain closure.** Begin with the existing private profile: exact stored
+`v` between zero and binary64 `0.6`, `abs(omega)<=1.5`, seed heading bounded by
+binary64 pi, at most seven advances and nonwrapping tick/epoch binding. These
+are fixture assumptions, not physical specifications. Derive operand ranges
+from each supplied record and prior supported error intervals; ideal midpoint
+or endpoint bounds alone do not establish domains for the computed program.
+For coordinates and goal differences retain the declared finite scene/pose
+scale and accumulated error, not a newly imposed world-size ceiling. Require
+closed domains for small sinc arguments, denominator separation, wrap cuts,
+atan2 quadrants and near-zero/cancellation cases. If an interval leaves a
+primitive's supported domain or needs unsupported branches, stop unresolved;
+do not clamp, select the branch nearest the observed answer or tune the domain
+after inspecting outcomes.
+
+**Repeated-error propagation.** Let `H_k` bound circular stored-heading error
+relative to the ideal binary-step-clock trajectory and `P_k` bound each world
+position component. Let `Lh_k` and `Lp_k` be independently justified local step
+errors, comparing the actual step against exact constant-twist motion started
+from that same stored pose, for the same exact owned twist and `d`. Then a
+candidate conservative recurrence is
+
+$$
+H_{k+1} \le H_k + Lh_k,\qquad
+P_{k+1} \le P_k + v d H_k + Lp_k.
+$$
+
+The heading flow is an isometry on the circle and each displacement component
+has heading sensitivity at most `v*d`, from the integral of unit-speed trig.
+The local terms must already include supported rounding, sinc/trig, constant
+and wrap error; separate additional terms would be needed for uncertain twist
+or time, which are not approved by this fixed-twist claim. Start at exact owned
+seed equality only when established by the source record; never restart at
+zero error on a later stored event or held receipt. At a wrap cut retain all
+supported circular branches; there is no Lipschitz claim for bare wrapped
+coordinates. A failed local row prevents a finite supported accumulated bound.
+
+Owner goal normalization G1 does **not** feed the next motion step: that step
+uses the event's stored pose heading. Keep G1-G3 as a separate current-event
+transform bound, not a repeated motion-state update. Its error is amplified by
+the world-goal-to-stored-position lever arm. The existing goal reference is
+relative to the same stored pose; adding `P_k` again would change that target.
+A separate claim relative to ideal world pose would need explicitly derived
+position/heading terms, and is not automatically adopted. For the nominal
+clock lane additionally retain the existing exact `n*abs(d-1/20)` translation/
+heading discrepancy; do not fit one clock or fold it silently into libm error.
+
+**Admission, invalidation and proof obligations.** A future evidence record
+needs a row-by-row proof/contract citation, domains, composed formulas, branch
+conditions, implementation identity and explicit unresolved reasons. Uniform
+primitive guarantees or an independently checked decomposition are candidate
+routes; a bounded independent high-precision run could diagnose only unless
+its reference uncertainty and domain coverage are justified. Installing such
+a reference library, downloading sources or running a numeric study needs
+separate approval. No dependency or new evidence run is requested by this plan.
+
+Invalidate dependent rows on changed code, wrappers/native builds/dispatch,
+dtype/shape, FP state, domain, epoch/model, goal/coordinate scale or missing
+provenance. Do not carry successful rows across a restart based on a version
+string, file hash or historical pass alone. Any later comparison still requires
+whole-reference containment for a positive result, disjointness for a supported
+inconsistency and unresolved for mere overlap. No comparison may weaken the old
+owner anchor, original/decoded State/frame checks or `host_round_trip_changed`.
+Keep all existing qualification flags false unless a separate qualification
+scope explicitly adopts and justifies a stronger claim.
+
+Proposed acceptance obligations, **not executed**, cover every ledger row and
+its domain, zero/tiny/normal/subnormal and nonfinite branches, cancellation and
+large common offsets, real-pi/wrap/atan2 cuts, seed-to-seven-step propagation,
+goal-only normalization, both clocks, missing or invalidated evidence, overlap
+classification and source/wire separation. Freshly bound producer faults must
+be discriminated by supported bounds, not just digest mismatch; absent bounds
+must preserve unresolved rather than inventing a rejection or pass.
+
+**Next proposed package, not approved:** a bounded read-only implementation
+identity/source audit of the current environment, mapping P1-P7/G1-G3 to actual
+Python/NumPy/native paths and available primary-source guarantees. At most ten
+ledger rows, no numerical/model/fixture execution, new dependency/download,
+persisted raw artifact or implementation change; report missing paths/guarantees
+explicitly in the existing documents. This could resolve identity questions,
+not prove primitive errors or adopt an allowance. Alternative: separately
+approve a specific supported reference/tool and numerical evidence scope after
+identity/domain review. No collection, runtime integration or physical/task-
+quality approval follows. This design-only preparation is complete and exhausted.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5375,7 +5516,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-10-22, REVIEW.md §97): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §98): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5446,9 +5587,12 @@ three-way comparison. It is not adopted as a normal input or producer-error
 contract. The separately approved reference-only helper is complete in
 `1bb89fe` (§97), with 16 cases, four reused scenes and zero question queries.
 It encloses mathematical references only; old motion/source verdicts and all
-qualification flags remain unchanged. A design-only primitive-error evidence
-plan is proposed, not approved; physical/numerical/task-quality and integration/
-data gates remain unchanged.
+qualification flags remain unchanged. The separately approved design-only
+primitive-error evidence plan is now prepared (§98), with ten proposed operation
+rows, supported-domain/evidence identity requirements, accumulated-error and
+goal-only normalization rules. It adopts no allowance and qualifies no primitive.
+A bounded read-only implementation identity/source audit is proposed, not
+approved; physical/numerical/task-quality and integration/data gates remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

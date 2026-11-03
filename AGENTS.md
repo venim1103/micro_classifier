@@ -113,26 +113,26 @@ python -m pytest -q && ruff check . && git diff --check
   optional) and a real bullet body. Do not push, create branches or rewrite
   history unless explicitly requested. Never revert another person's changes.
 
-## Current State (2026-10-22)
+## Current State (2026-11-03)
 
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: `1bb89fe` adds the private rational motion
-  reference (DESIGN.md §7 / REVIEW.md §97): 16 cases, four reused complete scenes,
-  17 owners, 136 ticks and zero question queries. Exact integral/tail, separate
-  nominal/binary clocks, circular heading and stored-pose goal bounds are
-  mathematical references only. Every old source/test AST node and checker
-  verdict stays unchanged; missing NumPy/libm error evidence remains unresolved.
-  Helper qualification flags stay false; source/wire and ownership remain
-  separate, with private body/domain conditioning still oracle-assisted.
-  All bounded approvals are exhausted. Next proposed, not approved: design-only
-  primitive-error evidence/operation-ledger plan, covering required independent
-  evidence, operand domains, repeated-error propagation and invalidation. No
-  allowance adoption, code, fixture run, dependency, collection, input adoption
-  or runtime integration follows from that proposal.
+- Latest approved package complete: design-only primitive-error evidence plan
+  (DESIGN.md §7 / REVIEW.md §98). Ten proposed rows cover actual integrator and
+  goal operations, independent bounds/identity, computed-domain closure, repeated
+  error propagation, goal-only normalization and invalidation. No allowance,
+  source/test change, fixture run or numerical qualification occurred. Prior
+  `1bb89fe` is mathematical reference tooling only; old checker/wire verdicts
+  and qualification flags stay unchanged, with private body/domain assumptions
+  still oracle-assisted. Historical gates do not attest a restarted environment.
+  All approved scopes are exhausted. Next proposed, not approved: bounded
+  read-only implementation identity/source audit of these ten rows, no numerical/
+  model/fixture execution, dependency/download, code or raw persisted artifact.
+  Identity alone cannot qualify primitive error; no collection, input adoption
+  or runtime integration is implied.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-97 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-98 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -143,7 +143,7 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Full offline gate: 2,005 passes plus the known transformer xfail, 640 interface
+- Last source gate (2026-10-22, not rerun): 2,005 passes plus known xfail, 640 interface
   checks; lint/changed-file format/editor diagnostics, native sanitizers and
   hard-float Arm compilation pass. No deployment or task-quality result follows.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1188,15 +1188,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §97 complete
-the approved private rational reference in `1bb89fe`: 16 cases / four reused
-scenes / 17 owners / 136 ticks / zero queries; full gate 2,005 passes plus known
-xfail. Exact references do not qualify primitive errors, motion, source/wire or
-physical inputs; old AST nodes/checker verdicts stay unchanged. Next proposed,
-not approved: design-only primitive-error evidence/operation-ledger plan, no
-allowance adoption, code, fixtures, dependencies, collection or integration.
-Task 6/9, physical/numerical/task-quality, teacher assets and ST/board remain
-blocked.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §98 complete
+the approved design-only primitive-error evidence plan: ten proposed operation
+rows, supported-domain/implementation evidence and accumulated-error rules;
+no allowances, source/test edits or fixtures. Prior `1bb89fe` and its 2,005-pass/
+known-xfail source gate remain historical, not newly rerun. Next proposed, not
+approved: bounded read-only identity/source audit of those ten rows, no numeric/
+model/fixture run, dependency/download, code, collection or integration. Old
+checker/wire verdicts and broader Task 6/9, physical/numerical/task-quality,
+teacher assets and ST/board gates remain unchanged.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
@@ -1320,8 +1320,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   Rational reference (REVIEW.md §97): `1bb89fe` adds 16 cases/four reused scenes,
   17 owners/eight ticks each and zero queries. Rational trajectory/heading/goal
   bounds remain mathematical only; old AST nodes and motion verdicts are intact.
-  All scopes exhausted; a design-only primitive-error evidence plan is proposed,
-  not approved, with no allowance, implementation, fixture or integration implied.
+  The separately approved design-only primitive-error plan is prepared below;
+  code/fixture scopes remain exhausted, with no allowance or integration implied.
+  Primitive plan (REVIEW.md §98): ten operation/evidence/domain rows and separate
+  motion/goal error propagation are proposed, not implemented or qualified.
+  Next read-only identity/source audit is not approved; no numerical execution,
+  dependency, collection or runtime admission follows. Old verdicts stay unchanged.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

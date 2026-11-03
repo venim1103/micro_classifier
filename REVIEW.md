@@ -6002,6 +6002,78 @@ authorize code, fixtures, dependencies, collection or integration. Physical/
 numerical/task-quality, Tasks 6/9, teacher assets and ST/board gates stay blocked;
 strict abstention, the synthetic envelope and Gaussian-risk decisions stay settled.
 
+## 98. Primitive-Error Evidence Plan Prepared (2026-11-03)
+
+The user's continuation approved the preceding **design-only** primitive-error
+evidence/operation-ledger proposal. Work began clean at `f4bc734`; Current State,
+§97, DESIGN.md §§1, 2, 7 and 12 and the actual integrator/owner were read.
+The environment has resumed on a later date, but no historical package approval
+or environment/error guarantee is presumed renewed. No source/test edit,
+fixture/numerical run, allowance adoption, dependency or integration is authorized
+by this preparation. The 2,005-pass/known-xfail gate in §97 remains historical
+evidence, not newly rerun or a verified restarted-environment qualification.
+
+**Local hypothesis and discriminating check:** the missing evidence belongs to
+the actual ordered scalar/NumPy/libm operations and their domains, not the
+rational ideal integral. In particular, `_record` normalizes yaw for its body
+goal while `advance` uses the event's stored pose heading. A nearby source read
+checks those two consumers; the proposed propagation must therefore keep goal
+normalization separate from repeated motion-state error. Static documentation
+checks bind the ledger to these expressions and preserve every source/test byte;
+no producer experiment or guessed floating residual is needed to prepare it.
+
+**Plan in DESIGN.md §7:** ten rows, P1-P7/G1-G3, enumerate angle, midpoint,
+sinc argument, normalized-sinc wrapper, distance, position/trig, wrapped heading,
+goal-only normalization, goal differences/trig and final goal products/sums.
+Each row must bind its real target, input/domain/units, dtype/shape, rounding
+points, actual implementation and independent error evidence. Installed sources,
+version strings or hashes alone are not loaded-path or uniform-error proof.
+Exact-order rounding, underflow/zero, overflow, constants, wrapper/kernel
+branches and dispatch need evidence; no one-ulp or correctly-rounded-libm
+promise, epsilon, confidence threshold or risk budget is adopted.
+
+Existing fixture seed/twist/tick bounds start domain propagation, but computed
+operand ranges must include prior supported errors. Missing evidence or failed
+closure remains unresolved, never clamped or retrospectively tuned. Position/
+circular-heading error recurrences start from a justified seed and accumulate
+local step errors over all advances, using the integral's `v*d` heading
+sensitivity. Goal-only atan2 normalization does not feed that recurrence; its
+current-event error uses the goal lever arm and same stored-pose reference.
+Nominal/binary clock discrepancy stays a separate exact term. This is a proposed
+symbolic composition, not an implemented allowance or error measurement.
+
+Invalidation covers code/native builds/dispatch, dtype/shape/FP state, domain,
+clock epoch/model, goal/coordinate scale and incomplete evidence identity. A
+restart cannot inherit qualification from a historical version/hash/pass.
+Proof obligations include every row's domains/branches, subnormal/zero and
+cancellation, wrap/quadrant ambiguity, seed-to-seven-step propagation, both
+clocks and unchanged source/wire guards. Freshly bound fault controls require
+supported separating bounds; without them they remain unresolved. None ran.
+Old helper/checker verdicts and numerical/physical/free-space/training flags are
+unchanged; private body/domain assumptions remain oracle-assisted.
+
+Documentation validation checked 482 reference uses, 143 local targets,
+balanced fences/math, sections 1-98, preserved earlier review history/stable
+workflow rules and unchanged source/test bytes. Static AST checks bind the
+ten ledger rows and motion/goal distinction to current source. `git diff --check`
+and editor diagnostics pass. The validator ran on `/opt/venv/bin/python` 3.12.3;
+this is not editor-interpreter, NumPy/native-path or FP-state qualification.
+No simulation import, numerical fixture, default suite, dependency/download
+or environment setting change was performed. There was no failed check to repair.
+
+**Next concrete candidate, not approved:** read-only current implementation
+identity/source audit, at most the ten ledger rows. Identify actual paths and
+available primary-source guarantees or precise missing evidence, recording only
+in existing documents; no numerical/model/fixture execution, new dependencies/
+downloads, raw persisted artifacts or source change. This is identity evidence,
+not primitive-error qualification, an adopted allowance or a new positive
+motion verdict. A reference/tool/numerical-study alternative needs its own
+explicit scope after identity/domain review. All prior bounded scopes and this
+design-only preparation are exhausted. No job or cleanup is pending; no agent
+push. Task 6/9, physical/numerical/task-quality, teacher assets and ST/board
+remain blocked; strict abstention, the synthetic envelope and Gaussian-risk
+choices remain settled. No collection, label/data/training or runtime admission.
+
 ## Sources
 
 Hardware and tools:

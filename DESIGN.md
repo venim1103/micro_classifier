@@ -3505,6 +3505,21 @@ approve a specific supported reference/tool and numerical evidence scope after
 identity/domain review. No collection, runtime integration or physical/task-
 quality approval follows. This design-only preparation is complete and exhausted.
 
+**Separately approved read-only audit outcome (2026-11-03):** REVIEW.md §99
+records all ten project/wrapper/native mappings, inspected file/build identities
+and explicit remaining gaps for the selected environment. This is identity
+evidence only: actual scalar/short-array loops, libm IFUNC implementations,
+live FP state, matching implementation/build sources and independent uniform
+error guarantees remain unqualified. In the installed wrapper P4 substitutes
+`1.0e-20` at zero before sin/divide, rather than assigning exactly one; any
+later supported decomposition must cover that branch. G2 infers the world-goal
+array dtype and needs conversion/promotion evidence, not a newly adopted dtype
+or coordinate ceiling. No primitive allowance, producer experiment, source/test
+change or numerical verdict occurred. The bounded audit is exhausted; a
+same-ten-row primary-source review is proposed, not approved (§99), with no
+checkout/package download, dependency, numerical execution or implementation.
+Runtime, collection, input adoption and physical/task-quality gates stay closed.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5516,7 +5531,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §98): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §99): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5591,8 +5606,12 @@ qualification flags remain unchanged. The separately approved design-only
 primitive-error evidence plan is now prepared (§98), with ten proposed operation
 rows, supported-domain/evidence identity requirements, accumulated-error and
 goal-only normalization rules. It adopts no allowance and qualifies no primitive.
-A bounded read-only implementation identity/source audit is proposed, not
-approved; physical/numerical/task-quality and integration/data gates remain.
+The separately approved ten-row read-only implementation identity/source audit
+is complete (§99): current project/wrapper/native identities and specific gaps,
+not uniform primitive-error guarantees or producer qualification. A same-row
+primary-source review is proposed, not approved; no numerical execution or
+source download follows. Physical/numerical/task-quality and integration/data
+gates remain.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

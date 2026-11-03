@@ -6074,6 +6074,165 @@ push. Task 6/9, physical/numerical/task-quality, teacher assets and ST/board
 remain blocked; strict abstention, the synthetic envelope and Gaussian-risk
 choices remain settled. No collection, label/data/training or runtime admission.
 
+## 99. Primitive Implementation Identity Audit (2026-11-03)
+
+The user's continuation approved the preceding bounded **read-only** identity/
+source audit of P1-P7/G1-G3, not a numerical study or error qualification.
+Work began clean at `84916d8`. Only existing documentation may change; no
+numerical/model/fixture execution, new dependency/download, raw persisted
+artifact, source/test change, collection or runtime integration is authorized.
+Earlier checkpoints and all unresolved motion/qualification verdicts remain
+unchanged. The 2026-10-22 source gate is historical and will not be rerun for
+this documentation-only audit.
+
+**Local hypothesis and cheap check:** the ten rows can be mapped to project
+expressions and installed wrapper/native identities without executing them,
+but those identities need not supply independent uniform error guarantees.
+Static source/AST checks discriminate the motion and goal consumers: `advance`
+passes the previous stored heading and Python-float twist to `integrate` with
+`0.05`; `_record` uses atan2 normalization only in the current goal transform.
+Pylance reports `/opt/venv/bin/python` as the selected interpreter. Actual
+module/native paths, dispatch and floating-point state are not established by
+that selection alone; the audit below records evidence and explicit gaps
+rather than running arithmetic or inferring bounds from a version string.
+
+**Observed identity, not qualification.** Metadata-only runs used the editor's
+selected `/opt/venv/bin/python`, resolving to `/usr/bin/python3.12`, Python
+3.12.3 built with GCC 13.3.0. The reported platform is x86_64 WSL2 Linux with
+glibc 2.39; `dpkg-query` declares Python source/package version
+`3.12.3-1ubuntu0.17` and libc6/glibc `2.39-0ubuntu8.4`. These are installed
+package declarations, not independently reconstructed build provenance.
+`math.__spec__.origin` is `built-in`, with `BuiltinImporter` and no `__file__`.
+The executable imports `sin`, `cos`, `atan2` at `GLIBC_2.2.5` and `fmod` at
+`GLIBC_2.38`. Its reported CFLAGS include `-O2`; configuration metadata and
+`float_info` radix 2/mantissa 53/maximum exponent 1024/rounds 1 do not verify
+current rounding mode, FTZ/DAZ, contraction or per-operation rounding.
+
+NumPy reports 2.2.6, matching installed distribution metadata, with a
+`cp312-cp312-manylinux_2_17_x86_64`/manylinux2014 wheel and Meson generator.
+Its build metadata reports GCC 10.2.1 and OpenBLAS 0.3.29; build-time Python/
+include paths are not current loaded paths. The loaded core is
+`/opt/venv/lib/python3.12/site-packages/numpy/_core/`
+`_multiarray_umath.cpython-312-x86_64-linux-gnu.so`. The inspector process maps
+that image and `/usr/lib/x86_64-linux-gnu/libm.so.6`/`libc.so.6`, as well as
+the wheel's OpenBLAS, gfortran and quadmath libraries. Mapping BLAS does not
+show that any of these ten scalar/elementwise rows uses BLAS.
+
+The core imports libm `sin`, `cos`, `atan2` and `fmod` at `GLIBC_2.2.5`;
+its RPATH names the wheel's `numpy.libs`. Libm exports `sin`/`cos` as IFUNCs.
+NumPy metadata reports SSE/SSE2/SSE3 baseline, enabled AVX2/FMA3 but no enabled
+AVX512, and current AVX2 targets for double sin/cos and double add/subtract/
+multiply/divide. Ufunc signatures include `d->d` and `dd->d`. These are
+reported dispatch/type capabilities, not a trace of the scalar/zero-dimensional/
+two-element loops used by the producer. In-loop fallbacks, resolved libm
+IFUNC implementations, conversion paths and live FP state remain unverified.
+
+SHA-256 identities read in this audit (native/installed paths are external
+environment evidence, not files added to the repository):
+
+| File | SHA-256 |
+| --- | --- |
+| `/usr/bin/python3.12` | `e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f` |
+| NumPy `__init__.py` under the above site-packages directory | `6ae17b070c0f70a8e3cad89a510a256942e5a1f37ea5feb120cec167ed2a6236` |
+| NumPy `lib/_function_base_impl.py` | `79e65a8b3169b022de8ac2dcc6b43e78ae11fbc7a7c3a60a3d5d637833f00b35` |
+| NumPy core `_multiarray_umath` image | `e6241082eaab01d0f68b2b661522ecb9d5d2160915104df8b112cc161dfa18b4` |
+| `/usr/lib/x86_64-linux-gnu/libm.so.6` | `c09178edd7fbc58aa8415f4bbe54dd76c5ff6c6398ba3e56e5a4743fd7e9adfc` |
+| `/usr/lib/x86_64-linux-gnu/libc.so.6` | `e7a914a33fd4f6d25057b8d48c7c5f3d55ab870ec4ee27693d6c5f3a532e6226` |
+| NumPy `_core/include/numpy/npy_math.h` | `69e485b3ad106d63f2d6020fc870cfad813189f9b999b0c07233ff98b93f3c5d` |
+| [sim/rover.py][primitive-integrator] | `3d185338976b9f08209162c361ab6e313dc44ac0ebde97d06f65324e3f244718` |
+| [sim/diagnostics.py][primitive-owner] | `d3fb40bc5df02685f86ca0b73f18c97ea69889c9bfcac951fa182201407a26ee` |
+
+ELF build IDs respectively for Python, libm, libc and NumPy core are
+`337d65cf00021797985cc9f77c0cc334a9fbeb38`,
+`d8f8ccaca13be50ab267d1c66c8c67325c71ab1c`,
+`42c84c92e6f98126b3e2230ebfdead22c235b667` and
+`71a69750c159b911d8bb858b8f46c9fe1dae801c`. Hashes/build IDs bind inspected
+bytes, not implementation correctness, source equivalence or future FP state.
+
+**Ten-row source mapping and remaining evidence:** the owner's twist is
+converted to Python floats and previous event poses are stored as lists of
+floats. Its current pose is explicitly cast to NumPy `float` before `_record`.
+The following dtype/shape routing is source-derived, not observed by running
+an owner, ufunc or producer fixture. Every error-qualification row stays
+unresolved; no uniform numerical guarantee was established by the inspected
+wrapper, header, docstring or metadata.
+
+| Row | Identified Path | Precise Remaining Gap |
+| --- | --- | --- |
+| P1 | [Integrator][primitive-integrator] Python-float `turn_rate*seconds`, supplied by the owner. | Matching CPython scalar implementation/build and live rounding/subnormal/overflow evidence; no multiplication allowance. |
+| P2 | Python-float `yaw+angle/2` from the stored heading. | Division/addition rounding and propagated-input domain closure, including cancellation. |
+| P3 | Python-float `angle/(2*math.pi)`; stored `math.pi` hex is `0x1.921fb54442d18p+1`. | Supported scalar rounding and real-pi/argument composition; constant identity is not an error bound. |
+| P4 | Unwrapped installed `np.sinc`, `numpy/lib/_function_base_impl.py` at line 3752, with globals bound to NumPy `pi`, `where` and `sin`. | Zero substitution, conversion/comparison/where, multiply, sin and divide guarantees plus scalar/0-D loop identity; details below. |
+| P5 | Python `speed*seconds`, then multiplication by NumPy's sinc result. | Exact scalar/0-D result and promotion path, NumPy scalar arithmetic rounding and accumulated sinc error, unobserved in this audit. |
+| P6 | Scalar `math.cos/sin`, then inferred float64 two-element NumPy array products/additions. | Actual short-array loops and libm IFUNC/source guarantees, magnitude/cancellation and local-to-global error propagation. |
+| P7 | Python-float ordered additions, `%` and subtraction; executable imports `fmod@GLIBC_2.38`. | Python modulo wrapper/sign correction and native remainder implementation; an imported fmod symbol alone does not describe `%` or its circular error. |
+| G1 | [Owner][primitive-owner] `math.atan2(math.sin(pose[2]), math.cos(pose[2]))`; input is a NumPy float scalar, goal-only output a math result. | Scalar conversion and actual libm implementations, norm separation, quadrant/cut and circular error guarantees. |
+| G2 | `np.asarray(scenario.goal)-pose[:2]`, followed by scalar math trig. | Goal array dtype is inferred, not forced to float64; numeric conversion/promotion and subtraction/trig domains require evidence for each supported goal representation. |
+| G3 | NumPy goal-component products/sums with scalar math results, followed by `float(...)` for State. | Scalar conversion/rounding and contraction evidence, goal lever arm and cancellation; original/decoded wire remains separately checked. |
+
+P4's inspected body is `x=np.asanyarray(x)`;
+`y=pi*where(x==0,1.0e-20,x)`; `return sin(y)/y`. Its global pi is a Python
+float with the same stored hex as `math.pi`. The real sinc definition assigns
+1 at zero, but this implementation substitutes a small nonzero argument and
+evaluates sin/divide: there is no explicit exact-one return. No value was
+measured and no cancellation of the two stored-pi operations is presumed.
+The existing ten-row ledger can keep P4 opaque or later decompose these
+operations inside that row; this audit does not add an eleventh primitive or
+adopt a new implementation. G2 likewise must retain array conversion as an
+obligation; a float annotation on Scenario does not coerce its stored goal.
+
+**Available primary-source evidence and limits:** project expressions, installed
+wrapper code, public ufunc type/dispatch metadata and the installed NumPy math
+header were read. That header declares `npy_sin`/`npy_cos`/`npy_atan2` as
+double functions needing fixups or blocklisting and aliases `npy_fmod` to
+`fmod`; it supplies no uniform error bound or proof of a compiled loop.
+The installed math docstring names C-standard functions, not correctly rounded
+trig or a one-ulp promise. Checked conventional paths
+`/usr/src/python3.12/Objects/floatobject.c`,
+`/usr/src/python3.12/Modules/mathmodule.c` and the wheel's
+`_core/src/umath/loops.c.src` are absent. A Python float header is present,
+but matching full implementation/build sources and a supported libm uniform
+error contract were not obtained. This is not an exhaustive filesystem search
+or a claim that no such evidence exists elsewhere. No web fetch, source
+checkout/package retrieval, install or environmental setting change occurred.
+
+**Failed probe preserved:** the first identity snippet assumed
+`math.__file__` and stopped with AttributeError. Reading the module spec
+instead, and handling an optional file, repaired that metadata probe; its
+rerun passed and identified built-in math. No producer/numerical call had
+occurred, and no test assertion or error tolerance was relaxed. Metadata-only
+imports disabled bytecode writing and did not import sim, teacher or torch.
+No audit raw report/output file was created in the repository.
+
+**Verification:** the first scoped static check passed the stored-heading/goal
+consumer distinction, unchanged source/test bytes and prior review history.
+The completed documentation check passed 486 reference uses, 68 distinct local
+target paths, balanced fences/math, review sections 1-99, all ten rows, all
+nine recorded file hashes and the installed zero-substitution wrapper AST.
+All tracked Python/C/header bytes and stable workflow/history sections match
+`84916d8`; `git diff --check` passes. These are content/identity checks, not
+numerical validation. The default suite, native compilation/sanitizers and
+historical fixture gates were not rerun. No numerical primitive, producer,
+question, simulator episode or model was executed by the audit.
+
+**Next bounded candidate, not approved:** primary-source review for the same
+ten rows, using the identified CPython/NumPy versions and Ubuntu package
+declarations to distinguish upstream tags from distribution patches. Proposed
+default: read official source/documentation pages only, with no checkout,
+source-package download, dependency, numerical/model/fixture execution or code
+change. Record exact source/build correspondence gaps and any stated guarantee
+and its domain; do not turn a source comment or sampled maximum into a bound.
+Acceptance is a cited row-by-row evidence/gap record, not qualification.
+Alternative: separately authorize matching local source-package acquisition
+and provenance review; that download is not authorized here. A numerical or
+independent-reference study needs its own later scope. This ten-row identity
+audit is complete and exhausted. All motion/source/wire verdicts and numerical/
+physical/free-space/training flags are unchanged; Task 6/9 and broader gates
+remain blocked. No collection, input adoption or runtime admission follows.
+
+[primitive-integrator]: sim/rover.py
+[primitive-owner]: sim/diagnostics.py
+
 ## Sources
 
 Hardware and tools:

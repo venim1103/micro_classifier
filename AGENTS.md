@@ -118,21 +118,22 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only primitive-error evidence plan
-  (DESIGN.md §7 / REVIEW.md §98). Ten proposed rows cover actual integrator and
-  goal operations, independent bounds/identity, computed-domain closure, repeated
-  error propagation, goal-only normalization and invalidation. No allowance,
-  source/test change, fixture run or numerical qualification occurred. Prior
-  `1bb89fe` is mathematical reference tooling only; old checker/wire verdicts
-  and qualification flags stay unchanged, with private body/domain assumptions
-  still oracle-assisted. Historical gates do not attest a restarted environment.
-  All approved scopes are exhausted. Next proposed, not approved: bounded
-  read-only implementation identity/source audit of these ten rows, no numerical/
-  model/fixture execution, dependency/download, code or raw persisted artifact.
-  Identity alone cannot qualify primitive error; no collection, input adoption
-  or runtime integration is implied.
+- Latest approved package complete: ten-row read-only primitive implementation
+  identity/source audit (DESIGN.md §7 / REVIEW.md §99). Project/wrapper/native
+  paths, hashes/build metadata and precise gaps are recorded; installed sinc
+  substitutes a tiny nonzero argument at zero and goal dtype is inferred.
+  Reported dispatch does not attest actual loops/IFUNCs or live FP state.
+  Uniform error guarantees remain missing; no allowances, numerical/fixture run,
+  source/test change or qualification occurred. Old checker/wire verdicts and
+  flags stay unchanged; `1bb89fe` remains mathematical reference tooling only.
+  Historical gates do not qualify a restarted environment. All approved scopes
+  are exhausted. Next proposed, not approved: same-ten-row primary-source review
+  via official source/documentation pages, no checkout/package download,
+  dependency, numerical/model/fixture execution or implementation change.
+  Source/build correspondence and error qualification remain separate; no
+  collection, input adoption or runtime integration is implied.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-98 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-99 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1188,15 +1189,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §98 complete
-the approved design-only primitive-error evidence plan: ten proposed operation
-rows, supported-domain/implementation evidence and accumulated-error rules;
-no allowances, source/test edits or fixtures. Prior `1bb89fe` and its 2,005-pass/
-known-xfail source gate remain historical, not newly rerun. Next proposed, not
-approved: bounded read-only identity/source audit of those ten rows, no numeric/
-model/fixture run, dependency/download, code, collection or integration. Old
-checker/wire verdicts and broader Task 6/9, physical/numerical/task-quality,
-teacher assets and ST/board gates remain unchanged.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §99 complete
+the approved ten-row read-only implementation identity/source audit. Current
+paths/build hashes, wrapper branches and unresolved source/dispatch/FP/error
+gaps are recorded, not qualified primitive allowances. No source/tests or
+numerical/fixture run; prior `1bb89fe` and the 2,005-pass/known-xfail source gate
+remain historical, not rerun. Next proposed, not approved: same-ten-row official
+primary-source review, no checkout/package download, dependency, numeric/model/
+fixture execution, implementation, collection or integration. Old verdicts and
+broader Task 6/9, physical/numerical/task-quality, teacher assets and ST/board
+gates remain unchanged.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
@@ -1324,8 +1326,11 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   code/fixture scopes remain exhausted, with no allowance or integration implied.
   Primitive plan (REVIEW.md §98): ten operation/evidence/domain rows and separate
   motion/goal error propagation are proposed, not implemented or qualified.
-  Next read-only identity/source audit is not approved; no numerical execution,
-  dependency, collection or runtime admission follows. Old verdicts stay unchanged.
+  The separately approved ten-row read-only identity/source audit is complete
+  (§99): actual image/wrapper identities and explicit gaps, no uniform bounds,
+  numerical execution, source/test changes or admission. Next same-row official
+  primary-source review is proposed, not approved; no dependency, source-package
+  download, collection or integration follows. Old verdicts stay unchanged.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

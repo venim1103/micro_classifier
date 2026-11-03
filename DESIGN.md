@@ -4844,6 +4844,73 @@ completed design-only scope.
 
 [controlled-candidate-audit-review]: REVIEW.md
 
+#### Private Independent Candidate Auditor (2026-11-03)
+
+The user separately approved the bounded auditor/tests proposed above;
+[review §113][controlled-candidate-auditor-review] records implementation,
+verification and limits. `_audit_synthetic_controlled_candidate` is an additive
+private opt-in checker, not a runtime consumer or adopted input schema. The old
+receipt audit, owners, arithmetic helpers, references, defaults, bounds and
+qualification flags remain unchanged. Isolation remains the default.
+
+An optional caller-retained anchor carries currentness, lane/model/epoch,
+source/calibration identities, reference tick and digest. The caller must obtain
+it at authorized issuance, not from a later untrusted copy, and invalidate it
+after advance/source change/ambiguous publication. Matching means correspondence
+to that declared current anchor, not independent source authority or a fresh
+live-source attestation. Missing currentness remains unresolved. Self-re-signing
+does not suppress semantic checks or turn a mismatched anchor into ownership.
+
+The checker preflights bounded builtin/array records, exact nested keys and
+typed State/trace data before hashing and semantic replay. Its private structural
+ceilings are ten nesting levels, at most 24 mapping entries, eleven non-array
+sequence elements, eight events/history entries, finite existing eight-view
+array shapes/dtypes, 64-character strings, existing maximum frame size and the
+4,096-bit integer/rational ceiling. These are supported-record preconditions,
+not global scene restrictions, new numerical allowances or allocator/time/live
+memory bounds. Word width and ratio sizes precede rational decoding/GCD work;
+unsupported evidence stops explicitly. Unexpected/allocation/interruption errors
+are not universally converted into success, abstention or rollback.
+
+Independent integer/Fraction relations check the four ordered trace rows,
+operand/exact/error ratios, finite claimed words, adjacent midpoints/tie parity,
+signed zero, truncated residue and sign correction. No producer arithmetic
+helper or owner audit is used as the oracle. Separate periods, period-reaching
+correction and both pi endpoints remain intact. Seed/event/previous stored
+words, fixed twist/constants and nominal versus binary elapsed clocks are
+linked without resetting at snapshot. Standard-library integer/Fraction and
+native/work trusted-base gaps remain; this is not accepted proof or all-domain
+qualification.
+
+Actual event State/frame bytes and last source State/frame are checked through
+the existing codecs. Binary32 changed fields are reported by tick, separately
+from exact frame correspondence. Exposed delivery/hold records link to eligible
+ledger captures and poses with two-tick latency; repeated capture IDs preserve
+typed capture bytes. Relative acquisition ticks/ranges/masks must be exact typed
+copies, including masked positive zero. No pending queue, native motion/goal/
+relative transform, source-scale calculation or ray geometry is replayed.
+
+Results separate ownership, schema, trace, event, codec, capture and copied-input
+statuses, checked counts, reasons and explicit unverified relations. Owned but
+incomplete issued history preserves checked trace/codec results and remains
+unresolved. All five qualification flags stay false. Native motion/goal/relative
+transforms, returns, pending completeness, source authority and W0/TB0 stay
+unqualified; no aggregate is a question answer, old verdict or Task 6/9 exit.
+
+The eight reused cases/four existing scenes use eight constructor positions,
+64 published events including seeds and 32 auditor attempts per complete
+invocation, within the approved sixteen/eight/32 caps. Tests forbid producer,
+owner, source-audit, transform and query paths inside the auditor, preserve
+receipt-only behavior and check nonmutation. These finite controls do not
+exhaust all malformed inputs or establish independent codec/native proof.
+No new primitive corpus, world/study episode, log/data adapter, runtime/wire
+adoption, dependency/acquisition, risk/proof/allowance promotion or hardware run.
+The bounded approval is exhausted. Next proposed, not approved: design-only
+gap/exit planning for remaining native position/goal and relative-transform
+evidence; no further implementation, extraction or fixture execution follows.
+
+[controlled-candidate-auditor-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6855,7 +6922,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §112): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §113): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6979,11 +7046,16 @@ not independent motion/source/wire evidence. Its separately approved design-only
 audit contract is prepared (§112): eight boundaries/eight future gates, four
 anchor/content cases, noncircular trace and bounded event/codec/history checks;
 native motion/relative transforms and source authority remain unresolved.
-No auditor or numerical/fixture run occurred. Next proposed, not approved:
-private auditor/tests, eight reused cases/four scenes, sixteen constructor
-attempt positions/eight events each, at most 32 auditor attempts per completed
-invocation; no query/reference/log adapter, native dynamics/geometry replay,
-data/runtime/wire adoption or promotion. All broader gates remain unchanged.
+No auditor or numerical/fixture run occurred in that design-only scope. The
+separately approved private auditor/tests are complete (§113): eight reused
+cases/four scenes, eight constructors/64 published events and 32 auditor attempts
+per complete invocation. Independent declared trace/event/codec/capture/copy
+relations are checked without producer arithmetic or native replay; source
+authority/native motion/goal/relative transforms remain unresolved. All old
+module ASTs/defaults/flags/verdicts stay unchanged. Next proposed, not approved:
+design-only gap/exit planning for those remaining native arithmetic relations;
+no extraction, fixture run, adapter, integration or promotion follows. All
+broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

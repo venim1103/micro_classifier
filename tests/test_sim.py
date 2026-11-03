@@ -1807,6 +1807,332 @@ def test_synthetic_c1_controlled_owner_staged_fixture(
     print(f"controlled {case}: {counts}; published_events={published}")
 
 
+@pytest.mark.parametrize(
+    "case,scene_index,literal_index,speed",
+    [
+        ("straight", 0, 0, 0.5),
+        ("left", 0, 6, 0.5),
+        ("right", 1, 7, 0.5),
+        ("wrap", 2, 8, 0.5),
+        ("wire", 3, 0, 0.6),
+        ("signed_zero", 0, 1, 0.0),
+        ("late_failure", 1, 6, 0.5),
+        ("ingress", 0, 0, 0.5),
+    ],
+)
+def test_synthetic_controlled_candidate_independent_audit(
+    monkeypatch, case, scene_index, literal_index, speed
+):
+    from dataclasses import asdict
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    counts = {
+        name: 0
+        for name in (
+            "constructors",
+            "advances",
+            "records",
+            "captures",
+            "traces",
+            "receipt_audits",
+            "auditor_attempts",
+        )
+    }
+
+    def counted(original, name):
+        def call(*args, **kwargs):
+            counts[name] += 1
+            return original(*args, **kwargs)
+
+        return call
+
+    for owner_class, method, name in (
+        (diagnostics._SyntheticC1ControlledMotionOwner, "__init__", "constructors"),
+        (diagnostics._SyntheticC1ControlledMotionOwner, "advance", "advances"),
+        (diagnostics._SyntheticC1ControlledMotionOwner, "audit", "receipt_audits"),
+        (diagnostics._SyntheticC1SourceRecorder, "record_tick", "records"),
+    ):
+        monkeypatch.setattr(
+            owner_class, method, counted(getattr(owner_class, method), name)
+        )
+    for name, counter in (
+        ("capture_synthetic_c1_views", "captures"),
+        ("_trace_synthetic_binary64_rows", "traces"),
+        ("_audit_synthetic_controlled_candidate", "auditor_attempts"),
+    ):
+        monkeypatch.setattr(
+            diagnostics, name, counted(getattr(diagnostics, name), counter)
+        )
+    scenes = (
+        Scenario(start=(2, 2, 0), goal=(5, 2)),
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.6, 2, 0.30),)),
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),)),
+        Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),)),
+    )
+    heading, turn, literal_words = _ARITHMETIC_TRACE_LITERALS[literal_index]
+    owner = diagnostics._SyntheticC1ControlledMotionOwner(
+        scenes[scene_index],
+        seed_tick=20,
+        position_m=(2.0, 2.0),
+        heading_word=heading,
+        speed=speed,
+        turn_word=turn,
+        synthetic_test_only=True,
+    )
+    for tick in range(21, 28):
+        owner.advance(tick)
+    bundle = owner.snapshot()
+    assert (
+        bundle["candidate"]["events"][1]["trace"]["intermediate_words"] == literal_words
+    )
+    assert owner.audit(bundle)["ownership_status"] == "candidate_binding_matches"
+
+    def retained_anchor(receipt):
+        candidate = receipt["candidate"]
+        return {
+            "current": True,
+            **{
+                name: candidate[name]
+                for name in ("lane", "model", "clock_epoch", "source_files")
+            },
+            "calibration_identity": receipt["source"]["private_source"][
+                "calibration_identity"
+            ],
+            "reference_tick": 27,
+            "binding_sha256": receipt["binding_sha256"],
+        }
+
+    anchor = retained_anchor(bundle)
+    initial_anchor = deepcopy(anchor)
+    initial_digest = owner._digest(bundle)
+    initial_root = owner._root
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("independent auditor called a producer, transform or query")
+
+    def audit(value, **settings):
+        before = dict(counts)
+        with monkeypatch.context() as guard:
+            for name in (
+                "_synthetic_binary64_value",
+                "_synthetic_rn64",
+                "_synthetic_binary64_operation",
+                "_trace_synthetic_binary64_rows",
+                "capture_synthetic_c1_views",
+                "prepare_synthetic_c1_relative_input",
+                "_reference_synthetic_c1_motion",
+                "_check_synthetic_c1_motion",
+                "_audit_synthetic_c1_source_binding",
+                "probe_synthetic_c1_questions",
+                "probe_synthetic_c1_relative_questions",
+                "probe_synthetic_c1_enclosure",
+                "probe_synthetic_c1_occupied_witness",
+                "RoverEnv",
+                "write_episode",
+            ):
+                guard.setattr(diagnostics, name, forbidden)
+            for owner_class in (
+                diagnostics._SyntheticC1ControlledMotionOwner,
+                diagnostics._SyntheticC1MotionOwner,
+                diagnostics._SyntheticC1SourceRecorder,
+            ):
+                for method in ("__init__", "snapshot", "audit"):
+                    guard.setattr(owner_class, method, forbidden)
+            guard.setattr(
+                diagnostics._SyntheticC1ControlledMotionOwner, "advance", forbidden
+            )
+            guard.setattr(
+                diagnostics._SyntheticC1SourceRecorder, "record_tick", forbidden
+            )
+            result = diagnostics._audit_synthetic_controlled_candidate(
+                value, **{"synthetic_test_only": True, **settings}
+            )
+        assert counts == {**before, "auditor_attempts": before["auditor_attempts"] + 1}
+        return result
+
+    def resign(value):
+        source = value["source"]
+        source["binding_sha256"] = diagnostics._c1_source_binding_digest(
+            {
+                "relative_input": source["relative_input"],
+                "fixture_state": asdict(source["fixture_state"]),
+                "host_frame": source["private_source"]["host_frame"],
+                "private_source": source["private_source"],
+            }
+        )
+        value["binding_sha256"] = owner._digest(value)
+
+    first = audit(bundle)
+    assert first["reason"] == "bounded_declared_relations_only"
+    assert first["ownership_status"] == "unresolved_anchor"
+    assert first["event_status"] == "consistent_checked_relations", first
+    owned = audit(bundle, expected_anchor=anchor)
+    assert owned["ownership_status"] == "anchor_matches"
+    assert owned["content_status"] == "consistent_checked_relations", owned["reason"]
+    assert owned["events_checked"] == owned["frames_checked"] == 8
+    assert owned["captures_checked"] == owned["copied_records_checked"] == 6
+    assert owned["trace_cells_checked"] >= 70
+    clocks = owned["elapsed_clocks"]
+    assert clocks[0]["nominal_ratio"] == clocks[0]["binary_ratio"] == (0, 1)
+    assert Fraction(*clocks[-1]["nominal_ratio"]) == Fraction(7, 20)
+    assert Fraction(*clocks[-1]["binary_ratio"]) == 7 * _literal_binary64_fraction(
+        0x3FA999999999999A
+    )
+    assert clocks[-1]["nominal_ratio"] != clocks[-1]["binary_ratio"]
+    if speed:
+        assert owned["host_changed_fields"]
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    ):
+        assert owned[flag] is False
+    assert {
+        "native_motion",
+        "native_goal",
+        "relative_transforms",
+        "source_authority",
+        "pending_captures",
+        "native_work_trusted_base",
+    } <= set(owned["unverified_relations"])
+    changed = deepcopy(bundle)
+    event = changed["candidate"]["events"][1]
+    if case == "straight":
+        event["previous_pose_words"] = (0, 0, 0)
+        reason = "previous_pose_mismatch"
+    elif case == "left":
+        cell = event["trace"]["rows"][0]["cells"][0]
+        ratio = Fraction(*cell["exact_ratio"]) + 1
+        cell["exact_ratio"] = ratio.numerator, ratio.denominator
+        reason = "exact_ratio_mismatch"
+    elif case == "right":
+        event["trace"]["rows"][3]["cells"][3]["truncated_quotient"] += 1
+        reason = "truncated_quotient_mismatch"
+    elif case == "wrap":
+        rows = event["trace"]["rows"]
+        event["trace"]["rows"] = (rows[1], rows[0], *rows[2:])
+        reason = "trace_row_order_mismatch"
+    elif case == "wire":
+        event["host_frame"] = event["host_frame"][:-1] + bytes(
+            [event["host_frame"][-1] ^ 1]
+        )
+        reason = "state_frame_mismatch"
+    elif case == "signed_zero":
+        event["pose_words"] = (
+            *event["pose_words"][:2],
+            event["pose_words"][2] ^ (1 << 63),
+        )
+        reason = "pose_word_mismatch"
+    elif case == "late_failure":
+        history = changed["source"]["private_source"]["history"]
+        history[1]["capture"] = deepcopy(history[1]["capture"])
+        held = history[1]["capture"]
+        index = tuple(np.argwhere(held["tof_valid"])[0])
+        held["tof_m"][index] *= np.float32(0.9)
+        reason = "held_capture_changed"
+    else:
+        changed["candidate"]["events"][0]["fixture_state"]["sequence"] = True
+        changed["candidate"]["arithmetic_kind"] = np.float32(0)
+        reason = "state_integer_type_mismatch"
+    resign(changed)
+    changed_digest = owner._digest(changed)
+    broken = audit(changed, expected_anchor=anchor)
+    assert broken["content_status"] == "inconsistent_record", broken["reason"]
+    assert broken["reason"] == reason
+    if case != "ingress":
+        assert broken["ownership_status"] == "anchor_mismatch"
+    assert owner._digest(bundle) == initial_digest and anchor == initial_anchor
+    assert owner._digest(changed) == changed_digest and owner._root is initial_root
+
+    extra = deepcopy(bundle)
+    if case == "straight":
+        original_snapshot = diagnostics._SyntheticC1SourceRecorder.snapshot
+
+        def incomplete(recorder):
+            source = original_snapshot(recorder)
+            source["private_source"]["history"] = []
+            source["relative_input"]["history"] = []
+            source["binding_sha256"] = diagnostics._c1_source_binding_digest(
+                {
+                    "relative_input": source["relative_input"],
+                    "fixture_state": asdict(source["fixture_state"]),
+                    "host_frame": source["private_source"]["host_frame"],
+                    "private_source": source["private_source"],
+                }
+            )
+            return source
+
+        with monkeypatch.context() as issuance:
+            issuance.setattr(
+                diagnostics._SyntheticC1SourceRecorder, "snapshot", incomplete
+            )
+            issued = owner.snapshot()
+        last = audit(issued, expected_anchor=retained_anchor(issued))
+        assert last["ownership_status"] == "anchor_matches"
+        assert (
+            last["trace_status"]
+            == last["codec_status"]
+            == "consistent_checked_relations"
+        )
+        assert last["content_status"] == "unresolved_evidence"
+        assert last["reason"] == "unsupported_incomplete_delivered_history"
+    elif case == "left":
+        extra["candidate"]["events"][1]["trace"]["rows"][0]["cells"][0]["word"] += 1
+        resign(extra)
+        last = audit(extra, expected_anchor=anchor)
+        assert last["reason"] == "rounded_neighbor_mismatch"
+    elif case == "right":
+        entry = extra["source"]["private_source"]["history"][0]["capture"]
+        entry["capture_ticks"] = entry["capture_ticks"].astype(np.int64)
+        resign(extra)
+        last = audit(extra)
+        assert last["reason"] == "unsupported_array_dtype"
+    elif case == "wrap":
+        extra["candidate"]["events"][1]["trace"] = None
+        resign(extra)
+        last = audit(extra)
+        assert last["reason"] == "unsupported_missing_trace"
+        assert last["event_status"] == "consistent_checked_relations"
+    elif case == "wire":
+        extra["candidate"]["events"][1]["trace"]["rows"][0]["cells"][0][
+            "exact_ratio"
+        ] = (1 << 4096, 1)
+        with monkeypatch.context() as preflight:
+            preflight.setattr(diagnostics, "_c1_source_binding_digest", forbidden)
+            last = audit(extra)
+        assert last["reason"] == "unsupported_ratio_size"
+        assert last["content_status"] == "unresolved_evidence"
+    elif case == "signed_zero":
+        last = audit(bundle, expected_anchor={**anchor, "current": False})
+        assert last["ownership_status"] == "unresolved_anchor"
+        assert last["content_status"] == "consistent_checked_relations"
+    elif case == "late_failure":
+        record = extra["source"]["relative_input"]["history"][0]
+        index = tuple(np.argwhere(record["tof_valid"])[0])
+        record["tof_m"][index] *= np.float32(0.9)
+        resign(extra)
+        last = audit(extra)
+        assert last["reason"] == "relative_payload_copy_mismatch"
+    else:
+        with pytest.raises(ValueError, match="synthetic_test_only=True"):
+            audit(bundle, synthetic_test_only=1)
+    assert counts == {
+        "constructors": 1,
+        "advances": 7,
+        "records": 8,
+        "captures": 6,
+        "traces": 7,
+        "receipt_audits": 1,
+        "auditor_attempts": 4,
+    }
+    assert len(owner._root["events"]) == 8
+    print(f"independent {case}: {counts}; published_events=8")
+
+
 def test_synthetic_c1_source_recorder_owns_capture():
     from interface.protocol import State
     from sim.diagnostics import _SyntheticC1SourceRecorder

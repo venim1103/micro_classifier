@@ -118,20 +118,20 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only independent candidate audit
-  contract (DESIGN.md §7 / REVIEW.md §112), eight boundaries/eight future gates,
-  four anchor/content cases and noncircular trace/event/codec/history checks.
-  Native motion/relative transforms/source authority remain unresolved; no
-  auditor, import or numerical/fixture run. Source/tests/defaults/old bounds/
-  flags/verdicts and `1bb89fe` unchanged. §111 candidate remains receipt-only,
-  private and unqualified; isolation stays default, all bounded scopes exhausted.
-  Next proposed, not approved: private auditor/tests, eight reused cases/four
-  scenes, sixteen constructor attempt positions/eight events each including seed,
-  at most 32 auditor attempts including failures per completed invocation; no
-  query/reference/log adapter, native replay, data/runtime/wire adoption,
-  dependency/acquisition/tuning/risk/proof/allowance promotion or hardware run.
+- Latest approved package complete: private independent candidate auditor/tests
+  (DESIGN.md §7 / REVIEW.md §113), eight reused cases/four scenes, eight constructors,
+  64 published events/eight each including seed and 32 auditor attempts per
+  complete invocation. Independent declared trace/event/codec/capture/copy checks
+  preserve every old module AST/API/default/bound/flag/verdict and `1bb89fe`.
+  Ownership and content stay distinct; native motion/goal/relative transforms,
+  pending completeness/source authority/native-work remain unresolved, all five
+  flags false. The old candidate audit remains receipt-only; isolation is default.
+  Next proposed, not approved: design-only gap/exit planning for those remaining
+  native arithmetic relations; no extraction, fixture run, implementation,
+  query/reference/log adapter, data/runtime/wire adoption or promotion.
+  All bounded scopes are exhausted; no dependency/acquisition or hardware run.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-112 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-113 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -142,9 +142,9 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-03): 2,117 passes plus known xfail, 71 existing
+- Last source-test gate (2026-11-03): 2,125 passes plus known xfail, 71 existing
   ONNX warnings; eight new cases, lint/changed-file format/editor diagnostics
-  and legacy AST preservation pass; failed checks preserved in §111. No
+  and legacy AST preservation pass; failed checks preserved in §113. No
   runtime/C source change or additional opt-in sanitizer/
   Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1189,15 +1189,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §112 prepares
-the approved design-only audit contract: eight boundaries/eight future gates,
-four anchor/content cases; no auditor or numerical/fixture run. Source/tests/
-flags/bounds/verdicts and `1bb89fe` unchanged; §111's 2,117 plus known xfail
-not rerun. Isolation stays default; candidate binding is not qualification.
-Next proposed, not approved: private auditor/tests, eight reused cases/four scenes,
-sixteen constructor attempt positions/eight events each including seed, at most
-32 auditor attempts per completed invocation; no query/reference/log adapter,
-native replay, data/runtime/wire adoption or promotion.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §113 completes
+the separately approved private independent auditor/tests: eight reused cases,
+four scenes, eight constructors/64 events and 32 auditor attempts per complete
+invocation. Root gate: 2,125 plus known xfail; old module ASTs/defaults/flags/
+bounds/verdicts and `1bb89fe` unchanged. Ownership/checked content/native
+qualification remain distinct; isolation stays default.
+Next proposed, not approved: design-only gap/exit planning for native position/
+goal and relative-transform evidence; no extraction, fixture run, implementation,
+query/reference/log adapter, data/runtime/wire adoption or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1394,6 +1394,14 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   not approved: bounded private auditor/tests, eight cases/four scenes/sixteen
   constructor positions/eight events each and at most 32 auditor attempts per
   completed invocation; no native replay/adapter/integration or promotion.
+  Independent auditor (REVIEW.md §113): separately approved private checker/tests
+  complete; eight reused cases/four scenes, eight constructors/64 published events,
+  32 auditor attempts per complete invocation and 2,125 plus known xfail pass.
+  Anchor/schema/trace/event/codec/capture/copy statuses stay separate; all prior
+  module ASTs and five false qualification flags are preserved. Native motion/
+  goal/relative transforms/source authority/native-work remain unresolved. Next
+  proposed, not approved: design-only native gap/exit planning; no further fixture,
+  extraction, implementation, adapter/integration or promotion is implied.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

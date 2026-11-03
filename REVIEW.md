@@ -7722,6 +7722,131 @@ cleanup or assistant push.
 
 [controlled-candidate-audit-design]: DESIGN.md
 
+## 113. Private Independent Candidate Auditor (2026-11-03)
+
+The user answered yes to §112's private auditor/tests package and requested
+autonomous continuation/local commits, not pushing. Implementation began from
+clean `d2e5381`; the prior proposed/not-approved status is superseded by this
+separate approval. Only the additive private checker in [diagnostics][controlled-auditor-source],
+one eight-case test in [the existing test module][controlled-auditor-tests] and
+the three existing design/review/handoff documents change. No runtime adoption,
+new dependency, acquisition, study episode, task data or hardware action.
+
+**Hypothesis and first check.** Independent record/trace relations can reject a
+re-signed inconsistent bundle while reporting its anchor mismatch separately.
+The first small receipt/event slice and a reused straight fixture discriminated
+that hypothesis. Initial preflight rejected the mapper's existing NumPy float64
+source-scale scalar; explicit dtype-preserving support repaired it and the same
+check passed. Trace and source checks were initially explicitly unresolved, not
+premature success. Independent trace checks then passed the same fixture.
+
+**Implemented boundary.** `_audit_synthetic_controlled_candidate` requires
+literal synthetic opt-in and preflights bounded exact schemas/types/words/ratios/
+arrays before digesting or replaying content. Separately implemented rational
+adjacent-word midpoint/tie checks validate every submitted ordered arithmetic
+cell, error ratio, raw truncated residue and correction. The checker never calls
+producer decoding/RN64/operation/trace helpers, owner methods, old source/motion
+audits, recapture, relative transforms, question/reference/coordinator/log paths.
+It reuses the typed digest and public State codecs only for correspondence;
+these and integer/Fraction operations are shared, unqualified trusted bases.
+No native FP rounding oracle, old-verdict borrowing or tolerance change.
+
+An optional externally retained current anchor is distinct from self-hashing;
+callers must invalidate it after advance/source change/ambiguous publication.
+Missing currentness stays unresolved, not fresh ownership. Separate result fields
+cover schema, trace, event, codec, capture and copied-input content, with checked
+counts/reasons and explicit unverified relations. Nonwrapping ticks, original
+seed, prior stored pose words, fixed twist/constants and binary versus nominal
+elapsed ratios remain distinct. Event State/frame bytes and last source State/
+frame match through the codecs; binary32 changes are reported by tick, not hidden.
+Delivered/held clocks and pose links use only the exposed ledger. Copied relative
+ticks/ranges/masks preserve dtype/shape/order and masked positive zero. Pending
+completeness, native position/goal/relative transforms, source scale/returns,
+source authority, numerical/work/native trusted base and task quality remain
+unqualified; all five flags are false. No all-domain proof or qualified wire.
+
+**Bounded evidence and activity.** One parametrized test adds eight reused
+motion cases/four existing complete scenes. Each complete invocation uses eight
+constructors, 56 advances, 64 recorder events (eight per owner including seed),
+48 captures, 56 producer traces, eight unchanged receipt-audit controls and
+exactly 32 new auditor attempts including the opt-in rejection. No auditor
+constructs/advances an owner or recaptures; guarded calls and counters enforce
+that separation. Seven cases retain normal issuance; the straight case also
+issues an intentionally incomplete receipt under a local source-snapshot fixture
+hook, without new events. Its separately retained anchor matches while checked
+trace/codec relations pass and capture completeness stays unresolved.
+
+Other controls cover unowned/checked and owned/checked data, re-signed previous-
+word/exact-ratio/quotient/row/frame/pose/held-record faults, a neighboring wrong
+rounded word, wrong array dtype, missing trace, oversized ratio rejected before
+hashing, stale anchor, changed copied range and boolean State/opt-in aliases.
+Valid/corrupt submissions, anchor and owner root remain unchanged. Literal first
+traces agree with the existing worksheets; no new primitive corpus or scene.
+Finite cases do not exhaust malformed records, rounding branches or native proof.
+
+Six initial one-case executions and eight expanded executions (including two
+default gates) reuse the same cases: cumulatively 70 constructor attempts, 560
+published events, 490 advances/producer traces, 420 captures, 267 auditor attempts
+and 64 receipt controls. Failed executions are included, not independent cohorts;
+pre-existing default-suite fixtures/native/export controls are separate.
+
+**Failure history.** After schema/codec/capture expansion, preflight rejected
+the recorder's builtin integer zero noise/dropout fields. An unchanged diagnostic
+rerun still failed; the schema was repaired to accept finite builtin numeric
+Config fields while preserving strict integer fields and rejecting booleans.
+The focused check passed. A Pylance debugger launch first lacked explicit mode,
+then reported missing `debugpy`; no debug session, install or extra fixture ran.
+Expanded tests initially passed seven cases; deepcopy retained shared held-capture
+aliases, so the intended single-record mutation changed both copies and reached
+the copy check instead. Detaching that one test record repaired the fixture;
+all eight then passed. Ruff found one new local import blank-line issue; its
+repair, focused rerun and changed-file formatting/lint passed. No assertion,
+tolerance, deadline, old bound/guard or known xfail was relaxed.
+
+Final diff inspection found the generic structural walk preceded exact schemas.
+Exact bounded nested schemas/types now run first, so an undeclared subtree cannot
+force that walk before rejection. The same ingress case checks this precedence
+with an unsupported NumPy scalar beside a boolean State alias. The next focused
+run passed six cases and failed two reason assertions: field-specific dtype and
+ratio-size guards now preceded the generic guards. Array rejection keeps explicit
+unsupported shape/dtype/storage reasons; the ratio assertion now requires the
+earlier `unsupported_ratio_size` and unresolved status at the identical ceiling.
+No input or bound was admitted to make tests pass. Focused eight-case and required
+root gates then passed. The first root gate (51.50 s) preceded this substantive
+repair; the second (48.13 s) verifies it, not unchanged reassurance.
+
+**Verification.** Final focused command:
+`python -m pytest -q tests/test_sim.py -k synthetic_controlled_candidate_independent_audit`
+passed eight cases (1,194 deselected). Required root gate
+`python -m pytest -q && ruff check . && git diff --check` passed: **2,125 passed,
+one known transformer xfailed, 71 existing ONNX warnings, 48.13 s**, no reported
+skips. Changed-file Ruff format check, editor diagnostics and exact preservation
+of every prior module AST node in both source/test files passed. Pylance selected
+`/opt/venv/bin/python`; its source diagnostics contained only private-unaccessed
+notices, no errors. No additional opt-in sanitizer/Arm/ST/board gate: C/runtime
+source is unchanged and historical opt-in results are not fresh board evidence.
+Documentation references/targets/history/whitespace and final staged scope are
+checked before commit; the successful source gate is not rerun for prose alone.
+The first documentation matcher expected literal `§113` in every document;
+this review uses a numbered section heading instead. The matcher was corrected
+to require that heading here and the cross-reference in DESIGN/AGENTS, without
+changing the evidence or requirement.
+
+**Exit and next permission.** Approved private auditor/tests are complete;
+the receipt audit and all old ASTs/APIs/defaults/bounds/flags/verdicts, `1bb89fe`,
+historical reports/logs and wire remain unchanged. New fixture source hashes
+naturally identify the additive checker version, not regenerated old artifacts.
+No retained job, raw artifact, cleanup or assistant push. Task 6/9, native/work/
+numerical/physical/task-quality, teacher assets and ST/board remain blocked.
+Next proposed, not approved: design-only gap/exit planning for remaining native
+position/goal and relative-transform evidence, with isolation retained and no
+source extraction, new fixture run, implementation, adapter, collection,
+integration, dependency/acquisition or risk/proof/allowance promotion. The
+bounded implementation approval is exhausted; no next slice is implied.
+
+[controlled-auditor-source]: sim/diagnostics.py
+[controlled-auditor-tests]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

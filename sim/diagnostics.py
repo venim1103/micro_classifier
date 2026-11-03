@@ -1398,6 +1398,1109 @@ def _reference_synthetic_c1_motion(motion, *, synthetic_test_only=False):
     return result
 
 
+def _audit_synthetic_controlled_candidate(
+    bundle, *, expected_anchor=None, synthetic_test_only=False
+):
+    """Check bounded private records without inheriting producer verdicts."""
+    from dataclasses import fields
+
+    from interface.protocol import MAX_FRAME_SIZE, State, decode_state, encode_state
+    from sim.rover import Scenario
+
+    if synthetic_test_only is not True:
+        raise ValueError("controlled audit requires synthetic_test_only=True")
+    flags = (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    )
+    result = {
+        "allowed_use": "private_synthetic_independent_candidate_audit_only",
+        **{flag: False for flag in flags},
+        "ownership_status": "unresolved_anchor",
+        "content_status": "unresolved_evidence",
+        **{
+            name: "unresolved_evidence"
+            for name in (
+                "schema_status",
+                "trace_status",
+                "event_status",
+                "codec_status",
+                "capture_status",
+                "copied_input_status",
+            )
+        },
+        "reason": "unchecked_relations",
+        "events_checked": 0,
+        "trace_cells_checked": 0,
+        "captures_checked": 0,
+        "frames_checked": 0,
+        "copied_records_checked": 0,
+        "host_changed_fields": (),
+        "unverified_relations": (
+            "native_motion",
+            "native_goal",
+            "relative_transforms",
+            "ray_returns",
+            "pending_captures",
+            "source_authority",
+            "native_work_trusted_base",
+        ),
+    }
+
+    def require(condition, reason):
+        if not condition:
+            raise ValueError(reason)
+
+    def preflight(value, depth=0):
+        require(depth <= 10, "unsupported_record_depth")
+        kind = type(value)
+        if kind is State:
+            for field in fields(State):
+                preflight(getattr(value, field.name), depth + 1)
+        elif kind is dict:
+            require(len(value) <= len(fields(Config)), "unsupported_mapping_size")
+            require(
+                all(type(key) is str and len(key) <= 64 for key in value),
+                "unsupported_keys",
+            )
+            for item in value.values():
+                preflight(item, depth + 1)
+        elif kind in (tuple, list):
+            require(len(value) <= 11, "unsupported_sequence_size")
+            for item in value:
+                preflight(item, depth + 1)
+        elif kind is np.ndarray:
+            require(value.shape in ((8,), (8, 3), (8, 8, 8)), "unsupported_array_shape")
+            require(
+                value.dtype.str in ("<u4", "<f8", "<f4", "|b1"),
+                "unsupported_array_dtype",
+            )
+            require(
+                value.flags.c_contiguous and np.all(np.isfinite(value)),
+                "unsupported_array_storage",
+            )
+        elif kind is int:
+            require(value.bit_length() <= 4096, "unsupported_integer_size")
+        elif kind in (float, np.float64):
+            require(math.isfinite(value), "unsupported_nonfinite_scalar")
+        elif kind is str:
+            require(len(value) <= 64, "unsupported_string_size")
+        elif kind is bytes:
+            require(len(value) <= MAX_FRAME_SIZE, "unsupported_frame_size")
+        else:
+            require(value is None or kind is bool, "unsupported_record_type")
+
+    def keys(value, expected):
+        require(
+            type(value) is dict and set(value) == set(expected),
+            "record_schema_mismatch",
+        )
+
+    def same(left, right):
+        return _c1_source_binding_digest(left) == _c1_source_binding_digest(right)
+
+    def word_value(word):
+        require(type(word) is int and 0 <= word < 1 << 64, "finite_word_type_mismatch")
+        magnitude = word & ((1 << 63) - 1)
+        exponent, fraction = divmod(magnitude, 1 << 52)
+        require(exponent < 2047, "nonfinite_word")
+        coefficient = fraction + ((1 << 52) if exponent else 0)
+        shift = (exponent if exponent else 1) - 1075
+        value = Fraction(coefficient * (1 << max(shift, 0)), 1 << max(-shift, 0))
+        return -value if word >> 63 else value
+
+    def rational(pair):
+        require(type(pair) is tuple and len(pair) == 2, "ratio_shape_mismatch")
+        numerator, denominator = pair
+        require(
+            type(numerator) is int and type(denominator) is int and denominator > 0,
+            "ratio_type_mismatch",
+        )
+        require(
+            max(numerator.bit_length(), denominator.bit_length()) <= 4096,
+            "unsupported_ratio_size",
+        )
+        require(math.gcd(numerator, denominator) == 1, "noncanonical_ratio")
+        return Fraction(numerator, denominator)
+
+    def rounded(exact, zero_sign, word):
+        value = word_value(word)
+        sign = int(exact < 0) if exact else zero_sign
+        require(word >> 63 == sign, "rounded_sign_mismatch")
+        magnitude = word & ((1 << 63) - 1)
+        absolute = abs(exact)
+        center = abs(value)
+        lower = abs(word_value(magnitude - 1)) if magnitude else Fraction(0)
+        upper = (
+            word_value(magnitude + 1)
+            if magnitude < 0x7FEFFFFFFFFFFFFF
+            else Fraction(1 << 1024)
+        )
+        low_midpoint, high_midpoint = (lower + center) / 2, (center + upper) / 2
+        require(low_midpoint <= absolute <= high_midpoint, "rounded_neighbor_mismatch")
+        require(
+            not magnitude & 1 or absolute not in (low_midpoint, high_midpoint),
+            "rounded_tie_mismatch",
+        )
+        return value
+
+    def verify_trace(trace, heading_word):
+        keys(
+            trace,
+            (
+                "allowed_use",
+                "supported",
+                "reason",
+                *flags,
+                "rows",
+                "inputs",
+                "rounded_cells",
+                "residue_correction",
+                "intermediate_words",
+            ),
+        )
+        require(
+            trace["allowed_use"] == "isolated_synthetic_arithmetic_trace_only"
+            and trace["supported"] is True
+            and trace["reason"] == "literal_word_trace_only",
+            "trace_declaration_mismatch",
+        )
+        require(all(trace[flag] is False for flag in flags), "trace_flag_mismatch")
+        inputs = (
+            heading_word,
+            candidate["turn_word"],
+            candidate["duration_word"],
+            candidate["pi_word"],
+            candidate["two_word"],
+        )
+        require(same(trace["inputs"], inputs), "trace_input_mismatch")
+        rows = trace["rows"]
+        require(type(rows) is tuple and len(rows) == 4, "trace_rows_mismatch")
+        for row, name in zip(rows, ("P1", "P2", "P3", "P7"), strict=True):
+            keys(row, ("row", "cells"))
+            require(
+                row["row"] == name and type(row["cells"]) is tuple,
+                "trace_row_order_mismatch",
+            )
+        require(
+            tuple(len(row["cells"]) for row in rows) in ((1, 2, 2, 5), (1, 2, 2, 6)),
+            "trace_cell_count_mismatch",
+        )
+        cells = tuple(entry for row in rows for entry in row["cells"])
+        position = 0
+
+        def check(name, operation, left, right):
+            nonlocal position
+            entry = cells[position]
+            position += 1
+            keys(
+                entry,
+                (
+                    "name",
+                    "operation",
+                    "operands",
+                    "exact_ratio",
+                    "zero_sign",
+                    "word",
+                    "rounding_error_ratio",
+                    *(
+                        ("truncated_quotient",)
+                        if operation == "truncated_residue"
+                        else ()
+                    ),
+                ),
+            )
+            require(
+                entry["name"] == name and entry["operation"] == operation,
+                "trace_cell_order_mismatch",
+            )
+            require(same(entry["operands"], (left, right)), "trace_operand_mismatch")
+            left_value, right_value = word_value(left), word_value(right)
+            left_sign, right_sign = left >> 63, right >> 63
+            if operation in ("add", "sub"):
+                if operation == "sub":
+                    right_value, right_sign = -right_value, right_sign ^ 1
+                exact = left_value + right_value
+                zero_sign = int(
+                    not left_value and not right_value and left_sign and right_sign
+                )
+            elif operation == "mul":
+                exact, zero_sign = left_value * right_value, left_sign ^ right_sign
+            elif operation == "div":
+                require(bool(right_value), "zero_divisor")
+                exact, zero_sign = left_value / right_value, left_sign ^ right_sign
+            else:
+                require(bool(right_value), "zero_period")
+                quotient = left_value / right_value
+                integer = abs(quotient.numerator) // quotient.denominator
+                integer = -integer if quotient < 0 else integer
+                require(
+                    type(entry["truncated_quotient"]) is int
+                    and entry["truncated_quotient"] == integer,
+                    "truncated_quotient_mismatch",
+                )
+                exact, zero_sign = left_value - integer * right_value, left_sign
+            require(
+                type(entry["zero_sign"]) is int and entry["zero_sign"] == zero_sign,
+                "zero_tag_mismatch",
+            )
+            require(rational(entry["exact_ratio"]) == exact, "exact_ratio_mismatch")
+            value = rounded(exact, zero_sign, entry["word"])
+            require(
+                rational(entry["rounding_error_ratio"]) == value - exact,
+                "rounding_error_mismatch",
+            )
+            result["trace_cells_checked"] += 1
+            return entry["word"]
+
+        heading, turn, duration, pi_word, two = inputs
+        angle = check("a", "mul", turn, duration)
+        half = check("half", "div", angle, two)
+        midpoint = check("m", "add", heading, half)
+        period_q = check("b_q", "mul", two, pi_word)
+        argument = check("q", "div", angle, period_q)
+        first = check("x_1", "add", heading, angle)
+        shifted = check("x", "add", first, pi_word)
+        period_r = check("b_r", "mul", two, pi_word)
+        residue = check("z", "truncated_residue", shifted, period_r)
+        if not word_value(residue):
+            correction, corrected = "divisor_signed_zero", period_r & (1 << 63)
+        elif word_value(residue) < 0:
+            correction, corrected = (
+                "negative_nonzero",
+                check("u", "add", residue, period_r),
+            )
+        else:
+            correction, corrected = "none", residue
+        final = check("r_next", "sub", corrected, pi_word)
+        require(position == len(cells), "extra_trace_cell")
+        require(
+            type(trace["rounded_cells"]) is int and trace["rounded_cells"] == position,
+            "rounded_count_mismatch",
+        )
+        require(trace["residue_correction"] == correction, "correction_kind_mismatch")
+        require(
+            same(
+                trace["intermediate_words"],
+                (
+                    angle,
+                    half,
+                    midpoint,
+                    period_q,
+                    argument,
+                    first,
+                    shifted,
+                    period_r,
+                    residue,
+                    corrected,
+                    final,
+                ),
+            ),
+            "intermediate_words_mismatch",
+        )
+        return final
+
+    def sequence(value, length, kind=tuple):
+        require(
+            type(value) is kind and len(value) == length, "sequence_schema_mismatch"
+        )
+
+    def numeric(value):
+        require(
+            type(value) in (int, float) and math.isfinite(value), "scalar_type_mismatch"
+        )
+
+    def state_schema(value):
+        keys(value, (field.name for field in fields(State)))
+        for name in ("sequence", "timestamp_us", "validity", "task_id", "faults"):
+            require(type(value[name]) is int, "state_integer_type_mismatch")
+        for name, length in (
+            ("ages_us", 5),
+            ("velocity_m_s", 3),
+            ("angular_velocity_rad_s", 3),
+            ("goal_m", 3),
+        ):
+            sequence(value[name], length)
+            require(
+                all(
+                    type(item) is (int if name == "ages_us" else float)
+                    for item in value[name]
+                ),
+                "state_vector_type_mismatch",
+            )
+        require(type(value["battery_fraction"]) is float, "state_scalar_type_mismatch")
+
+    def config_schema(value):
+        keys(value, (field.name for field in fields(Config)))
+        for name, item in value.items():
+            if name in (
+                "latency_ticks",
+                "history_ticks",
+                "max_ticks",
+                "odometry_latency_ticks",
+            ):
+                require(type(item) is int, "config_integer_type_mismatch")
+            else:
+                numeric(item)
+
+    def identity(value):
+        require(
+            type(value) is str
+            and len(value) == 64
+            and all(character in "0123456789abcdef" for character in value),
+            "identity_type_mismatch",
+        )
+
+    def file_schema(value):
+        keys(value, ("sim/diagnostics.py", "sim/rover.py", "interface/protocol.py"))
+        for item in value.values():
+            identity(item)
+
+    def array_schema(value, shape, dtype):
+        require(
+            type(value) is np.ndarray and value.shape == shape,
+            "unsupported_array_shape",
+        )
+        require(value.dtype.str == dtype, "unsupported_array_dtype")
+        require(value.flags.c_contiguous, "unsupported_array_storage")
+
+    def records_schema(source, candidate):
+        keys(
+            source,
+            (
+                "allowed_use",
+                *flags[:4],
+                "relative_input",
+                "fixture_state",
+                "private_source",
+                "source_files",
+                "binding_sha256",
+            ),
+        )
+        require(
+            source["allowed_use"] == "private_synthetic_source_record_only"
+            and all(source[flag] is False for flag in flags[:4]),
+            "source_declaration_mismatch",
+        )
+        require(type(source["fixture_state"]) is State, "source_state_type_mismatch")
+        state_schema(
+            {
+                field.name: getattr(source["fixture_state"], field.name)
+                for field in fields(State)
+            }
+        )
+        file_schema(source["source_files"])
+        file_schema(candidate["source_files"])
+        identity(source["binding_sha256"])
+        private, relative = source["private_source"], source["relative_input"]
+        keys(
+            private,
+            (
+                "producer_identity",
+                "calibration_identity",
+                "clock_epoch",
+                "reference_epoch",
+                "reference_tick",
+                "reference_pose_m_rad",
+                "fixture_goal_m",
+                "fixture_state",
+                "host_frame",
+                "arena_yaw_rad",
+                "config",
+                "scenario",
+                "history",
+            ),
+        )
+        identity(private["producer_identity"])
+        identity(private["calibration_identity"])
+        state_schema(private["fixture_state"])
+        config_schema(private["config"])
+        sequence(private["reference_pose_m_rad"], 3, list)
+        sequence(private["fixture_goal_m"], 2, list)
+        require(
+            type(private["reference_tick"]) is int
+            and type(private["host_frame"]) is bytes
+            and type(private["arena_yaw_rad"]) is float
+            and type(private["clock_epoch"]) is str
+            and type(private["reference_epoch"]) is str,
+            "source_reference_type_mismatch",
+        )
+        for item in (*private["reference_pose_m_rad"], *private["fixture_goal_m"]):
+            numeric(item)
+        scenario = private["scenario"]
+        keys(scenario, (field.name for field in fields(Scenario)))
+        require(type(scenario["name"]) is str, "scenario_name_type_mismatch")
+        for name, length in (("bounds", 2), ("start", 3), ("goal", 2)):
+            sequence(scenario[name], length)
+            for item in scenario[name]:
+                numeric(item)
+        require(
+            type(scenario["obstacles"]) is tuple
+            and len(scenario["obstacles"]) <= 11
+            and type(scenario["obstacle_heights"]) is tuple
+            and len(scenario["obstacle_heights"]) <= 11,
+            "scenario_object_type_mismatch",
+        )
+        for obstacle in scenario["obstacles"]:
+            sequence(obstacle, 3)
+            for item in obstacle:
+                numeric(item)
+        for item in scenario["obstacle_heights"]:
+            numeric(item)
+        keys(
+            relative,
+            (
+                "schema",
+                "allowed_use",
+                *flags[:4],
+                "status",
+                "reason",
+                "reference_tick",
+                "config",
+                "history",
+                "fixture_goal_body_m",
+                "fixture_arena_yaw_rad",
+                "numerical_source_scale",
+            ),
+        )
+        require(
+            relative["schema"] == "micro-classifier/synthetic-c1-relative-input/1"
+            and relative["allowed_use"] == "controlled_synthetic_qualification_only"
+            and all(relative[flag] is False for flag in flags[:4]),
+            "relative_declaration_mismatch",
+        )
+        require(
+            type(relative["reference_tick"]) is int
+            and type(relative["status"]) is str
+            and type(relative["reason"]) is str,
+            "relative_metadata_type_mismatch",
+        )
+        config_schema(relative["config"])
+        if relative["fixture_goal_body_m"] is not None:
+            sequence(relative["fixture_goal_body_m"], 2, list)
+            require(
+                all(type(item) is float for item in relative["fixture_goal_body_m"]),
+                "relative_goal_type_mismatch",
+            )
+        require(
+            relative["fixture_arena_yaw_rad"] is None
+            or type(relative["fixture_arena_yaw_rad"]) is float,
+            "relative_axis_type_mismatch",
+        )
+        require(
+            relative["numerical_source_scale"] is None
+            or type(relative["numerical_source_scale"]) in (float, np.float64),
+            "relative_scale_type_mismatch",
+        )
+        for history in (private["history"], relative["history"]):
+            require(
+                type(history) is list and len(history) <= 8, "unsupported_history_size"
+            )
+        for event in private["history"]:
+            keys(
+                event,
+                (
+                    "clock_epoch",
+                    "capture_id",
+                    "delivery_tick",
+                    "snapshot_tick",
+                    "capture",
+                ),
+            )
+            require(
+                type(event["clock_epoch"]) is str
+                and type(event["capture_id"]) is str
+                and type(event["delivery_tick"]) is int
+                and type(event["snapshot_tick"]) is int,
+                "capture_metadata_type_mismatch",
+            )
+            capture = event["capture"]
+            keys(
+                capture,
+                (
+                    "schema",
+                    "allowed_use",
+                    *flags[:3],
+                    "config",
+                    "capture_ticks",
+                    "capture_poses_m_rad",
+                    "tof_m",
+                    "tof_valid",
+                ),
+            )
+            require(
+                capture["schema"] == C1_SCHEMA
+                and capture["allowed_use"] == "synthetic_visibility_fixtures_only"
+                and all(capture[flag] is False for flag in flags[:3]),
+                "capture_declaration_mismatch",
+            )
+            config_schema(capture["config"])
+            for name, shape, dtype in (
+                ("capture_ticks", (8,), "<u4"),
+                ("capture_poses_m_rad", (8, 3), "<f8"),
+                ("tof_m", (8, 8, 8), "<f4"),
+                ("tof_valid", (8, 8, 8), "|b1"),
+            ):
+                array_schema(capture[name], shape, dtype)
+        for record in relative["history"]:
+            keys(
+                record,
+                ("capture_ticks", "capture_poses_body_m_rad", "tof_m", "tof_valid"),
+            )
+            for name, shape, dtype in (
+                ("capture_ticks", (8,), "<u4"),
+                ("capture_poses_body_m_rad", (8, 3), "<f8"),
+                ("tof_m", (8, 8, 8), "<f4"),
+                ("tof_valid", (8, 8, 8), "|b1"),
+            ):
+                array_schema(record[name], shape, dtype)
+        for event in candidate["events"]:
+            keys(
+                event,
+                (
+                    "tick",
+                    "kind",
+                    "pose_m_rad",
+                    "pose_words",
+                    "previous_pose_words",
+                    "trace",
+                    "fixture_state",
+                    "host_frame",
+                ),
+            )
+            state_schema(event["fixture_state"])
+            require(
+                type(event["host_frame"]) is bytes
+                and type(event["kind"]) is str
+                and type(event["tick"]) is int,
+                "event_metadata_type_mismatch",
+            )
+            sequence(event["pose_m_rad"], 3)
+            sequence(event["pose_words"], 3)
+            require(
+                all(type(item) is float for item in event["pose_m_rad"]),
+                "pose_scalar_type_mismatch",
+            )
+            for word in event["pose_words"]:
+                word_value(word)
+            if event["previous_pose_words"] is not None:
+                sequence(event["previous_pose_words"], 3)
+                for word in event["previous_pose_words"]:
+                    word_value(word)
+            trace = event["trace"]
+            if trace is None:
+                continue
+            keys(
+                trace,
+                (
+                    "allowed_use",
+                    "supported",
+                    "reason",
+                    *flags,
+                    "rows",
+                    "inputs",
+                    "rounded_cells",
+                    "residue_correction",
+                    "intermediate_words",
+                ),
+            )
+            require(
+                type(trace["supported"]) is bool
+                and type(trace["rounded_cells"]) is int
+                and all(
+                    type(trace[name]) is str
+                    for name in ("allowed_use", "reason", "residue_correction")
+                )
+                and all(type(trace[flag]) is bool for flag in flags),
+                "trace_metadata_type_mismatch",
+            )
+            sequence(trace["inputs"], 5)
+            sequence(trace["intermediate_words"], 11)
+            for word in (*trace["inputs"], *trace["intermediate_words"]):
+                word_value(word)
+            sequence(trace["rows"], 4)
+            for row in trace["rows"]:
+                keys(row, ("row", "cells"))
+                require(
+                    type(row["row"]) is str
+                    and type(row["cells"]) is tuple
+                    and len(row["cells"]) <= 6,
+                    "trace_row_schema_mismatch",
+                )
+                for cell in row["cells"]:
+                    require(type(cell) is dict, "trace_cell_schema_mismatch")
+                    keys(
+                        cell,
+                        (
+                            "name",
+                            "operation",
+                            "operands",
+                            "exact_ratio",
+                            "zero_sign",
+                            "word",
+                            "rounding_error_ratio",
+                            *(
+                                ("truncated_quotient",)
+                                if cell.get("operation") == "truncated_residue"
+                                else ()
+                            ),
+                        ),
+                    )
+                    sequence(cell["operands"], 2)
+                    for word in (*cell["operands"], cell["word"]):
+                        word_value(word)
+                    rational(cell["exact_ratio"])
+                    rational(cell["rounding_error_ratio"])
+                    require(
+                        type(cell["name"]) is str
+                        and type(cell["operation"]) is str
+                        and type(cell["zero_sign"]) is int
+                        and cell["zero_sign"] in (0, 1),
+                        "trace_cell_type_mismatch",
+                    )
+                    if "truncated_quotient" in cell:
+                        require(
+                            type(cell["truncated_quotient"]) is int,
+                            "quotient_type_mismatch",
+                        )
+
+    stage = "schema_status"
+    try:
+        keys(bundle, ("allowed_use", *flags, "candidate", "source", "binding_sha256"))
+        require(
+            bundle["allowed_use"]
+            == "private_synthetic_controlled_motion_candidate_only",
+            "candidate_use_mismatch",
+        )
+        require(all(bundle[flag] is False for flag in flags), "candidate_flag_mismatch")
+        candidate = bundle["candidate"]
+        keys(
+            candidate,
+            (
+                "lane",
+                "model",
+                "arithmetic_kind",
+                "clock_epoch",
+                "seed_tick",
+                "seed_pose_words",
+                "speed_word",
+                "turn_word",
+                "duration_word",
+                "pi_word",
+                "two_word",
+                "tick_period_us",
+                "nominal_seconds_ratio",
+                "source_files",
+                "events",
+            ),
+        )
+        require(
+            candidate["lane"] == "experimental_controlled_binary64_owner_v1",
+            "candidate_lane_mismatch",
+        )
+        require(
+            candidate["model"] == "constant_twist_controlled_binary64_candidate_v1",
+            "candidate_model_mismatch",
+        )
+        events = candidate["events"]
+        require(
+            type(events) is tuple and 1 <= len(events) <= 8, "unsupported_event_count"
+        )
+        records_schema(bundle["source"], candidate)
+        require(
+            type(candidate["seed_tick"]) is int
+            and type(candidate["tick_period_us"]) is int,
+            "candidate_clock_type_mismatch",
+        )
+        sequence(candidate["nominal_seconds_ratio"], 2)
+        require(
+            all(type(item) is int for item in candidate["nominal_seconds_ratio"]),
+            "candidate_ratio_type_mismatch",
+        )
+        sequence(candidate["seed_pose_words"], 3)
+        for word in (
+            *candidate["seed_pose_words"],
+            *(
+                candidate[name]
+                for name in (
+                    "speed_word",
+                    "turn_word",
+                    "duration_word",
+                    "pi_word",
+                    "two_word",
+                )
+            ),
+        ):
+            word_value(word)
+        require(
+            type(candidate["clock_epoch"]) is str
+            and len(candidate["clock_epoch"]) == 32
+            and all(
+                character in "0123456789abcdef"
+                for character in candidate["clock_epoch"]
+            ),
+            "epoch_type_mismatch",
+        )
+        require(
+            type(candidate["arithmetic_kind"]) is str, "arithmetic_kind_type_mismatch"
+        )
+        identity(bundle["binding_sha256"])
+        if expected_anchor is not None:
+            keys(
+                expected_anchor,
+                (
+                    "current",
+                    "lane",
+                    "model",
+                    "clock_epoch",
+                    "source_files",
+                    "calibration_identity",
+                    "reference_tick",
+                    "binding_sha256",
+                ),
+            )
+            require(
+                type(expected_anchor["current"]) is bool
+                and type(expected_anchor["reference_tick"]) is int
+                and all(
+                    type(expected_anchor[name]) is str
+                    for name in ("lane", "model", "clock_epoch")
+                ),
+                "anchor_type_mismatch",
+            )
+            file_schema(expected_anchor["source_files"])
+            identity(expected_anchor["calibration_identity"])
+            identity(expected_anchor["binding_sha256"])
+            preflight(expected_anchor)
+        preflight(bundle)
+        payload = {
+            key: value for key, value in bundle.items() if key != "binding_sha256"
+        }
+        payload["source"] = {
+            **payload["source"],
+            "fixture_state": asdict(payload["source"]["fixture_state"]),
+        }
+        require(
+            type(bundle["binding_sha256"]) is str
+            and _c1_source_binding_digest(payload) == bundle["binding_sha256"],
+            "candidate_digest_mismatch",
+        )
+        if expected_anchor is not None:
+            keys(
+                expected_anchor,
+                (
+                    "current",
+                    "lane",
+                    "model",
+                    "clock_epoch",
+                    "source_files",
+                    "calibration_identity",
+                    "reference_tick",
+                    "binding_sha256",
+                ),
+            )
+            declared = {
+                "current": True,
+                **{
+                    name: candidate[name]
+                    for name in ("lane", "model", "clock_epoch", "source_files")
+                },
+                "calibration_identity": bundle["source"]["private_source"][
+                    "calibration_identity"
+                ],
+                "reference_tick": events[-1]["tick"],
+                "binding_sha256": bundle["binding_sha256"],
+            }
+            result["ownership_status"] = (
+                "anchor_matches"
+                if same(expected_anchor, declared)
+                else "unresolved_anchor"
+                if expected_anchor["current"] is not True
+                else "anchor_mismatch"
+            )
+        result[stage] = "consistent_checked_relations"
+        stage = "event_status"
+        seed_tick = candidate["seed_tick"]
+        require(
+            type(seed_tick) is int and 0 <= seed_tick <= 85899, "seed_tick_mismatch"
+        )
+        require(
+            same(
+                (
+                    candidate["duration_word"],
+                    candidate["pi_word"],
+                    candidate["two_word"],
+                ),
+                (0x3FA999999999999A, 0x400921FB54442D18, 0x4000000000000000),
+            ),
+            "constant_words_mismatch",
+        )
+        require(
+            type(candidate["tick_period_us"]) is int
+            and candidate["tick_period_us"] == 50000
+            and same(candidate["nominal_seconds_ratio"], (1, 20)),
+            "clock_constants_mismatch",
+        )
+        require(
+            0 <= word_value(candidate["speed_word"]) <= Fraction(3, 5)
+            and abs(word_value(candidate["turn_word"])) <= Fraction(3, 2),
+            "twist_domain_mismatch",
+        )
+        require(
+            candidate["arithmetic_kind"] == "mixed_controlled_native_unqualified",
+            "arithmetic_kind_mismatch",
+        )
+        elapsed = []
+        for index, event in enumerate(events):
+            keys(
+                event,
+                (
+                    "tick",
+                    "kind",
+                    "pose_m_rad",
+                    "pose_words",
+                    "previous_pose_words",
+                    "trace",
+                    "fixture_state",
+                    "host_frame",
+                ),
+            )
+            require(
+                type(event["tick"]) is int
+                and event["tick"] == seed_tick + index <= 85899,
+                "event_tick_mismatch",
+            )
+            require(
+                event["kind"] == ("seed" if index == 0 else "interval_ending"),
+                "event_kind_mismatch",
+            )
+            require(
+                same(
+                    event["previous_pose_words"],
+                    None if index == 0 else events[index - 1]["pose_words"],
+                ),
+                "previous_pose_mismatch",
+            )
+            if index == 0:
+                require(
+                    event["trace"] is None
+                    and same(event["pose_words"], candidate["seed_pose_words"]),
+                    "seed_record_mismatch",
+                )
+            import struct
+
+            require(
+                type(event["pose_m_rad"]) is tuple
+                and len(event["pose_m_rad"]) == 3
+                and type(event["pose_words"]) is tuple
+                and len(event["pose_words"]) == 3,
+                "pose_shape_mismatch",
+            )
+            for scalar, word in zip(
+                event["pose_m_rad"], event["pose_words"], strict=True
+            ):
+                word_value(word)
+                require(
+                    type(scalar) is float
+                    and struct.unpack("<Q", struct.pack("<d", scalar))[0] == word,
+                    "pose_word_mismatch",
+                )
+            require(
+                abs(word_value(event["pose_words"][2]))
+                <= word_value(candidate["pi_word"]),
+                "heading_domain_mismatch",
+            )
+            nominal, binary = (
+                Fraction(index, 20),
+                index * word_value(candidate["duration_word"]),
+            )
+            elapsed.append(
+                {
+                    "tick": event["tick"],
+                    "nominal_ratio": (nominal.numerator, nominal.denominator),
+                    "binary_ratio": (binary.numerator, binary.denominator),
+                }
+            )
+            result["events_checked"] += 1
+        result[stage] = "consistent_checked_relations"
+        result["elapsed_clocks"] = tuple(elapsed)
+        stage = "trace_status"
+        for event in events[1:]:
+            require(event["trace"] is not None, "unsupported_missing_trace")
+            final_word = verify_trace(event["trace"], event["previous_pose_words"][2])
+            require(final_word == event["pose_words"][2], "stored_heading_mismatch")
+        result[stage] = "consistent_checked_relations"
+        stage = "codec_status"
+        source = bundle["source"]
+        private = source["private_source"]
+        for event in events:
+            state = State(**event["fixture_state"])
+            require(
+                state.sequence == event["tick"] & 0xFFFF
+                and state.timestamp_us == event["tick"] * 50000,
+                "state_clock_mismatch",
+            )
+            speed = struct.unpack("<d", struct.pack("<Q", candidate["speed_word"]))[0]
+            turn = struct.unpack("<d", struct.pack("<Q", candidate["turn_word"]))[0]
+            expected = State(
+                sequence=state.sequence,
+                timestamp_us=state.timestamp_us,
+                velocity_m_s=(speed, 0.0, 0.0),
+                angular_velocity_rad_s=(0.0, 0.0, turn),
+                goal_m=state.goal_m,
+            )
+            require(
+                same(asdict(state), asdict(expected)),
+                "state_twist_or_defaults_mismatch",
+            )
+            require(encode_state(state) == event["host_frame"], "state_frame_mismatch")
+            decoded = decode_state(event["host_frame"])
+            require(
+                encode_state(decoded) == event["host_frame"],
+                "codec_round_trip_mismatch",
+            )
+            changed = tuple(
+                field.name
+                for field in fields(State)
+                if not same(getattr(state, field.name), getattr(decoded, field.name))
+            )
+            if changed:
+                result["host_changed_fields"] += ((event["tick"], changed),)
+            result["frames_checked"] += 1
+        require(
+            same(events[-1]["fixture_state"], asdict(source["fixture_state"]))
+            and same(events[-1]["fixture_state"], private["fixture_state"])
+            and events[-1]["host_frame"] == private["host_frame"],
+            "last_state_frame_mismatch",
+        )
+        result[stage] = "consistent_checked_relations"
+        stage = "capture_status"
+        relative, config = source["relative_input"], private["config"]
+        require(
+            same(candidate["source_files"], source["source_files"])
+            and private["producer_identity"]
+            == _c1_source_binding_digest(source["source_files"])
+            and private["calibration_identity"] == _c1_source_binding_digest(config),
+            "source_identity_link_mismatch",
+        )
+        source_payload = {
+            "relative_input": relative,
+            "fixture_state": asdict(source["fixture_state"]),
+            "host_frame": private["host_frame"],
+            "private_source": private,
+        }
+        require(
+            _c1_source_binding_digest(source_payload) == source["binding_sha256"],
+            "source_digest_mismatch",
+        )
+        require(same(relative["config"], config), "relative_config_mismatch")
+        require(
+            config["dt"] == 0.05
+            and config["latency_ticks"] == 2
+            and config["history_ticks"] == 8
+            and config["noise_std"] == 0.0
+            and config["dropout"] == 0.0
+            and config["max_range"] == 4.0,
+            "unsupported_capture_profile",
+        )
+        require(
+            private["clock_epoch"]
+            == private["reference_epoch"]
+            == candidate["clock_epoch"],
+            "reference_epoch_mismatch",
+        )
+        require(
+            private["reference_tick"]
+            == relative["reference_tick"]
+            == events[-1]["tick"]
+            and same(tuple(private["reference_pose_m_rad"]), events[-1]["pose_m_rad"]),
+            "reference_event_mismatch",
+        )
+        require(
+            same(tuple(private["fixture_goal_m"]), private["scenario"]["goal"]),
+            "source_goal_copy_mismatch",
+        )
+        history = private["history"]
+        ledger = {event["tick"]: event for event in events}
+        eligible = tuple(tick for tick in ledger if tick == 0 or tick % 4 != 1)
+        expected_snapshots = tuple(
+            tick
+            for tick in ledger
+            if any(captured + 2 <= tick for captured in eligible)
+        )[-8:]
+        previous = None
+        for entry in history:
+            capture = entry["capture"]
+            snapshot = entry["snapshot_tick"]
+            require(snapshot in ledger, "unsupported_missing_snapshot_ledger")
+            delivered = tuple(tick for tick in eligible if tick + 2 <= snapshot)
+            require(bool(delivered), "unsupported_missing_capture_ledger")
+            captured = delivered[-1]
+            require(
+                entry["clock_epoch"] == candidate["clock_epoch"]
+                and entry["capture_id"] == f"{candidate['clock_epoch']}:{captured}"
+                and entry["delivery_tick"] == captured + 2
+                and np.all(capture["capture_ticks"] == captured),
+                "capture_clock_mismatch",
+            )
+            require(same(capture["config"], config), "capture_config_mismatch")
+            pose_bytes = struct.pack("<ddd", *ledger[captured]["pose_m_rad"])
+            require(
+                all(
+                    row.tobytes() == pose_bytes
+                    for row in capture["capture_poses_m_rad"]
+                ),
+                "capture_pose_link_mismatch",
+            )
+            ranges, valid = capture["tof_m"], capture["tof_valid"]
+            require(
+                not np.any(valid & ((ranges <= 0) | (ranges >= 4)))
+                and np.all(ranges[~valid].view(np.uint32) == 0),
+                "capture_masked_range_mismatch",
+            )
+            fingerprint = _c1_source_binding_digest(capture)
+            if previous is not None and previous[0] == captured:
+                require(
+                    previous[1:] == (entry["capture_id"], fingerprint),
+                    "held_capture_changed",
+                )
+            previous = captured, entry["capture_id"], fingerprint
+            result["captures_checked"] += 1
+        require(
+            tuple(entry["snapshot_tick"] for entry in history) == expected_snapshots
+            and bool(history),
+            "unsupported_incomplete_delivered_history",
+        )
+        result[stage] = "consistent_checked_relations"
+        stage = "copied_input_status"
+        require(
+            len(relative["history"]) == len(history),
+            "unsupported_incomplete_copied_history",
+        )
+        for record, entry in zip(relative["history"], history, strict=True):
+            for name in ("capture_ticks", "tof_m", "tof_valid"):
+                require(
+                    same(record[name], entry["capture"][name]),
+                    "relative_payload_copy_mismatch",
+                )
+            result["copied_records_checked"] += 1
+        result[stage] = "consistent_checked_relations"
+        result["content_status"] = "consistent_checked_relations"
+        result["reason"] = "bounded_declared_relations_only"
+    except (ValueError, KeyError, TypeError, OverflowError) as error:
+        result[stage] = (
+            "unresolved_evidence"
+            if str(error).startswith("unsupported_")
+            else "inconsistent_record"
+        )
+        result["content_status"] = result[stage]
+        result["reason"] = str(error)
+    return result
+
+
 class _SyntheticC1ControlledMotionOwner:
     """Stage a private mixed-arithmetic fixture, never qualify motion or wire."""
 

@@ -4447,6 +4447,168 @@ teacher-asset and ST/board gates remain separate.
 
 [arithmetic-compatibility-review]: REVIEW.md
 
+#### Proposed Controlled-Arithmetic Owner Contract (2026-11-03)
+
+The user approved this design-only preparation following §109
+([review §110][controlled-owner-contract-review]), not implementation, owner
+execution or adoption. Proposed default: leave the normal integrator and
+`_SyntheticC1MotionOwner` unchanged and keep the controlled helper isolated.
+An experimental candidate would be a separately identified private lane,
+fixed at construction, never a per-input fallback or a new runtime profile.
+
+| Contract Boundary | Proposed Candidate Requirement | Unchanged Limit / Stop |
+| --- | --- | --- |
+| C0: ingress | Bind exact stored heading/twist words, literal duration/pi/two and finite position/speed to one copied fixture seed/epoch. | No current-goal atan2 heading substitution, silent coercion, caller-supplied next pose or input/log adapter. |
+| C1: arithmetic | P1/P2/P3/P7 feed angle, midpoint, sinc argument and next stored heading in source order; remaining native operations stay identified. | Do not merge periods, fuse cells, clamp period-reaching correction or infer full-motion error qualification. |
+| C2: event binding | Bind each candidate trace's inputs/output words to the previous event, interval-ending twist, next pose/State/frame and both clocks. | Candidate ownership, source/wire and motion evidence are distinct, not inherited old verdicts. |
+| C3: publication | Prepare arithmetic, capture/delivery/history, State/frame and a complete next owner ledger without mutating the retained candidate root; publish only after validation. | Existing `_record` updates the recorder before appending its event: calling it does not establish a transaction or all-exception rollback. |
+| C4: audit | Retain a fresh candidate identity/anchor; reject foreign/stale/re-signed/mixed-lane records and keep all qualification flags false. | Do not feed a renamed candidate to the old strict motion/checker schema or reuse a legacy seal. |
+| C5: work/failure | Keep eight-event/nonwrapping bounds and explicit unsupported/exception/work acceptance gates. | W0/TB0, allocations/native paths, time/live memory and physical/task quality remain open; no silent native fallback. |
+
+The local hypothesis is that trace correctness alone cannot authenticate the
+old owner's event/capture publication boundary. The nearby source shows
+`advance` computing a pose, `_record` producing the host frame, then recorder
+mutation followed by owner-list append and seal invalidation. A future candidate
+needs an explicit preparation/publication design rather than assuming that
+sequence is atomic. This is a static contract requirement, not a newly tested
+failure or a requested repair of the old owner.
+
+**Candidate identity and ingress, proposed only.** Use an additive private
+candidate rather than a switch inside the old owner or integrator. Suggested
+lane/model labels are `experimental_controlled_binary64_owner_v1` and
+`constant_twist_controlled_binary64_candidate_v1`; neither is a wire/catalogue
+version or adopted runtime profile. Require literal `synthetic_test_only=True`
+and fix the lane for its lifetime. Copy the Scenario/seed; retain one planar
+speed/turn and a fresh candidate epoch, source identities and private seal.
+Callers request only the next tick after construction, never a next pose, goal,
+trace, timestamp, source/capture record or producer selection.
+
+The seed/previous heading and fixed turn must have exact finite binary64 words,
+nonboolean builtin integer word storage and the helpers' unchanged bounds.
+Round-trip conversion into the remaining native scalar/array path must preserve
+those words, including signed zero. Native finite position/speed use an explicit
+binary64 scalar/array contract and existing fixture limits, not wire-decoded
+binary32 substitutes. Reject unsupported types/widths/constants/domain evidence
+instead of silently coercing or truncating it. Bind `duration_word`, `pi_word`,
+`two_word` to `0x3FA999999999999A`, `0x400921FB54442D18`,
+`0x4000000000000000`. The stored event heading, not `_record`'s goal-frame
+atan2 normalization, is the next step's input. These checks establish declared
+word correspondence only, not actual source authority or TB0.
+
+| Trace Result | Proposed Position/Motion Consumer | Residual Unqualified Path |
+| --- | --- | --- |
+| P1 `a` | Interval angle; bind to fixed turn and binary-step duration. | Do not recompute a native angle for a competing position path. |
+| P2 `m` | `math.cos(m)` and `math.sin(m)` for the position increment. | Both libm calls, argument/domain error and native vector arithmetic remain unqualified. |
+| P3 `q` | `np.sinc(q)` in the existing ordered speed-times-duration-times-sinc expression. | sinc's internal pi/sin/division and remaining multiplications are not replaced or certified. |
+| P7 `r_next` | Next stored event heading, with its exact word and correction trace. | Current-goal atan2/sin/cos/subtraction, State encoding and float32 round-trip remain separate. |
+
+Retain source-ordered native distance/vector operations, world-coordinate
+position and source-scale guards. Do not call the old integrator for position
+and then overwrite only yaw: that would leave native midpoint/argument
+production active. No recentering, dtype/promotion assumption, error allowance,
+floor/cylinder/sensor change or new physical range is adopted. P4-P6/G1-G3 and
+all complete-motion/goal bounds stay unresolved; mixed controlled/native is
+the candidate's declared arithmetic kind, not a fully controlled integrator.
+
+**Proposed private records and clock binding.** The candidate outer bundle
+must have a new allowed-use/schema/model identity, not an extended legacy
+motion dictionary that an old reader might accept after fields are removed.
+Its retained seal covers lane/epoch, source/calibration identities, seed/twist,
+constant words, events and their private prepared capture/State/frame evidence.
+Source identities must cover candidate/helper, remaining native computation,
+capture and encoding source paths; text hashes are not authenticated native
+build/live binding. Any future source-file change needs fresh owner identities,
+not historical log/report regeneration or seal reuse.
+
+Each interval-ending event binds previous pose/heading words, fixed twist,
+next tick, full ordered trace and next stored pose/heading word. Bind its goal
+State and actual encoded host-frame bytes too. Keep declared source ownership,
+arithmetic support, source/wire correspondence and mathematical motion evidence
+as separate fields. All training, real-input, free-space, numerical-certification
+and producer-parity qualification flags remain false. A candidate record or
+successful word trace cannot inherit `consistent_under_fixture_assumptions`,
+legacy motion-consistency or source/wire status from an unrelated old seal.
+
+The seed event is explicitly seed-only, with no fabricated preceding interval
+or advance trace. Count it within the eight-event limit. Require consecutive
+nonwrapping ticks, existing `tick*50000` frame time and seed tick at most 85899.
+Keep the two mathematical elapsed clocks separate: $(k-k_0)d$ for exact stored
+binary $d$ and $(k-k_0)/20$ nominal seconds. Do not reset accumulated reference
+error on snapshot, capture receipt or frame encoding. The unchanged capture
+cadence, two-tick delivery/held history and acquisition-to-event pose binding
+remain source evidence, not a new sampling policy or physical sensor claim.
+
+**Preparation/publication state machine.** A proposed advance has four stages:
+
+1. Check tick/event capacity, source/lane identity, previous-word binding and
+  fixed constants/profile without changing the retained root or seal.
+2. Prepare a supported word trace, native next position, next stored heading,
+  finite/domain checks and complete State/frame in private temporary state.
+3. Prepare capture/delivery/history and a complete next event ledger against a
+  copied/staged recorder state using the same candidate epoch. The active owner,
+  recorder and seal must not be used as scratch state. The existing mutating
+  `_record`/`record_tick` pair cannot simply be called on the active candidate.
+4. Validate all cross-bindings, then publish one completed retained root under
+  serialized access and invalidate the previous seal on successful advance.
+  A later snapshot creates a fresh seal for that completed root only.
+
+Prepublication unsupported/ValueError rejection must leave event count, pose,
+capture queue/history and existing seal unchanged; it is not a fallback to
+native arithmetic. Unexpected/allocation/interruption failures propagate, not
+universal safety-qualified abstention. If publication may have begun, the
+caller must discard that owner/epoch rather than trust an old seal or retry an
+ambiguous advance. This is a conditional staged-publication contract, not a
+proved single-assignment/VM atomicity or memory-rollback guarantee. Side-effecting
+replacement helpers/capture factories, mutable private state and concurrent
+calls are outside the assumed domain. Native staging must never gain authority
+merely because an earlier trace succeeded.
+
+**Audit and acceptance gates, not executed.** Candidate audits require their
+own strict outer schema/retained anchor and field/source/event/frame bindings.
+Reject stale, foreign, re-signed, truncated and mixed-lane records. The old
+checker has an exact key/model contract; do not strip tags or rename candidate
+data to make it pass. `1bb89fe` remains a mathematical reference, not candidate
+ownership or full-motion proof. No reference/query/coordinator adapter is adopted.
+
+| Gate | Future Discriminating Check | Failure / Evidence Limit |
+| --- | --- | --- |
+| A0 | Verify legacy/default APIs and ASTs, wire/catalogue/scenes, old guards/flags/verdicts and historical artifacts remain unchanged. | Source-keyed identities may naturally change after future additive code; do not regenerate historical evidence. |
+| A1 | Exact-word/scalar/constants/previous-event binding, including signed zero and rejected ingress. | A coercion or goal-normalized heading mismatch rejects before publication. |
+| A2 | Each position/heading step consumes the bound P1/P2/P3/P7 outputs once, preserving the residual native order. | Partial yaw-only substitution, period fusion or native fallback fails the contract. |
+| A3 | Compare declared reused fixtures against ordinary scalar steps and independent literal trace cells, retaining pi endpoints. | Sample agreement is not all-domain parity or full-motion error evidence; diagnose discrepancies. |
+| A4 | Inject preparation failures and verify pose, event/capture/history and seal preservation; distinguish ambiguous publication. | Do not weaken S0, catch every exception as unsupported or promise rollback without evidence. |
+| A5 | Seed plus consecutive intervals stays within eight events/nonwrapping clock limits; captures bind acquisition/delivery poses. | Missing interval, copied current pose or merged nominal/binary time rejects. |
+| A6 | Candidate audit rejects foreign/stale/re-signed/mixed-lane event/State/frame records; old readers reject candidate bundles. | No borrowed ownership/source/wire/motion verdict or automatic reference adaptation. |
+| A7 | Count constructor attempts/events/captures/trace/audit calls including failed attempts; run focused/default source gates. | Counts/4,096-bit preflight are not time/live memory/allocator or hardware-fit bounds. |
+
+W0/TB0, object materialization/native GCD/division/FP/build correspondence and
+source/return/physical/task-quality qualification remain open. A fixture-only
+prototype may expose those gaps but cannot adopt a deadline, live-allocation
+allowance or safety policy. No teacher assets, ST tools or board action follows.
+
+**Alternatives and next permission.** Retain isolation now. An additive candidate
+with staged-root publication is the recommended experimental route if separately
+approved: it exposes four-cell substitution without changing the old owner.
+Changing the legacy owner/integrator, sharing a new rollback mechanism across
+them, or selecting producers per input has a wider compatibility/provenance
+blast radius and is not recommended or approved here.
+
+Next proposed, **not approved**: implement that private candidate and bounded
+synthetic tests only, at most eight declared motion-fixture cases using four
+already-used complete scenes, at most sixteen owner constructor attempts
+(candidate plus legacy controls, including failures), and eight events per owner
+including the seed (at most 128 published owner events). Reuse existing arithmetic
+literals/fault evidence and mutated copies of those records, no new world/study
+episodes. Instrument the new slice; repeated focused/default gates reuse the
+same cases, while existing default-suite fixtures remain separately identified.
+Keep old APIs/ASTs/defaults/guards/verdicts and all qualification flags unchanged.
+No question queries, reference/coordinator/log adapter, data/labels, scene/domain
+change, runtime/wire adoption, dependency/acquisition, tuning, risk/allowance/
+proof promotion or hardware run. No prototype, fixture or numerical execution
+is authorized by the completed design-only package.
+
+[controlled-owner-contract-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6458,7 +6620,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §109): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §110): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6571,10 +6733,13 @@ complete (§108): eight conditional D0/R1-R5/O0/T0 derivations, including canoni
 pairs and raw-residue representability under the declared profile, not accepted
 proof or qualification. Its separately approved twelve-case scalar/trace
 comparison is complete (§109): exact word/sign/correction agreement, not
-all-domain/native/work qualification or runtime integration. Next proposed, not
-approved: design-only opt-in private synthetic-owner arithmetic contract, with
-word ingress, four-cell substitution, distinct provenance/failure/work gates;
-no implementation/import/fixture/episode run, adoption or promotion. All gates stay.
+all-domain/native/work qualification or runtime integration. Its separately
+approved design-only owner contract is prepared (§110): word ingress/four-cell
+consumers, distinct lane/event/clock/seal identity and staged-publication/work
+gates, not adoption or implementation. Next proposed, not approved: private
+candidate/tests, eight reused motion cases/four scenes, sixteen owner attempts/
+eight events each; no query/reference/log adapter, data/runtime/wire adoption,
+dependency or proof/allowance/flag promotion. All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

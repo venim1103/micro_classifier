@@ -7389,6 +7389,104 @@ unavailable and all broader Task 6/9/physical/task-quality gates stay.
 
 [scalar-compatibility-tests]: tests/test_sim.py
 
+## 110. Proposed Controlled-Arithmetic Owner Contract (2026-11-03)
+
+The user approved §109's design-only opt-in private synthetic-owner contract
+and requested autonomous continuation/local commits. Work began clean at
+`5425012`; Current State, §109, the existing owner/recorder/checker and nearby
+integrator/reference contract were reviewed. This is preparation only, not
+candidate implementation, product/runtime adoption or renewed fixture/run
+permission. No interpreter import, arithmetic/owner/fixture/episode execution,
+source/test edit, source acquisition or broader trusted-base audit occurred.
+
+**Local hypothesis and discriminating source check.** The controlled trace
+cannot itself authenticate event/capture publication. Existing `_record` encodes
+a State/frame, calls the mutating recorder, then appends the owner event and
+invalidates its seal. A late append failure is not established rollback of
+recorder state. `record_tick` prepares capture/delivery lists before assigning
+retained fields, but that does not make the surrounding owner/recorder sequence
+one transaction. This was a static control-flow observation, not a reproduced
+failure or repair request for the legacy owner. The first six-boundary document
+edit/check passed immediately; source/tests stayed unchanged.
+
+**Prepared proposal.** [DESIGN.md §7][controlled-owner-contract-design] now
+specifies C0-C5 ingress/arithmetic/event/publication/audit/work boundaries,
+four named consumers and A0-A7 future acceptance gates. Suggested experimental
+lane/model labels are separate from the strict old motion schema; fixed at
+construction with copied fixture seed/Scenario, one twist, fresh epoch/identity
+and retained private seal. The default is to keep the helper isolated and leave
+the normal integrator, old owner, source/checker/reference APIs and wire alone.
+
+Exact finite heading/turn words and literal duration/pi/two must bind to the
+stored previous event, preserving native conversion/signed-zero bits; no
+current-goal atan2 heading or binary32 wire substitute. P1/P2/P3/P7 would feed
+angle/midpoint/sinc argument/next stored heading. Remaining `np.sinc`,
+`math.cos`/`math.sin`, speed/vector/position and current-goal native computation
+stay explicit and unqualified. Calling the old integrator then overwriting yaw
+would fail the contract because position still uses native intermediate cells.
+Separate periods/rounding/correction, pi endpoints and source-scale handling
+remain; no recentering, clamping, hidden promotion or per-input producer choice.
+
+**Identity, clocks and publication.** Candidate bundles must bind lane/epoch/
+source/calibration identities, seed/twist/constants, every previous/next pose
+word, ordered trace and actual State/frame bytes. Candidate ownership,
+arithmetic support, source/wire and mathematical motion evidence remain
+separate, all qualification flags false. Hashes/local text do not authenticate
+native builds or live bindings. No borrowed legacy seal/verdict or stripping
+candidate tags to pass the old exact-key/model checker. `1bb89fe` remains a
+mathematical reference, not ownership or full-motion evidence; no adapter adopted.
+
+Seed-only event plus intervals must respect eight events, consecutive/nonwrapping
+ticks and existing frame time. Binary elapsed `(tick-seed_tick)*stored_duration`
+and nominal `(tick-seed_tick)/20` remain distinct; snapshots/captures do not reset
+seed-based error. Existing cadence, acquisition/delivery/held history stay,
+not a new sensor or sampling policy.
+
+Proposed advance preflights identity/words/tick capacity, then prepares trace,
+native next pose, State/frame, staged recorder/history and complete event ledger
+without using the retained active root as scratch. Only validated completed
+state may publish under serialized access. Prepublication ValueError/unsupported
+must preserve pose/event/capture/history and existing seal. Allocation,
+interruption/unexpected exceptions propagate; ambiguous publication requires
+discarding the owner/epoch, not trusted rollback, old-seal reuse or native
+fallback. Single-root/VM atomicity, side-effecting replacements and native work
+remain assumptions/acceptance gaps, not an all-exception safety guarantee.
+
+**Tradeoffs, exit and next permission.** Recommended experimental route is an
+additive candidate with staged-root publication. Isolation remains the default;
+changing the old integrator/owner or sharing a rollback refactor has wider
+compatibility/provenance impact and is not approved. The design-only package
+is complete, not contract/runtime adoption, correctness/work proof or Q0-Q5.
+
+Next proposed, **not approved**: private candidate plus synthetic tests only,
+at most eight declared motion-fixture cases using four already-used complete
+scenes, sixteen owner constructor attempts total including candidate/legacy
+controls and failures, eight events each including seed (128 published events
+maximum). Reuse arithmetic literals/faults and record-copy mutations; instrument
+the new slice. Focused/default gates reuse those cases, with pre-existing suite
+controls reported separately. Preserve old APIs/ASTs/defaults/guards/flags/
+verdicts and historical artifacts; no scene/episode/data, question query,
+reference/coordinator/log adapter, source/wire/runtime adoption, dependency/
+acquisition, tuning, risk/proof/allowance promotion or hardware run. The prepared
+contract authorizes none of that implementation or fixture/numerical execution.
+
+**Verification and retained limits.** Initial and expanded focused checks passed:
+six C0-C5 boundaries, four P1/P2/P3/P7 consumers, eight A0-A7 gates and exact-word,
+clock/staging/exception/schema/budget limits. Scoped references/local-target,
+section/preservation/whitespace checks passed: sections 1-110, 548 reference uses/
+local targets, paired fence/math controls, prior review/source-list/dossier/
+workflow/history/source-test gate and source/test byte preservation. Editor
+diagnostics are clear and the scoped diffs reviewed. No check or patch failed;
+no code or numerical run occurred in this package. The diagnostics
+blob remains `fa78f69d3f3a504ec5b086842f0aaf980d5b5288`; tests remain
+`8b4accbbc7a5c56ad40ffbfdb89034096a8bca8e`. Only AGENTS.md, DESIGN.md and
+REVIEW.md change. §109's 2,109 passes plus known xfail/71 warnings remain the
+last source-test gate, not rerun design evidence. W0/TB0, native/full-motion/
+goal/wire, numerical/physical/task-quality, Task 6/9, teacher assets and ST/board
+gates stay open. No background job, cleanup, artifact regeneration or assistant push.
+
+[controlled-owner-contract-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

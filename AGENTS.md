@@ -118,19 +118,19 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: twelve-case scalar/controlled-trace comparison
-  (DESIGN.md §7 / REVIEW.md §109). All 132 intermediate words per path match the
-  reused literal sheets exactly; zero/correction tags and raw-residue errors
-  agree. One tests-only function; all 251 prior function ASTs/literals unchanged.
-  Not all-domain/native/build/live/work evidence, accepted proof or qualification.
-  Runtime/source/defaults/old bounds/flags/verdicts and `1bb89fe` unchanged. All
-  read/run scopes exhausted. Next proposed, not approved: design-only opt-in
-  private synthetic-owner arithmetic contract, explicit word ingress/four-cell
-  substitution and distinct provenance/failure/work gates; isolation is default.
-  No implementation/import/owner tick/fixture/episode run, query/log adapter,
-  source/wire adoption, integration/dependency/acquisition or promotion follows.
+- Latest approved package complete: design-only controlled-arithmetic owner
+  contract (DESIGN.md §7 / REVIEW.md §110), six boundaries/four consumers/eight
+  gates. Separate word/lane/event/clock/seal identity and staged publication;
+  not all-exception rollback, native/work proof, adoption or implementation.
+  Source/tests/defaults/old bounds/flags/verdicts and `1bb89fe` unchanged; no
+  imports/fixture/numerical run. Isolation remains default; all scopes exhausted.
+  Next proposed, not approved: additive private candidate plus tests, at most
+  eight reused motion cases/four scenes, sixteen owner attempts including failures,
+  eight events each including seed (128 maximum). Preserve old APIs/ASTs/flags;
+  no question/reference/coordinator/log adapter, data/runtime/wire adoption,
+  dependency/acquisition/tuning/risk/proof/allowance promotion or hardware run.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-109 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-110 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1187,14 +1187,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §109 completes
-the approved twelve-case scalar/controlled-trace comparison: 132 words per path
-match literals; zero/correction/error checks pass. All prior test ASTs unchanged;
-gate 2,109 plus known xfail. Not all-domain/native/work/proof qualification.
-Runtime/source/defaults/old bounds/flags/verdicts and `1bb89fe` unchanged.
-Next proposed, not approved: design-only opt-in private synthetic-owner arithmetic
-contract, word ingress/four-cell substitution, distinct provenance/failure/work
-gates. No code/import/owner/fixture/episode run, adoption/integration or promotion.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §110 prepares
+the approved design-only owner contract: six boundaries/four consumers/eight
+gates, word/lane/event/clock/seal binding and staged publication. Not adopted,
+implemented or numerically/work-qualified. Source/tests/old flags/bounds/verdicts
+and `1bb89fe` unchanged; §109's 2,109 plus known xfail not rerun.
+Next proposed, not approved: private candidate/tests, eight reused motion cases/
+four scenes, sixteen owner attempts/eight events each including seed; no question/
+reference/log adapter, data/runtime/wire adoption, dependency or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1372,9 +1372,13 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   approved bounded compatibility result follows; no extra runtime scope implied.
   Scalar/trace comparison (REVIEW.md §109): twelve reused cases/132 words per path
   match exactly, zero/correction/error checks pass; 2,109 plus known xfail. Only
-  one test added; no runtime/owner/source edit or qualification. Next proposed,
-  not approved: design-only opt-in owner arithmetic contract, no code/import/
-  fixture/episode run, source/wire adoption, data/integration or promotion.
+  one test added; no runtime/owner/source edit or qualification. Its separately
+  approved design-only contract preparation follows; no extra run scope implied.
+  Owner contract (REVIEW.md §110): six boundaries/four consumers/eight gates,
+  separate candidate identity and staged publication, not adoption/code/proof.
+  Source/tests unchanged; next proposed, not approved: eight-case/four-scene
+  private candidate/tests, sixteen owner attempts/eight events each including seed.
+  No queries/reference/log adapter, data/runtime/wire adoption or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

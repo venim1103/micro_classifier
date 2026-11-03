@@ -35,6 +35,566 @@ from sim.rover import (
 )
 
 
+@pytest.mark.parametrize(
+    "word,numerator,denominator,sign",
+    [
+        (0x0000000000000000, 0, 1, 0),
+        (0x8000000000000000, 0, 1, 1),
+        (0x3FF0000000000000, 1, 1, 0),
+        (0xBFF0000000000000, -1, 1, 1),
+        (0x0000000000000001, 1, 1 << 1074, 0),
+        (0x0010000000000000, 1, 1 << 1022, 0),
+        (0x8000000000000001, -1, 1 << 1074, 1),
+        (0x000FFFFFFFFFFFFF, (1 << 52) - 1, 1 << 1074, 0),
+        (0x7FEFFFFFFFFFFFFF, ((1 << 53) - 1) << 971, 1, 0),
+    ],
+)
+def test_synthetic_arithmetic_literal_word_roundtrip(
+    word, numerator, denominator, sign
+):
+    from fractions import Fraction
+
+    from sim.diagnostics import _synthetic_binary64_value, _synthetic_rn64
+
+    value, actual_sign = _synthetic_binary64_value(word)
+    assert value == Fraction(numerator, denominator)
+    assert actual_sign == sign
+    assert _synthetic_rn64(numerator, denominator, zero_sign=sign) == word
+
+
+@pytest.mark.parametrize(
+    "numerator,denominator,expected",
+    [
+        ((1 << 53) + 1, 1 << 53, 0x3FF0000000000000),
+        ((1 << 53) + 3, 1 << 53, 0x3FF0000000000002),
+        (1, 1 << 1075, 0x0000000000000000),
+        (-1, 1 << 1075, 0x8000000000000000),
+        (3, 1 << 1075, 0x0000000000000002),
+        ((1 << 53) - 1, 1 << 1075, 0x0010000000000000),
+        ((1 << 54) - 1, 1 << 53, 0x4000000000000000),
+        (((1 << 53) - 1) << 971, 1, 0x7FEFFFFFFFFFFFFF),
+        (((1 << 54) - 3) << 970, 1, 0x7FEFFFFFFFFFFFFE),
+        (-((1 << 53) + 1), 1 << 53, 0xBFF0000000000000),
+        ((1 << 54) - 1, 1 << 1076, 0x0010000000000000),
+        ((1 << 52) - 1, 1 << 1074, 0x000FFFFFFFFFFFFF),
+        (1, 1 << 1076, 0x0000000000000000),
+    ],
+)
+def test_synthetic_arithmetic_literal_rounding(numerator, denominator, expected):
+    from sim.diagnostics import _synthetic_rn64
+
+    assert _synthetic_rn64(numerator, denominator) == expected
+
+
+@pytest.mark.parametrize(
+    "word",
+    [
+        True,
+        -1,
+        1 << 64,
+        0x7FF0000000000000,
+        0xFFF0000000000000,
+        0x7FF8000000000000,
+        None,
+    ],
+)
+def test_synthetic_arithmetic_rejects_invalid_word(word):
+    from sim.diagnostics import _synthetic_binary64_value
+
+    with pytest.raises(ValueError):
+        _synthetic_binary64_value(word)
+
+
+@pytest.mark.parametrize(
+    "numerator,denominator,zero_sign",
+    [
+        (True, 1, 0),
+        (1, False, 0),
+        (1, 0, 0),
+        (1, -1, 0),
+        (1, 1, True),
+        (1, 1, 2),
+        (1 << 4096, 1, 0),
+        (1, 1 << 4096, 0),
+        (((1 << 54) - 1) << 970, 1, 0),
+        (1 << 4095, 1 << 4095, 0),
+    ],
+)
+def test_synthetic_arithmetic_rejects_invalid_rounding(
+    numerator, denominator, zero_sign
+):
+    from sim.diagnostics import _synthetic_rn64
+
+    with pytest.raises(ValueError):
+        _synthetic_rn64(numerator, denominator, zero_sign=zero_sign)
+
+
+def _literal_binary64_fraction(word):
+    from fractions import Fraction
+
+    exponent = (word >> 52) & 2047
+    significand = word & ((1 << 52) - 1)
+    if exponent:
+        significand += 1 << 52
+    signed = -significand if word >> 63 else significand
+    return Fraction(signed) * Fraction(2) ** ((exponent or 1) - 1075)
+
+
+@pytest.mark.parametrize(
+    "operation,left,right,expected",
+    [
+        ("add", 0x8000000000000000, 0x8000000000000000, 0x8000000000000000),
+        ("add", 0x8000000000000000, 0x0000000000000000, 0x0000000000000000),
+        ("add", 0x3FF0000000000000, 0xBFF0000000000000, 0x0000000000000000),
+        ("add", 0x3FF0000000000000, 0x3CA0000000000000, 0x3FF0000000000000),
+        ("add", 0x3FF0000000000001, 0x3CA0000000000000, 0x3FF0000000000002),
+        ("sub", 0x8000000000000000, 0x0000000000000000, 0x8000000000000000),
+        ("sub", 0x8000000000000000, 0x8000000000000000, 0x0000000000000000),
+        ("sub", 0x3FF0000000000000, 0x3FF0000000000000, 0x0000000000000000),
+        ("sub", 0x3FF0000000000000, 0x3CA0000000000000, 0x3FEFFFFFFFFFFFFF),
+        ("mul", 0x8000000000000000, 0xBFF0000000000000, 0x0000000000000000),
+        ("mul", 0x0000000000000000, 0xBFF0000000000000, 0x8000000000000000),
+        ("mul", 0x0000000000000001, 0x3FE0000000000000, 0x0000000000000000),
+        ("mul", 0x0000000000000001, 0xBFE0000000000000, 0x8000000000000000),
+        ("mul", 0x4008000000000000, 0x3FE0000000000000, 0x3FF8000000000000),
+        ("mul", 0x7FEFFFFFFFFFFFFF, 0x3FF0000000000000, 0x7FEFFFFFFFFFFFFF),
+        ("div", 0x8000000000000000, 0x3FF0000000000000, 0x8000000000000000),
+        ("div", 0x3FF0000000000000, 0x4008000000000000, 0x3FD5555555555555),
+        ("div", 0x4000000000000000, 0x4008000000000000, 0x3FE5555555555555),
+        ("div", 0x0010000000000000, 0x4000000000000000, 0x0008000000000000),
+        ("div", 0x7FEFFFFFFFFFFFFF, 0x4000000000000000, 0x7FDFFFFFFFFFFFFF),
+    ],
+)
+def test_synthetic_arithmetic_literal_operation(operation, left, right, expected):
+    from fractions import Fraction
+
+    from sim.diagnostics import _synthetic_binary64_operation
+
+    cell = _synthetic_binary64_operation(operation, left, right)
+    left_value, right_value = map(_literal_binary64_fraction, (left, right))
+    if operation == "add":
+        exact = left_value + right_value
+    elif operation == "sub":
+        exact = left_value - right_value
+    elif operation == "mul":
+        exact = left_value * right_value
+    else:
+        exact = left_value / right_value
+    assert cell["word"] == expected
+    assert cell["operation"] == operation and cell["operands"] == (left, right)
+    assert Fraction(*cell["exact_ratio"]) == exact
+    assert (
+        Fraction(*cell["rounding_error_ratio"])
+        == _literal_binary64_fraction(expected) - exact
+    )
+
+
+@pytest.mark.parametrize(
+    "operation,left,right",
+    [
+        ("div", 0x3FF0000000000000, 0x0000000000000000),
+        ("mul", 0x7FEFFFFFFFFFFFFF, 0x4000000000000000),
+        ("pow", 0x3FF0000000000000, 0x3FF0000000000000),
+        ([], 0x3FF0000000000000, 0x3FF0000000000000),
+    ],
+)
+def test_synthetic_arithmetic_rejects_invalid_operation(operation, left, right):
+    from sim.diagnostics import _synthetic_binary64_operation
+
+    with pytest.raises(ValueError):
+        _synthetic_binary64_operation(operation, left, right)
+
+
+_ARITHMETIC_TRACE_LITERALS = (
+    (
+        0x0000000000000000,
+        0x0000000000000000,
+        (
+            0x0000000000000000,
+            0x0000000000000000,
+            0x0000000000000000,
+            0x401921FB54442D18,
+            0x0000000000000000,
+            0x0000000000000000,
+            0x400921FB54442D18,
+            0x401921FB54442D18,
+            0x400921FB54442D18,
+            0x400921FB54442D18,
+            0x0000000000000000,
+        ),
+    ),
+    (
+        0x8000000000000000,
+        0x8000000000000000,
+        (
+            0x8000000000000000,
+            0x8000000000000000,
+            0x8000000000000000,
+            0x401921FB54442D18,
+            0x8000000000000000,
+            0x8000000000000000,
+            0x400921FB54442D18,
+            0x401921FB54442D18,
+            0x400921FB54442D18,
+            0x400921FB54442D18,
+            0x0000000000000000,
+        ),
+    ),
+    (
+        0x3FF0000000000000,
+        0x0000000000000000,
+        (
+            0x0000000000000000,
+            0x0000000000000000,
+            0x3FF0000000000000,
+            0x401921FB54442D18,
+            0x0000000000000000,
+            0x3FF0000000000000,
+            0x401090FDAA22168C,
+            0x401921FB54442D18,
+            0x401090FDAA22168C,
+            0x401090FDAA22168C,
+            0x3FF0000000000000,
+        ),
+    ),
+    (
+        0xBFF0000000000000,
+        0x0000000000000000,
+        (
+            0x0000000000000000,
+            0x0000000000000000,
+            0xBFF0000000000000,
+            0x401921FB54442D18,
+            0x0000000000000000,
+            0xBFF0000000000000,
+            0x400121FB54442D18,
+            0x401921FB54442D18,
+            0x400121FB54442D18,
+            0x400121FB54442D18,
+            0xBFF0000000000000,
+        ),
+    ),
+    (
+        0x400921FB54442D18,
+        0x0000000000000000,
+        (
+            0x0000000000000000,
+            0x0000000000000000,
+            0x400921FB54442D18,
+            0x401921FB54442D18,
+            0x0000000000000000,
+            0x400921FB54442D18,
+            0x401921FB54442D18,
+            0x401921FB54442D18,
+            0x0000000000000000,
+            0x0000000000000000,
+            0xC00921FB54442D18,
+        ),
+    ),
+    (
+        0xC00921FB54442D18,
+        0x0000000000000000,
+        (
+            0x0000000000000000,
+            0x0000000000000000,
+            0xC00921FB54442D18,
+            0x401921FB54442D18,
+            0x0000000000000000,
+            0xC00921FB54442D18,
+            0x0000000000000000,
+            0x401921FB54442D18,
+            0x0000000000000000,
+            0x0000000000000000,
+            0xC00921FB54442D18,
+        ),
+    ),
+    (
+        0x0000000000000000,
+        0x3FF0000000000000,
+        (
+            0x3FA999999999999A,
+            0x3F9999999999999A,
+            0x3F9999999999999A,
+            0x401921FB54442D18,
+            0x3F804C26BE3B06CF,
+            0x3FA999999999999A,
+            0x40098861BAAA937E,
+            0x401921FB54442D18,
+            0x40098861BAAA937E,
+            0x40098861BAAA937E,
+            0x3FA9999999999980,
+        ),
+    ),
+    (
+        0x0000000000000000,
+        0xBFF0000000000000,
+        (
+            0xBFA999999999999A,
+            0xBF9999999999999A,
+            0xBF9999999999999A,
+            0x401921FB54442D18,
+            0xBF804C26BE3B06CF,
+            0xBFA999999999999A,
+            0x4008BB94EDDDC6B2,
+            0x401921FB54442D18,
+            0x4008BB94EDDDC6B2,
+            0x4008BB94EDDDC6B2,
+            0xBFA9999999999980,
+        ),
+    ),
+    (
+        0x400921FB54442D18,
+        0x3FF8000000000000,
+        (
+            0x3FB3333333333334,
+            0x3FA3333333333334,
+            0x40096EC82110F9E5,
+            0x401921FB54442D18,
+            0x3F88723A1D588A38,
+            0x4009BB94EDDDC6B2,
+            0x40196EC82110F9E5,
+            0x401921FB54442D18,
+            0x3FB3333333333340,
+            0x3FB3333333333340,
+            0xC0088861BAAA937E,
+        ),
+    ),
+    (
+        0xC00921FB54442D18,
+        0xBFF8000000000000,
+        (
+            0xBFB3333333333334,
+            0xBFA3333333333334,
+            0xC0096EC82110F9E5,
+            0x401921FB54442D18,
+            0xBF88723A1D588A38,
+            0xC009BB94EDDDC6B2,
+            0xBFB3333333333340,
+            0x401921FB54442D18,
+            0xBFB3333333333340,
+            0x4018D52E8777604B,
+            0x40088861BAAA937E,
+        ),
+    ),
+    (
+        0xC00921FB54442D18,
+        0xBD04000000000000,
+        (
+            0xBCC0000000000000,
+            0xBCB0000000000000,
+            0xC00921FB54442D18,
+            0x401921FB54442D18,
+            0xBC945F306DC9C883,
+            0xC00921FB54442D19,
+            0xBCC0000000000000,
+            0x401921FB54442D18,
+            0xBCC0000000000000,
+            0x401921FB54442D18,
+            0x400921FB54442D18,
+        ),
+    ),
+    (
+        0x3FF0000000000000,
+        0x3CF4000000000000,
+        (
+            0x3CB0000000000000,
+            0x3CA0000000000000,
+            0x3FF0000000000000,
+            0x401921FB54442D18,
+            0x3C845F306DC9C883,
+            0x3FF0000000000001,
+            0x401090FDAA22168C,
+            0x401921FB54442D18,
+            0x401090FDAA22168C,
+            0x401090FDAA22168C,
+            0x3FF0000000000000,
+        ),
+    ),
+)
+
+
+def _literal_trace_arguments(heading, turn):
+    return {
+        "heading_word": heading,
+        "turn_word": turn,
+        "duration_word": 0x3FA999999999999A,
+        "pi_word": 0x400921FB54442D18,
+        "two_word": 0x4000000000000000,
+        "synthetic_test_only": True,
+    }
+
+
+def _assert_literal_nearest_word(exact, word):
+    magnitude = word & ((1 << 63) - 1)
+    distance = abs(_literal_binary64_fraction(word) - exact)
+    sign = word & (1 << 63)
+    for neighbor in (magnitude - 1, magnitude + 1):
+        if 0 <= neighbor <= 0x7FEFFFFFFFFFFFFF:
+            neighbor_distance = abs(_literal_binary64_fraction(sign | neighbor) - exact)
+            assert distance <= neighbor_distance
+            if distance == neighbor_distance:
+                assert not word & 1
+    if exact:
+        assert bool(sign) == (exact < 0)
+
+
+@pytest.mark.parametrize("heading,turn,expected", _ARITHMETIC_TRACE_LITERALS)
+def test_synthetic_arithmetic_literal_trace(heading, turn, expected):
+    from fractions import Fraction
+
+    from sim.diagnostics import _trace_synthetic_binary64_rows
+
+    trace = _trace_synthetic_binary64_rows(**_literal_trace_arguments(heading, turn))
+    assert trace["supported"] and trace["reason"] == "literal_word_trace_only"
+    assert trace["intermediate_words"] == expected
+    assert [row["row"] for row in trace["rows"]] == ["P1", "P2", "P3", "P7"]
+    cells = [cell for row in trace["rows"] for cell in row["cells"]]
+    negative_residue = _literal_binary64_fraction(expected[8]) < 0
+    names = ["a", "half", "m", "b_q", "q", "x_1", "x", "b_r", "z"]
+    if negative_residue:
+        names.append("u")
+    names.append("r_next")
+    assert [cell["name"] for cell in cells] == names
+    assert trace["rounded_cells"] == len(cells) == 10 + negative_residue
+    by_name = {cell["name"]: cell for cell in cells}
+    assert by_name["half"]["operands"] == (expected[0], 0x4000000000000000)
+    assert by_name["m"]["operands"] == (heading, expected[1])
+    assert by_name["q"]["operands"] == (expected[0], expected[3])
+    assert by_name["x_1"]["operands"] == (heading, expected[0])
+    assert by_name["x"]["operands"] == (expected[5], 0x400921FB54442D18)
+    assert by_name["b_q"] is not by_name["b_r"]
+    assert by_name["r_next"]["operands"] == (expected[9], 0x400921FB54442D18)
+    for cell in cells:
+        left, right = map(_literal_binary64_fraction, cell["operands"])
+        operation = cell["operation"]
+        if operation == "add":
+            exact = left + right
+        elif operation == "sub":
+            exact = left - right
+        elif operation == "mul":
+            exact = left * right
+        elif operation == "div":
+            exact = left / right
+        else:
+            quotient = left / right
+            truncated = abs(quotient.numerator) // quotient.denominator
+            truncated *= -1 if quotient < 0 else 1
+            assert cell["truncated_quotient"] == truncated
+            exact = left - truncated * right
+            assert abs(exact) < right
+        assert Fraction(*cell["exact_ratio"]) == exact
+        _assert_literal_nearest_word(exact, cell["word"])
+        assert (
+            Fraction(*cell["rounding_error_ratio"])
+            == _literal_binary64_fraction(cell["word"]) - exact
+        )
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    ):
+        assert trace[flag] is False
+    if turn == 0xBD04000000000000:
+        assert trace["residue_correction"] == "negative_nonzero"
+        assert expected[9] == expected[7] and expected[10] == 0x400921FB54442D18
+    if turn == 0x3CF4000000000000:
+        unrounded_half = (
+            _literal_binary64_fraction(turn)
+            * _literal_binary64_fraction(0x3FA999999999999A)
+            / 2
+        )
+        assert unrounded_half > Fraction(1, 1 << 53)
+        assert expected[2] == 0x3FF0000000000000
+
+
+@pytest.mark.parametrize(
+    "changes,raises",
+    [
+        ({"synthetic_test_only": False}, True),
+        ({"synthetic_test_only": 1}, True),
+        ({"word_format": "binary32"}, False),
+        ({"word_format": True}, False),
+        ({"heading_word": True}, False),
+        ({"heading_word": -1}, False),
+        ({"heading_word": 0x7FF0000000000000}, False),
+        ({"heading_word": 0x400921FB54442D19}, False),
+        ({"turn_word": True}, False),
+        ({"turn_word": 0x7FF8000000000000}, False),
+        ({"turn_word": 0x3FF8000000000001}, False),
+        ({"turn_word": 0xBFF8000000000001}, False),
+        ({"duration_word": 0x3FA9999999999999}, False),
+        ({"pi_word": 0x400921FB54442D19}, False),
+        ({"two_word": 0x4000000000000001}, False),
+    ],
+)
+def test_synthetic_arithmetic_trace_rejects_evidence(changes, raises):
+    from sim.diagnostics import _trace_synthetic_binary64_rows
+
+    arguments = {**_literal_trace_arguments(0, 0), **changes}
+    if raises:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            _trace_synthetic_binary64_rows(**arguments)
+    else:
+        trace = _trace_synthetic_binary64_rows(**arguments)
+        assert trace["supported"] is False and trace["rows"] == ()
+        assert "intermediate_words" not in trace and "inputs" not in trace
+
+
+def test_synthetic_arithmetic_trace_work_and_late_failure_are_atomic(monkeypatch):
+    from sim import diagnostics
+
+    arguments = _literal_trace_arguments(0, 0)
+    with monkeypatch.context() as patch:
+        patch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 1)
+        trace = diagnostics._trace_synthetic_binary64_rows(**arguments)
+        assert not trace["supported"] and trace["reason"] == "arithmetic work limit"
+        assert trace["rows"] == () and "intermediate_words" not in trace
+    original = diagnostics._synthetic_binary64_operation
+    calls = []
+
+    def fail_at_last_cell(*operands):
+        calls.append(operands)
+        if len(calls) == 9:
+            raise ValueError("injected final-cell stop")
+        return original(*operands)
+
+    monkeypatch.setattr(diagnostics, "_synthetic_binary64_operation", fail_at_last_cell)
+    trace = diagnostics._trace_synthetic_binary64_rows(**arguments)
+    assert len(calls) == 9 and trace["reason"] == "injected final-cell stop"
+    assert trace["rows"] == () and "intermediate_words" not in trace
+
+
+def test_synthetic_arithmetic_kernel_has_no_fp_or_owner_path():
+    import ast
+    import inspect
+
+    from sim import diagnostics
+
+    for name in (
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+    ):
+        tree = ast.parse(inspect.getsource(getattr(diagnostics, name)))
+        identifiers = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
+        assert not identifiers & {
+            "float",
+            "np",
+            "math",
+            "integrate",
+            "_SyntheticC1MotionOwner",
+            "_SyntheticC1SourceRecorder",
+            "collect_diagnostic_episode",
+        }
+        assert not any(
+            isinstance(node, ast.Constant) and isinstance(node.value, float)
+            for node in ast.walk(tree)
+        )
+
+
 def test_tof_floor_and_missing_returns_follow_synthetic_mount():
     config = Config(noise_std=0, dropout=0, latency_ticks=0)
     observation, _ = RoverEnv(config).reset()

@@ -7,6 +7,7 @@ import math
 import platform
 from copy import deepcopy
 from dataclasses import asdict, replace
+from fractions import Fraction
 from itertools import pairwise
 from pathlib import Path
 
@@ -24,6 +25,230 @@ from sim.rover import (
 
 SCENES = ("clear", "obstacle", "corridor", "slalom")
 C1_SCHEMA = "micro-classifier/synthetic-c1-views/1"
+_SYNTHETIC_ARITHMETIC_BITS = 4096
+
+
+def _synthetic_binary64_value(word):
+    if type(word) is not int or not 0 <= word < (1 << 64):
+        raise ValueError("binary64 word must be an unsigned integer")
+    sign = word >> 63
+    exponent = (word >> 52) & 2047
+    if exponent == 2047:
+        raise ValueError("binary64 word must be finite")
+    significand = (word & ((1 << 52) - 1)) | ((1 << 52) if exponent else 0)
+    power = (exponent or 1) - 1075
+    numerator = significand << max(0, power)
+    denominator = 1 << max(0, -power)
+    return Fraction(-numerator if sign else numerator, denominator), sign
+
+
+def _synthetic_rn64(numerator, denominator=1, *, zero_sign=0):
+    if (
+        type(numerator) is not int
+        or type(denominator) is not int
+        or denominator <= 0
+        or type(zero_sign) is not int
+        or zero_sign not in (0, 1)
+    ):
+        raise ValueError("rounding requires integer rational and zero sign")
+    if (
+        max(numerator.bit_length(), denominator.bit_length())
+        > _SYNTHETIC_ARITHMETIC_BITS
+    ):
+        raise ValueError("arithmetic work limit")
+    sign = int(numerator < 0) if numerator else zero_sign
+    numerator = abs(numerator)
+    if not numerator:
+        return sign << 63
+    exponent = numerator.bit_length() - denominator.bit_length()
+    if exponent >= 0:
+        exponent -= int(numerator < (denominator << exponent))
+    else:
+        exponent -= int((numerator << -exponent) < denominator)
+    if exponent > 1023:
+        raise ValueError("rounded binary64 overflow")
+    if exponent < -1075:
+        return sign << 63
+    quantum = max(exponent - 52, -1074)
+    if (
+        max(
+            numerator.bit_length() + max(0, -quantum),
+            denominator.bit_length() + max(0, quantum),
+        )
+        > _SYNTHETIC_ARITHMETIC_BITS
+    ):
+        raise ValueError("arithmetic work limit")
+    scaled_numerator = numerator << max(0, -quantum)
+    scaled_denominator = denominator << max(0, quantum)
+    coefficient, remainder = divmod(scaled_numerator, scaled_denominator)
+    complement = scaled_denominator - remainder
+    coefficient += int(
+        remainder > complement or (remainder == complement and coefficient & 1)
+    )
+    if coefficient >= (1 << 53):
+        coefficient >>= 1
+        quantum += 1
+    if coefficient < (1 << 52):
+        return (sign << 63) | coefficient
+    exponent_field = quantum + 1075
+    if exponent_field >= 2047:
+        raise ValueError("rounded binary64 overflow")
+    return (sign << 63) | (exponent_field << 52) | (coefficient - (1 << 52))
+
+
+def _synthetic_binary64_operation(operation, left, right):
+    if type(operation) is not str or operation not in ("add", "sub", "mul", "div"):
+        raise ValueError("unsupported arithmetic operation")
+    left_value, left_sign = _synthetic_binary64_value(left)
+    right_value, right_sign = _synthetic_binary64_value(right)
+    if operation == "sub":
+        right_value, right_sign = -right_value, right_sign ^ 1
+    if operation in ("add", "sub"):
+        exact = left_value + right_value
+        zero_sign = int(not left_value and not right_value and left_sign and right_sign)
+    elif operation == "mul":
+        exact = left_value * right_value
+        zero_sign = left_sign ^ right_sign
+    else:
+        if not right_value:
+            raise ValueError("arithmetic division by zero")
+        exact = left_value / right_value
+        zero_sign = left_sign ^ right_sign
+    word = _synthetic_rn64(exact.numerator, exact.denominator, zero_sign=zero_sign)
+    rounded, _ = _synthetic_binary64_value(word)
+    error = rounded - exact
+    return {
+        "operation": operation,
+        "operands": (left, right),
+        "exact_ratio": (exact.numerator, exact.denominator),
+        "zero_sign": zero_sign,
+        "word": word,
+        "rounding_error_ratio": (error.numerator, error.denominator),
+    }
+
+
+def _trace_synthetic_binary64_rows(
+    *,
+    heading_word,
+    turn_word,
+    duration_word,
+    pi_word,
+    two_word,
+    word_format="binary64_1_11_52",
+    synthetic_test_only=False,
+):
+    """Trace isolated literal words, never an owner, pose update or qualification."""
+    if synthetic_test_only is not True:
+        raise ValueError("arithmetic trace requires synthetic_test_only=True")
+    result = {
+        "allowed_use": "isolated_synthetic_arithmetic_trace_only",
+        "supported": False,
+        "reason": "unsupported_arithmetic_evidence",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "producer_parity_qualified": False,
+        "rows": (),
+    }
+    try:
+        if type(word_format) is not str or word_format != "binary64_1_11_52":
+            raise ValueError("unsupported arithmetic word format")
+        values = tuple(
+            _synthetic_binary64_value(word)[0]
+            for word in (heading_word, turn_word, duration_word, pi_word, two_word)
+        )
+        if (duration_word, pi_word, two_word) != (
+            0x3FA999999999999A,
+            0x400921FB54442D18,
+            0x4000000000000000,
+        ):
+            raise ValueError("unsupported arithmetic constant words")
+        if abs(values[0]) > values[3] or abs(values[1]) > Fraction(3, 2):
+            raise ValueError("unsupported arithmetic trace domain")
+        cells = []
+
+        def cell(name, operation, left, right):
+            entry = _synthetic_binary64_operation(operation, left, right)
+            cells.append({"name": name, **entry})
+            return entry["word"]
+
+        angle = cell("a", "mul", turn_word, duration_word)
+        half = cell("half", "div", angle, two_word)
+        midpoint = cell("m", "add", heading_word, half)
+        denominator_q = cell("b_q", "mul", two_word, pi_word)
+        argument = cell("q", "div", angle, denominator_q)
+        first_sum = cell("x_1", "add", heading_word, angle)
+        shifted = cell("x", "add", first_sum, pi_word)
+        denominator_r = cell("b_r", "mul", two_word, pi_word)
+        shifted_value, shifted_sign = _synthetic_binary64_value(shifted)
+        period, period_sign = _synthetic_binary64_value(denominator_r)
+        quotient = shifted_value / period
+        truncated = abs(quotient.numerator) // quotient.denominator
+        if quotient < 0:
+            truncated = -truncated
+        exact_residue = shifted_value - truncated * period
+        residue = _synthetic_rn64(
+            exact_residue.numerator, exact_residue.denominator, zero_sign=shifted_sign
+        )
+        residue_value, _ = _synthetic_binary64_value(residue)
+        residue_error = residue_value - exact_residue
+        cells.append(
+            {
+                "name": "z",
+                "operation": "truncated_residue",
+                "operands": (shifted, denominator_r),
+                "truncated_quotient": truncated,
+                "exact_ratio": (exact_residue.numerator, exact_residue.denominator),
+                "zero_sign": shifted_sign,
+                "word": residue,
+                "rounding_error_ratio": (
+                    residue_error.numerator,
+                    residue_error.denominator,
+                ),
+            }
+        )
+        if not residue_value:
+            corrected = period_sign << 63
+            correction = "divisor_signed_zero"
+        elif residue_value < 0:
+            corrected = cell("u", "add", residue, denominator_r)
+            correction = "negative_nonzero"
+        else:
+            corrected = residue
+            correction = "none"
+        final = cell("r_next", "sub", corrected, pi_word)
+        rows = (
+            {"row": "P1", "cells": tuple(cells[:1])},
+            {"row": "P2", "cells": tuple(cells[1:3])},
+            {"row": "P3", "cells": tuple(cells[3:5])},
+            {"row": "P7", "cells": tuple(cells[5:])},
+        )
+        return {
+            **result,
+            "supported": True,
+            "reason": "literal_word_trace_only",
+            "inputs": (heading_word, turn_word, duration_word, pi_word, two_word),
+            "rows": rows,
+            "rounded_cells": len(cells),
+            "residue_correction": correction,
+            "intermediate_words": (
+                angle,
+                half,
+                midpoint,
+                denominator_q,
+                argument,
+                first_sum,
+                shifted,
+                denominator_r,
+                residue,
+                corrected,
+                final,
+            ),
+        }
+    except ValueError as error:
+        result["reason"] = str(error)
+        return result
 
 
 def _c1_config(config):

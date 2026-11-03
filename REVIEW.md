@@ -6864,6 +6864,111 @@ files change; the last source gate remains historical, not rerun qualification.
 
 [controlled-arithmetic-design]: DESIGN.md
 
+## 105. Isolated Controlled Arithmetic Prototype (2026-11-03)
+
+The user approved §104's isolated kernel/four-trace prototype, at most 64
+primitive and 32 trace fixtures, independent expectations, focused/default
+gates and local commits. No owner/runtime integration or qualification promotion
+was approved. Work began clean at `2f83d29`; Current State, §104, DESIGN.md §§1,
+2, 7 and 12, the private owner boundary and existing test/import conventions
+were checked. Pylance selected `/opt/venv/bin/python`; terminal Python and Ruff
+also resolve inside `/opt/venv`. No environment change or dependency acquisition.
+The first skill read used a stale extension-root path and failed; the exact
+listed Python extension path was then read successfully before coding.
+
+**Local hypothesis and first check.** Exact integer word decoding and
+nearest-lattice packing can preserve separate zero signs and ties without
+native FP. The first edit added only that slice and ten literal fixtures; the
+focused check passed immediately. Exact operation cells and the remaining
+primitive fixtures were then added; all 63 primitive checks passed. No owner,
+scene, observation, log, question or mathematical reference was used as an oracle.
+
+**Implemented private candidate.** [The diagnostics module][arithmetic-prototype]
+now contains `_synthetic_binary64_value`, `_synthetic_rn64`,
+`_synthetic_binary64_operation` and `_trace_synthetic_binary64_rows`.
+They decode finite unsigned words, use integer/Fraction exact arithmetic,
+explicit zero/cancellation/underflow tags and RN64 ties/carry/overflow handling.
+The trace binds its format and literal duration/pi/two contract, enforces the
+existing finite heading/twist profile and exposes exactly P1/P2/P3/P7 cells.
+P3/P7 periods are computed separately; negative quotient truncation, exact
+residue, zero sign, conditional correction and subtraction retain source order.
+Unsupported input, work-limit or late-cell failures publish no partial rows.
+Ten unconditional RN64 cells and one conditional cell are structural counts,
+not benchmarks. All qualification/training flags remain false. No new public
+runtime route, source/wire adapter, event mutation or dependency was introduced.
+
+The separate 4,096-bit preflight and conservative per-expression counts are
+documented in DESIGN.md §7. Fixed-word decoding bounds and quantum scaling
+leave the arithmetic/rounding-error integers below that ceiling by the stated
+counts; direct arbitrary rational inputs may be rejected before scaling.
+These are prototype structural arguments, not completed implementation proof,
+uniform primitive-error evidence, allocation/CPU measurement or firmware fit.
+The integer/Fraction/GCD/codec/control-flow trusted base remains unqualified.
+
+**Independent fixtures and accounting.** [Existing simulator tests][arithmetic-tests]
+contain 63 primitive fixtures: nine exact word/ratio round trips, thirteen
+rounding vectors, seven word rejections, ten rational/rounding rejections,
+twenty operation cells and four operation rejections. Twelve successful
+four-row literal sheets were derived by a separate exact-Fraction binary search
+over finite words, never the prototype or installed FP arithmetic. Durable
+tests verify literal words, rational results/errors and adjacent-word distance/
+tie inequalities. Separate zero tags are checked through literal output words.
+
+Fifteen rejected argument variants cover opt-in/format/type/constant/domain
+guards. One test reuses the zero/zero fixture with two fault modes: a reduced
+work cap and injected last-cell stop. Thus there are 28 trace test invocations,
+or a conservative 29 scenarios counting the two fault modes separately, below
+32. One additional structural test runs no arithmetic fixture. No random/grid
+expansion, alternative pose, episode or query was introduced. The twelve
+reference-derivation inputs are the same twelve literal sheets, not a second
+cohort. Internal arithmetic calls, neighbor decoding and repeated gate runs
+are execution reuse, not extra independently selected fixtures.
+
+The negative-residue fixture preserves `u==b_r` and final positive pi rather
+than clamping; the small-angle midpoint fixture demonstrates that an unfactored
+single rounding would differ. These are counterexamples/fixture evidence only,
+not full-domain equivalence, certified residue representability, old-CPython
+bit parity or motion/goal/wire qualification.
+
+**Verification and failed check.** Focused `python -m pytest -q tests/test_sim.py
+-k synthetic_arithmetic --tb=short` passed at 10, then 63, then 92 checks; all
+92 passed again after the import repair. Formatting touched only the two Python
+files. An independent AST comparison found all 25 previous diagnostic functions/
+classes and 238 previous test functions unchanged. The full repository suite
+passed 2,097 tests plus the known transformer QDQ xfail in 48.60 s, but the first
+combined gate then failed Ruff `PLR0402` on two new module import aliases.
+They were changed to `from sim import diagnostics`, without assertion, fixture,
+bound or arithmetic changes. Focused lint/tests passed, then the required gate
+`python -m pytest -q && ruff check . && git diff --check` passed: 2,097 plus the
+known xfail in 46.85 s. `ruff format --check sim/diagnostics.py tests/test_sim.py`
+also passed. The 71 ONNX export deprecation/tracing warnings were retained.
+Editor diagnostics have no errors; Pylance retains two old private-unaccessed
+notices and adds one for the deliberately isolated, test-only trace entry.
+There were no new arithmetic test failures or relaxed bounds/assertions.
+
+Default gates execute prior repository fixtures as well as these new cases;
+their execution is not a new owner/query/episode study. No C/native/runtime
+source changed and no additional opt-in sanitizer/Arm/vendor/board gate was
+requested; earlier such evidence remains historical. `sim/rover.py`, navigation,
+interface/firmware, old qualification flags/verdicts and helper `1bb89fe` stay
+unchanged. New module source identities naturally differ; no historical artifact
+or cache record was regenerated. Only two existing Python and three existing
+documentation files change. No download, model inference/training, task data,
+collection, asset restoration, hardware action or assistant push occurred.
+
+**Exit and next approval.** This bounded implementation/test package is complete
+and its permission exhausted. It is not adopted or numerically qualified.
+Next recommended, not approved: a design-only correctness/work-bound dossier
+for these four helpers and the same four rows. Specify nearest-lattice,
+carry/zero/remainder invariants, per-expression storage/trusted-base evidence
+and independent acceptance/stop checks; no source edits, new fixtures/numerical
+runs, dependency, owner/query/log adapter, allowance or qualification promotion.
+All Task 6/9, full-motion/goal/wire, physical/task-quality, teacher assets and
+ST/board gates remain separate. No background job or cleanup is pending.
+
+[arithmetic-prototype]: sim/diagnostics.py
+[arithmetic-tests]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

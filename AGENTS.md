@@ -118,22 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only controlled scalar arithmetic
-  proposal (DESIGN.md §7 / REVIEW.md §104). Integer/rational word/RN64 candidate
-  specifies four ordered traces, zero/subnormal/overflow and staged remainder
-  semantics, three alternatives and compatibility/cost/proof/stop checks. A
-  prototype candidate, not adopted/default arithmetic or installed-code parity.
-  No implementation, numerical run, bound or qualification change; all ten rows,
-  protocol, old verdicts/flags, source/tests and `1bb89fe` stay unchanged. Goal/
-  sinc/trig/wire and full-motion evidence remain separate and unqualified.
-  Historical gates are not restarted-environment evidence. All scopes exhausted.
-  Next proposed, not approved: isolated word/kernel/four-trace prototype with
-  literal unit fixtures, candidate distinct-fixture caps 64 primitive/32 trace;
-  independent expectations and focused/default gates, no owner/query/episode/
-  old-log adapter, dependency, integration or qualification/bound/flag promotion.
-  Default remains unchanged unqualified/abstaining.
+- Latest approved package complete: isolated controlled arithmetic prototype
+  (DESIGN.md §7 / REVIEW.md §105). Four private integer/Fraction word/RN64/trace
+  helpers preserve P1/P2/P3/P7 order, zero/remainder rules and atomic stops.
+  All 92 new checks pass: 63 primitive fixtures, 28 trace checks (29 scenarios
+  conservatively counting fault modes), one structural check; caps were 64/32.
+  Literal words and independent rational neighbor checks, not installed-FP parity
+  or uniform correctness. Separate 4,096-bit preflight is not measured cost or
+  certified motion/error evidence. Old functions/tests are AST-identical;
+  all ten rows' qualification, protocol/bounds, old verdicts/flags and `1bb89fe`
+  stay unchanged. No owner/query/episode/log adapter, dependency or integration.
+  New module source identities naturally change; historical artifacts unchanged.
+  All scopes exhausted. Next proposed, not approved: design-only correctness/
+  work-bound dossier for these helpers/four rows, exact invariants/trusted-base/
+  stop checks, no source changes, new fixtures/numerical runs or qualification/
+  allowance promotion. Default remains unchanged unqualified/abstaining.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-104 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-105 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -144,9 +145,10 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source gate (2026-10-22, not rerun): 2,005 passes plus known xfail, 640 interface
-  checks; lint/changed-file format/editor diagnostics, native sanitizers and
-  hard-float Arm compilation pass. No deployment or task-quality result follows.
+- Last source gate (2026-11-03): 2,097 passes plus known xfail; lint/changed-file
+  format/editor diagnostics pass after two PLR0402 import repairs. No C/native
+  source changed or additional opt-in sanitizer/Arm gate was run; their earlier
+  2026-10-22 evidence remains historical. No deployment or task-quality result.
 - Privileged simulator truth is now permitted in principle for geometric and
   predictive targets, never as student input. Observation-only human review
   remains for semantic/real-world data. Existing logs stay quarantined; no label,
@@ -1189,15 +1191,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §104 completes
-the approved design-only controlled-arithmetic proposal: four ordered traces,
-explicit word/RN64/remainder and signed-zero contract, three alternatives and
-compatibility/cost/proof/stop checks. No implementation/run/adoption, allowance
-or qualification follows; all ten rows, code/tests, protocol/bounds, old flags/
-verdicts and historical gates stay unchanged. Next proposed, not approved:
-isolated word/kernel/four-trace prototype and literal unit fixtures, 64 primitive/
-32 trace candidate caps; no owner/query/episode/old-log adapter, dependency,
-integration or qualification/bound/flag promotion. All broader gates stay.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §105 completes
+the approved isolated controlled-arithmetic prototype: four private helpers,
+P1/P2/P3/P7 cell order, literal/rational neighbor fixtures and atomic stops.
+All 92 new checks and 2,097 repository tests plus known xfail pass; lint repair
+is recorded. No old-producer parity, uniform correctness, owner/runtime adapter,
+allowance or qualification follows. Protocol/bounds, old functions/verdicts/
+flags and `1bb89fe` stay unchanged; module identities naturally differ.
+Next proposed, not approved: design-only correctness/work-bound dossier for
+these helpers/four rows, no source edits, new fixtures/numerical runs, dependency,
+owner/query/log adapter or allowance/qualification promotion. All broader gates stay.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1353,9 +1356,14 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   no larger numerical/source scope follows from the static inspection.
   Controlled arithmetic proposal (REVIEW.md §104): four explicit bit/RN64/staged
   remainder traces and compatibility/cost/proof/stop checks are prepared, not
-  implemented/adopted/qualified. Next proposed, not approved: isolated kernel/
-  trace/literal-unit prototype, 64 primitive/32 trace candidate caps; no owner,
-  query/episode/log adapter, dependency, integration or allowance/flag promotion.
+  then implemented/adopted/qualified. Its separately approved prototype follows;
+  no larger scope follows from the design preparation.
+  Controlled arithmetic prototype (REVIEW.md §105): four private helpers and
+  92 checks pass within 64 primitive/32 trace fixture caps; whole gate 2,097 plus
+  known xfail. Not old-producer parity, certified arithmetic or owner integration.
+  All old functions/flags/verdicts/bounds and `1bb89fe` stay unchanged. Next
+  proposed, not approved: design-only correctness/work-bound dossier, no new
+  code/fixture/numerical run, dependency, owner/query/log adapter or qualification.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

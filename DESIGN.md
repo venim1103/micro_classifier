@@ -3891,6 +3891,65 @@ qualification/adoption remain necessary. All present approvals are exhausted.
 
 [controlled-arithmetic-review]: REVIEW.md
 
+#### Isolated Controlled Arithmetic Prototype (2026-11-03)
+
+The user separately approved the isolated prototype proposed in §104, including
+literal fixtures and focused/default gates ([review §105][controlled-arithmetic-review]).
+The implementation in [the existing diagnostics module][c1-prototype-source]
+does not adopt the candidate as the producer or qualify installed CPython.
+Private word decoding and RN64 helpers use exact standard-library `Fraction`
+and integers, with separate zero signs, ties-to-even neighbor selection,
+subnormal/carry handling and unsupported overflow/division/work-limit stops.
+No float, NumPy or libm operation is part of these helpers.
+
+`_trace_synthetic_binary64_rows` requires literal `synthetic_test_only=True`,
+declared binary64 format and exact supplied constant words:
+duration `0x3fa999999999999a`, pi `0x400921fb54442d18`, two `0x4000000000000000`.
+It retains the existing finite heading/twist profile, with no repeated-step,
+owner, snapshot, source-record, episode or wire adapter. These literals are a
+prototype contract, not an attestation of current stored bytes or clock facts.
+It emits exactly P1/P2/P3/P7 with named operand/result/rounding-error cells and
+ten unconditional rounded cells, plus the negative-residue correction cell.
+P3 and P7 keep separate period cells. P7 truncates the exact quotient toward
+zero, preserves dividend-zero sign before divisor-sign correction and keeps a
+corrected residue equal to the period. Unsupported evidence or late arithmetic
+failure returns no partial rows. All qualification/training flags remain false.
+
+The independent integer preflight ceiling is 4,096 bits, not the mathematical
+reference's 65,536-bit budget or a measured allocation/time limit. Decoded finite
+word numerators and denominators need at most 1,024 and 1,075 bits. Conservative
+cross-product counts give at most 2,100/2,150 bits for exact add/subtract operands,
+2,048/2,150 for multiplication and 2,099/2,099 for division. Quantum scaling
+adds at most 1,074 numerator or 971 denominator bits. A rounding-error difference
+needs at most 3,175 numerator and 3,225 denominator bits by those same counts.
+The profile's residue quotient truncates to zero or one; its arithmetic does not
+add unbounded quotient growth. The rounder checks input/scaled lengths before
+materializing shifts, and compares remainder with its complement rather than
+doubling it. These are conservative structural arguments, not a completed
+implementation proof, uniform numerical certificate, CPU cost or firmware fit.
+Integer/Fraction/GCD/packing/control-flow semantics remain trusted-base evidence
+obligations; arbitrary direct rational inputs may stop at the preflight boundary.
+
+[Literal tests][controlled-arithmetic-prototype-tests] cover word/zero/rounding
+and operation boundaries, the four ordered traces, rejection and atomic stops.
+Expected words were derived without the prototype or native FP, using exact
+rational binary search; durable tests check literal outputs and independent
+neighbor-distance/tie inequalities. The period-rounding cut and a midpoint
+fusion counterexample remain explicit. These fixtures do not attest old-producer
+parity or establish all-domain correctness. Old diagnostic/test functions are
+AST-identical; module source identities naturally change without regenerating
+historical logs, reports or cache records. P4-P6/G1-G3, full motion/goal/source/
+wire evidence, old flags/verdicts and helper `1bb89fe` stay unchanged.
+
+The bounded prototype package is complete, not integrated/adopted/qualified.
+Next recommended, not approved: a design-only correctness/work-bound dossier
+for these four helpers and the same four rows, with exact lattice/zero/remainder
+invariants, trusted-base and stop obligations. No new fixtures, numerical runs,
+dependencies, owner/query/log adapter, allowance or qualification promotion.
+All Task 6/9, physical/task-quality, teacher and ST/board gates remain separate.
+
+[controlled-arithmetic-prototype-tests]: tests/test_sim.py
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5902,7 +5961,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §104): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §105): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6002,11 +6061,13 @@ rows in the private synthetic producer, with compatibility/cost/proof/stop check
 no implementation, adoption, numeric/fixture run, acquisition or integration.
 That separately approved design-only proposal is now prepared (§104): explicit
 word/RN64/remainder semantics, four traces, compatibility/tradeoffs and proof/
-cost/stop checks. It is not implemented, executed, adopted or numerically qualified.
-Next proposed, not approved: isolated word/kernel/four-trace prototype and literal
-unit tests, candidate distinct-fixture caps 64 primitive vectors/32 traces; no owner/query/episode/
-old-log adapter, integration or qualification/bound/flag promotion. All broader
-gates remain unchanged.
+cost/stop checks. Its separately approved isolated prototype is now complete
+(§105): exact word/RN64 operations and four traces with independent literal
+fixtures, rejection and atomic stops. This is not producer adoption/parity,
+numerical qualification or owner/runtime integration. Next proposed, not
+approved: design-only correctness/work-bound dossier for these helpers/rows,
+no new numerical fixtures/runs, dependencies, owner/query/log adapter or
+allowance/qualification promotion. All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

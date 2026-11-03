@@ -6774,6 +6774,96 @@ results remain historical, not new numerical qualification.
 
 [cpython-static-cases]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Python/generated_cases.c.h?id=f641d3123029c88838179c83a972bc2be28e6e60
 
+## 104. Controlled Scalar Arithmetic Proposal (2026-11-03)
+
+The user explicitly approved §103's design-only controlled-arithmetic proposal
+for P1-P3/P7 in the private synthetic producer. Work began clean at `9c7e3ed`;
+Current State, §103, DESIGN.md §§1, 2, 7 and 12, `integrate` and the private
+owner's seed/advance/current-goal boundary were read. Only existing documents
+change. No implementation/adoption, integrator/reference/bound/dependency
+change, numerical/fixture/model run, collection or runtime integration is
+authorized. All earlier source/static review failures and evidence are preserved.
+
+**Local hypothesis and checks.** An isolated integer/rational bit-pattern trace
+can specify four rows' rounding and remainder branches without qualifying
+their caller, opaque downstream arithmetic or the installed old producer.
+The first edit introduced four source-ordered traces and a cheap text/source
+preservation check. It passed before the rounder/tradeoffs were expanded; the
+expanded focused check also passed. No arithmetic fixture or producer was run.
+
+**Concrete candidate, not adopted.** [DESIGN.md §7][controlled-arithmetic-design]
+now proposes an unsigned binary64 word boundary, exact signed rational decoding
+with separate zero tags, integer arithmetic and nearest-lattice ties-to-even
+packing. It covers subnormal/carry/overflow transitions, invalid words/divisors,
+zero/cancellation rules and atomic unsupported stops without float/NumPy/libm
+calls or FP-mode changes. The formulas specify mathematical values, not floating
+power evaluation. Its trusted integer/codec/control-flow implementation and
+finite work bounds still require proof and source/environment binding.
+
+Exactly four row traces preserve P1 multiplication; P2 rounded half-angle then
+addition; P3 rounded stored-pi denominator then quotient; and P7 rounded
+additions/period, exact truncation/residue, sign correction and final subtraction.
+Ten unconditional RN64 cells plus one conditional correction cell are an
+analytic count, not performance evidence. Separate P3/P7 denominator occurrences
+stay explicit. Literal 2, immutable pi/duration words and ingress/egress byte
+preservation remain binding obligations, not refreshed current-process facts.
+
+P7's recommended candidate retains the staged fmod-like residue and Python
+divisor-sign/zero correction, including a corrected result that rounds to the
+period. Negative floor division, a fused row or a real-pi Euclidean wrap must
+not silently replace it. Exact residue representability and compatibility are
+proof obligations; no libm comment or sampled parity supplies that proof.
+A separate rational/interval circular object keeps all supported branches and
+does not overwrite the existing mathematical reference or select a nearest
+observed heading.
+
+**Tradeoffs and limits.** Route A is the recommended *prototype candidate*, not
+the active default: controlled word/RN64 traces reduce four FP dispatch questions
+but introduce a new implementation/trusted base and unknown cost. Route B keeps
+today's unchanged CPython producer with its still-missing evidence. Route C
+keeps reference-only rational/interval reasoning, not a producer attestation.
+Format/order/new-contract/old-bit-parity/full-motion/wire compatibility levels
+are distinct. A vetted library could be considered only under separate review;
+there is no dependency acquisition or general soft-float implementation here.
+
+P4-P6 and G1-G3, full motion/goal errors, current State/frame/source ownership,
+helper `1bb89fe`, both clocks, eight-event/seven-advance assumptions and seed-based
+error accounting stay unchanged. No numerical allowance or qualification flag
+is adopted. Integer temporaries and preflight costs remain unmeasured; no CPU,
+firmware fit, board, optical or task-quality claim follows from the cell count.
+
+**Exit and next scope.** The approved design preparation is complete: word/
+rounding/remainder contract, four traces, three alternatives, compatibility
+levels, cost uncertainties, proof and stop checks. It does not exit with a
+tested or qualified arithmetic implementation. All approved scopes are exhausted.
+
+Next recommended, **not approved**: isolated private word/RN64/exact-operation
+kernel and four-row trace prototype with literal synthetic unit fixtures only;
+candidate caps are 64 primitive vectors and 32 trace cases. Reuse existing
+diagnostic/test files; these caps count distinct fixtures, with gate execution
+counts recorded separately and not treated as independent cohorts. Independently
+derive bit/rational expectations, and run
+focused/default source gates only under that separate approval. No owner
+advance, question query, scene/episode/log or old-record adapter, new dependency,
+integration, bound adoption, proof/flag/verdict promotion or task data follows.
+No numerical tests are authorized by this document's completion. Broader Task
+6/9, numerical/physical/task-quality, teacher assets and ST/board gates remain.
+
+**Verification and retention.** `git diff --check` and focused Perl text checks
+pass for four ordered traces, three alternatives, ten unconditional rounding
+cells, zero/remainder/period and non-adoption controls, sections 1-104, 531
+reference uses and 62 distinct reference-defined local targets, fences/math and
+exact preservation of earlier review/design/workflow/history/source bytes.
+Editor diagnostics are clear for all three documents. The final wording check
+caught duplicated fixture-limit and verification-note wording from patch
+context; both paragraphs were repaired without changing the caps or scope. Earlier focused
+checks passed; previous §§102-103 failures are unchanged. No numerical/
+source/default/native/fixture suite, environment inspection/change, source-page
+retrieval or new raw artifact occurred. Only the three existing documentation
+files change; the last source gate remains historical, not rerun qualification.
+
+[controlled-arithmetic-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

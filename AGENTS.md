@@ -118,22 +118,22 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: bounded static CPython P1-P3/P7 path review
-  (DESIGN.md §7 / REVIEW.md §103). Five public API entries mapped; generated
-  source describes direct exact-float alternatives and generic table dispatch.
-  Total extracted disassembly text, including failed/diagnostic Add reads, is
-  31,673 bytes below the 64 KiB cap. Versioned-label validator repair is recorded.
-  No sixth entry/callee expansion; local/generated/live mappings and FP/error
-  evidence stay unqualified. All ten rows, bounds/protocol, old verdicts/flags,
-  code/tests and `1bb89fe` scope are unchanged. No numerical/fixture gate,
-  archive/package acquisition or environment change occurred. Historical gates
-  are not restarted-environment evidence. All approved scopes are exhausted.
-  Next proposed, not approved: design-only controlled-arithmetic alternative for
-  the same four rows/private synthetic producer, compatibility/cost/proof/stop
-  checks; no implementation/adoption, bounds, dependency, numerical/fixture run,
-  collection or integration. Default remains unchanged unqualified/abstaining.
+- Latest approved package complete: design-only controlled scalar arithmetic
+  proposal (DESIGN.md §7 / REVIEW.md §104). Integer/rational word/RN64 candidate
+  specifies four ordered traces, zero/subnormal/overflow and staged remainder
+  semantics, three alternatives and compatibility/cost/proof/stop checks. A
+  prototype candidate, not adopted/default arithmetic or installed-code parity.
+  No implementation, numerical run, bound or qualification change; all ten rows,
+  protocol, old verdicts/flags, source/tests and `1bb89fe` stay unchanged. Goal/
+  sinc/trig/wire and full-motion evidence remain separate and unqualified.
+  Historical gates are not restarted-environment evidence. All scopes exhausted.
+  Next proposed, not approved: isolated word/kernel/four-trace prototype with
+  literal unit fixtures, candidate distinct-fixture caps 64 primitive/32 trace;
+  independent expectations and focused/default gates, no owner/query/episode/
+  old-log adapter, dependency, integration or qualification/bound/flag promotion.
+  Default remains unchanged unqualified/abstaining.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-103 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-104 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1189,14 +1189,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §103 completes
-the approved static path review: five public APIs, 31,673 bytes including earlier
-Add reads, pinned generated-source alternatives and precise unresolved mappings.
-No sixth entry, guessed/callee mapping, numerical run or qualification follows.
-All ten rows, code/tests, protocol/bounds, old verdicts/flags and historical gates
-stay unchanged. Next proposed, not approved: design-only controlled arithmetic
-for these four rows/private synthetic producer, compatibility/cost/proof/stop
-checks, no implementation/adoption, numeric/fixture run, acquisition/integration.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §104 completes
+the approved design-only controlled-arithmetic proposal: four ordered traces,
+explicit word/RN64/remainder and signed-zero contract, three alternatives and
+compatibility/cost/proof/stop checks. No implementation/run/adoption, allowance
+or qualification follows; all ten rows, code/tests, protocol/bounds, old flags/
+verdicts and historical gates stay unchanged. Next proposed, not approved:
+isolated word/kernel/four-trace prototype and literal unit fixtures, 64 primitive/
+32 trace candidate caps; no owner/query/episode/old-log adapter, dependency,
+integration or qualification/bound/flag promotion. All broader gates stay.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1348,8 +1349,13 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   Static path review (REVIEW.md §103): five public APIs mapped within 31,673
   disassembly-text bytes including failed/diagnostic reads. Visible generated
   cases contain direct float arithmetic; compiled/live/callee/FP mappings stay open.
-  Next proposed, not approved: same-row/private-producer controlled-arithmetic
-  design only; no implementation, adoption, numeric run, acquisition/integration.
+  The separately approved design-only controlled-arithmetic result follows;
+  no larger numerical/source scope follows from the static inspection.
+  Controlled arithmetic proposal (REVIEW.md §104): four explicit bit/RN64/staged
+  remainder traces and compatibility/cost/proof/stop checks are prepared, not
+  implemented/adopted/qualified. Next proposed, not approved: isolated kernel/
+  trace/literal-unit prototype, 64 primitive/32 trace candidate caps; no owner,
+  query/episode/log adapter, dependency, integration or allowance/flag promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

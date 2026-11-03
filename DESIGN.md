@@ -3705,6 +3705,192 @@ No implementation/adoption, integrator/reference change, bounds, dependencies,
 numerical/fixture execution, collection or runtime integration follows. All
 approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 
+#### Controlled Scalar Arithmetic Candidate (2026-11-03)
+
+The user approved this design-only proposal preparation ([review §104][controlled-arithmetic-review]),
+not implementation, numerical execution or adoption. The candidate is an
+isolated private synthetic per-step arithmetic trace for P1-P3/P7, not a
+replacement for `integrate`, the owner, the mathematical reference or runtime
+rules. Recommended candidate: exact integer/rational operations on supplied
+binary64 words, followed by explicitly specified round-to-nearest, ties-to-even
+(`RN64`) at every original scalar rounding point. This defines proposed new
+arithmetic semantics; it does not assert installed CPython/libm equivalence.
+
+**Local hypothesis and static check.** A bit-pattern trace can make these four
+rounding/branch operations explicit without purporting to qualify their caller
+or opaque downstream primitives. The cheap documentation check must find
+exactly four ordered row traces, distinct rounded operands, signed-zero and
+remainder correction requirements, no owner/event update or downstream-row
+qualification, and unchanged source/tests. No arithmetic fixture is executed.
+
+`r`, `omega`, `d`, `pi_bits` and `two_bits` below are supplied finite binary64
+words; `two_bits` represents the exact integer literal 2. `value` denotes exact
+signed rational decoding, with a separate zero-sign tag. Operation names refer
+to exact arithmetic before `RN64`, not Python float calls. Constant/source
+binding and conversion into/out of these words remain separate obligations.
+
+| Row | Proposed Ordered Trace | Compatibility/Stop Obligation |
+| --- | --- | --- |
+| P1 | `a=RN64(mul(omega,d))` | Keep the exact stored binary-step duration, not nominal `1/20`; reject unsupported input/packing evidence rather than applying a pose update. |
+| P2 | `half=RN64(div(a,two_bits)); m=RN64(add(r,half))` | Round the division before addition; neither fuse nor substitute the ideal angle. |
+| P3 | `b_q=RN64(mul(two_bits,pi_bits)); q=RN64(div(a,b_q))` | Bind the stored pi word, positive denominator and both rounding points; retain real-pi/argument error separately for later P4/P5 composition. |
+| P7 | `x_1=RN64(add(r,a)); x=RN64(add(x_1,pi_bits)); b_r=RN64(mul(two_bits,pi_bits)); t=trunc(value(x)/value(b_r)); rho=value(x)-t*value(b_r); z=RN64(rho,zero_sign_of_x); u=fix_divisor_sign(z,b_r); r_next=RN64(sub(u,pi_bits))` | The quotient is exact truncation toward zero, not a rounded float division or negative floor division. `fix_divisor_sign` returns divisor-signed zero for zero residue, rounds `z+b_r` for negative nonzero residue, otherwise preserves `z`. |
+
+P3/P7 retain their separate denominator occurrences; no constant hoisting or
+shared intermediate is implied. The remainder path keeps the staged fmod-like
+residue/sign-correction schedule, not a fused real-pi Euclidean wrap. A rounded
+corrected residue may equal the stored period; do not clamp it to zero or
+force a half-open heading interval. Current circular-reference branching and
+unknown behavior remain separate. P4-P6 and G1-G3, float/NumPy boundary codecs,
+source/wire ownership, full-motion error, physical and task-quality gates are
+**not qualified** by this candidate. No code, bound, flag or verdict changes.
+
+**Word boundary and proposed arithmetic kernel.** Accept only nonboolean
+unsigned 64-bit integer words with an explicitly declared binary64 layout:
+one sign bit, eleven exponent bits and 52 fraction bits. Reject all-one exponent
+fields (NaNs/infinities), unsupported formats, malformed evidence and resource
+preflight failure. Do not coerce arbitrary Python/NumPy values, strip signed
+zero, infer source authority or accept an input merely because it can round-trip
+through the wire. A future ingress/egress adapter must separately bind original
+stored binary64 bytes, immutable constant words and output bit preservation.
+This document does not capture or attest those words from the current process.
+
+For normal fields $E,F$ and sign $s$, exact decoding is
+$(-1)^s(2^{52}+F)2^{E-1075}$; for exponent field zero it is
+$(-1)^s F2^{-1074}$. These are mathematical values represented by integer
+pairs, not floating-power instructions. Keep zero's sign as a tag, not just
+rational value zero.
+Exact addition/subtraction/multiplication/division operate on integer numerator/
+denominator pairs, with positive denominator. Division by zero is unsupported.
+No float conversion, NumPy, libm, floating `log`/`round`, ambient rounding-mode
+change or contracted/fused operation is part of the proposed kernel.
+
+For a nonzero exact magnitude, determine its binary exponent by integer
+bit-length/comparison, not a floating logarithm. Choose the binary64 lattice
+quantum from that exponent, floored at subnormal spacing $2^{-1074}$. Use integer
+quotient/remainder after exact scaling to that quantum; increment the quotient
+when twice the remainder exceeds the denominator, or at equality when the
+quotient is odd. Normalize a significand carry and pack the word exactly.
+Normal/subnormal transitions, tie carries and the maximum-finite transition
+must be proved, not handled by a float conversion. A rounded nonfinite result
+stops unsupported, without publishing a partial trace or updating any owner.
+An exact nonzero result rounded to zero retains its sign.
+
+Specify zero rules independently: multiplication/division use operand-sign XOR;
+addition of two negative zeros returns negative zero, while other zero additions
+and exact nonzero cancellation return positive zero under this proposed mode.
+Subtraction flips the right operand's sign, including zero, before applying the
+addition rules. Exact rational evaluation alone is insufficient to infer these
+tags. Source input zeros, underflow-to-zero and cancellation are distinct cases.
+
+This is a narrow arithmetic specification, not a general soft-float library or
+a claim about the current hardware mode. A vetted bit-exact library is another
+possible implementation route, requiring separate source/licence/dependency
+review; an IEEE remainder operation is not automatically Python `%`/fmod.
+The integer-only route still trusts integer operations, memory/control flow,
+bit packing and source/compiler identity. It reduces four FP-kernel dependency
+questions; it does not waive Q0-Q5 or create a qualified implementation.
+
+**Remainder and interval alternatives.** The proposed staged P7 default computes
+the quotient's magnitude with unsigned integer division and applies its sign
+for truncation toward zero; negative `//` is not that operation. It forms the
+exact fmod-like residue from the *rounded* `x` and *rounded* positive `b_r`.
+Residue representability and zero sign are proof obligations for this algorithm,
+not inherited from a libm comment or sampled parity. Round/correct/pack in the
+listed order, including `u==b_r` and the subsequent subtraction.
+
+An independent rational Euclidean residue using the stored period can help
+check algebraic sign/quotient relations, but any equivalence to the staged
+rounding path must be demonstrated, not assumed. A real-pi interval wrap is
+instead an ideal circular-reference object: uncertain period/quotient or a cut
+requires all supported branches, not selection of a scalar nearest the observed
+heading. It is not a replacement producer and must not alter `1bb89fe` or its
+verdicts. Similarly, rounding an entire unfactored row once is a different
+candidate from preserving every source rounding point.
+
+**Compatibility levels and alternatives.** These are choices for review,
+not an adopted configuration, dependency or replacement.
+
+| Route | Benefit | Limitation/Proposed Use |
+| --- | --- | --- |
+| A: integer/rational RN64 bit trace | Explicit finite-format arithmetic, evaluation order and remainder branches, without these four native FP dispatch kernels. | Recommended first isolated prototype candidate. A new implementation/trusted base must be verified; byte equality with installed CPython is not promised. |
+| B: retain installed CPython arithmetic | Preserves today's producer code and artifacts without migration. | Remains the current default. Needs actual dispatch/build/FP/domain/uniform-error evidence; further wrapper inspection alone does not supply it. |
+| C: rational/interval reference only | Mathematical target/branch evidence with explicit uncertainty and no producer change. | Retain as independent reference evidence. It neither attests the installed producer nor defines a unique controlled binary64 result. |
+
+Bit-format and literal-2 compatibility are different from preserving each
+source rounding point, matching a newly specified finite arithmetic contract,
+bit-for-bit agreement with the installed old producer, or full pose/State/wire
+compatibility. Test/report these levels separately. Do not use disagreement
+between A/B as proof that either is wrong until B's contract is independently
+qualified; source-order agreement alone is not byte parity. No candidate
+outputs may be spliced into current events, snapshots, cached bindings or logs.
+
+**Composition, closure and cost.** A future trace worksheet, not a runtime
+schema, names source/constant words, row/cell order, exact operand/result values,
+zero tags, rounded output words, rational rounding evidence and stop reasons.
+Operand rounding is propagated before each cell's own error. P3's stored-pi
+and argument contribution enters P4/P5 composition once; no sinc cancellation
+or exact-one-at-zero claim is unlocked. P7 retains circular real-pi comparison,
+not bare wrapped subtraction. The existing same-stored-pose local errors and
+seed-based recurrence remain requirements; held receipts do not reset error.
+G1 still normalizes only the current goal, not the next motion heading, and G2/
+G3 still compare against the same stored pose without adding ideal-pose error
+again. Binary-step and nominal clocks are not merged.
+
+Whole-row trace admission retains the private finite twist/heading/duration and
+eight-event/seven-advance profile, without inventing a smaller scene envelope.
+Kernel format correctness alone does not prove computed-domain closure for
+these rows or any downstream primitive. Each divisor, exponent shift, integer
+quotient/remainder, carry and materialized intermediate needs a derived work/
+storage preflight. Repeated rounding bounds word-valued state, not every temporary
+integer. Do not borrow the reference's 65,536-bit cap as a producer cost guarantee.
+Missing cap/domain evidence yields unsupported, not a larger budget or clamp.
+
+The listed four-row trace has ten unconditional RN64 calls and one additional
+call on the negative nonzero remainder-correction branch. This is an analytic
+operation count, not a benchmark; exact integer division and large temporaries
+can be much more expensive than native arithmetic. No time, allocation/stack,
+firmware fit, NPU or task-quality measurement is claimed. An eventual host-only
+prototype and board implementation would have independent evidence/budgets.
+
+**Proof and acceptance checks, proposed and unexecuted.** Prove exact word
+decode/encode, integer arithmetic/quotient signs, nearest-lattice rounding,
+ties-to-even, carry/normal/subnormal/overflow transitions and every zero-sign
+rule. Bind the implementation/trusted base and independently derived finite
+working-integer bounds. Literal bit fixtures and a separate rational/lattice
+argument must supply expected results, not the new rounder or existing FP calls
+as their own oracle. Shared integer infrastructure remains an explicit trust
+assumption; samples do not prove a uniform producer-error bound.
+
+Checks must cover signed zeros/cancellation, both tie parities, subnormal
+underflow and normal transitions, division/multiply exponent extremes, invalid
+words/denominators, quotient sign, remainder zero and period-rounding cuts,
+source-order versus fused-row differences, constant/word binding, wrong row
+dependencies and preflight/atomic stop behavior. An interval branch ambiguity
+must abstain. Owner/source/wire and all ten old qualification flags/verdicts
+must be unchanged; a passed isolated trace cannot qualify P4-P6/G1-G3 or become
+a new label, dataset or physical-clearance claim.
+
+**Exit and next permission.** This preparation exits with a concrete word/
+rounding/remainder contract, four ordered traces, three route tradeoffs,
+compatibility levels, cost uncertainties and proof/stop checks. Nothing is
+implemented, run, adopted or bounded numerically by completing the document.
+Recommended next bounded package, **not approved**: an isolated private
+word/RN64/exact-operation and four-trace prototype with synthetic literal unit
+tests only, reusing the existing diagnostic/test files. Candidate fixture caps are
+64 distinct primitive vectors and 32 distinct row-trace cases,
+no owner advances, question queries,
+scene/episode/log use, old-record adapter, integrations or proof/allowance/flag
+promotion. Test expectations need independent bit/rational derivations and
+focused/default source gates; no external package or GPU is required by the
+candidate. Gate invocations reuse those cases and report execution counts
+separately, never as independent cohorts. These counts authorize no run here
+and are not representative data
+or a uniform certification plan. Separate prototype approval and later numerical
+qualification/adoption remain necessary. All present approvals are exhausted.
+
+[controlled-arithmetic-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5716,7 +5902,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §103): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §104): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5814,7 +6000,13 @@ not bound float/generated/live paths or numerical qualification. Next proposed,
 not approved: a design-only controlled-arithmetic alternative for the same four
 rows in the private synthetic producer, with compatibility/cost/proof/stop checks;
 no implementation, adoption, numeric/fixture run, acquisition or integration.
-All broader gates remain unchanged.
+That separately approved design-only proposal is now prepared (§104): explicit
+word/RN64/remainder semantics, four traces, compatibility/tradeoffs and proof/
+cost/stop checks. It is not implemented, executed, adopted or numerically qualified.
+Next proposed, not approved: isolated word/kernel/four-trace prototype and literal
+unit tests, candidate distinct-fixture caps 64 primitive vectors/32 traces; no owner/query/episode/
+old-log adapter, integration or qualification/bound/flag promotion. All broader
+gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

@@ -7285,6 +7285,110 @@ No Python/default/native/source fixture or numerical gate was rerun. §105's
 
 [arithmetic-paper-design]: DESIGN.md
 
+## 109. Twelve-Case Scalar/Controlled-Trace Compatibility (2026-11-03)
+
+The user approved §108's tests-only ordinary scalar/controlled-trace comparison
+and focused/default test gates, then requested autonomous work and periodic
+local commits. Work began clean at `9d3e381`. Current State, §108 and the local
+literal fixtures/trace/integrator expressions were reviewed. This approves
+only the bounded comparison, not production edits, owner advances, query/log
+adapters, data collection, integration or proof/allowance/flag promotion.
+
+**Local hypothesis and first discriminating check.** The eleven scalar words
+per existing literal case should agree exactly with the independent literal
+sheet and controlled trace, including signed zeros, raw residue and corrected
+period-reaching remainder. Added one parametrized test in
+[the existing simulator tests][scalar-compatibility-tests], reusing the unchanged
+`_ARITHMETIC_TRACE_LITERALS` and argument helper. The first twelve-case focused
+run passed; no mismatch was hidden or converted to a tolerance.
+
+Pylance and terminal select `/opt/venv/bin/python`; `python -VV` reports
+Python 3.12.3, GCC 13.3.0. Struct word/float round-trips check all five supplied
+inputs as builtin floats, and constants match 0.05/math.pi/2.0. Scalar arithmetic
+retains integer literal two and separate period evaluations, as in the current
+integrator's four scalar expressions. The test does not call the integrator:
+no position/distance/sinc/trigonometric/owner/question/log path is added.
+
+**Observed compatibility.** Twelve reused input pairs, 132 intermediate words
+per path: native words equal the existing literal sheets and the controlled
+trace exactly. Raw `math.fmod`, Python `%` and the separately staged correction
+agree at their compared words; trace correction tags agree. All twelve raw-
+residue error ratios are (0,1), and `producer_parity_qualified` stays false.
+Literal-derived coverage is eight `none`, two `divisor_signed_zero` and two
+`negative_nonzero` corrections; ten zero/ two one quotients. Negative zero,
+zero residue, stored-pi wrap endpoints and negative correction rounding to the
+period are included. A positive-pi output is not clamped away.
+
+There are no new primitive/trace input fixtures: all twelve are reused from
+§105. Two successful focused runs and the default gate each execute the new
+comparison on those same twelve cases (36 new-comparison trace calls), not
+three independent cohorts. Existing suite fixtures/control paths also run in
+the explicitly approved default gate; the twelve-case limit does not claim
+zero owner activity throughout that pre-existing suite. The new test itself
+has no owner advance/question query/scene/log adapter. Existing synthetic
+model/export controls in the default suite are not live teacher/trained-model
+inference; no new study episode, label/dataset or persistent comparison artifact.
+
+**Failure history and successful gate.** First focused command:
+`python -m pytest -q tests/test_sim.py -k synthetic_arithmetic_scalar_trace_compatibility --tb=short`
+passed 12 cases, 1,174 deselected, 0.80 s. Narrow Ruff lint and editor diagnostics
+passed, then `ruff format --check tests/test_sim.py` failed on the new tuple
+assertion and generator layout. That combined command stopped before the full
+suite. Applied exactly the two requested formatting changes; no computation,
+assertion, literal or scope changed. The same focused command passed 12 cases
+in 0.78 s, then narrow lint and changed-file format passed.
+
+The repository-root default gate
+`python -m pytest -q && ruff check . && git diff --check` passed: 2,109 passes,
+one preserved transformer xfail, 71 existing ONNX deprecation/tracing warnings,
+55.81 s for pytest. No reported skips. Editor diagnostics are clear after the
+repair. Timing includes the test runner/collection and is not an arithmetic
+deadline, work bound or hardware measurement. No tolerance/deadline/guard,
+assertion or known xfail was relaxed. C/runtime source is unchanged; no
+additional opt-in sanitizer/Arm/vendor/board gate was run.
+
+**Preservation and evidence limits.** AST comparison removes only the new
+test function and matches the baseline module exactly: all 251 previous function
+ASTs, imports and literal fixtures unchanged. The diagnostics blob remains
+`fa78f69d3f3a504ec5b086842f0aaf980d5b5288`; the updated test blob is
+`8b4accbbc7a5c56ad40ffbfdb89034096a8bca8e`. Defaults, old source/ownership/wire/
+motion verdicts, all flags/bounds, the reference `1bb89fe` and existing reports/
+quarantined logs remain unchanged. There is no production module-source change
+to invalidate source-keyed study caches.
+
+Exact observed agreement does not establish the actual modulo/GCD/integer
+instruction path, live FP state, authenticated native build, uniform error,
+all-domain parity, time/live-memory bound or accepted proof. D0/R1-R5/O0/T0
+remain conditional/unaccepted and W0/TB0 remain open; S0's ValueError-only
+published-result behavior is not expanded. No optical/physical or representative
+task-quality evidence, runtime rules or Task 6/9 completion follows.
+
+**Exit and next permission.** The approved comparison and gates are complete.
+The new twelve-case run permission is exhausted; no further numerical study
+or new fixture/owner run follows from the request to continue autonomously.
+Next recommended, **not approved**: design-only opt-in private synthetic-owner
+arithmetic contract. Candidate ingress binds stored heading/twist words and
+literal constants; P1/P2/P3/P7 would feed angle/midpoint/sinc argument/next yaw
+while keeping remaining operations/clocks explicit and unqualified. Compare
+an additive separately identified candidate lane with leaving the helper
+isolated; retain isolation/defaults meanwhile. Specify provenance/old-verdict
+separation, unsupported/exception/atomic-advance behavior and work/acceptance
+gates. No silent native fallback or per-input outcome-driven producer choice.
+Preparing that proposal would authorize no code/runtime import, owner tick,
+fixture/episode/query/log adapter, source/wire adoption, risk/allowance/flag
+promotion, data/integration, dependency/acquisition or hardware claim.
+
+Only tests/test_sim.py and the three checkpoint documents change. Prior REVIEW
+history is retained. Scoped checks passed: sections 1-109, 546 reference uses/
+local targets, fence/math controls, prior review/dossier/workflow/history
+preservation, exact evidence/failure counts and four-file source/test scope.
+Whitespace is clean; the one-function test diff and checkpoint changes were
+reviewed. No cleanup, background job,
+artifact regeneration or assistant push; teacher assets and ST/board remain
+unavailable and all broader Task 6/9/physical/task-quality gates stay.
+
+[scalar-compatibility-tests]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

@@ -118,20 +118,19 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: conditional arithmetic paper review
-  (DESIGN.md §7 / REVIEW.md §108). Eight D0/R1-R5/O0/T0 derivations under explicit
-  integer/GCD/canonical/stable-binding/success assumptions, including raw-residue
-  representability for quotient zero/one. Not accepted proof, native/build/live/
-  work evidence, allowance or qualification. §107's three-file/47,635-byte read
-  scope stays exhausted; no extra implementation read, import, code/fixture run.
-  Eleven dossier obligations, old bounds/flags/verdicts and `1bb89fe` unchanged.
-  Next proposed, not approved: tests-only scalar/trace comparison on at most
-  twelve reused literal cases, exact words/sign/correction and focused/default
-  source-test gates under new permission. No production source edit, owner advance,
-  question query, scene/log adapter, new episodes/data, integration/dependency/
-  acquisition, W0/TB0 or native/work/allowance/flag promotion. Default unqualified.
+- Latest approved package complete: twelve-case scalar/controlled-trace comparison
+  (DESIGN.md §7 / REVIEW.md §109). All 132 intermediate words per path match the
+  reused literal sheets exactly; zero/correction tags and raw-residue errors
+  agree. One tests-only function; all 251 prior function ASTs/literals unchanged.
+  Not all-domain/native/build/live/work evidence, accepted proof or qualification.
+  Runtime/source/defaults/old bounds/flags/verdicts and `1bb89fe` unchanged. All
+  read/run scopes exhausted. Next proposed, not approved: design-only opt-in
+  private synthetic-owner arithmetic contract, explicit word ingress/four-cell
+  substitution and distinct provenance/failure/work gates; isolation is default.
+  No implementation/import/owner tick/fixture/episode run, query/log adapter,
+  source/wire adoption, integration/dependency/acquisition or promotion follows.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-108 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-109 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -142,10 +141,10 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source gate (2026-11-03): 2,097 passes plus known xfail; lint/changed-file
-  format/editor diagnostics pass after two PLR0402 import repairs. No C/native
-  source changed or additional opt-in sanitizer/Arm gate was run; their earlier
-  2026-10-22 evidence remains historical. No deployment or task-quality result.
+- Last source-test gate (2026-11-03): 2,109 passes plus known xfail, 71 existing
+  ONNX warnings; lint/changed-file format/editor diagnostics pass after two new
+  test-layout repairs. No runtime/C source change or additional opt-in sanitizer/
+  Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
   predictive targets, never as student input. Observation-only human review
   remains for semantic/real-world data. Existing logs stay quarantined; no label,
@@ -1188,14 +1187,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §108 completes
-the approved eight-obligation conditional paper review. Canonical/lattice/zero/
-overflow and profile-specific raw-residue arguments, not accepted proof or
-native/build/live/work/qualification evidence. Source/tests, old bounds/flags/
-verdicts and `1bb89fe` unchanged; §105's 2,097 passes plus known xfail not rerun.
-Next proposed, not approved: tests-only scalar/trace comparison on twelve reused
-literal cases at most, new focused/default gate permission; no production edit,
-owner/query/scene/log adapter, collection/data/integration or promotion.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §109 completes
+the approved twelve-case scalar/controlled-trace comparison: 132 words per path
+match literals; zero/correction/error checks pass. All prior test ASTs unchanged;
+gate 2,109 plus known xfail. Not all-domain/native/work/proof qualification.
+Runtime/source/defaults/old bounds/flags/verdicts and `1bb89fe` unchanged.
+Next proposed, not approved: design-only opt-in private synthetic-owner arithmetic
+contract, word ingress/four-cell substitution, distinct provenance/failure/work
+gates. No code/import/owner/fixture/episode run, adoption/integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1369,9 +1368,13 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   conditional paper outcome follows; no extra read/fixture/numerical scope implied.
   Paper review (REVIEW.md §108): eight conditional derivations and zero/one raw-
   residue representability, not accepted proof, native/work or qualification.
-  Source/tests/flags/bounds/verdicts unchanged. Next proposed, not approved:
-  tests-only scalar/trace comparison on twelve reused cases at most; no production
-  edit, owner/query/log adapter, new data/integration or allowance/flag promotion.
+  Source/tests/flags/bounds/verdicts unchanged in that scope. Its separately
+  approved bounded compatibility result follows; no extra runtime scope implied.
+  Scalar/trace comparison (REVIEW.md §109): twelve reused cases/132 words per path
+  match exactly, zero/correction/error checks pass; 2,109 plus known xfail. Only
+  one test added; no runtime/owner/source edit or qualification. Next proposed,
+  not approved: design-only opt-in owner arithmetic contract, no code/import/
+  fixture/episode run, source/wire adoption, data/integration or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

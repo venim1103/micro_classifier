@@ -424,6 +424,85 @@ def _literal_trace_arguments(heading, turn):
     }
 
 
+@pytest.mark.parametrize("heading,turn,expected", _ARITHMETIC_TRACE_LITERALS)
+def test_synthetic_arithmetic_scalar_trace_compatibility(heading, turn, expected):
+    import struct
+
+    from sim.diagnostics import _trace_synthetic_binary64_rows
+
+    arguments = _literal_trace_arguments(heading, turn)
+    input_words = tuple(
+        arguments[name]
+        for name in (
+            "heading_word",
+            "turn_word",
+            "duration_word",
+            "pi_word",
+            "two_word",
+        )
+    )
+    scalar_inputs = tuple(
+        struct.unpack("<d", struct.pack("<Q", word))[0] for word in input_words
+    )
+    assert all(type(value) is float for value in scalar_inputs)
+    assert (
+        tuple(
+            struct.unpack("<Q", struct.pack("<d", value))[0] for value in scalar_inputs
+        )
+        == input_words
+    )
+    heading_value, turn_value, duration, stored_pi, two_value = scalar_inputs
+    assert (duration, stored_pi, two_value) == (0.05, math.pi, 2.0)
+
+    angle = turn_value * duration
+    half = angle / 2
+    midpoint = heading_value + half
+    denominator_q = 2 * math.pi
+    argument = angle / denominator_q
+    first_sum = heading_value + angle
+    shifted = first_sum + math.pi
+    denominator_r = 2 * math.pi
+    residue = math.fmod(shifted, denominator_r)
+    corrected = shifted % denominator_r
+    final = corrected - math.pi
+    if residue == 0.0:
+        correction = "divisor_signed_zero"
+        staged_correction = math.copysign(0.0, denominator_r)
+    elif residue < 0:
+        correction = "negative_nonzero"
+        staged_correction = residue + denominator_r
+    else:
+        correction = "none"
+        staged_correction = residue
+    assert struct.pack("<d", corrected) == struct.pack("<d", staged_correction)
+    native_words = tuple(
+        struct.unpack("<Q", struct.pack("<d", value))[0]
+        for value in (
+            angle,
+            half,
+            midpoint,
+            denominator_q,
+            argument,
+            first_sum,
+            shifted,
+            denominator_r,
+            residue,
+            corrected,
+            final,
+        )
+    )
+    assert native_words == expected
+    trace = _trace_synthetic_binary64_rows(**arguments)
+    assert trace["supported"]
+    assert trace["intermediate_words"] == native_words
+    assert trace["residue_correction"] == correction
+    residue_cell = next(
+        cell for row in trace["rows"] for cell in row["cells"] if cell["name"] == "z"
+    )
+    assert residue_cell["rounding_error_ratio"] == (0, 1)
+    assert trace["producer_parity_qualified"] is False
+
+
 def _assert_literal_nearest_word(exact, word):
     magnitude = word & ((1 << 63) - 1)
     distance = abs(_literal_binary64_fraction(word) - exact)

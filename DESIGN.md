@@ -4411,6 +4411,42 @@ Default remains unchanged, unqualified and abstaining where evidence is missing.
 
 [arithmetic-paper-review]: REVIEW.md
 
+#### Bounded Scalar/Trace Compatibility (2026-11-03)
+
+The user separately approved §108's tests-only comparison on at most twelve
+reused literal trace cases ([review §109][arithmetic-compatibility-review]).
+Native scalar expressions retain the current integrator's multiplication,
+integer-two division/period expressions and ordered modulo wrap. Binary64
+struct round-trips bind the supplied words to builtin floats and the stored
+duration/pi/two literals. Direct `math.fmod` supplies a raw-residue comparison;
+Python `%` supplies the corrected value. Neither requires running the integrator,
+motion owner, sinc/trigonometric body, question coordinator or a log adapter.
+
+All eleven intermediate words per case agree exactly with both the previously
+recorded literals and the controlled trace. Signed-zero/correction tags agree,
+and the raw-residue error ratios are zero on these cases. The period-reaching
+negative correction and positive/negative-pi endpoints remain represented;
+there is no clamping or half-open wrap assertion. This is bounded compatibility
+evidence for the selected interpreter and reused inputs, not independent data,
+all-domain parity, accepted proof, instruction/FP-state binding or native/work
+qualification. Source, defaults, old flags/bounds/verdicts and `1bb89fe` stay.
+
+**Next proposed scope, not approved:** prepare a design-only opt-in private
+synthetic-owner arithmetic contract. Candidate word ingress would bind stored
+heading/twist and the literal constants, mapping P1/P2/P3/P7 to angle/midpoint/
+sinc argument/next heading while preserving the remaining operations and both
+clocks. A separately identified candidate lane must never inherit old ownership,
+wire, motion or qualification verdicts merely from these twelve comparisons.
+Specify candidate provenance, unsupported/exception/atomic-advance rules and
+work/acceptance gates before any implementation; no silent native fallback or
+per-input outcome-driven producer selection. Leaving the helper isolated is
+the retained alternative/default. No owner/source/wire edit, fixture/episode
+run, runtime import, integration, allowance/flag promotion or Task 6/9 claim is
+authorized by that proposed preparation. All numerical/physical/task-quality,
+teacher-asset and ST/board gates remain separate.
+
+[arithmetic-compatibility-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6422,7 +6458,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §108): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §109): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6533,10 +6569,12 @@ complete (§107): Fraction rational paths and integer-header boundaries, not
 native/build/live/work qualification. Its separately approved paper review is
 complete (§108): eight conditional D0/R1-R5/O0/T0 derivations, including canonical
 pairs and raw-residue representability under the declared profile, not accepted
-proof or qualification. Next proposed, not approved: tests-only scalar/trace
-comparison on at most twelve reused literal cases, focused/default gates under
-new permission; no production source edit, owner/query/scene/log adapter, new
-episodes/data, integration, native/work/allowance/flag promotion. All gates stay.
+proof or qualification. Its separately approved twelve-case scalar/trace
+comparison is complete (§109): exact word/sign/correction agreement, not
+all-domain/native/work qualification or runtime integration. Next proposed, not
+approved: design-only opt-in private synthetic-owner arithmetic contract, with
+word ingress, four-cell substitution, distinct provenance/failure/work gates;
+no implementation/import/fixture/episode run, adoption or promotion. All gates stay.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

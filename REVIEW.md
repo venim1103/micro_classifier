@@ -6382,6 +6382,84 @@ in the session only, with no source archive or raw report persisted in the repo.
 [primitive-ubuntu-python]: https://launchpad.net/ubuntu/+source/python3.12/3.12.3-1ubuntu0.17
 [primitive-ubuntu-glibc]: https://launchpad.net/ubuntu/+source/glibc/2.39-0ubuntu8.4
 
+## 101. Primitive Qualification Protocol Preparation (2026-11-03)
+
+The user's continuation approved the documentation-only protocol proposed at
+§100. Work began clean at `3ab5f4e`; Current State, §§98-100 and DESIGN.md
+§§1, 2, 7 and 12 were read, with the integrator and owner advance/goal consumers
+checked locally. This approval covers preparing the protocol, not adopting it,
+qualifying a row or executing future evidence gates. No source-package download,
+install, environment change, numerical/model/fixture run, source/test change,
+bound adoption, collection or integration is authorized by this package.
+
+**Local hypothesis and cheap discriminating check:** the existing ten-row
+ledger can become an actionable proof/check protocol without inventing a
+tolerance or conflating source identity with numerical qualification. The
+source still advances from the previous stored heading and normalizes only
+the current goal transform. The first static check will require exactly
+P1-P7/G1-G3, six ordered evidence gates, a proof/check and stop condition per
+row, explicit sinc-zero/goal-dtype obligations and unchanged earlier history
+and source bytes. Missing one of those would falsify the draft's completeness.
+
+**Prepared candidate, not adopted:** the
+[DESIGN.md §7 protocol draft][primitive-protocol-design] defines a proposed
+evidence worksheet rather than a new runtime schema, and Q0-Q5 for claim/input
+binding, source/build/path correspondence, process-local FP contract,
+independent uniform error argument, computed-domain closure/composition and
+review followed by separate adoption. Its ten-row matrix gives each existing
+operation a proof obligation and stop condition. Hashes, source descriptions,
+assumptions, reference uncertainty and sampled residuals remain distinct.
+
+The matrix explicitly covers sinc's tiny zero substitution and actual scalar/
+0-D route, Python remainder's sign/zero branches, NumPy short-array/fixup paths,
+goal dtype inference/conversion and goal-only atan2. P4 local error is at exact
+stored q; P3 argument uncertainty is composed once, not counted again in P5.
+Motion errors start from the same stored pose before the existing seed-based
+recurrence; current-event goal error does not add ideal-position error again.
+Both clocks and original/decoded wire verdicts remain separate.
+
+The proposed comparison back-projects supported implementation error E from
+the exact stored result O, comparing independent real-target enclosure R with
+O-E. Whole-reference containment, disjointness and mere overlap remain distinct;
+angles retain circular branches. Missing evidence stays unresolved and cannot
+support either a numerical pass or inconsistency claim. No existing checker,
+helper output, admission rule, source/wire verdict or qualification flag changed.
+
+**Acceptance and evidence limits:** preparation completes the worksheet fields,
+six ordered gates, ten proof/stop rows, composition/branch accounting,
+invalidation and future acceptance controls. The controls are proposed, not
+executed; no numeric allowance, proof dependency/tool, fixture/sample count or
+future run budget was selected. All primitive rows remain unqualified. This
+does not complete Task 6/9 or sensor/physical/task-quality/hardware qualification.
+
+**Next candidate, not approved:** a read-only CPython correspondence dossier
+for P1-P3/P7, limited to already-installed identity/build metadata and official
+public patch/build pages for the exact Ubuntu Python source package and amd64
+build. Recommended default: establish or precisely fail source/build/path
+correspondence before a scalar error proof or numerical study. No archives,
+packages, dependencies, settings changes, numerical/model/fixture execution,
+code or bound adoption; no persisted raw artifact is required. Missing official
+correspondence records are a stop condition, not permission to acquire sources.
+Acquisition, independent proof implementation, measurement or integration each
+needs its own later scope. This documentation-only preparation is complete and
+exhausted; no other approved task or background job remains.
+
+**Verification:** the first text-only check passed exactly ten proof/stop
+rows, six ordered gates, explicit branch/accounting/approval obligations and
+byte-identical earlier DESIGN.md/REVIEW.md content and tracked Python/C/header
+files relative to `3ab5f4e`; `git diff --check` passed. The completed three-document
+handoff check passed 518 reference uses, 62 distinct reference-defined local
+targets, balanced fences/display math, review sections 1-101, ten rows/six gates,
+current checkpoints and preserved prior review/design scope/workflow/history.
+Only AGENTS.md, DESIGN.md and REVIEW.md changed; editor diagnostics report no
+errors in all three. These are documentation checks, not proof or execution
+of Q0-Q5. The default code suite, numerical/fixture and native gates were not
+rerun; historical results stay historical. No web
+fetch, project import, numerical primitive, producer or simulator/model call
+was needed to prepare the protocol. No raw artifact or cleanup is pending.
+
+[primitive-protocol-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

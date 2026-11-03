@@ -3536,6 +3536,133 @@ protocol specifying the missing build/FP/reference/domain evidence and stop
 conditions, without package acquisition, environment changes, numerical studies,
 implementation or bound adoption. Collection/runtime and broader gates stay closed.
 
+#### Primitive Qualification Protocol Draft (2026-11-03)
+
+The user's continuation approved this documentation-only preparation
+(REVIEW.md §101), not the protocol's adoption or execution. It refines the
+existing ten-row plan using §§99-100's identity/source findings; it does not
+replace the [integrator][c1-motion-source],
+[owner/reference/checker][c1-prototype-source] or their verdicts. Proposed
+default: require the following evidence before recommending any allowance.
+No row is qualified by this draft, and no numeric tolerance is selected.
+
+**Proposed evidence worksheet, not a runtime schema.** Each row would carry
+its exact expression/operation order, real local target, units, operand bit
+patterns and dtype/shape, domain with branch coverage, implementation identity,
+reference/proof identity and uncertainty, error formula and dependencies,
+evidence classification, unresolved reason and invalidation conditions.
+Classifications distinguish assumptions, source descriptions, independently
+justified uniform bounds and diagnostic residuals. Empty evidence is not zero
+error; a hash or finite residual is not a uniform bound. Any later worksheet
+exporter, checker, package acquisition or evidence run needs separate approval.
+
+**Ordered evidence gates, proposed and not executed:**
+
+1. **Q0: Claim and input binding.** Name the existing private constant-twist
+  model, exact binary-step duration, seed/epoch and at most eight consecutive
+  events (seven advances), exact stored twist and pose, owned scene/goal and
+  same-stored-pose local target. Keep the nominal clock separate. Characterize
+  actual conversions rather than assuming Scenario annotations coerce values.
+  An unsupported stored goal representation remains unresolved, not silently
+  cast to a newly adopted dtype or excluded by a new input restriction.
+2. **Q1: Source/build/path correspondence.** Bind current project bytes,
+  CPython scalar/math wrappers, NumPy generated scalar/ufunc/fixup paths and
+  versioned libm implementations to loaded images and the applicable patched
+  source/build records. Record compiler/ABI/options and conversion paths.
+  Upstream tags and latest Ubuntu changelog entries alone cannot close this
+  gate. NumPy target metadata is not a trace of the selected short-array loop
+  or libm IFUNC. Missing correspondence stops claims about that implementation.
+3. **Q2: Execution arithmetic contract.** Establish the relevant process-local
+  rounding direction, intermediate precision, contraction/FMA and subnormal/
+  signed-zero/overflow behavior for every selected path. Bind evidence to the
+  producer execution and invalidate it when those properties can change.
+  Neither float_info.rounds nor an earlier inspector process establishes this
+  contract. Do not change FP mode or environment to make the claim succeed.
+4. **Q3: Independent uniform error argument.** For basic arithmetic/conversion,
+  enclose exact operations and justified rounding under Q1/Q2, including
+  absolute near-zero/underflow error. For sinc/trig/atan2/remainder, require a
+  supported uniform contract or independently checked complete decomposition,
+  including range reduction and exceptional branches. Existing rational
+  integral/pi enclosures can supply real targets, not implementation errors.
+  A second call through the same libm is not independent; a high-precision
+  reference would need its own justified uncertainty and provenance. Sampled
+  agreement, glibc goals and known-test maxima remain diagnostic only.
+5. **Q4: Computed-domain closure and composition.** Propagate prior input/error
+  intervals through the ordered program before invoking each row's argument.
+  Cover every reachable branch and conversion, denominator/norm separation,
+  cancellation, source scale and wrap cuts. Compose supported local errors
+  into the existing seed-based recurrence; do not reset on later stored events
+  or held receipts. A domain escape or missing upstream row stops dependent
+  bounds, not unrelated bookkeeping or already-established source identity.
+6. **Q5: Review and separate adoption.** Record exactly which claim, domain and
+  implementation the evidence supports, independent checking and unresolved
+  obligations. A completed proof dossier is a recommendation, not automatic
+  checker integration, numerical certification, physical qualification or
+  runtime/data approval. Any adoption or implementation requires a separate
+  explicit scope and its applicable regression gates.
+
+**Row-specific proof/check matrix, not executed:** the real targets and
+expressions remain those of the ten-row ledger above. This matrix makes the
+required argument and failure boundary explicit, without inventing allowances.
+
+| Row | Required Proof or Check | Stop Condition |
+| --- | --- | --- |
+| P1 | Exact stored omega-duration product and supported C-double rounding, including signed zero/subnormal results. | Missing scalar build/FP contract, overflow or uncovered product domain. |
+| P2 | Ordered division/addition enclosure, including P1 input error and midpoint cancellation. | Any division/addition or propagated midpoint branch outside its proved domain. |
+| P3 | Independent real-pi enclosure, exact stored pi identity, ordered denominator multiplication/division and P1 error. | Nonseparated denominator, missing constant/rounding evidence or unsupported argument interval. |
+| P4 | Complete asanyarray/comparison/where/pi-product/sine/division argument at the exact stored q; include both signed zeros, the tiny substitution and nonzero small arguments. | Missing scalar/0-D/conversion or libm path evidence, uncovered zero/subnormal branch or unproved division; never assign one from the definition alone. |
+| P5 | Exact speed-duration product and actual NumPy result/promotion route; compose P3 argument uncertainty and P4 local error once. | Unproved sinc result type or product rounding, or duplicated/omitted argument/constant contribution. |
+| P6 | Scalar math conversion/trig enclosures plus selected real length-two coordinate products/additions at retained source scale. | Missing installed loop/IFUNC/FP evidence or unsupported coordinate magnitude/cancellation; an AVX2 label is insufficient. |
+| P7 | Ordered additions, versioned fmod, sign correction/signed zero and final subtraction with real-pi and inherited angle error; retain circular branch sets. | Uncovered remainder/cut branch, unproved sign-correction arithmetic or reliance on bare wrapped subtraction. |
+| G1 | Converted stored heading, both trig enclosures, norm separation and complete atan2 wrapper/quadrant/cut argument. | Possible zero norm or unproved conversion/kernel/cut; never feed this goal-only normalization into the motion recurrence. |
+| G2 | Actual goal array inference/promotion, same stored position subtraction and G1-to-trig error propagation. | Unsupported stored goal dtype/conversion, scale or subtraction/trig domain; the pose cast does not qualify goal arithmetic. |
+| G3 | Ordered promoted component products/sums, any narrowing to Python float, cancellation and goal lever arm. | Missing conversion/contraction/error evidence or adding accumulated ideal-position error to the same-stored-pose target. |
+
+**Error accounting and proposed comparison.** P4's local error compares its
+output at the exact stored q with real normalized sinc at that q. P3 then
+relates q to the ideal angle; P5 must not charge that argument uncertainty
+twice. Similarly, local step errors start from the same stored pose; the
+existing accumulated position/heading recurrence adds inherited motion error
+once. G1-G3 concern the current stored-pose goal transform, not an ideal-pose
+goal. Conversion to wire binary32 and host-round-trip verdicts stay separate.
+
+For a future comparison, let R enclose the independent real target and let E
+be a supported implementation-error set in the same units. For exact stored
+result O, the compatible real-target set is O-E. Whole-reference containment
+R within O-E supports consistency under that candidate claim; disjointness
+supports inconsistency of that claim; mere overlap stays unresolved. Use
+circular sets and all supported branches for angles. Missing Q0-Q4 evidence
+permits neither a supported pass nor a numerical inconsistency claim. Refine
+reference uncertainty only within a separately authorized method/budget; never
+enlarge E, discard branches or select the nearest reference to get containment.
+This proposed rule does not modify the existing checker or its classifications.
+
+**Invalidation and acceptance checks, proposed only.** Invalidate dependent
+proofs on source/build/dispatch, dtype/shape/conversion, FP contract, domain,
+seed/epoch/twist/time or goal/source-scale changes. A restart needs current
+evidence binding, not a historical gate rerun treated as provenance. Planned
+controls cover missing/changed evidence, zero/tiny/subnormal/cancellation,
+wrap/atan2 branches, inferred goal types, both clocks, seven-step accumulation,
+same-stored-pose goal accounting, containment/disjointness/overlap and freshly
+bound producer faults that an actual supported argument must discriminate.
+No fixtures, residuals, proof tools, sample counts or future execution budget
+are selected or run by this preparation.
+
+**Exit and next authorization.** This package exits with the worksheet fields,
+six ordered gates, exactly ten proof/stop rows, accounting rules and invalidation/
+acceptance controls documented; it does not exit with qualified primitives.
+All current rows and qualification flags remain unresolved/unchanged. The next
+recommended bounded candidate is a read-only CPython correspondence dossier
+for P1-P3/P7: inspect already-installed identity/build metadata and official
+public patch/build pages for the exact Ubuntu source package and amd64 build.
+Record whether those records bind the current scalar/remainder paths; report
+gaps rather than assuming equivalence. This candidate is not approved here;
+no package/archive download, install, environment change, numerical/fixture
+execution, code change, bound adoption or integration follows. If those pages
+cannot establish correspondence, stop with that precise missing evidence before
+proposing source acquisition or another proof route. Task 6/9, physical,
+representative task-quality and hardware gates remain independent and blocked.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5547,7 +5674,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §100): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §101): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5628,10 +5755,14 @@ not uniform primitive-error guarantees or producer qualification. The separately
 approved same-row primary-source review is complete (§100), identifying scalar,
 wrapper/dispatch semantics and accuracy-policy limits without numerical runs
 or source-package acquisition. Matching-build/FP/domain and uniform-error
-qualification still remain. Next proposed, not approved: a documentation-only
-same-row qualification protocol; no acquisition, numerical execution, code or
-bound adoption follows. Physical/numerical/task-quality and integration/data
-gates remain unchanged.
+qualification still remain. The separately approved documentation-only protocol
+preparation is complete (§101): worksheet fields, Q0-Q5 gates and ten proof/stop
+rows, accounting/invalidation and proposed acceptance controls. No gate was
+adopted or executed and no primitive allowance was justified. Next proposed,
+not approved: read-only CPython P1-P3/P7 source/build correspondence dossier,
+installed metadata and official patch/build pages only, with explicit gaps.
+No archive/package acquisition, numerical execution, code or bound adoption
+follows. Physical/numerical/task-quality and integration/data gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

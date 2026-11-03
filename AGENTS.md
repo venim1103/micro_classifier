@@ -118,23 +118,20 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: ten-row official primary-source review
-  (DESIGN.md §7 / REVIEW.md §100), following §99's installed identity audit.
-  Python modulo/atan2 branches, sinc zero substitution, NumPy scalar/promotion
-  paths and short-array fallback conditions are cited. Tagged double sin/cos
-  dispatch calls scalar libm; AVX2 labels do not establish vector trig.
-  Glibc accuracy goals/test maxima are not uniform producer-error guarantees.
-  Upstream/manual/installed-build correspondence, actual FP behavior and domain
-  closure remain unqualified. No allowances, numerical/fixture run, source/test
-  change or old verdict/flag change; `1bb89fe` remains mathematical reference only.
-  Historical gates do not qualify a restarted environment. All scopes exhausted.
-  Next proposed, not approved: documentation-only same-ten-row qualification
-  protocol with evidence/check matrix and stop conditions; no package acquisition,
-  environment/dependency change, numerical/model/fixture run, code or bound adoption.
-  Source/build proof and error qualification remain separate; no collection,
-  input adoption or runtime integration is implied.
+- Latest approved package complete: documentation-only primitive qualification
+  protocol preparation (DESIGN.md §7 / REVIEW.md §101). Proposed worksheet,
+  Q0-Q5 evidence gates and ten proof/stop rows distinguish claim/input binding,
+  build/path/FP evidence, uniform arguments, domain closure and separate adoption.
+  Sinc-zero/goal-dtype/circular branches and once-only motion/goal error accounting
+  are explicit. No gate execution or protocol/bound adoption; all row qualification,
+  old verdicts/flags, code/tests and `1bb89fe` mathematical-only scope stay unchanged.
+  Historical gates are not restarted-environment evidence. All scopes exhausted.
+  Next proposed, not approved: read-only CPython correspondence dossier for
+  P1-P3/P7 using installed identity/build metadata and official public patch/build
+  pages; report gaps, no archive/package acquisition, dependency/environment change,
+  numerical/model/fixture run, code/bound adoption, collection or integration.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-100 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-101 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1190,16 +1187,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §100 completes
-the approved ten-row official primary-source review. Scalar/wrapper/dispatch
-semantics and accuracy-policy limits are cited, not uniform primitive allowances
-or installed-build/FP/domain qualification. No source/test or numerical/fixture
-run; `1bb89fe` and the 2,005-pass/known-xfail gate remain historical, not rerun.
-Next proposed, not approved: documentation-only same-row qualification protocol
-with build/FP/reference/domain evidence and stop conditions; no acquisition,
-environment/dependency change, numeric/model/fixture execution, code, bound
-adoption, collection or integration. Old verdicts and broader Task 6/9,
-physical/numerical/task-quality, teacher assets and ST/board gates stay unchanged.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §101 completes
+the approved documentation-only qualification protocol preparation. Proposed
+worksheet/Q0-Q5 gates, ten proof/stop rows and accounting/invalidation controls
+are documented, not adopted or executed. Uniform-error/build/FP/domain evidence
+remains unqualified; code/tests, old verdicts/flags and historical gates are unchanged.
+Next proposed, not approved: read-only CPython correspondence dossier for
+P1-P3/P7, installed identity/build metadata and official patch/build pages only;
+no archive/package acquisition, environment/dependency change, numeric/model/
+fixture run, code/bound adoption, collection or integration. Task 6/9, physical/
+numerical/task-quality, teacher assets and ST/board gates stay unchanged.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
@@ -1338,6 +1335,11 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   unqualified. No numerical/fixture execution, code or allowance/verdict change.
   Next proposed, not approved: documentation-only same-row qualification protocol,
   not acquisition, numerical studies, implementation, collection or integration.
+  Protocol preparation (REVIEW.md §101): separately approved documentation-only
+  candidate is complete, with Q0-Q5 gates and ten proof/stop rows. No gate,
+  numerical/fixture run, source/test or bound/verdict/flag change. Next proposed,
+  not approved: read-only CPython P1-P3/P7 correspondence dossier, metadata and
+  official patch/build pages only; no acquisition, numerical work or integration.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

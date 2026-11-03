@@ -3687,6 +3687,24 @@ debug/source/package acquisition, dependency/FP-mode change, proof/code/bound
 adoption, collection or integration is included. All approved scopes are
 exhausted; independent physical/task-quality/data/runtime gates remain blocked.
 
+**Static path outcome (REVIEW.md §103).** The separately approved bounded
+P1-P3/P7 review maps five public numeric APIs to the unchanged executable,
+not the float-slot, generated-case or live-dispatch implementation. Exact
+generated source describes direct exact-float add/subtract/multiply cases and
+generic table dispatch; those alternatives need not pass through the inspected
+APIs. Compiled cases, indirect callees, pi/conversion/result-storage and FP/
+uniform-error/domain evidence remain unbound. Missing local symbols or nearest
+export labels cannot be replaced by guessed mappings. No qualification gate,
+allowance, producer/reference, protocol or old verdict/flag was changed.
+
+Next proposed, not approved: a design-only controlled-arithmetic alternative for
+these same four rows in the private synthetic motion producer. Compare explicit
+binary64 rounding and rational/interval remainder branches against retaining
+CPython dispatch, with compatibility/cost uncertainties, proof and stop checks.
+No implementation/adoption, integrator/reference change, bounds, dependencies,
+numerical/fixture execution, collection or runtime integration follows. All
+approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5698,7 +5716,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §102): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §103): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5790,7 +5808,13 @@ Packaging sysconfig flag rewriting and differing build/runtime glibc package
 versions are explicit evidence limits. Next proposed, not approved: same-row
 static source/executable path inspection, five named entries/64 KiB extraction
 cap, no numerical/producer run, acquisition, environment change, proof/code/bound
-adoption, collection or integration. All broader gates remain unchanged.
+adoption, collection or integration. That separately approved static package is
+now complete (§103): named API mappings and source specialization alternatives,
+not bound float/generated/live paths or numerical qualification. Next proposed,
+not approved: a design-only controlled-arithmetic alternative for the same four
+rows in the private synthetic producer, with compatibility/cost/proof/stop checks;
+no implementation, adoption, numeric/fixture run, acquisition or integration.
+All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

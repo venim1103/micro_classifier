@@ -118,21 +118,22 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: read-only CPython P1-P3/P7 correspondence
-  dossier (DESIGN.md §7 / REVIEW.md §102). Exact public applied source/build
-  records and whole float-source text agreement narrow the patch gap, not the
-  installed source-to-executable or specialized/compiled-path gap. Packaging
-  rewrites sysconfig flags; build/runtime glibc package versions differ. Q1/FP/
-  uniform-error/domain evidence remains unqualified, with protocol/bounds,
-  all ten rows, old verdicts/flags, code/tests and `1bb89fe` scope unchanged.
-  No numerical/fixture gate rerun, acquisition or environment change occurred;
-  historical gates are not restarted-environment evidence. All scopes exhausted.
-  Next proposed, not approved: same-four-row static source/executable path review,
-  pinned official pages and existing symbol/disassembly tools; five named entries/
-  64 KiB extraction cap, missing mappings stay gaps. No producer/numerical run,
-  acquisition, dependency/FP change, code/bound adoption, collection or integration.
+- Latest approved package complete: bounded static CPython P1-P3/P7 path review
+  (DESIGN.md §7 / REVIEW.md §103). Five public API entries mapped; generated
+  source describes direct exact-float alternatives and generic table dispatch.
+  Total extracted disassembly text, including failed/diagnostic Add reads, is
+  31,673 bytes below the 64 KiB cap. Versioned-label validator repair is recorded.
+  No sixth entry/callee expansion; local/generated/live mappings and FP/error
+  evidence stay unqualified. All ten rows, bounds/protocol, old verdicts/flags,
+  code/tests and `1bb89fe` scope are unchanged. No numerical/fixture gate,
+  archive/package acquisition or environment change occurred. Historical gates
+  are not restarted-environment evidence. All approved scopes are exhausted.
+  Next proposed, not approved: design-only controlled-arithmetic alternative for
+  the same four rows/private synthetic producer, compatibility/cost/proof/stop
+  checks; no implementation/adoption, bounds, dependency, numerical/fixture run,
+  collection or integration. Default remains unchanged unqualified/abstaining.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-102 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-103 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1188,15 +1189,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §102 completes
-the approved four-row CPython correspondence dossier. Public applied source/build
-and float-file text agreement are recorded, not installed producer provenance,
-compiled/specialized path or FP/error qualification. Sysconfig rewriting and
-build/runtime glibc version differences remain explicit limits. All ten primitive
-rows, protocol/bounds, code/tests, old verdicts/flags and historical gates stay
-unchanged. Next proposed, not approved: same-row static source/executable path
-review, five named entry points/64 KiB extraction cap; no producer/numeric run,
-acquisition, dependency/FP change, code/bound adoption, collection or integration.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §103 completes
+the approved static path review: five public APIs, 31,673 bytes including earlier
+Add reads, pinned generated-source alternatives and precise unresolved mappings.
+No sixth entry, guessed/callee mapping, numerical run or qualification follows.
+All ten rows, code/tests, protocol/bounds, old verdicts/flags and historical gates
+stay unchanged. Next proposed, not approved: design-only controlled arithmetic
+for these four rows/private synthetic producer, compatibility/cost/proof/stop
+checks, no implementation/adoption, numeric/fixture run, acquisition/integration.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1343,8 +1343,13 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   Correspondence dossier (REVIEW.md §102): exact public CPython applied source/
   build metadata and whole float-file text agreement are recorded for P1-P3/P7.
   Installed provenance, specialization/code generation and FP/error bounds remain
-  unqualified. Next proposed, not approved: bounded same-row static path review,
-  five entries/64 KiB, no numerical/producer run, acquisition or integration.
+  unqualified. The separately approved static result follows; no broader scope
+  is implied by these metadata records.
+  Static path review (REVIEW.md §103): five public APIs mapped within 31,673
+  disassembly-text bytes including failed/diagnostic reads. Visible generated
+  cases contain direct float arithmetic; compiled/live/callee/FP mappings stay open.
+  Next proposed, not approved: same-row/private-producer controlled-arithmetic
+  design only; no implementation, adoption, numeric run, acquisition/integration.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

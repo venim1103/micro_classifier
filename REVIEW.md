@@ -6633,6 +6633,147 @@ documentation-only checkpoint; the last source gate remains historical.
 [cpython-correspondence-pymath]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Include/pymath.h?id=f641d3123029c88838179c83a972bc2be28e6e60
 [cpython-correspondence-rules]: https://git.launchpad.net/ubuntu/+source/python3.12/plain/debian/rules?id=f641d3123029c88838179c83a972bc2be28e6e60
 
+## 103. Bounded Static CPython Arithmetic Path Review (2026-11-03)
+
+The user explicitly approved §102's bounded static path review for P1-P3/P7,
+with at most five named entry points and 64 KiB of extracted disassembly.
+Work began clean at `fadd628`; Current State, §102, DESIGN.md §§1, 2, 7 and 12,
+the local `integrate` expressions and executable identity were checked.
+SHA-256 remains `e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f`.
+Existing `objdump` and `readelf` are available. No producer/numerical/fixture
+execution, debug/source/package acquisition, dependency/FP change, code/bound
+adoption, collection or integration is authorized; existing verdicts stay intact.
+
+**Local hypothesis and cheap check.** Public numeric API wrappers can be
+identified in the installed file without binding the producer's float slots or
+specialized interpreter paths. `.dynsym` is present; no `.symtab`/`.debug_*`
+section or named local `float_add/sub/mul/div/rem` symbol was reported. Five
+public functions are selected once: `PyNumber_Add`, `PyNumber_Subtract`,
+`PyNumber_Multiply`, `PyNumber_TrueDivide`, `PyNumber_Remainder`. The immediate
+check extracts only these functions, meters the complete text against 65,536
+bytes and reports their instructions/calls without following unnamed callees.
+Missing local mappings remain gaps, not permission to guess addresses or inspect
+additional entry points. `_PyEval_EvalFrameDefault` has an exported symbol but
+is not a sixth disassembly target. Pinned generated-interpreter source pages
+can describe alternatives, never an executed-path or compiled-case attestation.
+
+**Static extraction result.** GNU objdump 2.42 identified the following five
+exported entries in the unchanged executable. Addresses and sizes are ELF
+symbol declarations, not full call graphs or runtime/resource measurements.
+
+| Selected entry | Address | ELF symbol bytes | Static observation |
+| --- | --- | --- | --- |
+| `PyNumber_Add` | `0x53bbe0` | 428 | Pointer-table loads, indirect calls and sequence-fallback control flow; this is not an identified float addition body. |
+| `PyNumber_Subtract` | `0x53db30` | 307 | Indirect method calls and out-of-range branches; the eventual float subtraction target is not bound. |
+| `PyNumber_Multiply` | `0x53e310` | 711 | Indirect method calls plus sequence-related conversion/fallback paths; a named numeric API is not a double multiplication implementation. |
+| `PyNumber_TrueDivide` | `0x53f730` | 316 | Indirect calls through loaded pointers, not an identified C-double division body. |
+| `PyNumber_Remainder` | `0x53f5f0` | 313 | Indirect calls, not a bound float remainder/sign-correction or resolved fmod body. |
+
+`readelf --sections --wide` / `--dyn-syms --wide` supplied the symbol metadata.
+Each extraction used `objdump -d --no-show-raw-insn --disassemble=<selected name>`;
+no branch/callee body was expanded. Complete stdout, including section headers,
+was metered in memory. Successful five-entry extraction was **22,539 bytes**.
+The same unchanged-command Add payload was 4,567 bytes; accounting both earlier
+reads of that payload gives **31,673 bytes** cumulatively, below the unchanged
+65,536-byte cap. This counts one failed validator read and its diagnostic,
+not just the final success. SHA-256 text records were emitted by the tool;
+long terminal rendering was partly truncated, not a new body acquisition or
+evidence that omitted regions were inspected. No repeated successful binary
+extraction was added to improve the result or fill remaining budget.
+
+Branches outside the named symbol ranges retain nearest-export annotations
+such as `PyOS_Readline+offset` or `PyMapping_SetItemString+offset`. These labels
+are not verified identities or purposes for the unnamed target blocks. The
+exported `_PyEval_EvalFrameDefault` symbol is 52,236 machine-code bytes, but no
+evaluator disassembly was extracted; machine-code size is not text-output size.
+No absent local symbol was replaced by an address guess or debug acquisition.
+The selected named API mappings therefore do not complete their own call graphs,
+the float-slot mappings, or a specialized interpreter-case mapping.
+
+**Pinned generated-source evidence.** The [exact generated header][cpython-static-cases]
+at applied commit `f641d3123029c88838179c83a972bc2be28e6e60` has public Git
+blob `d5e3ce28ce264bd02e1b3312fe22978196202b52`. It declares generation by
+`Tools/cases_generator/generate_cases.py` from `Python/bytecodes.c`. The page
+and four case excerpts were read, not generated, compiled or executed.
+
+Its complete `BINARY_OP` target-name list contains integer multiply/subtract/
+add, Unicode/in-place Unicode add, float multiply/subtract/add and generic
+`BINARY_OP`. It contains no dedicated float divide or remainder target. That
+is a fact about this pinned header, not an exhaustive statement about every
+possible producer, helper or compiler optimization.
+
+- Float add/subtract/multiply cases check exact float operands, read stored
+  `ob_fval` doubles and perform the corresponding C expression directly. They
+  use `DECREF_INPUTS_AND_REUSE_FLOAT`; the visible arithmetic expression is not
+  an explicit `PyNumber_*` call. Macro expansion, build settings and stored-result
+  code are not bound by the present inspection.
+- Generic `BINARY_OP` conditionally considers adaptive specialization under
+  `ENABLE_SPECIALIZATION`, with cache/counter handling and
+  `_Py_Specialize_BinaryOp`; its ordinary result expression is
+  `binary_ops[oparg](lhs, rhs)`. The compiled table, specialization state and
+  chosen function pointer were not inspected or observed.
+- Exact-float guards mean mixed operands cannot simply be assumed to use the
+  all-float cases. The local producer includes literal `2` operations as well
+  as untyped parameters; no input-type or warmed instruction-cache measurement
+  was made. Source expressions alone do not attest the producer's path.
+
+**Exactly four path rows.** These extend §102 without upgrading any Q1-Q5
+qualification or the ten primitive-error rows.
+
+| Row | Bounded static result | Precise remaining gap |
+| --- | --- | --- |
+| P1: turn-duration multiply | Named Multiply API contains indirect dispatch; generated float multiply can compute directly from exact-float stored values. | Neither inspected API text nor the source alternative identifies the producer's compiled multiply case or actual operand/cache/FP state. |
+| P2: midpoint divide/add | Named TrueDivide and Add APIs are identified; source contains direct exact-float add and ordinary generic table dispatch, with no dedicated float divide target in this header. | Mixed-type conversion, actual division callee, specialized add instructions and stored-result rounding remain unbound. |
+| P3: stored-pi argument | Named Multiply/TrueDivide alternatives and the exact-float guards constrain what source paths may exist; §102's pi source record remains unchanged. | Compiled pi constant, literal/float conversion, generated-case mapping and arithmetic/error composition are not established by these wrappers. |
+| P7: heading add/remainder/subtract | Named Add/Remainder/Subtract APIs are identified; source has direct exact-float add/subtract and no dedicated float remainder target in this header. | Resolved float remainder/fmod/sign correction, actual compiled add/subtract and circular-branch error evidence remain unqualified. |
+
+**Failure and repair history.** The first focused gate failed with
+`Missing named entry: PyNumber_Add`. Initial suspicion was a stripped-symbol
+extraction limitation; the one-entry diagnostic instead showed the body named
+`PyNumber_Add@@Base`. The defect was the validator's unversioned-only label
+regex, not missing disassembly. The repaired matcher accepts exactly the
+selected name with optional `@@Base`, and the same five-entry check passed.
+No address-based workaround, extra entry, tolerance or text-cap change occurred.
+Both preceding Add reads are included in the cumulative accounting above.
+
+**Exit and next decision.** The approved static package is complete: it maps
+five public APIs to the identified installed file and documents source-level
+specialization alternatives, but stops at missing local/generated-case/callee
+and execution-contract mappings. Static dispatch possibilities are not live
+dispatch evidence, producer qualification, a uniform error theorem or an
+adopted bound. Current source/tests, runtime, protocol, helper `1bb89fe`, all
+verdicts/flags, data/artifacts and numerical/physical/task-quality gates stay
+unchanged. No numerical/model/fixture/default/native gate was run.
+
+Next recommended, **not approved**: a bounded design-only controlled-arithmetic
+alternative for the same four rows, confined to the private synthetic motion
+producer. Compare explicit binary64 rounding and rational/interval remainder
+branches with retaining CPython's generic/specialized producer, stating input/
+output compatibility, cost uncertainties, proof obligations and stop checks.
+Do not implement or adopt the candidate, change the integrator/reference,
+select bounds, acquire dependencies/packages, run numerical fixtures, collect
+data or integrate runtime behavior. This is a separate design direction, not
+permission to continue disassembly or infer missing mappings. Proposed default
+remains unchanged unqualified/abstaining behavior until that review. All approved
+scopes are exhausted; broader Task 6/9, teacher assets and ST/board gates stay.
+
+**Checkpoint verification and retention.** The metered five-entry binary
+inspection passed after the versioned-label repair; no successful binary gate
+was rerun. The first three-document text validator then failed by mutating a
+read-only literal alias in Perl. Removing that unnecessary mutation and using
+the literal anchor directly repaired the check; documentation and evidence
+criteria did not need relaxation. `git diff --check` and repaired focused Perl
+checks pass: four rows, five entries, cumulative byte accounting, failure/stop
+evidence, sections 1-103, 529 reference uses and 62 distinct reference-defined
+local targets, fences/math and prior review/design/workflow/history/source
+preservation. Editor diagnostics are clear for all three documents. Existing
+tool/terminal history holds inspection output; no raw artifact, source copy or
+downloaded package was created in the repository. Source/default/native/fixture
+suites were not rerun for this read-only documentation checkpoint; their old
+results remain historical, not new numerical qualification.
+
+[cpython-static-cases]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Python/generated_cases.c.h?id=f641d3123029c88838179c83a972bc2be28e6e60
+
 ## Sources
 
 Hardware and tools:

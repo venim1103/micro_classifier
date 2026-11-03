@@ -118,20 +118,20 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: private controlled-arithmetic owner/tests
-  (DESIGN.md §7 / REVIEW.md §111), eight reused cases/four scenes, sixteen
-  constructor attempt positions including failures, 112 published events per
-  completed invocation/eight each including seed. Separate candidate lane,
-  trace consumers, event/source/frame seal and staged publication; ambiguous
-  publication discards, not universal rollback. All previous module AST nodes,
-  defaults/old bounds/flags/verdicts and `1bb89fe` unchanged. Matching binding is
-  not independent motion/source/wire evidence or numerical/native/work proof.
-  Isolation remains default; all bounded scopes exhausted. Next proposed, not
-  approved: design-only independent candidate consistency-audit contract, no
-  imports/fixtures/implementation/adapters, data/runtime/wire adoption,
+- Latest approved package complete: design-only independent candidate audit
+  contract (DESIGN.md §7 / REVIEW.md §112), eight boundaries/eight future gates,
+  four anchor/content cases and noncircular trace/event/codec/history checks.
+  Native motion/relative transforms/source authority remain unresolved; no
+  auditor, import or numerical/fixture run. Source/tests/defaults/old bounds/
+  flags/verdicts and `1bb89fe` unchanged. §111 candidate remains receipt-only,
+  private and unqualified; isolation stays default, all bounded scopes exhausted.
+  Next proposed, not approved: private auditor/tests, eight reused cases/four
+  scenes, sixteen constructor attempt positions/eight events each including seed,
+  at most 32 auditor attempts including failures per completed invocation; no
+  query/reference/log adapter, native replay, data/runtime/wire adoption,
   dependency/acquisition/tuning/risk/proof/allowance promotion or hardware run.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-111 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-112 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1189,15 +1189,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §111 completes
-the approved private candidate/tests: eight reused cases/four scenes, sixteen
-constructor attempt positions, 112 published events per completed invocation.
-Separate word/trace/event/source/frame binding and staged publication; all old
-module AST nodes/flags/bounds/verdicts and `1bb89fe` unchanged. Whole gate:
-2,117 plus known xfail; binding is not independent source/wire/motion evidence.
-Next proposed, not approved: design-only independent candidate consistency-audit
-contract, no imports/fixtures/implementation/adapters, data/runtime/wire adoption
-or promotion. Isolation stays default; no query/reference/log adapter was added.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §112 prepares
+the approved design-only audit contract: eight boundaries/eight future gates,
+four anchor/content cases; no auditor or numerical/fixture run. Source/tests/
+flags/bounds/verdicts and `1bb89fe` unchanged; §111's 2,117 plus known xfail
+not rerun. Isolation stays default; candidate binding is not qualification.
+Next proposed, not approved: private auditor/tests, eight reused cases/four scenes,
+sixteen constructor attempt positions/eight events each including seed, at most
+32 auditor attempts per completed invocation; no query/reference/log adapter,
+native replay, data/runtime/wire adoption or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1388,6 +1388,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   cases and 2,117 plus known xfail pass. Binding does not qualify source/wire/
   motion or native/work; no query/reference/log adapter/integration or promotion.
   Next proposed, not approved: design-only independent candidate audit contract.
+  Independent audit contract (REVIEW.md §112): separately approved design-only
+  preparation complete; eight boundaries/eight gates/four anchor-content cases,
+  no auditor/import/fixture run or source/test/flag/verdict change. Next proposed,
+  not approved: bounded private auditor/tests, eight cases/four scenes/sixteen
+  constructor positions/eight events each and at most 32 auditor attempts per
+  completed invocation; no native replay/adapter/integration or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

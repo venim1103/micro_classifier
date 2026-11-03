@@ -4668,6 +4668,182 @@ promotion or integration. W0/TB0, Task 6/9, teacher assets and ST/board gates st
 
 [controlled-owner-prototype-review]: REVIEW.md
 
+#### Proposed Independent Candidate Audit Contract (2026-11-03)
+
+The user approved design-only preparation after §111
+([review §112][controlled-candidate-audit-review]), not an auditor implementation,
+numerical/fixture run or qualification. The local hypothesis
+is that a matching retained digest establishes receipt but cannot independently
+check the relations inside that receipt. The current candidate audit compares
+outer keys/flags, source identities and its retained digest; it does not replay
+trace cells, event links, State/frame values or capture clocks. The proposed
+default keeps that audit, all old APIs/verdicts/flags and isolation unchanged.
+
+An additive private auditor would separate a caller-supplied trusted ownership
+anchor from independently checked content. A re-signed internally inconsistent
+copy can have a valid self-digest without either ownership or consistency.
+Never obtain the expected ownership anchor from the submitted bundle itself;
+content consistency alone cannot authenticate a producer or live source.
+
+| Proposed Check | Independent Relation / Required Input | Stop / Evidence Limit |
+| --- | --- | --- |
+| IA0: anchor | Externally retained expected lane/model/epoch/source identities and digest, distinct from submitted content. | Missing anchor leaves ownership unresolved; a copied/self-digest is not authority. |
+| IA1: schema | Exact nested keys, builtin nonboolean integers/finite words, typed pose/State/frame and bounded record sizes. | Reject unsupported types/shape before copying, hashing or arithmetic; no new work allowance. |
+| IA2: trace | Reconstruct ordered P1/P2/P3/P7 rational operands, RN64 cells, truncated residue and sign correction independently of producer helpers. | Unsupported/error stops; no accepted native/TB0/proof or full-motion claim. |
+| IA3: events | Seed-only first event, consecutive nonwrapping ticks, previous/next pose words, fixed twist/constants and stored heading linkage. | No goal-normalized heading substitution, omitted interval or snapshot-based reset. |
+| IA4: State/frame | Event State and actual frame match source current State/frame, sequence/timestamp/twist and explicit binary32 conversion. | Binary64-to-wire differences are reported separately, not hidden by tolerance or coercion. |
+| IA5: clocks | Separate binary-step and nominal elapsed time; acquisition/delivery/hold reference the existing event ledger and epoch. | No merged clocks, changed cadence/latency or inferred missing event. |
+| IA6: source scope | Check declared capture/history/relative-input relationships without recapturing geometry or qualifying returns. | Missing ledger/capture evidence stays unresolved; no physical/source authority or clearance inference. |
+| IA7: result | Distinct ownership, trace, event, frame and source-clock statuses, all qualification flags false. | No old-verdict borrowing, candidate runtime adoption, query/reference/log adapter or universal rollback. |
+
+This initial matrix is preparation only. Proposed acceptance checks must
+distinguish an unchanged owned receipt, a self-re-signed inconsistent copy,
+consistent but unowned data, and incomplete evidence; hashes cannot substitute
+for independently computed relations. No new importer, implementation,
+fixture, primitive allowance, risk policy, task data or hardware work is
+authorized by this design package. W0/TB0 and numerical/physical/task-quality
+qualification remain open.
+
+**Proposed boundary and ownership assumptions.** A separate private
+`_audit_synthetic_controlled_candidate` would take the existing bundle, an
+optional externally retained expected anchor and literal synthetic opt-in.
+This is a suggested function boundary, not a new implemented API or schema.
+It must not construct/advance an owner, call the candidate's `audit` or producer
+trace/RN64 helpers, recapture geometry, query questions or parse a log. Existing
+public State codecs may be reused for codec correspondence only; standard-library
+integer/Fraction operations share the still-unqualified trusted base.
+
+The trusted caller may retain lane/model/epoch, source/calibration identities,
+reference tick and digest from its own authorized snapshot receipt at issuance.
+It must not derive the expected anchor from a later submitted copy. Invalidate
+the anchor after successful advance, source change or ambiguous publication;
+if currentness cannot be established under serialized access, ownership stays
+unresolved. No new generation counter, anchor exporter or lifetime policy is
+adopted. Matching a digest means matching that caller's anchor, not independent
+source authority, genuine capture history or a current live binding.
+
+| Submitted Record | Anchor Relation | Content Relation | Proposed Interpretation |
+| --- | --- | --- | --- |
+| Unchanged owned snapshot | Matches a separately current anchor | Checked relations pass | Receipt plus bounded consistency only, never qualification. |
+| Re-signed inconsistent copy | Does not match the retained anchor | At least one checked relation fails | Report both facts; do not stop semantic checking merely because self-hashing succeeds. |
+| Consistent copy without trusted anchor | Unknown | Checked relations pass | Consistent declared data, ownership unresolved. |
+| Owned but incomplete evidence | Matches | Some relations lack required evidence | Preserve checked statuses; completeness remains unresolved, never fabricate missing values. |
+
+A stale/mismatched anchor cannot become current by re-signing or by resetting the
+seed at snapshot time. Ownership mismatch and content inconsistency are distinct:
+an unowned record is not necessarily arithmetically inconsistent. Do not accept
+an anchor submitted through the same untrusted path as proof of authority.
+
+**Independent trace obligations, proposed.** Decode finite words by sign,
+exponent and significand using integer/rational mathematics, separately tracking
+signed zero. Verify exact constant words and the unchanged heading/turn profile;
+do not use native float arithmetic as the rounding oracle. Require exactly four
+ordered rows, eleven intermediate words and ten unconditional rounded cells,
+plus the conditional negative-residue addition cell. Check names, operations,
+operand linkage, canonical positive-denominator ratios, zero tags, words,
+rounding-error ratios and correction status, not just the final heading.
+
+For each arithmetic cell, independently derive its exact rational result and
+check the claimed finite RN64 word against the declared rounding rule, including
+adjacent midpoint/tie parity, subnormal/zero signs, carry and overflow stop.
+This is a future verifier obligation, not a new correctness derivation or accepted
+proof. The truncated quotient, exact raw residue and subsequent sign/zero
+correction are separate. Keep the two period cells separately linked, preserve
+the period-reaching correction and both stored pi endpoints; no floor-remainder
+substitution or clamping. Conditional §108 closure/raw-residue facts cannot replace
+checking the submitted worksheet or authorize an allowance.
+
+**Event, frame and source-clock relations.** Check exact nested keys and types
+against the existing private candidate record, rather than stripping fields into
+a legacy motion schema. Seed has no preceding trace; event count includes it and
+stays at most eight. Tick/word/pose/trace links, seed pose, fixed twist/constants,
+last source reference tick/pose and epoch must agree. Bind prior stored heading,
+never goal-normalized heading. The Scenario's declared start need not equal the
+separately supplied seed pose: that was not a constructor requirement and must
+not silently become a new scene restriction.
+
+Check each event's State encoding against its actual frame, last-event/source
+State and frame correspondence, sequence `(tick & 0xFFFF)` and nonwrapping
+timestamp `tick*50000`. A valid codec projection may change binary64 State fields
+to binary32. Report those changed fields separately; decode/encode correspondence
+is not equality with the original scalar, independent codec verification or
+wire-input qualification. No numerical tolerance, signed-zero normalization or
+JSON boolean/integer alias is introduced to hide a discrepancy.
+
+Derive nominal elapsed time from the original seed as `(tick-seed_tick)/20` and
+binary elapsed as `(tick-seed_tick)*stored_duration`; neither overwrites the
+other. Check existing capture eligibility (`tick == 0 or tick % 4 != 1`), shared
+view acquisition tick/pose, two-tick delivery, source epoch/reference tick and
+the latest eligible delivered capture for each exposed snapshot tick. Repeated
+held records retain the same capture ID and identical typed capture bytes while
+snapshot tick advances. Captures must link to existing ledger events; missing
+seed/interval evidence stays unresolved, not inferred from current pose.
+
+Only delivered/held history is exposed by the current recorder snapshot. Its
+pending queue is not exported: do not claim pending capture completeness or
+invent warmup deliveries. Bound exposed history at eight and arrays to the
+existing eight-view shapes/dtypes. Relative history copies of capture ticks,
+ranges and masks must match the corresponding private source entries, preserving
+dtype/shape/order and masked-zero conventions. Native relative poses/body goal,
+source-scale guards and ideal ray/return correctness remain outside this checker;
+unknown relative status remains unknown. No recapture, native transform replay,
+source-scale relaxation, physical metrology or negative/clearance inference.
+
+**Result and failure contract, proposed.** Return separate ownership-anchor,
+schema, trace, event-link, codec-projection, capture-clock and copied-input statuses
+with checked counts/reasons and an explicit list of unverified relations. Use
+`consistent_checked_relations`, `inconsistent_record` or `unresolved_evidence`
+for content, and distinct anchor match/mismatch/unresolved outcomes. All training,
+real-input, free-space, numerical-certification and producer-parity flags remain
+false; native-motion/goal/relative-transform and source-authority verdicts remain
+unresolved. No aggregate success becomes a question answer or old consistency
+verdict. Receipt-only results from §111 remain unchanged.
+
+Preflight record/list/array shapes, finite word/type limits and the existing
+4,096-bit rational ceiling before copying, hashing or arithmetic. Ratios need
+canonical builtin integer fields and a positive denominator. Oversized/malformed
+or unsupported evidence stops the affected check with explicit reasons; do not
+change old bounds or supply native fallback. Input objects already allocated by
+the caller, intermediate allocator behavior, time/live memory and W0/TB0 are
+not bounded by this preflight. The proposed auditor has no retained publication
+state: it does not mutate owner/recorder/anchor/input and propagates allocation,
+interruption or unexpected failures rather than claiming universal abstention
+or rollback. Source-file hashes still cannot attest native builds/live bindings.
+
+| Proposed Gate | Future Discriminating Check | Required Limit |
+| --- | --- | --- |
+| AC0 | Preserve all old module ASTs/APIs/defaults/flags/verdicts/artifacts and receipt-only behavior. | Additive private checker only; no adopted schema/adapter. |
+| AC1 | Exercise all four anchor/content quadrants and stale/foreign/self-re-signed records. | Trusted expected anchor is separate and currentness explicit. |
+| AC2 | Reject bool/float aliases, wrong keys/dtypes/shapes, oversized ratios/lists and missing evidence. | Preflight before traversal/copy/hash/work; old bounds unchanged. |
+| AC3 | Independently check each literal/corrupted trace cell, signed zero, residue/correction and row order. | No producer trace/RN64 oracle or accepted native/proof claim. |
+| AC4 | Check seed/event/previous-word/twist and both elapsed clocks without reset. | Eight events/nonwrapping timestamps; sequence wrap stays separate. |
+| AC5 | Separate exact frame bytes, codec projection and reported binary32 changed fields. | No widened tolerance or hidden precision/type conversion. |
+| AC6 | Check exposed capture/delivery/hold and copied relative ticks/ranges/masks, including incomplete history. | No pending-queue claim, recapture, transform/return/physical qualification. |
+| AC7 | Verify nonmutation, explicit failure results and bounded activity; run focused/default gates. | No owner advancement inside auditor, question/reference/coordinator/log use or flag promotion. |
+
+**Exit, tradeoff and next permission.** The design-only contract is prepared;
+IA0-IA7 and AC0-AC7 are unexecuted requirements, not an implemented auditor or
+accepted numerical/source evidence. A separate checker is preferred to extending
+the receipt audit: it exposes shared trusted-base/native gaps and avoids changing
+old acceptance. Reusing the producer trace as an oracle would be cheaper but
+circular; replaying native dynamics/geometry would exceed this proposed scope.
+Isolation remains the default.
+
+Next proposed, **not approved**: additive private auditor/tests only, at most
+eight reused motion cases/four already-used complete scenes, sixteen constructor
+attempt positions including failures/legacy controls, eight events each including
+seed (128 published events maximum), and at most 32 auditor attempts including
+failed checks per completed invocation. Reuse literal worksheets and mutated
+record copies; count constructors/events/captures/traces/audits, with repeated
+focused/default gates using the same cases and existing suite controls separate.
+No new world/study episode/data, query/reference/coordinator/log adapter,
+native motion/transform/geometry replay, dependency/acquisition, runtime/wire
+adoption, tuning, risk/proof/allowance/qualification promotion or hardware run.
+No implementation, imports or numerical/fixture execution follows from this
+completed design-only scope.
+
+[controlled-candidate-audit-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6679,7 +6855,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §111): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §112): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6799,10 +6975,15 @@ gates, not adoption or qualification. Its separately approved private candidate
 and bounded tests are complete (§111): eight reused cases/four scenes, sixteen
 constructor attempt positions, 112 published events per complete invocation;
 all old module AST nodes and qualification flags remain unchanged. Binding is
-not independent motion/source/wire evidence. Next proposed, not approved:
-design-only independent candidate consistency-audit contract, no imports/fixtures,
-implementation/adapters, data/runtime/wire adoption or promotion. All broader
-gates remain unchanged.
+not independent motion/source/wire evidence. Its separately approved design-only
+audit contract is prepared (§112): eight boundaries/eight future gates, four
+anchor/content cases, noncircular trace and bounded event/codec/history checks;
+native motion/relative transforms and source authority remain unresolved.
+No auditor or numerical/fixture run occurred. Next proposed, not approved:
+private auditor/tests, eight reused cases/four scenes, sixteen constructor
+attempt positions/eight events each, at most 32 auditor attempts per completed
+invocation; no query/reference/log adapter, native dynamics/geometry replay,
+data/runtime/wire adoption or promotion. All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

@@ -7615,6 +7615,113 @@ gates remain blocked. No background job, cleanup, artifact regeneration or assis
 
 [controlled-owner-prototype-design]: DESIGN.md
 
+## 112. Proposed Independent Candidate Audit Contract (2026-11-03)
+
+The user approved §111's next design-only independent candidate audit contract
+and requested autonomous continuation/local commits. The actual worktree was
+clean at `03f9104`; the notified source/test changes were checked against that
+commit, with no outstanding diff. Current State, §111, DESIGN.md §§1/2/6/7/12,
+the current candidate audit, adjacent recorder/relative mapper and existing
+tampered-record test were read. Source/tests are unchanged in this package.
+No candidate/arithmetic/fixture import or execution, acquisition, environment
+change, source adapter, task data, runtime integration or hardware action occurred.
+
+**Local hypothesis and first check.** The retained digest establishes receipt,
+not independent validity of the contained trace/event/frame/clock relations.
+The controlling `audit` checks outer keys/false flags, current source identities
+and the retained typed digest, then reports declared support. It does not
+recompute trace cells or validate those relations. The neighboring test changes
+payload fields and recomputes their self-digest; the old retained anchor rejects
+them. That does not test an independent semantic validator or establish that
+consistent unowned records are invalid. The first eight-boundary document edit
+and focused check passed; source/test blobs and runtime remained untouched.
+
+**Prepared contract.** [DESIGN.md §7][controlled-candidate-audit-design] contains
+IA0-IA7 boundaries and AC0-AC7 future gates. The proposed checker is additive,
+private and opt-in, with an optional externally retained current anchor and
+separate schema, trace, event-link, codec, capture-clock and copied-input results.
+Four quadrants distinguish owned/checked, re-signed/inconsistent, unowned/checked
+and owned/incomplete evidence. No anchor is derived from the later submitted
+copy. The trusted caller can retain its own authorized receipt at issuance and
+must invalidate it after advance/source change/ambiguous publication; missing
+currentness stays unresolved. No owner API/generation counter/lifetime policy
+or runtime schema is adopted.
+
+Independent trace checking would use separately implemented integer/rational
+relations, not the producer trace/RN64 helpers or native FP as an oracle. Check
+all ordered P1/P2/P3/P7 cells, operands, exact/error ratios, signed-zero/tie/
+subnormal/carry/overflow behavior, raw truncated residue and later correction.
+Separate periods and period-reaching correction/pi endpoints stay. This is a
+verifier specification, not a new derivation, accepted proof, allowance or
+independent trusted-base qualification; shared integer/Fraction/native gaps stay.
+
+Seed/event/previous-word/twist/constants, original-seed binary and nominal clocks,
+last source event/State/frame and typed codec projection are distinct checks.
+Sequence wraps at 16 bits while timestamp remains nonwrapping; binary32 changed
+fields are reported, never hidden by tolerance or mistaken for original-scalar
+equality. Existing State codecs may be reused only for codec correspondence;
+their reuse is not independent codec verification or wire-input qualification.
+The independent checker must not construct/advance an owner, call its audit,
+recapture geometry, query questions or read logs. It may not borrow old verdicts.
+
+**Source and incomplete-evidence limits.** The recorder snapshot exposes delivered/
+held history but not pending captures. The relative mapper copies acquisition
+ticks/ranges/masks while native arithmetic computes body poses/goals. Proposed
+checks cover existing eligibility, two-tick delivery, linked acquisition poses/
+epoch/reference ticks, repeated held typed bytes and copied relative arrays.
+Do not infer pending completeness or warmup deliveries, invent missing ledger
+events, replay native transforms/geometry, relax source-scale guards or qualify
+return membership. Native motion/goal/relative transforms and source authority
+stay unresolved; unknown relative status remains unknown. A Scenario start is
+not required to equal the separately supplied seed pose; no new scene restriction.
+
+Preflight exact nested keys/types, bounded event/history/eight-view arrays and
+the unchanged 4,096-bit rational ceiling before copying/hash/arithmetic. This
+does not bound caller-allocated input, allocator time/live memory or W0/TB0.
+The proposed checker has no retained state and does not mutate inputs/anchor/
+owner/recorder. Allocation/interruption/unexpected failures propagate; no
+universal abstention/rollback claim. All five qualification flags remain false,
+with checked/inconsistent/unresolved content statuses and separate ownership
+match/mismatch/currentness. No aggregate becomes a question answer or accepted
+source/physical/task-quality claim.
+
+**Tradeoff, exit and next permission.** The design-only preparation is complete;
+all sixteen boundary/gate rows remain unexecuted and no auditor exists. Keep
+receipt audit/old APIs/flags/verdicts/defaults and isolation unchanged. A separate
+checker avoids changing old acceptance and makes circular/shared-base limits
+visible; producer-oracle reuse is circular, while native dynamics/geometry replay
+would exceed the proposed scope. Task 6/9, native/work/numerical/physical/task-quality,
+teacher assets and ST/board remain blocked.
+
+Next proposed, **not approved**: private auditor/tests only, eight reused motion
+cases/four complete previously used scenes, sixteen constructor attempt positions
+including failures/legacy controls, eight events each including seed (128 published
+maximum), at most 32 auditor attempts including failures per completed invocation.
+Reuse literal worksheets/mutated record copies; instrument attempts/events/captures/
+traces/audits and separate repeated focused/default cases from existing suite
+controls. No new world/study episode/data, query/reference/coordinator/log adapter,
+native motion/transform/geometry replay, dependency/acquisition, runtime/wire
+adoption, tuning or risk/proof/allowance/qualification promotion or hardware run.
+No implementation or numerical/fixture activity is authorized by the design.
+
+**Verification and failure history.** Initial matrix check passed; expanded
+check initially failed because it expected the exact phrase `no native transform
+replay` instead of the existing exclusion `No recapture, native transform replay`.
+The matcher was corrected with the same control, not the document or its scope;
+the expanded check passed. It checks eight boundaries, eight gates, four
+anchor/content cases, noncircular trace, precise codec/history limits, unapproved
+budgets and unchanged source/test blobs. Text checking is not mathematical proof.
+Scoped checks passed: sections 1-112, 552 reference uses/local targets, paired
+fences, preserved prior review/source list/design proposal/stable workflow/history
+and last source-gate record. Editor diagnostics are clear and scoped diffs were
+reviewed; final whitespace/staged-scope checks precede commit. Source/test blobs
+still match `03f9104`. §111's 2,117 plus known xfail/71 warnings remain the last
+source gate, not rerun design evidence. No source/test/default/
+bound/flag/verdict or `1bb89fe` change, artifact regeneration, background job,
+cleanup or assistant push.
+
+[controlled-candidate-audit-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

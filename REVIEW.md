@@ -6460,6 +6460,179 @@ was needed to prepare the protocol. No raw artifact or cleanup is pending.
 
 [primitive-protocol-design]: DESIGN.md
 
+## 102. CPython Scalar Source/Build Correspondence Review (2026-11-03)
+
+The user explicitly approved the §101 read-only CPython correspondence dossier
+for P1-P3/P7. Work began clean at `45c40fb`; Current State, the latest protocol
+checkpoint and DESIGN.md §§1, 2, 7 and 12 were checked. This scope covers existing
+installed identity/build metadata, official public patch/build pages and updates
+to existing documents. No source/binary package or archive acquisition, install,
+environment change, numerical/model/fixture run, code or bound adoption,
+collection or integration is authorized. Existing Q0-Q5 proposals, all ten
+unqualified primitive rows and old checker/source/wire verdicts remain unchanged.
+
+**Local hypothesis and discriminating check:** the current interpreter and
+official package/build declarations can agree without proving cumulative
+patched-source correspondence or the compiled scalar/remainder paths. Fresh
+Pylance environment/metadata checks identify `/opt/venv/bin/python`, resolving
+to `/usr/bin/python3.12`; the executable hash/build ID match §99. Installed
+packages declare `3.12.3-1ubuntu0.17` amd64, and the
+[official build page][cpython-correspondence-build] identifies a successful
+build of that version. The public text buildinfo/changes records and available
+official patch browser can distinguish declarations from actual correspondence;
+their links are not permission to retrieve source archives or binary packages.
+The first static check requires this distinction, the bounded four-row scope,
+and unchanged prior review/source bytes. No numerical function is needed.
+
+**Package-verification limitation:** `dpkg --verify python3.12-minimal` reported
+missing `README.Debian.gz` and the `python3.12.1.gz` man page, despite the command
+returning zero. No executable checksum mismatch was reported. This is a check
+against local package records, not independent archive verification or proof
+of an intact package. No files were restored, removed or installed.
+
+**Fresh installed declarations.** Pylance's selected interpreter remains
+`/opt/venv/bin/python`, resolving to `/usr/bin/python3.12`, version
+`3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]`; prefixes are `/opt/venv`
+and `/usr`. `math` has built-in spec origin. The metadata snippet printed
+loader metaclass `type`, not an implementation name; §99's `BuiltinImporter`
+identification is not replaced by that incidental output. No audited math
+function, NumPy/project/teacher import or fixture was invoked.
+
+| Record | Fresh result and evidence limit |
+| --- | --- |
+| Executable identity | SHA-256 `e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f`; ELF build ID `337d65cf00021797985cc9f77c0cc334a9fbeb38`, both matching §99. These identify the current file, not its producer. |
+| Local package binding | `python3.12-minimal`, `libpython3.12-minimal`, `libpython3.12-stdlib` and `python3.12-dev` declare source `python3.12`, version `3.12.3-1ubuntu0.17`, amd64. `dpkg-query -S` assigns the executable to `python3.12-minimal`; executable MD5 `889a058bf0c9cf12e239a83a59a405d0` matches that package's local control record. This is not independent authenticated provenance. |
+| Reported build metadata | `CC=x86_64-linux-gnu-gcc`; `CFLAGS`/`PY_CFLAGS` report `-fno-strict-overflow -Wsign-compare -DNDEBUG -g -O2 -Wall`. `PY_CORE_CFLAGS` adds hardening/includes, C11, visibility and core/PIC declarations. `PY_ENABLE_SHARED=1`, `Py_DEBUG=0`, `WITH_PYMALLOC=1`, `SIZEOF_DOUBLE=8`, x87/x64 assembly support and `SOABI=cpython-312-x86_64-linux-gnu` are declarations, not per-object command or live FP evidence. |
+| Metadata locations | Makefile `/usr/lib/python3.12/config-3.12-x86_64-linux-gnu/Makefile`, pyconfig `/usr/include/python3.12/pyconfig.h` and sysconfig `/usr/lib/python3.12/sysconfig.py`. Configuration declares `--enable-shared`; reported linker flags include `-Wl,-Bsymbolic-functions -Wl,-z,relro -g -fwrapv -O2`. Do not assign this shared metadata automatically to the executable's scalar objects. |
+| ELF dependencies | Executable NEEDED entries are `libm.so.6`, `libz.so.1`, `libexpat.so.1`, `libc.so.6`, with no libpython NEEDED entry. Undefined imports include `atan2`, `sin`, `cos` at `GLIBC_2.2.5` and `fmod` at `GLIBC_2.38`. These are dependency/version declarations, not current resolution or proof that a particular operation uses them. |
+
+**Official public build/source records.** The [successful amd64 build][cpython-correspondence-build]
+is build `33562858` in the Ubuntu security-proposed PPA, Noble Release pocket,
+on `lcy02-amd64-094`, dated 2026-09-02 with reported duration 48m50.7s. This is
+the identified public build, not an independently authenticated chain from that
+build to the current installed file.
+
+- The [public changes record][cpython-correspondence-changes] declares source
+  `python3.12`, version `3.12.3-1ubuntu0.17`, architectures `all amd64`, Noble,
+  profile `noudeb`, and date 2026-08-31. Its latest tarfile/HTML security changes
+  alone do not describe the cumulative patches.
+- The [public buildinfo][cpython-correspondence-buildinfo] text was read into
+  memory, not saved or executed. Its SHA-256
+  `febad4e4afc3376305c8eae79567db3e443a6f70b6f6d2154ab975e35ca0730c`
+  matches the changes record's declared checksum for the 14,133-byte buildinfo.
+  This checks agreement between these public records, not a verified signature.
+  It declares Ubuntu/amd64, build date 2026-09-02 13:59:06 UTC, build path
+  `/build/python3.12-PWfLPC/python3.12-3.12.3`, `parallel=8`, `noudeb`, C.UTF-8
+  locale variables and `SOURCE_DATE_EPOCH=1788171506`.
+- Buildinfo declares GCC/G++ 13 packages `13.3.0-6ubuntu2~24.04.1`, binutils
+  `2.42-4ubuntu2.8` and `libc6-dev=2.39-0ubuntu8.8`. Installed `libc6:amd64`
+  instead declares `2.39-0ubuntu8.4`. Build dependencies are not the current
+  runtime library's identity or a guarantee about its remainder implementation.
+- Both public records declare SHA-256
+  `d452689b9660845345a4c3e05e4ad82c082d5474e04031b7aa47f1a6d5610a6e`
+  for the 2,334,634-byte `python3.12-minimal` amd64 `.deb`. This is an archive
+  checksum, **not** `/usr/bin/python3.12`'s checksum. No package was retrieved,
+  unpacked or independently bound to the installed executable.
+- The official importer distinguishes applied/unapplied Noble branches.
+  Its [exact applied commit][cpython-correspondence-applied]
+  `f641d3123029c88838179c83a972bc2be28e6e60`, tag
+  `applied/3.12.3-1ubuntu0.17`, tree
+  `4a25e755a6e33d46ac42e6dd3704d57b45791b42`, records importer date 2026-09-10.
+  This later import is public reconstructed-source evidence, not itself the
+  source archive used by the earlier build.
+- The [pinned cumulative patch series][cpython-correspondence-series] includes
+  consolidated `python3.12-updates.diff`, packaging/link/profile/sysconfig
+  changes and accumulated security patches; `build-math-object.diff` is
+  commented out. Names alone do not prove absence of relevant changes. The
+  applied file, not just these names or latest changelog, was compared below.
+
+**Exactly four correspondence rows.** These are Q1-informed dossier findings,
+not a Q1 pass or adopted qualification worksheet. All ten primitive-error
+rows remain unqualified.
+
+| Row | Public source evidence | Remaining correspondence/error obligation |
+| --- | --- | --- |
+| P1: turn-duration multiplication | The pinned [applied float source][cpython-correspondence-float], Git blob `7a882bfd88bdae960426b33267ca5972a6cce900`, is text-identical to official upstream v3.12.3 `Objects/floatobject.c`. Its `float_mul` body uses converted C doubles, multiplication and `PyFloat_FromDouble`. | This proves public source-text equality, not which generic/specialized interpreter path the producer takes, compiled instructions, per-object flags, FP state, domain closure or a uniform multiplication bound. |
+| P2: midpoint division/addition | The same whole-file comparison includes identical `float_div` and `float_add` bodies; division has its zero-divisor guard and C-double result conversion. | Bind stored operands, specialization/dispatch and compiled division/addition separately. A source expression is not proof of rounding, underflow/overflow behavior on the computed domain or an accumulated-error allowance. |
+| P3: stored-pi argument | The [applied math source][cpython-correspondence-math], blob `23fa2b181648c9ec0ca2fea8c9dbb10c31a2b47f`, adds `pi` through `PyFloat_FromDouble(Py_MATH_PI)`. The [applied header][cpython-correspondence-pymath], blob `4c1e3d9984894b0cb27dfb387e3e3b8781e14091`, defines decimal `Py_MATH_PI` under `#ifndef`; multiply/divide bodies agree as above. | Bind the actual compiled macro/constant, operand conversions and dispatch. Neither the decimal source nor reported flags establishes the stored-pi and local argument error; composition with P4/P5 remains once-only and unqualified. |
+| P7: heading additions/remainder/subtraction | Identical `float_add`, `float_sub` and `float_rem` bodies preserve fmod, nonzero wrong-sign divisor addition and divisor-signed zero. The installed file declares `fmod@GLIBC_2.38`. | Python remainder is not raw fmod. Actual generic/specialized execution, resolved fmod body, sign-boundary/circular composition, FP/error contract and calculated-domain closure remain unproved. Local remainder source equality supplies no uniform libm bound. |
+
+The in-memory comparison checked the **whole** applied/upstream float source
+text and separately extracted all five named slot bodies, with all six equality
+checks true. Body SHA-256 records were emitted by the metadata tool; no source
+tree/package was acquired or executed, and no local source was created. This
+narrows the upstream-versus-cumulative-patch gap for that public file only.
+It does not attest all headers, generated interpreter cases, overrides or the
+complete build input. Adaptive/specialized execution may bypass the inspected
+float slots; no specialization trace or producer run was made.
+
+The [pinned packaging rules][cpython-correspondence-rules] also define distinct
+static/shared builds, amd64 LTO selection unless disabled, and a
+`sysconfig_substflags` transformation that removes LTO options and rewrites
+`-O3` to `-O2`. Module configuration and `_math.o` Makefile repair are declared
+there. These inspected declarations show why reported sysconfig flags cannot
+be treated as an unmodified executable-specific compile record. The build
+rules and their embedded import/check commands were **read, not run**; no full
+build log, per-object command, generated configuration or reproducible build
+was inspected. No live rounding, FTZ/DAZ, contraction or IFUNC state was checked.
+
+**Retrieval and failed-check history.** Dedicated webpage extraction failed to
+extract meaningful buildinfo content; the browser request fallback failed on
+unsupported `Storage.getCookies`. The final bounded standard-library HTTPS
+read under the selected interpreter succeeded with default TLS verification;
+it parsed the public control record and compared official source text entirely
+in memory, with bytecode writes disabled. The octet-stream content type was
+not navigated as a download. These failures do not mean the public record is
+absent. A targeted `rg` command also failed because `rg` is unavailable; editor
+text search located the handoff anchors. No install, setting/security change,
+archive/package acquisition or numerical workaround occurred.
+
+**Exit, precise blocker and proposed next action.** The approved four-row
+dossier is complete: exact public applied source and build metadata are now
+identified, but the current installed producer's dispatch/code-generation and
+source-to-executable provenance are not established. Q2-Q4 FP, uniform-error
+and computed-domain obligations are untouched, and no Q5 adoption is implied.
+All old motion/source/wire verdicts, qualification flags, bounds, runtime,
+tests and artifacts remain unchanged. Historical source/default/native gates
+were not rerun; no task-quality or physical evidence follows.
+
+Next proposed, **not approved**: bounded read-only static CPython path review
+for these same four rows, using the pinned official generated-interpreter
+pages and existing executable symbols/disassembly tools. Candidate cap: five
+named entry points and 64 KiB of extracted disassembly; keep inspection output
+in tool history and existing documents, no new raw artifacts. Check whether
+generic/specialized scalar paths can be mapped to the identified file; missing
+symbols/mapping stop with an explicit gap, never an inferred executed path.
+No producer/numerical/fixture execution, debug/source/package acquisition,
+dependency/FP-mode change, proof implementation, bound adoption, collection or
+integration is included. Proposed default remains unqualified/abstaining.
+This separate permission would still not establish live dispatch or a uniform
+error theorem. All presently approved scopes are exhausted; broader Task 6/9,
+physical/numerical/task-quality, teacher assets and ST/board gates remain blocked.
+
+**Verification and retention.** Selected-interpreter metadata and in-memory
+public-text parsing/source equality checks returned zero; `dpkg-query`, local
+hash/ELF reads and bounded `curl`-to-stdout source-page excerpts supplied the
+declarations above. Package verification and retrieval failures remain recorded,
+not hidden by their successful follow-ups. No new raw/source/package artifact
+was retained in the repository; evidence stays in tool history and these docs.
+`git diff --check` plus focused Perl text checks passed: exactly four dossier
+rows, review sections 1-102, 528 reference uses, 62 distinct reference-defined
+local targets, fences/math, current handoffs and preserved prior review/design/
+workflow/history/source bytes. Editor diagnostics are clear for all three docs.
+The default Python/native/fixture suites were not rerun for this read-only,
+documentation-only checkpoint; the last source gate remains historical.
+
+[cpython-correspondence-build]: https://launchpad.net/~ubuntu-security-proposed/+archive/ubuntu/ppa/+build/33562858
+[cpython-correspondence-changes]: https://launchpadlibrarian.net/875581834/python3.12_3.12.3-1ubuntu0.17_amd64.changes
+[cpython-correspondence-buildinfo]: https://launchpadlibrarian.net/875581836/python3.12_3.12.3-1ubuntu0.17_amd64.buildinfo
+[cpython-correspondence-applied]: https://git.launchpad.net/ubuntu/+source/python3.12/commit/?id=f641d3123029c88838179c83a972bc2be28e6e60
+[cpython-correspondence-series]: https://git.launchpad.net/ubuntu/+source/python3.12/plain/debian/patches/series?h=applied/3.12.3-1ubuntu0.17
+[cpython-correspondence-float]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Objects/floatobject.c?id=f641d3123029c88838179c83a972bc2be28e6e60
+[cpython-correspondence-math]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Modules/mathmodule.c?id=f641d3123029c88838179c83a972bc2be28e6e60
+[cpython-correspondence-pymath]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Include/pymath.h?id=f641d3123029c88838179c83a972bc2be28e6e60
+[cpython-correspondence-rules]: https://git.launchpad.net/ubuntu/+source/python3.12/plain/debian/rules?id=f641d3123029c88838179c83a972bc2be28e6e60
+
 ## Sources
 
 Hardware and tools:

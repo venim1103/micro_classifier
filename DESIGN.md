@@ -3663,6 +3663,30 @@ cannot establish correspondence, stop with that precise missing evidence before
 proposing source acquisition or another proof route. Task 6/9, physical,
 representative task-quality and hardware gates remain independent and blocked.
 
+**CPython correspondence outcome (REVIEW.md §102).** The separately approved
+read-only P1-P3/P7 dossier identifies the exact public Ubuntu applied source
+and amd64 build metadata. Applied `Objects/floatobject.c` agrees textually with
+upstream v3.12.3, including all five relevant scalar/remainder slots. This is
+source-text evidence only: public archive checksums and matching local package
+records do not independently bind the installed executable to that build.
+Packaging rules define sysconfig flag rewriting and distinct static/shared/LTO
+paths, so reported flags are not a per-object compile record. Generic versus
+specialized dispatch and current fmod resolution remain unresolved. The public
+build's glibc development version differs from the installed runtime package;
+neither declaration supplies a live libm/FP contract or uniform error theorem.
+This result completes the dossier, not Q1 or any numerical qualification gate.
+The protocol, all ten error rows, old verdicts/flags, code/bounds and helper
+`1bb89fe` mathematical-only scope remain unchanged.
+
+Next proposed, not approved: same-four-row static CPython path inspection using
+the pinned official generated-interpreter pages and existing executable symbols/
+disassembly tools, capped at five named entry points and 64 KiB of extracted
+disassembly, with missing mappings reported as gaps. No executed-path claim
+follows from static possibilities. No numerical/fixture/producer execution,
+debug/source/package acquisition, dependency/FP-mode change, proof/code/bound
+adoption, collection or integration is included. All approved scopes are
+exhausted; independent physical/task-quality/data/runtime gates remain blocked.
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5674,7 +5698,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §101): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §102): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -5758,11 +5782,15 @@ or source-package acquisition. Matching-build/FP/domain and uniform-error
 qualification still remain. The separately approved documentation-only protocol
 preparation is complete (§101): worksheet fields, Q0-Q5 gates and ten proof/stop
 rows, accounting/invalidation and proposed acceptance controls. No gate was
-adopted or executed and no primitive allowance was justified. Next proposed,
-not approved: read-only CPython P1-P3/P7 source/build correspondence dossier,
-installed metadata and official patch/build pages only, with explicit gaps.
-No archive/package acquisition, numerical execution, code or bound adoption
-follows. Physical/numerical/task-quality and integration/data gates stay unchanged.
+adopted or executed and no primitive allowance was justified. The separately
+approved CPython P1-P3/P7 correspondence dossier is complete (§102): exact public
+applied source/build metadata and float-slot text agreement, but no installed
+source-to-executable, specialization/compiled-path or FP/error qualification.
+Packaging sysconfig flag rewriting and differing build/runtime glibc package
+versions are explicit evidence limits. Next proposed, not approved: same-row
+static source/executable path inspection, five named entries/64 KiB extraction
+cap, no numerical/producer run, acquisition, environment change, proof/code/bound
+adoption, collection or integration. All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

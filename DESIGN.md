@@ -3950,6 +3950,198 @@ All Task 6/9, physical/task-quality, teacher and ST/board gates remain separate.
 
 [controlled-arithmetic-prototype-tests]: tests/test_sim.py
 
+#### Controlled Arithmetic Correctness Dossier (2026-11-03)
+
+The user approved this design-only dossier for the four private helpers and
+P1/P2/P3/P7 ([review §106][controlled-arithmetic-dossier-review]), not source
+changes, new fixtures, numerical execution or qualification. The baseline is
+`9b4000e`. This is a conditional mathematical/source worksheet: every claim
+below requires its named trusted-base and implementation-correspondence
+obligations. No row is declared proved, adopted or Q0-Q5-qualified by preparation.
+The earlier 92 fixture checks remain historical evidence, not a new proof run.
+
+The local hypothesis is that exact rational/lattice reasoning can separate
+format correctness, rounded finite results, zero semantics, overflow and
+work/stop claims without implying installed-producer parity or a runtime bound.
+The cheap check is static correspondence to the four unchanged helper bodies
+and the existing neighbor/zero/exception tests, not arithmetic evaluation.
+
+| Obligation | Owning Helper | Conditional Invariant/Discriminating Check |
+| --- | --- | --- |
+| D0 | `_synthetic_binary64_value` | Exact built-in integer word, finite exponent field; decode the normal/subnormal mathematical value and retain the independent sign of zero. Fraction reduction preserves the value but cannot recover zero sign. |
+| R1 | `_synthetic_rn64` | For positive magnitude and denominator, bit-length difference plus one exact comparison gives the floor binary exponent. Check the positive/negative shift branches separately, including a correction from zero to minus one. |
+| R2 | `_synthetic_rn64` | With quantum `max(exponent-52,-1074)`, quotient/remainder give adjacent lattice candidates. Compare remainder with its complement; increment above half, or at half only for an odd coefficient. |
+| R3 | `_synthetic_rn64` | A carry to `2**53` is renormalized once. Subnormal coefficients below `2**52`, the first normal coefficient and exponent-field packing preserve the selected value and sign. |
+| R4 | `_synthetic_rn64` | Overflow uses the finite-format carry threshold, not nearest among finite words alone. Check early exponent rejection and the final all-one exponent rejection independently. |
+| R5 | `_synthetic_rn64` / `_synthetic_binary64_operation` | Exact zero uses an explicit valid tag; nonzero underflow keeps its own sign. Addition, subtraction and multiplication/division have distinct tag rules, not a single rational-zero convention. |
+| O0 | `_synthetic_binary64_operation` | The named exact operation precedes RN64; returned error is decoded rounded value minus that exact result. Operand rounding and upstream error are not hidden inside this local ratio. |
+| T0 | `_trace_synthetic_binary64_rows` | P1/P2/P3/P7 keep source-ordered cells, two separate periods, exact quotient truncation, remainder sign correction and final subtraction. The worksheet is not an owner/pose/source/wire adapter. |
+| W0 | all four helpers | Materialized expression lengths, integer/Fraction implementation work and live object bytes are distinct. A 4,096-bit check alone is neither a time bound nor protection against already-materialized oversized caller inputs. |
+| S0 | `_trace_synthetic_binary64_rows` | Only the caught ValueError path returns an unsupported result with empty rows. Opt-in rejection raises; allocation/interruption/unexpected exceptions are not converted into safety-qualified abstention. |
+| TB0 | all four helpers | Bind integer, Fraction/GCD, packing, comparison/shift, source/interpreter and exception semantics before promoting any conditional argument. No native CPython FP-path equivalence is inferred. |
+
+For R1, let $N,D>0$ and $e_0=\operatorname{bitlen}(N)-\operatorname{bitlen}(D)$.
+The source compares $N$ with $D2^{e_0}$ when $e_0\ge0$, or $N2^{-e_0}$ with
+$D$ otherwise, and subtracts one exactly when the left side is smaller.
+The required result is $2^e\le N/D<2^{e+1}$. These are rational comparisons,
+not floating logarithms or runtime observations.
+
+For R2, set $q=\max(e-52,-1074)$ and choose integers $A,B>0$ such that
+$A/B=(N/D)2^{-q}$. Integer division gives $A=KB+R$, $0\le R<B$.
+Comparing $R$ with $B-R$ is equivalent to comparing $2R$ with $B$, without
+materializing the doubled remainder. Prove that the increment/odd rule chooses
+the nearest lattice point, with ties to even, before invoking R3/R4 packing.
+
+For R4, the maximum finite magnitude is $M=(2^{53}-1)2^{971}$ and its
+overflow midpoint is $H=M+2^{970}=(2^{54}-1)2^{970}$. Magnitudes at or above
+$H$ must stop unsupported; do not pretend a nearest-finite-only search defines
+this decision. The conceptual next value $2^{1024}$ explains the carry/tie,
+but is not a supported output word. Existing finite-neighbor tests exclude
+that upper candidate, so they cannot discharge R4 on their own.
+
+**Branch completion and zero tags.** R3 must partition magnitudes below half
+the least subnormal, at that half, within the subnormal lattice, at the first
+normal transition, within normal binades and at the overflow midpoint. The
+early `exponent < -1075` branch is strictly below half; equality still reaches
+quotient/tie selection. A selected zero retains the nonzero exact result's
+sign. Before increment the normal coefficient is below `2**53`; the possible
+single carry is renormalized before packing. A subnormal carry to `2**52`
+must instead encode the minimum normal. No float conversion supplies this proof.
+
+R5 requires the following source-specific tag ledger, including subtraction
+of signed zeros. Two negative exact zeros add to negative zero; other exact
+zero additions and nonzero cancellation give positive zero. Subtraction flips
+the right value and sign before that same rule. Multiplication and supported
+division use operand-sign XOR. Division by either signed zero is unsupported.
+The operation worksheet's `zero_sign` is the exact-zero fallback tag, not a
+replacement for the sign of a nonzero result. It is ignored by RN64 for nonzero
+numerators. Neither a rational equality nor an adjacent-magnitude check proves
+these tags, and the supplied tag's validity is not caller/source authority.
+
+O0 separately requires exact operation semantics, reduction and positive
+denominators. Its error ratio is local to the *already rounded* supplied words.
+It is not the total seed-to-cell error, a runtime allowance or a claim that the
+installed old producer has that error. Preserve the previous same-stored-pose
+and seed-based accounting, both clocks and once-only stored-pi/argument error
+composition; P4-P6/G1-G3 and `1bb89fe` remain outside the dossier's proof claim.
+
+**Four-row dependency and remainder worksheet.** This is not a new trace schema
+or API. T0 requires the following exact dependencies, not just named output rows.
+
+| Row | Conditional Source-Order Obligation | Closure/Stop Obligation |
+| --- | --- | --- |
+| P1 | Round supplied turn times supplied binary-step duration to `a`. | Literal duration is positive and below `1/16`; it is not nominal `1/20` or newly attested stored bytes. |
+| P2 | Divide rounded `a` by literal two, round `half`, then add supplied heading and round `m`. | An exact unfactored half-angle expression is a different producer; finite closure depends on R1-R5. |
+| P3 | Separately round two times stored pi to `b_q`; divide rounded `a` by it and round `q`. | Prove the denominator is positive and exact doubling is representable; do not inherit P4/P5 or real-pi error qualification. |
+| P7 | Round heading plus `a`, then plus stored pi; separately round its period, truncate the exact quotient, form and round the signed residue, correct sign and finally subtract pi. | Prove quotient/domain closure and each rounding point; zero/sign correction, `u==b_r` and circular-reference cuts cannot be replaced by floor division, clamping or a fused wrap. |
+
+Let the stored pi value be $p$, duration be $d$, and reaction turn be $\omega$.
+D0 and the literal words must establish $3<p<4$, $0<d<1/16$, literal two,
+$|r|\le p$ and $|\omega|\le3/2$. Conditional on RN64 monotonicity and exact
+representable endpoint preservation, $|a|\le3/32$ and the first rounded sum
+lies in $[-5,5]$. The next rounded sum $x$ lies in $[-2,9]$; exact doubling
+gives $b_r=b_q=2p>6$. Thus $-1<x/b_r<2$ and truncation toward zero yields
+only zero or one. The two cells stay distinct despite that equality. These
+deliberately loose rational intervals require no new scene or numerical sample.
+They are a conditional closure argument to review, not qualified domain bounds.
+
+For the residue, prove $\rho=x-tb_r$, $|\rho|<b_r$ and the dividend sign for
+nonzero residue. Truncation must use magnitude division and then restore sign.
+D0/RN64 exactness must cover residue representability or retain a nonzero local
+residue-rounding error; do not assume representability from successful fixtures.
+At zero, RN64 initially preserves the dividend sign, then correction uses the
+divisor's zero sign. Negative nonzero residue adds the period and rounds; this
+can produce `u==b_r`. Positive residue is unchanged. The final subtraction has
+its own rounding/zero rule. Prove these cases before claiming staged remainder
+semantics, never installed fmod equivalence or a half-open real-pi result.
+
+**Expression-size ledger, not a resource certificate.** Let bit length refer
+to integer magnitude, with zero length zero and a positive denominator. The
+following are conservative unreduced arithmetic counts conditional on exact
+integer/Fraction semantics; they bound values, not internal allocator objects.
+
+| Stage | Numerator/Comparison Bits | Denominator Bits | Derivation/Remaining Obligation |
+| --- | --- | --- | --- |
+| D0 finite-word decode | 1,024 | 1,075 | At most 53 significand bits and a 971-bit positive shift, or denominator `2**1074`; reduction cannot enlarge values. |
+| O0 add/subtract | 2,100 | 2,150 | Two cross-products of at most 2,099 bits plus one sum carry; denominator product. |
+| O0 multiply | 2,048 | 2,150 | Products of two decoded numerators/denominators; internal GCD work remains a trusted-base question. |
+| O0 divide | 2,099 | 2,099 | Cross numerator/denominator products with a nonzero right operand; normalize sign. |
+| R1 exponent comparison | at most 4,096 on either side | not a new ratio | After input preflight, the shifted side's bit length equals the larger original bit length. This shift precedes the later quantum preflight. |
+| R2 quantum scaling of a word operation | at most 3,174 | at most 3,121 | Add at most 1,074 numerator or 971 denominator bits; direct rational calls instead obey their own 4,096-bit scaled preflight. |
+| R2 quotient/remainder/tie | coefficient at most 54 before carry normalization | scaled divisor at most 4,096 | Remainder and complement fit the divisor; one increment and one carry, not an unbounded coefficient loop. |
+| O0/T0 local rounding error | at most 3,175 | at most 3,225 | Difference between decoded rounded word and exact operation/residue; cross-products plus one sum carry. |
+| T0 quotient/residue | quotient-ratio 2,099; residue numerator 2,100 | quotient-ratio 2,099; residue denominator 2,150 | Conditional trace closure bounds truncated quotient to zero/one before multiplication by the period. |
+
+The decode/operation paths have structural bounds before they call the rounder;
+they do not dynamically preflight each Fraction internal allocation. R1's
+comparison shift is justified by its own matching-bit-length argument, not
+retroactively by R2's later guard. RN64 checks rational lengths before `abs`
+and quantum-scaled lengths before their shifts. Arbitrary oversized integers
+may already exist at ingress: these checks do not bound their construction,
+caller storage or parsing. Prove reduction, GCD/division and intermediate
+materialization separately rather than equating a guarded returned pair with
+every implementation temporary.
+
+The trace has ten or eleven rounded worksheets and bounded source-level
+control flow, but those counts are not time, Python allocation or stack bounds.
+Live fractions, operand/error tuples, cell dictionaries, retained lists/rows,
+temporary division/GCD objects, interpreter frames and object overhead require
+a separate materialization/work model. A 4,096-bit integer ceiling and the
+reference's 65,536-bit ceiling neither measure nor certify that model. No new
+deadline, memory budget, Cortex-M55 fit or hardware implementation is adopted.
+
+**Trusted base and stop model.** TB0 must distinguish mathematical assumptions
+from their actual implementation/correspondence evidence. Bind the four source
+bodies, mutable cap/global/helper bindings and immutable literal contract;
+then the selected interpreter's integer shifts/comparisons/division, Fraction
+normalization/arithmetic/GCD, tuple/dictionary construction and exception
+behavior. The local Git identities in REVIEW.md §106 bind text only, not
+installed interpreter instructions, live bindings or authenticated build lineage.
+No fresh interpreter/native-library identity or stdlib source audit occurred.
+
+S0 proves only externally published result atomicity on the existing ValueError
+path: its returned rows are empty and no owner/event/log mutation path exists.
+Partly built local cells may have existed before the catch; this is not rollback
+of allocations or every exception. `MemoryError`, interruption and unexpected
+exceptions propagate; they are not converted into a safety-qualified unknown.
+The strict opt-in guard raises before the result is created. Binding mutation,
+side-effecting replacement helpers or a different caller are outside the assumed
+proof domain, not silently protected by these checks. No host fallback or
+physical failure policy is changed.
+
+**Candidate acceptance sequence, not executed or adopted.**
+
+1. Freeze the exact helper text, word/constant/domain contract, source-cell
+  dependency graph, zero tags, overflow midpoint and exception set. Any mismatch
+  invalidates the worksheet instead of reusing a historical test result.
+2. Review D0/R1-R5/O0/T0 by branch, including RN monotonicity, representable
+  endpoints, carry, exact-zero versus underflow and P7 truncation/correction.
+  An unclosed lemma remains an explicit obligation, not a fixture-derived proof.
+3. Review W0/TB0 at each materialization boundary. Choose explicit trust
+  assumptions or bind already-local implementation evidence; missing source,
+  compiler/live correspondence, internal work or byte costs stay unresolved.
+4. Map the existing literal/neighbor/fault fixtures to those obligations without
+  running or enlarging them. Neighbor samples do not prove overflow, zero tags,
+  all-domain correctness, rare exceptions or internal work. Any future execution
+  needs a separate bounded approval; old 64/32 permission is exhausted.
+5. Record independent paper review outcomes per obligation, assumptions and
+  unresolved dependencies. Even a later accepted conditional theorem does not
+  promote Q0-Q5, primitive allowances, old producer parity, owner integration,
+  full motion/goal/wire qualification, physical clearance or task-data approval.
+
+Recommended default: retain the isolated prototype and unchanged unqualified/
+abstaining producer paths. This preparation is complete, not proof acceptance.
+Next recommended, **not approved**: bounded read-only trusted-base/source
+correspondence review for these same helpers, at most three already-local
+implementation files and 64 KiB cumulative extracted text, including failed/
+diagnostic reads. Missing integer/GCD implementation or interpreter/build
+correspondence remains a gap. No acquisition/download, runtime import,
+disassembly, new fixture/numerical run, source edit, dependency, proof/allowance/
+flag promotion or owner/query/log adapter; no general interpreter audit. All
+Task 6/9, numerical/physical/task-quality, teacher assets and ST/board gates stay.
+
+[controlled-arithmetic-dossier-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -5961,7 +6153,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §105): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §106): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6064,10 +6256,14 @@ word/RN64/remainder semantics, four traces, compatibility/tradeoffs and proof/
 cost/stop checks. Its separately approved isolated prototype is now complete
 (§105): exact word/RN64 operations and four traces with independent literal
 fixtures, rejection and atomic stops. This is not producer adoption/parity,
-numerical qualification or owner/runtime integration. Next proposed, not
-approved: design-only correctness/work-bound dossier for these helpers/rows,
-no new numerical fixtures/runs, dependencies, owner/query/log adapter or
-allowance/qualification promotion. All broader gates remain unchanged.
+numerical qualification or owner/runtime integration. Its separately approved
+design-only dossier is now prepared (§106): eleven conditional correctness,
+work/trusted-base/stop obligations, four-row closure and a paper acceptance
+sequence. No proof, budget, allowance or qualification is accepted. Next
+proposed, not approved: bounded read-only trusted-base/source correspondence,
+three already-local files/64 KiB cumulative text; no acquisition, runtime import,
+numerical/fixture run, source edit, owner/query/log adapter or promotion. All
+broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

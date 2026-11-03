@@ -6969,6 +6969,107 @@ ST/board gates remain separate. No background job or cleanup is pending.
 [arithmetic-prototype]: sim/diagnostics.py
 [arithmetic-tests]: tests/test_sim.py
 
+## 106. Controlled Arithmetic Correctness/Work Dossier (2026-11-03)
+
+The user approved §105's design-only correctness/work-bound dossier for the
+same four private helpers and P1-P3/P7, with no code changes, new fixtures or
+numerical runs. Work began clean at `9b4000e`. The reported source/test edits
+were checked: neither file had a pending diff and their current text was read
+before document edits. Current State, §105 and DESIGN.md §§1, 2, 7 and 12
+were read. Only existing documentation changes; no interpreter/import/model,
+arithmetic/fixture/default/native gate, collection, dependency or qualification
+action is authorized. Prior results and failures are preserved unchanged.
+
+**Local hypothesis and first check.** Conditional exact-rational/lattice
+arguments can separate finite packing, zero, overflow and work/stop claims
+without implying installed-producer parity or a uniform implementation bound.
+The first edit added eleven obligations and floor-exponent, tie and overflow
+worksheets. Its focused text/source-preservation check passed before expansion:
+all eleven IDs/four helpers, finite-neighbor limitation, ValueError-only atomic
+stop model and unchanged source/tests. No helper or arithmetic fixture was run.
+
+**Exact local text baseline.** These Git object IDs were read from the current
+repository, not inferred from an old exporter hash or Python import:
+
+| Object | Git Identity | Limit |
+| --- | --- | --- |
+| Baseline commit | `9b4000ef11729944c88623574f8af25de548bbae` | Local committed text, not installed interpreter/build attestation. |
+| [Helper module][arithmetic-prototype] blob | `fa78f69d3f3a504ec5b086842f0aaf980d5b5288` | All four helper bodies and literal/cap guards are present; no execution or live binding evidence. |
+| [Existing tests][arithmetic-tests] blob | `2678bfe43b0ff3bb78a15342f64d57a153bc0538` | Existing literal/neighbor/fault checks, not rerun or enlarged. |
+
+**Prepared candidate.** [DESIGN.md §7][arithmetic-dossier-design] now contains
+D0, R1-R5, O0, T0, W0, S0 and TB0: exact word/zero decoding, floor exponent,
+nearest-lattice ties, carry/packing/overflow, operation/zero rules, four-row
+dependencies, integer-size versus work/materialization, exceptions and trusted
+implementation correspondence. No obligation is marked proved or Q0-Q5 closed.
+The symbolic arithmetic is a paper argument, not numerical fixture execution.
+
+The floor-exponent worksheet covers both shift branches and the correction
+from zero to minus one. Quotient/remainder/complement comparison supplies the
+conditional tie argument, before separate subnormal/normal carry and overflow
+packing obligations. Overflow's midpoint is distinguished from a search over
+finite words alone: existing neighbor checks exclude the nonfinite upper
+candidate and cannot discharge that branch independently. Exact-zero fallback
+tags, nonzero underflow signs and subtraction's flipped right-zero sign are
+explicit; rational equality cannot prove them.
+
+The four-row worksheet retains every rounding point, separate P3/P7 periods,
+exact quotient truncation, residue/correction and final subtraction. A loose
+symbolic closure argument derives `x` within `[-2,9]` and a period greater
+than six, conditional on decoded constants, RN monotonicity and exact endpoints;
+truncation is then zero or one. This is not adopted domain/error evidence.
+Residue representability remains a separate proof obligation or local-error
+term, never inferred from installed fmod or successful fixtures. `u==b_r`,
+circular cuts, both clocks and the previous once-only/seed-based composition
+requirements remain intact; P4-P6/G1-G3 and `1bb89fe` are not qualified.
+
+The expression ledger distinguishes decode, operation products, exponent
+comparison, quantum scaling, quotient/remainder and local-error storage.
+The comparison shift before the quantum guard has its own matching-bit-length
+argument. The cap bounds admitted integer magnitudes, not already-materialized
+caller inputs, all Fraction/GCD temporaries, allocation/time/stack or firmware
+fit. The worksheet retains the 4,096-bit ceiling and existing conservative
+counts without accepting a resource certificate or borrowing 65,536 bits.
+
+The stop model is published-result atomicity for the caught ValueError path,
+not allocation rollback or universal exception handling. Opt-in failure raises;
+MemoryError, interruption and unexpected exceptions propagate. Stable helper/
+cap bindings and integer/Fraction/GCD/packing/control-flow correspondence are
+explicit trusted-base dependencies, not waived because source syntax is FP-free.
+No current interpreter/native identity or installed stdlib audit was performed.
+
+**Acceptance and next scope.** Five unexecuted paper-review stages freeze the
+contract, check branch/closure lemmas, review internal materialization/trust,
+map existing fixtures without execution and record independent outcomes with
+remaining assumptions. This exits with a concrete dossier, not proof acceptance,
+new allowance, qualification, adoption, runtime integration or task labels.
+All approved scopes are exhausted; default remains unchanged/unqualified.
+
+Next recommended, **not approved**: a bounded read-only trusted-base/source
+correspondence review for the same four helpers, at most three already-local
+implementation files and 64 KiB cumulative extracted text including failed/
+diagnostic reads. Bind Fraction/integer/GCD semantics only where local evidence
+exists; missing implementation/build/live mappings stay explicit gaps. No source
+acquisition/download, runtime import, disassembly, fixture/numerical run, source
+edit, dependency, proof/allowance/flag promotion, owner/query/log adapter or
+general interpreter audit. Broader Task 6/9, numerical/physical/task-quality,
+teacher assets and ST/board gates remain unchanged.
+
+**Verification and retention.** Focused text/source-preservation checks and
+`git diff --check` validate the dossier/handovers, reference definitions/local
+targets, section sequence and preservation of prior review/source/test text.
+The initial check passed without a failed attempt. The expanded patch first
+failed on a literal escaped section marker in its context; the outcome check
+confirmed no partial edit. The actual marker was restored before reapplication,
+without weakening any claim, check or scope. No code/default/native suite,
+arithmetic/source-derivation run or environment/dependency change occurred.
+The last source gate remains §105's 2,097 passes plus known xfail, not rerun
+proof evidence. Only AGENTS.md, DESIGN.md and REVIEW.md change; source/test Git
+identities, old bounds/flags/verdicts, reports/logs and helper `1bb89fe` stay
+unchanged. No cleanup, background job, acquisition, collection or assistant push.
+
+[arithmetic-dossier-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

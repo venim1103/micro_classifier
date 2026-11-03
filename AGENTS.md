@@ -118,23 +118,22 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: isolated controlled arithmetic prototype
-  (DESIGN.md §7 / REVIEW.md §105). Four private integer/Fraction word/RN64/trace
-  helpers preserve P1/P2/P3/P7 order, zero/remainder rules and atomic stops.
-  All 92 new checks pass: 63 primitive fixtures, 28 trace checks (29 scenarios
-  conservatively counting fault modes), one structural check; caps were 64/32.
-  Literal words and independent rational neighbor checks, not installed-FP parity
-  or uniform correctness. Separate 4,096-bit preflight is not measured cost or
-  certified motion/error evidence. Old functions/tests are AST-identical;
-  all ten rows' qualification, protocol/bounds, old verdicts/flags and `1bb89fe`
-  stay unchanged. No owner/query/episode/log adapter, dependency or integration.
-  New module source identities naturally change; historical artifacts unchanged.
-  All scopes exhausted. Next proposed, not approved: design-only correctness/
-  work-bound dossier for these helpers/four rows, exact invariants/trusted-base/
-  stop checks, no source changes, new fixtures/numerical runs or qualification/
-  allowance promotion. Default remains unchanged unqualified/abstaining.
+- Latest approved package complete: design-only controlled arithmetic
+  correctness/work dossier (DESIGN.md §7 / REVIEW.md §106), pinned to `9b4000e`
+  helper/test text. Eleven conditional decode/RN64/zero/overflow/operation/trace/
+  work/exception/trusted-base obligations, four-row closure and five paper
+  review stages; none proved, accepted or qualification-promoted. The 4,096-bit
+  cap is not time/live-allocation or caller-input storage evidence. Finite-neighbor
+  checks do not cover overflow/zero semantics; only caught ValueError returns
+  empty rows, not every exception. Source/tests, old bounds/flags/verdicts,
+  all ten rows and `1bb89fe` stay unchanged; no fixture/numerical gate rerun.
+  All scopes exhausted. Next proposed, not approved: bounded read-only same-helper
+  trusted-base/source correspondence, three already-local implementation files/
+  64 KiB cumulative text including failed reads. No acquisition, runtime import,
+  disassembly, source edit, fixture/numerical run, owner/query/log adapter or
+  proof/allowance/qualification promotion. Default remains unqualified/abstaining.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-105 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-106 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1191,16 +1190,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §105 completes
-the approved isolated controlled-arithmetic prototype: four private helpers,
-P1/P2/P3/P7 cell order, literal/rational neighbor fixtures and atomic stops.
-All 92 new checks and 2,097 repository tests plus known xfail pass; lint repair
-is recorded. No old-producer parity, uniform correctness, owner/runtime adapter,
-allowance or qualification follows. Protocol/bounds, old functions/verdicts/
-flags and `1bb89fe` stay unchanged; module identities naturally differ.
-Next proposed, not approved: design-only correctness/work-bound dossier for
-these helpers/four rows, no source edits, new fixtures/numerical runs, dependency,
-owner/query/log adapter or allowance/qualification promotion. All broader gates stay.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §106 completes
+the approved design-only correctness/work dossier for four private arithmetic
+helpers/P1-P3/P7. Eleven conditional obligations and paper acceptance stages,
+not accepted proof, time/storage evidence, parity or qualification. Source/tests,
+old bounds/flags/verdicts and `1bb89fe` stay unchanged; §105's 2,097 passes plus
+known xfail remain historical, not rerun. Next proposed, not approved: bounded
+read-only trusted-base/source correspondence, three already-local files/64 KiB
+cumulative text; no acquisition/runtime import/disassembly, source/fixture/
+numerical run, owner/query/log adapter or proof/allowance/qualification promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1361,9 +1359,14 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   Controlled arithmetic prototype (REVIEW.md §105): four private helpers and
   92 checks pass within 64 primitive/32 trace fixture caps; whole gate 2,097 plus
   known xfail. Not old-producer parity, certified arithmetic or owner integration.
-  All old functions/flags/verdicts/bounds and `1bb89fe` stay unchanged. Next
-  proposed, not approved: design-only correctness/work-bound dossier, no new
-  code/fixture/numerical run, dependency, owner/query/log adapter or qualification.
+  All old functions/flags/verdicts/bounds and `1bb89fe` stay unchanged. The
+  design-only dossier was separately approved and is prepared below; no wider
+  code/fixture/numerical scope follows from this prototype.
+  Correctness/work dossier (REVIEW.md §106): eleven conditional obligations,
+  four-row closure and five paper-review stages; no accepted proof/allowance,
+  qualification or code/test change. Next proposed, not approved: same-helper
+  read-only trusted-base/source correspondence, three local files/64 KiB text;
+  no acquisition/runtime import/disassembly, numeric/fixture run or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

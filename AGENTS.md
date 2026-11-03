@@ -118,22 +118,20 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only controlled arithmetic
-  correctness/work dossier (DESIGN.md §7 / REVIEW.md §106), pinned to `9b4000e`
-  helper/test text. Eleven conditional decode/RN64/zero/overflow/operation/trace/
-  work/exception/trusted-base obligations, four-row closure and five paper
-  review stages; none proved, accepted or qualification-promoted. The 4,096-bit
-  cap is not time/live-allocation or caller-input storage evidence. Finite-neighbor
-  checks do not cover overflow/zero semantics; only caught ValueError returns
-  empty rows, not every exception. Source/tests, old bounds/flags/verdicts,
-  all ten rows and `1bb89fe` stay unchanged; no fixture/numerical gate rerun.
-  All scopes exhausted. Next proposed, not approved: bounded read-only same-helper
-  trusted-base/source correspondence, three already-local implementation files/
-  64 KiB cumulative text including failed reads. No acquisition, runtime import,
-  disassembly, source edit, fixture/numerical run, owner/query/log adapter or
-  proof/allowance/qualification promotion. Default remains unqualified/abstaining.
+- Latest approved package complete: bounded local arithmetic trusted-base review
+  (DESIGN.md §7 / REVIEW.md §107). Three files read once, 47,635/65,536 bytes:
+  Fraction rational algorithms/unchecked internal pairs and integer-header
+  declarations/representation. Native integer/GCD/division/build/live ABI,
+  module origin and internal work remain unbound. No proof/trust/qualification
+  promotion, source/test edit, import or numerical run. Eleven dossier obligations,
+  old bounds/flags/verdicts and `1bb89fe` stay unchanged. All read scopes exhausted.
+  Next proposed, not approved: paper-only conditional partial-correctness review
+  of eight D0/R1-R5/O0/T0 obligations using recorded source correspondence and
+  explicit integer/GCD/canonical/stable-binding assumptions. No extra source
+  extraction/import/acquisition, code/fixture/numerical run, W0/TB0 closure,
+  allowance/flag promotion or owner/query/log adapter. Default stays unqualified.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-106 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-107 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1190,15 +1188,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §106 completes
-the approved design-only correctness/work dossier for four private arithmetic
-helpers/P1-P3/P7. Eleven conditional obligations and paper acceptance stages,
-not accepted proof, time/storage evidence, parity or qualification. Source/tests,
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §107 completes
+the approved read-only trusted-base review: three local files, 47,635 bytes
+within 64 KiB, Fraction paths and integer-header boundaries. Not native/build/
+live/work evidence or correctness/qualification acceptance. Source/tests,
 old bounds/flags/verdicts and `1bb89fe` stay unchanged; §105's 2,097 passes plus
-known xfail remain historical, not rerun. Next proposed, not approved: bounded
-read-only trusted-base/source correspondence, three already-local files/64 KiB
-cumulative text; no acquisition/runtime import/disassembly, source/fixture/
-numerical run, owner/query/log adapter or proof/allowance/qualification promotion.
+known xfail were not rerun. Next proposed, not approved: paper-only conditional
+D0/R1-R5/O0/T0 partial-correctness review with explicit integer/GCD/canonical/
+stable-binding assumptions; no extra implementation reads/import/acquisition,
+source/fixture/numerical run, W0/TB0 closure or promotion. All broader gates stay.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1364,9 +1362,13 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   code/fixture/numerical scope follows from this prototype.
   Correctness/work dossier (REVIEW.md §106): eleven conditional obligations,
   four-row closure and five paper-review stages; no accepted proof/allowance,
-  qualification or code/test change. Next proposed, not approved: same-helper
-  read-only trusted-base/source correspondence, three local files/64 KiB text;
-  no acquisition/runtime import/disassembly, numeric/fixture run or promotion.
+  qualification or code/test change. Its separately approved read-only result
+  follows; no extra code/fixture/numerical scope follows from that dossier.
+  Trusted-base review (REVIEW.md §107): three files/47,635 bytes, Fraction paths
+  and integer-header limits; native/build/live/work and proof/qualification open.
+  No imports/acquisition/source edits/numerical runs. Next proposed, not approved:
+  eight-obligation conditional paper review, no extra source extraction, imports,
+  fixtures/runs, native-trust or allowance/flag promotion, owner/query/log adapter.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

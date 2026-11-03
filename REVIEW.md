@@ -7070,6 +7070,120 @@ unchanged. No cleanup, background job, acquisition, collection or assistant push
 
 [arithmetic-dossier-design]: DESIGN.md
 
+## 107. Bounded Local Arithmetic Trusted-Base Review (2026-11-03)
+
+The user approved §106's read-only same-helper trusted-base/source review:
+at most three already-local implementation files and 64 KiB cumulative
+extracted text, no imports/downloads/code changes/numerical runs. Work began
+clean at `a83d4b8`; Current State and §106, the DESIGN.md §7 dossier and §12
+handoff were checked with the unchanged active §1/2 boundaries. Helper/test
+blobs remain `fa78f69d3f3a504ec5b086842f0aaf980d5b5288` and
+`2678bfe43b0ff3bb78a15342f64d57a153bc0538`. No broader interpreter audit,
+disassembly, source acquisition, model/task-data or qualification work follows.
+
+**Route, identities and exact budget.** Pylance reports the selected interpreter
+as `/opt/venv/bin/python`; filesystem resolution gives `/usr/bin/python3.12`.
+That does not identify a loaded Fraction module or its bytecode. The following
+three candidate files were preflighted, then read once in full. Package ownership
+and versions were read without executing Python; hashes were unchanged on the
+post-review check. Both package groups report `3.12.3-1ubuntu0.17`.
+
+| Local Evidence File | Lines / Extracted Bytes | SHA-256 | Declared Package Owner |
+| --- | --- | --- | --- |
+| `/usr/lib/python3.12/fractions.py` | 988 / 38,067 | `cf33568f7b767f66896995a7a81cc662e8be226f2e58efb61d2028f64eb5d231` | `libpython3.12-stdlib:amd64` |
+| `/usr/include/python3.12/cpython/longobject.h` | 100 / 4,679 | `b443782d6b69a2cfd141ac13ac8b7a8d69e47bfdae9df984de4991b2d248b8b8` | `libpython3.12-dev:amd64` |
+| `/usr/include/python3.12/cpython/longintrepr.h` | 133 / 4,889 | `e2acf37f668089278081539473eeedc8537b848fcd2eb91f53172701c014b9c3` | `libpython3.12-dev:amd64` |
+
+Total implementation-text extraction is 47,635 bytes of 65,536, leaving 17,901
+unused; exactly three files, no repeated/failed/diagnostic source extraction.
+Full files include comments, unrelated methods and examples; none was run.
+Metadata size/hash/ownership checks and repository workflow/document reads are
+not extra implementation-text payloads. The initially listed pyconfig candidate
+was not selected or read. Checked `/usr/src/python3.12/Objects/longobject.c`
+and `/usr/src/python3.12/Modules/mathmodule.c` paths were absent: this is a
+location-specific gap, not proof of global source absence. No search expansion,
+fourth implementation file, package/cache/source copy or acquisition occurred.
+
+**Local hypothesis, first edit and check.** The integer/Fraction-selected paths
+can correspond to exact rational reduction while `_from_coprime_ints` assumes,
+rather than checks, its normalized-pair invariant. Headers can expose integer
+interfaces/layout without qualifying native bodies. The first documentation
+edit recorded six F0-F4/I0 surfaces; the focused check passed for those rows,
+unchecked constructor, conditional types, binding and implementation limits.
+No module, helper or fixture was imported/executed to establish that result.
+
+**Visible Fraction paths.** [DESIGN.md §7][arithmetic-trusted-design] records
+the exact-int two-argument constructor's GCD/sign reduction and the internal
+pair allocator's unchecked positive-denominator/coprime precondition. A
+single-int constructor directly uses denominator one. Forward Fraction/int
+operands select rational algorithms; reverse Rational paths convert to Fraction.
+Float/complex and float-comparison branches exist but are outside the helper
+operand assumptions, not evidence that the whole module is FP-free or that
+those assumptions were observed in a live process.
+
+Add/subtract have denominator-GCD reduction and a conditional second GCD;
+multiply/divide cross-cancel with two GCD calls before products. Named helper
+`sub` is unary negation plus addition; `_sub` separately computes error/residue
+differences. Unary/pair allocation does not redo normalization. Predicates and
+properties use stored integer fields, with Rational comparisons materializing
+cross-products. The source's normalized-input assumptions are prerequisites,
+not enforcement by slots/immutability comments or by the internal allocator.
+
+RN64 uses builtin integer `divmod`, shifts and comparisons, not Fraction
+rounding/formatting or `_PyLong_DivmodNear`. Trace truncation uses explicit
+integer magnitude division; integer-times-period goes through Rational reverse
+multiplication. Source-level fixed/GCD call counts are not native iteration,
+allocation, time or stack bounds. Reduction/cross-cancellation is compatible
+with §106's conditional unreduced expression counts, but native GCD/division/
+allocator temporaries and returned-pair invariants still require evidence.
+
+**Integer/header and exception limits.** `longobject.h` declares `_PyLong_GCD`
+with a mathmodule-use comment and bit-count/shift/nearest-divmod interfaces;
+these are not inspected implementations or actual operator/callee mappings.
+`longintrepr.h` has selectable 15/30-bit digits and a concrete `lv_tag` structure,
+while representation prose still uses `ob_size`. Do not infer a configured
+ABI, sign layout, memory formula or allocator fit from that prose. Neither
+integer source nor the math.gcd wrapper/body, compiler/link/loaded configuration,
+runtime module/bytecode lineage or authenticated package/build provenance is
+bound by local hashes/ownership. W0/TB0 and Q0-Q5 remain open.
+
+Fraction zero checks raise ZeroDivisionError, not caught ValueError. The
+helper right-zero guard/literal positive period exclude those only under
+canonical type/value/binding invariants. Early allocation, MemoryError,
+interruption or unexpected/replaced bindings remain outside S0's published-
+result atomicity; no safety-qualified universal abstention is introduced.
+
+**Exit and next permission.** The bounded source/header review is complete,
+not correctness, native trust, resource or qualification acceptance. All
+three-file/read approvals are exhausted; unused bytes authorize no follow-up.
+Next recommended, **not approved**: paper-only conditional partial-correctness
+review for eight named D0/R1-R5/O0/T0 obligations using the recorded helper/
+Fraction correspondence and explicit exact-integer/GCD/canonical-input/stable-
+binding assumptions. Review zero/round/carry/overflow and P7 quotient/residue
+cases, recording conditional lemmas/gaps without adopting native trust or
+closing W0/TB0. No additional implementation extraction, import/acquisition,
+source edit, new fixture/numerical run, dependency, proof/allowance/flag promotion
+or owner/query/log integration. All full-motion/goal/wire, Task 6/9,
+physical/task-quality, teacher assets and ST/board gates remain unchanged.
+
+**Verification and retention.** The first focused text/scope check passed.
+Scoped reference/local-target, section/fence, identity/budget and preservation
+checks passed: six surfaces, sections 1-107, 542 reference uses/local targets,
+paired fence/math blocks and source/test plus historical-review preservation.
+Editor diagnostics are clear. Diff review confines the changes to the new
+ledger and current handoffs; prior dossier/workflow history and old flags/
+verdicts/bounds remain unchanged. On resumption the combined status/anchor
+command printed the worktree/HEAD/diff stats, then failed because `rg` is absent;
+editor search and document reads supplied the anchors. This was not failed
+implementation extraction, numerical execution or permission to widen scope.
+Only AGENTS.md, DESIGN.md and REVIEW.md change. No Python/default/native test,
+arithmetic/reference/model/fixture run, environment/dependency change, raw source
+artifact, cache regeneration, cleanup, background job or assistant push occurred.
+No failed implementation extraction or numerical check was hidden. The last
+source gate remains §105's 2,097 passes plus known xfail, not rerun evidence.
+
+[arithmetic-trusted-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -4142,6 +4142,101 @@ Task 6/9, numerical/physical/task-quality, teacher assets and ST/board gates sta
 
 [controlled-arithmetic-dossier-review]: REVIEW.md
 
+#### Local Arithmetic Trusted-Base Review (2026-11-03)
+
+The user separately approved the bounded read-only follow-up to §106
+([review §107][arithmetic-trusted-base-review]). It inspects already-local
+Fraction source and two integer headers, not runtime imports, a numerical run
+or a general interpreter audit. It changes neither the four private helpers
+nor the eleven conditional obligations, old flags/verdicts or `1bb89fe`.
+The following is static source correspondence, not accepted correctness,
+compiled/live-path binding, resource evidence or Q0-Q5 qualification.
+
+| Surface | Visible Correspondence | Remaining Trust/Stop Obligation |
+| --- | --- | --- |
+| F0: exact-int constructor | `Fraction.__new__` accepts two exact integer arguments, rejects zero denominator, uses `math.gcd`, normalizes denominator sign and divides the pair by the GCD. | Object allocation occurs first; integer/GCD semantics and exceptions remain trusted. No signed-zero tag survives rational zero alone. |
+| F1: internal pair constructor | `_from_coprime_ints` allocates and stores the supplied numerator/denominator without another GCD or sign check. | Its documented reduced-positive-denominator invariant must come from the callers; the constructor does not enforce it. |
+| F2: operator selection | Generated forward operators use rational algorithms for Fraction operands and convert integer operands through Fraction. Reverse operators admit Rational operands. Float/complex fallback branches also exist. | Their exclusion is conditional on the helpers' exact types and stable bindings, not a whole-module FP-free claim or observed dispatch. |
+| F3: arithmetic | `_add`/`_sub` reduce denominator factors; `_mul`/`_div` cross-cancel using GCD before products. Division rejects zero numerator in its divisor and restores denominator sign. | Check zero/cancellation, positive denominators and coprimality before trusting F1. Integer division/GCD bodies and internal work remain unbound. |
+| F4: predicates/unary/properties | Rational comparisons use cross-products; boolean conversion uses the numerator; unary negative/absolute return internal pairs; numerator/denominator properties expose stored integers. | Canonical integer pairs and type bindings are prerequisites. Float comparison, formatting/hash/conversion and arbitrary subclasses are not qualified. |
+| I0: integer boundary | Local headers declare GCD, shifts and bit-count-related interfaces and show selectable 15/30-bit digits with an `lv_tag` structure. | Declarations/comments are not the integer/GCD implementations, selected configuration, compiled ABI, live dispatch or memory/time bounds. |
+
+`math.gcd` is an integer dependency, not evidence that these paths call native
+floating arithmetic. Conversely, the presence of an integer-only branch does
+not authenticate its loaded module, compiled callee or ambient replacement
+bindings. Selected-editor interpreter and local file/hash/package metadata
+are distinct from runtime module origin and bytecode/build correspondence.
+No checked header may be substituted for a linked integer implementation.
+
+**Helper-to-source correspondence.** Under unchanged exact type/class/global
+bindings, `_synthetic_binary64_value` constructs Fraction from two integers;
+its positive denominator goes through F0. RN64 itself uses builtin integer
+bit lengths, shifts, division/remainder and comparisons. It does not call
+Fraction's `__round__`, fraction `divmod`, decimal formatting or the header's
+`_PyLong_DivmodNear`. Similar names/tie comments do not bind those native APIs
+to the executed integer operators.
+
+The named operation `sub` first negates the right Fraction and then performs
+addition; its exact path is F4 unary negation plus F3 `_add`, not automatically
+Fraction `_sub`. Actual `_sub` remains relevant to rounded-minus-exact error
+ratios and the trace's residue subtraction. Multiplication/division use F3
+`_mul`/`_div`; the trace's integer-times-period uses the Rational reverse
+operator and the exact single-int Fraction constructor. Its quotient truncation
+is explicit integer magnitude division, not Fraction `__trunc__` or floor wrap.
+
+F0 performs one GCD after allocating its object; the exact single-int constructor
+stores denominator one directly. F3 add/subtract have one GCD and a conditional
+second GCD; multiply/supported divide have two. Unary/pair construction does
+not revalidate with another GCD. Per-cell error subtraction and predicates are
+additional work beyond ten/eleven RN64 calls. Source-level call counts do not
+bound GCD/division iterations, intermediate allocations, runtime or stack.
+
+For normalized inputs, denominator-GCD reduction, cross-cancellation and
+sign restoration are compatible with the dossier's unreduced product counts.
+That is a conditional source correspondence, not a proved implementation
+bound. Comparisons materialize cross-products too. Check those, error subtraction
+and internal pair construction separately; a bound on a returned reduced pair
+is not a bound on every native temporary. F1's reduced-positive-denominator
+precondition must survive zero/cancellation and all callers. Slots/comments
+alone do not enforce canonicality or prevent mutation of stored attributes.
+
+The header evidence remains a declaration/representation boundary. GCD's
+declaration mentions use by `mathmodule.c`, but neither that wrapper nor
+integer/GCD/shift/division body was inspected. Selectable 15/30-bit digits are
+not a measured configured digit size. The representation prose still uses
+`ob_size` terminology beside the actual `lv_tag` structure; do not derive a
+live ABI, sign layout or memory recipe from that prose. No linked/compiled
+configuration or full object-materialization/allocator model is established.
+
+Fraction constructor/division zero checks raise `ZeroDivisionError`, not the
+trace's caught `ValueError`. The helper's right-zero guard and literal positive
+period exclude those cases only under the stated invariants. Object allocation,
+integer operations and unexpected/replaced bindings may still fail outside
+that catch. S0's published-result atomicity and the unchanged host failure
+policy are not enlarged by this review.
+
+**Remaining evidence and next permission.** The bounded review is complete;
+text identities and package ownership are not authenticated build provenance,
+observed module origin, loaded bytecode, closure selection or native correspondence.
+No imported module or instruction path was inspected, and neither the eleven
+obligations nor Q0-Q5 is promoted. W0/TB0 and all native/internal-work claims stay
+open. The already-local text was inspected without acquisition or execution;
+unused file/text allowance is not permission for a further audit.
+
+Next recommended, **not approved**: a paper-only conditional partial-correctness
+review of the eight named D0/R1-R5/O0/T0 obligations, using the recorded helper/
+Fraction correspondence and explicit exact-integer/GCD/canonical-input/stable-
+binding assumptions. Check rounding/zero/overflow and the P7 zero/one quotient
+and residue-representability cases. Record each conditional lemma, gap or
+counterargument without accepting implementation qualification or native trust.
+No extra implementation-text extraction, runtime import, acquisition, source
+edit, fixture/numerical run, dependency, allowance/flag promotion or integration.
+This is not renewed permission for three files/64 KiB, a runtime work proof,
+owner/query/log adapter, physical/task-quality or Task 6/9 completion. Default
+remains unchanged/unqualified/abstaining; teacher and ST/board gates stay separate.
+
+[arithmetic-trusted-base-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6153,7 +6248,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §106): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §107): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6259,11 +6354,13 @@ fixtures, rejection and atomic stops. This is not producer adoption/parity,
 numerical qualification or owner/runtime integration. Its separately approved
 design-only dossier is now prepared (§106): eleven conditional correctness,
 work/trusted-base/stop obligations, four-row closure and a paper acceptance
-sequence. No proof, budget, allowance or qualification is accepted. Next
-proposed, not approved: bounded read-only trusted-base/source correspondence,
-three already-local files/64 KiB cumulative text; no acquisition, runtime import,
-numerical/fixture run, source edit, owner/query/log adapter or promotion. All
-broader gates remain unchanged.
+sequence. Its separately approved bounded local trusted-base review is now
+complete (§107): Fraction rational paths and integer-header boundaries, not
+native/build/live/work qualification. No proof, budget, allowance or flag is
+accepted. Next proposed, not approved: paper-only conditional D0/R1-R5/O0/T0
+partial-correctness review with explicit integer/GCD/canonical/stable-binding
+assumptions; no further source extraction, acquisition, import, numerical/fixture
+run, code/allowance/flag change or owner/query/log adapter. All broader gates stay.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

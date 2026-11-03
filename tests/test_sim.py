@@ -1496,6 +1496,317 @@ def test_synthetic_c1_recorder_question_composition(monkeypatch, case):
         assert all(value is None for value in result["candidate_values"].values())
 
 
+@pytest.mark.parametrize(
+    "case,scene_index,literal_index,speed",
+    [
+        ("straight", 0, 0, 0.5),
+        ("left", 0, 6, 0.5),
+        ("right", 1, 7, 0.5),
+        ("wrap", 2, 8, 0.5),
+        ("wire", 3, 0, 0.6),
+        ("signed_zero", 0, 1, 0.0),
+        ("late_failure", 1, 6, 0.5),
+        ("ingress", 0, 0, 0.5),
+    ],
+)
+def test_synthetic_c1_controlled_owner_staged_fixture(
+    monkeypatch, case, scene_index, literal_index, speed
+):
+    import struct
+    from fractions import Fraction
+
+    from interface.protocol import decode_state
+    from sim import diagnostics, rover
+
+    counts = {
+        "constructors": 0,
+        "advances": 0,
+        "records": 0,
+        "captures": 0,
+        "traces": 0,
+        "audits": 0,
+    }
+
+    def counted(original, counter):
+        def call(*args, **kwargs):
+            counts[counter] += 1
+            return original(*args, **kwargs)
+
+        return call
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("controlled fixtures must not query, reference or collect")
+
+    for name in (
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "_reference_synthetic_c1_motion",
+        "_check_synthetic_c1_motion",
+        "RoverEnv",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    candidate_class = diagnostics._SyntheticC1ControlledMotionOwner
+    for owner_class in (candidate_class, diagnostics._SyntheticC1MotionOwner):
+        for method, counter in (("__init__", "constructors"), ("advance", "advances")):
+            monkeypatch.setattr(
+                owner_class, method, counted(getattr(owner_class, method), counter)
+            )
+    monkeypatch.setattr(
+        candidate_class, "audit", counted(candidate_class.audit, "audits")
+    )
+    recorder_class = diagnostics._SyntheticC1SourceRecorder
+    monkeypatch.setattr(
+        recorder_class, "record_tick", counted(recorder_class.record_tick, "records")
+    )
+    for name, counter in (
+        ("capture_synthetic_c1_views", "captures"),
+        ("_trace_synthetic_binary64_rows", "traces"),
+    ):
+        monkeypatch.setattr(
+            diagnostics, name, counted(getattr(diagnostics, name), counter)
+        )
+    scenes = (
+        Scenario(start=(2, 2, 0), goal=(5, 2)),
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.6, 2, 0.30),)),
+        Scenario(start=(2, 2, 0), goal=(5, 2), obstacles=((2.4, 2, 0.005),)),
+        Scenario(start=(1, 1, 0), goal=(5, 2), obstacles=((2.4, 2, 0.30),)),
+    )
+    scene = scenes[scene_index]
+    heading_word, turn_word, expected_words = _ARITHMETIC_TRACE_LITERALS[literal_index]
+
+    def scalar(word):
+        return struct.unpack("<d", struct.pack("<Q", word))[0]
+
+    settings = {
+        "seed_tick": 20,
+        "position_m": (2.0, 2.0),
+        "heading_word": heading_word,
+        "speed": speed,
+        "turn_word": turn_word,
+        "synthetic_test_only": True,
+    }
+    if case == "ingress":
+        for change in ({"heading_word": True}, {"synthetic_test_only": 1}):
+            with pytest.raises(ValueError):
+                candidate_class(scene, **{**settings, **change})
+        for bad in (True, -1, 1 << 64, 0x7FF0000000000000):
+            with pytest.raises(ValueError):
+                candidate_class._scalar(bad)
+        for bad in (True, 1, np.float64(1), float("inf")):
+            with pytest.raises(ValueError):
+                candidate_class._word(bad)
+        assert counts == {
+            "constructors": 2,
+            "advances": 0,
+            "records": 0,
+            "captures": 0,
+            "traces": 0,
+            "audits": 0,
+        }
+        print(f"controlled {case}: {counts}; published_events=0")
+        return
+    owner = candidate_class(scene, **settings)
+    legacy = diagnostics._SyntheticC1MotionOwner(
+        scene,
+        seed_tick=20,
+        pose_m_rad=(2.0, 2.0, scalar(heading_word)),
+        speed=speed,
+        turn_rate=scalar(turn_word),
+        synthetic_test_only=True,
+    )
+    assert owner._root["recorder"]._scenario is not scene
+    previous = None
+    consumers = []
+    original_cos, original_sin, original_sinc = math.cos, math.sin, np.sinc
+
+    def observed(original, label):
+        def call(value):
+            consumers.append((label, candidate_class._word(float(value))))
+            return original(value)
+
+        return call
+
+    for tick in range(21, 28):
+        legacy.advance(tick)
+        consumers.clear()
+        with monkeypatch.context() as patch:
+            patch.setattr(rover, "integrate", forbidden)
+            patch.setattr(math, "cos", observed(original_cos, "cos"))
+            patch.setattr(math, "sin", observed(original_sin, "sin"))
+            patch.setattr(np, "sinc", observed(original_sinc, "sinc"))
+            owner.advance(tick)
+        event = owner._root["events"][-1]
+        words = event["trace"]["intermediate_words"]
+        assert consumers[:3] == [
+            ("sinc", words[4]),
+            ("cos", words[2]),
+            ("sin", words[2]),
+        ]
+        assert event["pose_words"][2] == words[10]
+        assert event["trace"]["inputs"] == (
+            event["previous_pose_words"][2],
+            turn_word,
+            0x3FA999999999999A,
+            0x400921FB54442D18,
+            0x4000000000000000,
+        )
+        if tick == 21:
+            assert words == expected_words
+        if tick == 22:
+            previous = owner.snapshot()
+            root = owner._root
+            trace_function = diagnostics._trace_synthetic_binary64_rows
+            prepare_function = owner._prepare_event
+
+            def fail_capture(*args, **kwargs):
+                counts["captures"] += 1
+                raise ValueError("controlled fixture preparation fault")
+
+            def unsupported(*args, _trace=trace_function, **kwargs):
+                trace = _trace(*args, **kwargs)
+                return {
+                    **trace,
+                    "supported": False,
+                    "rows": (),
+                    "reason": "fixture unsupported",
+                }
+
+            def fail_prepared(*args, _prepare=prepare_function, **kwargs):
+                _prepare(*args, **kwargs)
+                raise MemoryError("controlled fixture late preparation fault")
+
+            def mismatched_prepared(*args, _prepare=prepare_function, **kwargs):
+                event = _prepare(*args, **kwargs)
+                return {**event, "host_frame": b"fixture mismatched staged frame"}
+
+            target, replacement, error = (
+                ("capture_synthetic_c1_views", fail_capture, ValueError)
+                if case == "straight"
+                else (None, mismatched_prepared, ValueError)
+                if case == "left"
+                else ("_trace_synthetic_binary64_rows", unsupported, ValueError)
+                if case == "right"
+                else (None, fail_prepared, MemoryError)
+                if case == "late_failure"
+                else (None, None, None)
+            )
+            if error is not None:
+                with monkeypatch.context() as patch:
+                    if target:
+                        patch.setattr(diagnostics, target, replacement)
+                    else:
+                        patch.setattr(owner, "_prepare_event", replacement)
+                    with pytest.raises(error):
+                        owner.advance(23)
+                assert owner._root is root
+                assert owner.snapshot()["binding_sha256"] == previous["binding_sha256"]
+            for invalid in (True, 22, 24, 85900):
+                with pytest.raises(ValueError, match="bounded consecutive"):
+                    owner.advance(invalid)
+            assert (
+                owner.audit(previous)["ownership_status"] == "candidate_binding_matches"
+            )
+    bundle = owner.snapshot()
+    events = bundle["candidate"]["events"]
+    assert len(events) == 8
+    assert events[0]["kind"] == "seed" and events[0]["trace"] is None
+    assert events[0]["previous_pose_words"] is None
+    assert events[0]["pose_words"][2] == heading_word
+    assert bundle["candidate"]["seed_tick"] == 20
+    assert bundle["candidate"]["seed_pose_words"] == events[0]["pose_words"]
+    assert bundle["candidate"]["nominal_seconds_ratio"] == (1, 20)
+    duration = _literal_binary64_fraction(bundle["candidate"]["duration_word"])
+    assert 7 * duration != Fraction(7, 20)
+    for index, (event, old) in enumerate(zip(events, legacy._events, strict=True)):
+        assert event["tick"] == 20 + index
+        assert event["pose_m_rad"] == tuple(old["pose_m_rad"])
+        assert event["fixture_state"] == old["fixture_state"]
+        assert event["host_frame"] == old["host_frame"]
+        state = decode_state(event["host_frame"])
+        assert state.timestamp_us == event["tick"] * 50000
+        assert event["pose_words"] == tuple(
+            candidate_class._word(value) for value in event["pose_m_rad"]
+        )
+        if index:
+            assert event["previous_pose_words"] == events[index - 1]["pose_words"]
+            assert event["trace"]["producer_parity_qualified"] is False
+    result = owner.audit(bundle)
+    assert result["ownership_status"] == "candidate_binding_matches"
+    assert result["arithmetic_status"] == "supported_declared_word_trace"
+    assert result["events_checked"] == 8
+    assert result["motion_status"] == "unresolved_motion_evidence"
+    assert result["wire_status"] == "unqualified_candidate_wire"
+    assert result["source_status"] == "unqualified_candidate_source"
+    assert all(result[flag] is False and bundle[flag] is False for flag in owner._FLAGS)
+    assert owner.audit(previous)["ownership_status"] == "inconsistent_candidate_record"
+    old = previous["source"]["private_source"]["history"][-1]
+    new = bundle["source"]["private_source"]["history"][-1]
+    assert (
+        old["clock_epoch"] == new["clock_epoch"] == bundle["candidate"]["clock_epoch"]
+    )
+    assert all(
+        item["delivery_tick"] == item["capture"]["capture_ticks"][0] + 2
+        for item in bundle["source"]["private_source"]["history"]
+    )
+    held = bundle["source"]["private_source"]["history"][-2]
+    assert held["capture_id"] == new["capture_id"]
+    assert held["snapshot_tick"] + 1 == new["snapshot_tick"]
+    for field in ("capture_ticks", "capture_poses_m_rad", "tof_m", "tof_valid"):
+        assert np.array_equal(held["capture"][field], new["capture"][field])
+    for mutate in ("lane", "trace", "frame", "clock", "history", "flag", "missing"):
+        changed = deepcopy(bundle)
+        if mutate == "lane":
+            changed["candidate"]["lane"] = "substituted"
+        elif mutate == "trace":
+            changed["candidate"]["events"][1]["trace"]["inputs"] = (0,)
+        elif mutate == "frame":
+            changed["candidate"]["events"][1]["host_frame"] = b"invalid"
+        elif mutate == "clock":
+            changed["candidate"]["seed_tick"] = 22
+        elif mutate == "history":
+            changed["source"]["private_source"]["history"][-1]["snapshot_tick"] = 0
+        elif mutate == "flag":
+            changed["producer_parity_qualified"] = True
+        else:
+            del changed["candidate"]
+        if mutate not in ("flag", "missing"):
+            changed["binding_sha256"] = owner._digest(changed)
+        assert (
+            owner.audit(changed)["ownership_status"] == "inconsistent_candidate_record"
+        )
+    with pytest.raises(ValueError, match="bounded consecutive"):
+        owner.advance(28)
+    legacy.snapshot()
+    with pytest.raises(ValueError, match="unsupported private C1 motion bundle"):
+        legacy.audit(bundle)
+    if case == "late_failure":
+        publish = owner._publish
+
+        def fail_publication(prepared):
+            publish(prepared)
+            raise RuntimeError("fixture ambiguous publication")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(owner, "_publish", fail_publication)
+            with pytest.raises(RuntimeError, match="ambiguous publication"):
+                owner.snapshot()
+        for operation in (
+            owner.snapshot,
+            lambda: owner.audit(bundle),
+            lambda: owner.advance(28),
+        ):
+            with pytest.raises(ValueError, match="discarded"):
+                operation()
+    published = len(owner._root["events"]) + len(legacy._events)
+    assert published == 16 and counts["constructors"] == 2
+    assert counts["records"] <= 17 and counts["traces"] <= 8
+    assert counts["captures"] <= 13
+    print(f"controlled {case}: {counts}; published_events={published}")
+
+
 def test_synthetic_c1_source_recorder_owns_capture():
     from interface.protocol import State
     from sim.diagnostics import _SyntheticC1SourceRecorder

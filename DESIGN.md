@@ -4609,6 +4609,65 @@ is authorized by the completed design-only package.
 
 [controlled-owner-contract-review]: REVIEW.md
 
+#### Private Controlled-Arithmetic Owner Prototype (2026-11-03)
+
+The user separately approved the preceding bounded candidate/test package;
+its implementation is recorded in [review §111][controlled-owner-prototype-review].
+`_SyntheticC1ControlledMotionOwner` is additive and private, with literal
+synthetic opt-in, finite builtin binary64 position/speed, exact heading/turn
+words, copied Scenario/seed and a fresh recorder epoch. The experimental lane
+and model names above are used only for this candidate, not adopted wire,
+catalogue, runtime or physical contracts. All previous module AST nodes,
+helpers, owners, integrator, checker/reference APIs and flags are unchanged.
+
+Each interval uses the previous stored heading word and the fixed literal
+duration/pi/two. P1 angle remains bound inside the full trace; P2 midpoint feeds
+native cos/sin, P3 argument feeds native sinc and P7 output supplies the next
+stored heading. Native distance/vector/position, libm/sinc and current-goal
+arithmetic remain explicitly unqualified. No old-integrator/yaw-only fallback,
+period fusion, clamping, recentering or new allowance is introduced.
+
+Advance prepares trace, pose, State/frame, recorder/capture/history and event
+ledger on private staged state. The staged current pose/State/frame must match
+the event before publishing one completed root. A successful advance clears
+the old seal; snapshot stages a recorder copy and binds the complete candidate,
+including source/calibration identities, words, traces and actual frame bytes.
+Tick timestamps remain nonwrapping; frame sequence uses the existing 16-bit
+wrap. Seed counts within eight events; binary duration and nominal 1/20-second
+time remain distinct and snapshots do not replace the seed. Capture cadence,
+two-tick delivery and held data remain unchanged.
+
+Preparation errors leave the retained root/seal intact; unexpected failures
+propagate. An exception in the publication boundary marks the owner discarded
+and rethrows, after which snapshot/audit/advance reject. This is conditional
+staging under serialized use and stable helpers, not universal rollback, VM
+atomicity, live-allocation/deadline or physical safety evidence.
+
+The strict candidate audit compares the current retained typed digest and source
+file identities. `candidate_binding_matches` and `supported_declared_word_trace`
+mean owned receipt/declared support, not an independent arithmetic replay or
+complete motion/source/wire consistency check. Source and wire stay unqualified,
+motion stays unresolved, and all five qualification flags stay false. Old readers
+reject the candidate schema; no adapter or borrowed legacy verdict is introduced.
+
+Eight declared tests reuse four complete scenes and existing arithmetic literal
+rows. Seven candidate/legacy pairs plus two rejected constructors use sixteen
+attempt positions and 112 published events per completed invocation, each owner
+bounded at eight events including seed. Tests compare 56 poses/States/frames,
+literal first-interval words, actual midpoint/sinc consumers, stored words,
+clock/capture/hold binding, rejected ingress/records and preparation/publication
+faults. Focused/default repetitions use the same cases, not independent cohorts;
+failed attempts and cumulative activity are recorded separately in §111.
+
+The bounded package is complete, not numerical/native/work/physical/task-quality
+qualification, task labels or runtime integration. Isolation remains the default.
+Next proposed, not approved: a design-only independent candidate consistency-audit
+contract for event/trace/source/frame/clock evidence and its stop conditions;
+no additional imports, fixtures, adapter, implementation, risk/allowance/proof
+promotion or integration. W0/TB0, Task 6/9, teacher assets and ST/board gates stay.
+
+[controlled-owner-prototype-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6620,7 +6679,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §110): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §111): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6736,10 +6795,14 @@ comparison is complete (§109): exact word/sign/correction agreement, not
 all-domain/native/work qualification or runtime integration. Its separately
 approved design-only owner contract is prepared (§110): word ingress/four-cell
 consumers, distinct lane/event/clock/seal identity and staged-publication/work
-gates, not adoption or implementation. Next proposed, not approved: private
-candidate/tests, eight reused motion cases/four scenes, sixteen owner attempts/
-eight events each; no query/reference/log adapter, data/runtime/wire adoption,
-dependency or proof/allowance/flag promotion. All broader gates remain unchanged.
+gates, not adoption or qualification. Its separately approved private candidate
+and bounded tests are complete (§111): eight reused cases/four scenes, sixteen
+constructor attempt positions, 112 published events per complete invocation;
+all old module AST nodes and qualification flags remain unchanged. Binding is
+not independent motion/source/wire evidence. Next proposed, not approved:
+design-only independent candidate consistency-audit contract, no imports/fixtures,
+implementation/adapters, data/runtime/wire adoption or promotion. All broader
+gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

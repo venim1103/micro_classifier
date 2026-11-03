@@ -7487,6 +7487,134 @@ gates stay open. No background job, cleanup, artifact regeneration or assistant 
 
 [controlled-owner-contract-design]: DESIGN.md
 
+## 111. Private Controlled-Arithmetic Owner Prototype (2026-11-03)
+
+The user approved §110's bounded private candidate/tests and requested autonomous
+work/local commits. Work began clean at `220a460`; Current State, §110, the
+owning recorder and nearby four-scene motion tests were read. Pylance selected
+`/opt/venv/bin/python`. No dependency/environment/source acquisition, live
+teacher/trained-model run,
+study episode, task label/data, runtime/wire adoption or hardware work occurred.
+
+**Hypothesis, change and first check.** Staging a copied recorder should preserve
+the retained owner ledger and seal on preparation failure. The first additive
+class/test edit used one reused straight case and a candidate/legacy pair.
+Capture failure preserved the root/seal, and all eight poses/States/frames
+matched. The check failed only because the test called the legacy audit without
+its required snapshot. Adding that prerequisite reached strict old-schema
+rejection and the same focused check passed. No old owner repair was made.
+
+**Implementation.** [DESIGN.md §7][controlled-owner-prototype-design] records
+the private `_SyntheticC1ControlledMotionOwner`: strict word/native ingress,
+fixed lane/twist/constants, copied fixture and fresh source epoch. Bound trace
+P1/P2/P3/P7 outputs control angle/midpoint/sinc argument/stored yaw; remaining
+native arithmetic stays explicit and unqualified. No call to the old integrator
+supplies candidate position. Prepared recorder/current pose/State/frame and event
+cross-bind before single-root publication. Snapshot also stages a recorder copy
+and seals complete candidate/source evidence. Seeds, source identities, separate
+binary/nominal clocks, nonwrapping timestamps, 16-bit frame sequence and old
+capture/delivery/held-history rules remain bound.
+
+Prepublication unsupported/ValueError and an injected late MemoryError preserve
+the old root/seal; unexpected exceptions propagate. An injected publication
+exception after root assignment permanently discards the candidate, including
+snapshot/audit/advance, rather than claiming rollback or safe retry. This does
+not prove VM atomicity, arbitrary private mutation/replacement/concurrent use,
+allocator behavior or native/work qualification.
+
+Candidate audit checks exact outer keys/false flags, current retained typed
+digest and unchanged source identities. Re-signed lane/trace/frame/clock/history,
+flag/missing-field changes and stale snapshots reject; old readers reject the
+new outer schema. Matching evidence reports `candidate_binding_matches` and
+`supported_declared_word_trace`, not independently recomputed arithmetic or
+qualified source/wire/motion. Source/wire stay unqualified, motion unresolved,
+five flags false. No question/reference/coordinator/log adapter or old audit
+verdict borrowing occurs. W0/TB0 and full-motion/goal evidence remain open.
+
+**Bounded fixtures and activity.** Exactly eight declared cases: straight, left,
+right, wrap, wire, signed zero, late failure and ingress. Four previously used
+complete open/normal-cylinder/slender-cylinder/wire-quantization scenes and
+existing arithmetic literal rows are reused. Seven candidate/legacy pairs plus
+two rejected constructor positions total sixteen attempts and 112 published
+events per completed invocation, each owner at eight including seed. The new
+slice forbids question/reference/checker/collection paths; legacy controls use
+only their unchanged integrator and snapshot. No rollout or persisted data artifact.
+
+The completed instrumented invocation reports:
+
+| Case | Constructor Attempts | Advance Attempts | Recorder Attempts | Capture Attempts | Trace Calls | Candidate Audits | Published Events |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| straight | 2 | 20 | 17 | 13 | 8 | 10 | 16 |
+| left | 2 | 20 | 17 | 13 | 8 | 10 | 16 |
+| right | 2 | 20 | 16 | 12 | 8 | 10 | 16 |
+| wrap | 2 | 19 | 16 | 12 | 7 | 10 | 16 |
+| wire | 2 | 19 | 16 | 12 | 7 | 10 | 16 |
+| signed zero | 2 | 19 | 16 | 12 | 7 | 10 | 16 |
+| late failure | 2 | 21 | 17 | 13 | 8 | 11 | 16 |
+| ingress | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
+| total | 16 | 138 | 115 | 87 | 53 | 71 | 112 |
+
+Attempts include failures; extra staged records/captures are not published
+events. Callback/bit ceilings are not measured time/live memory. Seven pairs
+compare all 56 pose/State/frame events, exact first-interval literal words,
+actual midpoint/sinc consumers and next stored headings. Clock distinction,
+two-tick delivery and byte-identical held captures pass. Capture failure,
+unsupported trace, staged-frame mismatch and late preparation/publication
+faults exercise different stops without adding cases or owner positions.
+
+**Failed-check history and repetitions.** A patch failed because the test-file
+header was omitted; targeted search verified no partial edit, then the corrected
+patch applied. The first expanded run had seven failures from a test-only attempt
+to mutate frozen Scenario.goal, plus ingress passed. Copy identity replaced that
+invalid mutation. The next run had seven failures from unpacking the existing
+literal helper's single Fraction return, plus ingress passed; the same assertion
+was repaired and failed capture attempts included in the counter. Eight cases
+then passed. Narrow Ruff found three C408 dictionary-style and two B023 callback
+binding issues; literal dictionaries/default bindings repaired only the new test.
+Eight cases passed again, but changed-file format check failed on new layout.
+Ruff formatted only the two changed files after the final staged-frame/held
+capture assertions passed. No assertion, tolerance, arithmetic guard, deadline,
+old flag/verdict or known transformer xfail was weakened.
+
+Two initial one-case focused invocations (one failed/one passed), five expanded
+eight-case focused invocations (two failed/three passed) and one default-gate
+invocation reuse the same cases. Across these new-slice executions, 100 constructor
+attempts and 606 published events occurred: repeated controls, not additional
+fixture positions, scenes or independent cohorts. The early failed runs did not
+reach every final counter/report assertion; the table describes the completed
+instrumented version only. Existing default-suite fixture/owner/synthetic export
+activity is separate, not included in these new-slice counts or claimed absent.
+
+**Verification.** Final focused command
+`python -m pytest -q -s tests/test_sim.py -k controlled_owner_staged_fixture --tb=short`
+passed eight with 1,186 deselected in 1.33 s. Narrow lint/changed-file formatting
+passed. Required root gate `python -m pytest -q && ruff check . && git diff --check`
+passed 2,117 plus the known xfail, 71 existing ONNX warnings in 53.35 s; no reported
+skips. Removing only the new class/test from parsed modules reproduces the entire
+prior ASTs, including all imports/helpers/literals/old owners and test functions.
+Editor diagnostics are clear. No C/runtime source changed, so no additional
+opt-in sanitizer/Arm/ST/board gate ran; historical evidence is not renewed.
+Only two Python files and the three checkpoint documents change; old artifacts,
+reports/logs/wire/catalogue/defaults and `1bb89fe` remain untouched. Scoped document
+checks pass: sections 1-111, 550 reference uses/local targets, paired fences,
+preserved prior review/source list/design proposal/stable workflow/history,
+eight-row/cumulative totals and five-file scope. The first preservation matcher
+failed at an earlier inline source link; the exact line-start definition anchor
+fixed the matcher, not the documents, and the same checks passed. Whitespace,
+editor diagnostics and scoped/staged diffs are checked before commit; the
+successful source gate is not rerun for these document-only updates.
+
+**Exit and next permission.** Approved candidate/test scope complete and exhausted;
+isolation stays default. This is neither an independent candidate-consistency
+audit nor numerical/native/work/physical/task-quality qualification, Task 6/9
+completion, task labels or runtime integration. Next proposed, not approved:
+design-only independent candidate event/trace/source/frame/clock audit contract
+with explicit checks, stop conditions and evidence limits, no imports/fixtures,
+implementation/adapter or promotion. Teacher assets, ST/board and all broader
+gates remain blocked. No background job, cleanup, artifact regeneration or assistant push.
+
+[controlled-owner-prototype-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

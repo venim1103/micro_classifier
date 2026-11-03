@@ -1398,6 +1398,274 @@ def _reference_synthetic_c1_motion(motion, *, synthetic_test_only=False):
     return result
 
 
+class _SyntheticC1ControlledMotionOwner:
+    """Stage a private mixed-arithmetic fixture, never qualify motion or wire."""
+
+    _FLAGS = (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    )
+
+    def __init__(
+        self,
+        scenario,
+        *,
+        seed_tick,
+        position_m,
+        heading_word,
+        speed,
+        turn_word,
+        synthetic_test_only=False,
+    ):
+        if synthetic_test_only is not True:
+            raise ValueError("controlled owner requires synthetic_test_only=True")
+        if type(seed_tick) is not int or not 0 <= seed_tick <= 85899:
+            raise ValueError("controlled owner requires a nonwrapping seed tick")
+        if type(position_m) not in (tuple, list) or len(position_m) != 2:
+            raise ValueError("controlled owner requires two binary64 coordinates")
+        position_words = tuple(self._word(value) for value in position_m)
+        speed_word = self._word(speed)
+        heading, turn = self._scalar(heading_word), self._scalar(turn_word)
+        if not 0 <= speed <= 0.6 or abs(turn) > 1.5 or abs(heading) > math.pi:
+            raise ValueError("unsupported controlled owner seed or twist")
+        self._seed_tick = seed_tick
+        self._seed_words = (*position_words, heading_word)
+        self._speed = speed
+        self._speed_word = speed_word
+        self._turn_word = turn_word
+        self._turn = turn
+        self._discarded = False
+        self._lane = "experimental_controlled_binary64_owner_v1"
+        self._model = "constant_twist_controlled_binary64_candidate_v1"
+        if (
+            self._word(math.pi) != 0x400921FB54442D18
+            or self._word(0.05) != 0x3FA999999999999A
+            or self._word(2.0) != 0x4000000000000000
+            or np.dtype(float).itemsize != 8
+        ):
+            raise ValueError("unsupported controlled owner native scalar format")
+        recorder = _SyntheticC1SourceRecorder(scenario, synthetic_test_only=True)
+        pose = (*position_m, heading)
+        event = self._prepare_event(recorder, seed_tick, pose, None, None)
+        self._validate_event(recorder, event)
+        self._root = {"recorder": recorder, "events": (event,), "binding": None}
+
+    @staticmethod
+    def _scalar(word):
+        import struct
+
+        _synthetic_binary64_value(word)
+        value = struct.unpack("<d", struct.pack("<Q", word))[0]
+        if struct.unpack("<Q", struct.pack("<d", value))[0] != word:
+            raise ValueError("controlled owner word conversion changed")
+        return value
+
+    @staticmethod
+    def _word(value):
+        import struct
+
+        if type(value) is not float or not math.isfinite(value):
+            raise ValueError(
+                "controlled owner requires finite builtin binary64 scalars"
+            )
+        return struct.unpack("<Q", struct.pack("<d", value))[0]
+
+    def _check_root(self):
+        if self._discarded:
+            raise ValueError("controlled owner discarded after ambiguous publication")
+        if (
+            self._lane != "experimental_controlled_binary64_owner_v1"
+            or self._model != "constant_twist_controlled_binary64_candidate_v1"
+            or self._word(self._speed) != self._speed_word
+            or self._word(self._turn) != self._turn_word
+            or self._word(math.pi) != 0x400921FB54442D18
+        ):
+            raise ValueError("controlled owner lane, twist or constant changed")
+        recorder = self._root["recorder"]
+        if recorder._source_files() != recorder._identities:
+            raise ValueError("controlled owner source files changed; use a new owner")
+
+    def _prepare_event(self, recorder, tick, pose, trace, previous_words):
+        from interface.protocol import State, encode_state
+
+        pose_words = tuple(self._word(value) for value in pose)
+        if abs(pose[2]) > math.pi:
+            raise ValueError("unsupported controlled owner heading")
+        heading = math.atan2(math.sin(pose[2]), math.cos(pose[2]))
+        cosine, sine = math.cos(heading), math.sin(heading)
+        delta_x, delta_y = np.asarray(recorder._scenario.goal) - pose[:2]
+        state = State(
+            sequence=tick & 0xFFFF,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(self._speed, 0.0, 0.0),
+            angular_velocity_rad_s=(0.0, 0.0, self._turn),
+            goal_m=(
+                float(delta_x * cosine + delta_y * sine),
+                float(delta_y * cosine - delta_x * sine),
+                0.0,
+            ),
+        )
+        frame = encode_state(state)
+        recorder.record_tick(tick, pose_m_rad=pose, fixture_state=state)
+        return {
+            "tick": tick,
+            "kind": "seed" if trace is None else "interval_ending",
+            "pose_m_rad": tuple(pose),
+            "pose_words": pose_words,
+            "previous_pose_words": previous_words,
+            "trace": deepcopy(trace),
+            "fixture_state": asdict(state),
+            "host_frame": frame,
+        }
+
+    def _validate_event(self, recorder, event):
+        tick, pose, state, frame = recorder._current
+        if (
+            event["tick"] != tick
+            or event["host_frame"] != frame
+            or event["fixture_state"] != asdict(state)
+            or event["pose_words"] != tuple(self._word(float(value)) for value in pose)
+            or event["pose_words"]
+            != tuple(self._word(value) for value in event["pose_m_rad"])
+        ):
+            raise ValueError("controlled owner staged event binding mismatch")
+
+    def _publish(self, prepared):
+        self._root = prepared
+
+    def _commit(self, prepared):
+        try:
+            self._publish(prepared)
+        except BaseException:
+            self._discarded = True
+            raise
+
+    def advance(self, tick):
+        self._check_root()
+        root = self._root
+        if (
+            type(tick) is not int
+            or tick != root["events"][-1]["tick"] + 1
+            or tick > 85899
+            or len(root["events"]) >= 8
+        ):
+            raise ValueError("controlled owner requires bounded consecutive ticks")
+        previous = root["events"][-1]
+        previous_words = tuple(self._word(value) for value in previous["pose_m_rad"])
+        if previous_words != previous["pose_words"]:
+            raise ValueError("controlled owner previous pose words changed")
+        trace = _trace_synthetic_binary64_rows(
+            heading_word=previous_words[2],
+            turn_word=self._turn_word,
+            duration_word=0x3FA999999999999A,
+            pi_word=0x400921FB54442D18,
+            two_word=0x4000000000000000,
+            synthetic_test_only=True,
+        )
+        if trace["supported"] is not True:
+            raise ValueError(f"unsupported controlled owner trace: {trace['reason']}")
+        words = trace["intermediate_words"]
+        midpoint, argument, heading = map(self._scalar, (words[2], words[4], words[10]))
+        distance = self._speed * 0.05 * np.sinc(argument)
+        position = np.asarray(previous["pose_m_rad"][:2]) + distance * np.array(
+            [math.cos(midpoint), math.sin(midpoint)]
+        )
+        pose = (float(position[0]), float(position[1]), heading)
+        recorder = deepcopy(root["recorder"])
+        event = self._prepare_event(recorder, tick, pose, trace, previous_words)
+        self._validate_event(recorder, event)
+        self._check_root()
+        prepared = {
+            "recorder": recorder,
+            "events": (*root["events"], event),
+            "binding": None,
+        }
+        self._commit(prepared)
+
+    @staticmethod
+    def _digest(bundle):
+        payload = {
+            key: value for key, value in bundle.items() if key != "binding_sha256"
+        }
+        payload["source"] = {
+            **payload["source"],
+            "fixture_state": asdict(payload["source"]["fixture_state"]),
+        }
+        return _c1_source_binding_digest(payload)
+
+    def snapshot(self):
+        self._check_root()
+        recorder = deepcopy(self._root["recorder"])
+        source = recorder.snapshot()
+        bundle = {
+            "allowed_use": "private_synthetic_controlled_motion_candidate_only",
+            **{flag: False for flag in self._FLAGS},
+            "candidate": {
+                "lane": self._lane,
+                "model": self._model,
+                "arithmetic_kind": "mixed_controlled_native_unqualified",
+                "clock_epoch": recorder._epoch,
+                "seed_tick": self._seed_tick,
+                "seed_pose_words": self._seed_words,
+                "speed_word": self._speed_word,
+                "turn_word": self._turn_word,
+                "duration_word": 0x3FA999999999999A,
+                "pi_word": 0x400921FB54442D18,
+                "two_word": 0x4000000000000000,
+                "tick_period_us": 50000,
+                "nominal_seconds_ratio": (1, 20),
+                "source_files": dict(recorder._identities),
+                "events": deepcopy(self._root["events"]),
+            },
+            "source": source,
+        }
+        binding = self._digest(bundle)
+        bundle["binding_sha256"] = binding
+        self._check_root()
+        self._commit({**self._root, "recorder": recorder, "binding": binding})
+        return bundle
+
+    def audit(self, bundle):
+        self._check_root()
+        binding = self._root["binding"]
+        if binding is None:
+            raise ValueError("controlled owner needs a current snapshot")
+        result = {
+            "allowed_use": "private_synthetic_controlled_motion_audit_only",
+            **{flag: False for flag in self._FLAGS},
+            "ownership_status": "inconsistent_candidate_record",
+            "arithmetic_status": "unqualified_word_trace_evidence",
+            "source_status": "unqualified_candidate_source",
+            "wire_status": "unqualified_candidate_wire",
+            "motion_status": "unresolved_motion_evidence",
+            "events_checked": 0,
+        }
+        if (
+            type(bundle) is not dict
+            or set(bundle)
+            != {"allowed_use", *self._FLAGS, "candidate", "source", "binding_sha256"}
+            or bundle["allowed_use"]
+            != "private_synthetic_controlled_motion_candidate_only"
+            or any(bundle[flag] is not False for flag in self._FLAGS)
+            or type(bundle["binding_sha256"]) is not str
+        ):
+            return result
+        try:
+            if bundle["binding_sha256"] != binding or self._digest(bundle) != binding:
+                return result
+        except (KeyError, ValueError, TypeError, OverflowError):
+            return result
+        result.update(
+            ownership_status="candidate_binding_matches",
+            arithmetic_status="supported_declared_word_trace",
+            events_checked=len(self._root["events"]),
+        )
+        return result
+
+
 class _SyntheticC1MotionOwner:
     """Own a bounded constant-twist fixture, not a simulator rollout."""
 

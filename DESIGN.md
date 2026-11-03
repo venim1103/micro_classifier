@@ -4237,6 +4237,180 @@ remains unchanged/unqualified/abstaining; teacher and ST/board gates stay separa
 
 [arithmetic-trusted-base-review]: REVIEW.md
 
+#### Conditional Arithmetic Paper Review (2026-11-03)
+
+Following §107, the user approved continuing the proposed eight-obligation
+paper-only partial-correctness review ([review §108][arithmetic-paper-review]).
+This records conditional derivations, not accepted proof or implementation
+qualification. It uses the recorded four-helper contract and Fraction source
+correspondence; no additional implementation text, runtime import, arithmetic
+execution or fixture is needed. Earlier dossier/source reviews remain historical.
+
+**Assumptions and success boundary.** Assume exact builtin integer comparison,
+bit lengths, shifts, division/remainder and nonnegative mathematical GCD;
+canonical Fraction pairs with positive denominators; unchanged exact types,
+literal words, helper/global bindings and rounding/control-flow correspondence.
+Assume allocation and selected operations complete normally. Do not authenticate
+any native/build/live implementation by assuming these mathematical semantics.
+The conclusion concerns a returned supported result, not guaranteed return for
+every mathematical input. Input and scaled-bit guards may stop otherwise finite
+values; no new domain/admission rule or completeness claim follows.
+
+The Fraction normalization prerequisite can be separated from that native trust.
+For reduced pairs $n_1/d_1,n_2/d_2$, let $g=\gcd(d_1,d_2)$, $s=d_1/g$,
+$v=d_2/g$. Addition/subtraction forms $t=n_1v\mathbin{\pm}n_2s$ over
+$sgv$. Since $\gcd(s,v)=1$ and the input pairs are reduced,
+$\gcd(t,s)=\gcd(t,v)=1$; only $\gcd(t,g)$ can remain to cancel.
+This justifies the recorded conditional second-GCD reduction, including zero:
+if $t=0$, those equalities force $s=v=1$, and cancellation leaves denominator
+one. Cross-cancellation in multiplication removes $\gcd(n_1,d_2)$ and
+$\gcd(n_2,d_1)$ before products. Division by nonzero $n_2$ instead removes
+$\gcd(n_1,n_2)$ and $\gcd(d_1,d_2)$, then restores denominator sign.
+The remaining numerator/denominator cross-pairs are coprime. Unary negation/
+absolute value preserve canonicality. These are value/invariant arguments under
+the assumptions, not proofs of integer/GCD code, mutation resistance or work.
+
+| Obligation | Conditional Paper Outcome | Still Outside the Conclusion |
+| --- | --- | --- |
+| D0 | Finite fields decode the exact dyadic value; rational zero has an independent word-sign tag. | Word/source authority and native shifts/constructor binding. |
+| R1 | Bit lengths plus the recorded exact comparison select the floor exponent in both shift branches. | Native bit-length/shift/division correctness and progress. |
+| R2 | Quotient/remainder and the complement/odd rule select nearest-even on the relevant lattice. | Guard completeness, instruction/FP-path equivalence and execution evidence. |
+| R3 | Zero, subnormal/minimum-normal transition and single normal carry pack the selected value. | Actual builtin packing/code correspondence and allocation behavior. |
+| R4 | Early high exponent and final exponent carry reject the overflow midpoint and larger magnitudes. | Accepting overflow semantics or qualifying finite-neighbor tests as proof. |
+| R5 | Exact-zero fallback tags, nonzero-underflow signs and per-operation zero rules remain distinct. | Caller/source authority, every-exception abstention or host fallback policy. |
+| O0 | Canonical rational operations precede rounding; decoded-rounded minus exact is a local error. | Old-producer parity, propagated allowance, native/work qualification. |
+| T0 | Ordered cells have conditional finite closure; quotient zero/one makes the raw residue representable. | Adoption, full-motion/goal/wire evidence, integration or qualification flags. |
+
+**D0 and exponent selection.** Write the sign as $S$, the exponent field as
+$E$, and the 52-bit fraction field as $F$. For finite fields the decoded value is
+
+$$
+V(S,E,F)=(-1)^S
+\begin{cases}
+F2^{-1074}, & E=0,\\
+(2^{52}+F)2^{E-1075}, & 1\le E\le2046.
+\end{cases}
+$$
+
+Positive power-of-two denominators and exact shifts realize that value; GCD
+reduction preserves it. The $E=F=0$ pair represents zero but loses its sign,
+so $S$ must remain separate. All-one exponent fields remain unsupported.
+
+For R1 let $N,D>0$, $l_N=\operatorname{bitlen}(N)$,
+$l_D=\operatorname{bitlen}(D)$ and $e_0=l_N-l_D$. The defining bit intervals give
+$2^{e_0-1}<N/D<2^{e_0+1}$. The recorded shift comparison tests exactly
+$N/D<2^{e_0}$ without a floating logarithm, even when $e_0<0$.
+If true, choose $e=e_0-1$; otherwise choose $e=e_0$. Both choices satisfy
+$2^e\le N/D<2^{e+1}$. In particular $e_0=0$ can legitimately correct to
+$e=-1$; it is not a special unhandled negative-shift case.
+
+**R2/R3: nearest-even and packing.** Put $q=\max(e-52,-1074)$ and scale the
+magnitude to $A/B=(N/D)2^{-q}$. Exact division gives $A=KB+R$ with
+$0\le R<B$. The distances to coefficients $K,K+1$ are $R/B$ and
+$(B-R)/B$. Increment exactly when $R>B-R$, or at equality for odd $K$.
+This selects the even coefficient at a tie without doubling the remainder.
+On a normal binade, coefficients run from $2^{52}$ to below $2^{53}$;
+below the first normal, the lattice is the fixed $2^{-1074}$ subnormal grid.
+Below a binade's lower endpoint a smaller-grid candidate cannot be closer to
+a magnitude already at or above that endpoint than the endpoint itself.
+
+For $e<-1075$ the magnitude is strictly below half the least subnormal and
+rounds to zero. At $e=-1075$ the tie still reaches quotient selection; coefficient
+zero is even. In subnormal scaling a carry to $2^{52}$ encodes the first normal.
+In normal scaling at most one increment can reach $2^{53}$; replace that
+coefficient by $2^{52}$ and increment $q$ once, preserving the selected value.
+Otherwise the fraction field is the coefficient minus $2^{52}$ and the exponent
+field is $q+1075$; subnormal coefficients instead retain exponent field zero.
+A zero coefficient retains the separately selected sign.
+
+The same ordered lattice/midpoint partition gives nondecreasing decoded RN64
+values, conditional on successful guarded results. Every representable finite
+endpoint is preserved because its coefficient has zero remainder. These two
+lemmas justify interval endpoint reasoning below; they do not remove guard
+rejections or make a claim about native floating-point modes.
+
+**R4/R5: overflow and sign cases.** At the top binade the maximum finite value
+is $M=(2^{53}-1)2^{971}$ and the midpoint to conceptual $2^{1024}$ is
+$H=(2^{54}-1)2^{970}$. Below $H$ the rounded coefficient stays finite; at $H$
+the odd maximum coefficient ties to the even carry. That carry makes exponent
+field 2047 and stops unsupported. Larger magnitudes in this binade do likewise;
+$e>1023$ already implies magnitude at least $2^{1024}$ and the early stop.
+Reflecting magnitude preserves these conclusions for negative inputs. This is
+not nearest among finite words alone, and does not rely on a sampled neighbor.
+
+An exact-zero rational uses its valid supplied fallback tag. A nonzero rational
+rounded to zero instead uses its own sign, not that fallback. Addition gives
+negative exact zero only for two negative zero operands; opposite zeros and
+nonzero cancellation give positive zero. Subtraction flips the right sign/value
+before that rule, so negative zero minus positive zero remains negative zero,
+while negative zero minus negative zero becomes positive zero. Multiplication
+and supported division use sign XOR. Either signed-zero divisor is unsupported.
+These rules concern the mathematical successful path; S0 is not strengthened.
+
+**O0 and ordered finite closure.** Conditional canonical-pair arithmetic makes
+the exact operation correct before RN64. The emitted error ratio is therefore
+$V(w_{\mathrm{rounded}})-v_{\mathrm{exact}}$ for the supplied already-rounded
+words, never a seed-to-cell or old-producer allowance. Named subtraction is
+negation then addition; its error/residue subtraction uses the separately
+recorded rational subtraction path. Neither is fused with another cell.
+
+D0's literal-field inequalities give $3<p<4$, $0<d<1/16$ and exact two.
+Under the declared $|r|\le p$, $|\omega|\le3/2$ profile, monotonicity and
+representable endpoints give $|a|\le3/32$, $|\mathrm{half}|\le3/64$ and
+$m\in[-5,5]$. Halving need not be exact for tiny subnormal $a$.
+Doubling $p$ is exact and representable: both separately computed periods
+$b_q,b_r$ equal $b=2p\in(6,8)$ without merging their cells.
+P3 has $|q|\le1/64$. P7's first sum lies in $[-5,5]$ and its next rounded
+sum $x$ in $[-2,9]$. Thus $-1<x/b<2$, so magnitude division with sign
+restoration truncates to $t=0$ or $t=1$. These are paper intervals for supported
+traces, not changed runtime bounds, input admission or full-motion certification.
+
+**T0: raw residue representability and correction.** For $t=0$, the exact
+residue $\rho=x$ is already a finite word value. For $t=1$, $b\le x\le9$.
+Since $p$ is in binade $[2,4)$, $b$ is an integer multiple of $2^{-50}$.
+Here $x$ is in binade $[4,8)$ or $[8,16)$, so it too is a multiple of
+$2^{-50}$ (the latter binade has twice that spacing). Hence
+
+$$
+\rho=x-b=k2^{-50},\qquad 0\le\rho<3,\qquad 0\le k<3\,2^{50}<2^{53}.
+$$
+
+Every nonzero such coefficient has at most 53 significant bits and an exponent
+far above underflow; leading-zero normalization gives an exact finite binary64
+word. Thus raw-residue RN64 preserves its mathematical value in both quotient
+cases, and its local error ratio is conditionally zero. This closes the recorded
+representability lemma on this profile only; it does not promote an error bound,
+flag, native remainder claim or acceptance of the eight obligations.
+
+At exact zero, raw rounding retains the dividend tag, then correction selects
+the positive divisor's zero tag. A negative nonzero residue occurs only when
+$t=0$ and $x<0$; adding $b$ and rounding is still a distinct operation. Its
+exact sum can lie sufficiently close to $b$ to round to $u=b$, including the
+even-coefficient midpoint case. Positive residue is unchanged. Consequently
+$0\le u\le b$, not a guaranteed half-open interval. The final separate
+subtraction/rounding gives $r_{\mathrm{next}}\in[-p,p]$, permitting $+p$;
+do not clamp, use floor-wrap, or substitute real pi. P1/P2/P3/P7 retain ten
+unconditional rounding cells and the one conditional negative-residue correction.
+
+**Outcome and next permission.** Eight conditional derivations are recorded;
+none is accepted implementation proof. The canonical-pair, monotonicity and
+profile-specific residue lemmas depend on the explicit assumptions. W0/TB0,
+allocation/progress, every-exception semantics, old producer parity and Q0-Q5
+remain open. Both binary/nominal clocks, stored-pi/argument error counted once,
+seed-based accounting, P4-P6/G1-G3, `1bb89fe` and all old flags/bounds/verdicts stay.
+
+Next recommended, **not approved**: bounded synthetic tests-only comparison of
+the same four ordered scalar expressions against the controlled trace, using
+at most twelve reused literal trace cases. Report exact word/sign/correction
+agreement or discrepancy; do not loosen assertions or infer all-domain parity.
+Reuse the existing test file/helpers and run focused/default source-test gates
+only under that separate approval. No production source change, owner advance,
+question query, scene/log adapter, new episode/data, integration, dependency/
+acquisition, native/work/allowance/flag promotion or physical/ST/board claim.
+Default remains unchanged, unqualified and abstaining where evidence is missing.
+
+[arithmetic-paper-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6248,7 +6422,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §107): the active
+Current critical-path checkpoint (2026-11-03, REVIEW.md §108): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -6356,11 +6530,13 @@ design-only dossier is now prepared (§106): eleven conditional correctness,
 work/trusted-base/stop obligations, four-row closure and a paper acceptance
 sequence. Its separately approved bounded local trusted-base review is now
 complete (§107): Fraction rational paths and integer-header boundaries, not
-native/build/live/work qualification. No proof, budget, allowance or flag is
-accepted. Next proposed, not approved: paper-only conditional D0/R1-R5/O0/T0
-partial-correctness review with explicit integer/GCD/canonical/stable-binding
-assumptions; no further source extraction, acquisition, import, numerical/fixture
-run, code/allowance/flag change or owner/query/log adapter. All broader gates stay.
+native/build/live/work qualification. Its separately approved paper review is
+complete (§108): eight conditional D0/R1-R5/O0/T0 derivations, including canonical
+pairs and raw-residue representability under the declared profile, not accepted
+proof or qualification. Next proposed, not approved: tests-only scalar/trace
+comparison on at most twelve reused literal cases, focused/default gates under
+new permission; no production source edit, owner/query/scene/log adapter, new
+episodes/data, integration, native/work/allowance/flag promotion. All gates stay.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

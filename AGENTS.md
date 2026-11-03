@@ -118,20 +118,20 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: bounded local arithmetic trusted-base review
-  (DESIGN.md §7 / REVIEW.md §107). Three files read once, 47,635/65,536 bytes:
-  Fraction rational algorithms/unchecked internal pairs and integer-header
-  declarations/representation. Native integer/GCD/division/build/live ABI,
-  module origin and internal work remain unbound. No proof/trust/qualification
-  promotion, source/test edit, import or numerical run. Eleven dossier obligations,
-  old bounds/flags/verdicts and `1bb89fe` stay unchanged. All read scopes exhausted.
-  Next proposed, not approved: paper-only conditional partial-correctness review
-  of eight D0/R1-R5/O0/T0 obligations using recorded source correspondence and
-  explicit integer/GCD/canonical/stable-binding assumptions. No extra source
-  extraction/import/acquisition, code/fixture/numerical run, W0/TB0 closure,
-  allowance/flag promotion or owner/query/log adapter. Default stays unqualified.
+- Latest approved package complete: conditional arithmetic paper review
+  (DESIGN.md §7 / REVIEW.md §108). Eight D0/R1-R5/O0/T0 derivations under explicit
+  integer/GCD/canonical/stable-binding/success assumptions, including raw-residue
+  representability for quotient zero/one. Not accepted proof, native/build/live/
+  work evidence, allowance or qualification. §107's three-file/47,635-byte read
+  scope stays exhausted; no extra implementation read, import, code/fixture run.
+  Eleven dossier obligations, old bounds/flags/verdicts and `1bb89fe` unchanged.
+  Next proposed, not approved: tests-only scalar/trace comparison on at most
+  twelve reused literal cases, exact words/sign/correction and focused/default
+  source-test gates under new permission. No production source edit, owner advance,
+  question query, scene/log adapter, new episodes/data, integration/dependency/
+  acquisition, W0/TB0 or native/work/allowance/flag promotion. Default unqualified.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-107 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-108 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1188,15 +1188,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §107 completes
-the approved read-only trusted-base review: three local files, 47,635 bytes
-within 64 KiB, Fraction paths and integer-header boundaries. Not native/build/
-live/work evidence or correctness/qualification acceptance. Source/tests,
-old bounds/flags/verdicts and `1bb89fe` stay unchanged; §105's 2,097 passes plus
-known xfail were not rerun. Next proposed, not approved: paper-only conditional
-D0/R1-R5/O0/T0 partial-correctness review with explicit integer/GCD/canonical/
-stable-binding assumptions; no extra implementation reads/import/acquisition,
-source/fixture/numerical run, W0/TB0 closure or promotion. All broader gates stay.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §108 completes
+the approved eight-obligation conditional paper review. Canonical/lattice/zero/
+overflow and profile-specific raw-residue arguments, not accepted proof or
+native/build/live/work/qualification evidence. Source/tests, old bounds/flags/
+verdicts and `1bb89fe` unchanged; §105's 2,097 passes plus known xfail not rerun.
+Next proposed, not approved: tests-only scalar/trace comparison on twelve reused
+literal cases at most, new focused/default gate permission; no production edit,
+owner/query/scene/log adapter, collection/data/integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1366,9 +1365,13 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   follows; no extra code/fixture/numerical scope follows from that dossier.
   Trusted-base review (REVIEW.md §107): three files/47,635 bytes, Fraction paths
   and integer-header limits; native/build/live/work and proof/qualification open.
-  No imports/acquisition/source edits/numerical runs. Next proposed, not approved:
-  eight-obligation conditional paper review, no extra source extraction, imports,
-  fixtures/runs, native-trust or allowance/flag promotion, owner/query/log adapter.
+  No imports/acquisition/source edits/numerical runs. Its separately approved
+  conditional paper outcome follows; no extra read/fixture/numerical scope implied.
+  Paper review (REVIEW.md §108): eight conditional derivations and zero/one raw-
+  residue representability, not accepted proof, native/work or qualification.
+  Source/tests/flags/bounds/verdicts unchanged. Next proposed, not approved:
+  tests-only scalar/trace comparison on twelve reused cases at most; no production
+  edit, owner/query/log adapter, new data/integration or allowance/flag promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

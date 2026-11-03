@@ -7184,6 +7184,107 @@ source gate remains §105's 2,097 passes plus known xfail, not rerun evidence.
 
 [arithmetic-trusted-design]: DESIGN.md
 
+## 108. Conditional Arithmetic Partial-Correctness Paper Review (2026-11-03)
+
+The user asked to refresh the documents and continue the plan, approving §107's
+proposed paper-only D0/R1-R5/O0/T0 review. The pending §107 report was first
+validated and committed as `b3f00a6`; this paper review starts from that clean
+checkpoint. No further implementation text, interpreter/stdlib import, native
+instruction inspection, arithmetic/fixture execution or code edit was authorized
+or performed. Local evidence accounting stays at §107's three files/47,635 bytes.
+
+**Route and falsifiable local hypothesis.** The recorded source contract permits
+conditional nearest-even/zero/overflow reasoning independently of W0/TB0. The
+existing T0 profile restricts its quotient to zero/one; in the quotient-one case
+the two finite operands share a dyadic grid and their difference can fit the
+format exactly. The cheap checks are the eight named obligation rows, both
+quotient branches, coefficient/spacing inequalities and explicit exceptions to
+an overbroad conclusion. This is manual mathematical review plus text/scope
+validation, not a formal proof checker or an empirical numerical experiment.
+
+**Assumptions, not native acceptance.** [The paper worksheet][arithmetic-paper-design]
+assumes exact integer operations/nonnegative mathematical GCD, canonical Fraction
+pairs, stable exact types/bindings/literals and correspondence to the recorded
+control flow. Allocation/operations must complete normally. It establishes only
+conditional successful-result arguments: guard rejection and progress, internal
+objects, interpreter/build/live binding and resource bounds remain open. Nothing
+promotes the eleven §106 obligations, proof/allowance/qualification flags or Q0-Q5.
+
+The Fraction prerequisite is now explicit algebra: denominator-GCD addition/
+subtraction leaves only gcd with the common factor to cancel; cross-cancellation
+in multiplication/division preserves value and coprimality; zero normalizes to
+denominator one and unary operations preserve it. That argument does not bind
+the native GCD/division implementation or make the unchecked internal constructor
+enforce its precondition. Mutable globals/fields and foreign types stay outside
+the assumptions, not covered by a safety guard.
+
+| Obligation | Recorded Conditional Derivation / Limit |
+| --- | --- |
+| D0 | Sign/exponent/significand fields decode finite dyadics; zero sign remains a separate tag. |
+| R1 | Bit-length intervals restrict the exponent to two candidates; either shift branch makes the exact separating comparison. |
+| R2 | Complement comparison selects nearest coefficient, with parity at ties; ordered midpoint cells give monotonic decoded values and exact endpoints. |
+| R3 | Below-half/equal-half/subnormal/minimum-normal and one normal carry pack the selected finite value. |
+| R4 | At the maximum-finite midpoint, odd coefficient ties to even carry; early high-exponent and final exponent-field stops agree conditionally. |
+| R5 | Exact-zero fallback, nonzero-underflow sign, subtraction's flipped tag, XOR multiplication/division and zero-divisor rejection remain distinct. |
+| O0 | Normalized exact operations precede rounding; the returned ratio is local rounded-minus-exact, not propagated or old-producer error. |
+| T0 | Ordered periods/cells retain finite conditional closure; quotient zero/one raw residue is representable, but corrected residue may equal its period. |
+
+**T0 result and its boundary.** The stored-pi/duration/profile inequalities,
+conditional monotonicity and representable endpoints give period in (6,8),
+rounded x in [-2,9] and truncated quotient zero/one. For zero, residue is x
+itself. For one, x is at least the period and at most nine: both are multiples
+of `2**-50`; their nonnegative difference is below three. Its integer coefficient
+is below `3*2**50 < 2**53`, so it has at most 53 significant bits and is well
+above underflow. The raw-residue local error is conditionally zero on this
+profile, not an adopted runtime allowance or proof of native remainder parity.
+
+Negative residue remains a separate rounded period addition and can reach the
+period at an appropriate midpoint/near-period value. The final separately rounded
+subtraction therefore permits both endpoints of [-stored_pi, stored_pi]. No
+clamping, floor wrap, half-open real-pi promise or cell fusion was introduced.
+The two period cells remain distinct despite conditional equality; ten fixed
+RN64 cells plus one conditional correction remain. P2 halving is not assumed
+exact for tiny subnormals. Both clocks, seed-based/once-only error accounting,
+P4-P6/G1-G3 and the unchanged reference `1bb89fe` remain outside this proof scope.
+
+**Failed check and repair.** The first focused paper text check failed on
+`exponent field 2047`, split across two source lines. The matcher was repaired
+to normalize prose whitespace, retaining all required IDs/inequalities/limits;
+the identical focused controls then passed. No arithmetic, assertion, fixture,
+word, tolerance or domain was changed. That successful check is not formal proof
+checking and does not close implementation correspondence or W0/TB0.
+
+**Exit, next permission and remaining gates.** The approved paper review is
+complete as eight conditional derivations with explicit trust/progress and
+acceptance limits, not an accepted theorem or implementation qualification.
+Next recommended, **not approved**: bounded synthetic tests-only comparison of
+the four ordered scalar expressions and the controlled trace on at most twelve
+reused literal trace cases. Record exact word/sign/correction agreement or
+discrepancy; stop and diagnose failures rather than loosen assertions. Reuse
+tests/helpers, with focused/default source-test gates only under new approval.
+No production source change, owner tick/advance, question query, scene/log
+adapter, new episode/data, integration, acquisition/dependency, native/work/
+allowance/flag promotion or physical/ST/board claim. Twelve-case agreement would
+be bounded compatibility evidence, not all-domain parity or renewed old 64/32
+fixture permission. Task 6/9, representative/physical evidence, teacher assets
+and ST/board gates remain unchanged. Default stays unqualified/abstaining.
+
+**Verification and retention.** The repaired focused paper check passed for all
+eight rows, canonical/exponent/tie/packing/overflow/zero/residue distinctions,
+paired math and unchanged helper/test bytes. Final scoped references/local
+targets, handoffs/sections, historical-preservation, diagnostics and whitespace
+checks passed: sections 1-108, 544 reference uses/local targets, paired math/
+fences, preserved prior review/dossier/workflow/history/task tail and unchanged
+helper/test blobs. Editor diagnostics are clear and the scoped diffs reviewed.
+Only AGENTS.md, DESIGN.md and REVIEW.md change; no artifacts, cleanup,
+background job or assistant push.
+No Python/default/native/source fixture or numerical gate was rerun. §105's
+2,097 passes plus known xfail remain historical; the source/test blobs remain
+`fa78f69d3f3a504ec5b086842f0aaf980d5b5288` and
+`2678bfe43b0ff3bb78a15342f64d57a153bc0538`.
+
+[arithmetic-paper-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -7847,6 +7847,84 @@ bounded implementation approval is exhausted; no next slice is implied.
 [controlled-auditor-source]: sim/diagnostics.py
 [controlled-auditor-tests]: tests/test_sim.py
 
+## 114. Native Arithmetic Gap and Exit Plan (2026-11-04)
+
+After reboot, the user asked to continue where we left off. This is taken as
+approval for the design-only native motion/transform gap plan offered at §113,
+not renewed permission for its exhausted implementation or fixture runs.
+`git status --short` was empty and HEAD was `a997e17`; the preceding two commits
+were `d2e5381` and `03f9104`. Current State, §113, DESIGN.md §§1/2/6/7 and the
+nearby candidate `advance`/`_prepare_event` and relative mapper were read.
+Only DESIGN/REVIEW and the existing AGENTS handoff change. No project import,
+numerical/fixture/model run, external implementation extraction, dependency,
+asset restoration, environment change, collection, runtime integration or
+hardware action. Standard-library document validators are not a numerical run.
+The rebooted interpreter/native bindings, GPU and removed teacher assets have
+not been requalified; this documentation-only task does not require them.
+
+**Hypothesis and discriminating check.** Checking the four trace rows and copied
+records does not establish accuracy of native consumers. In the actual candidate,
+words 2/4/10 feed midpoint/sinc argument/stored heading, but distance/position
+still use native sinc, scalar trig and NumPy arithmetic. Goal heading normalization
+is current-event-only. The relative mapper separately uses vector trig and matrix
+products. A focused static check of these source anchors and the eight proposed
+rows can falsify a misplaced operation mapping; it cannot establish native
+accuracy. The first design edit/check passed without importing project code or
+executing any operation under study. Source/test blob identities still match
+`c016c18fabde3262df852c04f3a277c477f50816` and
+`f9c34a99e4b10ab5f2277a7e0087356b21cb44bd` respectively.
+
+**Concrete candidate.** [DESIGN.md §7][native-gap-plan-design] now maps NF0-NF7:
+word/native boundaries, normalized sinc, distance/position, goal-only heading,
+goal components, relative poses, relative goal/arena and source scale. Each row
+names its bound inputs, missing evidence and stop. Separate four possible claims:
+existing declared-record consistency; same-environment execution compatibility;
+independent mathematical enclosures; qualified computed-program enclosures.
+No shared-library replay, sample maximum, interval overlap, matching source hash
+or bit agreement is promoted into uniform accuracy or source authority.
+
+The proposed default retains isolation. The first mathematical prerequisite
+would be NF1 at the exact stored q, with real-pi/series/remainder/domain evidence
+and explicit zero branches; it would not certify the installed wrapper or alter
+the producer. A native compatibility study is an alternative diagnostic claim,
+not a substitute for this accuracy obligation. The candidate must preserve the
+original seed, stored motion heading, separate binary/nominal clocks and once-only
+local-versus-propagated error accounting. Goal normalization does not feed motion.
+Owner scalar goals and mapper matrix goals need not have identical last bits;
+neither copying one over the other nor adding a fitted tolerance is permitted.
+Acquisition/reference transforms, original source-coordinate scale/guards,
+wire projection, pending captures, return membership and source authority remain
+separate. No tighter domain, error allowance or risk policy is adopted.
+
+**Exit and next permission.** The approved gap/exit plan is prepared, with eight
+NF rows, four claim levels and six NX0-NX5 paper review checks. These are not
+executed numerical gates, accepted derivations or qualification. All existing
+source/test ASTs/APIs/defaults/bounds/flags/verdicts, `1bb89fe`, reports/logs and
+wire remain unchanged; all five flags stay false. No pending job or cleanup was
+created. Task 6/9, native/work/numerical/physical/task-quality, teacher assets and
+ST/board gates remain open.
+
+Next proposed, **not approved**: design-only NF1 rational sinc enclosure contract
+and feasibility argument, including exact target, branches, interval/remainder
+and computed-domain evidence, rational work limits, reuse-versus-isolation
+tradeoff, acceptance checks and unresolved stops. No prototype API, term count,
+precision/work allowance, implementation, extraction, new fixture run, adapter,
+integration, dependency/acquisition or promotion is authorized by this completed
+plan. The next design scope would specify a concrete mathematical prerequisite,
+not claim completion of the native motion or broader task gates.
+
+**Verification.** Initial NF0-NF7/four-claim/NX0-NX5/source-anchor/single-document
+scope check passed. Final checks passed: 557 reference uses/local targets,
+sections 1-114, paired fences, prior review/source list/design contract/stable
+workflow/history/last source-gate preservation, unchanged tracked code and
+three-document scope. Whitespace and staged-scope checks precede commit.
+The code suite was not rerun: §113's 2,125 passes plus known xfail and 71 warnings
+remain historical, not post-reboot or new arithmetic evidence. No check failure
+has occurred in the initial preparation. Final scoped diff and staged checks
+precede the local commit; no push or history rewrite is authorized.
+
+[native-gap-plan-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -113,25 +113,25 @@ python -m pytest -q && ruff check . && git diff --check
   optional) and a real bullet body. Do not push, create branches or rewrite
   history unless explicitly requested. Never revert another person's changes.
 
-## Current State (2026-11-03)
+## Current State (2026-11-04)
 
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: private independent candidate auditor/tests
-  (DESIGN.md §7 / REVIEW.md §113), eight reused cases/four scenes, eight constructors,
-  64 published events/eight each including seed and 32 auditor attempts per
-  complete invocation. Independent declared trace/event/codec/capture/copy checks
-  preserve every old module AST/API/default/bound/flag/verdict and `1bb89fe`.
-  Ownership and content stay distinct; native motion/goal/relative transforms,
-  pending completeness/source authority/native-work remain unresolved, all five
-  flags false. The old candidate audit remains receipt-only; isolation is default.
-  Next proposed, not approved: design-only gap/exit planning for those remaining
-  native arithmetic relations; no extraction, fixture run, implementation,
-  query/reference/log adapter, data/runtime/wire adoption or promotion.
-  All bounded scopes are exhausted; no dependency/acquisition or hardware run.
+- Latest approved package complete: design-only native arithmetic gap/exit plan
+  (DESIGN.md §7 / REVIEW.md §114), eight NF0-NF7 consumer rows, four distinct
+  evidence claims and six paper exit checks. No source/test change or numerical/
+  fixture run; §113's private auditor stays isolated, with all five flags false.
+  Native motion/goal/relative transforms, pending completeness/source authority
+  and native-work remain unresolved. Reboot baseline was clean at `a997e17`;
+  interpreter/native/GPU/teacher-asset availability is not freshly qualified.
+  Next proposed, not approved: design-only NF1 rational sinc enclosure contract
+  and feasibility argument, not implementation, extraction, fixtures, adapter,
+  runtime/wire adoption or promotion. Isolation remains the default; no new
+  term count, precision/work allowance, dependency/acquisition or hardware run.
+  All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-113 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-114 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1189,15 +1189,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §113 completes
-the separately approved private independent auditor/tests: eight reused cases,
-four scenes, eight constructors/64 events and 32 auditor attempts per complete
-invocation. Root gate: 2,125 plus known xfail; old module ASTs/defaults/flags/
-bounds/verdicts and `1bb89fe` unchanged. Ownership/checked content/native
-qualification remain distinct; isolation stays default.
-Next proposed, not approved: design-only gap/exit planning for native position/
-goal and relative-transform evidence; no extraction, fixture run, implementation,
-query/reference/log adapter, data/runtime/wire adoption or promotion.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §114 prepares
+the separately approved design-only native gap/exit plan: eight NF0-NF7 rows,
+four claim levels and six paper checks, not executed numerical gates. Source/
+tests/defaults/bounds/flags/verdicts and `1bb89fe` remain unchanged; §113's 2,125
+plus known xfail is historical, not rerun after reboot. Isolation stays default.
+Next proposed, not approved: design-only NF1 rational sinc enclosure contract/
+feasibility argument; no new term/work allowance, extraction, fixture run,
+implementation, query/reference/log adapter, data/runtime/wire adoption or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1402,6 +1401,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   goal/relative transforms/source authority/native-work remain unresolved. Next
   proposed, not approved: design-only native gap/exit planning; no further fixture,
   extraction, implementation, adapter/integration or promotion is implied.
+  Native gap plan (REVIEW.md §114): separately approved design-only preparation
+  complete; eight NF0-NF7 consumer rows, four distinct claims and six paper checks.
+  No source/test/fixture change, bound/verdict/flag promotion or restarted code gate.
+  Next proposed, not approved: design-only NF1 rational sinc enclosure contract
+  and feasibility argument; native motion/transforms/work/source authority and
+  task gates remain unresolved, with isolation retained.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

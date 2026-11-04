@@ -4911,6 +4911,89 @@ evidence; no further implementation, extraction or fixture execution follows.
 
 [controlled-candidate-auditor-review]: REVIEW.md
 
+#### Native Arithmetic Gap and Exit Plan (2026-11-04)
+
+After reboot, the user's continuation approved the design-only follow-up offered
+at §113; [review §114][native-gap-plan-review] records that scope. This is a
+proposal, not native replay, arithmetic implementation, an accepted error bound
+or promotion of the private candidate. Source/tests, old verdicts and all five
+qualification flags remain unchanged. Isolation stays the recommended default.
+
+**Local hypothesis.** The checked P1/P2/P3/P7 words do not constrain every
+native consumer result: a consistent declared trace is not a bound on native
+position, current goal or relative transforms. The nearby source confirms that
+`advance` consumes words 2/4/10 as midpoint/sinc argument/stored heading, then
+computes distance and position natively. `_prepare_event` normalizes heading
+only for the current goal. The relative mapper separately uses vector trig and
+row-vector matrix products. Their unverified relations must not disappear behind
+the auditor's `consistent_checked_relations` result.
+
+| Gap | Existing Consumer / Bound Input | Required Exit Evidence / Stop |
+| --- | --- | --- |
+| NF0: boundary | Word-to-native midpoint, argument and next heading; builtin speed and literal `0.05`; native-to-word coordinates/State fields. | Bind signed-zero bits, exact duration/constant words, conversions, actual scalar/array dtype/shape and evaluation order. Record correspondence is not live FP/build qualification. |
+| NF1: sinc | `np.sinc(argument)` at the stored P3 word, not an ideal unrounded argument. | Cover the complete normalized-sinc wrapper, zero/tiny substitution, pi multiplication, sine and division on the computed domain. Shared-library replay or a sampled maximum is not a uniform local-error bound. |
+| NF2: motion | `speed * 0.05 * sinc`, scalar cos/sin at the stored P2 midpoint, then NumPy coordinate products/additions from the previous stored pose. | Bind rounding/promotion/contraction, coordinate scale/cancellation and finite intermediates. Compose local sinc/trig/rounding and P2/P3 input errors once; missing evidence leaves motion unresolved. |
+| NF3: goal heading | Scalar `atan2(sin(r), cos(r))` for current stored `r`, followed by scalar cos/sin. | Bound norm separation, quadrants/cuts and circular error for the actual wrapper/domain. This heading never replaces the stored motion heading or becomes another propagated state update. |
+| NF4: goal components | Inferred goal-array subtraction from current stored position; scalar product/sum expressions into `State.goal_m`. | Preserve actual goal dtype and each arithmetic/conversion step, goal lever arm and cancellation. A same-stored-pose target does not add accumulated world-position error again. Wire projection is a separate later conversion. |
+| NF5: relative poses | Captured/reference stored poses; vector heading normalization and difference, row-vector translation/rotation, then vector heading normalization again. | Bind every slot to its acquisition/reference events, vector dtype/shape/path, matrix reduction order, branch and circular enclosure. No scalar/vector bit-equality assumption or native transform replay is implied. |
+| NF6: relative goal/arena | `(goal-reference[:2]) @ rotation`, `fixture_arena_yaw_rad=-yaw`, versus the owner's different scalar goal expression. | Specify the common real target and separate implementation errors. Last-bit disagreement alone is not geometric inconsistency; agreement is not an error bound. Do not copy one result over the other or introduce a tolerance to hide it. |
+| NF7: source scale | Max/abs reductions over original reference, goal, capture poses and derived relative values; existing scale guard. | Preserve source-coordinate magnitude and the original guard even after translation/rotation. A small relative result cannot erase cancellation risk or qualify the scale computation, ray returns or source authority. |
+
+**Claim ladder and acceptance.** Four distinct future claims are proposed:
+
+1. Declared-record consistency: retain §113's exact checked relations and explicit
+  unverified list; it already exists and is not expanded by this plan.
+2. Same-environment execution compatibility: independently written expressions
+  could compare selected native outputs, but still share Python/NumPy/libm and
+  need fresh implementation/FP identity after reboot. Producer/mapper calls are
+  not independent checkers, and different scalar/vector expressions need not
+  be bit-identical. This claim would remain diagnostic, not numerical accuracy.
+3. Independent mathematical enclosures: a rational/interval reference with
+  justified remainder/domain evidence can enclose an exact mathematical target.
+  A point inside an enclosure shows compatibility only; a point outside the
+  bare ideal enclosure is not a faulty implementation without a separately
+  justified implementation-error allowance. Never fit that allowance to residuals.
+4. Qualified computed-program enclosure: bind actual implementation/FP paths,
+  prove uniform local errors and computed-domain closure, and compose them
+  through NF0-NF7 with independently reviewed reference uncertainty. W0/TB0,
+  source authority, physical error, task quality and runtime adoption remain
+  separate gates even if this numerical claim eventually closes.
+
+The recommended next direction is an isolated mathematical NF1 prerequisite,
+not another native replay batch. A proposed rational sinc enclosure would take
+the exact stored argument word, enclose real pi and the entire-function sinc
+series with explicit interval/remainder justification, and handle both signed
+zeros without assuming the installed wrapper returns exact one. It would expose
+only mathematical bounds or unresolved evidence. It would not measure or bound
+the installed wrapper's deviation, certify `np.sinc`, consume owners/logs, or
+replace a producer operation. Existing `1bb89fe` remains mathematical reference
+evidence, not a candidate-owner adapter or installed-primitive guarantee.
+
+**Next proposed permission, not approved:** a design-only NF1 enclosure contract
+and feasibility argument, including exact target, zero/nonzero branches, series
+remainder/domain closure, rational work limits, reuse of existing mathematical
+helpers versus a separate private boundary, and discriminating acceptance/stop
+checks. Prepare the specification before requesting implementation or numerical
+execution; no term count, precision/work allowance or prototype API is adopted
+here. This is the first unresolved dependency in NF2, not completion of motion
+qualification. Alternatives are retaining isolation with no arithmetic work, or
+a separately approved shared-library compatibility study; the latter cannot
+close NF1's independent accuracy obligation.
+
+**Paper exit checks.** NX0-NX5 below are review checks for this plan, not executed
+numerical gates or an accepted proof:
+
+| Check | Required Content / Discriminating Stop |
+| --- | --- |
+| NX0 | All eight NF rows map to current consumers and explicit missing evidence; checked trace words are never called native accuracy. |
+| NX1 | The four claims remain separate; no shared replay, sample maximum, interval overlap or source hash is promoted to a uniform guarantee. |
+| NX2 | Preserve previous stored pose/heading, original seed and separate binary/nominal clocks; G1/NF3 remains goal-only. |
+| NX3 | Local same-stored-pose errors, propagated trajectory errors and current goal/relative errors are not double-counted. Both sides of a relative transform and circular cuts need their own evidence. |
+| NX4 | Keep codec changes, source scale/guards, missing/pending captures, return membership and source authority separate; no inferred completeness or scalar/vector bit equality. |
+| NX5 | Scope is documentation only; source/tests/defaults/bounds/flags/verdicts, `1bb89fe` and old artifacts remain unchanged. Every later read/run/code/integration scope needs separate authorization. |
+
+[native-gap-plan-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -6922,7 +7005,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-03, REVIEW.md §113): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §114): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7052,10 +7135,13 @@ cases/four scenes, eight constructors/64 published events and 32 auditor attempt
 per complete invocation. Independent declared trace/event/codec/capture/copy
 relations are checked without producer arithmetic or native replay; source
 authority/native motion/goal/relative transforms remain unresolved. All old
-module ASTs/defaults/flags/verdicts stay unchanged. Next proposed, not approved:
-design-only gap/exit planning for those remaining native arithmetic relations;
-no extraction, fixture run, adapter, integration or promotion follows. All
-broader gates remain unchanged.
+module ASTs/defaults/flags/verdicts stay unchanged. The separately approved
+design-only native gap/exit plan is prepared (§114): eight NF0-NF7 consumer rows,
+four distinct evidence claims and six paper exit checks, not numerical/native
+qualification. Next proposed, not approved: design-only NF1 rational sinc
+enclosure contract and feasibility argument; no extraction, fixture run,
+implementation, adapter, integration or promotion follows. All broader gates
+remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

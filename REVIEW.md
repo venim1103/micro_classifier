@@ -8348,6 +8348,138 @@ requires separate approval; this design-only contract scope is exhausted.
 
 [sinc-bridge-design]: DESIGN.md
 
+## 119. NF1 Read-Only Installed-Path Evidence Dossier (2026-11-04)
+
+The user explicitly approved §118's five-row read-only investigation: at most
+65,536 inspected source/metadata text bytes, already-installed files only, no
+target imports/dynamic loads, numerical/native comparison, acquisition or
+implementation. Baseline is clean `be44942`. This is identity/path evidence,
+not an adopted allowance or a refreshed live producer execution contract.
+[DESIGN.md §7][sinc-path-design] records the resulting evidence boundary.
+
+**Local hypothesis and first check.** The installed wrapper may still match
+§99's selection-before-product description while leaving its native/error
+obligations unresolved. A bounded source window confirms `x=np.asanyarray(x)`;
+`y=pi*where(x==0,1.0e-20,x)`; `return sin(y)/y`, with an array-function
+dispatch decorator. No expression or docstring example was executed. The
+wrapper, NumPy core image, libm and NumPy math-header SHA-256 values match §99.
+The explicit `/opt/venv/bin/python` symlink resolves to `/usr/bin/python3.12`;
+this is not a new editor-interpreter or loaded-image observation. WHEEL declares
+the same Meson/non-purelib cp312 manylinux tags, not runtime dtype/dispatch.
+
+The preflight guessed `_core/_multiarray_umath.py`; `wc` reported it absent.
+The compiled core image is present and hash-matched. This is a failed path
+probe, not a missing-dependency or package-integrity verdict. Its diagnostics
+are included in a conservative 4,096-byte initial metadata charge. The wrapper
+window is 3,997 bytes and WHEEL is 137 bytes: first-stage charge 8,230 bytes.
+Streaming file hashes are identity operations, not text-source inspection;
+their printed metadata is charged. No raw artifact is persisted by the audit.
+
+| Row | Current Evidence | Unresolved Boundary |
+| --- | --- | --- |
+| WP0: wrapper/constants | Installed wrapper and four file hashes match §99. Source imports pi/sin from `_core.umath` and where from `_core.numeric`; selection precedes the pi product. | The literal/import names do not attest instantiated constant words, live bindings, call interception, currentness or source authority. |
+| WP1: input/result routing | METADATA declares NumPy 2.2.6; WHEEL declares Meson/cp312/manylinux. `multiarray.py` imports compiled exports, names asanyarray and decorates where with `_multiarray_umath.where` through an overrides partial with `verify=False`. | Intermediate namespace/live binding, actual dtype/shape, conversion/promotion, zero comparison and returned scalar/0-D path remain unqualified. Source/docstrings are not observed execution. |
+| WP2: multiply/divide paths | Core ELF declares libm/libc and other dependencies with wheel-relative RPATH. Checked installed NumPy loop-source paths are absent; no matching multiply/divide implementation was inspected. | The binary identity/dependency list does not identify selected elementwise loops, scalar promotion, contraction, rounding/subnormal behavior or uniform errors. |
+| WP3: sine/libm path | Core imports `sin@GLIBC_2.2.5`; inspected libm exports sin as IFUNC. The math header declares npy_sin among double functions needing fixups or blocklisting, not a direct alias or error contract. | Import/declaration/IFUNC identity does not prove the actual ufunc loop, selected loaded libm, resolved implementation, build correspondence or uniform sine error. |
+| WP4: execution-contract gaps | Generated build file declares GCC 10.2.1, scipy-openblas 0.3.29 and empty compiler-argument strings. Core imports exception-status functions; libm exports FP-control interfaces. No such function or target code was called. | Build declarations are not complete flags or a live FP contract. Exception interfaces do not establish current rounding, FTZ/DAZ, intermediate precision, contraction, branch/domain closure, native work or source authority. |
+
+**Inspected routes and identity limits.** The source reads are intentionally
+partial: wrapper lines 1-55 and 3750-3865; multiarray lines 95-107 and 383-413,
+plus a 2,048-byte-capped routing search; math header lines 140-191; generated
+build file lines 1-160; METADATA lines 1-18; and the 137-byte WHEEL. No Python
+body, decorator, configuration expression or docstring example was evaluated.
+The routing search ends at its cap; its truncated last line is not complete
+source coverage. Namespace reexports and runtime monkeypatching are not proved
+from these excerpts. The compiled export/where decorator is a source-level
+link, not a new selected-call or result-type observation.
+
+Core ELF dependencies name libscipy_openblas64_-56d6093b, libstdc++, libm,
+libgcc_s, libc and the ELF loader, with `$ORIGIN/../../numpy.libs` RPATH.
+This is not a loader-resolution trace or evidence that these operations use
+BLAS. The selected-symbol query reports sine, feclearexcept and fetestexcept;
+it does not establish that rounding control is absent or used. Libm's visible
+fegetround/fesetround/fegetenv/fesetenv exports are interfaces, not an FP-state
+measurement. No process maps, dispatch query, IFUNC resolution, target import,
+dynamic load, numerical call, disassembly or environment mutation occurred.
+
+The checked `_core/src/umath/loops.c.src`,
+`_core/src/umath/loops_trigonometric.dispatch.cpp` and
+`/usr/src/glibc/sysdeps/ieee754/dbl-64/s_sin.c` paths are absent. This is not an
+exhaustive search or a claim that matching sources cannot exist elsewhere.
+The generated build file identifies itself as build-time system information;
+its empty argument strings do not supply a complete build/FP contract, and
+its CPU-feature expressions were not evaluated. Historical AVX2/current-target
+and loaded-image observations in §99 have not been refreshed.
+
+The four refreshed SHA-256 values equal §99's wrapper/core/libm/header values.
+Additional inspected-file identities are:
+
+- `numpy/_core/multiarray.py`:
+  `d0fed9047291d26234b5ab72a83087c277dec04122438f1dc2bcd52f63d0024d`.
+- `numpy/__config__.py`:
+  `212c5766a509cdd26a2c0ff78123cac9554ff29b7046927c2cfcc5d16bca8122`.
+
+These bind inspected file bytes, not installed-package attestation, loaded
+objects, future global bindings, numerical correctness or runtime work.
+
+**Budget ledger and failures.** The final conservative inspected-text charge
+is **35,758 bytes**, below the approved 65,536-byte cap. No remaining budget
+is treated as permission for another inspection or experiment.
+
+- Initial and final metadata preflights: 4,096 bytes reserved each, 8,192 total,
+  including printed identities, sizes and failed-path/absence diagnostics.
+- Initial wrapper/WHEEL windows: 3,997 + 137 = 4,134 bytes.
+- Capped routing/dependency/core-symbol/libm-symbol output: respectively
+  2,048 + 2,048 + 4,096 + 4,096 = 12,288 bytes, charged at their full caps.
+- Six final source/build windows: 1,961 + 371 + 991 + 1,993 + 5,036 + 792
+  = 11,144 bytes, preflighted before reads.
+
+The ledger bounds inspected installed-source excerpts and returned metadata,
+including diagnostics; it is not a bound on hash/ELF-tool internal binary I/O.
+Local repository documents and standard-library static validators are not a
+new installed-source investigation. No audit-created raw report/file is kept;
+ordinary tool/session output is not presented as a collected task artifact.
+The absent-shim preflight failed after its successful earlier metadata reads;
+it was not repeated wholesale. Two subsequent documentation patch attempts
+also failed: both used incorrect wrapped context and changed no file. A narrow
+read of the actual dossier supplied the grounded replacement. These context
+failures consumed no installed-source text or numerical attempt.
+
+**Verification and disposition.** The first post-edit static check passed
+the five rows, wrapper order, failed-probe/byte record, REVIEW-only scope and
+unchanged source/test hashes. The completed-dossier check passes for all five
+rows, the conservative 35,758-byte ledger, failure/qualification limits and
+earlier review/Sources preservation. Expanded documentation checks pass: 568
+reference uses/local targets, sections 1-119, fences/math, earlier design
+contracts, stable workflow/history/last source-gate/task-tail preservation,
+five-row/budget/failure/no-run clauses, exact three-document scope and unchanged
+code hashes. Whitespace and editor diagnostics pass. Scoped diff/staged checks
+precede the local commit. The code suite is not rerun: §116's 2,137 passes plus known
+xfail and 71 warnings remain the last source gate, not a new §119 run.
+No project source/test/configuration/bound/allowance/flag/verdict change;
+diagnostic/test blobs stay `593448a4140e658692e0dc0965dc72f1f94666ae` and
+`8715a92bd370464cbbcee563b0625b59d3c3608a`. All five qualification flags stay
+false. The mathematical helper, `1bb89fe`, normal inputs/defaults, C/wire,
+old logs/reports and prior failures are preserved. No dependencies/downloads,
+labels/data/training, model/GPU/hardware action, native comparison, integration,
+cleanup or background job. No assistant push is authorized/performed.
+
+The five-row investigation is complete, not native/error qualification.
+Identity/source-description evidence is refreshed only as stated; NB0-NB8
+remain unclosed, with no supported implementation allowance or live FP/source
+authority proof. Task 6/9, native/source/work/numerical/physical/task-quality,
+teacher assets and ST/board gates stay open. Default: retain isolation.
+
+**Next proposed, not approved:** design-only NF1 closure-route decision brief,
+comparing continued native qualification with a separately identified controlled
+mathematical candidate. Specify attainable claims, source/dependency evidence
+costs, zero/tiny/domain/work stops, compatibility limits and acceptance gates.
+This would not adopt a replacement, qualify native errors, acquire sources,
+import/run a target, authorize code/fixtures or integrate/promote a consumer.
+All current bounded scope is exhausted; no further installed inspection follows.
+
+[sinc-path-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

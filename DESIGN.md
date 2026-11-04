@@ -5584,6 +5584,45 @@ design-only scope is exhausted when the documentation checks/commit complete.
 
 [sinc-bridge-review]: REVIEW.md
 
+#### NF1 Installed-Path Dossier Boundary (2026-11-04)
+
+The user separately approved §118's five-row, at-most-65,536-byte read-only
+investigation; [review §119][sinc-path-review] records commands, inspected
+windows, file identities, failures and the conservative 35,758-byte charge.
+Only already-installed files and static ELF metadata were inspected. No target
+import, dynamic load, configuration evaluation, numerical/native comparison,
+acquisition, implementation or environment change occurred.
+
+WP0-WP4 cover wrapper/constants, input/result routing, multiply/divide paths,
+sine/libm and execution-contract gaps. The wrapper/core/libm/header hashes
+match §99; routing/build-file identities are also recorded. The source still
+selects the tiny constant before the pi product, with named umath/numeric
+imports and a compiled-core where decorator. ELF imports/dependencies and a
+libm sine IFUNC are declarations, not an observed selected loop or resolver.
+The inspected math header supplies declarations, not uniform sine errors.
+Generated build information is not complete compiler/FP evidence. Absent
+implementation sources at three checked paths do not establish global absence.
+
+This refreshes only the stated file/source-description evidence. It does not
+attest live constants/bindings, dtype/promotion/selection/output routing, loaded
+library resolution, current process FP state, build/source correspondence,
+uniform primitive errors, domain closure or native work. Historical current
+dispatch/loaded-image observations are not renewed. NB0-NB8 therefore remain
+unclosed; the conditional bridge is not a supported implementation allowance.
+All five flags, native statuses, mathematical helper, source/test APIs, bounds,
+old verdicts and isolation default stay unchanged. No runtime/data approval.
+
+The bounded investigation is complete and exhausted. Next proposed, not
+approved: design-only NF1 closure-route decision brief comparing continued
+native qualification with a separately identified controlled mathematical
+candidate. It would specify attainable claims, evidence costs, branch/domain/
+work stops, compatibility limits and acceptance gates, not adopt a replacement,
+acquire sources, import/run targets, authorize code/fixtures or integrate/promote
+a consumer. Physical/task-quality, source/work, teacher assets and ST/board
+gates remain open; unused inspection budget is not renewed permission.
+
+[sinc-path-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7595,7 +7634,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §118): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §119): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7744,10 +7783,14 @@ No source/test/run/flag/verdict change. The separately approved design-only
 NF1 native-error bridge contract is prepared (§118): nine NB0-NB8 obligations,
 recorded wrapper order, branch-specific symbolic error decomposition, conservative
 comparison rules and six paper acceptance checks. No installed path/FP/error
-evidence or allowance is refreshed/adopted. Next proposed, not approved: bounded
-read-only NF1 path-evidence gap dossier, five rows and at most 65,536 inspected
-text bytes; no import, numerical/native comparison, implementation, adapter,
-integration, acquisition, allowance or promotion follows. All broader gates stay.
+evidence or allowance is refreshed/adopted. The separately approved read-only
+five-row installed-path dossier is complete (§119), with a conservative 35,758
+inspected text bytes within the 65,536-byte cap. File identities/source routes
+are refreshed only as stated; selected loops/IFUNC, full build/FP contract and
+uniform errors remain unqualified. No target import, native comparison, source/
+test or verdict change. Next proposed, not approved: design-only NF1 closure-route
+decision brief, not replacement adoption, acquisition, implementation, target
+execution, adapter/integration or promotion. All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

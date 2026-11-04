@@ -118,22 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only NF1 native-error bridge
-  contract (DESIGN.md §7 / REVIEW.md §118), nine NB0-NB8 obligations, recorded
-  wrapper order, branch-specific symbolic decomposition, conservative comparison
-  rules and six paper checks. Not an adopted allowance or native/resource proof.
-  No source/test change, import or fixture/native run; five flags stay false.
+- Latest approved package complete: read-only NF1 installed-path dossier
+  (DESIGN.md §7 / REVIEW.md §119), five WP0-WP4 rows and conservative 35,758
+  inspected text bytes within the 65,536-byte cap. Wrapper/core/libm/header
+  identities match §99; source/ELF/build declarations do not qualify selected
+  loops/IFUNC, full build/FP contract or uniform errors. No target import,
+  numerical/native run, source/test change or allowance; five flags stay false.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `506e892`; last source
+  and native-work remain unresolved. Baseline was clean at `be44942`; last source
   gate remains §116, not rerun here; no environment/native/GPU/teacher requalification.
-  Next proposed, not approved: bounded read-only NF1 path-evidence gap dossier,
-  five rows / at most 65,536 inspected text bytes from installed files/metadata.
-  No import, numerical/native comparison, source-package acquisition/extraction,
-  implementation/integration or allowance/qualification adoption. Isolation stays
-  default; no dependency, collection or hardware approval follows.
+  Next proposed, not approved: design-only NF1 closure-route decision brief,
+  comparing native qualification with a separately identified controlled
+  mathematical candidate. No replacement adoption, import/execution, source
+  acquisition/extraction, code/fixtures, integration or allowance/qualification
+  adoption. Isolation stays default; no dependency/data/hardware approval.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-118 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-119 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1191,15 +1192,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §118 prepares
-the separately approved design-only NF1 native-error bridge contract: nine
-NB0-NB8 obligations, branch-specific symbolic error decomposition, conservative
-comparison semantics and six paper checks. No adopted allowance or native proof,
-source/test/configuration/bound/flag/verdict change; `1bb89fe` stays.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §119 completes
+the separately approved five-row read-only NF1 installed-path dossier: conservative
+35,758 inspected text bytes under the 65,536-byte cap. File identities/source
+descriptions, not selected-loop/IFUNC/build-FP/uniform-error qualification.
+No target import/native run or source/test/bound/flag/verdict change; `1bb89fe` stays.
 The last source gate remains §116's 2,137 plus known xfail, not rerun here.
-Next proposed, not approved: bounded read-only NF1 path-evidence gap dossier,
-five rows / at most 65,536 inspected text bytes from installed files/metadata;
-no import, numerical/native comparison, package acquisition/extraction,
+Next proposed, not approved: design-only NF1 closure-route decision brief,
+native qualification versus a separately identified controlled mathematical
+candidate; no replacement adoption, acquisition, target execution, code/fixtures,
 implementation/query/reference/log adapter, allowance adoption or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
@@ -1435,6 +1436,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   source/test edits, native run, allowance or flag/verdict promotion. Next proposed,
   not approved: five-row read-only installed-path evidence dossier, at most 65,536
   inspected text bytes; not acquisition/execution/implementation/integration.
+  NF1 path evidence (REVIEW.md §119): separately approved five-row read-only
+  dossier complete; conservative 35,758 inspected text bytes under the 65,536 cap.
+  File/source/ELF/build identity only; selected paths, full FP/build contracts,
+  uniform errors and native work remain open. No target import/native comparison,
+  source/test or flag/verdict change. Next proposed, not approved: design-only
+  closure-route decision brief, not replacement/code/execution/integration.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

@@ -5755,6 +5755,207 @@ isolation remains the default and all broader gates remain open.
 
 [sinc-route-review]: REVIEW.md
 
+#### NF1 Interval-to-Word Certificate Contract (2026-11-04)
+
+The user separately approved §120's design-only contract/work preparation;
+[review §121][sinc-cell-review] records scope and checks. This refines the
+proposed `controlled_mathematical_sinc_rn64_candidate_v0`, not Route C adoption,
+an implemented API, an accepted proof or an error/resource allowance. No helper
+call, word evaluation, fixture/native run, installed inspection or acquisition
+occurs. Existing producers, helpers, flags, verdicts and consumers stay unchanged.
+
+**Local hypothesis and trust boundary.** A first-true search over ordered exact
+upper cell midpoints, followed by endpoint and whole-interval verification,
+could yield a sound partial word result under the existing enclosure assumptions.
+It need not round arbitrary enclosure fractions with the old 4,096-bit helper.
+The discriminating paper checks are monotonicity/tie ownership, a strictly
+shrinking search interval, explicit edge rejection and complete guarded work
+accounting. A counterexample to any of these invalidates the candidate contract,
+not the old native program. The following argument is conditional, not accepted
+numerical certification or native parity.
+
+A pure interval component establishes only cell containment; the separate word
+entry must bind it to F(q)'s direct enclosure. Synthetic component controls
+confer no such binding. Its two endpoints are fixed canonical integer-pair
+tuples with exact builtin nonboolean integer components, positive denominators
+and bounded sizes; invalid pairs are rejected before arithmetic or coercion.
+
+**Entry and enclosure binding.** Proposed private word entry requires literal
+synthetic opt-in and an exact builtin nonboolean u64 q word, retaining both zero
+signs. Invalid opt-in raises ValueError; malformed/nonfinite/out-of-domain words
+produce unresolved evidence, not coercion. At most one existing §116 enclosure
+call is permitted per entry, including zero; no retries, increased terms/caps or
+native fallback. A word entry may enter the interval component at most once;
+zero takes no such entry. The enclosure's strict domain $|q|\le1/64$,
+32/8-term configuration and 65,536-bit limit remain unchanged. Consume only
+that direct local call's exact canonical interval and matching input/sign/
+configuration metadata, not a supplied log, claimed certificate or old owner
+record. Missing or inconsistent binding stops. Stable Fraction/global bindings
+and SR0-SR9 remain assumptions, not facts
+established by a configuration snapshot. Canonical-pair validation and interval
+ordering are guarded before arithmetic; a success status alone is insufficient.
+
+Both input zeros require the exact mathematical interval [1,1] and permit the
+existing unit word `0x3ff0000000000000`; keep the original q/sign in evidence.
+This branch has no cell search and claims nothing about native tiny substitution.
+A nonzero q, even subnormal, remains nonzero. Its enclosure must be ordered,
+strictly positive and have bounded canonical integer pairs; never clip it to a
+guessed near-one range. Unsupported evidence produces no candidate word.
+
+**Exact lattice and cells.** Let M be the largest positive finite binary64 word,
+`0x7fefffffffffffff`. Eligible output words satisfy $1\le w<M$; M itself is a
+search sentinel, not an eligible result. Neighbor words $w-1,w,w+1$ must decode
+as exact finite nonnegative dyadics; zero is supported only as a neighbor value.
+No infinity, negative word or zero output cell is supplied. This deliberately
+partial support is not a new cutoff on q or a claim that the target underflows.
+An integer-only local decoder uses fraction bits f and exponent bits e:
+
+$$
+D(0)=0,\qquad
+D(w)=\begin{cases}
+f/2^{1074},&e=0,\\
+(2^{52}+f)2^{e-1075},&1\le e\le2046.
+\end{cases}
+$$
+
+Guard shifts and numerator/denominator construction before allocation; do not
+call old round/decoder/operation/trace, owner, auditor or native helpers. This is
+a proposed separate decoder, not a refactor or a claim of independent evidence.
+For eligible w define $L_w=(D(w-1)+D(w))/2$ and
+$U_w=(D(w)+D(w+1))/2$. A boundary belongs to w exactly when its significand is
+even, equivalently its word's low bit is zero. Thus both boundaries are closed
+for even w and open for odd w. Subnormal/normal and exponent transitions retain
+actual unequal adjacent spacings; no symmetric-ulp shortcut is permitted.
+
+**Endpoint search and final certificate.** For a positive exact endpoint x use
+the predicate $P_x(w)=(x<U_w)\lor(x=U_w\land w\text{ even})$. Exact decoded values
+and their upper midpoints strictly increase with eligible word order. Therefore
+P is monotone: it cannot revert to false; equality assigns the shared midpoint
+to the even of two adjacent words. Seek its first true eligible word with
+integer indices lo=1 and hi=M. M is never decoded/tested as a candidate, but
+may be decoded as the finite upper neighbor of M-1. While lo<hi, choose
+$j=\lfloor(lo+hi)/2\rfloor$; true replaces hi by j, false
+replaces lo by j+1. Maintain that eligible indices below lo are false and those
+at/above hi are true. If lo=M, no supported cell was found: unresolved.
+
+Each endpoint result must also pass its full lower and upper cell inequalities;
+the first true word can still fail the lower boundary at the unsupported low
+edge. Run at most one search for each of l,u. Different words mean unresolved.
+For a common w, freshly reconstruct both neighbors/midpoints and verify all of
+the closed enclosure $[l,u]$: $l>L_w$ and $u<U_w$, allowing equality separately
+at either boundary only for even w. An odd word cannot own a singleton midpoint
+tie; its adjacent even word can when that full cell is supported. An interval
+crossing a boundary rejects, regardless of its midpoint or width. Recheck
+parity, eligibility and finite neighbor identity; endpoint agreement does not
+replace this witness. Each full-cell reconstruction decodes its three dyadics
+once and reuses the central value for both midpoints. Each predicate/boundary
+test uses one guarded three-way rational comparison, reusing that result for
+strictness and equality/parity rather than recomputing comparison products.
+
+Conditional soundness follows from F(q) belonging to the direct enclosure and
+that entire enclosure belonging to this one exact rounding cell. Monotonicity
+and tie ownership identify the endpoint words, not the truth of enclosure
+membership. The cell checker must not claim to prove F(q) inclusion or native
+accuracy. Ambiguity, unsupported edges, missing evidence or a guard failure
+returns unresolved; no guessed word, fitted tolerance or adaptive refinement.
+
+**Candidate-local guards and conditional work argument.** Propose a separate
+cell ceiling C=65,536 bits, never higher than the enclosure limit; it is not
+adopted here. Do not change either old 4,096/65,536-bit global limit. Canonical
+integer pairs have positive denominators and components at most C bits. Before
+each left shift, product, sum, denominator doubling or comparison cross-product,
+use conservative bit-length bounds: shift adds its count, product adds operand
+lengths, sum adds one to their maximum. Compare two guarded products directly,
+without an unnecessary unbounded difference. Midpoint addition and halving must
+guard every unreduced intermediate before Fraction construction/GCD, then check
+canonical results. No cancellation or later reduction excuses an oversized raw
+operation. Guards may conservatively reject valid mathematical values.
+
+Word/index/parity operations stay bounded by the fixed u64 lattice; endpoint
+pair checks, canonicalization, interval-order comparison and publication are
+also part of the work contract, not invisible free setup. No unbounded input
+sequence, decimal parsing, rational-to-float conversion, full search transcript,
+cache or persistence is proposed. A candidate-local ceiling snapshot does not
+by itself qualify Python allocation/GCD, arbitrary mutable bindings or work.
+
+For the search, hi-lo starts below $2^{63}$ and each iteration reduces it to at
+most its floor-half. Under exact bounded-index execution at most 63 iterations
+suffice; retain §120's conservative proposed cap of 64 per endpoint, checked
+before every attempt. Exhaustion stops unresolved rather than extending it.
+The paper cell upper ledger, including a final reconstruction and a separately
+counted enclosure dependency, is:
+
+| Work Item | Proposed Per-Entry Maximum | Included Boundary |
+| --- | --- | --- |
+| Existing enclosure entry | 1 | Zero or nonzero; its separate SR/work obligations remain. |
+| Endpoint search iterations | 128 | Two searches, at most 64 attempts each. |
+| Exact dyadic word decodes | 265 | Two per search attempt, three per endpoint verification, three final. |
+| Exact midpoint constructions | 134 | One per attempt, two per endpoint verification, two final. |
+| Rational comparisons | 135 | One per attempt, two per endpoint verification, two final, one interval-order check. |
+
+These are conditional upper-level call counts, not measured counters, primitive
+instruction/constructor counts, a live-memory bound or an elapsed-time deadline.
+Each midpoint/compare includes its guarded raw operations and canonicalization;
+each decode includes its guarded shifts. Metadata/type/sign/size/GCD checks and
+result construction must be accounted separately, not misreported as covered by
+135 comparisons. The enclosure's existing paper ledger is not folded into this
+one or rerun. W0/TB0, runtime/library correspondence and resource qualification
+stay open. Passing the enclosure does not guarantee that cell cross-products
+fit C, that allocation terminates successfully or that a nonzero word publishes.
+
+**Publication and compatibility.** Proposed successful local evidence contains
+the distinct candidate identity, q/sign and direct enclosure/configuration
+binding, candidate word and neighbor words/exact dyadics, exact L/U, tie closure,
+whole-interval comparison outcomes and bounded attempted-work metadata. Build
+fresh owned canonical pairs/containers, never alias helper/owner records. Publish
+one complete result only after all checks; do not mutate old evidence. An
+unresolved result omits the output word and cell certificate; bounded reason,
+input identity and attempted-work metadata may remain. Counters do not imply
+successful publication, and unexpected/allocation/interruption errors propagate:
+this is not universal rollback or a guarantee of any return.
+
+All five flags remain false: training_approved, real_input_qualified,
+free_space_qualified, numerically_certified and producer_parity_qualified.
+Native sinc/source/motion/work and consumer eligibility remain unresolved even
+on a candidate-word return. No error allowance, old-record retagging, owner/
+auditor/reference/log adapter, wire/CLI/runtime adoption or embedded-fit claim.
+P3 argument error, NF2 recurrence, goals and relative transforms remain separate.
+
+**Independent acceptance controls.** Before any proposed implementation is
+accepted, require these ten obligations:
+
+- CW0: exact q/direct-enclosure binding and separate pure-cell claim.
+- CW1: integer decoder and finite-neighbor order.
+- CW2: monotone first-true search and shrinking-index invariants.
+- CW3: both tie parities and unequal transition spacing.
+- CW4: closed whole-interval containment and edge rejection.
+- CW5: zero and nonzero-subnormal separation.
+- CW6: raw/preflight/postcanonical guards and search exhaustion.
+- CW7: owned publication, attempted-work and exception semantics.
+- CW8: independent expected-cell controls, not a shared truth oracle.
+- CW9: preservation/non-adoption and resource/trusted-base limits.
+
+No obligation closes merely because it appears in this contract.
+Future controls must construct exact literal dyadics/midpoints independently
+from bit-field mathematics and specify
+expected words before candidate evaluation, not use candidate helpers, native
+sine or the same enclosure as an independent truth oracle. Mocked intervals can
+test cell mechanics, never establish their inclusion of F(q).
+
+**Next proposed, not approved:** a bounded isolated private prototype/tests in
+the existing diagnostics/test files, not a consumer or accepted Route C. Proposed
+per complete focused invocation: twelve reused q-literal positions, at most 24
+word entries/24 enclosure calls; sixteen independent pure-cell controls with at
+most 32 direct cell entries. Including nested word calls, at most 56 total cell
+entries. No owner/event/trace/query/reference/log/native call or new scene. Any
+implementation approval must explicitly include these fixture/call limits and
+normal source gates; it does not accept a proof, numeric/work allowance, native
+compatibility or qualification. No such code, fixture derivation/evaluation or
+gate run occurs here. Isolation remains the default; this design-only scope is
+exhausted after documentation verification and a local checkpoint.
+
+[sinc-cell-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7766,7 +7967,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §120): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §121): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7924,9 +8125,14 @@ test or verdict change. The separately approved design-only closure-route brief
 is prepared (§120): native-error qualification versus a separate partial
 mathematical RN64 candidate, with whole-cell/parity rules, cap/reuse limits and
 eight decision gates. Recommend candidate design work only; neither route,
-replacement, error/work allowance nor total completion is adopted. Next proposed,
-not approved: design-only interval-to-word certificate contract and work argument,
-not code, fixtures, acquisition, execution, adapter/integration or promotion.
+replacement, error/work allowance nor total completion is adopted. The subsequent
+interval-to-word certificate/work preparation was separately approved and is
+complete (§121): exact-cell search/verification, guarded work ledger, separate
+interval/word claims and ten
+acceptance obligations, with no route/proof/allowance adoption or source/test run.
+Next proposed, not approved: isolated private prototype/tests under the recorded
+24 word/24 enclosure/32 direct-cell/56 total-cell per-invocation limits; not a
+consumer, native comparison, acquisition, integration or qualification promotion.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

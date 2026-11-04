@@ -8585,6 +8585,119 @@ dependency, adapter/integration or proof/allowance/qualification promotion.
 
 [sinc-route-design]: DESIGN.md
 
+## 121. NF1 Interval-to-Word Certificate Contract (2026-11-04)
+
+The user explicitly approved §120's offered design-only certificate and
+conditional work contract, requesting autonomous work and local commits.
+Actual baseline is clean `b275c72`. This approves contract preparation, not
+Route C adoption, implementation, fixture derivation/evaluation, target import,
+native comparison, installed inspection, acquisition or a proof/error/work
+allowance. User-side terminal push context does not authorize an assistant push.
+
+**Local hypothesis and first check.** A monotone first-true upper-midpoint
+search followed by exact endpoint and whole-interval checks could give a sound
+partial word result, conditional on the direct mathematical enclosure. This
+avoids assuming arbitrary 65,536-bit rational compatibility with the old
+4,096-bit rounder. The nearby §120 comparison controls this path. The first
+edit drafted its exact lattice/search/tie/edge/guard/publication contract;
+the next action was a standard-library text/hash/whitespace check. It passed
+without target imports, word evaluation or fixtures. No assertion, guard,
+rejection rule or old helper was changed to obtain that result.
+
+**Prepared contract.** [DESIGN.md §7][sinc-cell-design] separates a pure
+interval-cell claim from the word entry's direct q/enclosure binding. The
+proposed entry calls the unchanged enclosure at most once and the interval
+component at most once; zero requires exact [1,1] and no cell search. Strict
+opt-in, finite nonboolean builtin word, domain, signed-zero metadata and
+canonical-pair validation stay explicit. A supplied certificate/log or mock
+interval cannot authenticate F(q) or source authority.
+
+Eligible cell words are 1 through M-1, with M the largest positive finite word
+and a virtual search sentinel, never a tested candidate. M can still be decoded
+as the finite upper neighbor of M-1. Zero is only a supported neighbor,
+not a candidate cell; unsupported low/high cells stay unresolved. The integer
+decoder retains subnormal and exponent-transition spacing. Upper midpoints
+strictly increase; equality belongs to the even word. First-true search uses
+lo/hi invariants, then full lower/upper endpoint checks and a fresh whole-closed-
+interval cell witness. Equal endpoint words alone do not suffice. Assigning a
+midpoint tie to an odd word is invalid; its supported even neighbor can own it.
+Boundary-crossing intervals, invalid neighbors and ambiguous/work-limited
+evidence yield no candidate word. This is not a tiny-q cutoff or clipping rule.
+
+The paper search argument halves an initial index distance below 2**63;
+63 steps suffice under the stated exact-index assumptions, while retaining the
+proposed cap of 64 attempts per endpoint. The cell-only conditional upper ledger
+is 128 search attempts, 265 dyadic decodes, 134 midpoint constructions and
+135 rational comparisons including interval ordering. One unchanged enclosure
+entry is separate. These are upper-level call counts, not measured counters,
+constructor/instruction counts, RAM/timing bounds or a universal-return claim.
+The ledger requires each full-cell reconstruction to reuse its three decoded
+dyadics and each boundary/predicate test to reuse one guarded three-way rational
+comparison for strictness/equality/parity, not recompute the comparison products.
+Metadata, GCD, allocation, binding and publication work must be accounted
+separately. W0/TB0 and stable-binding/runtime correspondence remain open.
+
+A proposed candidate-local 65,536-bit ceiling guards unreduced shifts/products/
+sums/doubling/comparison cross-products before construction/GCD and canonical
+results afterward. It is not adopted; both old caps and implementations remain
+unchanged. Guard rejection may be conservative. Unexpected/allocation/
+interruption errors propagate; no universal rollback. Proposed publication
+uses fresh owned complete evidence, never old record mutation or a partly
+published word/certificate. Attempted-work metadata is not success evidence.
+
+CW0-CW9 cover direct binding/pure-cell claim, decoder/order, search invariants,
+parity/transition ties, whole interval/edges, zero/subnormal separation,
+guards/exhaustion, ownership/exceptions/work, independent cell expectations
+and preservation/non-adoption/trusted-base limits. Independent future controls
+must derive dyadics/midpoints/expected words from bit-field mathematics before
+candidate evaluation. Shared enclosure/native sine/self-comparison is not an
+independent oracle; mocked intervals test only cell mechanics. No proof or
+acceptance obligation is closed by this documentation.
+
+**Verification and limits.** First focused and expanded checks pass: 572
+reference uses/local targets, sections 1-121, fences/math, previous review/
+Sources/design contracts, stable workflow/history/source-gate/task-tail
+preservation, ten CW obligations, binding/search/guard/ledger/publication/
+call-limit/non-adoption/no-run clauses, exact three-document scope and unchanged
+source/test identities. Whitespace and editor diagnostics pass. Paper review
+identified overbroad sentinel and odd-tie wording: M is excluded only as a
+candidate, not as M-1's finite upper neighbor; an even neighbor can own a tie
+that the odd word cannot. Clarifications preserve the exact-cell rules and
+proposed limits. Final focused edge/diff/staged checks precede the local commit.
+The focused edge check failed because the old absolute "never decoded" sentence
+remained beside that clarification. Removed the stale sentence, not the check
+or finite-neighbor requirement. One repair patch included an unrelated invalid
+context and did not apply; the corrected local patch applied. The same focused
+edge check then passed with unchanged assertions. No word/fixture evaluation or
+target import occurred in any of these static checks.
+The code suite and source/fixture/native gates are not rerun: §116's 2,137
+passes plus known xfail and 71 warnings remain historical.
+§119 installed-path observations are not refreshed. Diagnostic/test blobs stay
+`593448a4140e658692e0dc0965dc72f1f94666ae` and
+`8715a92bd370464cbbcee563b0625b59d3c3608a`.
+
+No source/test/configuration/bound/allowance/flag/verdict change. All five flags
+stay false; native sinc/motion/goal/relative/source/work and consumer eligibility
+remain unresolved. `1bb89fe`, normal inputs/defaults, C/wire, old logs/reports
+and earlier failures are unchanged. No project import, fixture/numerical/native/
+model/GPU run, dependency/acquisition, data/labels/training, environment/hardware,
+owner/event/trace/query/reference/log adapter, consumer/integration, cleanup or
+background job. The only approved scope is exhausted on document verification
+and local commit; no push is authorized/performed.
+
+**Next proposed, not approved.** Private isolated prototype/tests in the existing
+diagnostics/test files: twelve reused q-literal positions, at most 24 word entries
+and 24 unchanged enclosure calls per complete focused invocation; sixteen
+independent pure-cell controls, at most 32 direct cell entries. Including nested
+word entries, at most 56 total cell entries. Approval must explicitly include
+these limits and normal source gates. No owner/event/trace/query/reference/log/
+native call or new scene. This would not adopt Route C or a proof/error/work
+allowance, integrate a consumer, or promote any qualification. All Task 6/9,
+numerical/physical/task-quality, teacher-asset and ST/board gates stay open;
+default remains isolation. No such implementation or fixture work occurs here.
+
+[sinc-cell-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

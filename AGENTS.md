@@ -118,23 +118,24 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only NF1 closure-route brief
-  (DESIGN.md §7 / REVIEW.md §120), native qualification versus a separate
-  partial mathematical RN64 candidate, whole-cell/parity and cap/reuse limits,
-  eight decision gates. Candidate design work is recommended, not adopted;
-  no route/replacement/error/work allowance or total completion is approved.
+- Latest approved package complete: design-only NF1 interval-to-word certificate
+  contract/work argument (DESIGN.md §7 / REVIEW.md §121), separate pure-cell and
+  q/enclosure claims, exact midpoint search/parity/edge checks, guarded paper
+  work ledger and ten acceptance obligations. Candidate/route/proof/error/work
+  allowance and total completion are not adopted.
   No target import/run, new inspection or source/test change; five flags stay false.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `9ba1bb8`; last source
+  and native-work remain unresolved. Baseline was clean at `b275c72`; last source
   gate remains §116, not rerun here; no environment/native/GPU/teacher requalification.
-  Next proposed, not approved: design-only Route C interval-to-word certificate
-  contract/work argument, not candidate adoption, implementation/call, fixtures,
-  native comparison, acquisition/extraction, integration or proof/allowance/
-  qualification promotion. Old 4,096/65,536-bit helpers stay unchanged;
+  Next proposed, not approved: isolated private prototype/tests, twelve reused q
+  positions / at most 24 word and enclosure entries, sixteen pure-cell controls /
+  at most 32 direct and 56 total cell entries per complete focused invocation.
+  No owner/event/trace/query/reference/log/native call, new scene, acquisition,
+  integration or proof/allowance/qualification promotion. Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-120 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-121 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1192,16 +1193,17 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §120 prepares
-the separately approved design-only closure-route brief: native qualification
-versus a partial mathematical RN64 candidate, whole-cell/parity rules, cap/reuse
-limits and eight gates. Recommendation for candidate design is not adoption.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §121 prepares
+the separately approved design-only interval-to-word certificate/work contract:
+separate interval/word claims, exact midpoint search/parity/edges, guarded paper
+ledger and ten obligations. Candidate/route/proof/allowance adoption stays absent.
 No target import/run, new inspection or source/test/bound/flag/verdict change;
 `1bb89fe` stays. Old 4,096/65,536-bit helpers remain unchanged.
 The last source gate remains §116's 2,137 plus known xfail, not rerun here.
-Next proposed, not approved: design-only Route C interval-to-word certificate
-contract/work argument, not candidate adoption, implementation/call, fixture/native
-comparison, acquisition, query/reference/log adapter, allowance/proof or promotion.
+Next proposed, not approved: bounded private prototype/tests, twelve reused q
+positions / 24 word and enclosure entries, sixteen pure-cell controls / 32 direct
+and 56 total cell entries per complete focused invocation. No owner/event/trace/
+query/reference/log/native call, new scene, acquisition, integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1448,6 +1450,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   eight decision gates. No route adoption, source/test edit, run or promotion.
   Next proposed, not approved: design-only interval-to-word certificate/work
   contract, not implementation, fixtures, acquisition, execution or integration.
+  NF1 cell contract (REVIEW.md §121): separately approved design-only preparation
+  complete; exact-cell search/verification, separate claims, guarded work ledger,
+  ten obligations and bounded prototype proposal. No code, fixtures, native run,
+  proof/allowance adoption or qualification. Next proposed, not approved: private
+  prototype/tests under 24 word/24 enclosure/32 direct-cell/56 total-cell limits
+  per complete focused invocation, not owners/adapters/integration or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

@@ -7925,6 +7925,100 @@ precede the local commit; no push or history rewrite is authorized.
 
 [native-gap-plan-design]: DESIGN.md
 
+## 115. NF1 Rational Sinc Contract and Feasibility (2026-11-04)
+
+The user explicitly approved §114's offered design-only NF1 rational sinc
+enclosure contract and feasibility argument, asking to continue autonomously
+and commit locally. Clean baseline: `020d926`. This is not permission to
+implement, import the project, execute numerical/fixture/native/model work,
+extract an external implementation, acquire dependencies/assets, adapt runtime
+or change flags/verdicts/allowances. Only DESIGN/REVIEW and the existing AGENTS
+handoff change; no background job, artifact or cleanup is created.
+
+**Local hypothesis and first check.** The stored q word, rather than the ideal
+turn/time argument, defines the independent normalized-sinc target. An even-power
+interval avoids dividing by tiny q and can handle both zero words explicitly.
+The nearby old rational motion reference already contains Machin arctangent
+bounds, but its helpers are nested: reusing them directly would require changing
+old ASTs or supplying a fabricated motion record. First edit specified the
+private word boundary, real-pi bracket, parity-correct series remainder, proposed
+work limits and isolation. Its immediate static check passed for SC0-SC7 content,
+the nested reuse boundary and unchanged source/test blob identities. It did not
+execute a numerical check or establish mathematical/program correctness.
+
+**Prepared candidate.** [DESIGN.md §7][sinc-contract-design] specifies exact
+finite builtin u64 ingress with literal synthetic opt-in, a proposed local
+`abs(q) <= 1/64` domain and target `sin(real_pi*q)/(real_pi*q)` with exact
+mathematical value one for both zero words. Word/sign metadata is retained;
+installed `np.sinc` zero/tiny substitution behavior is not thereby qualified.
+Conditional monotonic-RN64 domain closure uses the declared turn bound and
+exact duration/period words, not producer execution or a new source claim.
+
+For nonzero q, independent Machin brackets give real pi and hence an interval
+for `(pi*q)**2`. Horner interval evaluation of the entire even series uses
+all four endpoint products. Decreasing absolute terms give the signed next-term
+remainder: nonnegative for an even included-term count and nonpositive for odd.
+The first omitted factorial is `(2*N+1)!`; the one-term sentinel is explicitly
+separate from any caller-selected runtime configuration. No guessed ulp,
+same-library replay, floating oracle, interval division by tiny q or replacement
+of stored q with an ideal argument is permitted.
+
+Candidate defaults are 32 arctangent terms, eight sinc terms and 65,536 bits
+per rational numerator/denominator including intermediates, with conservative
+pre-operation and post-canonical guards and no automatic refinement. These
+are proposed limits, not approved new allowances or changes to the existing
+4,096-bit arithmetic/auditor or old rational reference. A conditional paper
+bit-growth argument exhibits headroom for dyadic denominators at most `2**128`;
+common-denominator structure also bounds final canonical endpoints/comparisons.
+The symbolic width bound separates pi uncertainty from the analytic tail.
+Neither argument is an executed/proof-checked result, a universal successful
+completion claim or a native time/live-RAM/GCD/build/FP qualification. Smaller
+arguments may stop on work; they must never be silently converted to zero.
+
+Recommend a separate private local decoder/Machin/interval boundary, not a
+refactor, owner/reference adapter or reuse of producer arithmetic as an oracle.
+Proposed results expose exact canonical-pair intervals/stages and unresolved
+stops, with no partial enclosure after a supported rejection and no mutation.
+Unexpected failures/interruption/allocation errors propagate; no universal
+rollback claim. All five qualification flags stay false. SC5-SC7 define future
+independent controls, work/nonmutation checks and evidence separation, not
+executed tests. Mathematical enclosure alone does not bound installed sinc or
+finish NF1 native accuracy, NF2-NF7, motion/source authority or Task 6/9.
+
+**Exit and next permission.** This approved design preparation is complete.
+Next proposed, **not approved**: isolated private helper/tests in the existing
+diagnostic/test modules, explicitly accepting/revising the proposed 32/8-term,
+65,536-bit configuration, at most twelve existing trace-sheet word-case positions
+and 24 helper attempts including rejection per complete invocation. Read q from
+stored word index four without recomputing the trace; reuse existing word/type/
+work fault patterns within those caps. Focused/default gates would reuse the
+same positions, with existing suite controls separate. No new corpus, owner
+construction/advance/capture, trace generation, native comparison, scene/episode,
+question/reference/log adapter, dependency/acquisition, data/runtime/wire adoption
+or promotion. Isolation remains default. Native/work/numerical/physical/task-quality,
+teacher assets and ST/board gates remain open.
+
+**Verification.** First scoped contract check and subsequent feasibility/literal
+shape check passed. The latter parsed twelve existing eleven-word sheets without
+decoding a word or evaluating any polynomial. The expanded document validator
+first failed because its generic `§115` self-citation matcher did not recognize
+the existing numbered `## 115.` heading format. Correcting only that matcher
+made the same check pass; no substantive requirement or document was altered
+to obtain the pass. It verified 559 reference uses/local targets, sections
+1-115, fences/math blocks, prior review/Sources/design contracts, stable workflow/
+history/last source-gate/task-tail preservation and three-document scope. Editor
+diagnostics pass. The final addition gives the Machin identity's explicit
+rational tangent/quadrant justification; scoped content/whitespace/staged checks
+precede commit. These text checks are not mathematical proof checking.
+Source/test blobs remain `c016c18fabde3262df852c04f3a277c477f50816` and
+`f9c34a99e4b10ab5f2277a7e0087356b21cb44bd`; no source/test/default/bound/verdict/
+flag or historical artifact change. The code suite was not rerun: §113's 2,125
+passes plus known xfail and 71 warnings remain historical, not post-reboot
+arithmetic evidence. Interpreter/native/GPU/removed-teacher-asset availability
+has not been freshly qualified. Scoped staging/local commit only, no push.
+
+[sinc-contract-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

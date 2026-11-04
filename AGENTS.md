@@ -118,20 +118,22 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only native arithmetic gap/exit plan
-  (DESIGN.md §7 / REVIEW.md §114), eight NF0-NF7 consumer rows, four distinct
-  evidence claims and six paper exit checks. No source/test change or numerical/
-  fixture run; §113's private auditor stays isolated, with all five flags false.
+- Latest approved package complete: design-only NF1 rational sinc contract and
+  feasibility argument (DESIGN.md §7 / REVIEW.md §115), with exact stored-word
+  target, both zeros, Machin/series intervals and conditional domain/work/width
+  derivations. No source/test change, import or numerical/fixture run; §113's
+  private auditor stays isolated, with all five flags false.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Reboot baseline was clean at `a997e17`;
+  and native-work remain unresolved. This baseline was clean at `020d926`;
   interpreter/native/GPU/teacher-asset availability is not freshly qualified.
-  Next proposed, not approved: design-only NF1 rational sinc enclosure contract
-  and feasibility argument, not implementation, extraction, fixtures, adapter,
-  runtime/wire adoption or promotion. Isolation remains the default; no new
-  term count, precision/work allowance, dependency/acquisition or hardware run.
+  Next proposed, not approved: isolated private helper/tests, explicitly accepting
+  or revising proposed 32/8-term, 65,536-bit limits and twelve reused word-case
+  positions/24 helper attempts per invocation. No owner/trace generation, native
+  comparison, new corpus, adapter, runtime/wire adoption or promotion follows.
+  Isolation remains default; no new work allowance/dependency/acquisition/hardware run.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-114 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-115 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1189,14 +1191,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §114 prepares
-the separately approved design-only native gap/exit plan: eight NF0-NF7 rows,
-four claim levels and six paper checks, not executed numerical gates. Source/
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §115 prepares
+the separately approved design-only NF1 rational sinc contract/feasibility:
+stored-word/zero target, real-pi/even-series bounds and conditional domain/work/
+width derivations, not accepted proof or native accuracy. Source/
 tests/defaults/bounds/flags/verdicts and `1bb89fe` remain unchanged; §113's 2,125
 plus known xfail is historical, not rerun after reboot. Isolation stays default.
-Next proposed, not approved: design-only NF1 rational sinc enclosure contract/
-feasibility argument; no new term/work allowance, extraction, fixture run,
-implementation, query/reference/log adapter, data/runtime/wire adoption or promotion.
+Next proposed, not approved: isolated private helper/tests with proposed 32/8
+terms, 65,536-bit cap and twelve reused word-case positions/24 helper attempts.
+No new work allowance, implementation, extraction, fixture run, owner/trace/native
+comparison, query/reference/log adapter, data/runtime/wire adoption or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1407,6 +1411,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   Next proposed, not approved: design-only NF1 rational sinc enclosure contract
   and feasibility argument; native motion/transforms/work/source authority and
   task gates remain unresolved, with isolation retained.
+  NF1 contract (REVIEW.md §115): separately approved design-only preparation
+  complete; stored-word target, both zeros, independent real-pi/even-series
+  bounds and conditional domain/work/width argument. No code/import/fixture run
+  or proof/allowance/flag/verdict promotion. Next proposed, not approved: private
+  helper/tests with proposed 32/8 terms, 65,536-bit cap and twelve reused literal
+  positions/24 attempts; native/work/source/task gates stay open, isolation default.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

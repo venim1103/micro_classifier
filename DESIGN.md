@@ -4994,6 +4994,212 @@ numerical gates or an accepted proof:
 
 [native-gap-plan-review]: REVIEW.md
 
+#### Proposed NF1 Rational Sinc Enclosure Contract (2026-11-04)
+
+The user approved this design-only NF1 contract/feasibility preparation after
+§114 ([review §115][sinc-contract-review]). Nothing below implements a helper,
+accepts a proof/error allowance or renews any fixture execution scope. The
+recommended boundary is a separate private word-only mathematical reference;
+the producer, old rational reference and independent auditor remain unchanged.
+
+**Target and input boundary (SC0).** Given an exact finite binary64 word,
+decode its signed rational value $q$ by integer significand/exponent arithmetic.
+Require a builtin nonboolean unsigned 64-bit integer and literal synthetic
+opt-in, not a coerced float/NumPy scalar, array, trace, owner or log record.
+The proposed local domain is $|q|\le 1/64$, checked exactly on that input; this
+is not a new global producer/sensor restriction or an assertion that every
+future P3 result belongs to it. Missing domain closure stays unresolved.
+
+Conditional paper closure uses the declared $|\mathrm{turn}|\le3/2$ and exact
+duration word $0<d<1/16$. Monotonic RN64 and representability of $3/32$ give
+$|a|=|\operatorname{RN64}(\mathrm{turn}\,d)|\le3/32$.
+The positive pi word exceeds three and its doubling is exactly representable,
+so the separately rounded P3 period $b_q$ exceeds six. Therefore
+$|a/b_q|\le1/64$; monotonic RN64 and representability of $1/64$ close the
+stored-word domain too. This is conditional on the trace's rounding/domain
+obligations, not new source authority, installed-wrapper evidence or approval
+to run traces. The helper must still check its submitted word independently.
+
+The target is the real-pi normalized function at this **stored** argument:
+
+$$
+F(q)=\begin{cases}1,&q=0,\\
+\sin(\pi q)/(\pi q),&q\ne0.\end{cases}
+$$
+
+Both zero words retain their original word/sign metadata and have the exact
+mathematical enclosure $[1,1]$; no pi construction or division is necessary.
+This does not say installed `np.sinc` returns exactly one on either word: its
+wrapper's tiny substitution and native arithmetic remain NF1 implementation
+gaps. For nonzero input, do not replace $q$ by the ideal unrounded P3 argument,
+cancel its rounded period against wrapper pi, or divide an interval by $q$.
+P3 argument error versus the ideal trajectory is a separate later composition.
+
+**Independent real-pi enclosure (SC1).** A new local rational construction may
+reuse the mathematical identity of `1bb89fe`, not its owner-shaped interface
+or a successful old result. For $d\in\{5,239\}$ define
+
+$$
+A_m(d)=\sum_{k=0}^{m-1}\frac{(-1)^k}{(2k+1)d^{2k+1}},\qquad
+e_m(d)=\frac{1}{(2m+1)d^{2m+1}}.
+$$
+
+The alternating arctangent series gives $[A_m,A_m+e_m]$ for even $m$ and
+$[A_m-e_m,A_m]$ for odd $m$. Let these intervals be $[a_d,b_d]$. Machin's
+identity, with its quadrant justified independently as in the earlier paper
+reference, gives
+
+$$
+\pi\in[p_L,p_U]=[16a_5-4b_{239},\;16b_5-4a_{239}].
+$$
+
+For the identity's branch, set $\alpha=\arctan(1/5)$ and
+$\beta=\arctan(1/239)$. Exact tangent addition gives
+$\tan(2\alpha)=5/12$, $\tan(4\alpha)=120/119$ and
+$\tan(4\alpha-\beta)=1$. Since $0<\beta<\alpha<1/5$ and
+$3<\pi$, the angle satisfies $0<4\alpha-\beta<4/5<\pi/2$.
+It is therefore $\pi/4$, not another tangent branch; no floating phase or
+installed atan2 selects the identity.
+
+Require ordered rational endpoints and the exact bracket $3<p_L\le p_U<4$;
+unsupported construction/bracket/work stops unresolved, never substitutes
+binary64 `math.pi`. Shared standard-library integer/Fraction/GCD behavior
+remains an unqualified trusted base, not independent native/build proof.
+
+**Even-power interval and remainder (SC2).** With nonzero exact $q$, form
+$T=[q^2p_L^2,q^2p_U^2]$. SC0/SC1 give
+$0\le T_L\le T_U\le1/256$. Evaluate
+
+$$
+f(t)=\sum_{k=0}^{\infty}\frac{(-1)^k t^k}{(2k+1)!},\qquad F(q)=f((\pi q)^2).
+$$
+
+For $0\le t\le1/256$, consecutive absolute terms have ratio
+$t/((2k+2)(2k+3))\le1/1536<1$, hence decrease to zero. For $N\ge1$
+included terms, $P_N(t)=\sum_{k=0}^{N-1}(-1)^kt^k/(2k+1)!$ and the uniform
+next-term magnitude is $U_N=T_U^N/(2N+1)!$. The remainder interval is
+$E_N=[0,U_N]$ for even $N$ and $E_N=[-U_N,0]$ for odd $N$. Count included
+terms, not polynomial degree; the first omitted factorial is $(2N+1)!$.
+
+Compute a rational interval $H_N\supseteq\{P_N(t):t\in T\}$ by Horner
+evaluation with exact coefficients and interval operations: each multiplication
+uses the minimum/maximum of all four endpoint products. Repeated occurrences
+of $T$ are correlated in the target; ordinary interval evaluation may overbound
+them but must not assume independence, endpoint monotonicity or shrink the hull.
+Return $H_N+E_N$ as the exact rational enclosure. The $N=1$ paper sentinel is
+$[1-T_U/6,1]$. Evenness gives identical enclosures for $q$ and $-q$ without
+changing either original word. No native sine, sinc, pi, float division or
+floating endpoint conversion is a mathematical oracle.
+
+**Proposed finite-work configuration (SC3).** Candidate defaults are 32 terms
+per arctangent, eight included sinc terms and 65,536 bits per rational numerator/
+denominator, including intermediates. These are proposed private host-reference
+limits, not an accepted new budget or a change to the old 4,096-bit arithmetic/
+audit cap or the old motion-reference limits. In this configuration the sinc
+polynomial ends at degree seven in $t$, and its remainder is $[0,T_U^8/17!]$.
+There is no outcome-driven refinement, extra precision, term escalation or
+fallback to native arithmetic.
+
+Preflight integer/word types and operand sizes before shifts, products, sums,
+denominator inversion or coefficient/power construction; validate canonical
+positive-denominator pairs. Use guarded incremental products, not unchecked
+large powers/factorials followed only by a final-size test. Every rational
+operation checks conservative numerator/denominator growth before the operation
+and canonical result size afterward. All coefficient degrees and loop bounds
+are fixed before arithmetic. Input objects already allocated by the caller,
+GCD internals, allocator cost, elapsed time/live RAM and W0/TB0 are not bounded
+by this preflight. A finite input in SC0's domain may still stop on work; no
+all-domain successful-completion or measured-resource claim is proposed.
+
+There is a concrete nonzero paper feasibility subdomain, without claiming
+runtime qualification: let the decoded dyadic denominator $Q\le2^{128}$.
+For the fixed Machin construction, the common-denominator witnesses
+$D_d=d^{65}\prod_{k=0}^{32}(2k+1)$ enclose every partial sum and next term.
+Using $5<2^3$, $239<2^8$ and $2k+1<2^7$ gives
+$D_5<2^{426}$, $D_{239}<2^{751}$ and $M=D_5D_{239}<2^{1177}$.
+Both pi endpoints' canonical denominators divide $M$. Both squared-argument
+denominators divide $D=(QM)^2<2^{2610}$; use 2,700 bits as a coarse bound.
+Horner's endpoint denominators divide $D^7\,15!$, while the tail and final
+sum endpoints divide $D^8\,17!$. Even looser per-operation accounting gives
+at most $7(2700)+8(60)=19380$ denominator bits before the final sum and
+$8(2700)+85=21685$ for the tail, using $15!<2^{60}$ and $17!<2^{85}$.
+Thus guarded final cross-products/sums need fewer than 42,000 bits before
+canonicalization. The shared denominator tightens canonical final endpoints
+back below 21,700 bits; ordered-endpoint comparison products stay below 44,000.
+Nested Horner intervals have absolute endpoints below two, so numerator/carry
+headroom fits these rounded-up bounds too. Incremental Machin/coefficient
+construction is smaller. This argues headroom below SC3's proposed cap for
+this subdomain under exact canonical arithmetic, not an accepted work proof
+for an unwritten program, integer/GCD internals or all binary64 denominators.
+
+Width also has a paper bound, not a native error allowance. Let
+$\delta p=p_U-p_L=16e_{32}(5)+4e_{32}(239)$ and
+$\Delta T=T_U-T_L\le8q^2\delta p\le\delta p/512$.
+The Horner width recurrence satisfies $w_{j+1}\le2\Delta T+T_Uw_j$,
+starting at zero; all nested magnitudes are below two. Hence the final width is at most
+$3\Delta T+U_8\le3\delta p/512+2^{-64}/17!$.
+No decimal residual/accuracy measurement or tuned stopping target is inferred.
+
+**Boundary, reuse and failure result (SC4).** Suggested name:
+`_enclose_synthetic_sinc_word(q_word, *, synthetic_test_only=False)`, not an
+implemented or adopted API. Reusing the whole old motion helper would require
+fabricated motion records and conflate scopes. Extracting its nested helpers
+would change old ASTs. Recommended: a separate small bounded local decoder,
+Machin construction and interval kernel, reusing standard-library exact
+rationals and existing literal-test conventions rather than producer helpers.
+This deliberately shares the integer trusted base, not a producer-call oracle.
+Do not refactor, invoke or strip tags into the old reference/auditor/owner.
+
+Proposed results carry original word, exact decoded ratio/sign, target/domain,
+zero-versus-series branch, candidate configuration, exact interval endpoints
+and reason/counts. Successful nonzero results also expose pi, squared-argument,
+polynomial and signed remainder intervals for independent checking. Mathematical
+status is enclosed or unresolved, never a motion/source/wire verdict; all five
+training/real-input/free-space/numerical-certification/producer-parity flags stay
+false. Zero may omit unused interval stages explicitly. On supported input/work
+failure, publish no partial enclosure. Literal-opt-in failure raises; allocation,
+interruption or unexpected failures propagate rather than claiming universal
+abstention/rollback. There is no retained mutable state or input mutation.
+Use canonical positive-denominator integer pairs for exact result intervals;
+do not make binary64 display endpoints, JSON, files or persistence part of this
+private boundary. The $N=1$ sentinel and odd-count signs are paper/kernel
+controls, not permission for caller-selected configurations or extra helper runs.
+
+**Acceptance and feasibility (SC5-SC7).** These are future discriminating
+requirements, not executed tests or an accepted mathematical derivation:
+
+| Check | Proposed Requirement / Stop |
+| --- | --- |
+| SC5: independent controls | Pin both zero words, finite-word decoding/domain/type rejection, evenness, Machin endpoint signs, exact factorial coefficients and the $N=1$ sentinel. Check interval multiplication/series-tail parity independently, not by calling the producer or another invocation of the same reference as its oracle. |
+| SC6: work and nonmutation | Pin fixed loop/configuration values, pre-operation and post-canonical growth stops, explicit unresolved results with no partial interval, strict opt-in and unchanged inputs/old module ASTs. Subnormal/tiny words cannot silently become zero; work rejection is allowed, native substitution is not. |
+| SC7: evidence separation | Separate sampled mathematical enclosure checks from universal proof and installed-wrapper error. A native output outside the bare mathematical interval is not a qualified implementation fault without justified implementation error; an overlap is not qualification. No motion/goal/relative/source/codec/owner adapter, allowance or runtime consumer. |
+
+The construction is feasible on paper without division by a small input or an
+external arbitrary-precision dependency: fixed finite rational polynomials,
+positive-domain alternating tails and conservative interval propagation suffice
+under the stated mathematical/trusted-base assumptions. Width and successful
+completion within SC3 remain unmeasured; conservative hulls/work stops may be
+unhelpful and are not permission to increase budgets. This is a prerequisite
+reference, not closure of NF1's installed-primitive accuracy or NF2-NF7.
+
+**Next proposed, not approved:** an isolated private prototype/tests in the
+existing diagnostic/test modules, preserving every old AST/API/bound/flag/verdict.
+Suggested cap: twelve reused literal word-case positions and at most 24 helper
+attempts including rejections per complete invocation, with no owner construction,
+advance, capture, producer trace call or question/reference/log adapter. Reuse
+the twelve existing trace sheets' stored word at index four without recomputing
+the trace, plus existing input-word/type/work fault patterns within those same
+case positions and attempt cap. Repeated focused/default gates reuse these
+positions; old suite controls remain separate and must not be presented as new
+NF1 fixtures. These caps are proposed, not executed or approved. No new primitive
+corpus, scene, episode, data, native comparison, dependency/acquisition, integration,
+precision escalation or qualification promotion. A later approval must explicitly
+accept or revise SC3's proposed configuration and these case/attempt caps before
+any import, prototype or numerical fixture execution. Current design-only work
+authorizes none of them; isolation remains the default.
+
+[sinc-contract-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7005,7 +7211,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §114): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §115): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7138,10 +7344,14 @@ authority/native motion/goal/relative transforms remain unresolved. All old
 module ASTs/defaults/flags/verdicts stay unchanged. The separately approved
 design-only native gap/exit plan is prepared (§114): eight NF0-NF7 consumer rows,
 four distinct evidence claims and six paper exit checks, not numerical/native
-qualification. Next proposed, not approved: design-only NF1 rational sinc
-enclosure contract and feasibility argument; no extraction, fixture run,
-implementation, adapter, integration or promotion follows. All broader gates
-remain unchanged.
+qualification. The separately approved design-only NF1 sinc contract and paper
+feasibility argument are prepared (§115): exact stored-word target, signed zero,
+real-pi Machin brackets, even-series remainder, conditional domain/work/width
+derivations and isolated boundary. Proposed 32/8 terms, 65,536-bit cap and twelve
+literal positions/24 helper attempts are not approved implementation/run budgets.
+Next proposed, not approved: isolated private prototype/tests under those limits;
+no extraction, fixture run, adapter, integration or promotion follows from this
+design. All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

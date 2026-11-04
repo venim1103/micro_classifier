@@ -5623,6 +5623,138 @@ gates remain open; unused inspection budget is not renewed permission.
 
 [sinc-path-review]: REVIEW.md
 
+#### NF1 Closure-Route Decision Brief (2026-11-04)
+
+The user separately approved §119's design-only comparison;
+[review §120][sinc-route-review] records its preparation and verification.
+This compares attainable claims, not adopted implementations or qualifications.
+No installed-source inspection, target import, numerical/fixture/native run,
+acquisition, dependency, code/test change or consumer integration occurs.
+
+**Recommendation for review, not adoption.** Keep every existing path isolated
+and every qualification flag false. Prefer a separate controlled-candidate
+design contract as the next bounded preparation, rather than presume that more
+identity inspection or sampled native agreement will close a uniform error
+claim. Continue native qualification only with a separately approved route to
+the missing implementation/build/FP/error evidence. Neither route currently
+qualifies NF1, source authority, native work, full motion or Task 6/9.
+
+| Decision Aspect | Route N: Qualify Existing Native Sinc | Route C: Separate Controlled Mathematical Candidate |
+| --- | --- | --- |
+| Local claim | Bound the identified wrapper's exact stored output O against real-pi F(q) at the same authenticated stored q. | Produce a finite binary64 word RN64(F(q)) only when a conditional exact enclosure certifies that one rounding cell. This is a new program/claim, not native parity. |
+| Preserved behavior | Keeps asanyarray/selection, stored-pi product, sine/division, tiny substitution, output/promotion and selected native order. | Keeps the mathematical stored-word target, domain and input sign identity; deliberately does not implement the wrapper's stored-pi/tiny program or inferred dtype behavior. |
+| Evidence needed | Close NB0-NB8: loaded-path/build correspondence, actual FP contract, reachable branches and uniform primitive errors, plus independent reference/composition evidence. | Close the enclosure and integer cell-checker's correctness/trusted-base/work obligations, domain/word binding and partial-return semantics. No installed sine claim follows. |
+| Availability/cost | Matching sources/builds and uniform contracts are not supplied by §119. Obtaining/reviewing them or running path/FP checks needs a new exact scope; availability and effort are unmeasured. | Existing private enclosure can be a producer dependency, not an independent proof/oracle. A separately bounded integer rounding-cell component and its own checks are still absent. Time/RAM/completion are unmeasured. |
+| Compatibility | Supported local error would concern that exact version/path/domain, not arbitrary future environments or the whole trajectory. | Output words, output representation and supported/unresolved cases may differ from native behavior. No relabeling of old records, transparent replacement or wire/runtime adoption. |
+| Remaining costs | Reference/trusted-base/source authority and NF2-NF7 still need their own evidence even if local sine is qualified. | Integer/Fraction/GCD/allocation and publication evidence remain; native products/trig/motion/goal/relative paths outside this local candidate stay unqualified. No embedded-port or firmware-fit claim. |
+
+Deferring both routes is the current operational default, not a third heuristic
+or a permission to collect data. Route C's proposed preference is for isolated
+design work, not permission to change what an existing owner computes.
+
+**Concrete candidate for discussion.** Proposed identity:
+`controlled_mathematical_sinc_rn64_candidate_v0`, host-only and private. Input
+would be a literal synthetic opt-in and one exact builtin nonboolean u64 q word;
+the target remains F(0)=1 and otherwise sin(pi q)/(pi q), $|q|\le1/64$.
+The proposed finite success value is RN64(F(q)), round-to-nearest/ties-to-even,
+not an endpoint approximation, native output, confidence or error allowance.
+No API/schema/identity is adopted here.
+
+1. Validate word/type/finite/domain evidence without coercing an unsupported
+  input; retain both input zero signs. Missing authenticity remains a separate
+  source obligation even when a supplied word is well formed.
+2. Obtain the existing private 32/8-term mathematical enclosure under its
+  unchanged 65,536-bit limit and SR0-SR9 assumptions. Treat unresolved work/
+  domain or unexpected exceptions according to their existing semantics;
+  do not extend terms/precision, replace a tiny nonzero q or use native fallback.
+3. For either zero word, the mathematical target permits the unit output word
+  `0x3ff0000000000000`, retaining the original q word/sign as metadata. This
+  does not establish that the unmeasured native wrapper returns that word.
+4. For nonzero q, require an ordered finite positive rational interval R. A
+  proposed integer-only search would locate endpoint rounding cells in the
+  ordered positive binary64 lattice, with at most 64 bisection iterations per
+  endpoint. No rational-to-float coercion or unproved endpoint clipping.
+5. Accept a proposed finite word w only if the entire closed R lies in its
+  exact ties-to-even cell. Endpoint words agreeing is sufficient only after
+  the endpoint map and its monotonicity are justified; retain the cell witness
+  and recheck whole-interval containment rather than trust a guessed word.
+6. If endpoints map differently, a boundary/tie is unresolved, a required
+  neighbor is unsupported or any preflight fails, return unresolved with no
+  candidate word. No nearest-endpoint choice, precision retry, cap increase,
+  silent fallback or partially published result. Exceptions are not universal
+  rollback; partial function support does not mean partial output publication.
+7. Keep fresh candidate-local identity/input/interval/cell evidence separate
+  from owner/auditor records. Every qualification flag remains false; native
+  compatibility, source/motion/work and consumer eligibility stay unresolved.
+  Nothing is persisted/exported or consumed by existing code.
+
+**Cell and work boundary.** For a positive finite interior word w with two
+supported finite neighbors, let their exact values be $v_-,v,v_+$ and
+$m_-=(v_-+v)/2$, $m_+=(v+v_+)/2$. Its cell has those midpoint boundaries;
+each boundary belongs to w exactly when w's significand is even. For odd w,
+both boundaries are open. Consequently, with $R=[l,u]$, equality at either
+boundary is allowed only for even w; strict containment works for both parities.
+This covers unequal neighbor spacing at an exponent transition, rather than
+assuming one symmetric ulp width. Unsupported lattice edge/overflow cases stop.
+The mathematical target is positive near one on the declared domain; this
+does not authorize clipping an enclosure to a guessed range or skipping checks.
+
+The proposed search bound is a logical limit, not a verified implementation,
+instruction count or elapsed-time/RAM guarantee. Constructing exact dyadic
+neighbors/midpoints and comparing them with R requires its own pre-operation
+and post-result guards. Even if each midpoint is small, cross-products with
+large enclosure numerators/denominators can exceed a cap. Such a case must
+remain unresolved; successful enclosure construction is not successful rounding.
+The existing `_synthetic_rn64` has a 4,096-bit ceiling, not the enclosure's
+65,536-bit one. Do not feed arbitrary enclosure endpoints through it, raise
+its global limit or refactor it under the guise of reuse. A proposed separate
+cell component could use a candidate-local ceiling no greater than 65,536 bits,
+subject to its own contract/review. This is not a newly adopted work budget or
+an all-binary64 completion guarantee. W0/TB0 and stable-binding assumptions stay.
+
+Sharing the existing enclosure/Fraction stack does not create an independent
+reference for this candidate. Future checks would need independently derived
+literal cell boundaries/expected words and reviewed mathematical inclusion,
+not self-comparison or a call to the same native sine. No such check runs here.
+
+**Compatibility and composition stops.** Route N's conditional error bound
+and Route C's proposed rounded mathematical word are different claims. An
+enclosure width, candidate rounding cell or finite parity sample cannot be
+reinterpreted as a uniform bound for the old wrapper. No native pi/tiny branch
+is canceled algebraically or declared exact. Subnormal nonzero q remains a
+nonzero exact input even when a proved rounded mathematical result could be one.
+At no point does a candidate word authenticate its P3 source or bind a current
+event. A different local sinc program would need a separate consumer identity,
+once-only P3-argument composition and a reviewed NF2 motion recurrence before
+any later integration. Goals, relative transforms, wire and old artifacts keep
+their existing meanings; the current owner/reference/auditor remain unchanged.
+
+**Decision and acceptance gates.** DR0 fixes which claim is sought and whether
+partial success is acceptable; no total-function guarantee is presumed. DR1
+requires exact source/input/target/version identity and independent evidence
+classification. DR2 requires the route-specific proof: NB0-NB8 for N, or
+enclosure/cell/zero/tie/monotonicity obligations for C. DR3 closes branch/domain
+coverage and explicit rejection/exception semantics, without a new tiny cutoff.
+DR4 establishes the selected work/guard contract and separately scoped resource
+evidence; finite loops and counters alone do not close it. DR5 requires focused
+independent fixture controls and applicable source gates in a separately approved
+implementation scope. DR6 reviews compatibility, invalidation and once-only
+composition without changing old consumers. DR7 requires explicit proof/error/
+adoption/integration approval; a design choice or passing prototype does not
+promote any flag, native claim, physical clearance or task-quality result.
+
+**Next proposed, not approved:** design-only Route C interval-to-word
+certificate contract and conditional work argument. Specify the exact cell
+search/verification boundary, finite-neighbor/tie and ambiguity cases, candidate
+local preflight/call limits, publication semantics, independent acceptance
+controls and old-helper nonmutation. This would not adopt Route C or its
+numeric/work limits, implement/call it, acquire sources, run native/fixture
+comparisons, integrate a consumer or approve any proof/allowance. This decision
+brief's design-only scope is exhausted on documentation verification/commit;
+isolation remains the default and all broader gates remain open.
+
+[sinc-route-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7634,7 +7766,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §119): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §120): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7788,9 +7920,14 @@ five-row installed-path dossier is complete (§119), with a conservative 35,758
 inspected text bytes within the 65,536-byte cap. File identities/source routes
 are refreshed only as stated; selected loops/IFUNC, full build/FP contract and
 uniform errors remain unqualified. No target import, native comparison, source/
-test or verdict change. Next proposed, not approved: design-only NF1 closure-route
-decision brief, not replacement adoption, acquisition, implementation, target
-execution, adapter/integration or promotion. All broader gates stay unchanged.
+test or verdict change. The separately approved design-only closure-route brief
+is prepared (§120): native-error qualification versus a separate partial
+mathematical RN64 candidate, with whole-cell/parity rules, cap/reuse limits and
+eight decision gates. Recommend candidate design work only; neither route,
+replacement, error/work allowance nor total completion is adopted. Next proposed,
+not approved: design-only interval-to-word certificate contract and work argument,
+not code, fixtures, acquisition, execution, adapter/integration or promotion.
+All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

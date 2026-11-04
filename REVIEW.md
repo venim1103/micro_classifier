@@ -8480,6 +8480,111 @@ All current bounded scope is exhausted; no further installed inspection follows.
 
 [sinc-path-design]: DESIGN.md
 
+## 120. NF1 Closure-Route Decision Brief (2026-11-04)
+
+The user explicitly approved §119's design-only comparison of native
+qualification versus a controlled sinc candidate, requesting autonomous work
+and local commits. Actual baseline is clean `9ba1bb8`. This scope prepares a
+decision brief, not route adoption, implementation, execution, new installed
+inspection, acquisition or a numerical/error/work allowance. No unused §119
+inspection budget or older fixture/run permission is renewed.
+
+**Local hypothesis and discriminating check.** A separate mathematical
+word-to-word candidate could remove the local dependency on native sinc only
+by changing the claimed program; it cannot qualify the old wrapper. The
+nearby §116/§117/§119 records identify the existing enclosure and native gaps.
+The owning controlled-arithmetic contract also states a 4,096-bit RN64 cap,
+versus the enclosure's 65,536-bit limit. Direct endpoint-rounder reuse is not
+justified merely because both use Fraction. The first edit drafted the route
+matrix, partial candidate, exact-cell rule, cap boundary and eight DR0-DR7
+gates; the next action was a focused static content/hash/scope check.
+
+**Prepared recommendation.** [DESIGN.md §7][sinc-route-design] recommends
+retaining isolation now, and preferring a separate candidate-design contract
+as the next preparation. This is not a decision to replace an owner stage.
+Route N would qualify the existing wrapper at the same authenticated stored
+q, requiring NB0-NB8's exact path/build/FP/domain/uniform-error evidence.
+Identity files, sampled agreement or known-test maxima do not supply it;
+source availability, evidence effort and runtime resources remain unmeasured.
+
+Route C proposes a private host-only
+`controlled_mathematical_sinc_rn64_candidate_v0`: RN64(F(q)) at that same
+finite stored q, with the old domain and both input zero signs retained.
+Its 32/8-term rational enclosure is an existing producer dependency, not an
+independent oracle. Both mathematical zero targets permit the unit word;
+this predicts no unmeasured native result. For nonzero q, a separately bounded
+integer-only endpoint search would propose a word only when a final exact
+cell witness contains the entire rational enclosure. The proposed search
+limit is 64 bisection iterations per endpoint, not a measured resource bound
+or an all-domain completion guarantee.
+
+Cell boundaries are exact adjacent-value midpoints. Both ties belong to an
+even significand; neither belongs to an odd one. Unequal neighbor spacing
+at an exponent transition is retained. Differing endpoint words, unsupported
+neighbors/overflow, ambiguity or arithmetic preflight failure stay unresolved
+with no output word. No endpoint float coercion, clipping, nearest-point fit,
+precision retry, native fallback or silent cap increase is proposed.
+
+The old 4,096-bit rounder cannot simply accept arbitrary 65,536-bit enclosure
+fractions. A future separate cell component would need a candidate-local
+preflight contract, proposed no greater than the enclosure ceiling; cross-product
+growth can still reject even small midpoints. Neither that limit nor a helper
+refactor is adopted. Integer/Fraction/GCD/allocation, stable bindings, publication
+and W0/TB0 obligations remain. No timing, memory-fit or success-rate estimate
+is inferred, and this Python mathematical candidate is not embedded firmware.
+
+The route matrix covers claim, behavior, evidence, cost, compatibility and
+remaining dependencies. Candidate words/representation/support can differ from
+NumPy; old records cannot be retagged or reinterpreted as native parity/error
+evidence. Source authentication, P3 argument composition and NF2-NF7 retain
+their own obligations. The proposed candidate would not remove native products,
+trig or transforms elsewhere or qualify a complete motion/goal/wire path.
+DR0-DR7 require claim/partiality choice, identity, route-specific proof, branch/
+rejection coverage, work/resources, independent fixtures/source gates in a
+separately approved implementation, compatibility/composition review and explicit
+later adoption. No proof, error allowance or qualification flag is promoted.
+
+**Checks and preserved failure.** The first focused validator failed because
+it required three continuation spaces in the phrase "no candidate word", while
+the document uses two. A targeted clause search confirmed the unchanged text;
+only the matcher normalized whitespace. The same route/cap/parity/rejection/
+scope/source-hash check then passed. No design, guard, bound or rejection
+requirement was weakened, and no numerical word was decoded or evaluated.
+The first expanded check repeated the layout assumption for the wrapped
+"not an independent oracle" clause. Applying the same prose-whitespace
+normalization repaired only that matcher; the same full check passed.
+Documentation checks pass: 570 reference uses/local targets, sections 1-120,
+fences/math, prior REVIEW/Sources/design contracts, stable workflow/history/
+last source-gate/task-tail preservation, route/cap/eight-gate/non-adoption/
+failure/no-run clauses, exact three-document scope and unchanged code hashes.
+Whitespace and editor diagnostics pass. Final scoped diff/staged checks precede
+the local commit. The code suite is not rerun.
+§116's 2,137 passes plus known xfail and 71 warnings remain the last source
+gate; §119's installed-path observations are not refreshed in this scope.
+
+No project source/test/configuration/bound/allowance/flag/verdict change;
+diagnostic/test blobs stay `593448a4140e658692e0dc0965dc72f1f94666ae` and
+`8715a92bd370464cbbcee563b0625b59d3c3608a`. All five qualification flags stay
+false. The mathematical helper, `1bb89fe`, normal inputs/defaults, C/wire,
+old logs/reports and prior failures are preserved. No target import/native/
+fixture/model/GPU run, source/dependency acquisition, data/labels/training,
+environment/hardware change, consumer/owner/reference/log adapter, integration,
+cleanup or background job. No assistant push is authorized/performed.
+
+**Exit and next permission.** Approved design-only comparison is prepared and
+exhausted; neither route nor replacement/allowance/resource/proof adoption follows.
+Default remains isolation. Native/source/work/numerical/physical/task-quality,
+Task 6/9, teacher assets and ST/board gates remain open.
+
+Next proposed, not approved: design-only Route C interval-to-word certificate
+contract and conditional work argument. Specify exact cell search/verification,
+finite-neighbor/tie and ambiguity cases, candidate-local preflight/call limits,
+publication semantics, independent acceptance controls and old-helper nonmutation.
+No candidate adoption, implementation/call, fixture/native comparison, acquisition,
+dependency, adapter/integration or proof/allowance/qualification promotion.
+
+[sinc-route-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

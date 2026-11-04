@@ -5200,6 +5200,70 @@ authorizes none of them; isolation remains the default.
 
 [sinc-contract-review]: REVIEW.md
 
+#### Private NF1 Rational Sinc Prototype Complete (2026-11-04)
+
+The user separately approved the isolated helper/tests offered at §115, including
+32 arctangent terms, eight sinc terms, a 65,536-bit rational cap, twelve reused
+word-case positions and at most 24 helper attempts per complete invocation.
+[Review §116][sinc-prototype-review] records implementation and verification.
+That approval applies only to this private prototype/configuration/test scope,
+not an accepted proof, native accuracy/error allowance, source authority or
+runtime consumer. The preceding design draft is retained as historical context.
+
+The [diagnostic prototype][c1-prototype-source] now contains the separate
+`_enclose_synthetic_sinc_word` and its private `_SYNTHETIC_SINC_BITS` limit.
+Every prior module AST node is unchanged. No producer arithmetic helper,
+motion reference, owner, auditor, recorder, relative mapper or question path
+calls or is refactored into it. Literal synthetic opt-in and exact finite
+builtin u64 ingress precede independent integer word decoding; sign metadata
+distinguishes both zero words even though their rational value is zero.
+Both zero words yield the mathematical interval `[1,1]` without constructing pi.
+
+The nonzero path constructs rational 32-term alternating arctangent brackets,
+combines them with Machin's identity, checks the real-pi bracket, encloses the
+squared argument and evaluates the eight-term even polynomial by four-product
+Horner interval multiplication. The nonnegative remainder after eight terms is
+`[0,T_U**8/17!]`. Exact canonical integer-pair stages expose arctangent, pi,
+squared argument, coefficients, polynomial and remainder separately. No native
+sinc/trigonometry/float oracle, tiny substitution, endpoint rounding, persistence
+or owner/reference/log adapter is used. Domain/work failures remain unresolved
+with no partial enclosure; opt-in failure raises, and unexpected/allocation
+errors propagate. Successful and rejected results keep all five qualification
+flags false and native-sinc/motion statuses explicitly unresolved.
+
+Incremental powers/factorials, rational arithmetic and endpoint comparisons
+preflight conservative operand growth; canonical results are checked afterward.
+Returned operation counts and canonical-result bit counts describe checked
+arithmetic, not elapsed time/live RAM, allocator/GCD internals, W0/TB0, universal
+completion or a computed-program enclosure. Subnormal inputs are decoded exactly
+or rejected on work, never replaced with the zero target. There is no adaptive
+term/precision increase or fallback. The old 4,096-bit arithmetic/auditor limit,
+old mathematical reference, normal defaults and verdicts are unchanged.
+
+One twelve-case test reads stored q at index four of the existing literal
+sheets without producing traces. Each completed invocation asserts exactly
+two helper attempts per position: 13 enclosed results (six zero/seven series,
+including reflection), eight unresolved results and three expected exceptions.
+Independent exact partial sums, coefficients, expanded endpoint polynomials,
+the one-term bracket, remainder and symbolic width checks use only those cases.
+Native/producer/owner paths are forbidden; strict word/domain/opt-in, minimum-
+subnormal early-work rejection, late canonical-result rejection, allocation
+failure propagation, separate results and false flags are covered. These are
+bounded synthetic arithmetic fixtures, not a new corpus or task data/proof.
+
+The full source gate passes 2,137 tests plus the known transformer xfail and
+71 existing warnings; focused checks, lint, changed-file format, editor diagnostics
+and old-AST preservation pass (§116). No C/runtime source change or additional
+opt-in sanitizer/Arm/hardware run; default-suite legacy controls remain separate.
+This approved package is complete and exhausted. Next proposed, not approved:
+design-only conditional correctness/work-obligation review of this helper's
+decoder, Machin/series intervals, guards and result semantics. No new import,
+fixture run, extraction, consumer/native comparison, allowance/proof acceptance,
+integration, dependency/acquisition, data or qualification promotion follows.
+NF1 native accuracy, NF2-NF7, source authority and broader task gates stay open.
+
+[sinc-prototype-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7211,7 +7275,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §115): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §116): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7347,11 +7411,14 @@ four distinct evidence claims and six paper exit checks, not numerical/native
 qualification. The separately approved design-only NF1 sinc contract and paper
 feasibility argument are prepared (§115): exact stored-word target, signed zero,
 real-pi Machin brackets, even-series remainder, conditional domain/work/width
-derivations and isolated boundary. Proposed 32/8 terms, 65,536-bit cap and twelve
-literal positions/24 helper attempts are not approved implementation/run budgets.
-Next proposed, not approved: isolated private prototype/tests under those limits;
-no extraction, fixture run, adapter, integration or promotion follows from this
-design. All broader gates remain unchanged.
+derivations and isolated boundary. Its separately approved private helper/tests
+are complete (§116) under the 32/8-term, 65,536-bit, twelve-position/24-attempt
+limits. All old module ASTs/flags/verdicts remain unchanged; mathematical
+enclosure is not installed-sinc accuracy or motion/source qualification. The
+2,137-pass source gate plus known xfail is recorded, not task-quality evidence.
+Next proposed, not approved: design-only conditional correctness/work-obligation
+review; no new run/import/extraction, native comparison, adapter, integration or
+promotion follows. All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

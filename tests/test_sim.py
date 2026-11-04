@@ -413,6 +413,215 @@ _ARITHMETIC_TRACE_LITERALS = (
 )
 
 
+@pytest.mark.parametrize("literal_index", range(12))
+def test_synthetic_sinc_word_enclosure(literal_index, monkeypatch):
+    import ast
+    import inspect
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    helper = diagnostics._enclose_synthetic_sinc_word
+    attempts = []
+    outputs = []
+
+    def enclose(*arguments, **keywords):
+        attempts.append((arguments, keywords))
+        assert len(attempts) <= 2
+        output = helper(*arguments, **keywords)
+        outputs.append(output)
+        return output
+
+    def forbidden(*arguments, **keywords):
+        raise AssertionError("sinc reference reached a producer/native/owner path")
+
+    for name in (
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+        "_reference_synthetic_c1_motion",
+        "_audit_synthetic_controlled_candidate",
+        "_SyntheticC1ControlledMotionOwner",
+        "_SyntheticC1SourceRecorder",
+        "prepare_synthetic_c1_relative_input",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for module, names in (
+        (diagnostics.np, ("sinc", "sin", "cos", "arctan2")),
+        (diagnostics.math, ("sin", "cos", "atan2")),
+    ):
+        for name in names:
+            monkeypatch.setattr(module, name, forbidden)
+    syntax = ast.parse(inspect.getsource(helper))
+    assert not any(
+        isinstance(node, ast.Constant) and type(node.value) is float
+        for node in ast.walk(syntax)
+    )
+    assert not any(
+        isinstance(node, (ast.Import, ast.ImportFrom)) for node in ast.walk(syntax)
+    )
+    assert not any(
+        isinstance(node, ast.Name) and node.id in {"np", "math", "float", "open"}
+        for node in ast.walk(syntax)
+    )
+
+    word = _ARITHMETIC_TRACE_LITERALS[literal_index][2][4]
+    result = enclose(word, synthetic_test_only=True)
+    assert result["status"] == "enclosed_mathematical_sinc", result["reason"]
+    assert result["q_word"] == word and result["sign"] == word >> 63
+    value = _literal_binary64_fraction(word)
+    assert Fraction(*result["q_ratio"]) == value
+    assert result["configuration"] == {
+        "arctangent_terms": 32,
+        "sinc_terms": 8,
+        "rational_bit_limit": 65536,
+    }
+    assert 0 < result["work"]["max_result_bits"] <= 65536
+    lower, upper = (Fraction(*endpoint) for endpoint in result["interval"])
+    assert 0 < lower <= upper <= 1
+    if not value:
+        assert result["branch"] == "zero" and lower == upper == 1
+        assert result["stages"] == {}
+        assert result["work"]["rational_operations"] == 0
+    else:
+        stages = result["stages"]
+        assert result["branch"] == "series"
+        arctangents = []
+        for denominator, interval in zip((5, 239), stages["arctangent"], strict=True):
+            partial = sum(
+                Fraction(
+                    (-1) ** index, (2 * index + 1) * denominator ** (2 * index + 1)
+                )
+                for index in range(32)
+            )
+            tail = Fraction(1, 65 * denominator**65)
+            assert tuple(Fraction(*endpoint) for endpoint in interval) == (
+                partial,
+                partial + tail,
+            )
+            arctangents.append((partial, partial + tail))
+        pi_lower, pi_upper = (Fraction(*endpoint) for endpoint in stages["pi"])
+        assert 3 < pi_lower <= pi_upper < 4
+        assert pi_lower == 16 * arctangents[0][0] - 4 * arctangents[1][1]
+        assert pi_upper == 16 * arctangents[0][1] - 4 * arctangents[1][0]
+        squared_lower, squared_upper = (
+            Fraction(*endpoint) for endpoint in stages["squared_argument"]
+        )
+        assert squared_lower == value**2 * pi_lower**2
+        assert squared_upper == value**2 * pi_upper**2
+        assert 0 < squared_lower <= squared_upper <= Fraction(1, 256)
+        assert stages["coefficients"] == tuple(
+            ((-1) ** degree, math.factorial(2 * degree + 1)) for degree in range(8)
+        )
+        polynomial_lower, polynomial_upper = (
+            Fraction(*endpoint) for endpoint in stages["polynomial"]
+        )
+        for endpoint in (squared_lower, squared_upper):
+            expanded = sum(
+                Fraction((-1) ** degree, math.factorial(2 * degree + 1))
+                * endpoint**degree
+                for degree in range(8)
+            )
+            assert polynomial_lower <= expanded <= polynomial_upper
+        assert stages["remainder"][0] == (0, 1)
+        tail = squared_upper**8 / math.factorial(17)
+        assert Fraction(*stages["remainder"][1]) == tail
+        assert lower == polynomial_lower and upper == polynomial_upper + tail
+        assert 1 - squared_upper / 6 <= lower
+        assert upper - lower <= 3 * (pi_upper - pi_lower) / 512 + Fraction(
+            1, (1 << 64) * math.factorial(17)
+        )
+        for interval in (
+            result["interval"],
+            stages["pi"],
+            stages["squared_argument"],
+            stages["polynomial"],
+            stages["remainder"],
+        ):
+            for numerator, denominator in interval:
+                assert type(numerator) is type(denominator) is int
+                assert denominator > 0 and math.gcd(numerator, denominator) == 1
+                assert max(numerator.bit_length(), denominator.bit_length()) <= 65536
+
+    if literal_index in (1, 2):
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            enclose(word, synthetic_test_only=(False if literal_index == 1 else 1))
+    elif literal_index == 6:
+        mirror_word = _ARITHMETIC_TRACE_LITERALS[7][2][4]
+        mirror = enclose(mirror_word, synthetic_test_only=True)
+        assert mirror["interval"] == result["interval"]
+        assert mirror["stages"] == result["stages"]
+        assert mirror["stages"] is not result["stages"]
+        assert mirror["sign"] != result["sign"]
+    elif literal_index in (9, 10, 11):
+        original_fraction = diagnostics.Fraction
+        allocations = []
+
+        def guarded_fraction(*arguments):
+            allocations.append(arguments)
+            if len(allocations) == 64:
+                if literal_index == 11:
+                    raise MemoryError("injected sinc allocation failure")
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_SINC_BITS", 1)
+            return original_fraction(*arguments)
+
+        if literal_index == 9:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_SINC_BITS", 1)
+        else:
+            monkeypatch.setattr(diagnostics, "Fraction", guarded_fraction)
+        if literal_index == 11:
+            with pytest.raises(MemoryError, match="injected sinc allocation failure"):
+                enclose(word, synthetic_test_only=True)
+            assert len(allocations) == 64
+        else:
+            rejected = enclose(
+                0x0000000000000001 if literal_index == 9 else word,
+                synthetic_test_only=True,
+            )
+            assert rejected["reason"] == "sinc_rational_work_limit"
+            assert rejected["status"] == "unresolved_mathematical_sinc"
+            assert "interval" not in rejected and "stages" not in rejected
+            if literal_index == 9:
+                assert rejected["q_word"] == 0x0000000000000001
+                assert rejected["work"]["rational_operations"] == 0
+            else:
+                assert len(allocations) == 64
+                assert rejected["work"]["rational_operations"] > 0
+    else:
+        rejected_words = {
+            0: (True, "unsupported_sinc_word"),
+            3: (-1, "unsupported_sinc_word"),
+            4: (1 << 64, "unsupported_sinc_word"),
+            5: (0x7FF0000000000000, "nonfinite_sinc_word"),
+            7: (0x7FF8000000000000, "nonfinite_sinc_word"),
+            8: (_ARITHMETIC_TRACE_LITERALS[8][1], "outside_sinc_domain"),
+        }
+        rejected_word, reason = rejected_words[literal_index]
+        rejected = enclose(rejected_word, synthetic_test_only=True)
+        assert rejected["status"] == "unresolved_mathematical_sinc"
+        assert rejected["reason"] == reason
+        assert "interval" not in rejected and "stages" not in rejected
+    assert len(attempts) == 2
+    assert result["configuration"]["rational_bit_limit"] == 65536
+    assert result["q_word"] == word
+    assert tuple(Fraction(*endpoint) for endpoint in result["interval"]) == (
+        lower,
+        upper,
+    )
+    for output in outputs:
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "producer_parity_qualified",
+        ):
+            assert output[flag] is False
+        assert output["native_sinc_status"] == "unresolved_native_sinc_evidence"
+        assert output["motion_status"] == "unresolved_motion_evidence"
+
+
 def _literal_trace_arguments(heading, turn):
     return {
         "heading_word": heading,

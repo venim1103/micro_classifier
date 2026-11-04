@@ -8019,6 +8019,120 @@ has not been freshly qualified. Scoped staging/local commit only, no push.
 
 [sinc-contract-design]: DESIGN.md
 
+## 116. Isolated NF1 Rational Sinc Prototype (2026-11-04)
+
+The user explicitly approved §115's offered private helper/tests and proposed
+32/8-term, 65,536-bit, twelve-position/24-attempt limits, asking to continue
+autonomously and commit locally. `git status --short` was empty at `b0600a1`.
+Pylance freshly selected `/opt/venv/bin/python`; the focused checks used that
+interpreter and the required root gate completed. No GPU/teacher-asset/native
+accuracy requalification, dependency/acquisition or environment change occurred.
+The approval covers this isolated prototype, not proof/error-policy adoption,
+owner/trace generation, native comparison or runtime integration.
+
+**Local hypothesis and first check.** Independent exact word decoding, Machin
+pi brackets and a fixed even-power interval should enclose the mathematical
+normalized sinc at stored q without native functions or small-q division.
+Nearby literal tests and the existing arithmetic helpers established the local
+word/result conventions; no old helper was extracted or used as an oracle.
+First edit added the private helper and twelve-position basic test. The next
+action ran only existing literal position six: one helper attempt, passing in
+0.83 s with exact rational stage/remainder assertions. No producer trace,
+owner, capture, native sinc comparison or new input sheet was created.
+
+**Implementation.** [DESIGN.md §7][sinc-prototype-design] records the separate
+`_enclose_synthetic_sinc_word` plus `_SYNTHETIC_SINC_BITS=65536`. The helper
+requires literal opt-in and builtin nonboolean finite u64 words, decodes the
+signed rational independently and checks `abs(q) <= 1/64`. Both zero words
+retain word/sign and exact `[1,1]`, with no pi or series work. Nonzero words use
+32 alternating arctangent terms for each Machin component, a checked real-pi
+bracket and squared-argument interval, eight exact factorial coefficients and
+four-product Horner multiplication. Its remainder is `[0,T_U**8/17!]`.
+
+Arithmetic and endpoint comparisons preflight conservative integer growth;
+incremental powers/factorials avoid unchecked large constructions. Canonical
+result-size checks follow arithmetic. Exact canonical-pair enclosure stages are
+published only after complete enclosure; supported rejection has no partial
+interval/stages, but retains attempted-work counts. Strict opt-in raises before
+work, and unexpected/allocation
+errors propagate. Decoded-input metadata may remain after rejection, but is
+not a partial mathematical result. No mutable input, memoization, persistence,
+floating presentation, adaptive terms/precision or fallback. All five flags
+stay false; native-sinc/motion evidence stays unresolved on every return.
+The integer/Fraction/GCD trusted base, native/build/live FP, W0/TB0, actual
+time/live RAM, all-domain completion and accepted proof remain unqualified.
+
+**Bounded test matrix and counts.** One new twelve-case parametrized test reads
+the existing sheets' stored word at index four, never computing a trace. A local
+counter asserts exactly two attempts per position, including failures: 24 per
+completed matrix invocation. It obtains 13 enclosures (six zero/seven series,
+including the existing signed reflection), eight unresolved rejections (three
+word-type/range, two nonfinite, one domain and two work) and three expected
+exceptions (two strict-opt-in and one injected allocation failure).
+
+Independent rational arctangent partial sums/next terms, Machin combinations,
+factorial coefficients, expanded polynomial endpoints, the one-term bracket,
+remainder and symbolic width checks do not use native sinc/trig or the producer
+as an oracle. Existing word/type/work fault patterns include the minimum
+subnormal at early preflight, a reduced cap immediately after the 64th Fraction
+construction to reach the post-canonical guard, and a MemoryError at that same
+construction to check propagation. No result stages survive work rejection;
+the first result stays unchanged across the second attempt. Tests forbid
+producer arithmetic/trace/reference/auditor/owner/recorder/relative paths and
+native sine/cosine/atan2/sinc; source AST also forbids floating literals,
+imports and the names `np`, `math`, `float`, `open` in the new helper. This is sample/kernel
+evidence, not a universal proof or an installed-library bound.
+
+Three complete matrices ran: expanded checks, final amended controls and the
+root gate; all reused the same twelve positions. Including the first one-case
+probe, that is 73 helper attempts: 40 enclosures, 24 unresolved returns and nine
+expected exceptions. These totals count failed attempts, not independent
+corpora or new task data. The new helper/test creates zero owners, advances,
+captures, traces, queries, native comparisons or log/reference adapters. The
+default gate separately runs its pre-existing synthetic native/export/owner
+controls, not additional NF1 fixtures or renewed study collection.
+
+**Checks and preserved failure history.** Expanded matrix: 12 passed in 0.90 s.
+Lint and all-old-AST preservation passed. Pylance reported unused-symbol hints
+but no errors. The initial changed-file `ruff format --check` failed on newly
+added call/assertion layouts, so the root gate was not started then. Only the
+new test's existing controls were strengthened (subnormal word, all-return flags,
+first-result preservation); the immediate focused check passed 12 in 0.28 s.
+`ruff format sim/diagnostics.py tests/test_sim.py` then formatted the two changed
+files. Lint, changed-file format and whitespace passed. No tolerance, assertion,
+safety guard, input bound or known xfail was relaxed to obtain a pass.
+
+The required root command `python -m pytest -q && ruff check . && git diff --check`
+passed: **2,137 passed, one known transformer xfailed, 71 existing warnings,
+48.85 s**, no reported skips. Editor diagnostics pass. Every pre-existing source/
+test AST node, including imports/constants/functions/classes/tests, is unchanged
+in order. Gate-checked blobs: `593448a4140e658692e0dc0965dc72f1f94666ae`
+for the diagnostic source and `8715a92bd370464cbbcee563b0625b59d3c3608a` for
+the tests. No C/runtime change or additional opt-in sanitizer/Arm/ST/board gate;
+host/default checks are not linked firmware, physical/task quality or native
+accuracy evidence. Documentation checks pass: 562 reference uses/local targets,
+sections 1-116, fences, previous review/Sources/design contracts, stable workflow/
+history/task-tail preservation, exact gate-tested source hashes/all old ASTs,
+failure/attempt accounting and five-file scope. Documentation editor diagnostics
+and whitespace pass. Final diff/staged scope and whitespace checks precede the
+local commit; no push is authorized.
+
+**Exit and next permission.** Approved private prototype/tests are complete and
+exhausted. Old owners/auditors/arithmetic/reference, `1bb89fe`, normal inputs/
+defaults/bounds/verdicts/flags, C/wire and historical logs/reports are unchanged.
+No live teacher, trained-model/training, study collection, task data/splits,
+dependency/acquisition, runtime consumer, cleanup or background job was started.
+Next proposed, **not approved**: design-only conditional correctness/work-obligation
+review of this helper's decoder, Machin/series intervals, guards and result
+semantics, separating mathematical obligations from shared trusted-base/native/
+work gaps. No import, new fixture run, implementation/extraction, native comparison,
+consumer/owner/reference/log adapter, proof/allowance acceptance, data/runtime/wire
+adoption or qualification promotion. Isolation remains default; Task 6/9,
+NF1 native accuracy, NF2-NF7, source authority, physical/task-quality, teacher
+assets and ST/board gates remain open.
+
+[sinc-prototype-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

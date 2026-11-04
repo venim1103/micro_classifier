@@ -28,6 +28,204 @@ C1_SCHEMA = "micro-classifier/synthetic-c1-views/1"
 _SYNTHETIC_ARITHMETIC_BITS = 4096
 
 
+_SYNTHETIC_SINC_BITS = 65536
+
+
+def _enclose_synthetic_sinc_word(q_word, *, synthetic_test_only=False):
+    """Enclose real-pi sinc at a stored word, not the installed native program."""
+    if synthetic_test_only is not True:
+        raise ValueError("sinc reference requires synthetic_test_only=True")
+    work = {"rational_operations": 0, "max_result_bits": 0}
+    result = {
+        "allowed_use": "isolated_synthetic_sinc_reference_only",
+        "status": "unresolved_mathematical_sinc",
+        "reason": "unsupported_sinc_word",
+        "target": "real_pi_normalized_sinc_at_stored_binary64",
+        "domain_ratio": (1, 64),
+        "configuration": {
+            "arctangent_terms": 32,
+            "sinc_terms": 8,
+            "rational_bit_limit": _SYNTHETIC_SINC_BITS,
+        },
+        "q_word": None,
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "producer_parity_qualified": False,
+        "native_sinc_status": "unresolved_native_sinc_evidence",
+        "motion_status": "unresolved_motion_evidence",
+        "work": work,
+    }
+
+    class WorkLimit(ArithmeticError):
+        pass
+
+    def preflight(*sizes):
+        if max(sizes) > _SYNTHETIC_SINC_BITS:
+            raise WorkLimit("sinc_rational_work_limit")
+
+    def bounded(value):
+        size = max(value.numerator.bit_length(), value.denominator.bit_length())
+        preflight(size)
+        work["max_result_bits"] = max(work["max_result_bits"], size)
+        return value
+
+    def rational(numerator, denominator=1):
+        preflight(numerator.bit_length(), denominator.bit_length())
+        return bounded(Fraction(numerator, denominator))
+
+    def add(left, right):
+        preflight(
+            max(
+                left.numerator.bit_length() + right.denominator.bit_length(),
+                right.numerator.bit_length() + left.denominator.bit_length(),
+            )
+            + 1,
+            left.denominator.bit_length() + right.denominator.bit_length(),
+        )
+        work["rational_operations"] += 1
+        return bounded(left + right)
+
+    def multiply(left, right):
+        preflight(
+            left.numerator.bit_length() + right.numerator.bit_length(),
+            left.denominator.bit_length() + right.denominator.bit_length(),
+        )
+        work["rational_operations"] += 1
+        return bounded(left * right)
+
+    def divide(left, right):
+        return multiply(left, rational(right.denominator, right.numerator))
+
+    def compare(left, right):
+        preflight(
+            left.numerator.bit_length() + right.denominator.bit_length(),
+            right.numerator.bit_length() + left.denominator.bit_length(),
+        )
+        return (left > right) - (left < right)
+
+    def interval_add(left, right):
+        return add(left[0], right[0]), add(left[1], right[1])
+
+    def interval_multiply(left, right):
+        products = [multiply(first, second) for first in left for second in right]
+        low = high = products[0]
+        for product in products[1:]:
+            if compare(product, low) < 0:
+                low = product
+            if compare(product, high) > 0:
+                high = product
+        return low, high
+
+    def pairs(interval):
+        return tuple((value.numerator, value.denominator) for value in interval)
+
+    try:
+        if type(q_word) is not int or not 0 <= q_word < (1 << 64):
+            return result
+        result["q_word"] = q_word
+        exponent = (q_word >> 52) & 2047
+        if exponent == 2047:
+            result["reason"] = "nonfinite_sinc_word"
+            return result
+        sign = q_word >> 63
+        significand = (q_word & ((1 << 52) - 1)) | ((1 << 52) if exponent else 0)
+        power = (exponent or 1) - 1075
+        preflight(significand.bit_length() + max(0, power), 1 + max(0, -power))
+        numerator = significand << max(0, power)
+        value = rational(-numerator if sign else numerator, 1 << max(0, -power))
+        result.update(q_ratio=(value.numerator, value.denominator), sign=sign)
+        if compare(abs(value), rational(1, 64)) > 0:
+            result["reason"] = "outside_sinc_domain"
+            return result
+        if not value:
+            result.update(
+                status="enclosed_mathematical_sinc",
+                reason="exact_mathematical_zero_branch",
+                branch="zero",
+                interval=((1, 1), (1, 1)),
+                stages={},
+            )
+            return result
+
+        one = rational(1)
+        zero = rational(0)
+        arctangents = []
+        for denominator in (5, 239):
+            base = rational(1, denominator)
+            square = multiply(base, base)
+            odd_power = base
+            partial = zero
+            for index in range(32):
+                coefficient = rational((-1) ** index, 2 * index + 1)
+                partial = add(partial, multiply(coefficient, odd_power))
+                odd_power = multiply(odd_power, square)
+            tail = divide(odd_power, rational(65))
+            arctangents.append((partial, add(partial, tail)))
+        pi_bounds = interval_add(
+            interval_multiply(arctangents[0], (rational(16), rational(16))),
+            interval_multiply(arctangents[1], (rational(-4), rational(-4))),
+        )
+        if (
+            compare(rational(3), pi_bounds[0]) >= 0
+            or compare(pi_bounds[0], pi_bounds[1]) > 0
+            or compare(pi_bounds[1], rational(4)) >= 0
+        ):
+            result["reason"] = "unsupported_sinc_pi_bracket"
+            return result
+        squared_argument = interval_multiply(
+            (multiply(value, value),) * 2,
+            (
+                multiply(pi_bounds[0], pi_bounds[0]),
+                multiply(pi_bounds[1], pi_bounds[1]),
+            ),
+        )
+        if compare(squared_argument[1], rational(1, 256)) > 0:
+            result["reason"] = "outside_sinc_series_domain"
+            return result
+        factorial = one
+        coefficients = []
+        for degree in range(18):
+            if degree:
+                factorial = multiply(factorial, rational(degree))
+            if degree % 2 and degree <= 15:
+                coefficients.append(divide(rational((-1) ** (degree // 2)), factorial))
+        polynomial = (coefficients[-1],) * 2
+        for coefficient in reversed(coefficients[:-1]):
+            polynomial = interval_add(
+                interval_multiply(polynomial, squared_argument), (coefficient,) * 2
+            )
+        tail_power = one
+        for _ in range(8):
+            tail_power = multiply(tail_power, squared_argument[1])
+        remainder = (zero, divide(tail_power, factorial))
+        enclosure = interval_add(polynomial, remainder)
+        if compare(enclosure[0], enclosure[1]) > 0:
+            result["reason"] = "unsupported_sinc_interval_order"
+            return result
+        result.update(
+            status="enclosed_mathematical_sinc",
+            reason="real_pi_even_series_enclosure_only",
+            branch="series",
+            interval=pairs(enclosure),
+            stages={
+                "arctangent": tuple(pairs(interval) for interval in arctangents),
+                "pi": pairs(pi_bounds),
+                "squared_argument": pairs(squared_argument),
+                "coefficients": tuple(
+                    (coefficient.numerator, coefficient.denominator)
+                    for coefficient in coefficients
+                ),
+                "polynomial": pairs(polynomial),
+                "remainder": pairs(remainder),
+            },
+        )
+    except WorkLimit as error:
+        result["reason"] = str(error)
+    return result
+
+
 def _synthetic_binary64_value(word):
     if type(word) is not int or not 0 <= word < (1 << 64):
         raise ValueError("binary64 word must be an unsigned integer")

@@ -118,22 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only NF1 rational sinc contract and
-  feasibility argument (DESIGN.md §7 / REVIEW.md §115), with exact stored-word
-  target, both zeros, Machin/series intervals and conditional domain/work/width
-  derivations. No source/test change, import or numerical/fixture run; §113's
-  private auditor stays isolated, with all five flags false.
+- Latest approved package complete: isolated private NF1 rational sinc helper/
+  tests (DESIGN.md §7 / REVIEW.md §116), with stored-word/zero target, real-pi
+  Machin brackets and even-series intervals. Approved prototype limits: 32/8
+  terms, 65,536 bits, twelve reused positions/24 attempts per complete invocation.
+  All prior module ASTs/flags/verdicts remain unchanged; no native comparison,
+  owner/trace generation, adapter or runtime adoption. All five flags stay false.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. This baseline was clean at `020d926`;
-  interpreter/native/GPU/teacher-asset availability is not freshly qualified.
-  Next proposed, not approved: isolated private helper/tests, explicitly accepting
-  or revising proposed 32/8-term, 65,536-bit limits and twelve reused word-case
-  positions/24 helper attempts per invocation. No owner/trace generation, native
-  comparison, new corpus, adapter, runtime/wire adoption or promotion follows.
-  Isolation remains default; no new work allowance/dependency/acquisition/hardware run.
+  and native-work remain unresolved. Baseline was clean at `b0600a1`; Pylance
+  selected `/opt/venv/bin/python`, and the default offline gate passed. GPU/
+  teacher assets and native accuracy have not been requalified.
+  Next proposed, not approved: design-only conditional correctness/work-obligation
+  review of the new helper, not imports, fixtures, extraction, native comparison,
+  implementation/integration or promotion. Isolation remains default; no proof/
+  error allowance, dependency/acquisition, collection or hardware approval follows.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-115 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-116 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -144,9 +145,9 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-03): 2,125 passes plus known xfail, 71 existing
-  ONNX warnings; eight new cases, lint/changed-file format/editor diagnostics
-  and legacy AST preservation pass; failed checks preserved in §113. No
+- Last source-test gate (2026-11-04): 2,137 passes plus known xfail, 71 existing
+  ONNX warnings; twelve new word cases, lint/changed-file format/editor diagnostics
+  and legacy AST preservation pass; failed format check preserved in §116. No
   runtime/C source change or additional opt-in sanitizer/
   Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1191,16 +1192,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §115 prepares
-the separately approved design-only NF1 rational sinc contract/feasibility:
-stored-word/zero target, real-pi/even-series bounds and conditional domain/work/
-width derivations, not accepted proof or native accuracy. Source/
-tests/defaults/bounds/flags/verdicts and `1bb89fe` remain unchanged; §113's 2,125
-plus known xfail is historical, not rerun after reboot. Isolation stays default.
-Next proposed, not approved: isolated private helper/tests with proposed 32/8
-terms, 65,536-bit cap and twelve reused word-case positions/24 helper attempts.
-No new work allowance, implementation, extraction, fixture run, owner/trace/native
-comparison, query/reference/log adapter, data/runtime/wire adoption or promotion.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §116 completes
+the separately approved isolated NF1 rational sinc helper/tests: 32/8 terms,
+65,536-bit limit, twelve reused word positions/24 attempts per complete invocation.
+The gate passes 2,137 plus known xfail; all old module ASTs/flags/verdicts and
+`1bb89fe` remain unchanged. No owner/trace/native comparison, adapter, runtime/
+wire adoption or qualification. Isolation stays default.
+Next proposed, not approved: design-only conditional correctness/work-obligation
+review; no import, fixture run, extraction, implementation, native comparison,
+query/reference/log adapter, proof/error-allowance adoption or promotion follows.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1417,6 +1417,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   or proof/allowance/flag/verdict promotion. Next proposed, not approved: private
   helper/tests with proposed 32/8 terms, 65,536-bit cap and twelve reused literal
   positions/24 attempts; native/work/source/task gates stay open, isolation default.
+  NF1 prototype (REVIEW.md §116): separately approved private helper/tests
+  complete under 32/8-term, 65,536-bit, twelve-position/24-attempt limits; twelve
+  new cases and 2,137 plus known xfail pass. All old module ASTs/flags/verdicts
+  stay unchanged; no native/owner/trace/adapter/integration or qualification.
+  Next proposed, not approved: design-only conditional correctness/work-obligation
+  review, not a new import/fixture/code scope or proof/error-allowance acceptance.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

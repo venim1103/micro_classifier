@@ -5264,6 +5264,177 @@ NF1 native accuracy, NF2-NF7, source authority and broader task gates stay open.
 
 [sinc-prototype-review]: REVIEW.md
 
+#### NF1 Conditional Correctness and Work Review (2026-11-04)
+
+The user separately approved the design-only review offered at §116;
+[review §117][sinc-correctness-review] records its scope and checks. The object
+is `_enclose_synthetic_sinc_word` at the §116 source identity, not an installed
+native sinc, a consumer or a new implementation. No project import, fixture,
+arithmetic execution, source extraction or accepted proof/allowance follows.
+The source/test files were reread after an edit notification; the actual Git
+baseline is clean `4606b15` with no current source/test diff.
+
+**Disposition.** No algebraic mismatch was identified in the reviewed local
+path under SR0's assumptions. SR1-SR6 support conditional partial correctness
+of a normally returned mathematical enclosure. SR7 supports only specific
+algebraic size guards and a paper operation ledger; SR8 supports ordinary-return
+semantics, not universal rollback. SR9 retains isolation. These are paper review
+outcomes, not accepted proofs, runtime guarantees or closure of W0/TB0, native
+accuracy, source authority or the numerical/physical/task-quality gates.
+
+| Obligation | Conditional Outcome / Remaining Boundary |
+| --- | --- |
+| SR0: stable semantics and identities | Assume builtin integer semantics, exact canonical Fraction arithmetic/comparisons and terminating allocation/GCD operations, ordinary serialized execution, fixed helper/global bindings and the declared 65,536-bit cap. No installed/build/live trusted-base proof is supplied. |
+| SR1: word/domain/zero | Exact builtin nonboolean u64/finite rejection precedes decoding; normalized/subnormal formulas and both signed-zero words have the intended stored-rational target. No producer-word authenticity or source-domain admission follows. |
+| SR2: scalar and interval kernel | Exact add/multiply/positive-divisor inversion and guarded comparisons preserve rational semantics; four-product hulls enclose products, including negative Machin scaling. No generic public rational kernel is adopted. |
+| SR3: Machin construction | The 32-step odd-power/partial-sum invariant gives an even-term lower endpoint and positive next term; the earlier tangent/quadrant identity transfers the two brackets to real pi. A passed numeric bracket alone would not prove this identity. |
+| SR4: squared argument and coefficients | Positive pi, squared q and exact domain give ordered nonnegative T; the degree loop stores exactly eight sinc coefficients and leaves 17! as the tail divisor. No floating underflow/tiny substitution. |
+| SR5: Horner inclusion | Natural interval induction encloses the same scalar polynomial for every t in T; repeated occurrences are correlated, so endpoint-only polynomial checks do not replace this argument. |
+| SR6: remainder, width and evenness | Decreasing even-series terms yield a nonnegative tail beginning at index eight and the prior symbolic width bound; the squared target gives evenness, with original word/sign retained. Not an installed-library error bound. |
+| SR7: finite guards and work | Direct algebraic growth checks, fixed loops and conditional denominator headroom are justified below. Counters exclude constructors/comparisons and hidden runtime work; no universal completion, time/live-RAM or native-work bound. |
+| SR8: rejection and publication | Supported rejection returns no enclosure/stages; only local input metadata/work may remain. Success stages are assembled before update. Unexpected/allocation/interruption errors propagate; no claim that an interrupted local dict update rolls back. |
+| SR9: evidence and consumers | Five flags remain false and native-sinc/motion statuses unresolved. Results are mutable declarations, not attestations; no source/owner/trace/codec/relative/runtime consumer or promotion. |
+
+**SR0-SR2: decoding and arithmetic.** Let exponent field $e$, fraction field
+$f$ and sign $s$ come from the finite submitted word. The code uses
+$m=f+2^{52}$ when $e>0$, otherwise $m=f$, with
+$p=e-1075$ when $e>0$, otherwise $p=-1074$. Thus
+$q=(-1)^s m2^p$ has the normal binary64 formula, or the subnormal
+$(-1)^sf2^{-1074}$. Exact canonicalization cannot turn a nonzero significand
+into zero. Only the two zero words have zero value; their separate sign remains
+in metadata. The domain check applies to this decoded value, not ideal motion.
+The raw shifts are preflighted; fixed word masks/constants and already allocated
+caller integers are not a general allocation boundary.
+
+For canonical operands with positive denominator, addition preflights
+$\max(N_L+D_R,N_R+D_L)+1$ numerator bits and $D_L+D_R$ denominator bits;
+multiplication preflights $N_L+N_R$ and $D_L+D_R$. Here N/D are operand bit
+lengths, not values. These bound naive cross-products/sums; canonical reduction
+cannot enlarge their magnitudes. `divide` in this program inverts only positive
+65 or factorial divisors, never q or an interval containing zero. Comparisons
+preflight the two cross-product bit sums, including the final interval-order
+check. Exact semantics and implementation scratch costs of Fraction/GCD remain
+assumed rather than inferred from these formulas. `abs(value)` preserves operand
+bit sizes but its internal construction is not counted by `bounded`.
+
+**SR3-SR4: loop invariants.** At the start of arctangent iteration k,
+
+$$
+\mathrm{odd\_power}=d^{-(2k+1)},\qquad
+\mathrm{partial}=\sum_{j=0}^{k-1}\frac{(-1)^j}{(2j+1)d^{2j+1}}.
+$$
+
+One coefficient/product/add and multiplication by $d^{-2}$ preserve this
+invariant. After 32 iterations (last Python index 31), the power is $d^{-65}$;
+division by 65
+gives the correct first omitted positive magnitude, not degree 63 or 67.
+Alternating terms decrease to zero for both d values. Multiplication by the
+negative constant -4 reverses that component's endpoints through the generic
+four-product hull. Together with the already specified Machin quadrant argument
+this encloses real pi; the explicit `3 < p_L <= p_U < 4` check is an additional
+stop, not an oracle. Consequently $0<T_L\le T_U\le1/256$ for accepted nonzero q;
+the absent lower-bound check is supplied by these invariants, not a new guard.
+
+After degree j of the coefficient loop, `factorial` is j! (with 0!=1).
+Odd j=1,3,...,15 append $(-1)^{(j-1)/2}/j!$, exactly coefficients k=0,...,7.
+The loop continues to j=17, so its final factorial is 17!, not 15! or 16!.
+All powers/factorials grow incrementally through guarded multiplication.
+
+**SR5-SR6: enclosure closure.** Starting with $[c_7,c_7]$, the seven Horner
+steps compute $I_k=[c_k,c_k]+T I_{k+1}$. The minimum/maximum of all four
+endpoint products contains each product of members of the two intervals.
+Induction therefore contains $\sum_{k=0}^7 c_k t^k$ for every one fixed
+$t\in T$, without asserting that independently chosen t values are the same.
+For this domain, successive absolute sinc-series terms have ratio at most
+$1/1536<1$, hence the alternating tail after the eight included terms is
+$[0,T_U^8/17!]$. The eight-step `tail_power` loop starts at one and produces
+exactly $T_U^8$. Adding that interval gives a conditional enclosure of F(q).
+The test's endpoint expansions/sentinel/width checks are finite controls, not
+this quantified induction or an independent trusted base.
+
+For the earlier width claim, all nested Horner magnitudes remain below two
+since $|c_k|\le1$ and $T_U\le1/256$. With zero initial width,
+$w_{k}\le2\Delta T+T_Uw_{k+1}$ gives polynomial width below $3\Delta T$;
+adding the tail gives at most $3\delta p/512+2^{-64}/17!$ as previously stated.
+Squaring q makes the complete mathematical result even; zero words retain their
+metadata and exact unit interval separately. Neither width nor symmetry is a
+bound on wrapper pi multiplication, native sine/division or zero substitution.
+
+**SR7: algebraic work ledger, not measurements.** Under SR0 and complete
+nonzero success, the source-level `rational_operations` increments are:
+
+| Phase | Conditional Add/Multiply Counter Increments |
+| --- | --- |
+| Two arctangent brackets | 2(1 + 32(3) + 1 + 1) = 198 |
+| Machin endpoint products and sums | 8 + 2 = 10 |
+| q square, two pi squares and squared-argument hull | 1 + 2 + 4 = 7 |
+| Factorials and eight coefficient divisions | 17 + 8 = 25 |
+| Seven Horner interval products/sums | 7(4 + 2) = 42 |
+| Eight tail products and final division | 8 + 1 = 9 |
+| Final enclosure addition | 2 |
+| Total | 293 |
+
+Division increments once via multiplication; its reciprocal construction is not
+another increment. On the same path there are conditionally 116 calls to the
+nested `rational` constructor and 66 to `compare`, not reflected in that counter.
+The constructor count decomposes as
+$2+2+2(1+32+1+1)+4+3+1+(17+8+8)+1=116$: input/domain, unit/zero,
+two arctangent loops, Machin constants, pi checks, series-domain constant,
+factorial/coefficient/reciprocal constructions and the final tail reciprocal.
+The comparison count is $1+12+3+6+1+42+1=66$: input-domain, Machin hulls,
+pi checks, squared-argument hull, series-domain, Horner hulls and final order.
+These are paper counts from fixed loops, not executed or instrumented results,
+and not counts of all Fraction/integer allocations. Zero success has no
+add/multiply increments but still decodes, constructs rationals and compares.
+A rejected operation may increment before its canonical result fails the guard.
+`max_result_bits` is the maximum canonical size that passed `bounded`, not the
+largest attempted result, pre-reduction integer, comparison product or live RAM.
+For example, zero still reaches construction of the $2^{1074}$ raw denominator
+before Fraction reduces its value to $0/1$. That raw integer is 1,075 bits and
+is not recorded as a canonical-result peak. The zero shortcut skips pi/series,
+not decoding/normalization work; this observation is symbolic, not a measurement.
+
+The previous common-denominator argument applies conditionally to dyadic
+$Q\le2^{128}$: coefficient factorials divide 15!, both T endpoints' denominators
+divide $(QM)^2$, Horner endpoints divide $D^7 15!$ and final endpoints divide
+$D^8 17!$. Thus the earlier coarse 42,000-bit direct-arithmetic and 44,000-bit
+comparison headroom is consistent with the guards on this subdomain under exact
+canonical arithmetic. It is not a new all-binary64 completion claim or proof of
+the integer implementation, and is not extended by sampling. Bounded logical
+loops do not bound GCD/allocator/native internals or make an interrupted run a
+supported return. W0/TB0 remain open.
+
+One binding assumption is important: `configuration` snapshots the cap once,
+but `preflight` reads `_SYNTHETIC_SINC_BITS` each time and Fraction is a module
+binding. Concurrent mutation/monkeypatching is outside SR0; returned configuration
+is not an immutable enforcement/identity token. The existing failure tests
+deliberately change those bindings and check rejection/propagation only. This
+review does not repair, freeze or authorize runtime reliance on those globals.
+
+**SR8-SR9: exit and evidence.** Every supported early return precedes insertion
+of `interval`/`stages`. In the nonzero success call, Python evaluates `pairs`
+and the complete stage dictionary before invoking `result.update`; no later
+preflight can then turn it into a caught work-limit rejection. If construction
+or dict update itself fails unexpectedly, the invocation raises rather than
+returning a partial success; no universal local rollback is asserted. Input is
+a builtin immutable word, output containers are fresh local objects and there
+is no persistence. Returned dictionaries can be changed by callers: a status,
+flag or exact-looking interval is not source authority or proof on its own.
+The mathematical target, stored-word authenticity, native implementation error,
+and composition into motion remain four distinct obligations.
+
+**Exit and next permission.** This conditional paper review is prepared, not
+proof/allowance acceptance. No source/test/budget/flag/verdict change, helper
+invocation or renewed fixture scope occurred; isolation remains the default.
+Next proposed, not approved: design-only NF1 native-error bridge contract,
+separating the stored-word real-pi target from the installed wrapper's computed
+program, zero/tiny branches, missing primitive evidence and conservative future
+comparison semantics. No external/source acquisition or extraction, new import,
+execution/native comparison, adapter, integration, error allowance or promotion
+would follow from preparing that contract. All broader gates stay open.
+
+[sinc-correctness-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7275,7 +7446,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §116): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §117): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7416,9 +7587,14 @@ are complete (§116) under the 32/8-term, 65,536-bit, twelve-position/24-attempt
 limits. All old module ASTs/flags/verdicts remain unchanged; mathematical
 enclosure is not installed-sinc accuracy or motion/source qualification. The
 2,137-pass source gate plus known xfail is recorded, not task-quality evidence.
-Next proposed, not approved: design-only conditional correctness/work-obligation
-review; no new run/import/extraction, native comparison, adapter, integration or
-promotion follows. All broader gates remain unchanged.
+The separately approved design-only conditional review is prepared (§117):
+ten SR0-SR9 obligations, decoder/interval/series derivations and a paper ledger,
+not accepted proof or resource/native qualification. Stable global bindings,
+counter coverage, ordinary-return publication and W0/TB0 remain explicit limits.
+No source/test/run/flag/verdict change. Next proposed, not approved: design-only
+NF1 native-error bridge contract; no source acquisition/extraction, new import,
+execution/native comparison, adapter, integration, allowance or promotion follows.
+All broader gates remain unchanged.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

@@ -8133,6 +8133,119 @@ assets and ST/board gates remain open.
 
 [sinc-prototype-design]: DESIGN.md
 
+## 117. NF1 Conditional Correctness and Work Review (2026-11-04)
+
+The user explicitly approved §116's offered design-only correctness/work-limit
+review, asking to continue autonomously and commit locally. An editor context
+notification reported changes to the diagnostic source and simulator tests.
+Both files were reread; actual `git status --short` and their diff were empty
+at `4606b15`. Their identities still match §116's gated blobs. No user edit was
+reverted, reformatted or staged. The source/test tree remains untouched.
+
+This scope permits a local paper review, not project imports, fixture/helper/
+native/model execution, external/source extraction or acquisition, new code,
+consumer/runtime integration, proof/allowance acceptance or promotion. Only
+DESIGN/REVIEW and the existing AGENTS current handoff change. No new dependency,
+environment change, study data, artifact, cleanup or background job is created.
+
+**Hypothesis and discriminating check.** The helper's normally returned interval
+should enclose the mathematical stored-word target under stable bindings and
+exact integer/Fraction semantics, while its bit guard/counter cannot certify
+complete runtime work. The nearby source and existing test establish the owning
+boundary: nested arithmetic/interval helpers, three fixed range loops, live
+cap/Fraction bindings, only WorkLimit caught and success-only enclosure stages.
+The first edit mapped ten SR0-SR9 obligations and source-level invariants to
+these statements. Its next action was a focused static content/AST/hash check,
+not a helper call or mathematical proof checker.
+
+**Review outcome.** [DESIGN.md §7][sinc-correctness-design] identifies no algebraic
+mismatch in the local path under explicit SR0 assumptions: stable source/global
+bindings, ordinary serialized execution, exact canonical Fraction/integer
+operations and normal termination of required allocation/GCD operations.
+SR1-SR6 support conditional partial correctness; they are not accepted proofs.
+Normal/subnormal decoding preserves the exact stored q and both zero signs.
+The arctangent loop leaves power d**-65 and the positive 32-term next magnitude;
+negative Machin scaling reverses endpoints. The factorial loop appends exactly
+eight coefficients through 15! and exits with 17!. Natural interval Horner
+induction plus the positive eighth-index tail encloses the same scalar t, without
+promoting endpoint samples or shared Fraction behavior into a universal proof.
+Domain positivity, width and evenness arguments stay mathematical, not native
+sinc behavior or an implementation error allowance.
+
+**Work and publication limits.** SR7 derives conditional naive integer-growth
+guards and carries the earlier common-denominator headroom only on the stated
+dyadic subdomain. Complete nonzero success has a paper ledger of 293 counted
+add/multiply operations, 116 nested rational constructions and 66 comparison
+calls, with explicit phase decompositions. These are source-level derivations,
+not measured/instrumented results or counts of all integer/Fraction allocations.
+Zero success still does decoding/construction/comparison despite zero counted
+add/multiply operations. A post-canonical rejection may follow a counter
+increment; max_result_bits records only canonical values that passed bounded.
+It excludes oversized attempted results, raw cross-products and live memory.
+Even zero constructs a raw 2**1074 denominator before canonicalization; that
+symbolic example distinguishes a skipped pi/series path from zero decode cost.
+The 65,536-bit cap does not qualify GCD/allocator/native internals, elapsed time,
+live RAM, all-domain completion or W0/TB0.
+
+One explicit assumption is operationally important: configuration snapshots the
+cap at entry, while preflight rereads the mutable module global and Fraction is
+also a module binding. Concurrent mutation/monkeypatching is outside SR0; that
+metadata is not an immutable enforcement/identity token. The existing failure
+tests change bindings to test rejection/propagation, not such an identity claim.
+No freeze, repair or runtime reliance is adopted by this design-only scope.
+
+SR8 distinguishes supported rejection, normal success and propagated unexpected
+failure. Enclosure/stage arguments are assembled before the success update;
+supported early rejection has no interval/stages, although input metadata and
+attempted-work counts may remain. Allocation/interruption/update failure raises,
+not a returned partial success or universal rollback. SR9 retains five false
+flags, unresolved native-sinc/motion statuses and isolation. Fresh output objects
+are still caller-mutable declarations, not source authentication or proof.
+Installed sinc accuracy, NF2-NF7, source authority and task-quality remain open.
+
+**Checks and preserved failures.** The first static validator assumed ast.walk
+would list nested range loops in source order; it failed because shallower loops
+are visited first. Only the matcher changed to the exact loop-bound multiset
+8/18/32; the same guard-order/live-binding/exception/source-hash/scope checks
+then passed. No source or mathematical requirement was weakened. A later
+focused text/hash check passed for the explicit constructor/comparison count
+decompositions, publication/measurement limits and unchanged source/test bytes.
+
+Two document patch attempts were rejected on context: one included an unrelated
+hunk, and one mixed an AGENTS handoff line into the DESIGN milestone update.
+The intended ledger hunk was applied alone; the milestone paragraph was reread
+before the corrected update. No source edit or extra numerical execution resulted.
+These are tooling/context failures, not arithmetic-test results or proof checks.
+
+Documentation checks pass: 564 reference uses/local targets, sections 1-117,
+fences/math, prior review/Sources/design contracts, stable workflow/history/last
+source-gate/task-tail preservation, ten obligations, failure/no-run history,
+three-document scope and unchanged code hashes. Whitespace and editor diagnostics
+pass. The final zero-path counter clarification, scoped diff and staged checks
+precede the local commit; no code suite or new numerical fixture is run
+for this documentation-only checkpoint. §116's 2,137 passes plus known xfail
+and 71 warnings remain the last source-gate evidence, not a new §117 run.
+Unchanged diagnostic/test blobs: `593448a4140e658692e0dc0965dc72f1f94666ae`
+and `8715a92bd370464cbbcee563b0625b59d3c3608a`. No native/runtime/GPU/teacher-
+asset/hardware qualification is refreshed by this review. No push is authorized.
+
+**Exit and next permission.** Approved conditional paper review is complete and
+exhausted, not proof/error-policy or resource/native qualification acceptance.
+All source/test APIs/ASTs/configurations/bounds/flags/verdicts, `1bb89fe`, normal
+inputs/defaults, C/wire and old artifacts remain unchanged. No pending job or
+cleanup. Task 6/9, native/source/work/numerical/physical/task-quality, teacher
+assets and ST/board gates remain open.
+
+Next proposed, **not approved**: design-only NF1 native-error bridge contract,
+distinguishing the stored-word real-pi target from the installed wrapper's
+computed program, zero/tiny branches, missing primitive evidence and conservative
+future comparison semantics. It would specify obligations, not execute a native
+comparison or approve any allowance. No source acquisition/extraction, new
+import, execution, implementation, consumer/owner/reference/log adapter, data,
+integration, dependency or qualification promotion follows. Keep isolation.
+
+[sinc-correctness-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

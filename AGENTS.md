@@ -118,23 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: isolated private NF1 rational sinc helper/
-  tests (DESIGN.md §7 / REVIEW.md §116), with stored-word/zero target, real-pi
-  Machin brackets and even-series intervals. Approved prototype limits: 32/8
-  terms, 65,536 bits, twelve reused positions/24 attempts per complete invocation.
-  All prior module ASTs/flags/verdicts remain unchanged; no native comparison,
-  owner/trace generation, adapter or runtime adoption. All five flags stay false.
+- Latest approved package complete: design-only NF1 conditional correctness/
+  work review (DESIGN.md §7 / REVIEW.md §117), ten SR0-SR9 obligations,
+  conditional decoder/interval/series arguments and a paper operation ledger.
+  Stable bindings, counter coverage, ordinary-return semantics and W0/TB0 limits
+  are explicit, not accepted proof/resource/native qualification. No source/test
+  change, import or fixture run; §116's private helper and five false flags stay.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `b0600a1`; Pylance
-  selected `/opt/venv/bin/python`, and the default offline gate passed. GPU/
-  teacher assets and native accuracy have not been requalified.
-  Next proposed, not approved: design-only conditional correctness/work-obligation
-  review of the new helper, not imports, fixtures, extraction, native comparison,
+  and native-work remain unresolved. Baseline was clean at `4606b15`; reported
+  source/test edits were reread and have no current Git diff. Last source gate
+  remains §116, not rerun here; no environment/native/GPU/teacher requalification.
+  Next proposed, not approved: design-only NF1 native-error bridge contract,
+  not source acquisition/extraction, imports, execution/native comparison,
   implementation/integration or promotion. Isolation remains default; no proof/
-  error allowance, dependency/acquisition, collection or hardware approval follows.
+  error allowance, dependency, collection or hardware approval follows.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-116 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-117 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1192,14 +1192,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §116 completes
-the separately approved isolated NF1 rational sinc helper/tests: 32/8 terms,
-65,536-bit limit, twelve reused word positions/24 attempts per complete invocation.
-The gate passes 2,137 plus known xfail; all old module ASTs/flags/verdicts and
-`1bb89fe` remain unchanged. No owner/trace/native comparison, adapter, runtime/
-wire adoption or qualification. Isolation stays default.
-Next proposed, not approved: design-only conditional correctness/work-obligation
-review; no import, fixture run, extraction, implementation, native comparison,
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §117 prepares
+the separately approved design-only conditional correctness/work review: ten
+SR0-SR9 obligations, conditional enclosure/guard derivations, paper work ledger
+and stable-binding/publication/trusted-base limits. No accepted proof/native
+accuracy or source/test/configuration/bound/flag/verdict change; `1bb89fe` stays.
+The last source gate remains §116's 2,137 plus known xfail, not rerun here.
+Next proposed, not approved: design-only NF1 native-error bridge contract;
+no acquisition/extraction, import, execution/native comparison, implementation,
 query/reference/log adapter, proof/error-allowance adoption or promotion follows.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
@@ -1423,6 +1423,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   stay unchanged; no native/owner/trace/adapter/integration or qualification.
   Next proposed, not approved: design-only conditional correctness/work-obligation
   review, not a new import/fixture/code scope or proof/error-allowance acceptance.
+  NF1 paper review (REVIEW.md §117): separately approved design-only review
+  complete; ten conditional obligations, invariant/guard derivations and paper
+  ledger, with stable-binding/counter/publication/W0-TB0 limits. No code/import/
+  fixture run or proof/allowance/flag/verdict promotion. Next proposed, not
+  approved: design-only native-error bridge contract, not acquisition/extraction,
+  execution/native comparison, implementation, adapter/integration or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

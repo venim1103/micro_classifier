@@ -8246,6 +8246,108 @@ integration, dependency or qualification promotion follows. Keep isolation.
 
 [sinc-correctness-design]: DESIGN.md
 
+## 118. NF1 Native-Error Bridge Contract Draft (2026-11-04)
+
+The user explicitly approved §117's offered design-only NF1 native-error bridge
+contract and requested autonomous work with local commits. Actual baseline:
+clean `506e892`, with no source/test or other worktree changes. A terminal
+context reports a successful user-side push; this does not authorize an assistant
+push, and none is performed. This package prepares a candidate contract only,
+not adoption of its assumptions, implementation, new numerical/native execution,
+installed-source extraction/acquisition or an implementation-error allowance.
+
+**Local hypothesis and check.** The stored-word mathematical enclosure and
+the installed wrapper's computed result need distinct claims, including zero
+substitution and the correct order of selection/product. Prior §99's actual
+record says `y=pi*where(x==0,1.0e-20,x)`, confirmed by §100's public-source
+description; substitution tests the input before multiplication, not a rounded
+pi product. This scope rereads those local records, not the installed wrapper.
+The first edit writes the bridge in DESIGN; the next action is a focused static
+wrapper-order/content/hash/scope check. It passed without a project import,
+word evaluation, fixture, native call or refreshed environment observation.
+
+**Prepared contract.** [DESIGN.md §7][sinc-bridge-design] gives nine NB0-NB8
+obligations: source/input identity, conversion/selection, zero/tiny branches,
+multiply, sine, division/output, mathematical bridge, comparison and once-only
+composition/lifetime. Exact c/e are the stored wrapper constants, not real pi
+or decimal-exact tiny values. The conditional real-binary64 stage model is
+selection z, exact product a=cz, computed y, computed sine s, then quotient O.
+Unsupported dtype/shape/conversion or selected native paths remain unresolved;
+this candidate does not narrow accepted inputs or adopt a new runtime schema.
+
+Both zero signs select the tiny constant before the product; nonzero subnormals
+are not replaced merely for being small. If the computed y is zero, the
+expression has no second substitution and the quotient bound cannot be used.
+Exact comparison/selection is still an obligation: a path treating a nonzero
+subnormal as zero needs separate branch evidence or stops the nonzero z=q
+model, rather than silently charging the wrong operand as product rounding.
+Underflow/FTZ, finite results, denominator separation and every reachable branch
+need evidence, not a changed FP mode or a new tiny-input cutoff.
+
+Using the real integral H(t)=integral cos(ut) du over u in [0,1], the draft
+separates multiplication, sine and division errors from H(cz)-F(q). Its
+conditional absolute bound is delta_d + delta_s/eta + L_B*delta_m + A(q),
+with separately justified errors, a nonzero-denominator lower bound and
+segment domains. Nonzero q retains stored-pi discrepancy; zero retains a
+symbolic substitution artifact bounded by (ce)^2/6. These are paper implications,
+not measured errors or adopted numeric allowances. Near-zero amplification
+of an absolute sine bound may remain uninformative. No native sine contract,
+selected path, FP state, actual constant word or uniform eta is established.
+
+The future comparison encloses absolute error between distance to R and the
+maximum endpoint distance. Whole-reference containment supports conditional
+consistency, strict separation supports inconsistency of the candidate claim/
+evidence bundle, and other overlap stays unresolved. O inside R only makes
+the lower bound zero; it does not prove zero error or wrapper accuracy.
+Missing identity/reference/native evidence prevents both a supported pass
+and a numerical inconsistency claim. Epsilon is not chosen from residuals or
+reference width. These rules specialize §101 rather than changing a checker.
+
+P3 argument uncertainty versus the ideal trajectory remains a distinct term
+for later P5 composition, charged once. NF2 motion products/trig, inherited pose
+error, goal/relative transforms and wire conversions remain outside NF1.
+Six BC0-BC5 paper checks cover identity, zero/subnormal branches, quotient
+separation, missing evidence, containment/separation/overlap and composition/
+invalidation. No fixture or comparison is executed to satisfy these checks.
+
+**Verification and limits.** The initial focused check passed for the recorded
+wrapper order, all nine obligations/six checks, branch/denominator/comparison/
+composition clauses, DESIGN-only edit scope and unchanged diagnostic/test hashes.
+The first expanded validator failed by requiring a §118 self-reference in
+REVIEW, which uses the numbered `## 118.` heading. This repeats the matcher
+pitfall already recorded in §115; only that assertion was corrected, not a
+document requirement. The same check then passed: 566 reference uses/local
+targets, sections 1-118, fences/math, earlier REVIEW/Sources/design contracts,
+stable workflow/history/last source-gate/task-tail preservation, obligation/check
+coverage, three-document scope and unchanged code hashes. Whitespace and editor
+diagnostics pass. The final selection caveat and ordered-reference wording,
+scoped diff/staged review precede the local commit. The code suite is not rerun
+for this documentation-only package. The last source gate remains §116's
+2,137 passes plus known xfail and 71 warnings; §117 remains a paper review.
+Source/test blobs remain `593448a4140e658692e0dc0965dc72f1f94666ae` and
+`8715a92bd370464cbbcee563b0625b59d3c3608a`. All prior APIs/ASTs/configurations/
+bounds/verdicts, five false flags, `1bb89fe`, normal inputs/defaults, C/wire,
+logs/reports and old artifacts stay unchanged. No additional import, arithmetic/
+native/GPU/model run, source/dependency acquisition, collection/labels/data,
+training, cleanup, environment/hardware action, integration or promotion.
+No background job is running. Native accuracy/source authority/W0-TB0 and
+physical/numerical/task-quality, Task 6/9, teacher assets and ST/board stay open.
+
+**Next permission, not current work.** Proposed default: retain isolation and
+unresolved native evidence. Next proposed, not approved: bounded read-only NF1
+path-evidence gap dossier from already-installed files/metadata only. Five rows:
+wrapper/constants, input/result routing, multiply/divide paths, sine/libm path,
+execution-contract evidence gaps. Proposed total inspection ceiling is 65,536
+source/metadata text bytes including failed/diagnostic reads, with no persisted
+raw artifact. This could refresh identity and locate missing evidence, not
+prove live dispatch/FP state, primitive accuracy or native work. No imports,
+dynamic loads, numerical/fixture/native comparison, package acquisition/
+extraction, dependencies, implementation, consumer/owner/reference/log adapter,
+integration, allowance adoption or promotion would be implied. That investigation
+requires separate approval; this design-only contract scope is exhausted.
+
+[sinc-bridge-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

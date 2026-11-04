@@ -5435,6 +5435,155 @@ would follow from preparing that contract. All broader gates stay open.
 
 [sinc-correctness-review]: REVIEW.md
 
+#### NF1 Native-Error Bridge Contract Draft (2026-11-04)
+
+The user separately approved the design-only contract proposed in §117;
+[review §118][sinc-bridge-review] records this preparation. This is a candidate
+evidence contract, not its adoption, an implementation or a numerical comparison.
+It uses the already recorded §99/§100 wrapper description, not a new inspection
+of installed NumPy, a source extraction or a refreshed environment identity.
+The rational helper and all native consumers remain separate and unchanged.
+
+**Claim and owning boundary.** Let q be the exact finite binary64 value decoded
+from the submitted P3 word, with $|q|\le1/64$, and let F(q) be the §115 real-pi
+normalized-sinc target, including F(0)=1. NF1 would concern the exact stored
+output O of the identified wrapper at that same q, not an ideal unrounded angle,
+an inferred scalar conversion or a complete motion step. Authenticating the
+word and establishing the actual dtype/shape/dispatch remain prerequisites.
+Neither a checked trace nor the helper's interval supplies them automatically.
+
+The recorded wrapper is `x=np.asanyarray(x)`;
+`y=pi*where(x==0,1.0e-20,x)`; `return sin(y)/y`. Therefore its conditional
+real-binary64 stage model is:
+
+$$
+z=\begin{cases} e,&x=0,\\q,&x\ne0,\end{cases}\qquad
+a=c z,\qquad y=\operatorname{mul}_{\rm native}(c,z),\qquad
+s=\operatorname{sin}_{\rm native}(y),\qquad
+O=\operatorname{div}_{\rm native}(s,y).
+$$
+
+Here c/e denote the exact values of the wrapper's stored pi/tiny constants,
+not real pi, decimal-exact $10^{-20}$ or newly selected constants. The model
+requires exact conversion x=q and proved selection/promotion to this real
+binary64 path; it is not inferred just from the expression or annotations.
+No actual bit pattern, selected kernel, FP state or error bound is refreshed
+by this draft. Result extraction must preserve the stored value exactly or
+be a separately accounted conversion, never a silently discarded NF1 error.
+Exact selection is an obligation, not a measured fact: if the actual comparison
+treats a nonzero subnormal as zero, the nonzero z=q model is not established.
+That selection effect needs its own branch evidence or a stop; do not silently
+charge it as multiplication error under the wrong selected operand.
+
+| Obligation | Required Evidence / Missing-Evidence Stop |
+| --- | --- |
+| NB0: input and identity | Bind exact P3 word, source/epoch/currentness, helper/configuration identity and wrapper/constants/build/loaded-image identities. Historical hashes or copied declarations are not present source authority. |
+| NB1: conversion and selection | Establish asanyarray dtype/shape, comparison and where selection/promotion, exact x=q and the actual c/e values. Unsupported scalar/0-D/subclass/complex or converted inputs stop this real-binary64 contract, without changing accepted inputs. |
+| NB2: zero and tiny | Both input zero signs take the tiny-constant branch before pi multiplication; nonzero subnormals do not take that branch merely because they are small. A computed zero y is not resubstituted by this expression. Cover underflow/FTZ, finite results and division separation or stop. |
+| NB3: multiplication | Bind the actual ordered pi product and a justified absolute error over its reachable branch domain, including signed zero/subnormal/overflow behavior. No generic RN64 assumption from the controlled trace. |
+| NB4: sine | Bind the selected scalar/ufunc/libm route and an independent uniform sine-error contract over every reachable y. A NumPy target label, another sine call, a policy goal or sampled maximum does not close it. |
+| NB5: division and output | Establish nonzero denominator, finite sine/quotient, division rounding and return representation/extraction. Missing near-zero or conversion evidence stops the output claim. |
+| NB6: real target and bridge | Keep c-versus-real-pi error, zero substitution, product/sine/division errors and reference uncertainty separate; use the conditional decomposition below. SR0-SR9 remain assumptions, not an accepted trusted base. |
+| NB7: comparison and classification | Bind exact stored O and independent R to the same word/domain; distinguish conditional consistency, inconsistency and unresolved overlap. No inferred allowance, zero-error conclusion from membership, nearest-endpoint fit or automatic certification. |
+| NB8: composition and lifetime | Keep P3 argument error, NF2 products/trig/motion, accumulated state error, goal/relative transforms and wire conversions outside this local result. Evidence invalidates on relevant identity/path/FP/domain changes; all five flags and native statuses remain unchanged. |
+
+**Branch-complete conditional error argument.** Define the continuous real
+function $H(t)=\int_0^1\cos(ut)\,du$, so H(0)=1 and H(t)=sin(t)/t otherwise.
+Thus F(q)=H(pi q), whereas the exact-arithmetic surrogate of this wrapper is
+H(cz). They need not be equal, even before native rounding. For an interval
+containing the segment between a and y with $|t|\le B$, differentiation under
+this bounded integral gives $|H'(t)|\le\min(1/2,B/3)$: use respectively
+$|\sin(ut)|\le1$ and $|\sin(ut)|\le u|t|$. This avoids a false singular
+sensitivity argument at q=0; it does not bound the native sine implementation.
+
+Suppose separately justified evidence supplies finite nonnegative absolute
+bounds $\delta_m,\delta_s,\delta_d$ for $|y-a|$,
+$|s-\sin(y)|$ and $|O-s/y|$, and a justified $\eta>0$ with $|y|\ge\eta$.
+With $L_B=\min(1/2,B/3)$, exact real algebra then gives
+
+$$
+|O-F(q)|\le
+\delta_d+\delta_s/\eta+L_B\delta_m+A(q),\qquad
+A(q)=|H(cz)-H(\pi q)|.
+$$
+
+For nonzero q, a separately justified segment bound $B_c$ between cq and pi q
+gives $A(q)\le\min(1/2,B_c/3)|q|\,|c-\pi|$. Real-pi enclosures may bound
+the constant discrepancy, but the c identity and all native errors stay separate.
+For either input zero word, $z=e$ and the elementary inequality
+$|1-\cos(t)|\le t^2/2$ gives $A(0)\le(ce)^2/6$. Do not assign zero artifact
+or exact O=1 from F(0)=1. Each segment/domain and each error bound needs its
+own evidence; this is a symbolic implication, not chosen numeric allowances.
+
+A reachable nonzero q with y=0 makes the quotient decomposition unavailable;
+that branch is unresolved, not a limit evaluation or a second tiny substitution.
+An interval crossing zero must be split with complete branch coverage and
+proved denominator separation, or remain unresolved. Even when y is separated,
+an absolute sine bound divided by a tiny eta can be uninformative. Relative or
+correlated bounds could improve it only with their own independent contract.
+No subnormal/tiny inputs are excluded by a new cutoff and no FP modes are changed.
+Uniform evidence must cover the whole declared domain; a per-word argument is
+only per-word. No global positive eta or uniform allowance is inferred here.
+
+**Conservative future comparison, not a checker.** Under the independently
+justified reference assumptions let $R=[l,u]$, with $l\le u$, contain F(q), and O be the
+exact decoded finite native output. Its possible absolute error is enclosed by
+
+$$
+d_{\min}=\max(l-O,0,O-u),\qquad
+d_{\max}=\max(|O-l|,|O-u|).
+$$
+
+For a separately supported candidate allowance $\varepsilon\ge0$, whole
+containment $R\subseteq[O-\varepsilon,O+\varepsilon]$, equivalently
+$d_{\max}\le\varepsilon$, supports conditional consistency for this word.
+Strict separation $d_{\min}>\varepsilon$ supports inconsistency of the bound
+evidence bundle/candidate claim, not attribution to a particular primitive.
+Every other case remains unresolved, including boundary overlap when the upper
+error bound exceeds epsilon. This is the symmetric-error specialization of
+§101's R within O-E rule, not permission to change that protocol or a checker.
+
+O inside R only makes the lower bound zero; it does not generally make the
+upper bound zero. An exact unit reference for a zero word similarly does not
+predict O or qualify unmeasured zero behavior. Missing NB0-NB6 evidence prevents
+either a supported pass or a numerical inconsistency claim; an unsupported
+output remains unresolved. Comparisons would use exact/outward arithmetic with
+independent uncertainty accounted for, never rounded nearest-endpoint residuals.
+Reference refinement requires its own approved method/budget; epsilon cannot
+be fitted to a result, widened for containment or inferred from reference width.
+No finite comparisons establish a uniform implementation bound by themselves.
+
+**Composition boundary.** If q* is the ideal unrounded P3 argument, a later
+qualified P5 argument would add the distinct $|F(q)-F(q^*)|$ term once, using
+a justified domain/sensitivity argument. It must not also charge that argument
+uncertainty inside the local NF1 error above. Multiplication by speed/duration,
+midpoint trig, coordinate arithmetic, inherited pose error, goal transforms and
+wire conversion each retain their own ordered obligations. A local consistent
+comparison cannot update owner/auditor verdicts, reference bounds or flags.
+
+**Paper acceptance checks and exit.** The contract would require BC0 exact
+word/target/output identities; BC1 both zeros and nonzero subnormal branches
+without an input cutoff; BC2 separated-denominator/finite error decomposition;
+BC3 explicit missing-evidence stops; BC4 containment/separation/overlap and
+inside-reference countercases; BC5 once-only composition and invalidation.
+These are review requirements, not executed fixtures, a callable schema or
+accepted proof. Default disposition remains unresolved native evidence and
+isolation; no primitive now has a supported allowance from this draft.
+
+Next proposed, not approved: a bounded read-only NF1 path-evidence gap dossier
+using current already-installed files/metadata only. Proposed ceiling: five
+rows (wrapper/constants, input/result routing, multiply/divide paths, sine/libm
+path, execution-contract evidence gaps), at most 65,536 bytes of inspected
+source/metadata text including failed/diagnostic reads, and no persisted raw
+artifact. It could refresh identity and locate missing evidence, not prove
+actual dispatch/FP state, primitive accuracy or native work. No imports, dynamic
+loads, numerical/fixture/native comparison, acquisition/extraction, dependencies,
+implementation, integration or allowance/qualification adoption is implied.
+Even that read-only investigation needs separate approval; this contract's
+design-only scope is exhausted when the documentation checks/commit complete.
+
+[sinc-bridge-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7446,7 +7595,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §117): the active
+Current critical-path checkpoint (2026-11-04, REVIEW.md §118): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -7591,10 +7740,14 @@ The separately approved design-only conditional review is prepared (§117):
 ten SR0-SR9 obligations, decoder/interval/series derivations and a paper ledger,
 not accepted proof or resource/native qualification. Stable global bindings,
 counter coverage, ordinary-return publication and W0/TB0 remain explicit limits.
-No source/test/run/flag/verdict change. Next proposed, not approved: design-only
-NF1 native-error bridge contract; no source acquisition/extraction, new import,
-execution/native comparison, adapter, integration, allowance or promotion follows.
-All broader gates remain unchanged.
+No source/test/run/flag/verdict change. The separately approved design-only
+NF1 native-error bridge contract is prepared (§118): nine NB0-NB8 obligations,
+recorded wrapper order, branch-specific symbolic error decomposition, conservative
+comparison rules and six paper acceptance checks. No installed path/FP/error
+evidence or allowance is refreshed/adopted. Next proposed, not approved: bounded
+read-only NF1 path-evidence gap dossier, five rows and at most 65,536 inspected
+text bytes; no import, numerical/native comparison, implementation, adapter,
+integration, acquisition, allowance or promotion follows. All broader gates stay.
 
 | Milestone | Deliverable | Exit condition |
 | --- | --- | --- |

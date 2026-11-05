@@ -6725,6 +6725,55 @@ ST/board remain blocked. Present approval ends at document checks/local commit.
 
 [sinc-bind-budget-review]: REVIEW.md
 
+#### NF1 Isolated Declared-Binding Checker (2026-11-05)
+
+The user's §128 follow-up approved the bounded private capture/checker/sixteen-
+control package. [Review §129][sinc-bind-implementation-review] records execution
+and failures. One private 65,536-bit limit and checker were added; every old
+source/test AST node and order is preserved. There is no runtime/wire/owner/
+reference/V-cell/native/adapter integration or qualification promotion.
+
+The checker accepts only literal synthetic opt-in, expected finite builtin u64 q
+and §127's exact full record profiles. It independently decodes signed q, checks
+canonical pairs/domain/configuration/branch/common interval/work-copy consistency
+and stage interval ordering, then publishes fresh diagnostic-only correspondence.
+All raw pair guards precede Fraction work. Candidate-work keys are validated
+before lookup, following a reproduced hostile-key failure and repair. Fixed
+validated containers bound snapshot traversal under serialized caller ownership;
+this is not an atomic snapshot, immutable binding or universal return guarantee.
+Unexpected/allocation/interruption errors propagate. No producer/checker/native
+call occurs inside verification; no interval/series/cell inclusion is inferred.
+
+The in-memory module fixture captures twelve candidates, twelve nested and twelve
+companion-direct enclosures, six nested cells and twenty-four snapshots per tested
+invocation. Origin-labelled attempt markers are distinct from declared work.
+All twelve full pairs are required; worker execution is rejected. No callee
+payload interception, same-invocation transcript claim, persistent capture or
+task dataset. Control copies/report/work/endpoint-list mutations leave pool and
+saved baseline unchanged. Sixteen cases request exactly two checker entries each:
+17 verified, 12 unresolved and three exceptions per complete matrix. These are
+finite synthetic correspondence controls, not source authority or target quality.
+
+All five allowed source invocations were spent: BC0 pass, BC8 hostile-key failure,
+same BC8 repair pass, complete matrix pass and root gate pass. Checker entries
+were 2/2/2/32/32 (70 total); capture totals 60 candidate/120 enclosure/30 nested
+cell/120 snapshots. No extra capture/checker execution remains authorized. Final
+gate: 2,197 passes, known xfail, 71 existing warnings; lint/changed-file format/
+editor/old-AST checks pass. No additional opt-in C/native/Arm/sanitizer/model/board
+gate or environment qualification. The five flags remain false; native/motion/
+source/work unresolved and every consumer ineligible. `1bb89fe` stays unchanged.
+
+Declared correspondence still permits mutually consistent fabricated records.
+V-cell exact-content composition, V-target inclusion, V-live/capture authority,
+CT0-CT2/CT4-CT5/W0/TB0/resource and Task 6/9 claims remain unaccepted. Counts and
+maximum accepted canonical bits are not primitive/native/time/RAM fit evidence.
+Next concrete prerequisite is a conditional guard/snapshot/publication/work
+review of this exact checker before considering wider evidence use; no further
+capture/run, integration or proof/error/work allowance/Route C/totality/qualification
+is approved by completing the bounded source package. Isolation remains default.
+
+[sinc-bind-implementation-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8736,7 +8785,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §128): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §129): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8939,6 +8988,11 @@ The separately approved capture/budget protocol is prepared (§128): twelve slot
 origin and nonrefundable failure accounting; at most five verification/repair
 invocations. User follow-up approves the next private fixture/checker/sixteen-control
 package and normal source gates within those limits, not integration or promotion.
+The bounded source package is complete (§129): isolated declared-binding checker,
+owned twelve-slot companion capture and sixteen controls; old ASTs/caps preserved.
+Gate 2,197 plus known xfail/71 warnings; five invocations exhausted, no further
+capture/checker run. Declared correspondence is not V-target/V-live/resource or
+consumer qualification; conditional guard/snapshot/work review remains a prerequisite.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

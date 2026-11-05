@@ -413,6 +413,351 @@ _ARITHMETIC_TRACE_LITERALS = (
 )
 
 
+@pytest.fixture(scope="module")
+def synthetic_sinc_binding_pool(request):
+    import hashlib
+    from pathlib import Path
+
+    from sim import diagnostics
+
+    assert not hasattr(request.config, "workerinput")
+    counts = {
+        "candidate": 0,
+        "enclosure_nested": 0,
+        "enclosure_direct": 0,
+        "cell": 0,
+        "snapshot": 0,
+        "checker": 0,
+    }
+    journal = []
+    origin, slot = "candidate", 0
+    originals = (
+        diagnostics._candidate_synthetic_sinc_word,
+        diagnostics._enclose_synthetic_sinc_word,
+        diagnostics._certify_synthetic_sinc_cell,
+    )
+    identities = {
+        str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in (Path(diagnostics.__file__), Path(__file__))
+    }
+
+    def reserve(kind, maximum):
+        assert counts[kind] < maximum
+        counts[kind] += 1
+
+    def invoke(kind, maximum, helper, argument):
+        reserve(kind, maximum)
+        entry = {"kind": kind, "slot": slot, "origin": origin, "outcome": "pending"}
+        journal.append(entry)
+        try:
+            output = helper(argument, synthetic_test_only=True)
+        except BaseException as error:
+            entry["outcome"] = type(error).__name__
+            raise
+        entry["outcome"] = output["status"]
+        return output
+
+    def enclose(word, **keywords):
+        assert keywords == {"synthetic_test_only": True}
+        return invoke(
+            "enclosure_nested" if origin == "candidate" else "enclosure_direct",
+            12,
+            originals[1],
+            word,
+        )
+
+    def cell(interval, **keywords):
+        assert origin == "candidate" and keywords == {"synthetic_test_only": True}
+        return invoke("cell", 12, originals[2], interval)
+
+    def freeze(value, depth=0):
+        assert depth <= 8
+        if type(value) is dict:
+            assert len(value) <= 23 and all(
+                type(key) is str and len(key) <= 32 for key in value
+            )
+            return {key: freeze(item, depth + 1) for key, item in value.items()}
+        if type(value) in (tuple, list):
+            assert len(value) <= 8
+            values = [freeze(item, depth + 1) for item in value]
+            return tuple(values) if type(value) is tuple else values
+        assert type(value) in (int, str, bool)
+        if type(value) is int:
+            assert value.bit_length() <= 65536
+        if type(value) is str:
+            assert len(value) <= 64
+        return value
+
+    assert (
+        diagnostics._SYNTHETIC_SINC_BITS,
+        diagnostics._SYNTHETIC_SINC_CELL_BITS,
+        diagnostics._SYNTHETIC_SINC_CELL_STEPS,
+    ) == (65536, 65536, 64)
+    records = []
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(diagnostics, "_enclose_synthetic_sinc_word", enclose)
+        patch.setattr(diagnostics, "_certify_synthetic_sinc_cell", cell)
+        for slot in range(12):
+            word = _ARITHMETIC_TRACE_LITERALS[slot][2][4]
+            origin = "candidate"
+            candidate = invoke("candidate", 12, originals[0], word)
+            origin = "companion_direct"
+            enclosure = enclose(word, synthetic_test_only=True)
+            assert (
+                type(candidate) is dict
+                and len(candidate) == 23
+                and candidate["status"] == "candidate_mathematical_sinc_word"
+            )
+            assert (
+                type(enclosure) is dict
+                and len(enclosure) == 20
+                and enclosure["status"] == "enclosed_mathematical_sinc"
+            )
+            common = {
+                "allowed_use",
+                "status",
+                "reason",
+                "target",
+                "q_word",
+                "work",
+                "sign",
+                "q_ratio",
+                "configuration",
+                "interval",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "producer_parity_qualified",
+            }
+            assert set(candidate) == common | {
+                "identity",
+                "native_sinc_status",
+                "motion_status",
+                "source_status",
+                "native_work_status",
+                "consumer_status",
+                "certificate",
+                "enclosure_binding",
+            }
+            assert set(enclosure) == common | {
+                "domain_ratio",
+                "native_sinc_status",
+                "motion_status",
+                "branch",
+                "stages",
+            }
+            zero = word & ((1 << 63) - 1) == 0
+            assert set(enclosure["stages"]) == (
+                set()
+                if zero
+                else {
+                    "arctangent",
+                    "pi",
+                    "squared_argument",
+                    "coefficients",
+                    "polynomial",
+                    "remainder",
+                }
+            )
+            if not zero:
+                assert set(candidate["work"]["cell"]) == {
+                    "search_iterations",
+                    "endpoint_iterations",
+                    "dyadic_decodes",
+                    "midpoint_constructions",
+                    "rational_comparisons",
+                    "rational_constructions",
+                    "max_result_bits",
+                }
+                assert (
+                    type(candidate["work"]["cell"]["endpoint_iterations"]) is list
+                    and len(candidate["work"]["cell"]["endpoint_iterations"]) == 2
+                )
+            reserve("snapshot", 24)
+            candidate = freeze(candidate)
+            reserve("snapshot", 24)
+            enclosure = freeze(enclosure)
+            records.append((word, candidate, enclosure))
+    assert (
+        len(records) == 12
+        and counts["candidate"]
+        == counts["enclosure_nested"]
+        == counts["enclosure_direct"]
+        == 12
+    )
+    assert counts["snapshot"] == 24 and counts["cell"] <= 12
+    assert all(
+        hashlib.sha256(Path(path).read_bytes()).hexdigest() == digest
+        for path, digest in identities.items()
+    )
+    return {
+        "records": tuple(records),
+        "counts": counts,
+        "journal": journal,
+        "source_hashes": identities,
+    }
+
+
+@pytest.mark.parametrize("control_index", range(16))
+def test_synthetic_sinc_declared_binding(
+    control_index, synthetic_sinc_binding_pool, monkeypatch
+):
+    import ast
+    import inspect
+    from copy import deepcopy
+
+    from sim import diagnostics
+
+    pool = synthetic_sinc_binding_pool
+    mapping = (0, 1, 2, 3, 4, 5, 6, 1, 8, 9, 10, 11, 7, 1, 2, 3)
+    word, original_candidate, original_enclosure = pool["records"][
+        mapping[control_index]
+    ]
+    originals = deepcopy((original_candidate, original_enclosure))
+    candidate, enclosure = deepcopy(originals)
+    helper = diagnostics._check_synthetic_sinc_declared_binding
+    attempts = 0
+
+    def forbidden(*arguments, **keywords):
+        raise AssertionError("binding checker reached an excluded producer/native path")
+
+    for name in (
+        "_candidate_synthetic_sinc_word",
+        "_enclose_synthetic_sinc_word",
+        "_certify_synthetic_sinc_cell",
+        "_check_synthetic_cell_certificate",
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+        "_reference_synthetic_c1_motion",
+        "_audit_synthetic_controlled_candidate",
+        "_SyntheticC1ControlledMotionOwner",
+        "_SyntheticC1SourceRecorder",
+        "prepare_synthetic_c1_relative_input",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    syntax = ast.parse(inspect.getsource(helper))
+    assert not any(
+        isinstance(node, (ast.Import, ast.ImportFrom))
+        or isinstance(node, ast.Constant)
+        and type(node.value) is float
+        for node in ast.walk(syntax)
+    )
+    assert not any(
+        isinstance(node, ast.Name)
+        and node.id in {"np", "math", "float", "open", "deepcopy"}
+        for node in ast.walk(syntax)
+    )
+
+    def check(expected=word, candidate_input=None, enclosure_input=None, **keywords):
+        nonlocal attempts
+        assert attempts < 2 and pool["counts"]["checker"] < 32
+        attempts += 1
+        pool["counts"]["checker"] += 1
+        return helper(
+            expected,
+            candidate if candidate_input is None else candidate_input,
+            enclosure if enclosure_input is None else enclosure_input,
+            **keywords,
+        )
+
+    first = check(synthetic_test_only=True)
+    saved = deepcopy(first)
+    assert first["status"] == "verified_declared_sinc_binding", first["reason"]
+    assert first["q_word"] == word and first["sign"] == word >> 63
+    ratio = _literal_binary64_fraction(word)
+    assert first["q_ratio"] == (ratio.numerator, ratio.denominator)
+    zero = word & ((1 << 63) - 1) == 0
+    assert first["work"]["canonical_pair_checks"] == (10 if zero else 35)
+    assert first["work"]["rational_constructions"] == (11 if zero else 36)
+    assert first["work"]["rational_comparisons"] == (2 if zero else 8)
+    assert first["work"]["dyadic_decodes"] == 1
+    if control_index in (0, 1):
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check(synthetic_test_only=False if control_index == 0 else 1)
+    elif control_index == 14:
+
+        def allocate(*arguments):
+            raise MemoryError("injected binding allocation")
+
+        monkeypatch.setattr(diagnostics, "Fraction", allocate)
+        with pytest.raises(MemoryError, match="injected binding allocation"):
+            check(synthetic_test_only=True)
+    elif control_index == 15:
+        second = check(synthetic_test_only=True)
+        candidate["configuration"]["sinc_terms"] = 99
+        second["work"]["canonical_pair_checks"] = 99
+        second["certificate"]["word"] = 0
+        series_original = deepcopy(pool["records"][7][1])
+        series_copy = deepcopy(series_original)
+        series_copy["work"]["cell"]["endpoint_iterations"][0] = 99
+        assert pool["records"][7][1] == series_original
+        assert first == saved
+    else:
+        if control_index == 2:
+            enclosure = deepcopy(pool["records"][1][2])
+        elif control_index == 3:
+            candidate["sign"] = float(candidate["sign"])
+        elif control_index == 4:
+            enclosure["configuration"]["sinc_terms"] = 8.0
+        elif control_index == 5:
+            candidate["certificate"]["interval"] = (
+                ((1, 1), (1, 1)) if not zero else ((1, 1), (2, 1))
+            )
+        elif control_index == 6:
+            enclosure["stages"].pop("pi")
+        elif control_index == 7:
+            candidate["certificate"]["branch"] = "series"
+        elif control_index == 8:
+
+            class HostileKey:
+                def __hash__(self):
+                    return hash("enclosure")
+
+                def __eq__(self, other):
+                    raise AssertionError("unexpected key equality hook")
+
+            declared = candidate["work"].pop("enclosure")
+            candidate["work"][HostileKey()] = declared
+        elif control_index == 9:
+            enclosure["domain_ratio"] = (2, 128)
+        elif control_index == 10:
+            enclosure["q_ratio"] = (1 << 65536, 1)
+        elif control_index == 11:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_BIND_CHECK_BITS", 1)
+        elif control_index == 12:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_BIND_CHECK_BITS", 65537)
+        else:
+            fraction = diagnostics.Fraction
+
+            def changed(*arguments):
+                output = fraction(*arguments)
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_BIND_CHECK_BITS", 1)
+                return output
+
+            monkeypatch.setattr(diagnostics, "Fraction", changed)
+        rejected = check(synthetic_test_only=True)
+        assert (
+            rejected["status"] == "unresolved_sinc_declared_binding"
+            and "certificate" not in rejected
+        )
+        if control_index == 10:
+            assert rejected["work"]["rational_constructions"] == 0
+    assert attempts == 2 and (original_candidate, original_enclosure) == originals
+    assert first == saved and first["work"]["max_result_bits"] <= 65536
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    ):
+        assert first[flag] is False
+    assert first["consumer_status"] == "ineligible_isolated_candidate"
+
+
 @pytest.mark.parametrize("control_index", range(16))
 def test_synthetic_cell_certificate_checker(control_index, monkeypatch):
     import ast

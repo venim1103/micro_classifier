@@ -38,6 +38,395 @@ _SYNTHETIC_SINC_CELL_STEPS = 64
 _SYNTHETIC_CELL_CHECK_BITS = 65536
 
 
+_SYNTHETIC_BIND_CHECK_BITS = 65536
+
+
+def _check_synthetic_sinc_declared_binding(
+    expected_q_word, candidate_record, enclosure_record, *, synthetic_test_only=False
+):
+    """Check declared record correspondence, not enclosure truth or live authority."""
+    if synthetic_test_only is not True:
+        raise ValueError("binding checker requires synthetic_test_only=True")
+    limit = _SYNTHETIC_BIND_CHECK_BITS
+    work = {
+        "canonical_pair_checks": 0,
+        "dyadic_decodes": 0,
+        "rational_comparisons": 0,
+        "rational_constructions": 0,
+        "max_result_bits": 0,
+    }
+    result = {
+        "identity": "synthetic_sinc_declared_binding_check_v0",
+        "allowed_use": "isolated_synthetic_declared_binding_only",
+        "status": "unresolved_sinc_declared_binding",
+        "reason": "unsupported_declared_binding",
+        "configuration": {
+            "rational_bit_limit": limit
+            if type(limit) is int and 1 <= limit <= 65536
+            else None
+        },
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "producer_parity_qualified": False,
+        "native_sinc_status": "unresolved_native_sinc_evidence",
+        "motion_status": "unresolved_motion_evidence",
+        "source_status": "unresolved_source_authority",
+        "native_work_status": "unresolved_native_work_evidence",
+        "consumer_status": "ineligible_isolated_candidate",
+        "work": work,
+    }
+    if type(limit) is not int or not 1 <= limit <= 65536:
+        result["reason"] = "unsupported_binding_check_configuration"
+        return result
+
+    class BindingStop(ArithmeticError):
+        pass
+
+    def require(condition):
+        if not condition:
+            raise BindingStop("inconsistent_declared_binding")
+
+    def preflight(*sizes):
+        if (
+            type(_SYNTHETIC_BIND_CHECK_BITS) is not int
+            or _SYNTHETIC_BIND_CHECK_BITS != limit
+        ):
+            raise BindingStop("changed_binding_check_configuration")
+        if max(sizes) > limit:
+            raise BindingStop("binding_rational_work_limit")
+
+    def shape(value, keys):
+        require(type(value) is dict and len(value) == len(keys))
+        require(
+            all(type(key) is str and len(key) <= 32 and key in keys for key in value)
+        )
+
+    def integer(value, low, high):
+        require(type(value) is int and low <= value <= high)
+
+    pairs = []
+
+    def pair(value):
+        require(type(value) is tuple and len(value) == 2)
+        require(all(type(part) is int for part in value) and value[1] > 0)
+        preflight(*(part.bit_length() for part in value))
+        pairs.append(value)
+
+    def interval(value):
+        require(type(value) is tuple and len(value) == 2)
+        for endpoint in value:
+            pair(endpoint)
+
+    def rational(numerator, denominator):
+        preflight(numerator.bit_length(), denominator.bit_length())
+        work["rational_constructions"] += 1
+        value = Fraction(numerator, denominator)
+        numerator, denominator = value.numerator, value.denominator
+        require(type(numerator) is int and type(denominator) is int and denominator > 0)
+        size = max(numerator.bit_length(), denominator.bit_length())
+        preflight(size)
+        work["max_result_bits"] = max(work["max_result_bits"], size)
+        return numerator, denominator
+
+    def compare(left, right):
+        preflight(
+            left[0].bit_length() + right[1].bit_length(),
+            right[0].bit_length() + left[1].bit_length(),
+        )
+        work["rational_comparisons"] += 1
+        first, second = left[0] * right[1], right[0] * left[1]
+        return (first > second) - (first < second)
+
+    def owned(value):
+        if type(value) is dict:
+            return {key: owned(item) for key, item in value.items()}
+        if type(value) is tuple:
+            return tuple(owned(item) for item in value)
+        if type(value) is list:
+            return [owned(item) for item in value]
+        return value
+
+    flags = {
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    }
+    common = {
+        "allowed_use",
+        "status",
+        "reason",
+        "target",
+        "q_word",
+        "work",
+        "sign",
+        "q_ratio",
+        "configuration",
+        "interval",
+    } | flags
+    candidate_keys = common | {
+        "identity",
+        "native_sinc_status",
+        "motion_status",
+        "source_status",
+        "native_work_status",
+        "consumer_status",
+        "certificate",
+        "enclosure_binding",
+    }
+    enclosure_keys = common | {
+        "domain_ratio",
+        "native_sinc_status",
+        "motion_status",
+        "branch",
+        "stages",
+    }
+    configuration = {
+        "arctangent_terms": 32,
+        "sinc_terms": 8,
+        "rational_bit_limit": 65536,
+    }
+    try:
+        integer(expected_q_word, 0, (1 << 64) - 1)
+        exponent = (expected_q_word >> 52) & 2047
+        require(exponent != 2047)
+        sign = expected_q_word >> 63
+        zero = expected_q_word & ((1 << 63) - 1) == 0
+        branch = "zero" if zero else "series"
+        for record, keys, selectors in (
+            (
+                candidate_record,
+                candidate_keys,
+                {
+                    "identity": "controlled_mathematical_sinc_rn64_candidate_v0",
+                    "allowed_use": "isolated_synthetic_sinc_word_candidate_only",
+                    "status": "candidate_mathematical_sinc_word",
+                    "reason": "conditional_mathematical_rounding_cell_only",
+                    "source_status": "unresolved_source_authority",
+                    "native_work_status": "unresolved_native_work_evidence",
+                    "consumer_status": "ineligible_isolated_candidate",
+                },
+            ),
+            (
+                enclosure_record,
+                enclosure_keys,
+                {
+                    "allowed_use": "isolated_synthetic_sinc_reference_only",
+                    "status": "enclosed_mathematical_sinc",
+                    "reason": "exact_mathematical_zero_branch"
+                    if zero
+                    else "real_pi_even_series_enclosure_only",
+                    "branch": branch,
+                },
+            ),
+        ):
+            shape(record, keys)
+            selectors.update(
+                target="real_pi_normalized_sinc_at_stored_binary64",
+                native_sinc_status="unresolved_native_sinc_evidence",
+                motion_status="unresolved_motion_evidence",
+            )
+            require(
+                all(
+                    type(record[key]) is str and record[key] == value
+                    for key, value in selectors.items()
+                )
+            )
+            require(
+                all(type(record[key]) is bool and record[key] is False for key in flags)
+            )
+            integer(record["q_word"], 0, (1 << 64) - 1)
+            integer(record["sign"], 0, 1)
+            require(record["q_word"] == expected_q_word and record["sign"] == sign)
+            shape(record["configuration"], configuration)
+            require(
+                all(
+                    type(record["configuration"][key]) is int
+                    and record["configuration"][key] == value
+                    for key, value in configuration.items()
+                )
+            )
+            pair(record["q_ratio"])
+            interval(record["interval"])
+        pair(enclosure_record["domain_ratio"])
+        require(enclosure_record["domain_ratio"] == (1, 64))
+        binding = candidate_record["enclosure_binding"]
+        shape(binding, {"q_word", "sign", "q_ratio"})
+        integer(binding["q_word"], 0, (1 << 64) - 1)
+        integer(binding["sign"], 0, 1)
+        require(binding["q_word"] == expected_q_word and binding["sign"] == sign)
+        pair(binding["q_ratio"])
+        stages = enclosure_record["stages"]
+        shape(
+            stages,
+            set()
+            if zero
+            else {
+                "arctangent",
+                "pi",
+                "squared_argument",
+                "coefficients",
+                "polynomial",
+                "remainder",
+            },
+        )
+        if not zero:
+            require(
+                type(stages["arctangent"]) is tuple and len(stages["arctangent"]) == 2
+            )
+            for value in stages["arctangent"]:
+                interval(value)
+            for key in ("pi", "squared_argument", "polynomial", "remainder"):
+                interval(stages[key])
+            require(
+                type(stages["coefficients"]) is tuple
+                and len(stages["coefficients"]) == 8
+            )
+            for value in stages["coefficients"]:
+                pair(value)
+        certificate = candidate_record["certificate"]
+        shape(
+            certificate,
+            {"word", "interval", "branch"}
+            if zero
+            else {
+                "word",
+                "interval",
+                "neighbors",
+                "boundaries",
+                "closed_ties",
+                "lower_order",
+                "upper_order",
+                "whole_interval_contained",
+            },
+        )
+        integer(certificate["word"], 1, 0x7FEFFFFFFFFFFFFE)
+        interval(certificate["interval"])
+        if zero:
+            require(
+                type(certificate["branch"]) is str
+                and certificate["branch"] == "zero"
+                and certificate["word"] == 0x3FF0000000000000
+            )
+        else:
+            require(
+                type(certificate["neighbors"]) is tuple
+                and len(certificate["neighbors"]) == 3
+            )
+            for neighbor in certificate["neighbors"]:
+                require(type(neighbor) is tuple and len(neighbor) == 2)
+                integer(neighbor[0], 0, 0x7FEFFFFFFFFFFFFF)
+                pair(neighbor[1])
+            interval(certificate["boundaries"])
+            require(
+                type(certificate["closed_ties"]) is bool
+                and type(certificate["whole_interval_contained"]) is bool
+                and certificate["whole_interval_contained"] is True
+            )
+            for key in ("lower_order", "upper_order"):
+                integer(certificate[key], -1, 1)
+        declared = candidate_record["work"]
+        shape(
+            declared,
+            {"enclosure_entries", "cell_entries", "enclosure"}
+            | (set() if zero else {"cell"}),
+        )
+        for enclosure_work in (enclosure_record["work"], declared["enclosure"]):
+            shape(enclosure_work, {"rational_operations", "max_result_bits"})
+            integer(enclosure_work["rational_operations"], 0, (1 << 64) - 1)
+            integer(enclosure_work["max_result_bits"], 0, 65536)
+        integer(declared["enclosure_entries"], 1, 1)
+        integer(declared["cell_entries"], 0 if zero else 1, 0 if zero else 1)
+        require(declared["enclosure"] == enclosure_record["work"])
+        if not zero:
+            cell = declared["cell"]
+            shape(
+                cell,
+                {
+                    "search_iterations",
+                    "endpoint_iterations",
+                    "dyadic_decodes",
+                    "midpoint_constructions",
+                    "rational_comparisons",
+                    "rational_constructions",
+                    "max_result_bits",
+                },
+            )
+            for key in cell:
+                if key != "endpoint_iterations":
+                    integer(
+                        cell[key],
+                        0,
+                        65536 if key == "max_result_bits" else (1 << 64) - 1,
+                    )
+            require(
+                type(cell["endpoint_iterations"]) is list
+                and len(cell["endpoint_iterations"]) == 2
+            )
+            for count in cell["endpoint_iterations"]:
+                integer(count, 0, 64)
+            require(sum(cell["endpoint_iterations"]) == cell["search_iterations"])
+        candidate, enclosure = owned(candidate_record), owned(enclosure_record)
+        for value in pairs:
+            work["canonical_pair_checks"] += 1
+            require(rational(*value) == value)
+        work["dyadic_decodes"] += 1
+        if zero:
+            ratio = rational(0, 1)
+        else:
+            significand = expected_q_word & ((1 << 52) - 1)
+            if exponent:
+                significand += 1 << 52
+            shift = exponent - 1075 if exponent else -1074
+            preflight(significand.bit_length() + max(0, shift), 1 + max(0, -shift))
+            numerator = significand << max(0, shift)
+            ratio = rational(-numerator if sign else numerator, 1 << max(0, -shift))
+        require(compare((abs(ratio[0]), ratio[1]), (1, 64)) <= 0)
+        require(
+            candidate["q_ratio"]
+            == enclosure["q_ratio"]
+            == candidate["enclosure_binding"]["q_ratio"]
+            == ratio
+        )
+        common_interval = candidate["interval"]
+        require(
+            common_interval
+            == enclosure["interval"]
+            == candidate["certificate"]["interval"]
+        )
+        require(common_interval[0][0] > 0 and compare(*common_interval) <= 0)
+        if zero:
+            require(common_interval == ((1, 1), (1, 1)))
+        else:
+            stages = enclosure["stages"]
+            for value in (
+                *stages["arctangent"],
+                stages["pi"],
+                stages["squared_argument"],
+                stages["polynomial"],
+                stages["remainder"],
+            ):
+                require(compare(*value) <= 0)
+        preflight(1)
+        result.update(
+            status="verified_declared_sinc_binding",
+            reason="declared_correspondence_only",
+            q_word=expected_q_word,
+            sign=sign,
+            q_ratio=ratio,
+            branch=branch,
+            profile=owned(configuration),
+            interval=common_interval,
+            certificate=owned(candidate["certificate"]),
+        )
+    except BindingStop as error:
+        result["reason"] = str(error)
+    return result
+
+
 def _check_synthetic_cell_certificate(certificate, *, synthetic_test_only=False):
     """Independently verify supplied cell contents, never sinc inclusion or source."""
     if synthetic_test_only is not True:

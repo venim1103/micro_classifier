@@ -9370,6 +9370,81 @@ teacher assets and ST/board remain blocked. No background job or assistant push.
 
 [sinc-bind-budget-design]: DESIGN.md
 
+## 129. NF1 Isolated Declared-Binding Checker (2026-11-05)
+
+The user's explicit §128 follow-up authorized the next bounded source package
+and autonomous local commits. Clean baseline `5341c41`; no push, dependency,
+new q/scene/cohort, persistent capture or broader integration/qualification scope.
+[DESIGN.md §7][sinc-bind-implementation-design] records the implementation limits.
+
+Added `_SYNTHETIC_BIND_CHECK_BITS=65536` and the 384-line private
+`_check_synthetic_sinc_declared_binding`, one 183-line module capture fixture and
+one 156-line sixteen-case test. Every earlier module/test AST node and order
+remains unchanged pre/post formatting. Exact builtin profiles, independent signed
+q/domain/canonical-ratio checks, guarded comparisons, full stage shapes/order,
+interval/work-copy/zero correspondence and fresh diagnostic publication only.
+Verifier calls no producer/cell/V-cell/owner/reference/trace/native/log adapter.
+Faithful Fraction/GCD/runtime bindings and serialized caller ownership remain
+premises; counters are attempted logical stages, not physical resource evidence.
+
+**Behavior checks and repair.** First cheapest BC0 passed (1, 2.46 s) with the
+owned twelve-slot pool and two checker requests. Guard-order inspection found
+candidate-work `.get` before key validation; sharpened BC8 into an exact-dict
+hostile nested-key control without another request per case. BC8 failed (1,
+0.69 s): its equality hook executed at that lookup. Moved exact candidate-work
+key validation before lookup; same BC8 passed (1, 0.32 s), rejecting without
+the hook. No assertion, cap, tolerance or known xfail was relaxed.
+
+Strengthened capture root/stage/work shapes and non-worker enforcement; BC15
+mutates an independent copied series endpoint list as well as input/report/work
+copies. Complete sixteen-case matrix passed (0.46 s). Each case requests two
+checker entries; per matrix 17 verified/12 unresolved/3 exceptions. Fresh full
+pools use 12 candidates/12 nested plus 12 companion-direct enclosures/6 nested
+cells/24 snapshots. All twelve pairs are required, no skip/refill/recapture.
+Origin markers do not claim the companion was the candidate's callee.
+
+**Style and final gate.** Scoped lint passed; initial changed-file format check
+failed only new layouts. Formatted only the two changed Python files; same
+format/lint and old-AST/order checks pass. Editor diagnostics are clear. Final
+root command `/opt/venv/bin/python -m pytest -q && ruff check . && git diff --check`
+passed: 2,197 tests, one known transformer xfail, 71 existing ONNX warnings,
+63.34 s, no reported skips. No extra opt-in native/C/Arm/sanitizer/GPU/teacher/
+board or environment requalification; those historical gates are not renewed.
+
+**Budget and retention.** Exactly five source invocations: BC0, failed BC8,
+repaired BC8, full matrix, root gate. Checker entries 2/2/2/32/32 = 70; capture
+totals 60 candidates/120 enclosures/30 nested cells/120 snapshots, all within
+§128's 60/120/60/120/160 conservative ceilings. The sharpened regression and
+local repair consumed the two extra focused positions; no further fixture/helper
+execution or rerun is authorized. Unchanged default legacy controls ran under
+separate root-gate approval and their original limits. All payloads stay in
+invocation fixture memory, released at teardown; no new capture exporter/cache/
+report/data, existing reports/logs unchanged. Preserve all failures above and §128.
+
+Tested Git blobs: source `709dc01f1232dd76a66dd571bcd8365432365ded`, tests
+`955a39417a8d2e3a834dfc0efa836d4f43642767`. Final document/reference/history/
+identity checks pass: 590 actual references/local targets, sections 1-129,
+prior review/Sources/design/milestones/workflow/task-tail preservation, actual
+budget/failure/gate/no-run limits, old source/test ASTs and exact five-file scope.
+Editor diagnostics are clear; exact source/test diff review and whitespace pass.
+Final staged-byte checks precede the checkpoint commit; the successful source gate is
+not rerun merely after documentation. No background job, unrelated cleanup or
+assistant push. Source file identities/capture counters are not loaded-code,
+callee provenance, native work, numerical certification or measured fit evidence.
+
+**Outcome and remaining prerequisite.** Approved package complete; five flags
+false, native/motion/source/work unresolved, consumer ineligible. Matching complete
+records verifies declared correspondence only, not F(q) inclusion/cell correctness
+or capture/live authority. Old caps/helpers/defaults/wire/reports, `1bb89fe`,
+Task 6/9, native motion/goals/relative transforms, source completeness/authority,
+teacher assets and ST/board remain unchanged/blocked. Before any wider evidence
+use, prepare/review the conditional guard/snapshot/publication/work obligations
+for this exact checker; no further source run, V-cell composition, owner/adapter/
+native integration or proof/error/work allowance/Route C/totality/qualification
+promotion follows. Keep isolation default; do not invent renewed execution scope.
+
+[sinc-bind-implementation-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

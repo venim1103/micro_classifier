@@ -11012,6 +11012,36 @@ questions and user-side ST/ToF readiness remain behind their existing gates.
 
 [c1-wire-rejection-source]: sim/diagnostics.py
 
+## 147. Concurrent Architecture Review Merge (2026-11-05)
+
+The user requested merging the other AI's architectural comments with the local
+tested C1 checkpoint and pushing the combined changes. Fetch found remote
+`045ae67`, which adds only the [architecture review][concurrent-architecture-review],
+alongside local `8345acd`. The histories diverged after `b72adb5`; there were no
+overlapping file edits or unresolved conflicts. `git merge --no-ff --no-commit
+origin/main` completed automatically, preserving both commits without rebasing
+or discarding either contribution.
+
+The incoming review is retained byte-for-byte. Its proposed priorities,
+quantization/accuracy assumptions, physical return-model claims, token savings
+and stack targets are not adopted requirements or newly verified measurements.
+The existing source-qualification, startup/command, runtime, collection and
+hardware boundaries remain; this merge does not reactivate deferred teacher or
+arithmetic work. The active roadmap and §146's spent verification scope stay
+unchanged. Merge/push authorization applies to this requested operation only.
+
+The automatic-merge check passed: no unresolved index entries, every existing
+tracked file unchanged, exact incoming document bytes and clean staged
+whitespace. Scoped checks pass: REVIEW sections 1-147 ordered, 365 reference
+uses/four inline links and local targets valid, no conflict markers, exact prior
+review/history/Sources and other tracked files preserved, documentation-only
+scope and clean whitespace/editor diagnostics. No source/test edit, fixture
+replay or code-suite rerun occurred; §146's 2,269-pass gate remains historical
+tested evidence, not a new merge-time test result. No task data, model run or
+dependency change occurred. Final staged-byte verification precedes the commit.
+
+[concurrent-architecture-review]: ARCHITECTURE_IMPROVEMENTS.md
+
 ## Sources
 
 Hardware and tools:

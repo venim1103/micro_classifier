@@ -10446,6 +10446,105 @@ completeness/work/resources, teacher assets and ST/board remain blocked. No push
 
 [sinc-join-worksheet-design]: DESIGN.md
 
+## 141. U4 Bounded Process-Local Binding Identity Audit (2026-11-05)
+
+The user selected **Keep claims unaccepted; specify evidence direction** without
+a free-text direction. In response to a concrete proposal, the user explicitly
+approved one U4 identity-only process: import sim.diagnostics, record four checker/
+Fraction bindings and source hashes; no checker calls, fixtures, numerical comparison,
+source edits, claim adoption or gate renewal. After its failed audit assertion,
+the user separately approved exactly one corrective identity-only snapshot, keeping
+the failure. [DESIGN.md §7][sinc-binding-identity-design] records the evidence boundary.
+Baseline clean at `477452c`; no assistant push or new branch. No blanket numerical/
+source-fixture/native/runtime/data authorization follows from these two approvals.
+
+**Local hypothesis and boundary check.** The four selected namespace bindings should
+be plain Python functions from the expected diagnostics module, while its Fraction
+binding should match the canonical fractions module object. This is identity, not
+arithmetic correctness. A local standard-library AST preflight of diagnostics and
+rover found no inspected diagnostics initialization calls and only two dataclass
+decorator calls in rover's inspected class setup. Imports include NumPy/rover, not
+a teacher loader on this entry path. That limited preflight is not an exhaustive
+analysis of dependency initialization or annotations/class bodies.
+
+Pylance environment tool freshly selected `/opt/venv/bin/python`; both Pylance
+runtime snippets used that explicit path and the workspace cwd. Before importing
+diagnostics they set sys.dont_write_bytecode=True and CUDA_VISIBLE_DEVICES empty.
+No explicit checker or Fraction constructor call, fixture/capture/owner/question/
+episode/log path, numerical comparison, GPU/model/teacher job, download or test gate
+was added. Standard module/dependency initialization still executes; no all-transitive
+native/constructor/work telemetry or zero-import-cost claim is made.
+
+**Two individually approved identity attempts, both spent.**
+1. Pylance 75-line snapshot exited1 at snippet line41: `type(fraction_class) is type`.
+  Import, pinned diagnostics source-hash assertion and four FunctionType checks
+  completed before that overstrict metaclass assertion. No JSON identity table,
+  code-object digests or final repeat/stability checks were printed; do not recover
+  unprinted intermediate values as evidence. No checker/arithmetic failure occurred.
+2. Separately approved corrective 76-line snapshot exited0, process69379. It replaced
+  only that metaclass assumption with `fraction_class is fractions.Fraction`, recorded
+  actual metaclass metadata and retained the other identity/source-hash checks. The
+  successful result follows; it is a new process, not repaired state from attempt one.
+
+Successful executable `/opt/venv/bin/python`, resolved `/usr/bin/python3.12`;
+sys.version `3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]`. Reported module
+sim.diagnostics file/spec origin `/workspaces/micro_classifier/sim/diagnostics.py`,
+loader type SourceFileLoader. File SHA256 matches tested §138 source:
+`be7f30a1559ef0c49d3992c923788c12a1c9e9d56718a44c1190837649aa5057`.
+This is not an executable/build/ABI/FP provenance verification.
+
+| Binding | Code First Line | Process-Local Object ID | Marshalled Code-Object SHA256 |
+| --- | --- | --- | --- |
+| _check_synthetic_sinc_target_content | 669 | 129206657476992 | 9c3f49382d77f7c71045b799b404edd82f1bb83d5be054b65f732918a325984b |
+| _check_synthetic_sinc_composition | 1057 | 129206659306880 | 33e2ef61c8a5f4736d5edfaa76686df810a25ef95b23cd42560eff1a9e570db2 |
+| _check_synthetic_sinc_declared_binding | 1487 | 129206659307040 | 798ad9cac9b249824e4297e8156d8cbf0511b2dbfd76fc2b570b5f2aac5fcfdd |
+| _check_synthetic_cell_certificate | 1873 | 129206659307200 | 290f24a2ebc7b1a03047726d2db592ab4fde591476f16a3317ee8b2d13318397 |
+
+All four were exact types.FunctionType. Reported module sim.diagnostics;
+qualname/code_name equal their binding names; code_filename the same diagnostics
+path; globals_are_module_namespace=True and wrapped_attribute_present=False.
+Code digests are of marshal.dumps(helper.__code__), not source bytes or an
+independent compilation comparison; version/path/serialization-sensitive, not a
+security attestation. Object IDs are references in process69379, not durable IDs.
+The join function itself was not one of these four inspected bindings.
+
+Fraction object ID506355536, reported module/qualname fractions/Fraction, metaclass
+abc.ABCMeta, identical to fractions.Fraction. Module path `/usr/lib/python3.12/fractions.py`,
+SHA256 `cf33568f7b767f66896995a7a81cc662e8be226f2e58efb61d2028f64eb5d231`
+matches the historical §107 file digest; no Fraction text/GCD/native implementation
+or package provenance was rereviewed. Metaclass identity caused the first probe's
+wrong assertion; no checker guard or trusted-base requirement was relaxed.
+
+The four borrowed function references plus Fraction binding were identical at
+their later checks, and diagnostics/fractions file hashes matched repeat reads
+across the successful metadata span. This does not observe every instant, detect
+change-and-restoration, enforce ownership, prove future stability or authenticate
+selected code. Python function metadata, module names, filenames/loader and absent
+__wrapped__ do not independently prove source-to-code correspondence or absence
+of arbitrary substitution/interception. No correctness/native/resource verdict.
+
+Output retained only in normal tool/session history and this existing evidence
+record; no raw report/cache/fixture artifact created or cleanup needed. The runtime
+snippets disabled bytecode writes before project import; worktree and source hashes
+checked unchanged afterward. No additional project process/import is pending.
+Scoped metadata/table/approval/failure/evidence-limit/history/Sources/design/milestone/
+stable-workflow/source-byte/whitespace checks pass, including 614 reference uses/local
+targets. Editor/diff/staged-byte checks precede this documentation checkpoint;
+no default suite rerun. No evidence-record validation failed after the probe repair.
+
+§138 gate remains 2,245 passes plus known xfail/71 warnings, not new arithmetic
+evidence from these snapshots. Its four of five source positions and unused fifth
+are unchanged; old §129/§132 budgets exhausted and §135 fifth not borrowed. The two
+identity-process approvals are separate and fully spent, not source-fixture renewal.
+All fifteen U/JO verdicts undecided, five flags false; native/motion/source/work
+unresolved and consumer ineligible. No mathematical/proof/allowance/Route C/totality,
+U4/evidence-policy/native/source/resource/consumer acceptance or runtime integration.
+Task6/9, physical/task-quality, native motion/goals/relative transforms, source
+authority/completeness/work, teacher assets and ST/board remain blocked. Next needs
+explicit named premise/evidence/claim or separately approved concrete evidence work.
+
+[sinc-binding-identity-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -7951,6 +7951,47 @@ dependency, hardware or acquisition authority follows from the worksheet.
 
 [sinc-join-worksheet-review]: REVIEW.md
 
+#### NF1 Process-Local Binding Identity Evidence Boundary (2026-11-05)
+
+The user kept claims unaccepted and separately approved a bounded U4 identity-only
+audit: one process importing diagnostics to record four checker/Fraction bindings
+and source hashes, no checker calls/fixtures/numerical comparison or claim adoption.
+A second, corrective identity-only process was separately approved after the first
+probe's metaclass assertion failed. [Review §141][sinc-binding-identity-review]
+records both attempts and the successful metadata, not a renewed source gate.
+
+The evidence boundary is an identified process's module namespace, function/code
+metadata, source-file and marshalled-code-object digests, Fraction module binding
+and metaclass, plus repeated binding/file-hash checks across its metadata span.
+These distinct observations are not interchangeable: a source hash identifies
+file bytes, a code-object digest identifies a Python-version/path-sensitive
+serialization, and object IDs distinguish references within that process only.
+Reported filename/origin/loader and absent __wrapped__ attribute do not establish
+source-to-loaded-code correspondence or absence of arbitrary interception.
+
+Canonical class identity is not an exact-metaclass requirement: the observed
+Fraction binding is fractions.Fraction with abc.ABCMeta. A probe must report its
+metaclass rather than assume builtin type; this is an audit correction, not a
+change to any checker guard or arithmetic contract. No Fraction constructor or
+checker is explicitly invoked by the metadata snippets. Imports execute normal
+module/dependency initialization; that is not an all-transitive-call work audit.
+
+Matching references/hashes at two observation points do not detect every transient
+mutation, enforce serialized ownership, guarantee future stability or authenticate
+runtime selection. They do not prove integer/Fraction/GCD semantics, compiled/native
+paths, arithmetic/tie/target correctness, source authority/completeness, termination,
+resource fit, physical inputs or consumer eligibility. The join's own binding was
+not one of the four inspected function rows. U4 and all JO/upstream verdicts remain
+undecided; five flags false and unresolved/ineligible statuses are unchanged.
+
+Both explicitly allowed identity attempts are spent. No further import/snapshot,
+source-to-code comparison, numerical/checker/fixture run, source acquisition or
+integration follows automatically. The next input is a named premise/evidence/claim
+decision or separately approved concrete evidence action; isolation remains default.
+Existing task/data/teacher/dependency/hardware gates and §138's source gate stay.
+
+[sinc-binding-identity-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9962,7 +10003,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §140): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §141): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -10219,6 +10260,11 @@ five upstream families and JO0-JO9 mapped to candidate evidence, proposed accept
 stop/invalidation conditions and explicit undecided verdicts. No imports/runs/source
 refresh or adoption. Only named premise/evidence/claim or separately authorized
 concrete evidence-direction decisions remain; isolation and source gate unchanged.
+The separately approved U4 identity audit is complete (§141): one failed metaclass
+probe plus one separately approved corrective process; four checker/Fraction
+bindings and source/code-object metadata recorded, no checker or fixture calls.
+Process-local observations do not close U4; all fifteen verdicts undecided, no
+claim adoption or source-gate renewal. Further evidence/import work needs decision.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

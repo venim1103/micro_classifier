@@ -6014,6 +6014,109 @@ The bounded prototype scope is exhausted; isolation remains the default.
 
 [sinc-word-review]: REVIEW.md
 
+#### NF1 Word Candidate Correctness and Work Review (2026-11-05)
+
+The user separately approved §122's design-only paper review;
+[review §123][sinc-word-proof-review] records evidence and verification. Current
+source/test identities match §122 despite an editor change notification. No
+source/test change, target import, fixture/native run or proof/error/work allowance
+acceptance occurs. The default remains isolation and all five flags remain false.
+
+**Conditional outcome.** Under exact builtin integer operations, faithful
+Fraction/copy semantics, stable serialized module bindings, terminating
+allocation/GCD and the unchanged SR0-SR9 enclosure assumptions, the local
+cell algorithm has no identified algebraic mismatch with its partial contract.
+That statement is a paper outcome, not accepted proof, actual native/library
+correspondence, a total function, source authority or representative task quality.
+The word result additionally requires the direct bound enclosure to contain F(q).
+Cell containment alone cannot establish that premise or the old native output.
+
+| Obligation | Conditional Derivation From Current Code | Residual Stop |
+| --- | --- | --- |
+| CW0 | Word/type/finite/domain checks and strict q/sign/ratio/configuration/branch matching precede a cell call; zero requires exact [1,1]. | Direct local calls and matching metadata do not authenticate source or immutable bindings. |
+| CW1 | Finite word decoding uses exact significand and power; subnormal spacing and actual adjacent words are retained. | Integer/Fraction implementation correspondence is assumed; unsupported zero/M output cells reject. |
+| CW2 | Increasing upper midpoints make the first-true predicate monotone; lo/hi updates strictly shrink the index distance. | Allocation/errors or guard exhaustion can stop before a word; no all-input completion claim. |
+| CW3 | Equality in the upper predicate belongs only to an even low bit; final lower/upper equality uses the same parity. | A tie at an unsupported neighboring output cell is unresolved, not clipped. |
+| CW4 | Each endpoint is checked against both boundaries; agreeing words are followed by a fresh closed whole-interval check. | A small width, agreeing sampled points or enclosure status does not replace the witness. |
+| CW5 | Both zero signs decode to exact zero and retain q/sign; nonzero subnormals follow the enclosure/cell route. | Mathematical unit output is not a statement about native tiny substitution. |
+| CW6 | Conservative raw shift/product/sum/doubling/cross-product guards precede construction, with canonical postchecks and fixed step limits. | Conservative rejection is allowed; GCD/allocation/binding behavior remains a trusted-base obligation. |
+| CW7 | Word/certificate fields are attached only on ordinary successful return; mutable records are freshly constructed/copied. | Unexpected exceptions propagate; partial dictionary construction is not universal rollback. |
+| CW8 | Existing pure-cell controls have independent dyadic/expected-word derivations and corrupted metadata controls. | Those finite historical checks are not complete domain proof, independent F(q) truth or renewed run permission. |
+| CW9 | Existing caps, functions, tests, owner/reference/default/wire meanings remain unchanged; all flags/status limits are explicit. | Native motion/goals/relative transforms, W0/TB0 and later adoption/consumer gates remain open. |
+
+**Search and cells.** For exact ordered finite dyadics D(w), adjacent upper
+midpoints increase strictly. For endpoint x, false means x is above that upper
+boundary or is an odd-word equality; true means it belongs at/below the upper
+boundary with the tie assigned to even. Eligible indices below lo remain false,
+and those at/above hi remain true. The virtual M sentinel is not evaluated as a
+candidate, but numeric word M is decoded as M-1's finite upper neighbor. Each
+iteration halves the remaining distance; the stated 64-step cap is conservative
+relative to the conditional 63-step index argument.
+
+The first true result can still be outside the lower boundary at the unsupported
+low edge, so full endpoint checks are necessary. Final containment of [l,u]
+uses both exact boundaries, including equality only for even w. Thus every real
+value in that closed interval has the same nearest/ties-even word, provided
+the finite-neighbor/cell mathematics and faithful operations hold. Applying this
+to F(q) additionally requires its enclosure inclusion; no native error follows.
+
+**Guard and counter ledger.** Cell configuration accepts builtin integer limits
+only, at most 65,536 bits/64 steps. Preflight compares current globals with the
+entry snapshot; this rejects observed changes, not arbitrary concurrency or
+mutation of Fraction/function bindings. Shift bounds use significand length plus
+nonnegative shift and denominator length; midpoint guards cover both raw products,
+their sum and doubled denominator; comparison guards cover both products without
+forming a difference. Canonical validation cannot excuse an oversized raw result.
+
+The conservative cell-only attempt ledger remains 128 search iterations,
+265 dyadic decodes, 134 midpoints and 135 three-way rational comparisons. At most
+401 counted rational constructions follow from two endpoint constructors plus
+the decode/midpoint calls. This is a paper upper-level ledger, not measurement.
+Strict pair/type/size checks, canonical comparisons, integer comparisons,
+preflight, copies, metadata and result building remain separate work.
+
+`search_iterations` increments before decoding; `dyadic_decodes` increments
+before finite-word/shift rejection; midpoint/compare counts increment after
+preflight but before raw evaluation; rational construction counts increment
+before Fraction and its postcheck. These count attempted stages, not published
+results. `max_result_bits` records only canonical results that passed checks,
+not unreduced, rejected, concurrently live or total allocated storage. Successful
+enclosure construction need not imply that later cell products fit the cap.
+No counter/loop argument certifies elapsed time, memory fit or native work.
+
+The word wrapper has separate fixed-u64 setup: q shifts construct components
+no larger than 1,075 bits before reduction, plus domain comparison and copying.
+It does not call the cell preflight for that setup. This is a distinct logical
+size bound, not an extension of the configurable cell guard/counter coverage.
+Its enclosure and cell entry counters increment before calls and do not count
+all inner work. The zero branch omits cell configuration/search; no cell-limit
+or native-return guarantee is inferred from a zero success.
+
+**Publication and trusted base.** Unresolved ordinary returns omit the output
+word/certificate while retaining permitted input/work metadata. The successful
+cell certificate retains exact neighbor/boundary/interval/parity/order evidence;
+the word wrapper copies it and its direct interval. Fresh mutable containers are
+distinct; immutable int/tuple sharing is harmless under their assumed semantics.
+Allocation/interruption/unexpected exceptions can prevent any return, including
+during final copying/publication. Nothing is persisted or consumed by old code.
+
+Word binding checks validate the recorded shape/types/values, not arbitrary
+untrusted helper substitution. In particular, the wrapper relies on the stable
+local cell function's returned status/certificate rather than running a second
+independent checker; copied evidence and matching identities are not a proof of
+live code correspondence. Fraction/GCD/deepcopy and installed native/runtime
+paths stay unqualified. This review neither widens a helper contract nor repairs
+source, promotes a flag or accepts Route C.
+
+**Next proposed, not approved:** design-only candidate certificate verification
+and trusted-base closure plan. Specify independently checked publication content,
+producer/checker separation, exact claims, rejection/binding/work boundaries and
+acceptance gates before implementation, imports/runs, source acquisition, native
+inspection, consumer integration or proof/error/work allowance adoption. No
+checker or new fixture scope follows from this completed paper review.
+
+[sinc-word-proof-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8025,7 +8128,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §122): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §123): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8191,9 +8294,13 @@ acceptance obligations, with no route/proof/allowance adoption or source/test ru
 The separately approved private prototype/tests are complete (§122): 28 cases,
 24 word/17 enclosure/32 direct-cell/38 total-cell entries per complete new-entry
 matrix, unchanged old ASTs and a fresh 2,165-pass gate plus known xfail. No
-proof/allowance, native/source/work or consumer promotion. Next proposed, not
-approved: design-only conditional correctness/publication/work review, not a
-new import/fixture/run, source edit, native inspection or consumer integration.
+proof/allowance, native/source/work or consumer promotion.
+The separately approved paper review is complete (§123): ten CW obligations,
+conditional search/guard/publication arguments, attempted-work ledger and
+trusted-base limits; no proof/error/work allowance or qualification acceptance.
+Next proposed, not approved: design-only certificate verification/trusted-base
+closure plan, not implementation, import/fixture/run, native inspection,
+source acquisition, consumer integration or allowance/promotion.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

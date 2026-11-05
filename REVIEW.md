@@ -8794,6 +8794,100 @@ edit, native inspection, adapter/integration or proof/allowance promotion follow
 
 [sinc-word-design]: DESIGN.md
 
+## 123. NF1 Word Candidate Correctness and Work Review (2026-11-05)
+
+The user explicitly approved §122's offered design-only correctness/work review
+and autonomous local commits. Actual baseline is clean `59e0903`. The editor
+reported possible source/test edits; actual status/diff and refreshed Git blob
+identities match the committed §122 files. No user edit was reverted. This scope
+reviews current text, not a new import, fixture/helper/native run, source change,
+installed inspection, acquisition or proof/error/work allowance adoption.
+
+**Local hypothesis and check.** Exact midpoint first-true search and final
+whole-interval checks appear conditionally sound under faithful builtin
+integer/Fraction/copy semantics and stable serialized bindings. Direct q/enclosure
+matching is a separate claim from source authority and F(q) inclusion. Read the
+owning helpers, current bounded tests and CW0-CW9 contract; the first edit recorded
+the conditional obligations, guards, attempted-work and publication boundaries.
+The next action was a focused text/preservation/hash/whitespace check, which
+passed without project imports, word evaluation or fixture calls.
+
+**Paper outcome.** [DESIGN.md §7][sinc-word-proof-design] maps CW0-CW9 to
+current branch/schema/search/guard/publication behavior and explicit stops.
+No local algebraic mismatch is identified under its stated trusted-base and
+SR0-SR9 assumptions. This is not accepted proof, all-domain completion, native
+correspondence/error qualification or physical/task-quality evidence.
+
+Exact neighbor values and upper midpoints increase with word order. The
+first-true predicate assigns equality to even words; lo/hi invariants and
+shrinking distance preserve the endpoint search. M is not a candidate but is
+M-1's finite upper neighbor. Full endpoint and fresh whole-closed-interval
+checks are necessary, including the unsupported low edge and tie ownership.
+Cell membership supports one mathematical rounding word only conditionally on
+the supplied interval's contents; the word claim additionally needs F(q) in its
+direct unchanged enclosure. Neither identifies a native result or source origin.
+
+Raw shift/product/sum/doubling/cross-product guards precede construction and
+canonical postchecks. The conservative paper ledger remains 128 search attempts,
+265 dyadic decodes, 134 midpoints and 135 rational comparisons; at most 401
+counted rational constructions include the two endpoint constructors. This is
+upper-level attempted work, not measurement or a primitive/GCD/allocation/time/
+RAM bound. Counts increment at different boundaries; rejected/postcheck-failed
+attempts need not appear in `max_result_bits`, which counts passed canonical
+results only. The enclosure ledger and q-wrapper setup/copying remain separate.
+
+Fixed-u64 q decoding has an independent logical component-size bound of 1,075
+bits; the wrapper does not invoke cell preflight for that setup. Its entry
+counters precede calls. Zero omits cell configuration/search, so successful zero
+publication says nothing about those limits or native tiny substitution. Live
+cap comparisons reject observed configuration changes, but do not establish
+immutable Fraction/function bindings, thread safety or general source authority.
+
+Successful ordinary returns publish fresh mutable containers/copies; immutable
+int/tuple sharing is harmless under faithful semantics. Unresolved ordinary
+returns omit the word/certificate; unexpected/allocation/interruption errors can
+prevent any return, including during final copying. No universal rollback.
+The wrapper trusts the stable local cell function's successful status/certificate
+and does not independently recheck that returned schema/witness. Matching
+metadata/copying is therefore not live-code or adversarial-helper qualification.
+Five flags and native/source/motion/work/consumer status limits remain unchanged.
+
+Historical independent pure-cell expectations, corruption/guard/exhaustion and
+ownership/allocation controls support the listed finite cases, not complete
+domain proof or independent F(q) truth. No historical approval or passing case
+renews an execution scope. `1bb89fe`, old helper caps/ASTs, default inputs/wire,
+native motion/goals/relative transforms and existing logs/reports remain unchanged.
+
+**Verification and limits.** First focused paper/preservation/source-identity
+and whitespace checks pass; 577 reference uses/local targets, sections 1-123,
+prior review/Sources/design/workflow/history/source-gate/task-tail preservation
+and document editor diagnostics pass. A later static AST counter read confirmed
+four counter/guard boundaries but failed with `StopIteration`: its selector
+incorrectly assumed a nested function named `endpoint`. Select the search by
+its actual counter instead; this is validator repair, not source/numerical work
+or relaxed assertions. Corrected static counter/guard/order assertions and
+diff/whitespace checks pass; exact three-document staged checks precede the
+checkpoint. Code suite and numerical/fixture/native gates are not
+rerun; §122's 2,165 passes plus known xfail and 71 warnings remain historical,
+with its failed format check and all earlier failures preserved. Source/test
+blobs remain `608f574bfaba9a742451995898719dd8523891e7` and
+`f7dc911ecc3bf929f2866d25efcdca7977c426ca`. No environment/native/GPU/teacher/
+board requalification, dependency/data/training, consumer/adapter integration,
+background job or cleanup. No assistant push is authorized/performed.
+
+**Exit and next permission.** Approved design-only review is complete after
+document verification/local commit. No CW/SR/W0/TB0 proof, bound or resource
+obligation is accepted/closed; Task 6/9 and broader native/source/physical/
+numerical/task-quality, teacher-asset and ST/board gates remain. Isolation default.
+Next proposed, not approved: design-only candidate certificate verification and
+trusted-base closure plan. Specify independent publication-content checks,
+producer/checker separation, exact claim/rejection/binding/work boundaries and
+acceptance gates before any implementation, imports/runs, source acquisition,
+native inspection, consumer integration or proof/error/work allowance adoption.
+No checker/new fixture/code scope follows from this paper review.
+
+[sinc-word-proof-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

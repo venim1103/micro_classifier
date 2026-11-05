@@ -118,22 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: isolated NF1 word/cell prototype/tests
-  (DESIGN.md §7 / REVIEW.md §122), two private helpers and 28 new cases. Per
-  complete matrix: 24 word/17 enclosure/32 direct-cell/38 total-cell entries,
-  below approved 24/24/32/56 caps. All old source/test ASTs and caps stay unchanged;
-  five flags remain false. No Route C/proof/error/work allowance/totality adoption.
+- Latest approved package complete: design-only NF1 word-candidate correctness/
+  publication/work review (DESIGN.md §7 / REVIEW.md §123), ten conditional CW
+  obligations, search/guard arguments and attempted-work/trusted-base limits.
+  Source/test identities match §122 despite an editor edit notification;
+  no source/test change or new run. Five flags remain false; no proof/allowance
+  or Route C/totality/qualification adoption.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `b8702af`; fresh source
-  gate is §122's 2,165 plus known xfail/71 warnings. Editor interpreter verified;
-  no native/GPU/teacher/board requalification. No candidate owner/trace/query/log use.
-  Next proposed, not approved: design-only conditional correctness/publication/
-  work review, not new imports/fixtures/runs, source edits, native inspection,
+  and native-work remain unresolved. Baseline was clean at `59e0903`; source
+  gate remains §122's 2,165 plus known xfail/71 warnings, not rerun here.
+  No environment/native/GPU/teacher/board requalification or candidate consumer use.
+  Next proposed, not approved: design-only certificate verification/trusted-base
+  closure plan, not checker/code, import/fixture/run, native inspection/acquisition,
   integration or proof/allowance/qualification promotion. Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-122 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-123 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1191,15 +1192,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §122 completes
-the separately approved private word/cell prototype: 28 new cases, 24 word/17
-enclosure/32 direct-cell/38 total-cell entries per complete matrix, old ASTs/caps
-preserved and all five flags false. `1bb89fe` stays; no Route C/proof/allowance
-or consumer/native/source/work qualification. Fresh gate: 2,165 plus known xfail,
-71 warnings; changed-file format/editor/lint pass, failed format check retained.
-Next proposed, not approved: design-only conditional correctness/publication/
-work review, not import/new fixtures/runs, source edits, native inspection,
-owner/query/reference/log adapter, integration or promotion.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §123 completes
+the separately approved design-only word-candidate correctness/publication/work
+review: ten conditional CW obligations and guard/search/ledger/trusted-base
+boundaries. Source/test unchanged, five flags false; `1bb89fe` stays. No proof/
+allowance/Route C, consumer/native/source/work or totality acceptance. Last gate
+is §122's 2,165 plus known xfail/71 warnings, not rerun here; failures preserved.
+Next proposed, not approved: design-only certificate verification/trusted-base
+closure plan, not checker/code/import/new fixtures/runs, native inspection/
+acquisition, owner/query/reference/log adapter, integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1458,6 +1459,11 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   known xfail. No native/source/work or integration qualification. Next proposed,
   not approved: design-only conditional correctness/publication/work review,
   not new imports/fixtures/runs, source edits, native inspection or promotion.
+  NF1 word paper review (REVIEW.md §123): separately approved design-only review
+  complete; ten conditional obligations, guard/search/publication arguments and
+  attempted-work/trusted-base limits. No code/run/proof/allowance/flag change.
+  Next proposed, not approved: design-only certificate verification/trusted-base
+  closure plan, not checker/import/run/acquisition/integration or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

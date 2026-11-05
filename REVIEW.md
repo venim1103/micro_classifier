@@ -10285,6 +10285,95 @@ different source slice require explicit approval; no automatic promotion/integra
 
 [sinc-target-join-prototype-design]: DESIGN.md
 
+## 139. NF1 Target-to-Cell Conditional Review and Decision Brief (2026-11-05)
+
+Following the approved §138 prototype and the user's autonomous continuation/local
+commit request, the same-helper conditional correctness/publication/work and concrete
+decision preparation is now complete. [DESIGN.md §7][sinc-target-join-paper-design]
+contains ten JO0-JO9 obligations, the narrow conditional implication, separate
+zero/series ledgers and A/isolation versus B/conditional-claim decision brief.
+Baseline clean at source checkpoint `8bf26d3` (five files, 1,167 insertions/34
+deletions); no assistant push. Current source/test hashes match §138 exactly.
+
+**Local hypothesis and paper check.** Existing target and composition returns
+carry different complete profiles, so only exact retained stages/root/certificate
+joins can compose their conditional F(q)-in-I and I-in-cell statements. Nearby
+controlling code validates target before composition, owns reports, rechecks both
+callee inputs, joins every root/certificate and performs final live-limit checks.
+The cheapest discriminator is a static AST order/full-content/publication check,
+not another capture or numerical run. This review adds no new trusted-calculation
+helper or test, and does not accept the mathematical/trusted-base premises.
+
+Conditional result: for builtin finite stored u with exact |q|<=1/64, complete
+candidate/enclosure profiles and literal opt-in, assume upstream target (§136),
+binding (§130), pure-cell (§126) and composition (§133) correctness together with
+faithful builtin/Fraction/GCD, stable selected helpers/configuration, serialized
+input/report ownership and ordinary successful allocation/publication. Complete
+join success then yields F(q) in I in the exact ties-even cell C(w), hence
+RN64(F(q))=w. Both q zeros retain sign metadata with positive unit result; no cell
+or native tiny-branch claim. Neither structural equality nor agreeing reports
+independently proves the upstream theorems or authenticates live helper selection.
+
+JO0-JO9 cover literal entry/five limits, schema before copy/equality, retained
+originals/separate callee inputs, target-first post-call joins, composition/full
+certificate correspondence, transitive whole-cell implication, zero separation,
+publication/exception prefixes, attempted entries/legacy observer and work/claim
+separation. No local content-join mismatch identified under the named premises;
+this is not accepted proof, quantified trusted-base closure or all-domain success.
+Unresolved fixed metadata is not partial target/cell evidence. Unexpected errors
+propagate; JX14 tests a pre-body MemoryError, not interruption/all allocations.
+
+Conditional successful series: target24 canonical/1 decode/147 power/230 Fraction/
+131 target-operation/57 comparison, plus composition42/4/0/48/0/11/2 midpoint,
+giving66/5/147/278/131/68/2. Zero: target4/1/0/5/0/2 and composition10/1/0/11/0/2,
+giving14/2/0/16/0/4/0. Composition includes binding+cell once, not double-counted;
+its lack of target-operation counter is not zero integer/GCD work. Raw/key/metadata/
+immutable equality/traversal/report/copy/setup/publication/caller/allocator/runtime
+work remains separate. No summed bit cap, smaller certified cap or measured native/
+time/stack/RAM claim. max_result_bits covers accepted canonical outputs only.
+
+No source/test changed, project imported, helper/fixture/numerical/native/model
+executed, installed evidence inspected or acquired. The existing 2,245-pass,
+known transformer xfail/71 warnings/63.30 s gate and four-position source ledger
+stay §138 evidence, not rerun here. The unused fifth position remains unnecessary/
+unspent, not transferred. Old §129/§132 budgets exhausted; §135 fifth not borrowed.
+The old pre-body reservation, position-two printed cell186 aggregate versus
+journal-supported187 and failed documentation parser are preserved in §138;
+this paper neither reruns nor rewrites them.
+
+Standard-library-only static/text checks validate direct target-before-composition
+order, reserve-before-call/live checks, complete raw/report guards and owned
+post-call input/stage/root/certificate joins, zero/applicable-cell configuration,
+fresh publication/JoinStop-only handling, fixed flags/statuses and exact ledger
+sums pass. All 610 reference uses/local targets, history/Sources/design/milestone/
+stable-agent/source-byte/three-doc scope/whitespace checks pass. Editor/diff/staged-
+byte checks precede the paper checkpoint.
+These inspect source structure and prose, not runtime behavior or formal proofs.
+
+One follow-up proposal patch failed on unrelated review context; an exact design
+search confirmed that its design hunk had not landed. The grounded retry uses this
+actual paper-verification paragraph; no source change or gate execution follows.
+
+Decision-ready alternatives: A/default isolation, accept no claim; B explicitly
+accept only the conditional RN64(F(q))=certificate-word/content statement for the
+pinned private join after upstream and JO0-JO9 premise/admissible-evidence review.
+No premise/claim/proof/allowance/Route C/totality/native/source/resource/work or
+consumer accepted. A recommended; five flags false and native/motion/source/work
+unresolved, consumer ineligible. Eligible consumers, source completeness/authority,
+native motion/goals/relative transforms and Task 6/9/physical/task-quality/teacher
+assets/ST-board remain blocked. No task collection/labels/data/splits/training,
+runtime/owner/wire/log/teacher/dependency/hardware integration, artifacts/jobs/cleanup
+or assistant push. Only explicit claim/premise/admissible-evidence decisions or a
+separately approved next design-only scope remain; routine continuation renews none.
+
+Concrete next proposal if claims stay unaccepted: one design-only JO0-JO9/upstream
+premise/evidence worksheet using existing project records only, with proposed
+accept/stop/invalidation conditions and undecided verdicts for every dependency.
+No installed-source refresh, imports/runs, code, acquisition or claim adoption;
+this new preparation still needs explicit approval. Isolation remains default.
+
+[sinc-target-join-paper-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -7762,6 +7762,122 @@ authorization; Task 6/9 and all broader qualification gates remain blocked.
 
 [sinc-target-join-prototype-review]: REVIEW.md
 
+#### NF1 Target-to-Cell Conditional Correctness and Work Review (2026-11-05)
+
+Following §138's approved private prototype and autonomous continuation, this
+same-helper review prepares a conditional argument and decision brief only.
+[Review §139][sinc-target-join-paper-review] pins `8bf26d3`, records static checks
+and preserves the four-position ledger and 2,245-pass source gate. No project
+import, helper/fixture/native execution, new source edit, acquisition or adoption.
+The unused fifth position is not spent on reassurance or transferred to new work.
+
+**Conditional Statement.** Fix a builtin finite stored word u, its exact signed
+dyadic q with |q|<=1/64, complete candidate23/enclosure20 records, and literal
+synthetic opt-in. Assume faithful builtin integer/container operations, exact
+Fraction/GCD canonicalization, stable selected helper/configuration bindings,
+serialized input/report ownership, ordinary successful allocation/publication,
+and the mathematical/partial-correctness premises of the target (§136), declared
+binding (§130), pure-cell (§126) and composition (§133) reviews. If the pinned
+join returns its complete 26-field checked success, its published interval I
+contains F(q), and I is contained in the exact binary64 ties-even cell C(w) of its
+certificate word w. Hence RN64(F(q))=w. For either signed zero, F(0)=1 and w is the
+positive unit word; sign remains q metadata, not a signed sinc output or native
+tiny-branch result. No claim/premise/proof acceptance is implied by this review.
+
+The implication is transitive whole-interval containment, not an empirical
+word match, status/hash inference or endpoint-sampling argument. Unsupported or
+straddling cells, invalid domain/configuration/content and ordinary guard stops
+remain unresolved. A supported success implication does not promise success or
+return for every finite q, an installed NumPy result, physical evidence or a
+qualified consumer. The join calls existing checkers; it does not independently
+rederive their mathematical theorems or attest their selected live implementations.
+
+| Obligation | Conditional Local Argument | Premise or Limit Still Open |
+| --- | --- | --- |
+| JO0 / entry and limits | Literal opt-in precedes setup. Four always-active and one series-only limits are retained before delegation; exact nonboolean values lie in 1..65,536. Zero's cell limit is None and not read. Invalid configuration returns fixed unresolved metadata. | Multiple reads are not atomic or a detector for a transient change restored between checks. Stable bindings/serialized execution remain assumptions. |
+| JO1 / schema before traversal | Complete builtin candidate/enclosure/profile/work/stage/certificate shapes and integer/string/bool leaves precede ownership/cross-record equality. Hostile work keys stop before lookup/membership equality hooks. | Raw pair shape is not canonicality or mathematical content; later faithful checkers supply those obligations. Input allocation and container implementation remain trusted. |
+| JO2 / retained content and independent inputs | Original certificate/stages/root/ratio are retained from owned records. Target and composition receive distinct owned inputs; no external report is an API input. Initial ratio/root/work correspondence fixes the submitted content. | Validation-to-copy and report ownership are serialized premises, not enforced concurrency control or source authenticity. Producer work metadata is declared, not authenticated execution. |
+| JO3 / target before composition | Target attempt is reserved before its call, followed by live-limit checks, exact 25-field report/work/config guards and independent report ownership. Post-call target input schema and full content must match retained enclosure; q/sign/profile/domain/target/all stages/root must join exactly. | §136's mathematical and trusted-base conclusions are conditional. A complete report with matching counters is not independent live-callee authority or a substitute for them. |
+| JO4 / composition correspondence | At most one composition attempt follows accepted target content. Exact 23-field report/nested work/config is validated and owned; both composition inputs are revalidated and equal retained candidate/enclosure. Expected q/sign/ratio/profile/root and complete certificate equality are required. | Existing binding/cell premises and selected callees remain unaccepted. No source anchor, producer transcript, native oracle or runtime consumer is added. |
+| JO5 / target-to-cell implication | Target provides F(q) in I. Composition's same full certificate/root gives I in C(w), using pure-cell neighbors, midpoints, parity/ties/orders and whole-interval containment. Equality of all linked intervals yields RN64(F(q))=w. | The real-pi analytic/interval and exact ties-even-cell arguments must be explicitly reviewed/accepted separately; structural equality alone cannot prove either theorem. |
+| JO6 / zero separation | Exact expected word and sign joins retain both zeros; target has [1,1]/empty stages and composition has unit/[1,1]/zero certificate. No pure-cell call, work or cap is claimed. | Sign is input metadata. Mathematical F(0)=1 does not qualify the installed wrapper's tiny substitution, floating divide or source evidence. |
+| JO7 / publication and exceptions | Final live checks precede fresh success content/work publication. Ordinary JoinStop returns only sixteen fixed metadata fields, never stages/certificate. Unexpected/allocation/interruption errors propagate. Callee reports/work are owned before later use. | No universal return/rollback/transaction guarantee or arbitrary side-effect suppression. JX14 injects MemoryError before target body, not interruption or every publication allocation site. |
+| JO8 / attempted entries and harness | Join reserves target/composition entries before calls; composition keeps its own binding/cell reservations. New family wrappers precede old wrappers; old direct subsets stay separate. Legacy pre-body cell MemoryError was already reserved by the old wrapper and reconciled from its journal. | Bookkeeping is not original-body telemetry; late reconciliation does not move the old reservation in time. No fixture refill, old cap increase, wrapper bypass or resource evidence. |
+| JO9 / work and claim separation | Successful report counts are exact profiles; zero/series limits and nested work remain separate. No new Fraction work is performed in the join, no sum of caps/retry/refund/precision escalation. Five false flags and unresolved/ineligible statuses persist. | Setup/raw/copy/equality/caller/GCD/runtime/allocator and live work are not measured. JI/CT/W0/TB0, native/source/resource/totality/Route C and consumer acceptance stay open. |
+
+**Conditional Successful Work Ledger.** These sums describe logical counters of
+one ordinary successful path through faithful existing helpers, not §138's family
+attempts, all default-suite execution or primitive/native/resource work. Constructors
+are reserved before Fraction calls; rejected preflight work and exceptions may
+leave only a prefix or no returned report. Composition includes binding plus the
+series-only pure-cell checker. Do not count those nested paths twice.
+
+| Branch / Component | Canonical Pair Checks | Dyadic Decodes | Power Steps | Fraction Constructions | Target Rational Operations | Rational Comparisons | Midpoint Recomputation |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Series target | 24 | 1 | 147 | 230 | 131 | 57 | 0 |
+| Series composition, binding + cell | 42 | 4 | 0 | 48 | 0 | 11 | 2 |
+| Series combined | 66 | 5 | 147 | 278 | 131 | 68 | 2 |
+| Zero target | 4 | 1 | 0 | 5 | 0 | 2 | 0 |
+| Zero composition, binding only | 10 | 1 | 0 | 11 | 0 | 2 | 0 |
+| Zero combined | 14 | 2 | 0 | 16 | 0 | 4 | 0 |
+
+The zero/series path reserves one join, one target, one composition and one binding;
+series additionally reserves one pure-cell entry. The join itself adds no Fraction
+constructor, decode, midpoint, power or numerical rational operation counter.
+Its tuple/key/integer guards, immutable comparisons, owned traversal, nested report
+validation and fresh publication are still work, not free or bounded by that table.
+Composition's zero in the target-operation column means no counter of that kind,
+not no integer arithmetic: its decodes/midpoints/cross-products/GCD still occur.
+
+Binding series36 plus cell12 gives composition48 constructors; zero binding11.
+Target147 power steps are130 arctangent powers plus17 factorial steps. Its 131
+operation count is separate from 57 comparisons and 230 constructors (§136).
+The full entry ledger retains join-induced25/20/20/14 versus old32/32/57/48;
+one old cell reservation never entered the original body. Printed aggregate cell186
+versus journal-supported187 in §138 remains historical, not rewritten telemetry.
+
+The separate five limits are not summed into a memory or arithmetic allowance.
+The raw join cap also guards metadata integers; reduction can reject a valid
+larger-profile record before delegation. max_result_bits covers accepted canonical
+outputs of callees only; the observed target maximum13,146 is not all-domain,
+raw/live/intermediate/peak RAM or a smaller certified cap. Stable builtin/Fraction/
+GCD/code selections, allocation, input/callee-report ownership and serialized
+execution remain shared premises. No new installed-source inspection or measurement.
+
+**Concrete Decision Brief.** A/default: retain isolation and accept no claim,
+including the implication above; all flags/statuses and absent eligible consumer
+remain. B: separately accept only the explicitly conditional stored-word
+RN64(F(q))=certificate-word/content statement for this pinned private join, after
+reviewing JO0-JO9 and each upstream mathematical/builtin/Fraction/GCD/binding/
+ownership/exception premise and deciding admissible implementation evidence.
+Neither route approves source/native/runtime/physical/consumer use or changes flags.
+
+Before B, proposed acceptance checks are the exact finite-word/domain/profile/
+input/success/zero scope; target reconstruction/real-pi/tail and pure-cell tie
+arguments; complete raw guard/owned post-call/certificate/root/limit/publication
+review; independent selected-implementation and shared-premise decisions; separate
+logical/attempt/resource ledgers; and a recorded narrow claim with exclusions.
+Source/schema/profile/cap/runtime/canonicalization/helper-selection/ownership/math
+changes invalidate this review and require separate affected-evidence/gate decisions,
+not automatic reruns. Hashes pin bytes, not loaded code, source authority or sensors.
+
+If claim decisions are deferred, a concrete next design-only candidate is one
+JO0-JO9/upstream-premise and admissible-evidence worksheet in these existing records:
+map each conditional dependency, proposed accept/stop/invalidation condition and
+remaining evidence gap using existing project records only. No installed-source
+refresh, imports, fixtures/runs, acquisition, code or claim adoption. Exit: every
+obligation has a named premise/evidence boundary and explicit undecided verdict;
+no counters, hashes or historical tests promoted to proof. This preparation is
+proposed, not authorized by the completed review; isolation remains the default.
+
+This review exhausts the authorized same-helper preparation. Only explicit claim/
+premise/admissible-evidence decisions, or a separately approved next design-only
+scope, remain. Recommend A; no new code, imports/runs, acquisition, native/source/
+work/resources/consumer integration, owner/wire/log/data/teacher/dependency/hardware
+work follows. Task 6/9 and all broader qualification gates remain blocked.
+
+[sinc-target-join-paper-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9773,7 +9889,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §138): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §139): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -10020,6 +10136,11 @@ fixed sixteen JX controls, independent ownership/limits and exact full joins.
 Gate 2,245 plus known xfail/71 warnings; four of five positions used, fifth unused.
 Legacy pre-body reservation accounting repaired without old AST/cap changes;
 same-helper conditional review/decision preparation continues without new runs.
+That same-helper conditional join review and concrete decision brief are prepared
+(§139): JO0-JO9, exact zero/series path ledgers, full target-to-cell implication and
+explicit upstream/shared premises. Source/tests and §138 gate remain unchanged;
+no imports/runs/claims. Retain isolation; only explicit claim/evidence or separately
+approved next design-only scope decisions remain, not automatic integration.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

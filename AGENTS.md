@@ -118,7 +118,8 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Approved private target-to-cell join complete (DESIGN.md §7 / REVIEW.md §138),
+- Approved private target-to-cell join complete (DESIGN.md §7 / REVIEW.md §138,
+  `8bf26d3`),
   following §137's explicit fixed JX map/faults/caps/counter protocol and renewed
   affected/default gates. Complete typed stages/root/certificate, independent
   inputs/reports/limits and zero/no-cell branch; old AST/order/caps preserved.
@@ -130,11 +131,13 @@ from them. Historical details below are reference material, not new approvals.
   no proof/allowance/Route C/totality/qualification or consumer claim adoption.
   Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. Baseline `ae825dc`.
   Same-helper conditional correctness/publication/work and concrete decision
-  preparation continues without imports/new fixtures/runs or claim adoption.
+  brief prepared (§139): JO0-JO9, full implication and zero/series ledgers, without
+  imports/new fixtures/runs or claim adoption. Only explicit claim/premise/evidence
+  or separately approved next design-only scope decisions remain.
   Isolation default; native motion/goals/relative transforms, source completeness/
   authority/work, task/data/dependency/hardware and broader evidence remain blocked.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-138 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-139 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1193,14 +1196,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §138 private
-typed target-to-cell join and affected/default gates complete.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §139 conditional
+typed join correctness/publication/work and concrete decision brief prepared;
+§138 private prototype/gates in `8bf26d3`.
 Four of five positions used; fifth unnecessary, no new source run pending.
 Full named matrix: 32 joins/57 target/52 composition/77 binding/62 cell;
 old ASTs/caps and five false flags preserved; `1bb89fe` stays. Gate 2,245 plus
 known xfail/71 warnings; position-two reservation gap/repair preserved. No proof/
 allowance/Route C/native/source/work/totality/consumer acceptance. Same-helper
-conditional review/decision preparation continues without imports/runs/claims.
+review complete without imports/runs/claims. Only explicit premise/evidence/claim
+or separately approved next design-only scope decisions remain; isolation default.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/cleanup pending.
 
@@ -1520,6 +1525,9 @@ Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/clean
   Typed join prototype (REVIEW.md §138): separately approved private join/sixteen
   controls/affected gates complete; 2,245 plus known xfail/71 warnings, four positions.
   Old AST/caps/flags preserved; pre-body reservation gap repaired, no claim adoption.
+  Typed join review (REVIEW.md §139): JO0-JO9 conditional arguments, zero/series
+  logical ledgers and concrete premise/evidence/claim brief prepared; no source/run/
+  claim adoption. Only explicit decisions or separately approved design-only scope.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

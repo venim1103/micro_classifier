@@ -6851,6 +6851,197 @@ package needs its own decision; the exhausted source approval cannot supply it.
 
 [sinc-bind-paper-review]: REVIEW.md
 
+#### NF1 Exact-Content Composition Contract (2026-11-05)
+
+The user explicitly selected design-only V-cell composition preparation after
+§130. [Review §131][sinc-composition-contract-review] records this approval and
+checks. This proposes a separate private composition boundary, not implementation,
+integration, a new run allowance or adoption of any claim. Existing helpers/caps/
+flags/source/tests stay unchanged; §129's five source invocations remain exhausted.
+
+**Candidate Claim and Default.** For a series input, combine declared q/profile/
+interval correspondence with independently checked whole-cell certificate content.
+The proposed diagnostic claim is only that the same supplied interval/certificate
+passed both checks under their faithful-arithmetic/runtime/ownership premises.
+Even correct cell contents plus matching fabricated enclosure stages do not prove
+that F(q) is in that interval. V-target/SR inclusion, V-live/callee authority,
+resources and consumers remain separate. Recommend continued isolation, not
+accepting this composition claim or promoting any qualification flag.
+Proposed source surface is one additive private `_check_synthetic_sinc_composition`
+and `_SYNTHETIC_COMPOSITION_BITS`, not an owner, adapter or production API. Its
+three inputs are the retained expected q and complete candidate/enclosure records.
+
+**Inputs and Ownership.** Propose expected_q_word, complete candidate_record and
+complete enclosure_record, with literal synthetic opt-in. No external precomputed
+binding/cell reports or consumer/owner/log/reference inputs. Retain §127's complete
+23/20-field input schemas, producer profile 32/8/65,536 and exact zero/series
+certificate shapes. Validate fixed builtin keys/types/lengths/raw sizes before
+lookup/equality/copy; take owned fixed-field snapshots under serialized ownership.
+Do not use unrestricted traversal/deepcopy, coercion, JSON, digest-only equality,
+producer re-execution or arbitrary verifier callbacks in the proposed private
+boundary. The current source identities are version anchors, not live attestation.
+
+The binding check's successful output has 23 fields: its sixteen fixed diagnostic
+fields plus q_word, sign, q_ratio, branch, profile, interval and certificate.
+The cell check's successful output has seventeen: its sixteen fixed diagnostic
+fields plus certificate. It has no root q_word, word or interval. Require exact
+current identity/allowed-use/status/reason, configuration/work shapes, five false
+flags and unresolved native/motion/source/work/ineligible consumer fields in each.
+Never infer compatible profiles from equal root counts or a success string.
+Binding work has canonical_pair_checks, dyadic_decodes, rational_comparisons,
+rational_constructions and max_result_bits; cell work additionally has
+midpoint_recomputations. Neither is the seven-field producer-cell work profile.
+Binding selectors remain synthetic_sinc_declared_binding_check_v0 /
+isolated_synthetic_declared_binding_only / verified_declared_sinc_binding /
+declared_correspondence_only. Cell selectors remain
+synthetic_cell_certificate_content_check_v0 /
+isolated_synthetic_cell_content_check_only / verified_synthetic_cell_content /
+independent_exact_cell_content_only. Their configuration is exactly
+rational_bit_limit; binding additionally carries the separate producer profile.
+
+| Boundary | Proposed Sequence / Required Join | Stop or Missing Evidence |
+| --- | --- | --- |
+| J0 / entry | Validate opt-in and a separate fixed-shape composition configuration before any checker entry; retain independently supplied finite q, owned complete input snapshots and all applicable raw-copy/binding/cell limits before the binding call. Zero cell configuration is not applicable. | No cap increase, fallback, refill, retries, arbitrary callbacks or producer capture inside composition. |
+| J1 / binding | Reserve one nonrefundable binding attempt; call the existing declared-binding checker once on those snapshots. Require its complete exact success profile and typed q/sign/ratio/branch/profile/interval/certificate correspondence to the owned inputs. | Unresolved, unsupported/malformed output or observed binding-limit change stops before a cell entry. A profile/status string is not authority. |
+| J2 / exact zero | Independently retained zero q requires both signed-word/sign distinctions, canonical (0,1), empty enclosure stages and exact three-field unit-word/[1,1]/zero certificate. Cell attempts remain zero. | Do not fabricate an eight-field cell certificate or describe the uncalled cell checker as verified. Proposed status checked_declared_zero_binding is separate. |
+| J3 / series cell | Revalidate the separately retained cell-check limit after binding; reserve at most one cell attempt and call the existing pure-cell checker on an independently owned copy of the exact eight-field binding certificate. | Never pass the small enclosure binding, a root word, a different interval or a previously saved cell report. No cell call for rejected binding or zero. |
+| J4 / typed exact content | After fixed schema/type/raw-size validation, compare every certificate field from the owned input, binding output, cell input and recomputed cell output. The interval also equals both root intervals and the binding interval. | Equal words/statuses/hashes or Python equality on unchecked numeric aliases is insufficient; any differing neighbor, boundary, parity, order, interval or flag rejects. |
+| J5 / configuration and work | Keep composition, binding and cell limits distinct; producer profile remains unchanged. Recheck applicable saved limits after calls and before final publication, preserving separate attempted-work reports. | No summed/raised rational ceiling, overwritten configuration, deduplicated canonical checks or inferred primitive/native/RAM/time allowance. |
+| J6 / publication | Publish fresh diagnostic-only composition evidence only after the entire applicable join. Proposed series status checked_declared_binding_and_cell_content; zero uses J2. Retain q/sign/branch, exact interval/certificate and separately copied work/entry metadata. | Ordinary stop omits composed certificate/evidence. Unexpected/allocation/interruption exceptions propagate; no universal return or rollback/atomicity claim. |
+| J7 / isolation | Five flags always false; native/motion/source/work unresolved and consumer ineligible, including on either proposed success branch. No old result retagging or owner/runtime/wire/default change. | No accepted proof, Route C, totality, V-target/V-live/resource or downstream consumer use follows from composition. |
+
+The typed certificate projection uses a fixed order: word, interval, neighbors,
+boundaries, closed_ties, lower_order, upper_order, whole_interval_contained.
+Check exact builtin dict/string/tuple shapes and nonboolean integer leaves, exact
+boolean claims, positive denominators and raw size limits before projection/equality.
+Canonicality is established in the checker calls under their premises and retained
+only through exact typed content equality; the join performs no additional reduction
+or normalization. Series has seven rational pairs; zero's separate profile
+has no neighbors/boundaries. Do not canonicalize away changed contents, drop fields,
+join only on q/word, substitute a successful status or accept stale external reports.
+This is an interface proposal; no new projection/checker function is implemented.
+
+**Conditional Composition and Work.** If the two independent checker arguments
+are later accepted under explicit shared CT0-CT2/TB0 premises, exact content binding
+connects their statements about one supplied certificate. Only a separately accepted
+SR/target inclusion argument for this exact q/profile/complete enclosure could then
+connect F(q) to that cell. That implication is conditional paper reasoning, not
+proof acceptance, a native-sinc bound or current qualification. The signed-zero
+branch does not borrow the eight-field content interface or attest source authority.
+
+Complete successful series paths would perform at most one binding and one content
+check: 42 input canonical attempts (35 plus seven), four dyadic decodes, two midpoint
+recomputations, eleven comparisons and 48 Fraction attempts (36 plus twelve).
+Zero would perform one binding check only: ten canonical attempts, one decode,
+two comparisons, eleven Fraction attempts and no midpoint/cell attempt. Count the
+seven duplicate certificate pairs twice; do not share producer/canonical results
+to erase independence. These are proposed conditional logical ledgers, not runs,
+primitive work or measured resources. The new projection/copy/metadata/publication
+work needs a separate fixed-schema argument and is not covered by these counts.
+
+Propose an independent composition raw-copy ceiling of 65,536 bits, exact builtin
+nonboolean 1..65,536; no Fraction/float/native arithmetic in the join itself.
+The binding and cell checkers retain their own limits and guards. A lower limit
+may reject; it does not rewrite the 32/8/65,536 producer profile. A zero branch
+does not enter the cell checker: report its limit/work as not applicable, not
+as executed/verified. Observed mutation rejects, but temporary change/restoration,
+runtime binding fidelity, caller allocation, concurrent ownership, GCD, exception
+publication and stack/time/RAM remain unqualified assumptions or evidence gaps.
+Proposed fresh report identity is synthetic_sinc_composition_check_v0, allowed_use
+isolated_synthetic_sinc_composition_check_only, with the separate J2/J6 statuses
+or unresolved_synthetic_sinc_composition. Retain explicit configurations for the
+raw-copy/binding/applicable cell limits, the producer profile, and attempted entry
+counts with separately copied binding/cell work. For zero, cell configuration/work
+is not applicable and its entry count zero; for rejection, no composed certificate.
+Return no consumer decision, calibrated confidence, free-space or task label.
+
+**Unaccepted Gates.** CJ0-CJ7 require separate decisions/evidence: exact input/
+output/zero profiles and J0-J7; raw/typed exact-content ownership and stop argument;
+independent correspondence/cell and conditional target-premise separation; cap/
+attempt/setup/copy/publication work; bounded reused negative/exception controls;
+old AST/cap/flag/default/wire preservation and source gates; accepted source/runtime/
+resource evidence policy; and an explicit narrowly worded claim/consumer decision.
+Preparing this contract closes none of VB6/VC5/CT3-CT5 or W0/TB0 and approves no run.
+
+| Gate | Required Separate Evidence / Decision |
+| --- | --- |
+| CJ0 | Approve the exact J0-J7 input/output/zero/series interface, not a runtime API. |
+| CJ1 | Review typed exact-content/raw-guard/snapshot/no-hook/stop-publication arguments under explicit ownership premises. |
+| CJ2 | Review independent V-bind/V-cell reasoning and retain separate, unaccepted SR/V-target inclusion premises. |
+| CJ3 | Review three distinct limits, entry accounting and separate setup/copy/publication/runtime work. |
+| CJ4 | Approve the fixed reused CC0-CC15 variants/map and bounded synthetic execution, with finite evidence limits. |
+| CJ5 | Preserve old ASTs/caps/flags/defaults/wire/artifacts and approve affected focused/default source gates. |
+| CJ6 | Decide admissible source/runtime/live/resource evidence and requalification triggers; hashes/counts alone are insufficient. |
+| CJ7 | Explicitly accept or reject a narrowly worded claim and any later consumer use; no promotion through a diagnostic status. |
+
+**Bounded Future Proposal, Not Approval.** Reuse the twelve §129 q positions and
+sixteen control slots, two composition attempts per case (at most 32), with
+positive controls plus strict opt-in/type/raw/cap/snapshot faults, rejected-binding
+no-cell controls, both-zero no-cell controls, same-word/different-content joins,
+neighbor/boundary/parity/order/interval changes, malformed returned profiles,
+observed cap changes, allocation/interruption propagation and owned result/work
+mutation. Proposed CC0-CC15 mapping to existing positions is
+`(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 6, 7, 8, 9)`.
+Slots 0-5 are zero and 6-11 series, from the stored literal table, not a new trace
+run. All twelve pool positions remain required; repeated q values are not
+independent inputs or quality evidence. Each case has one ordinary control plus
+exactly one second composition request; no hidden third request for assertions.
+
+| Control / Existing Position | Proposed Second Request / Required Outcome |
+| --- | --- |
+| CC0 / 0 | False opt-in raises before any checker; ordinary positive zero uses no cell. |
+| CC1 / 1 | Integer opt-in raises; ordinary negative zero retains its sign and uses no cell. |
+| CC2 / 2 | Delete candidate certificate; raw input rejection has no cell entry. |
+| CC3 / 3 | Opposite-zero expected word/sign rejects correspondence, not a same-ratio join. |
+| CC4 / 4 | Replace candidate-work enclosure key with the existing BC8 hostile-key pattern; reject before its equality hook. |
+| CC5 / 5 | Increased composition limit rejects without modifying old caps. |
+| CC6 / 6 | Replace certificate center-neighbor word with its stored lower-neighbor word; independent cell check rejects. |
+| CC7 / 7 | Swap certificate boundary endpoints; independent cell check rejects, preserving reflected series q. |
+| CC8 / 8 | Replace lower_order with its float alias; reject before unchecked equality. |
+| CC9 / 9 | A scoped cell-return hook changes one interval endpoint while keeping word/status; exact join rejects. |
+| CC10 / 10 | A scoped binding-return hook deletes profile; stop before cell entry. |
+| CC11 / 11 | A scoped cell-return hook adds a root word; exact profile validation rejects. |
+| CC12 / 6 | Reduced composition raw limit rejects without reduction/refinement/retry. |
+| CC13 / 7 | A scoped binding-return hook changes the cell limit to one; observed configuration change stops publication. |
+| CC14 / 8 | A scoped cell-check hook raises MemoryError; propagate without publishing composition. |
+| CC15 / 9 | Repeat plus independent input/result/certificate/work mutation preserves the saved result and pool. |
+
+Tests may use scoped synthetic monkeypatches for malformed checker outputs/cap/
+exception faults; that does not add a non-test callback interface or qualify
+runtime bindings. One fault variant per second request is fixed before approval;
+the listed alias/error categories are not permission for extra requests or vectors.
+The fixed CC14 variant exercises allocation failure, not interruption; the latter
+remains a required propagation contract with no new executed/control evidence.
+
+Before any execution, a separate approval must explicitly renew affected fixture/
+checker matrices and default regressions, not extend the exhausted old allowance.
+Proposed ceilings per invocation, including failed/partial setup and root gate:
+
+| Named Affected Entries | Proposed Maximum | Accounting Boundary |
+| --- | --- | --- |
+| Capture-fixture candidate / enclosure / nested producer cell / snapshots | 12 / 24 / 12 / 24 | Reuse one complete owned twelve-slot pool; enclosure splits at most twelve nested plus twelve companion-direct. No callee interception/refill/persistence. |
+| New composition entries | 32 | Reserve before delegation, including opt-in failures, rejected inputs, exceptions and retries; no refunded slots. |
+| Binding checker | 64 | At most 32 from new composition plus 32 from the renewed existing binding matrix if run; no hidden assertion/building calls. |
+| Pure-cell checker | 64 | At most 32 from new composition plus 32 from the renewed existing content matrix if run; zero/rejected binding adds none. |
+
+Propose at most five invocation positions total, including probes/failed repairs/
+default gate: conservative totals 60/120/60/120 captures, 160 composition, 320
+binding and 320 pure-cell entries. Nested producer-cell and independent pure-cell
+entries stay different categories. Other unchanged default regressions require
+their explicit historical gate scope; these named ceilings are not an exhaustive
+root-suite resource claim. Serial execution only, complete owned pools or abort,
+no worker/refill/replacement/new download; payloads invocation-memory-only. Approval
+must confirm this control map, exact fault variants and counters before execution.
+
+Next decision: approve/modify this bounded private prototype and affected-gate
+renewal, or retain design-only isolation. Nothing here authorizes implementation,
+project imports/capture/checker/fixture/native runs, acquisition, integration,
+data/teacher/training, proof/error/work allowance or qualification. Task 6/9,
+native motion/goals/relative transforms, source completeness/authority, teacher
+assets and ST/board remain blocked; no product or risk-policy choice is adopted.
+
+[sinc-composition-contract-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8862,7 +9053,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §130): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §131): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9074,6 +9265,10 @@ That same-checker conditional review and concrete claim decision brief are now
 prepared (§130): ten BR0-BR9 obligations and the logical ledger, with unchanged
 source/tests and no new run. No correspondence/proof/trusted-base/resource or
 consumer claim is accepted; next is the explicit claim/premise/evidence decision.
+The separately approved design-only exact-content composition contract is prepared
+(§131): J0-J7/CJ0-CJ7, typed joins, explicit no-cell zero path, fixed sixteen-control
+map and unaccepted five-invocation prototype/affected-gate proposal. Source/tests
+unchanged, no run or claim adoption; implementation and renewed gates need approval.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

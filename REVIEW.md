@@ -9509,6 +9509,91 @@ or proof/error/work allowance/Route C/totality/qualification promotion follows.
 
 [sinc-bind-paper-design]: DESIGN.md
 
+## 131. NF1 Exact-Content Composition Contract (2026-11-05)
+
+The user explicitly selected **Design-only V-cell composition contract** from the
+batched continuation choice: exact-content binding, evidence requirements and a
+bounded future proposal, with no execution, integration or claim adoption. Clean
+baseline `b1aace2`; source checkpoint remains `9869129`. This approval renews none
+of §129's five exhausted source invocations. [DESIGN.md §7][sinc-composition-design]
+holds the proposed contract, J0-J7 boundaries and CJ0-CJ7 unaccepted gates.
+
+Proposes one private composition helper/independent raw-copy limit, retained
+expected q plus owned complete candidate/enclosure records. One binding attempt,
+then at most one pure-cell attempt for series only. Zero retains word/sign/(0,1),
+empty stages and its three-field unit certificate; no fake eight-field input or
+claimed cell verification. Exact typed joins bind all eight series certificate
+fields across owned input/binding/cell input/recomputed cell output, including
+interval equality with both root records. No external success report, word/status/
+hash-only join, normalization or hidden canonicalization work. Applicable limits
+are retained before the first checker call and rechecked after calls/publication.
+
+Actual source AST confirms binding success has 23 root fields/five work fields;
+cell success has seventeen root fields/six work fields and no root q_word/word/
+interval. Its eight certificate fields, exact current identity/allowed-use/status/
+reason and configuration are separate from the seven-field producer-cell work.
+Fresh proposed composition reports remain diagnostic: five flags false, native/
+motion/source/work unresolved and consumer ineligible. Correct cells joined to
+fabricated consistent stages do not establish F(q), live/callee source or resources.
+
+Conditional series ledger is 42 canonical-pair attempts/four decodes/two midpoints/
+eleven comparisons/48 Fraction attempts; zero is ten/one/zero/two/eleven with no
+cell entry. Duplicate certificate pairs count in both independent checkers.
+Projection/copy/metadata/caller/runtime/GCD/publication work is separate; no new
+measurement, proof, numerical allowance, totality or CT/W0/TB0 qualification.
+
+Future proposal only: sixteen CC0-CC15 controls mapped to existing positions
+`(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 6, 7, 8, 9)`, exactly two composition
+requests each. Stored literals show slots 0-5 zero and 6-11 series; all twelve
+pool positions required, not twelve independent q values. Single selected faults
+include zero/type/key/limit/no-cell controls, neighbor/boundary/alias changes,
+same-word/different-cell-return content, malformed binding/cell return profiles,
+observed cap change, MemoryError propagation and independent owned mutations.
+Interruption remains a propagation requirement, not this fixed fault's evidence.
+
+Per proposed invocation: capture-fixture 12 candidates/24 enclosures/12 nested
+producer cells/24 snapshots; 32 composition entries; at most 64 binding and 64
+pure-cell entries including each renewed existing 32-entry matrix if it runs.
+At most five positions including failed probes/repairs/root gate: conservative
+60/120/60/120 captures, 160 composition, 320 binding, 320 pure-cell entries.
+Other unchanged root regressions need explicit historical gate scope; capture
+ceilings are not all-root helper/resource counts. Reserve before delegation;
+no refunds/workers/refill/new q/scene/callee interception/persistent capture.
+This bounded prototype/affected-gate renewal is **not approved** by this design.
+
+**Checks and retained failure.** Immediate standard-library AST/text/whitespace
+check passed for actual result/certificate shapes, joins, conditional ledger,
+proposed budgets and preserved source/design. Tightened canonicality wording,
+work profiles and fixed map; same focused check passed against existing literal
+constants without trace/helper execution. A subsequent patch failed on an unrelated
+context line; targeted text check found neither proposed hunk landed. Removed
+that context and retried; the same expanded static check passed, including exact
+checker selectors, fixed control variants and capture-versus-checker accounting.
+No schema/assertion/budget was loosened; preserve this failed patch and earlier
+§129/§128 failures. Final document/history/reference/editor/scope checks pass:
+594 actual references/local targets, sections 1-131, prior
+review/Sources/design/milestones/workflow/history/source-gate/task-tail preservation,
+eight joins/eight gates/sixteen controls, exact limits/budgets/failure/no-run history,
+unchanged tested source identities, three-document scope, editor diagnostics and
+whitespace all pass. Exact diff review clarified the private/non-test boundary;
+final staged-byte checks remain before committing.
+The source test suite is not rerun for this design-only edit.
+
+**Outcome and next decision.** Approved preparation complete. Next: approve/modify
+the private prototype plus affected-gate renewal and its explicit five-position
+budget, or keep design-only isolation. No source/test/cap/flag/default/wire/artifact
+change, checker/capture/fixture/project/native/model run, installed inspection/
+acquisition, data/teacher/training/consumer integration or proof/error/work allowance/
+Route C/totality/qualification adoption. Source/test blobs remain
+`709dc01f1232dd76a66dd571bcd8365432365ded` /
+`955a39417a8d2e3a834dfc0efa836d4f43642767`; last source gate §129 stays 2,197
+passes/known xfail/71 warnings, not newly measured. Old 70 checker entries and
+60/120/30/120 capture totals are unchanged. No background job, cleanup or assistant
+push. `1bb89fe`, Task 6/9, source completeness/authority/native work, motion/goals/
+relative transforms, teacher assets and ST/board remain blocked and unchanged.
+
+[sinc-composition-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -6557,6 +6557,174 @@ and a local commit, not closure of VC5/CT4 or permission to acquire evidence.
 
 [sinc-bind-contract-review]: REVIEW.md
 
+#### NF1 V-bind Capture and Attempt-Budget Protocol (2026-11-05)
+
+The user separately approved §127's design-only capture/evidence/budget protocol;
+[review §128][sinc-bind-budget-review] records checks. This prepares a concrete
+future bounded package, not capture/checker implementation, fixture execution,
+accepted evidence, a resource allowance or qualification. No source/test change,
+target import/helper/native run, installed inspection, acquisition or integration.
+
+**Local hypothesis and proposed default.** A single owned in-memory capture pool
+per invocation can provide separate complete candidate/enclosure inputs for the
+§127 declared-correspondence checker, while recording every attempted source
+entry and never implying same-invocation enclosure provenance. Reuse only the
+twelve existing literal positions at `_ARITHMETIC_TRACE_LITERALS[i][2][4]`,
+for i=0..11. Positions are not twelve distinct q words or independent evidence;
+duplicates and both stored signed zeros retain their original slot identities.
+Do not evaluate a trace/owner/reference to recover q, select by output quality,
+replace rejected slots, alter defaults or introduce a new q/scene/cohort.
+
+Propose a private checker in the existing diagnostics module and one capture
+fixture plus one sixteen-position test in the existing simulator test file.
+No new module, CLI, report format or persistent capture/cache is needed. All
+old AST nodes, signatures, caps, defaults, wire, reports and logs must remain
+unchanged. Helper isolation and the five false flags remain the default.
+
+**Capture sequence and exact origin labels.** In one serialized, non-worker
+invocation, freeze the prospective twelve-slot input manifest before any producer
+entry: position, exact existing q word, expected profile and source/test file
+identities. Verify unchanged old configuration (32/8/65,536; cell step limit 64)
+and available original fixture bindings; do not repair drift by rewriting caps.
+These identities/bindings are assumptions and declared lineage, not V-live proof.
+
+For each slot in fixed order, reserve one candidate entry, call the unchanged
+candidate once with literal synthetic opt-in, then reserve one direct companion
+enclosure entry and call the unchanged enclosure once for the same expected q.
+The candidate may itself enter enclosure once and cell at most once; account for
+those as nested entries, never hide them as capture setup. The direct record is
+labelled companion_direct, not candidate_callee or the same invocation's actual
+enclosure transcript. The candidate's small binding/work copies cannot supply
+missing stages or prove that the companion was its callee. Intercepting callee
+payloads, changing owner/recorder paths or claiming same-event provenance is not
+part of this proposed package; that alternative needs a separate contract.
+
+Before retaining a successful pair, raw-check exact §127 full schemas, sizes and
+fixed containers, including the producer's seven-key cell work and two-item
+endpoint list. Then create owned fixed-field snapshots with no arbitrary-object
+conversion/copy hooks. Candidate and companion snapshots must be independent
+from producer objects, each other, fixture consumers and per-control mutation
+copies. Preserve every complete stage and declared work field; no clipping,
+rounding, status retagging or partial-record enrichment. Producer work remains
+declared metadata, not capture instrumentation or primitive resource evidence.
+
+Retain a bounded slot/attempt/status/reason marker for unresolved/malformed
+returns; do not retain arbitrary raw objects or publish them as complete pairs.
+Never refill that slot or collect an alternative q. Unexpected capture/allocation/
+interruption failure aborts pool construction, preserves spent-entry markers
+where available and cannot trigger automatic rebuilding for each test. Partial
+setup is not a valid reusable pool. No universal marker/publication guarantee
+after allocation failure; unexpected errors propagate.
+Pool eligibility requires all twelve complete pairs; a missing/failed pair fails
+setup before verifier entries, never skips or reassigns a control.
+
+**Reservation and invocation ledger.** Reserve before delegation, consume once
+even on opt-in rejection, unresolved return, downstream exception or snapshot
+failure; never refund a producer entry because no record was published. A denied
+reservation makes no target call and is a separate diagnostic event, not a hidden
+successful entry or counter reset. Abort on a denied/ambiguous budget request.
+The budgets below count the new package only; existing default regression
+controls require explicit separate gate approval and their own historical limits.
+
+| New-Package Quantity / Per Invocation | Proposed Hard Ceiling | Accounting Boundary |
+| --- | --- | --- |
+| Prospective literal slots / pool setup | Twelve slots / one setup attempt. | Freeze before calls; duplicates count separately, no retry/refill/worker multiplication. |
+| Candidate entries | 12 | One reservation per slot, including failed/unresolved calls; no second candidate call in a verifier control. |
+| Enclosure entries | 24 | At most twelve candidate-nested plus twelve companion-direct entries, separately labelled. |
+| Cell-producer entries | 12 | Candidate-nested only; zero may consume none, no independent cell/word/checker run for capture. |
+| Full-record snapshot attempts | 24 | At most one candidate and one companion snapshot per slot; partial/failed snapshots consume attempts, not permission to recapture. |
+| Declared-binding checker entries | 32 | Sixteen control positions, exactly two requested checker entries each; single selected control uses two. |
+| Existing V-cell/owner/reference/native/trace/log adapter entries | Zero from the new package. | Poison after pool setup; no implicit V-cell composition or F(q)/native replay. |
+
+Guard and instrument the candidate, nested/direct enclosure and nested cell
+entries before any call. Keep original callable references and origin counters
+separate; fixture wrapper faithfulness/runtime correspondence is assumed, not
+qualified. A failed setup must be cached as failure or end the invocation, not
+re-enter producers on later parametrized controls. Do not use parallel workers,
+rerun plugins, multiple pools, cross-process caches or resumed partial pools.
+Each new process/test invocation gets a fresh explicitly budgeted pool, not a
+free retry. Record reserved entries, outcomes, snapshot attempts and checker
+attempts separately from returned producer/verifier logical work counters.
+
+Propose one single-control focused check, one complete sixteen-control matrix
+and one required root source gate. Allow at most two additional executions only
+after a diagnosed substantive local repair, for the same focused check and/or
+required gate; never repeat an unchanged successful gate. Thus at most five
+new-package invocations, each with the ceilings above, not five automatically
+authorized runs. Aggregate conservative ceilings are 60 candidate, 120 enclosure,
+60 nested cell, 120 snapshot and 160 binding-checker entries. Actual selected/
+failed invocations may use less; retain exact counts and all failures, do not
+report ceilings as observed work. Additional execution needs fresh bounded
+approval; after three failed approaches, record the blocker and stop that work.
+Static lint/format/AST/reference checks and zero-execution discovery are recorded
+separately, not numerical/helper execution or a successful behavior check.
+
+**Sixteen-control draft.** Reuse the twelve captured positions for these named
+control slots; duplicate selection for later slots is deliberate. Each slot
+first checks an owned baseline pair, then makes one bounded altered/exception/
+repeat request. Baseline expectations come from independently decoded expected
+q and explicit §127 correspondence rules, not producer status as a truth oracle.
+The fixed BC0..BC15 pool-index mapping is
+`(0, 1, 2, 3, 4, 5, 6, 1, 8, 9, 10, 11, 7, 1, 2, 3)`.
+It covers all twelve positions; BC7 uses the negative stored zero.
+
+| Control Position | Second Request / Required Observation |
+| --- | --- |
+| BC0 | Literal opt-in false raises; entry remains spent. |
+| BC1 | Integer opt-in alias raises; entry remains spent. |
+| BC2 | Swap a companion with a different existing stored q/sign; reject even if values/intervals coincide. |
+| BC3 | Sign numeric alias; reject before accepting correspondence. |
+| BC4 | Configuration type/profile mismatch; no cap/term normalization. |
+| BC5 | Root/certificate interval mismatch using retained existing content; reject. |
+| BC6 | Missing/extra stage shape; no transcript completion or inclusion claim. |
+| BC7 | Wrong signed-zero branch/certificate shape; no fabricated eight-field zero cell. |
+| BC8 | Hostile builtin-container subclass/type control; no conversion/copy hooks. |
+| BC9 | Noncanonical rational pair; equality after reduction cannot excuse input. |
+| BC10 | Raw oversized pair; reject before canonicalization. |
+| BC11 | Reduced separate verifier cap; bounded unresolved, old caps intact. |
+| BC12 | Increased/invalid verifier cap; no new allowance. |
+| BC13 | Observed mid-call verifier-cap change; stop before publication. |
+| BC14 | Injected allocation failure; propagate without a verified record or recapture. |
+| BC15 | Owned repeat and independent input/report/work/list mutation; saved baseline/pool remain unchanged. |
+
+Cases cover named anchors, not every field/branch combination or mathematical
+domain. Domain/flag/work/neighbor/selector tamper variants and any further
+coverage require a separately budgeted follow-up if these sixteen cannot expose
+them. Do not hide extra checker calls in fixture builders, assertions, helpers,
+ownership repeats or exception probes. Reuse existing independent dyadic/test
+utilities for expected content; the checker calls none of those or producers.
+Poison prohibited paths after setup; snapshot pool originals before mutations,
+restore scoped patches and keep each control's mutable copies separate. No
+actual fixtures or expected record values are generated by this design work.
+
+**Retention, acceptance and next permission.** Keep future capture payloads only
+in the invocation's owned synthetic fixture memory, released on teardown;
+no task labels, dataset, cohort, persistent exporter, cache or log application.
+Retain bounded counts/source identities/outcomes/failed-check history in the
+existing review checkpoint; preserve existing reports/logs, do not regenerate
+them. No deletion of unrelated/user data, dependency/download or hardware work.
+
+Before a future source commit, require the focused behavior check, complete
+matrix, default root pytest/lint/whitespace gate, changed-file format/editor
+checks and historical AST/cap/flag/default/wire preservation. Default gates
+include their unchanged legacy fixture controls only under explicit approval;
+no additional native/sanitizer/Arm/GPU/teacher/board requalification follows.
+Capture counts/file identities/frozen records and the sixteen controls do not
+close VB1/VB3/VB5/VC5/CT4, V-target/V-live or actual resource/consumer claims.
+
+The user's follow-up separately approves the next bounded part after this
+protocol is finished: the isolated private in-memory capture fixture,
+declared-binding checker and sixteen reused controls, only under this twelve-slot/
+12-candidate/24-enclosure/12-nested-cell/24-snapshot/32-checker per-invocation
+protocol, at most five budgeted verification/repair invocations and normal source
+gates. No new q/scene, callee interception, V-cell/owner/reference/native/adapter
+integration, persistent artifact or proof/error/work allowance/Route C/totality/
+qualification adoption. Old helpers and `1bb89fe` stay; Task 6/9, native motion/
+goals/relative transforms, source completeness/authority, teacher assets and
+ST/board remain blocked. Present approval ends at document checks/local commit.
+
+[sinc-bind-budget-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8568,7 +8736,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §127): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §128): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8766,6 +8934,11 @@ evidence gates. Matching records are not target/live/resource truth; no capture,
 checker, run, proof/allowance or VC5/CT4/consumer acceptance. Next proposed, not
 approved: design-only capture/evidence/attempt-budget protocol, not acquisition/
 imports/new fixtures/runs/source edits/implementation/integration or promotion.
+The separately approved capture/budget protocol is prepared (§128): twelve slots,
+12/24/12/24/32 entry ceilings per invocation, complete owned pools, companion-direct
+origin and nonrefundable failure accounting; at most five verification/repair
+invocations. User follow-up approves the next private fixture/checker/sixteen-control
+package and normal source gates within those limits, not integration or promotion.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

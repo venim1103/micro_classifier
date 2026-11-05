@@ -9310,6 +9310,66 @@ teacher assets and ST/board stay blocked. Isolation remains default.
 
 [sinc-bind-contract-design]: DESIGN.md
 
+## 128. NF1 V-bind Capture and Attempt-Budget Protocol (2026-11-05)
+
+The user approved §127's design-only protocol, then explicitly requested the
+next part after completion without repeated permission questions. Baseline is
+clean `0e8788d`; source/test identities remain §125's. The separate follow-up
+approves the bounded capture/checker/test package below, not target/live/native/
+consumer qualification, new q/scenes, data, dependencies or hardware. User-side
+push success is not assistant push permission.
+
+[DESIGN.md §7][sinc-bind-budget-design] specifies twelve existing literal slots,
+one owned in-memory pool per invocation, separate candidate and companion-direct
+enclosure records, and no same-callee provenance claim. Complete pairs must all
+be available before verification; no partial pool, refill or replacement. Fixed
+sixteen-control mapping covers every slot and preserves both stored signed zeros.
+Per invocation ceilings: 12 candidate, 24 enclosure (nested/direct separately),
+12 candidate-nested cell, 24 full-record snapshot and 32 checker entries. Reserve
+before delegation; failed/unresolved/exception/snapshot entries are never refunded.
+Producer work declarations, capture counters and verifier logical work stay separate.
+
+Proposed source verification is one single control, one full matrix and one
+root gate, with at most two additional diagnosed local-repair executions, five
+invocations total. Conservative package ceilings are 60/120/60/120/160 for the
+five quantities above, not measured use or permission to repeat successful gates.
+Unchanged legacy default controls require separate source-gate approval, included
+in the user's bounded continuation; no extra native/Arm/sanitizer/model gate.
+Capture payloads are fixture-memory-only, no persistent exporter/cache/dataset;
+bounded counts/identities/outcomes/failures belong here. No deletion or cleanup
+of user data. File/counter/frozen-record evidence does not close V-target/V-live,
+VB1/VB3/VB5/VC5/CT4/resources or any consumer/proof/allowance/Route C/totality gate.
+
+**Checks and interruption.** First static validation returned outcome_unknown
+with no recorded output. Verified only DESIGN was modified and whitespace was
+clean before repeating; do not count the unknown call as a pass or execution.
+The repeated standard-library AST/text check passes: twelve eleven-word literal
+rows/signed-zero selectors, current test selector, one candidate enclosure/cell
+call site, sixteen controls, origins/reservations/failure/aggregate/retention/
+approval clauses and exact prior DESIGN/source/test preservation. The checkpoint
+patch failed with Duplicate Path DESIGN; verified no partial change, then retried
+with one header per file. Preserve this failure despite the existing workflow note.
+The full link check mistook the backticked literal selector `[i][2]` for reference
+2; exclude inline code spans from link parsing, not from exact history/identity
+checks. No false reference definition or weakened target assertion is introduced.
+The first failure note repeated the selector unquoted, causing a second undefined
+reference check; quoted that literal as code and kept the same strict check.
+No project import, helper/fixture/native run or source gate in this design checkpoint.
+Final document/reference/history/editor/whitespace/staged checks precede commit.
+The last source gate remains §125's 2,181 plus known xfail/71 warnings, not rerun.
+Source/test blobs stay `937df87cc85652e324869e40a5340bfdd72df73b` and
+`f4d0c57b7a547a79a1b615694b7a4a78c55e763a`; older failures are preserved.
+
+**Handoff.** After this document commit, continue independently with the approved
+private capture fixture/checker/sixteen-control package within the stated limits
+and normal source gates. No owner/reference/V-cell/native/log adapter integration,
+callee interception, persistent captures, new positions or qualification promotion.
+Old helpers/caps/flags/defaults/wire/reports/logs and `1bb89fe` stay unchanged;
+Task 6/9, source completeness/authority, native motion/goals/relative transforms,
+teacher assets and ST/board remain blocked. No background job or assistant push.
+
+[sinc-bind-budget-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

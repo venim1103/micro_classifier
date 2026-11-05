@@ -138,9 +138,16 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-146 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-148 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
+- Architectural review assessed (REVIEW.md §148 / DESIGN.md §12): supported
+  planning queue covers sensor response/coverage and public-doc clarity, gated
+  caller scratch/target optimization and deferred exact prompt improvements.
+  Existing row dedup and native double/hard-float support are recorded; blanket
+  lossless-mm, 70%-saving, guaranteed cone detection, fp32-only and <128-byte
+  results are not adopted.
+  Planning only: no source/run budget or qualification is renewed.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
   `mode` is absent from the active catalogue and stays unlabeled. Learned
   prediction/camera questions and distillation are deferred.
@@ -1207,6 +1214,11 @@ is spent (actual two reused scenes; 48 adapter/32 relative/10 coordinator per fu
 matrix). No fifth invocation or separate command-guard budget follows. D4's
 32-episode prospective cohort/criteria/resource scope remains separate/unapproved.
 No source qualification, normal runtime/profile or target change follows.
+Validated improvement queue: [DESIGN.md][design] §12 / [REVIEW.md][review] §148.
+Prioritize sensor/coverage admission; public-doc clarity is independent. Scratch/
+target optimization follows actual deployment gates, prompt work a justified
+teacher question and approved assets/use. Queue acceptance is not execution
+approval and does not change the next blocked source/startup/command decision.
 ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit

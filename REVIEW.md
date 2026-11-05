@@ -11042,6 +11042,127 @@ dependency change occurred. Final staged-byte verification precedes the commit.
 
 [concurrent-architecture-review]: ARCHITECTURE_IMPROVEMENTS.md
 
+## 148. Architecture Review Validation and Improvement Plan (2026-11-05)
+
+The user requested checking the [imported architectural review][architecture-validation-source]
+and adding valid improvements to the plan. This authorizes assessment and plan
+updates, not adopting every recommendation or implementing runtime/input/target
+changes. The three-question rules baseline remains the active priority; teacher
+work and general arithmetic audits remain deferred behind their existing gates.
+
+**Findings, highest risk first.**
+
+1. **Double-to-fp32 justification is outdated.** [ST's MCU specification][st-n657]
+  explicitly includes native half/single/double-precision FPU support.
+  [Current Arm builds][architecture-arm-build] use `-mfloat-abi=hard -mfpu=auto`.
+  The [old report][architecture-head-audit] really records 2,176/2,192/2,200-byte
+  head frames and software-double helpers, but §70 F22 identifies that soft-float
+  configuration as unsuitable M55 sizing evidence; §71 repaired the controls.
+  F22's recorded hard-float head comparison needs only `memcpy`, not those
+  helpers. No fresh compilation was performed here. Retain the reference;
+  do not require fp32/fixed-point or claim double/libm costs disappear without
+  a measured, numerically qualified deployed path. Scalar double support is
+  not a promise of double-precision MVE vectorization or free double `libm`.
+2. **Zone cones cannot guarantee clearance.** [The simulator][architecture-rover-source]
+  explicitly implements fictional point rays, not a device emulator.
+  [ST specifies][architecture-sensor-spec] a 65-degree diagonal square FoV;
+  this does not qualify uniform 5.6-by-5.6-degree response cones or detection
+  of every cylinder touching them. Mixed floor/object returns, occlusion,
+  target/status/error evidence and unobserved swept regions still matter.
+  The normal-cylinder aliases in §77 include limited-view turning geometry,
+  not only between-ray gaps or a floor-band threshold. Qualify a response/
+  coverage model before replacing rays. Preserve the accepted geometric
+  `clear_sector` meaning; unknown outside supported evidence is an admission
+  rule, not a target redefinition or proof that blind spots were closed.
+3. **Millimetre encoding is not a drop-in lossless fix.** The [prompt codec][architecture-prompt-source]
+  requires exact canonical reconstruction and uses typed binary32 rows only
+  when promotion recovers every original number; other rows remain literal.
+  The simulator samples noisy float-valued ranges, not an integer-mm profile.
+  Rounding to mm/cm changes those inputs. A qualified integer source and its
+  versioned conversion/error contract would be a different proposal. No
+  evidence supports the review's 70% saving. Both existing typed-row reports
+  have 80 exact round trips but 63 over-budget requests, maximum 6,016 tokens
+  ([mini report][architecture-row-budget]); neither solves 2,048-token use.
+  The longer-context parity diagnosis is valid but limited: two choice flips
+  on the same 7,616-token warm-clear input at two ceilings, not two independent
+  failures or all question types ([report][architecture-context-parity]).
+4. **Held-payload deduplication already exists at row level.** `compact_request_draft`
+  interns identical canonical rows across current/history ToF, masks and ego.
+  A whole-frame reference might reduce remaining index/structure overhead,
+  but must demonstrate net complete-prompt savings over that existing codec.
+  `_record_history` still updates ego/history each decision tick: a held ToF
+  payload does not imply the entire observation differs only in age. Preserve
+  each slot's fields, masks, signed zero, types and original identity; fixed
+  duplicate counts are not valid for every phase, rate or legacy profile.
+5. **Caller-supplied scratch is a valid conditional option, not a sizing result.**
+  The [head source][architecture-head-source] retains a 257-double expansion
+  plus five temporary logits. Moving that expansion to caller-owned storage
+  could reduce callee stack, not total RAM or full call-chain/interrupt stack.
+  No selected RTOS, stack overflow or less-than-128-byte result is established.
+  Preserve compensation, non-overlap/ownership and output-on-failure semantics;
+  do not replace the expansion with a basic Kahan/Neumaier accumulator merely
+  to shrink storage. Existing [nested/multiscale cancellation tests][architecture-head-tests]
+  pin residuals including four 32-shuffle controls. Requalification must use
+  the actual hard-float path and applicable native/board gates.
+6. **A separate optimized target path is useful only if justified.** Retaining
+  a high-precision reference while evaluating fp32/fixed-point/MVE alternatives
+  is a reasonable deployment option, not an adopted production architecture.
+  The current rules-first pilot needs no learned affine heads or teacher.
+  Select the real decision path and numerical/performance requirements first;
+  preserve rejection, confidence and wire parity and the known QDQ xfail.
+7. **README consolidation is valid.** The [public introduction][architecture-public-readme]
+  is 877 lines/5,382 whitespace-delimited words (`wc -l -w`), not about 3,500.
+  A concise maturity matrix and architecture diagram would improve navigation.
+  Mark implemented host tooling separately from proposed on-device runtime,
+  student/NPU inference and offline learning. Preserve essential safety and
+  maturity limits; reusable commands/history belong in the existing appropriate
+  documents. Do not manufacture CI badges or change account metadata here.
+8. **Strengths do not establish universal numerical guarantees.** The bounded
+  C/no-heap/wire hygiene and prior parity checks are real, but IEEE format
+  assertions and partial-sum expansion alone do not guarantee cross-build
+  reproducibility, correct clearance or numerical certification. `add_partial`
+  is an expansion algorithm, not simply the review's Kahan/Neumaier label.
+  Prior false qualification flags and unresolved evidence remain unchanged.
+
+**Accepted planning disposition.** [DESIGN §12][architecture-validation-plan]
+now queues sensor response/coverage qualification (I1), public-documentation
+clarity (I2), conditional caller-scratch work (I3), justified target optimization
+(I4) and deferred exact prompt improvements (I5), each with a trigger and exit.
+The review's teacher-first PR order, unconditional cone/precision changes,
+lossless-mm/70% promises and less-than-128-byte target are not adopted.
+Queue acceptance is not executable, collection, qualification or deployment
+approval. Tasks 6/9 remain blocked; §146's four verification positions stay spent.
+
+**Evidence and failed lookups.** Checks used source/test text, AST structure,
+existing JSON reports, the current Arm command and official ST product pages.
+UM3109 and VL53L8CX datasheet extraction failed; the attempted official driver
+header URL returned 404. No further driver lookup/download was attempted after
+those three failures, so ULD range units and zone-response details remain
+unverified here. The generic N657 page yielded no content; the existing exact
+N657A0 source link succeeded and confirms FPU capability. No project helper,
+fixture, tokenizer/model, compiler or hardware was executed; no old report,
+quarantined log, input or bound was regenerated or promoted. The imported review
+is preserved verbatim. Scoped validation passed: eight findings/five gated
+items, exact recorded metrics and current source anchors, 648 reference uses/
+25 inline links and local targets, ordered REVIEW sections 1-148, exact prior
+design/roadmap/review/Sources/stable workflow/task history and other tracked
+files preserved, three-document scope and clean whitespace/editor diagnostics.
+Final result-record and staged-byte checks precede the local planning checkpoint;
+the code suite is not rerun for these documentation-only changes.
+
+[architecture-validation-source]: ARCHITECTURE_IMPROVEMENTS.md
+[architecture-prompt-source]: teacher/label_pipeline.py
+[architecture-rover-source]: sim/rover.py
+[architecture-arm-build]: interface/build_audit.py
+[architecture-head-source]: firmware/micro_classifier_heads.c
+[architecture-head-tests]: tests/test_interface.py
+[architecture-head-audit]: interface/reports/reference-build-audit-20261019.json
+[architecture-row-budget]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
+[architecture-context-parity]: teacher/reports/d3-mini-context-parity-capped-20261016.json
+[architecture-public-readme]: README.md
+[architecture-validation-plan]: DESIGN.md
+[architecture-sensor-spec]: https://www.st.com/en/imaging-and-photonics-solutions/vl53l8cx.html
+
 ## Sources
 
 Hardware and tools:

@@ -10513,6 +10513,35 @@ all existing qualification gates. Review the baseline brief before expanding sco
 
 [priority-reset-review]: REVIEW.md
 
+### Validated Improvement Queue (2026-11-05)
+
+The user requested validating the imported architectural review and adding
+supported improvements to the plan. [Review §148][architectural-improvement-review]
+records source/report/primary-source checks, corrections and evidence gaps.
+The following planning items are accepted without replacing the active priority
+order above. They are not implemented or qualified, and provide no new code,
+fixture/run, collection, model/dependency or hardware authorization.
+
+| Item | Priority / Trigger | Exit Condition Before Adoption |
+| --- | --- | --- |
+| I1: Sensor response and coverage qualification | Active F21/M2 input/source admission, alongside the baseline's startup/actual-command decisions. | Independently supported zone/return/status/error, mounting/timing and swept-region coverage contract; retain normal-cylinder, slender, masked/occluded and delayed aliases and explicit unknowns. A footprint/frustum model is a candidate, not guaranteed detection or a selected 5.6-degree zone. |
+| I2: Public documentation clarity | Independent documentation-only follow-up; do not delay source/command admission. | A concise README introduction, implemented-versus-planned architecture diagram and maturity matrix; preserve host fail-safe ownership and on-device/host-only distinctions. Put history and reusable commands in existing audience-appropriate documents; check links and do not imply deployed student/NPU runtime or invent CI evidence. |
+| I3: Caller-owned head scratch | Native/board integration only if the selected deployment uses this head or a named memory gate requires it. | Explicit ownership/capacity/non-overlap and unchanged atomic-output contract; retain the existing partial-sum reference and cancellation/parity controls. Measure current hard-float callee and complete-call-chain/interrupt stack plus caller RAM. Moving storage is not total-RAM reduction; no less-than-128-byte target or RTOS-fit claim is adopted. |
+| I4: Qualified target-specific optimization | Actual deployed-path profiling/numerical gates justify a separate fp32/fixed-point/MVE candidate. | Keep the high-precision reference; establish justified error, decision/confidence/wire/rejection parity and measured target cost with applicable host/sanitizer/Arm/linked-board gates. Native double is supported; neither mandatory fp32 nor removal of all `libm` dependencies is a requirement. Preserve the known QDQ xfail and existing bounds. |
+| I5: Exact prompt representation improvements | Deferred until a justified learned question needs teacher work and the assets/use scope are approved. | Compare any whole-frame-reference draft with existing exact row interning; reconstruct every original field/type/mask/age and identity, and measure complete requests at the unchanged 2,048-token ceiling after approved asset restoration/verification. Integer units require a separately qualified source/schema/precision contract, not rounding existing float inputs. No 70% saving or budget/quality success is assumed. |
+
+The current conditional C1 input/wire adapter still always rejects; it is not
+a qualified baseline. Unknown outside supported sensing/motion/return evidence
+remains an admission rule for the existing geometric question meanings, not a
+redefinition of `clear_sector` or a narrower task chosen to hide blind spots.
+Sensor response details and current deployed stack/latency are still evidence
+gaps. The old soft-float build tables remain historical (§70 F22/§71), not
+current M55 sizing measurements. See §7/12's original baseline and deployment
+gates before implementation. Do not reopen general arithmetic audits, restore
+teachers or collect episodes merely because these improvements are now queued.
+
+[architectural-improvement-review]: REVIEW.md
+
 ### Historical Milestone Context Through §143
 
 Recorded checkpoint (2026-11-05, REVIEW.md §143): the active

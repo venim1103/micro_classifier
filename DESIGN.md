@@ -1631,6 +1631,230 @@ Task-specific distillation into simpler networks has published support, for
 example [Tang et al.][distillation-paper]. This supports the approach, not a
 guarantee that a particular micro-student preserves broad teacher capabilities.
 
+### Rules Baseline Admission Brief (Proposed, 2026-11-05)
+
+**One candidate for review, not adoption.** Following §12's priority reset,
+propose an explicitly ideal-simulation, coverage-first C1 rules baseline. This
+consolidates the existing synthetic results into an admission and evaluation
+contract; it does not qualify their sources or numerical allowances. The first
+deliverable after approval would be a bounded Python rule-to-wire-to-host trial,
+not device emulation, firmware, task labels or a trained model. [Review §145][baseline-admission-review]
+records the source observations, open decisions and verification of this brief.
+Existing defaults, diagnostic heuristics, targets, wire bytes and quarantine stay
+unchanged. The older C1 sections below retain their original scope and evidence.
+
+#### Candidate Sensing and Scene Domain
+
+| Component | Proposed trial profile and admission boundary |
+| --- | --- |
+| Sensing | The existing experimental C1 ring: eight simultaneous 8x8 point-ray views at yaw offsets 0 through 315 degrees in 45-degree steps, coincident body-centred origins at 0.15 m height, each with 45-degree local field and 22.5-degree downward pitch. This is a virtual information profile, not eight selected devices or continuous angular coverage. |
+| Returns | Ideal static first intersections with flat floor, cylinders and outer walls; zero range noise and zero stochastic dropout. Preserve binary32 rounding, ray identity and masks for missing, nonpositive, saturated or unsupported returns. Deliberately injected masks/occlusion are challenges, never synthetic max-range clearance. No Gaussian bound or physical optical/material claim. |
+| Timing and retention | Existing 20 Hz decisions, nominal 15 Hz tick-quantized simultaneous captures, two-tick delivery and at most eight consecutive snapshots. Geometric support comes only from the latest supported acquisition; repeated held batches neither refresh age nor add views. Proposed latest-age ceiling: three ticks (0.15 s), preserving the experimental restriction, not adopting a hardware deadline. |
+| Motion and goal | Exact, synchronous planar simulator-source evidence for acquisition-to-reference relative translation/heading, current forward speed/yaw rate and FLU body-frame goal. Host values must come from the actual decoded state bytes with known zero ego/goal ages. Exact source values are not automatically exact after binary32 encoding; changed values need a justified enclosure or rejection. |
+| Embodiment | Existing fictional circular body radius 0.18 m, forward speed limit 0.6 m/s, acceleration/deceleration 1 m/s² and turn limit 1.5 rad/s. Keep the adopted age-plus-one-tick reaction and separate braking-turn meanings. These are simulation parameters, not physical stopping specifications. |
+| Scene envelope | Static flat-floor cylinders with radius 0.05-0.30 m and height 0.05-1.0 m, and the existing axis-aligned 1 m outer walls. Arena axes, dimensions and source-scale provenance must be bound to the input. This previously approved synthetic envelope is proposed for this trial only; no global object restriction or new world-size limit. |
+| Unsupported domain | Moving objects, slopes/steps, overhangs, other shapes/material physics, asynchronous scans, nonzero/unqualified range/pose/clock errors and lost source epochs remain unsupported. The 5 mm cylinder alias stays a supported simulator regression but outside this candidate's admitted domain, not a silently removed obstacle. |
+| Identity and location | Use a distinct opt-in experimental simulation identity; C1 ranges and retention remain module-local. The 92-byte host state and catalogue-1/model-0 decision tooling remain the transport reference. Runtime/profile versioning must be reviewed before normal adoption; this brief assigns no new numeric wire/profile ID. |
+
+The range ceiling is 4 m, not proof that every relevant object is observable.
+Admission must exclude every permitted cylinder-centre cell intersecting the
+outer maneuver tube, with the declared radius/height bands and wall bounds.
+Finite rays, nominal ring bearings and floor support alone do not meet that
+condition. Occlusion may still permit a conclusion when remaining qualified
+evidence resolves the entire sweep; otherwise it is unknown. Positive evidence
+instead needs an above-floor occupied-return enclosure strictly inside an inner
+swept-body disk. Outer-tube membership is never a collision witness.
+
+#### Evidence Owners and Unknown Conditions
+
+| Required premise | Proposed source and missing evidence | Required behavior without it |
+| --- | --- | --- |
+| Domain and initial body clearance | Reviewed static scene manifest plus independently checked initializer preconditions, without obstacle coordinates or target answers in the rule input. Whether setup attestations are admissible evidence for this simulation trial requires approval. A true fixture flag is not qualification. | Reject admission; absence of an occupied witness cannot prove the current body clear. |
+| Continued body clearance | Proposed invariant from an independently admitted launch and every actual host command plus its fallback sweep; reset, unaccounted motion, contact or an expired command invalidates it. This invariant is not implemented or proved by current owner records. | Unknown/rejection until independently re-established; no per-tick oracle refresh. |
+| Return and coverage semantics | The declared ideal ray model, full range-rounding/transform enclosures, floor separation and continuous-centre/wall exclusion. Existing C1 tests are conditional evidence, not certified bounds. Missing/occluded rays constrain support rather than imply empty space. | Unknown on any unresolved region relevant to the queried sweep. |
+| Acquisition, registration and clocks | Named source owner binds actual batch, acquisition/reference epochs, relative transform and decoded host bytes. Existing fixture record consistency does not qualify native motion, goal transforms or binary32 equivalence. | Stale rejection for missing/over-age delivery; unsupported evidence or epoch/identity gaps reject rather than interpolate. |
+| Maneuver and numerical support | Keep two-phase trajectories, source-scale allowances, strict inner/outer distinctions and existing cell/depth/band/segment caps. Qualify only calculations needed by this baseline gate; unrelated arithmetic/identity audits stay deferred. | Unknown on overflow, contact ambiguity, unsupported error, work exhaustion or overlapping goal ranks. Never increase caps or weaken margins to pass. |
+| Goal and host execution | Valid decoded body-frame goal aligned to the decision reference, and a separately reviewed exact command/fallback contract. Goal distances are not obtained from world-frame fixture goals at runtime. | Sector unknown for invalid/stale/unresolved goals; no unqualified selected-sector/speed combination reaches actuation. |
+
+Private complete geometry, true trajectory and the [navigation reference][navigation-reference]
+belong only to qualification assertions and the separately authorized evaluator,
+not the rule, startup chooser or host-command chooser. Domain/setup evidence
+must be explicitly scoped, not an oracle supplying a fresh answer under another
+name. Records must distinguish conditional fixture consistency, qualified
+input evidence, question resolution, admitted command and measured task quality.
+No current false qualification flag or undecided audit verdict is promoted.
+
+#### Per-Question Admission
+
+Use the adopted simulation meanings and [C1 question coordinator][c1-prototype-source],
+not the old sector-minimum heuristic. All rows also require the evidence above.
+"Unknown" is internal absence of an answer, not another option or a fabricated
+uniform distribution. A conflict invalidates the entire bundle.
+
+| Question | When it may answer | When it must remain unknown |
+| --- | --- | --- |
+| `path_blocked` | For the centre maneuver, false needs whole-sweep exclusion; true needs an occupied-return enclosure strictly inside the swept body. Reaction uses the measured current turn; centre braking uses zero turn. | No complete exclusion and no qualified positive witness; unresolved contact/error/work; any clear/blocked or current-body contradiction. |
+| `clear_sector` | At nonzero speed, resolve centre/left/right maneuvers first. Braking turns are 0, +1.5 and -1.5 rad/s after the common current-turn reaction. Select the clear endpoint with bound-separated best goal distance; retain the adopted exact symmetric left/right tie favoring left. `none` requires all three blocked. | At rest; any unresolved maneuver or goal/rank; merely no known-clear option; contradictions. A side return or one known-clear sector alone does not suffice. |
+| `speed_tier` | Resolve all three centre-braking capacities at `max(current_speed, 0.6*tier/3)` for tiers 1-3. Select the highest clear capacity; tier 0 requires all three blocked. | Any unresolved capacity, including a higher tier; contradictions. Lower requested speed never erases existing momentum, and tier 0 is not unknown. |
+
+#### Wire and Host Admission
+
+The [wire contract][wire-python] already requires catalogue 1, model 0 and mask
+7 for `OK`; a full rules decision is 100 bytes. Proposed trial behavior is
+`OK` only for three resolved, mutually consistent questions with admitted input
+evidence. Partial/unknown results remain rejection diagnostics, never usable
+recommendations. Preserve missing/late/CRC-invalid/version/sequence/timestamp
+rejection and independent host braking. Proposed status precedence is malformed
+or unsupported schema first, stale input next, out-of-domain/unqualified evidence
+next, unresolved geometry/ranking as `REJECT_OUT_OF_DOMAIN`, and unexpected
+computation failure as `FAULT`; no new status or confidence threshold.
+
+Wire probability policy needs explicit review. Proposed diagnostic encoding is
+a degenerate distribution for a deterministic selection, clearly identified as
+uncalibrated in the experiment record. Codec-derived Jev confidence, including
+unit choice/score confidence for one-hot values, is not correctness probability
+or a clearance guarantee and must not control admission. Noul retains its absent
+confidence. No unknown is encoded as false, `none`, tier 0 or an invented model.
+
+**Two integration blockers, not simulated successes.** Source inspection shows
+that the [existing diagnostic host controller][baseline-host-source] brakes on
+rejection, while the C1 coordinator leaves sector unknown at rest. A direct
+replacement can therefore remain stopped forever from reset. The same host
+controller applies goal-proportional steering for centre and combines a sector
+with a centre-only capacity tier; those commands are not necessarily the
+reaction/braking sweeps C1 admitted. These are source-level incompatibilities;
+no new wire-loop or episode reproducing them was run for this brief.
+
+Proposed default: retain the question meanings and complete-OK rule. Require a
+separate host-owned, independently supported startup protocol, with one bounded
+launch and explicit fallback, before demanding moving-state module coverage.
+The launch cannot consume partial decision selections, private geometry or an
+oracle-selected action. Exact launch speed/duration and its clearance evidence
+are decisions still needed; moving fixtures alone cannot satisfy reset-to-goal
+M2. Include startup, warmup and failed relaunches in end-to-end outcomes, not
+silently discard them from the success denominator.
+
+For subsequent motion, require command admission for the actual one-tick
+acceleration/yaw command followed by the independent braking fallback. Do not
+assume that separately resolved sector and centre-capacity answers qualify their
+combination, or that replanning resets reaction/registration error. Unknown,
+expired or unqualified command support means braking, even after an `OK`
+question frame. The owner, location and interface for this extra guard require
+review; the existing host controller is not promoted unchanged. A guard based
+on module-local ranges is not silently moved to a sensorless host. Physical
+actuation, interlocks and flight fail-safes remain outside this simulation trial.
+
+#### Prospective Evaluation and Failure Gates
+
+**Proposed limits, not approved fixtures or runs.** First an isolated synthetic
+integration test increment, reusing existing packages/tests and per-query caps:
+at most 24 declared cases across at most eight existing complete scene records,
+with no new world coordinates or episodes. Propose at most 48 coordinator
+attempts in the new test family per complete focused/default invocation and at
+most four such invocations including failures, repairs and the root gate (192
+attempts total).
+Each retains the existing maximum six named question queries; any future
+command-guard executions need their own explicit accounting before approval.
+Running existing bounded fixture families in the root gate also requires an
+explicitly named regression renewal; the 48/192 limits cover only the new family,
+not hidden allowances for old entries. Preserve each family's old controls/caps.
+Do not borrow old fixture budgets, unused fifth positions or deferred SC18-v0.
+This increment tests the reviewed input/unknown/wire/host contract, not source
+qualification by assertion or representative task quality.
+
+Only after the input, startup and command gates pass, propose a separately
+approved CPU-only batch of 32 episodes, at most 400 ticks each, with no tuning
+or second batch. Sixteen nominal episodes cover clear, obstacle, corridor and
+slalom families, four frozen seeds per family. Sixteen challenge episodes cover
+the four rows below, four frozen variants each. Exact geometry, seeds, expected
+challenge outcomes, initialization and lineage must be reviewed and frozen
+before collection; none is generated or assigned here.
+
+| Evaluation stratum | Cases and required discrimination |
+| --- | --- |
+| Nominal navigation | Clear/obstacle/corridor/slalom with straight and both-sign turning, varied goal headings, speeds/momentum and low/tall in-envelope cylinders. Measure reset-to-goal outcomes and moving-state answers, not only favourable isolated clear fixtures. |
+| Spatial and vertical challenge | Mirrored normal-cylinder aliases, the 5 mm out-of-envelope alias, floor-adjacent/rounded heights and foreground occlusion. Preserve original single-view ambiguity; C1 visibility gains are necessary but not universal clearance. Unsupported aliases must not receive admitted clear commands. |
+| Temporal and return challenge | Held captures, partial/masked/missing batches, occlusion, late delivery, stale ego/goal, lost history/epochs and asynchronous views. Expect the specific unknown/rejection or justified remaining support, not blanket assumptions of clearance. |
+| Numerical and logical challenge | Tangency/near contact, one-segment outer-tube counterexamples, rank overlap/exact tie, invalid domain/body declarations and contradictory evidence; work exhaustion and source-scale/binary32 changes. Keep known negative regressions and all false flags intact. |
+| Host and transport challenge | At-rest startup, rejection-to-braking, goal-steered centre mismatch, sector/tier combination, expired command, missing/late/duplicate/out-of-order/corrupt frames and reset. Check actual commands, not merely successful decoding. |
+
+Report per-question answered coverage, complete-OK coverage, admitted-command
+coverage and unknown reasons separately. Denominators include every scheduled
+tick; also report post-warmup, supported moving-state coverage, with exclusions
+listed by reason and family so startup, faults and hard cases cannot disappear.
+Supported-moving eligibility must be fixed from domain/input/timing conditions
+before inspecting rule outputs. Work exhaustion and unresolved coverage/ranking
+remain in that denominator, not retrospective exclusions. Require resolved
+reference support for every active option from at least two episodes with
+distinct acquisition/input identities; publish answered/rejected counts per
+option. Missing options fail bundle qualification, and held-frame repetition
+does not satisfy this minimal class-support gate or establish representative
+frequency/independence.
+Reference-unknown comparisons stay unscored and count as reference coverage
+loss, not matches. Report false-clear (`path_blocked=false` against resolved
+blocked truth), false-blocked, wrong sector/tier, unsafe command, collision,
+success and timeout counts, both conditional on answers and over all exposures.
+Held snapshots are not independent samples or added confidence evidence.
+
+Proposed acceptance numbers are engineering review defaults, not measured
+achievability, statistical risk budgets or physical safety limits:
+
+- Zero false-clear, false-blocked, wrong resolved sector/tier, unqualified/unsafe
+  admitted command or collision in the bounded trial. Any such event stops admission;
+  preserve the failing evidence rather than tune or rerun automatically.
+- Every declared unsupported/stale/conflict/transport/command-expiry control
+  must give its required rejection and host fallback. Unknown is acceptable
+  where specified, but does not earn answered coverage or navigation success.
+- In each nominal family, at least 80% post-warmup supported moving ticks
+  answered per question and at least 60% complete-OK coverage. Also publish
+  full-episode and command coverage; always-reject fails regardless of collisions.
+- At least three of four nominal episodes succeed in each family; at most one
+  timeout per family and zero collisions. Challenge outcomes are assessed against
+  frozen expectations, with censored/rejection timeouts disclosed, not successes.
+- Record wall-clock decision/command-guard time, peak host memory and actual
+  deadline misses. Before a real-time 20 Hz host trial, review a receipt-to-command
+  deadline and demonstrate timely admission/fallback; the simulated 0.05 s tick
+  alone is not execution-time evidence or an adopted physical deadline.
+
+Preserve the failed heuristic's four successes, two collisions, two timeouts
+and 25 false-clear reference comparisons. Its quarantined logs and registered
+candidate replay are negative diagnostic baselines, not a new locked cohort.
+Use independent complete-geometry assertions only in authorized evaluation;
+record source identities, input/frame/command provenance and reference limits.
+Metrics may include macro-F1, per-class recall, NLL, Brier and ECE on resolved
+reference cases, with unknown denominators and infinite NLL explicit. Degenerate
+rule outputs do not acquire calibrated uncertainty because these metrics run.
+
+For this rules-only proposal, request one frozen prospective test cohort, with
+synthetic qualification fixtures kept separate; no training or calibration
+partition is needed merely to execute deterministic rules. Review source/template
+families and exact-input duplicates before accepting any cohort, including shared
+reset windows. This does not waive the five-purpose separation for later learned
+work or adopt a split. Four scene names are not four independent lineages.
+Future selection/tuning requires a separate development cohort and a new holdout
+decision, never reuse of this bounded test. New artifacts would remain ignored,
+purpose-tagged and non-training; paths/byte budget/retention require run approval.
+
+#### Decisions and Smallest Next Scope
+
+| Decision | Proposed default and approval needed |
+| --- | --- |
+| D1: claim and input | Review the ideal-simulation C1/latest-relative-batch candidate above as a separate opt-in trial, preserving normal defaults and physical non-qualification. Decide admissible domain/setup, registration/decoded-wire and numerical evidence before any `OK` trial integration. |
+| D2: host contract | Preserve at-rest unknown and the complete three-answer contract. Select an independently supported startup and exact command/fallback guard, its owner/location/interface and bounded execution accounting. Without this, only conditional fixture/rejection integration is unblocked, not a closed-loop baseline. |
+| D3: output and implementation | Review deterministic diagnostic probability/status policy and the bounded 24-case/eight-scene/48-new-family-attempt/four-invocation test increment, including explicit affected-regression gate renewal. Reuse current helpers/tests; keep the old heuristic/default wire loop unchanged. No episode, native port or source-verdict promotion follows. |
+| D4: evaluation | Accept or revise prospective coverage/failure thresholds, independent references, family/duplicate policy and exact 32-episode manifest/resource/retention scope only after D1-D3 gates. This brief requests no collection, labels, data acceptance, split lock or repeat run. |
+
+Recommended next action is a single review of D1-D3, then the smallest approved
+source/evidence and wire/host test increment that can falsify this candidate.
+Any unresolved source or host obligation remains a named blocker; do not insert
+true flags, narrow the targets or restart general audits to make progress appear
+complete. ST licence/install and board/ToF readiness remain parallel user-side
+M1a/M1b actions. Native/board integration follows its gates; learning/distillation
+and M6 remain deferred. Preparing this brief adopts none of these proposals.
+
+[baseline-admission-review]: REVIEW.md
+[baseline-host-source]: sim/rules.py
+
 ### Dataset Construction
 
 - Define the ground-truth policy and review an evaluation set before generating
@@ -10158,6 +10382,12 @@ for the existing three-question rover pilot, not another isolated arithmetic or
 runtime-identity package. [Review §144][priority-reset-review] records the decision,
 the deferred audit authorization and unchanged evidence limits. M0-M6 below remain
 the roadmap; host tooling completion is not task-quality or deployment completion.
+
+Current planning checkpoint: the [baseline admission brief (§145)][baseline-admission-review]
+is prepared in §7. Review D1-D3's ideal input/evidence, independent startup and
+actual command/fallback contract, output policy and bounded test scope next.
+D4's prospective evaluation remains separate and unapproved. The brief adopts
+no runtime profile, threshold, source verdict or fixture/run/data scope.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
   candidate and reviewable acceptance/evaluation checklist from existing evidence.

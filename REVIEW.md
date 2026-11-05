@@ -10793,6 +10793,112 @@ and its exact evidence/code/test/run scope, not resume the deferred audit branch
 
 [priority-reset-design]: DESIGN.md
 
+## 145. Concrete Simulation Baseline Admission Brief (2026-11-05)
+
+The user requested autonomous continuation from `9057456` and the §144 next
+deliverable. That authorizes preparing the baseline brief from existing evidence,
+not adopting a profile, launching the deferred audit or beginning implementation
+or collection. The worktree was clean at that commit. [DESIGN.md §7][baseline-admission-design]
+now contains one reviewable candidate; §12 and AGENTS.md point to its decisions
+rather than repeating the completed preparation as the next task.
+
+**Candidate and scope.** Propose the existing ideal C1 virtual ring with latest
+synchronized relative-batch evidence, decoded host motion/body goal and the
+previously approved synthetic cylinder/floor/wall envelope. Normal single-view
+inputs, sensor noise/defaults, proxies, wire catalogue, target meanings and
+historical artifacts are unchanged. This is a proposed simulation trial, not
+a buildable sensor profile or renewed synthetic-envelope approval. No Gaussian
+risk convention, physical error bound or qualification flag is adopted.
+
+The brief maps domain/setup/current-body, return/coverage, clocks/registration,
+decoded-wire, motion/numerical and goal/execution evidence to explicit owners
+and unknown/rejection conditions. Initial setup attestations and continued
+body-clear invariants need review; a true flag or absence of a witness is not
+evidence. Private complete geometry and reference answers remain outside rule,
+startup and command selection. Source consistency, mathematical enclosures,
+qualified inputs, question answers, admitted commands and task quality stay
+distinct. Full-input normal aliases, missing/occluded support, the 5 mm alias,
+floor/height, tangency/outer-tube, stale/held and budget/conflict cases remain.
+
+**Local source observations, not a new runtime experiment.** The owning
+`probe_synthetic_c1_questions` requires literal body/domain preconditions,
+resolves all sector/capacity states before ranking/maximal-tier selection and
+leaves sector unknown at rest. Centre braking uses zero turn; left/right use
+the existing opposite braking rates after the common measured-turn reaction.
+`sim/rules.py:host_action` brakes on rejection but goal-steers a centre answer
+and combines a sector with a centre-only tier. Therefore directly wiring C1
+into that controller leaves a reset/startup gap and can command a maneuver
+different from the admitted sweep. These are source-level incompatibilities,
+not newly measured deadlock, collision or closed-loop outcomes.
+
+The proposed default preserves at-rest unknown and the complete catalogue-1,
+model-0, mask-7 `OK` requirement. It needs independently supported host startup
+and admission of the actual one-tick command plus braking fallback, with an
+explicit owner/location/interface and source/error/expiry handling. A sensorless
+host does not silently acquire module-local C1 input. No partial recommendation
+is consumed, no world goal substitutes for decoded host evidence, and no
+centre-capacity/side-sector combination is presumed qualified. Exact startup
+parameters and command-guard execution budgets remain missing decisions.
+
+**Prospective tests and evaluation, not authorization.** D1-D3 review the ideal
+claim and admissible evidence, startup/command contract, deterministic diagnostic
+distribution/status policy and one bounded test increment. Proposed new family:
+at most 24 cases/eight reused complete scenes, 48 coordinator attempts per
+complete focused/default invocation and four invocations including failures,
+repairs and root (192 attempts). Existing six-query/per-query controls remain;
+command guards require separate accounting. A future root gate needs explicitly
+named affected-regression renewal, not borrowing exhausted old fixture scopes.
+
+D4 separately proposes 32 future episodes, at most 400 ticks each: sixteen
+nominal across four navigation families and sixteen frozen spatial/temporal/
+numerical/host challenges. Exact seeds/geometry/expected outcomes, reference
+authority/limits, cohort lineage/duplicates, resources and artifact retention
+must be reviewed before collection. Proposed engineering gates are zero wrong
+resolved answers/unsafe commands/collisions, required fallback on every declared
+rejection control, at least 80% per-question and 60% complete-OK supported moving
+coverage in each nominal family, and at least three of four nominal successes
+per family. Report all-tick/startup/command/reference coverage and timeout reasons
+as well; fix eligible denominators before inspecting outputs, include work/rank
+unknowns and require reference support for every active option from at least
+two episodes with distinct acquisition/input identities. Repeated held frames
+are not new class support; always rejecting is not success. These numbers are not measured
+achievability, a statistical risk policy, locked splits or accepted thresholds.
+Real-time deadline/resource evidence remains a separate gate, not implied by
+the 0.05 s simulated tick. No learning/calibration dataset is needed merely to
+trial deterministic rules; future learned work retains five-purpose separation.
+
+**Verification and retained failure.** The first isolated standard-library
+document validator failed because its literal matcher omitted quotation marks
+around the brief's "Unknown" label. The matcher was corrected to the actual
+quoted text; no document requirement or source behavior changed. The same
+focused check then passed 33 admission requirements, four decision rows, nine
+nearby source-text anchors and five reference uses/local targets, exact existing
+DESIGN text preservation and whitespace. Source text was read, not imported,
+compiled or executed. Final scoped checks passed all 33 admission requirements,
+D1-D4 and new-family/regression limits, 627 reference uses and 25 inline links/
+local targets, REVIEW sections 1-145 in order, exact old DESIGN/milestone and
+REVIEW history/Sources preservation, and stable AGENTS workflow/history/numbered
+results. Only three documents changed; source/tests stayed byte-identical.
+Editor diagnostics and whitespace checks passed. Diff/staged-byte review precedes
+the local documentation checkpoint; the code suite was not rerun.
+
+Last code gate remains §138's 2,245 passes plus known transformer xfail and
+71 warnings, not rerun. Old bounded scopes, fifteen undecided verdicts/five false
+flags and SC18-v0's unstarted/unspent but deferred authorization remain intact;
+no audit reactivation, consumer or proof/allowance/native/source/work adoption.
+No fixture/helper/episode/log replay, task label/cohort/split, teacher/model,
+training, dependency/download, environment or hardware action occurred. No raw
+artifact, background job or cleanup is pending; nothing pushed.
+
+**Next decision.** Review D1-D3 and authorize only the smallest named evidence/
+wire/host test increment whose prerequisites are satisfied. Missing input
+qualification, startup and command admission block a complete closed-loop
+baseline; D4 collection/evaluation follows separately. ST licence/tools and
+board/ToF readiness remain parallel user-side blockers. Native integration and
+learning follow their existing gates; general audits are not the next task.
+
+[baseline-admission-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

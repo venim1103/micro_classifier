@@ -118,23 +118,26 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only NF1 word-candidate correctness/
-  publication/work review (DESIGN.md §7 / REVIEW.md §123), ten conditional CW
-  obligations, search/guard arguments and attempted-work/trusted-base limits.
-  Source/test identities match §122 despite an editor edit notification;
+- Latest approved package complete: design-only NF1 certificate verification/
+  trusted-base closure plan (DESIGN.md §7 / REVIEW.md §124), four distinct claims,
+  exact eight-field pure-cell boundary and nine proposed gates. Source/test
+  identities still match §122;
   no source/test change or new run. Five flags remain false; no proof/allowance
   or Route C/totality/qualification adoption.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `59e0903`; source
+  and native-work remain unresolved. Baseline was clean at `f9878aa`; source
   gate remains §122's 2,165 plus known xfail/71 warnings, not rerun here.
   No environment/native/GPU/teacher/board requalification or candidate consumer use.
-  Next proposed, not approved: design-only certificate verification/trusted-base
-  closure plan, not checker/code, import/fixture/run, native inspection/acquisition,
-  integration or proof/allowance/qualification promotion. Old helpers stay unchanged;
+  Next proposed, not approved: isolated private pure-cell checker/tests, sixteen
+  reused positions/at most 32 checker attempts per complete focused invocation,
+  plus normal source gates. New tests call no word/enclosure/producer-cell;
+  default gates need explicit approval. No binding/target/live/native/consumer
+  work, acquisition, integration or proof/allowance/qualification promotion.
+  Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-123 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-124 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1192,15 +1195,17 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §123 completes
-the separately approved design-only word-candidate correctness/publication/work
-review: ten conditional CW obligations and guard/search/ledger/trusted-base
-boundaries. Source/test unchanged, five flags false; `1bb89fe` stays. No proof/
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §124 completes
+the separately approved design-only certificate verification/trusted-base plan:
+four distinct claims, eight-field pure-cell content checks and nine proposed
+gates. Source/test unchanged, five flags false; `1bb89fe` stays. No proof/
 allowance/Route C, consumer/native/source/work or totality acceptance. Last gate
 is §122's 2,165 plus known xfail/71 warnings, not rerun here; failures preserved.
-Next proposed, not approved: design-only certificate verification/trusted-base
-closure plan, not checker/code/import/new fixtures/runs, native inspection/
-acquisition, owner/query/reference/log adapter, integration or promotion.
+Next proposed, not approved: isolated private pure-cell checker/tests, sixteen
+reused positions/at most 32 checker attempts per complete focused invocation
+plus normal source gates. New tests call no word/enclosure/producer-cell;
+unchanged default regressions need explicit approval. No binding/target/live/
+native/owner/query/reference/log adapter/acquisition/integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1464,6 +1469,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   attempted-work/trusted-base limits. No code/run/proof/allowance/flag change.
   Next proposed, not approved: design-only certificate verification/trusted-base
   closure plan, not checker/import/run/acquisition/integration or promotion.
+  Certificate closure plan (REVIEW.md §124): separately approved design-only
+  preparation complete; four distinct claims, eight-field pure-cell boundary,
+  independent checking/work/publication plan and nine proposed gates. No code/run/
+  proof/allowance/flag change. Next proposed, not approved: private pure-cell
+  checker/tests, sixteen reused positions/32 checker attempts per complete focused
+  invocation plus normal source gates, not binding/target/native/consumer work.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

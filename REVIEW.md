@@ -8888,6 +8888,103 @@ No checker/new fixture/code scope follows from this paper review.
 
 [sinc-word-proof-design]: DESIGN.md
 
+## 124. NF1 Certificate Verification and Trusted-Base Closure Plan (2026-11-05)
+
+The user explicitly approved §123's offered design-only certificate verification/
+trusted-base plan and autonomous local commits. Actual baseline is clean
+`f9878aa`; source/test blobs still match §122. User terminal context reports a
+successful `git push`; no assistant push permission or wider scope follows.
+No source/test change, target import, helper/fixture/native run, installed
+inspection, acquisition or proof/error/work allowance adoption occurs here.
+
+**Local hypothesis and first check.** The word wrapper currently copies a
+successful direct cell certificate without an independent content recheck.
+A separate checker could verify frozen cell contents without making q/enclosure
+truth or live-source claims. Read the published cell/zero-word fields and nearby
+§123/contract evidence; the first edit prepared the concrete boundary and gates.
+The next action was a standard-library AST/text/preservation/whitespace check,
+not a target import or fixture evaluation. It failed on a draft field-count
+error: the actual certificate has eight keys, while the introductory prose said
+nine. Corrected that prose to the actual exact eight-key set and reran the same
+unrelaxed check: pass. No code or numerical repair was made.
+
+**Concrete candidate.** [DESIGN.md §7][sinc-certificate-plan-design] separates
+V-cell content, V-bind declared record correspondence, V-target mathematical
+inclusion and V-live source/runtime claims; work/resource evidence is distinct.
+The proposed first checker accepts only the existing eight-field pure-cell
+certificate with a literal synthetic opt-in, exact builtin shapes/types/keys,
+seven capped canonical rational pairs and a fresh bounded snapshot. Arbitrary
+object hooks, numeric aliases, unknown fields and unsupported configuration
+reject before arithmetic/copying. Already allocated caller objects and concurrent
+mutation are not covered by entry guards or a hash.
+
+Independently decode the three finite neighbor words and recompute both exact
+midpoints without producer/search/enclosure/old-RN64/native calls. Verify supplied
+neighbor values, boundaries, parity and two order fields; positive ordered
+closed-interval containment must independently pass. A success/true marker is
+not evidence by itself. Zero's three-field word certificate is outside the first
+pure-cell interface; later binding must separately preserve both signed zeros,
+[1,1]/unit/branch and nonzero-subnormal separation.
+
+Proposed independent guarded integer-pair logic keeps canonicalization/GCD as a
+named trusted-base dependency. Paper checking counts are three decodes, two
+midpoints and three rational comparisons, plus seven input canonical checks;
+equality/metadata/parity/snapshot/publication and underlying work remain separate.
+No endpoint search, enclosure retry, old-cap increase, primitive/time/RAM/native
+measurement or resource qualification is inferred. Fresh diagnostic content
+evidence would have a separate identity; unresolved reports omit a verified
+certificate and unexpected/allocation/interruption errors propagate. Old results
+and five false flags remain untouched; no consumer or general rollback claim.
+
+**Nine proposed gates.** VC0-VC4 cover explicit bounded implementation approval,
+independent cell arithmetic, raw/canonical/snapshot/publication controls, reused
+expected/tampered content and preservation/default gates. VC5 requires complete
+separately captured enclosure evidence and a distinct binding contract, not just
+current word metadata. VC6 requires independent SR inclusion/target premises;
+VC7 source/build/runtime/live-binding correspondence; VC8 separately approved
+primitive/resource and downstream decisions. Nothing closes/adopts those gates.
+Builtin integer, GCD/canonical, snapshot/publication, helper independence,
+enclosure inclusion and live correspondence must each retain its own missing
+proof/source/build/work evidence, permission and requalification row.
+The concrete CT0-CT5 table supplies those assumptions, available historical
+evidence, missing closure and change triggers without closing old W0/TB0. The
+proposed separate internal checker ceiling defaults to 65,536, rejects invalid/
+increased/observably changed limits and introduces no search/retry knob.
+
+**Verification and evidence limits.** Same focused eight-key/VC0-VC8/four-claim/
+seven-pair/zero/work/next-scope/preservation check passes after the field-count
+repair. Keep that initial failure and all historical checks unchanged. Final
+document validation then failed only its prose matcher at a wrapped
+`word/enclosure/` phrase; normalize slash-following prose whitespace, retaining
+all schema/gate/limit and exact-byte preservation assertions. A failed patch
+context lookup made no edit; the corrected bold-label anchor applies. Document
+editor diagnostics pass. Corrected 579-reference/local-target, sections 1-124,
+history/design/workflow/source-gate/task-tail and exact-scope/source-identity
+checks pass. CT0-CT5/cap and scoped diff/whitespace checks pass. Final
+producer-status/interface record and exact three-document staged checks precede
+the checkpoint. Code suite and numerical/fixture/native gates are not rerun;
+§122's 2,165 passes plus known xfail/71 warnings remain historical. Source/test
+blobs remain `608f574bfaba9a742451995898719dd8523891e7` and
+`f7dc911ecc3bf929f2866d25efcdca7977c426ca`. No environment/native/GPU/teacher/
+board requalification, data/labels/training/dependency, adapter/consumer use,
+background job or cleanup; no assistant push. Old caps/helpers/default inputs/
+wire/logs/reports, `1bb89fe` and native motion/goals/relative transforms stay.
+
+**Exit and next permission.** Approved design-only plan is complete after
+document verification/local commit. Isolation remains default; Task 6/9,
+numerical/physical/task-quality/source/native/work/teacher-asset/ST/board gates
+and all five false flags remain unchanged. Next proposed, not approved: isolated
+private pure-cell checker/tests only, sixteen reused control positions and at
+most 32 checker attempts per complete focused invocation plus normal source
+gates. New tests construct expected content independently and make no new word/
+enclosure/producer-cell calls; the default gate separately runs unchanged old
+regression controls only under that explicit new approval. No binding/target
+checker, new q/scene/data, native run/inspection/acquisition, owner/word-wrapper/
+adapter/consumer integration, proof/error/work allowance or qualification
+adoption follows. Implementation approval must explicitly include those limits.
+
+[sinc-certificate-plan-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

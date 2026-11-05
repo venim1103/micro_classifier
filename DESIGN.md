@@ -6117,6 +6117,134 @@ checker or new fixture scope follows from this completed paper review.
 
 [sinc-word-proof-review]: REVIEW.md
 
+#### NF1 Certificate Verification and Trusted-Base Closure Plan (2026-11-05)
+
+The user separately approved §123's design-only plan preparation;
+[review §124][sinc-certificate-plan-review] records the scope and checks. This
+is a concrete proposed verification boundary, not a checker implementation,
+accepted schema/proof/allowance, Route C adoption or permission for new runs.
+Current source/tests and five false flags remain unchanged; isolation stays default.
+
+**Four separate claims.** Proposed V-cell verifies that supplied exact interval
+content lies wholly in a supplied eligible mathematical rounding cell. V-bind
+checks declared q/sign/ratio/target/configuration/branch and interval correspondence
+between separately captured records. V-target additionally needs independent
+accepted evidence that F(q) is in that interval. V-live additionally needs
+source/build/runtime/binding correspondence, with work/resource qualification
+kept distinct. Passing V-cell cannot imply V-bind, V-target or V-live; matching
+hashes/metadata cannot imply source authority or mathematical inclusion.
+
+**Proposed pure-cell boundary.** First propose an isolated private content checker
+in the existing diagnostics/test files, not a call from the word wrapper, owner,
+auditor, reference, wire, CLI or runtime. It accepts only a literal synthetic opt-in
+and the current eight-field cell certificate, not an arbitrary producer object or
+an enclosing word result. The permitted keys are `word`, `interval`, `neighbors`,
+`boundaries`, `closed_ties`, `lower_order`, `upper_order` and
+`whole_interval_contained`. The schema is defined by that exact eight-key set.
+
+Require an exact builtin dict/key set and bounded builtin string keys before
+lookup/copy, fixed tuple lengths, nonboolean builtin word/order integers and exact
+boolean tie/containment fields. Validate seven canonical rational pairs: two
+interval endpoints, three neighbor values, two boundaries. Components must be
+builtin nonboolean integers with positive denominators and at most 65,536 bits
+before canonical/GCD work. Reject noncanonical pairs, extra/missing fields,
+numeric aliases, unexpected object types or unsupported configuration; never
+execute user conversion/copy hooks, parse decimal/JSON or persist an input.
+Already allocated caller input and concurrent mutation are not bounded by entry
+guards. Serialize ownership, validate and copy fixed fields into a fresh bounded
+snapshot before verification; no temporal/source-authenticity claim follows.
+
+Eligible w remains 1 through M-1. Independently decode w-1,w,w+1 from bit-field
+mathematics, retaining zero as a neighbor and M as a finite upper neighbor. Do
+not call the producer decoder/search/cell/enclosure, old RN64 helper or native
+sine. Compare supplied neighbor words and canonical values to those reconstructed
+values; recompute both adjacent midpoints with guarded exact arithmetic. Verify
+the supplied boundary pairs, parity boolean and order integers against these
+recomputations. Require positive ordered [l,u] and complete lower/upper inclusion,
+with both ties closed only for even w. `whole_interval_contained=True` must match
+recomputed containment. Producer success status is outside this interface and
+is never an acceptance predicate.
+
+The zero word-candidate certificate is a different three-field shape and is
+outside this first pure-cell interface. A future V-bind plan must separately
+check both signed q zeros, exact [1,1], unit word and zero branch; nonzero
+subnormal q may never be rewritten to zero. Rejecting that shape here does not
+invalidate the old mathematical zero branch or qualify its native substitute.
+
+**Independent arithmetic and work.** Proposed default is separate guarded
+integer-pair decoding/midpoint/cross-product logic, not producer helper reuse.
+Canonicalization/GCD remains an explicit trusted-base dependency; this plan
+selects no installed library/source qualification. Existing independent test
+dyadic utilities may construct expected fixture content, not serve as the checker
+or as independent F(q) truth. No endpoint search or enclosure retry is needed.
+The paper checking ledger is three decodes, two midpoint recomputations and
+three three-way rational comparisons (interval order and two containment orders),
+plus seven input canonical-pair checks and separately accounted neighbor/boundary/
+metadata equality, parity, snapshot and publication work. Raw operations must
+fit the separate checker ceiling before evaluation; later reduction cannot
+excuse an oversized intermediate. Propose an internal checker limit defaulting
+to 65,536 bits, accepting only exact builtin nonboolean integers from 1 through
+65,536. Snapshot/recheck before guarded operations; invalid/increased limits or
+observed changes stop unresolved. No search/precision-retry knob is needed.
+Do not raise the old 4,096/65,536-bit limits.
+Counts and passed canonical sizes are not primitive/native/time/RAM bounds.
+
+**Proposed report, not a producer retag.** Build fresh diagnostic-only content
+evidence after complete verification, with a distinct identity such as
+`synthetic_cell_certificate_content_check_v0`, independent recomputed interval/
+neighbors/boundaries/parity/orders and separate attempted-work metadata. Reject
+or unresolved reports omit a verified certificate; unexpected allocation/
+interruption errors propagate. Do not mutate incoming/old records or adopt an
+output word for any consumer. All five flags stay false; native/source/motion/
+work/consumer status limits stay unresolved even on verified content. No global
+proof or live-code attestation follows from a new report identity.
+
+**Closure sequence and acceptance gates.** None of these gates is accepted or
+closed by this plan:
+
+| Gate | Required Evidence or Decision | Stop Until Present |
+| --- | --- | --- |
+| VC0 | Explicitly approve the isolated pure-cell interface, exact key/shape/type/size rules and bounded test/run scope. | No implementation or fixture execution from design approval. |
+| VC1 | Independent decoder/midpoint/cross-product/canonical arguments and whole-interval/tie/edge derivation. | No shared producer success/status/expected word as truth oracle. |
+| VC2 | Fixed snapshot, raw/precanonical guards, canonical postchecks and fresh publication/exception controls. | No arbitrary-object hooks, unlimited allocation, concurrency or universal rollback claim. |
+| VC3 | Reused independent pure-cell controls plus tampered word/neighbor/boundary/parity/order/interval/flag/type cases. | Reject inconsistent content; finite cases do not prove a whole domain. |
+| VC4 | Historical AST/caps/flags/default/wire preservation and focused/default gates under separate approval. | No owner/word-wrapper/adapter/consumer integration or qualification promotion. |
+| VC5 | Separately captured complete enclosure evidence and exact V-bind contract, including zero and interval correspondence. | Current word metadata is not a complete independently checked enclosure transcript. |
+| VC6 | Independent SR inclusion/correctness obligations, accepted mathematical target/domain and trusted arithmetic premises. | V-cell/V-bind cannot establish F(q) inclusion or native error. |
+| VC7 | Exact source/build/runtime/live-binding correspondence for every trusted component, with change/requalification policy. | Source hashes, frozen records or private names do not establish live authority. |
+| VC8 | Separately approved primitive-work/allocation/GCD/resource evidence and downstream claim/consumer decision. | Logical counters, host tests or conditional paper proof do not certify time/RAM/board fit. |
+
+Proposed CT0-CT5 tracking rows remain unresolved and do not rename or close the
+older W0/TB0 obligations. All acquisition/import/run/implementation actions below
+require separate bounded approval; preparing this table approves none of them.
+
+| Row / Exact Claim | Assumed Semantics and Available Evidence | Missing Closure / Change Trigger |
+| --- | --- | --- |
+| CT0 / integer arithmetic and guards | Exact builtin shifts/products/sums/comparisons/bit lengths; §123's conditional derivation and current AST identity, not live primitive evidence. | Accepted arithmetic/guard argument plus implementation correspondence and separate work evidence; reconsider on interpreter/build/operation/cap change. |
+| CT1 / canonicalization and GCD | Canonical signed numerator/positive denominator with faithful terminating reduction; current Fraction dependency is assumed, not qualified. | Canonical/GCD correctness, exact library/build/live mapping and separately bounded allocation/work; reconsider on reduction implementation/runtime/domain/cap change. |
+| CT2 / snapshot and publication | Builtin shape/type checks, serialized ownership, fresh fixed-field copying and exception propagation; historical ownership cases are finite controls. | Explicit ownership/no-hook argument and permitted runtime/publication/resource evidence, not atomicity or general rollback; reconsider on copy/container/concurrency/entry-boundary change. |
+| CT3 / independent cell content | Independent bit-field/neighbor/midpoint/whole-interval logic; eight current fields are known, but no checker exists. | Separately approved checker plus independent derivation/tamper controls and preserved isolation; shared integer/GCD runtime still depends on CT0/CT1, reconsider on schema/algorithm/helper reuse change. |
+| CT4 / mathematical inclusion and binding | F(q) at stored q, signed-zero separation and unchanged SR enclosure premises; direct statuses/metadata and cell cases do not establish inclusion. | Complete V-bind evidence and independently accepted SR inclusion/target argument, not native parity; reconsider on target/domain/q decoding/series/configuration/enclosure change. |
+| CT5 / live source/runtime authority and resources | Current source/test file identities match §122, not loaded-code/build/library or caller/source authority. | Versioned source/build/live-binding chain, requalification policy and separate W0/resource evidence under approved scope; reconsider on interpreter/library/build/binding/input/consumer change. |
+
+No installed inspection, source-package acquisition, numerical study, library
+replacement or resource threshold is approved here. Closing one component on
+paper would still not close other rows, V-target/V-live or any consumer gate.
+
+**Proposed default and next permission.** Complete V-cell first while V-bind,
+V-target, V-live and resource claims remain unresolved. Next proposed, not approved:
+the isolated private pure-cell checker/tests only, sixteen reused control positions
+and at most 32 checker attempts per complete focused invocation, plus normal
+source gates. Construct expected records independently; no new word/enclosure/
+producer-cell calls in the new tests. Existing default regression gates separately
+execute their unchanged historical controls; this needs explicit approval, not
+automatic renewal of exhausted §122 scopes. No new q position/scene/data, binding/
+target checker, native run/inspection, acquisition, consumer integration or proof/
+allowance/qualification adoption. Implementation approval must include those
+limits; the present design-only scope ends with document checks and a local commit.
+
+[sinc-certificate-plan-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8128,7 +8256,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §123): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §124): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8298,9 +8426,14 @@ proof/allowance, native/source/work or consumer promotion.
 The separately approved paper review is complete (§123): ten CW obligations,
 conditional search/guard/publication arguments, attempted-work ledger and
 trusted-base limits; no proof/error/work allowance or qualification acceptance.
-Next proposed, not approved: design-only certificate verification/trusted-base
-closure plan, not implementation, import/fixture/run, native inspection,
-source acquisition, consumer integration or allowance/promotion.
+The separately approved design-only certificate verification/trusted-base plan
+is complete (§124): four distinct claims, exact pure-cell boundary, independent
+checking/work/publication argument and nine proposed gates. No checker, proof,
+allowance or qualification is adopted. Next proposed, not approved: isolated
+private pure-cell checker/tests, sixteen reused positions/at most 32 checker
+attempts per complete focused invocation and normal source gates, not binding/
+target/live/native/consumer work or promotion. New tests call no word/enclosure/
+producer-cell; unchanged default regressions need explicit gate approval.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

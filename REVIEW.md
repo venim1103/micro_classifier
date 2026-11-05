@@ -9097,6 +9097,110 @@ Isolation remains default; all approved scopes are exhausted.
 
 [sinc-cell-check-design]: DESIGN.md
 
+## 126. NF1 Cell Checker Correctness and Work Review (2026-11-05)
+
+The user explicitly approved §125's offered design-only correctness/publication/
+work review and autonomous local commits. Baseline is clean `22046af`; refreshed
+source/test identities match §125. User terminal context reports a successful
+push; no assistant push permission or broader experiment scope follows. No code
+change, target import, helper/fixture/native run, installed inspection/acquisition
+or proof/error/work allowance/qualification adoption occurs in this review.
+
+**Local hypothesis and first check.** Exact eight-field validation, independent
+dyadic/midpoint/whole-interval reconstruction and fresh publication appear
+conditionally sound under faithful builtin/Fraction operations and serialized
+caller ownership. Guarded rational work, fixed word setup and caller allocation
+must not be conflated. Read the checker, §125 evidence and nearby VC/CT contract;
+the first edit recorded ten conditional obligations and explicit limits. The
+next action was a standard-library AST/text/preservation/hash/whitespace check:
+pass, without importing the target or evaluating fixture/checker inputs.
+
+**Conditional paper outcome.** [DESIGN.md §7][sinc-checker-paper-design] maps
+CCR0-CCR9 to VC1-VC4/CT0-CT3. No local algebraic mismatch is identified under
+exact faithful builtin operations, canonical Fraction/reduction, stable module/
+builtin bindings, serialized caller ownership and successful allocation. This
+does not accept a proof, guarantee return or establish live/runtime/resource
+correspondence, independent F(q) truth, native parity or task/physical quality.
+
+Eight distinct allowed builtin keys imply exact coverage. Seven canonical-pair
+checks and positive denominators establish the recorded rational representations
+conditionally on reduction semantics. Actual finite adjacent word decoding and
+guarded midpoints preserve subnormal/normal/exponent transitions and M-1's finite
+upper neighbor M. Positive ordered endpoints and both exact lower/upper cell
+inequalities prove only the conditional content implication: every value in
+the supplied interval has that cell's mathematical rounding word. Tie equality
+is allowed only for even words; unsupported edges stay unresolved. Matching
+supplied neighbors/boundaries/parity/orders/true claims is not enclosure inclusion.
+Producer status and the zero word's three-field record are outside the interface.
+
+**Snapshot, guards and trusted base.** All seven raw pair shapes/types/sizes
+are checked before snapshot/canonicalization. Canonical checks use retained
+immutable input pairs; semantic interval reads use fresh snapshot pairs. Those
+agree under serialized ownership, not an enforced atomic snapshot. Some scalar
+fields are reread after their type checks; concurrent caller mutation/binding
+replacement is an unqualified premise, not a newly tested defect or permission
+for a source repair/run. No user conversion/copy hook is used under the exact
+builtin-shape premise; caller input allocation is still outside the boundary.
+
+Rational preflight guards constructor components, shifted dyadic operands,
+midpoint products/sum/doubling and comparison cross-products, with canonical
+type/sign/size checks afterward. Conservative bounds may reject valid reduced
+values; no cancellation/refinement/fallback bypasses a raw stop. Word eligibility,
+neighbor/index/radix/divmod/exponent setup, scalar checks, key sets, metadata,
+snapshot and result construction remain separate. Eligible word-lattice values
+have a fixed u64 bound, not a reduced rational-cap guarantee. Early rejection
+of already allocated caller objects is not constant-time or bounded allocation.
+Cap snapshots/rechecks do not qualify builtin/Fraction/GCD bindings, concurrency,
+source authority or actual work. No CT0-CT3/W0/TB0 obligation is closed.
+
+**Attempt and publication argument.** The conditional upper ledger remains
+seven canonical-pair checks, three decodes, two midpoints, three comparisons and
+twelve Fraction constructions (seven input, three decoded, two midpoint), with
+key/equality/type/parity/snapshot/publication work separate. Static source order
+confirms canonical-pair attempts before rational preflight; Fraction attempts
+after preflight and before construction/postcheck; decode attempts before divmod/
+guard; midpoint/compare attempts after raw preflight and before evaluation.
+Maximum canonical bits omits rejected/raw/concurrently live/aggregate storage.
+No instruction, native-work, time, RAM-fit or totality evidence follows.
+
+Complete ordinary success follows all semantic checks and final preflight;
+fresh mutable dictionaries are independent, with harmless immutable int/tuple
+sharing under faithful semantics. Ordinary unresolved/CheckStop paths attach no
+verified certificate. Unexpected/allocation/interruption errors may prevent any
+return or finish of publication; no universal rollback. Five flags remain false,
+native/source/motion/work statuses unresolved, consumer ineligible and all old
+records intact.
+
+**Verification and limits.** First focused eight-key AST/four guard-counter-
+constructor-order/ten-obligation/preservation/identity/whitespace checks pass.
+All 584 reference uses/local targets, sections 1-126/fences/math, unchanged prior
+review/Sources/design/workflow/history/source-gate/task-tail, conditional boundary
+clauses, three-document scope and source/test identities pass. Editor diagnostics
+are clear and whitespace passes. Exact diff review sharpened product-order and
+consumer-ineligibility wording; no check failed. Final content/staged-byte checks
+precede the local checkpoint. Code
+suite and numerical/fixture/native gates are not rerun; §125's 2,181 passes plus
+known xfail/71 warnings remain historical, including its discovery/format/rejected
+patch history. Source/test blobs remain `937df87cc85652e324869e40a5340bfdd72df73b`
+and `f4d0c57b7a547a79a1b615694b7a4a78c55e763a`. No environment/native/GPU/teacher/
+board requalification, dependency/data/labels/training, adapter/consumer use,
+background job/cleanup or assistant push. Conditional math is not board evidence.
+
+**Exit and next permission.** Approved design-only review completes after
+document verification/local commit, not acceptance of VC1-VC4/CT0-CT3 or proof/
+allowance/Route C/totality/source/native/work/task-quality/consumer qualification.
+Old helpers/caps/flags/default/wire/reports/logs, `1bb89fe` and native motion/
+goals/relative transforms stay. Task 6/9, source completeness/authority, teacher
+assets and ST/board remain blocked. Next proposed, not approved: design-only
+V-bind evidence/interface contract for separately captured candidate and complete
+enclosure records, exact q/sign/ratio/configuration/branch/interval correspondence,
+separate zero handling, bounded rejection/work/publication and independent
+evidence requirements. No record capture/binding/target/live checker, new import/
+fixture/run/source edit, native inspection/acquisition, adapter/consumer integration
+or proof/error/work allowance/qualification promotion. Isolation remains default.
+
+[sinc-checker-paper-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

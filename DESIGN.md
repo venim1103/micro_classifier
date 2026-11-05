@@ -6307,6 +6307,112 @@ The separately approved implementation scope is exhausted; isolation stays defau
 
 [sinc-cell-check-review]: REVIEW.md
 
+#### NF1 Cell Checker Correctness and Work Review (2026-11-05)
+
+The user separately approved §125's design-only checker review;
+[review §126][sinc-checker-paper-review] records evidence and checks. Current
+source/test identities still match §125. No code change, target import, new
+fixture/helper/native run, acquisition or accepted proof/error/work allowance.
+Five flags remain false; V-bind/V-target/V-live and consumer use stay absent.
+
+**Conditional conclusion.** No local algebraic mismatch is identified under
+faithful exact builtin operations and Fraction canonicalization, stable module/
+builtin bindings, serialized caller ownership through snapshot and successful
+allocation/reduction. A verified ordinary return then describes an eligible
+word whose exact cell contains the entire supplied positive closed interval.
+This is not accepted proof, live correspondence, a total-return guarantee,
+independent F(q) inclusion, native parity or task/physical qualification.
+
+The following CCR0-CCR9 are paper obligations, not adopted gates or new flags:
+
+| Obligation / Existing Boundary | Conditional Argument From Current Code | Unclosed Premise or Stop |
+| --- | --- | --- |
+| CCR0 / VC1, CT0, CT3 | Eight distinct builtin string keys from an eight-key allowed set imply exact coverage; strict builtin shape/type checks exclude numeric aliases and conversion/copy hooks. | Caller allocation, builtin correspondence and serialized key/value stability are assumed, not bounded or authenticated. |
+| CCR1 / VC2, CT1 | Seven pairs have positive denominators, builtin integer components, raw cap checks and equality to canonical Fraction output before semantic acceptance. | Faithful terminating GCD/canonicalization and allocation are not qualified by input types or pair equality alone. |
+| CCR2 / VC1, CT0, CT3 | Division by the significand radix reconstructs finite bit fields; actual adjacent words preserve zero/subnormal/normal/exponent-transition values. | Fixed word arithmetic is exact by premise; zero/M are neighbors only, never eligible outputs. |
+| CCR3 / VC1, CT0 | Midpoints use the two guarded cross-products, their sum and doubled positive denominator, with canonical postchecks. | Raw conservative rejection is permitted; reduction cannot excuse an oversized intermediate. |
+| CCR4 / VC1, CT0, CT3 | Two guarded comparison products give each three-way order; ordered positive endpoints and both exact cell inequalities imply whole-interval inclusion. | Supplied interval truth is not enclosure truth; a failed bound/order stops unresolved. |
+| CCR5 / VC1, CT3 | Actual neighbor/boundary values, even parity, both order fields and true containment marker must match reconstruction. | Producer status and three-field zero word records are outside this interface; no clipping or tie reassignment to unsupported cells. |
+| CCR6 / VC2, CT0 | Separate cap validation/rechecks and raw/precanonical/postcanonical guards stop detected limit changes or oversized rational stages. | No immutable global/runtime, concurrency or full setup/resource contract is established. |
+| CCR7 / VC2, CT2 | Fixed-field snapshot and fresh recomputed result/work dictionaries have no shared mutable caller container under the stated ownership premise. | Some scalar fields are reread from the caller; snapshot is not an atomic read or enforcement of ownership. |
+| CCR8 / VC2, CT0-CT2 | Attempt counters follow their actual guard/constructor boundaries; only complete ordinary success attaches a certificate. | Max canonical bits omits rejected/raw/live storage; unexpected errors can prevent any return, including publication. |
+| CCR9 / VC3-VC4, CT3 | Historical independent/tamper controls and unchanged old ASTs/caps/flags support their bounded cases and isolation. | Finite controls, hashes and private names do not close CT0-CT3, proof/totality or downstream qualification. |
+
+**Decoder and containment derivation.** Eligible w lies between 1 and M-1;
+w-1,w,w+1 therefore lie between zero and the largest positive finite word M.
+For exponent e and remainder h from division by $2^{52}$, the nonzero-exponent
+branch reconstructs $(2^{52}+h)2^{e-1075}$; the zero-exponent branch gives
+$h2^{-1074}$. Fraction reduction preserves those exact dyadics by assumption.
+Actual adjacent values, rather than an assumed uniform spacing, determine both
+midpoints. Neighbor word M is allowed only as M-1's finite upper neighbor.
+
+Positive denominators make the ordering of the two comparison products the exact
+rational order. The interval-order check and lower positivity precede neighbor
+and boundary verification. For reconstructed boundaries L,U, require l>L and
+u<U, with equality at either boundary allowed only for even w. Every x in [l,u]
+then meets the same cell inequalities. Equality at an odd boundary or an
+unsupported neighboring cell is unresolved, never a guessed output word. Matching
+claimed order/parity/true fields verifies internal content consistency only.
+
+**Guard partition.** Raw input-pair shapes/types/sizes are checked for all seven
+pairs before snapshot and before Fraction work. Canonical equality checks use
+the fixed immutable pairs retained from that input; semantic interval reads use
+the snapshot. Under serialized ownership those agree; the code does not establish
+an atomic snapshot or prevent mutation between the earlier scalar type checks
+and later scalar rereads. No source/temporal identity or adversarial runtime claim.
+
+Rational preflight covers argument component sizes, shifted significand and power
+denominator, midpoint product/sum/doubling bounds and both comparison products.
+Canonical outputs are type/sign/size checked after construction. Sum bounds add
+one to the maximum product bound, and doubled-denominator bounds include the
+additional shift. Conservative overestimates can reject mathematically valid
+small reduced values; this is an allowed partial stop, not a precision fallback.
+
+Word eligibility comparisons, neighbor/index arithmetic, radix/divmod/exponent
+setup, scalar parity/order checks, key sets, containers, snapshot and publication
+are separate from rational preflight. After eligibility, word-lattice values are
+bounded by the fixed u64 domain and radix constants, not by a reduced checker cap.
+Already allocated arbitrary caller integers/strings/containers and the work of
+early rejection are not an input-allocation or constant-time bound. A cap snapshot
+and later equality checks do not make Fraction/builtin bindings immutable or close
+CT0/CT1/CT2/W0/TB0, installed correspondence or primitive/native work.
+
+**Attempt and publication ledger.** Per entry the conditional upper-level ledger
+remains seven canonical-pair checks, three dyadic decodes, two midpoints, three
+three-way rational comparisons and twelve Fraction constructions. Input checking
+accounts for seven constructions, neighbor decoding three, midpoint reduction two;
+key/type/equality/parity/snapshot/result work is not hidden inside three comparisons.
+There is no search, enclosure call or precision retry to count.
+
+Canonical-pair counts increment before the rational preflight; Fraction counts
+increment after that preflight but before construction/postcheck. Decode counts
+increment before divmod or its later guard. Midpoint/compare counts increment
+after their raw preflight and before raw evaluation. `max_result_bits` records
+only canonical outputs passing postchecks, not raw/rejected/concurrently live
+or aggregate allocations. These are conditional attempted-stage counts, not
+measured primitive instructions, native work, elapsed time or memory fit.
+
+Successful ordinary publication follows semantic verification and a final
+configuration preflight. Fresh mutable dictionaries are independent; sharing
+immutable builtin int/tuple values is harmless under faithful semantics. Ordinary
+CheckStop/unresolved paths attach no verified certificate. Unexpected/allocation/
+interruption errors propagate, including during final result construction, so
+neither complete return nor universal rollback is guaranteed. No old report,
+producer status, owner/wire/runtime record or qualification flag is mutated.
+
+**Outcome and next permission.** VC1-VC4/CT0-CT3 remain unaccepted; the conditional
+arguments and §125's finite tests are evidence to review, not closure. Old caps,
+helpers, `1bb89fe`, native motion/goals/relative transforms and Task 6/9 stay.
+Next proposed, not approved: design-only V-bind evidence/interface contract for
+separately captured candidate and complete enclosure records. Specify exact
+q/sign/ratio/configuration/branch/interval correspondence, separate zero handling,
+bounded rejection/work/publication and independent evidence requirements. No
+binding/target/live checker, import/new fixture/run/source edit, native inspection/
+acquisition, integration or proof/error/work allowance/qualification promotion.
+Isolation remains default; this review ends with document checks and a local commit.
+
+[sinc-checker-paper-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8318,7 +8424,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §125): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §126): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8503,6 +8609,12 @@ preservation. Fresh gate: 2,181 plus known xfail/71 warnings; no proof/allowance
 or V-bind/V-target/V-live/native/work/consumer qualification. Next proposed, not
 approved: design-only conditional checker correctness/publication/work review,
 not new imports/fixtures/runs/source changes/acquisition/integration or promotion.
+The separately approved checker paper review is complete (§126): ten conditional
+obligations, decoder/whole-cell/snapshot/guard/publication arguments and attempted-
+work/trusted-base limits. No proof/allowance/VC/CT/resource or consumer acceptance.
+Next proposed, not approved: design-only V-bind evidence/interface contract for
+separately captured candidate and complete enclosure records, not capture/checker/
+imports/runs/source edits/native inspection/acquisition/integration or promotion.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

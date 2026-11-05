@@ -131,13 +131,15 @@ from them. Historical details below are reference material, not new approvals.
   no proof/allowance/Route C/totality/qualification or consumer claim adoption.
   Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. Baseline `ae825dc`.
   Same-helper conditional correctness/publication/work and concrete decision
-  brief prepared (§139): JO0-JO9, full implication and zero/series ledgers, without
-  imports/new fixtures/runs or claim adoption. Only explicit claim/premise/evidence
-  or separately approved next design-only scope decisions remain.
+  brief prepared (§139); separately approved design-only premise/evidence worksheet
+  complete (§140): five upstream families and JO0-JO9 with proposed accept/stop/
+  invalidation conditions, all fifteen verdicts undecided. No imports/new fixtures/
+  runs/source refresh or claim adoption. Only explicit named premise/evidence/claim
+  or separately authorized concrete evidence-direction decisions remain.
   Isolation default; native motion/goals/relative transforms, source completeness/
   authority/work, task/data/dependency/hardware and broader evidence remain blocked.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-139 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-140 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1196,16 +1198,18 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §139 conditional
-typed join correctness/publication/work and concrete decision brief prepared;
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §140 design-only
+join premise/evidence worksheet complete; §139 conditional review/brief prepared;
 §138 private prototype/gates in `8bf26d3`.
 Four of five positions used; fifth unnecessary, no new source run pending.
 Full named matrix: 32 joins/57 target/52 composition/77 binding/62 cell;
 old ASTs/caps and five false flags preserved; `1bb89fe` stays. Gate 2,245 plus
 known xfail/71 warnings; position-two reservation gap/repair preserved. No proof/
 allowance/Route C/native/source/work/totality/consumer acceptance. Same-helper
-review complete without imports/runs/claims. Only explicit premise/evidence/claim
-or separately approved next design-only scope decisions remain; isolation default.
+review and worksheet complete without imports/runs/source refresh/claims. Five
+upstream families and JO0-JO9, all fifteen verdicts undecided. Only named premise/
+evidence/claim or separately authorized concrete evidence-direction decisions remain;
+isolation default.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/cleanup pending.
 
@@ -1528,6 +1532,9 @@ Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/clean
   Typed join review (REVIEW.md §139): JO0-JO9 conditional arguments, zero/series
   logical ledgers and concrete premise/evidence/claim brief prepared; no source/run/
   claim adoption. Only explicit decisions or separately approved design-only scope.
+  Join worksheet (REVIEW.md §140): separately approved design-only upstream/JO
+  premise/evidence/accept-stop-invalidation map complete, all fifteen verdicts
+  undecided. No imports/runs/source refresh/claim adoption; named decisions remain.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

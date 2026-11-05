@@ -7878,6 +7878,79 @@ work follows. Task 6/9 and all broader qualification gates remain blocked.
 
 [sinc-target-join-paper-review]: REVIEW.md
 
+#### NF1 Join Premise and Admissible-Evidence Worksheet (2026-11-05)
+
+The user explicitly approved §139's next design-only worksheet: JO0-JO9/upstream
+premises, candidate admissible evidence and proposed accept/stop/invalidation
+conditions, using existing project records only. [Review §140][sinc-join-worksheet-review]
+records the clean `78328d2` baseline, scoped checks and unchanged §138 source gate.
+This prepares a decision, not evidence/claim adoption or a source/runtime change.
+
+**Scope and Status.** The sole candidate conclusion is §139's conditional
+stored-word RN64(F(q))=certificate-word/content statement, with its exact finite
+q/domain/profile/success/zero scope and exclusions. Five upstream families below
+cover all dependencies used by that argument; JO rows reference them explicitly.
+Every verdict is **undecided**. Candidate evidence is either an already-recorded
+argument/test/identity with stated limits, or a proposed future review criterion,
+not newly obtained evidence or permission to obtain it. No proposed accept condition
+is met or adopted merely because this worksheet exists.
+
+| Premise Family | Existing Project Record / Candidate Evidence | Proposed Accept Condition | Stop / Invalidation Boundary | Verdict |
+| --- | --- | --- | --- | --- |
+| U0 / mathematical target | §136 TC0-TC9: exact signed dyadic/domain/zero, decreasing arctangent sums, Machin identity/quadrant, positive squared interval, factorials, whole Horner enclosure and alternating-tail/root argument; §135 fixed tests are supporting controls only. | Explicitly decide each quantified mathematical/partial-correctness premise, or retain it as an openly assumed premise of the narrow implication. Samples/brackets alone cannot establish those theorems. | Missing analytic or guard/canonicality premise blocks an accepted unconditional conclusion; q/profile/kernel/theorem changes require a new decision. No native error follows. | undecided |
+| U1 / declared binding | §130 BR0-BR9 and §129: exact builtin finite q/sign/ratio/domain/profile/canonical pairs and complete record correspondence, including zero; fixture companions are owned declared records, not a producer transcript. | Explicitly accept only conditional declared correspondence under its guarded integer/Fraction/GCD assumptions; distinguish expected-word content from its authority. | Hash or copied report cannot replace correspondence; mutated schema/q/profile/canonicalization/ownership invalidates it. No source execution/authority inference. | undecided |
+| U2 / exact cell | §126 CCR0-CCR9 and §125: complete eight-field series certificate, three neighbor decodes, exact midpoints/order/parity/ties and whole interval containment; zero three-field certificate is outside that checker. | Decide the exact finite-neighbor/ties-even-cell partial-correctness argument and its integer/Fraction assumptions, not just endpoint tests or the reported word. | Unsupported/straddling cell or missing boundary/parity/canonical premise stops the implication; word/certificate/cap/decoder changes invalidate it. No search totality. | undecided |
+| U3 / composition | §133 CO0-CO9 and §132: one binding, series-only cell, complete typed original/binding/cell-input/cell-output certificate and common interval, separate saved caps and owned publication. | Accept only the conditional composition of U1/U2 and complete content joins with its input/report/helper/publication premises explicit. | External stale report, missing join or unresolved callee blocks accepted composition; helper/profile/schema/cap/ownership change invalidates it. Zero remains no-cell. | undecided |
+| U4 / shared execution and work base | §107 historical trusted-base dossier plus §126/130/133/136/139: builtin integer/container and Fraction/GCD semantics, stable selected helpers/configuration, serialized ownership, ordinary allocation/publication, exception prefixes; §138 byte IDs/gates identify checked source, not live selections. | Decide which assumptions are explicit conditions of the narrow theorem and what independent correspondence/ownership evidence would be admissible for any stronger implementation claim. No such new evidence is obtained here. | Missing live/native/allocator/source authority leaves stronger claims blocked; runtime/binding/GCD/copy/cap/publication changes invalidate correspondence. Counts/max bits never become RAM/time/native-work proof. | undecided |
+
+U0-U3's source reasoning depends on U4 where it invokes builtin/Fraction/GCD,
+ownership, helper selection and ordinary completion. U3 also depends on U1 and
+series-only U2. Historical §107 provenance/text observations are not refreshed
+loaded-image/ABI/build/FP evidence; no installed file is inspected by this worksheet.
+The distinction between an explicit conditional assumption and established evidence
+must remain in any eventual claim. Accepting a theorem conditional on U4 does not
+demonstrate U4 for an actual process, sensor or robot.
+
+| Join Obligation / Dependencies | Existing Candidate Evidence | Proposed Accept Condition | Stop / Invalidation Boundary | Verdict |
+| --- | --- | --- | --- | --- |
+| JO0 / U4 | §138/139 source/AST: literal opt-in, separate saved five limits and zero cell None; fixed JX5/11/12/13 limit controls. | Decide exact entry/applicable-limit/stable-read scope; require all active saved-limit checks, not a sum of caps. | Missing limit/type/live check stops; transient changes between reads remain outside detection. Opt-in/configuration/serialization changes invalidate review. | undecided |
+| JO1 / U0,U1,U2,U4 | Complete root/profile/work/stage/certificate raw builtin guards precede copy/equality; JX2/4 missing-stage/hostile-work-key controls. | Accept only raw shape/hook rejection plus later U1/U0/U2 canonical/content checks, not shape as mathematical evidence. | Missing nested guard or nonbuiltin leaf stops; container/schema/canonicalization changes invalidate. Pre-existing allocation is not counted work. | undecided |
+| JO2 / U1,U4 | Retained original records and separate target/composition copies; JX15 saved-result/input/work mutation checks. | Decide validation-to-copy and private serialized ownership conditions, distinguishing retained contents from source authenticity. | Aliasing/concurrent mutation or absent complete snapshot blocks the stronger ownership claim; copy/ownership/helper changes invalidate. | undecided |
+| JO3 / U0,U4 | Target-first reserved call, exact report/work/config and owned post-call stage/root/input joins; JX6/7/8/14 controls. | Combine accepted or explicitly assumed U0/U4 with exact same-q/profile/domain/all-stage/root content and post-call input checks. | Unresolved/missing/mutated target report/input stops composition; matching counters alone cannot repair a missing premise. Target/helper/math/profile changes invalidate. | undecided |
+| JO4 / U1,U2,U3,U4 | Composition report owned; both inputs and complete certificate/root match retained originals; JX9/10 boundary/schema controls. | Combine U3 and applicable U1/U2/U4 with all same-q/profile/root/eight-field or zero joins. | Word/status/hash-only, stale report or input mutation stops; changed composition/binding/cell/schema invalidates. No eligible consumer emerges. | undecided |
+| JO5 / U0,U2,U3,U4 | §139 transitive F(q)-in-I-in-C(w) argument; exact linked intervals and full certificate checks in §138. | Explicitly accept the conditional implication only if each upstream premise/condition is named; retain exact ties/parity/whole-cell and success-only scope. | Missing target or cell theorem blocks accepted RN64 conclusion; sample agreement cannot fill it. Target/cell/rounding meaning changes invalidate. | undecided |
+| JO6 / U0,U1,U3,U4 | Signed zero metadata, empty stages, unit/[1,1]/zero certificate and no cell work/cap; JX1/3 controls. | Decide mathematical F(0)=1, expected sign and no-cell branch without inferring a signed output or native tiny substitution. | Zero/subnormal/sign/profile aliases stop; changed zero definition/checker branching invalidates. U2 is not invoked on zero. | undecided |
+| JO7 / U3,U4 | Complete 26-field update after final live checks; sixteen-field ordinary stops; owned reports; only JoinStop caught. | Accept only ordinary successful publication and propagating exceptional prefixes, with no universal return/rollback/side-effect guarantee. | Unexpected/allocation/interruption means no promised report; JX14 is not coverage of every site. Publication/catch/copy semantics changes invalidate. | undecided |
+| JO8 / U4 | §138 first-installed family wrappers, disjoint join/old phases, old primary reservation journal and pre-body reconciliation; exact old AST/caps. | Decide named attempted-entry accounting only; preserve printed-versus-derived totals and old reservation timing. | Missing reservation/order/journal correspondence blocks ledger acceptance; new calls/refill/wrapper bypass/cap changes invalidate. No original-body or resource telemetry inferred. | undecided |
+| JO9 / U0,U1,U2,U3,U4 | §139 conditional zero/series sums, nested paths counted once, unchanged five flags/unresolved statuses and retained source gate. | Decide logical/profile counters separately from attempted entries and resource/evidence/consumer claims; no bit-cap sum or measured-cost claim. | Omitted setup/GCD/allocator/live work blocks resource conclusions; ledger/profile/cap/qualification changes invalidate. Larger success scope or flags need separate approval. | undecided |
+
+**Admissibility Boundaries.** Byte IDs identify the exact local source/text; they
+are not authenticated loaded helper/Fraction/GCD selections. Fixed synthetic tests
+exercise only the stated cases and exception sites, not quantified mathematics,
+native error, physical domain, source completeness or all-domain termination.
+Paper algebra and AST checks support a reviewable conditional argument; they are
+not machine-checked proofs or accepted evidence policies. The attempted journal
+and successful work table answer different questions; neither measures resources.
+
+Any later decision must explicitly say whether it accepts a conditional premise,
+an evidence type for a named claim, or the narrow conclusion. These are distinct
+decisions; none implies the others or changes source/flags. If a premise stays
+undecided, the corresponding stronger conclusion remains unaccepted; retaining an
+assumption explicitly permits discussion of the conditional argument only, not
+actual process qualification. No automatic adoption, relabeling or new execution.
+
+**Exit and Remaining Decision.** U0-U4 and JO0-JO9 all have explicit dependencies,
+candidate evidence/limits, proposed accept/stop/invalidation criteria and undecided
+verdicts. The approved design-only preparation is complete. Default/recommendation
+remains private isolation and no claim/premise/evidence-policy adoption. The next
+missing input is an explicit named premise/admissible-evidence/claim decision or
+a separately authorized concrete evidence direction, not more routine code or
+an unchanged gate. Native/source/work/resources/consumer and Task 6/9/physical/
+task-quality/teacher assets/ST-board stay blocked; no data, runtime, teacher,
+dependency, hardware or acquisition authority follows from the worksheet.
+
+[sinc-join-worksheet-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9889,7 +9962,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §139): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §140): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -10141,6 +10214,11 @@ That same-helper conditional join review and concrete decision brief are prepare
 explicit upstream/shared premises. Source/tests and §138 gate remain unchanged;
 no imports/runs/claims. Retain isolation; only explicit claim/evidence or separately
 approved next design-only scope decisions remain, not automatic integration.
+The separately approved design-only premise/evidence worksheet is prepared (§140):
+five upstream families and JO0-JO9 mapped to candidate evidence, proposed acceptance/
+stop/invalidation conditions and explicit undecided verdicts. No imports/runs/source
+refresh or adoption. Only named premise/evidence/claim or separately authorized
+concrete evidence-direction decisions remain; isolation and source gate unchanged.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

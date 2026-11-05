@@ -10374,6 +10374,78 @@ this new preparation still needs explicit approval. Isolation remains default.
 
 [sinc-target-join-paper-design]: DESIGN.md
 
+## 140. NF1 Join Premise and Admissible-Evidence Worksheet (2026-11-05)
+
+The user explicitly selected **Approve the design-only worksheet** in response to
+§139's bounded proposal: JO0-JO9/upstream premises, candidate evidence and proposed
+accept/stop/invalidation conditions using existing project records only. No imports,
+runs, code, installed-source refresh, acquisition or claim adoption approved.
+[DESIGN.md §7][sinc-join-worksheet-design] contains the completed worksheet.
+Baseline clean at `78328d2`; §138 source/test identities still exact. No assistant push.
+
+Local hypothesis: upstream mathematical content, declared binding, exact cell,
+composition and shared execution/work premises must stay separate; every JO row
+needs named dependencies and a candidate evidence boundary rather than an implicit
+promotion of hashes/counters/tests. The nearby §139 argument provides the controlling
+dependency path and exclusions. Cheapest discriminator: static text/table checks
+for all five upstream families and ten JO mappings, undecided verdicts and explicit
+accept/stop/invalidation columns, plus source/history/scope preservation. No helper
+or numerical experiment is needed or authorized for this design-only completion.
+
+U0 target covers §136 TC0-TC9, U1 declared binding §130 BR0-BR9, U2 cell §126
+CCR0-CCR9, U3 composition §133 CO0-CO9, U4 shared execution/work the existing §107
+dossier and later conditional reviews. U0-U3 source reasoning depends on U4;
+U3 uses U1 and series-only U2. JO0-JO9 map each dependency explicitly, including
+zero's absence of U2, full stage/root/certificate joins, exception-prefix and
+attempted-entry versus logical/resource work boundaries. All fifteen verdicts
+undecided, not adopted proof/premises/evidence policy/claim or consumer decisions.
+
+Candidate evidence separates already-recorded source/AST identities, fixed fixture
+results and paper arguments from proposed future acceptance criteria. Historical
+§107 source/provenance observations are not refreshed loaded-image/ABI/build/FP
+evidence. Neither byte hashes nor complete callee reports authenticate selected
+live implementations; finite tests do not establish quantified math, physical
+inputs, source authority/completeness, termination or resources. Conditional
+assumptions may remain explicit in a theorem without qualifying an actual process.
+
+The candidate conclusion remains exactly §139's success-only stored-word
+RN64(F(q))=certificate-word/content implication under its upstream/shared premises,
+finite q/domain/profile/zero scope. No broader adoption or altered flags. Proposed
+accept criteria require explicit named premise/evidence/conclusion decisions;
+stop/invalidation conditions preserve missing analytic/canonical/guard/helper/
+ownership/cap/publication evidence and require separate future gate/evidence
+decisions. No automatic rerun, acquisition or source change follows.
+
+Standard-library-only text/table/reference/local-target checks pass for every U/JO
+row/dependency/undecided verdict, proposed accept/stop/invalidation and admissibility
+boundaries, prior history/Sources/design/milestone/stable workflow, exact tested
+source bytes, three-doc scope and whitespace, with 612 reference uses/local targets.
+Editor/diff/staged checks precede the
+local checkpoint. No project imports/fixture/helper/native/model execution, code
+suite rerun, installed inspection/download, dataset/episode/log/label/split/training,
+runtime/wire/owner/log/teacher/dependency/hardware integration or artifacts/jobs/cleanup.
+
+The first dependency check failed: JO1's acceptance text correctly required later
+U0/U1/U2 canonical/content premises, but its label omitted U0/U2. Added those
+dependencies to the label and reran the same exact coverage/preservation checks;
+no acceptance condition, assertion, source or execution budget was relaxed.
+
+The last source gate remains §138's 2,245 passes, known transformer xfail, 71 warnings
+in 63.30 s; no source change or rerun. Four of five positions used; fifth unused,
+unnecessary and not transferred. Old §129/§132 budgets exhausted; §135 fifth not
+borrowed. Position-two pre-body accounting and documentation-parser failure, and
+§139's patch failure, remain historical evidence, not rewritten by this worksheet.
+
+All preparation in this explicitly approved scope is complete. Recommend isolation,
+all fifteen verdicts undecided and no accepted claim. Next blocker is an explicit
+named premise/admissible-evidence/claim decision or separately authorized concrete
+evidence direction. No generic continuation unlocks a source run or broader task.
+Five flags false; native/motion/source/work unresolved, consumer ineligible. Task
+6/9, physical/task-quality, native motion/goals/relative transforms, source authority/
+completeness/work/resources, teacher assets and ST/board remain blocked. No push.
+
+[sinc-join-worksheet-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

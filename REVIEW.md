@@ -10171,6 +10171,120 @@ No further implementation/execution or claim acceptance follows automatically.
 
 [sinc-target-join-design]: DESIGN.md
 
+## 138. NF1 Private Target-to-Cell Join Prototype (2026-11-05)
+
+The user explicitly answered yes to §137's offered private join prototype, fixed
+JX controls/counter protocol/caps and affected gates within five new invocation
+positions, keeping claims unaccepted, and requested autonomous continuation/local
+commits. Worktree was clean at `ae825dc`. [DESIGN.md §7][sinc-target-join-prototype-design]
+records the private implementation, not mathematical/native/source qualification.
+No assistant push, runtime/data/teacher/dependency/hardware integration approval.
+
+**Local hypothesis and immediate check.** The existing composition guard is the
+nearby schema/ownership pattern; the old target fixture's 32-entry cap requires
+new family wrappers before old direct wrappers. Retained full target-stage/root/
+certificate joins should accept ordinary JX6 and stop its fixed stage-only target
+mutation before composition. First edit added the private constant/helper and
+bounded family fixture/sixteen-control test; immediate position one passed. No
+native oracle, extra source fixture or project snippet was used.
+
+Complete raw keys/types/lengths/profile/work/certificate/stage leaves precede
+copy/equality. Independent owned inputs and retained originals protect q/sign/
+ratio/target/domain/branch/profile/all stages/root/eight-field or zero certificate.
+Existing target first, at most one existing composition next, each reserved and
+followed by all-active-limit checks. Exact callee reports and their work/configuration
+are validated and independently snapshotted; post-call inputs are revalidated and
+compared completely. Successful 26-field root is published only after all joins;
+ordinary stops return fixed sixteen-field metadata, no partial evidence. Only
+JoinStop is caught; unexpected/allocation/interruption errors propagate. Zero
+preserves signed words/unit/[1,1]/zero and has no cell/cap/work fiction.
+
+Five new top-level AST nodes: `_SYNTHETIC_TARGET_JOIN_BITS`,
+`_check_synthetic_sinc_target_cell_join`, `synthetic_sinc_target_cell_join_checks`,
+`synthetic_sinc_join_legacy_reservations`, `test_synthetic_sinc_target_cell_join`.
+After scoped formatting helper 614 lines, family fixture 91, observer 35, test
+209. Every prior source/test AST node and order is exact; old caps unchanged.
+The join contains no imports/float constants/Fraction/float/NumPy/math/open/deepcopy
+and only target/composition direct checker calls. Excluded producer/native/owner/
+reference paths are blocked in the fixed tests. No old artifact was regenerated.
+
+**Four of five positions used; fifth unused/unnecessary.** Each position reused
+one unchanged complete capture: 12 candidate, 12 nested plus 12 direct enclosure,
+six actual nested producer-cell entries and 24 owned snapshots. Exact sixteen JX
+map and two requests per control; no variants, third call, worker/refill/reset or
+__wrapped__ bypass. Old §129/§132 allowances exhausted; unused §135 position not
+borrowed. Future unused positions are not permission for an unchanged reassurance
+run or another source slice.
+
+1. `/opt/venv/bin/python -m pytest -q 'tests/test_sim.py::test_synthetic_sinc_target_cell_join[6]'`:
+  1 passed in 0.36 s. Two joins, two target, one composition/binding/cell. Fixed
+  target stage mutation rejects before composition; only one original cell body.
+2. `/opt/venv/bin/python -m pytest -q tests/test_sim.py::test_synthetic_sinc_target_cell_join tests/test_sim.py::test_synthetic_sinc_target_content tests/test_sim.py::test_synthetic_sinc_composition tests/test_sim.py::test_synthetic_sinc_declared_binding tests/test_sim.py::test_synthetic_cell_certificate_checker`:
+  80 passed in 1.61 s after owned callee-report snapshots. Join32/family target57/
+  composition52/binding77/cell61 printed. Old cell wrapper separately reported48
+  reservations versus inner family old47: its fixed pre-body MemoryError never
+  entered the inner wrapper. This incomplete family ledger is retained, not
+  retroactively presented as complete telemetry. No behavioral test failed.
+3. Same five matrices after the legacy reservation observer and scoped format:
+  80 passed in 2.51 s. Join32/target57/composition52/binding77/cell62. Join phases
+  25/20/20/14; old phases32/32/57/48, including one already-reserved pre-body entry.
+4. `/opt/venv/bin/python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`:
+  2,245 passed, known transformer xfail, 71 existing ONNX warnings in 63.30 s;
+  lint/changed-file format/whitespace pass. Same complete family/subset ledgers.
+
+**Accounting defect/repair.** Position two's tests passed but its printed family
+ledger omitted one old attempted pre-body failure. The old wrapper already reserved
+that attempt before raising. A scoped new observer reads its existing journal and
+records exactly that unmatched cell/MemoryError entry, without calling another
+helper or refunding/raising old caps. The marker exists only with the join fixture;
+old standalone tests remain unaffected when it is absent. An unexpected mismatch
+fails. The combined cap is supported by disjoint old<=64 plus join-induced<=32
+reservations, not by pretending the missed inner call occurred. Late reconciliation
+is bookkeeping of an old primary reservation, not new body-execution evidence.
+No behavioral assertion, tolerance, schema, cap, deadline or safety check relaxed.
+Ruff formatted only the two changed Python files; no format-check failure in this
+package. Historical failures, including §135's formatting failure, stay intact.
+
+Across four printed family ledgers: 98 joins, 173 target, 157 composition,
+232 binding and 186 cell entries. Including position two's independently retained
+old unmatched reservation gives 187 attempted cell entries; that extra one is
+derived from the preserved old journal/counters, not its original family printout.
+Capture totals48/96/24/96 versus maxima60/120/60/120. New aggregate ceilings remain
+join160/target320/composition320/binding480/cell480. Other root controls are the
+separately renewed default gate, not part of these named source-work counters.
+
+The initial documentation validator failed by treating inline Python indexing
+as a Markdown reference (`[i][2]`). Its later shell whitespace/stat command returned
+zero; that was not validation success. The repaired link-use parser excludes code
+spans/fences, retaining exact history, identities, reference and local-target checks.
+This documentation-only repair consumes no project invocation or new fixture.
+
+Pylance syntax/editor diagnostics and exact legacy AST/order checks pass. Tested
+source blobs: diagnostics `ab66a42dbf6eaf77a0f796ad32f5625ab1ff04cb`, tests
+`9df5b71b108564e64ff950faf7d0545209f7ef97`; SHA256 respectively
+`be7f30a1559ef0c49d3992c923788c12a1c9e9d56718a44c1190837649aa5057` /
+`6f82219ae9f3e971dd9bb468df49e9a3125a4f05085affa6352a5a6655a107ff`.
+No code changed after the successful gate. Scoped history/Sources/design/milestone/
+reference/local-target/whitespace/diff/staged-byte checks precede checkpoint commit.
+
+Five flags false; native/motion/source/work unresolved, consumer ineligible. No
+accepted conditional math/builtin/Fraction/GCD/ownership/proof/native error/work/
+resource/Route C/totality or consumer claim. No C/runtime source edit or additional
+opt-in sanitizer/Arm/build-audit gate; default gate is not board/native-sinc/task
+quality/resource requalification. No model/GPU/teacher/hardware run, dependency/
+download, episode/log/data/label/split, owner/query/reference/log/wire adapter or
+eligible consumer adoption. Raw payloads stayed invocation-memory-only; no report
+created, background job, cleanup or assistant push. Quarantine and `1bb89fe` stay.
+Task 6/9, native motion/goals/relative transforms, source completeness/authority/work,
+teacher assets and ST/board remain blocked.
+
+Next continued preparation: same-helper conditional correctness/publication/work
+and concrete claim/premise/evidence review, without imports/fixture/helper execution
+or claim adoption. Further claim/native/source/resource/consumer decisions or a
+different source slice require explicit approval; no automatic promotion/integration.
+
+[sinc-target-join-prototype-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

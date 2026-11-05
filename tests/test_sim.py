@@ -600,6 +600,350 @@ def synthetic_sinc_binding_pool(request):
 
 
 @pytest.fixture(scope="module")
+def synthetic_sinc_target_cell_join_checks(request, synthetic_sinc_binding_pool):
+    from functools import wraps
+
+    from sim import diagnostics
+
+    names = (
+        "_check_synthetic_sinc_target_content",
+        "_check_synthetic_sinc_composition",
+        "_check_synthetic_sinc_declared_binding",
+        "_check_synthetic_cell_certificate",
+    )
+    originals = tuple(getattr(diagnostics, name) for name in names)
+    assert all(
+        helper.__code__.co_name == name
+        for helper, name in zip(originals, names, strict=True)
+    )
+    kinds = ("target", "composition", "binding", "cell")
+    maxima = dict(zip(kinds, (64, 64, 96, 96), strict=True))
+    state = {
+        "join": 0,
+        "counts": dict.fromkeys(kinds, 0),
+        "phases": {kind: {"join": 0, "old": 0} for kind in kinds},
+        "journal": [],
+        "fault": None,
+        "joining": False,
+    }
+
+    def invoke(kind, helper, arguments, keywords):
+        assert state["counts"][kind] < maxima[kind]
+        state["counts"][kind] += 1
+        phase = "join" if state["joining"] else "old"
+        state["phases"][kind][phase] += 1
+        entry = {"kind": kind, "phase": phase, "outcome": "pending"}
+        state["journal"].append(entry)
+        try:
+            fault = state["fault"] if state["joining"] else None
+            if kind == "target" and fault == "target_memory":
+                raise MemoryError("injected join target delegation")
+            output = helper(*arguments, **keywords)
+            if kind == "target":
+                if fault == "target_stage":
+                    output["stages"]["pi"] = ((3, 1), output["stages"]["pi"][1])
+                elif fault == "target_schema":
+                    output["certificate"] = {}
+                elif fault == "target_input":
+                    arguments[1]["stages"]["pi"] = (
+                        (3, 1),
+                        arguments[1]["stages"]["pi"][1],
+                    )
+                elif fault == "binding_limit":
+                    diagnostics._SYNTHETIC_BIND_CHECK_BITS = 1
+            elif kind == "composition":
+                if fault == "composition_boundary":
+                    output["certificate"]["boundaries"] = (
+                        (1, 1),
+                        output["certificate"]["boundaries"][1],
+                    )
+                elif fault == "composition_schema":
+                    output["stages"] = {}
+                elif fault == "target_limit":
+                    diagnostics._SYNTHETIC_TARGET_CHECK_BITS = 1
+        except BaseException as error:
+            entry["outcome"] = type(error).__name__
+            raise
+        entry["outcome"] = output["status"]
+        return output
+
+    def decorate(kind, helper):
+        @wraps(helper)
+        def wrapped(*arguments, **keywords):
+            return invoke(kind, helper, arguments, keywords)
+
+        return wrapped
+
+    with pytest.MonkeyPatch.context() as patch:
+        for name, kind, helper in zip(names, kinds, originals, strict=True):
+            patch.setattr(diagnostics, name, decorate(kind, helper))
+        patch.setattr(
+            request.config, "_synthetic_sinc_join_checks", state, raising=False
+        )
+        try:
+            yield state
+        finally:
+            reporter = request.config.pluginmanager.getplugin("terminalreporter")
+            capture = request.config.pluginmanager.getplugin("capturemanager")
+            if reporter is not None and capture is not None:
+                with capture.global_and_fixture_disabled():
+                    reporter.write_line(
+                        f"Join attempt ledger: {state['join']}; families: {state['counts']}; "
+                        f"phases: {state['phases']}; capture: {synthetic_sinc_binding_pool['counts']}"
+                    )
+
+
+@pytest.fixture(autouse=True)
+def synthetic_sinc_join_legacy_reservations(request):
+    checks = getattr(request.config, "_synthetic_sinc_join_checks", None)
+    selected = request.node.name.split("[", 1)[0]
+    if checks is None or selected not in {
+        "test_synthetic_sinc_composition",
+        "test_synthetic_sinc_declared_binding",
+        "test_synthetic_cell_certificate_checker",
+    }:
+        yield
+        return
+    legacy = request.getfixturevalue("synthetic_sinc_composition_checks")
+    old_start, new_start = len(legacy["journal"]), len(checks["journal"])
+    yield
+    for kind in ("binding", "cell"):
+        old_rows = [row for row in legacy["journal"][old_start:] if row["kind"] == kind]
+        new_rows = [row for row in checks["journal"][new_start:] if row["kind"] == kind]
+        missing = len(old_rows) - len(new_rows)
+        assert missing >= 0
+        if missing:
+            assert (
+                kind == "cell"
+                and missing == 1
+                and old_rows[-1]["outcome"] == "MemoryError"
+            )
+            assert checks["counts"][kind] < 96
+            checks["counts"][kind] += 1
+            checks["phases"][kind]["old"] += 1
+            checks["journal"].append(
+                {
+                    "kind": kind,
+                    "phase": "old",
+                    "outcome": "MemoryError",
+                    "pre_body": True,
+                }
+            )
+
+
+@pytest.mark.parametrize("control_index", range(16))
+def test_synthetic_sinc_target_cell_join(
+    control_index,
+    synthetic_sinc_binding_pool,
+    synthetic_sinc_target_cell_join_checks,
+    monkeypatch,
+):
+    import ast
+    import inspect
+    from copy import deepcopy
+
+    from sim import diagnostics
+
+    pool, checks = synthetic_sinc_binding_pool, synthetic_sinc_target_cell_join_checks
+    mapping = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 6, 7, 8, 9)
+    word, original_candidate, original_enclosure = pool["records"][
+        mapping[control_index]
+    ]
+    originals = deepcopy((original_candidate, original_enclosure))
+    candidate, enclosure = deepcopy(originals)
+    helper = diagnostics._check_synthetic_sinc_target_cell_join
+    attempts = 0
+    zero = word & ((1 << 63) - 1) == 0
+
+    def forbidden(*arguments, **keywords):
+        raise AssertionError("join reached an excluded producer/native path")
+
+    for name in (
+        "_enclose_synthetic_sinc_word",
+        "_candidate_synthetic_sinc_word",
+        "_certify_synthetic_sinc_cell",
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+        "_reference_synthetic_c1_motion",
+        "_audit_synthetic_controlled_candidate",
+        "_SyntheticC1ControlledMotionOwner",
+        "_SyntheticC1SourceRecorder",
+        "prepare_synthetic_c1_relative_input",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("sinc", "sin", "cos", "arctan2"):
+        monkeypatch.setattr(diagnostics.np, name, forbidden)
+    for name in ("sin", "cos", "atan2"):
+        monkeypatch.setattr(diagnostics.math, name, forbidden)
+    syntax = ast.parse(inspect.getsource(helper))
+    assert not any(
+        isinstance(node, (ast.Import, ast.ImportFrom))
+        or isinstance(node, ast.Constant)
+        and type(node.value) is float
+        or isinstance(node, ast.Name)
+        and node.id in {"Fraction", "float", "np", "math", "open", "deepcopy"}
+        for node in ast.walk(syntax)
+    )
+    calls = [
+        node.func.id
+        for node in ast.walk(syntax)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id.startswith("_check_")
+    ]
+    assert calls == [
+        "_check_synthetic_sinc_target_content",
+        "_check_synthetic_sinc_composition",
+    ]
+
+    def check(expected=word, **keywords):
+        nonlocal attempts
+        assert attempts < 2 and checks["join"] < 32 and not checks["joining"]
+        attempts += 1
+        checks["join"] += 1
+        checks["joining"] = True
+        try:
+            return helper(expected, candidate, enclosure, **keywords)
+        finally:
+            checks["joining"] = False
+            checks["fault"] = None
+
+    before = dict(checks["counts"])
+    first = check(synthetic_test_only=True)
+    saved = deepcopy(first)
+    assert first["status"] == (
+        "checked_conditional_zero_target_binding"
+        if zero
+        else "checked_conditional_sinc_target_cell_content"
+    ), first
+    assert len(first) == 26
+    assert first["q_word"] == word and first["sign"] == word >> 63
+    assert (
+        first["q_ratio"] == enclosure["q_ratio"]
+        and first["profile"] == enclosure["configuration"]
+    )
+    assert first["target"] == enclosure["target"] and first["domain_ratio"] == (1, 64)
+    assert (
+        first["interval"]
+        == enclosure["interval"]
+        == candidate["certificate"]["interval"]
+    )
+    assert (
+        first["stages"] == enclosure["stages"]
+        and first["certificate"] == candidate["certificate"]
+    )
+    assert set(first["work"]) == {
+        "join_entries",
+        "target_entries",
+        "composition_entries",
+        "target",
+        "composition",
+    }
+    assert tuple(
+        first["work"][key]
+        for key in ("join_entries", "target_entries", "composition_entries")
+    ) == (1, 1, 1)
+    assert first["work"]["target"]["rational_constructions"] == (5 if zero else 230)
+    assert first["work"]["composition"]["binding_entries"] == 1
+    assert first["work"]["composition"]["cell_entries"] == (0 if zero else 1)
+    assert first["configuration"]["cell_bit_limit"] == (None if zero else 65536)
+    assert {key: checks["counts"][key] - before[key] for key in before} == {
+        "target": 1,
+        "composition": 1,
+        "binding": 1,
+        "cell": 0 if zero else 1,
+    }
+    if zero:
+        assert first["work"]["composition"]["cell"] is None
+        assert set(first["certificate"]) == {"word", "interval", "branch"}
+    else:
+        assert first["work"]["composition"]["cell"]["midpoint_recomputations"] == 2
+    second_before = dict(checks["counts"])
+    if control_index in (0, 1):
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check(synthetic_test_only=False if control_index == 0 else 1)
+    elif control_index == 15:
+        second = check(synthetic_test_only=True)
+        enclosure["stages"]["pi"] = ((0, 1), (0, 1))
+        candidate["certificate"]["boundaries"] = ((0, 1), (0, 1))
+        second["stages"]["pi"] = ((0, 1), (0, 1))
+        second["certificate"]["boundaries"] = ((0, 1), (0, 1))
+        second["work"]["target"]["rational_constructions"] = 999
+        second["work"]["composition"]["binding"]["rational_constructions"] = 999
+    else:
+        expected = word
+        if control_index == 2:
+            enclosure.pop("stages")
+        elif control_index == 3:
+            expected = word ^ (1 << 63)
+        elif control_index == 4:
+
+            class HostileKey:
+                def __hash__(self):
+                    return hash("enclosure")
+
+                def __eq__(self, other):
+                    raise AssertionError("unexpected join key equality")
+
+            value = candidate["work"].pop("enclosure")
+            candidate["work"][HostileKey()] = value
+        elif control_index in (5, 12):
+            monkeypatch.setattr(
+                diagnostics,
+                "_SYNTHETIC_TARGET_JOIN_BITS",
+                65537 if control_index == 5 else 1,
+            )
+        else:
+            faults = {
+                6: "target_stage",
+                7: "target_schema",
+                8: "target_input",
+                9: "composition_boundary",
+                10: "composition_schema",
+                11: "binding_limit",
+                13: "target_limit",
+                14: "target_memory",
+            }
+            checks["fault"] = faults[control_index]
+            if control_index == 11:
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_BIND_CHECK_BITS", 65536)
+            elif control_index == 13:
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_TARGET_CHECK_BITS", 65536)
+        if control_index == 14:
+            with pytest.raises(MemoryError, match="injected join target delegation"):
+                check(synthetic_test_only=True)
+        else:
+            rejected = check(expected, synthetic_test_only=True)
+            assert rejected["status"] == "unresolved_synthetic_sinc_target_cell_join"
+            assert (
+                len(rejected) == 16
+                and "certificate" not in rejected
+                and "stages" not in rejected
+            )
+    if control_index <= 5 or control_index == 12:
+        assert checks["counts"] == second_before
+    elif control_index in (6, 7, 8, 11, 14):
+        assert checks["counts"]["target"] == second_before["target"] + 1
+        assert all(
+            checks["counts"][key] == second_before[key]
+            for key in ("composition", "binding", "cell")
+        )
+    assert attempts == 2 and first == saved
+    assert (original_candidate, original_enclosure) == originals
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    ):
+        assert first[flag] is False
+    assert first["consumer_status"] == "ineligible_isolated_candidate"
+
+
+@pytest.fixture(scope="module")
 def synthetic_sinc_target_checks(request, synthetic_sinc_binding_pool):
     from functools import wraps
 

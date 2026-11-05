@@ -7708,6 +7708,60 @@ data and ST/board gates remain unchanged and blocked.
 
 [sinc-target-join-review]: REVIEW.md
 
+#### NF1 Private Target-to-Cell Join Prototype (2026-11-05)
+
+The user approved §137's private join prototype, exact JX map/faults/caps/counter
+protocol and affected/default gates under five new invocation positions, retaining
+unaccepted claims. [Review §138][sinc-target-join-prototype-review] records four
+used positions and the unused fifth. Old §129/§132 allowances stay exhausted;
+§135's unused position was not borrowed. No further unchanged gate is planned.
+
+The additive private `_check_synthetic_sinc_target_cell_join` retains distinct
+join/target/composition/binding/applicable-cell limits before delegation. Its
+separate raw cap defaults to 65,536. Complete builtin candidate23/enclosure20
+guards precede fixed owned snapshots; retained original stages/root/certificate
+and independently owned target/composition inputs are never external reports.
+One reserved target call precedes at most one reserved composition call. Exact
+25/23-field reports, their work/configuration, all expected q/profile/stage/root
+and full certificate content are checked and snapshotted. Both callee inputs are
+revalidated and compared to retained complete contents after their calls.
+
+The sole final publication has 26 complete diagnostic fields; unresolved results
+have only sixteen fixed fields. Zero has separate status and exact unit/[1,1]/zero
+certificate, no cell call/work/limit claim. Series retains the eight-field cell
+certificate. Saved limits are checked after calls and before publication. Only
+JoinStop is caught; unexpected/allocation/interruption errors propagate. No
+Fraction, producer, decoder, native trig, owner/reference/log adapter or direct
+binding/cell call is added; composition's existing nested calls remain unchanged.
+
+New family wrappers activate before old target/composition fixtures, with the
+join matrix first. The old fixtures wrap them for old direct subsets; all old
+ASTs/order/caps remain exact. An observer of the existing old reservation journal
+records its injected pre-body cell MemoryError, already reserved by that old
+wrapper but not delegated to the inner family wrapper. This reconciles attempted
+entries, never invokes another helper, raises an old cap, resets a fixture or
+bypasses __wrapped__. Its scoped marker is removed at teardown; standalone old
+tests without the join fixture do not activate the observer's dependencies.
+
+All sixteen fixed JX controls use exactly two join attempts and one shared capture.
+The final full-matrix ledger is 32 joins, 57 target, 52 composition, 77 binding,
+62 pure-cell attempts. Join-induced entries are 25/20/20/14; old subsets are
+32/32/57/48. One old pure-cell reservation is pre-body MemoryError, not an original
+checker-body execution. Capture uses 12 candidate, 24 enclosure, six actual nested
+producer-cell entries and 24 snapshots. These are diagnostic attempted-entry
+ledgers, not all root-suite execution, native/resource evidence or new task data.
+
+Five flags false; native/motion/source/work unresolved and consumer ineligible.
+The join implements conditional-content plumbing, not mathematical/proof/Route C/
+totality/source/native/resource or consumer claim acceptance. Current defaults,
+wire, artifacts, quarantine and `1bb89fe` are preserved. Next authorized preparation
+is the same-helper conditional correctness/publication/work and claim/premise/
+evidence decision review, without project imports or additional runs. No runtime/
+owner/wire integration, task collection/labels, teacher/dependency or hardware
+authorization; Task 6/9 and all broader qualification gates remain blocked.
+
+[sinc-target-join-prototype-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9719,7 +9773,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §137): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §138): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9961,6 +10015,11 @@ The separately approved design-only typed target-to-cell join contract is prepar
 (§137): TJ0-TJ9/JI0-JI7, retained full stages/root/certificate, distinct limits,
 zero/no-cell separation and fixed future JX controls/order/budget proposal. No
 checker/import/run/claim adoption; prototype and affected gate renewal unapproved.
+The separately approved private typed join and affected gates are complete (§138):
+fixed sixteen JX controls, independent ownership/limits and exact full joins.
+Gate 2,245 plus known xfail/71 warnings; four of five positions used, fifth unused.
+Legacy pre-body reservation accounting repaired without old AST/cap changes;
+same-helper conditional review/decision preparation continues without new runs.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

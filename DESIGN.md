@@ -7042,6 +7042,62 @@ assets and ST/board remain blocked; no product or risk-policy choice is adopted.
 
 [sinc-composition-contract-review]: REVIEW.md
 
+#### NF1 Private Composition Prototype (2026-11-05)
+
+The user separately approved §131's offered private prototype, fixed CC0-CC15
+map/faults, affected checker/default gates and five-invocation limit. This adopts
+only that implementation/test scope, not a correspondence, cell, target, live,
+resource or consumer claim. [Review §132][sinc-composition-prototype-review]
+records executions, retained failures and evidence limits.
+
+`_check_synthetic_sinc_composition` and `_SYNTHETIC_COMPOSITION_BITS` implement
+the isolated J0-J7 boundary. Exact builtin input schemas/raw guards precede owned
+copies and checker delegation. Applicable independent caps are saved before the
+binding call, checked after each call and again before publication. One binding
+entry; series alone may enter the pure-cell checker once. All eight certificate
+fields and all supplied/binding root intervals join by typed exact equality.
+Zero retains its separate three-field unit certificate, with no cell entry and
+cell configuration/work None. No Fraction, floating/native arithmetic, producer,
+owner, query, reference, capture or consumer path is added inside composition.
+
+The fresh diagnostic report uses synthetic_sinc_composition_check_v0 /
+isolated_synthetic_sinc_composition_check_only and the §131 zero/series/unresolved
+statuses. Its three configuration fields distinguish raw-copy, binding and
+applicable cell limits; five work fields retain composition/binding/cell entries
+and separately copied binding/cell work. Ordinary stops omit the composed
+certificate; unexpected/allocation/interruption errors propagate. Five flags stay
+false, native/motion/source/work unresolved and consumer ineligible. Stable
+bindings, serialized caller ownership and faithful runtime arithmetic remain
+premises, not enforced atomicity, authority or universal successful return.
+
+Sixteen fixed controls reuse the twelve existing pool positions, exactly two
+composition requests each. Test-only accounting wrappers preserve original
+checker introspection. The renewed full matrix reserves 32 composition, 57 binding
+and 48 pure-cell attempts; those checker totals include both old 32-entry matrices
+and the injected pre-body allocation failure. The shared capture fixture uses
+12 candidates, 24 enclosures (12 nested/12 companion-direct), six nested producer
+cells and 24 snapshots. Named entry counts are not complete root-suite/helper work
+or native resources; early invocation totals without printed ledgers are identified
+as source-derived in the review. Conditional series arithmetic ledger assertions
+retain 35+7 canonical checks, 1+3 decodes, two midpoints, 8+3 comparisons and
+36+12 Fraction attempts; they do not certify GCD/runtime/copy/publication cost.
+
+All five invocation positions are spent. The source gate passes 2,213 tests plus
+the known transformer xfail and 71 existing warnings; lint, changed-file format,
+editor syntax/diagnostics, whitespace and every old module AST/order pass.
+Source/test Git blobs: `278a0bf4c424d9090e9a02cd72554c91f395be7b` /
+`952d8644261ac619db8aee3e132772bf3b0fd5b9`.
+Old helpers/caps/defaults/wire/artifacts and `1bb89fe` remain unchanged.
+
+Next authorized preparation is a same-helper conditional correctness/work review
+and concrete claim/premise/evidence brief, without imports, fixtures or new runs.
+No sixth capture/checker execution, acquisition, native/owner/adapter/consumer
+integration, proof/error/work allowance, Route C/totality/qualification or task-data
+adoption follows. CJ0-CJ7 proof/evidence/consumer acceptance remains unclosed;
+bounded interface/control/gate execution is not blanket acceptance of those gates.
+
+[sinc-composition-prototype-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9053,7 +9109,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §131): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §132): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9269,6 +9325,11 @@ The separately approved design-only exact-content composition contract is prepar
 (§131): J0-J7/CJ0-CJ7, typed joins, explicit no-cell zero path, fixed sixteen-control
 map and unaccepted five-invocation prototype/affected-gate proposal. Source/tests
 unchanged, no run or claim adoption; implementation and renewed gates need approval.
+The separately approved private prototype/affected gates are complete (§132):
+fixed sixteen controls, typed joins and no-cell zero branch; old ASTs/caps intact.
+Gate 2,213 plus known xfail/71 warnings; five new invocations spent. Same-helper
+conditional review/decision preparation continues without imports/new runs or
+claim adoption; broader source/runtime/resource/consumer evidence remains blocked.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

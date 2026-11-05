@@ -9594,6 +9594,102 @@ relative transforms, teacher assets and ST/board remain blocked and unchanged.
 
 [sinc-composition-design]: DESIGN.md
 
+## 132. NF1 Private Composition Prototype (2026-11-05)
+
+The user explicitly approved the offered §131 private prototype and affected
+gates under its proposed five-invocation limit, then requested autonomous next-part
+continuation/local checkpoints. Clean baseline `5391702`; §129's older allowance
+remains exhausted, not silently extended. [DESIGN.md §7][sinc-composition-prototype-design]
+records the separate implementation scope. No proof/allowance/claim/consumer
+adoption, source authority, native/resource or physical/task-quality qualification.
+
+Adds only `_SYNTHETIC_COMPOSITION_BITS` and the private composition helper (428
+lines after scoped formatting), plus one module fixture (61 lines) and one
+sixteen-control test (177 lines). All old top-level module ASTs and order match
+HEAD exactly. Typed fixed schemas/raw guards precede recursive fixed-schema-owned
+copies; applicable three caps are retained before binding and rechecked after
+calls/final publication. One binding attempt, at most one pure-cell attempt for
+series; zero never borrows the eight-field cell interface. Exact certificate/root
+interval joins, current complete checker profiles, distinct work/configuration,
+fresh output, local-stop-only catch and five false flags remain diagnostic only.
+No Fraction/float/native/producer/owner/query/reference/capture inside composition.
+
+Uses the exact sixteen CC0-CC15 map/faults from §131 and the unchanged twelve-slot
+capture pool. Two composition requests per control, including opt-in exceptions.
+New accounting wrappers reserve before delegation and retain failure journal entries;
+functools.wraps preserves old checker introspection. Module lifetime covers both
+renewed old matrices; no worker/refill/new input/fault variant or third request.
+Scoped malformed-return/cap/MemoryError hooks are test-only, not a runtime callback
+interface. CC14 tests allocation failure, not interruption; the latter remains an
+unexecuted propagation requirement. Independent saved input/result/work mutations
+preserve the first result and pool. Series assertions cover all §131 arithmetic
+ledger components without adding reduction or normalizing a changed certificate.
+
+**Five nonrefundable invocations.** All used `/opt/venv/bin/python -m pytest -q`:
+
+| Position | Selected Tests / Change Since Prior Run | Result |
+| --- | --- | --- |
+| 1 | `tests/test_sim.py::test_synthetic_sinc_composition[6]`; first prototype neighbor control | 1 passed, 1.50 s |
+| 2 | Composition, declared-binding and pure-cell matrices; wrappers preserve introspection/full series ledger assertions | 48 passed, 1.54 s |
+| 3 | Same three matrices after adding teardown ledger reporting | 48 passed, 1.32 s; reporting captured, totals not visible |
+| 4 | Same three matrices after capture-disabled reporting repair | 48 passed, 1.42 s; bounded totals visible |
+| 5 | Root `python -m pytest -q && ruff check . && git diff --check`, after scoped formatting | 2,213 passed, known xfail, 71 warnings, 52.26 s; lint/whitespace pass |
+
+Positions 4/5 each print 32 composition/57 binding/48 pure-cell attempts and shared
+capture 12 candidate/12 nested enclosure/12 direct enclosure/six nested producer-cell/
+24 snapshots; old binding matrix reserves 32 of those binding entries. New composition
+accounts for 25 binding and 16 pure-cell attempts in a complete matrix. The injected
+pre-body MemoryError is charged as an attempted pure-cell delegation, not a claim
+that its original body executed. These are named attempted entries, not an exhaustive
+root/helper/resource ledger. Positions 2/3 use the same control paths, but their
+unprinted counts are source-derived, not independently observed telemetry. Position
+1 source-derived two composition/two binding/two pure-cell requests; capture pool
+still complete. Thus source-derived cumulative named totals are 130/230/194 and
+capture 60/120/30/120, below approved 160/320/320 and 60/120/60/120 ceilings.
+No extra source invocation or standalone helper/snippet run occurred.
+
+**Retained failures and checks.** Initial lint passed; initial changed-file format
+check failed on new layouts. Ruff formatted only diagnostics/test files, then same
+lint/format checks passed; old ASTs/order remain exact. Invocation 3's ordinary
+successful-test capture hid the ledger; reporter alone was insufficient. The local
+repair uses pytest's capture-disabled context, validated by invocation 4's visible
+totals, not by weakening counters/assertions. No behavior test failed, no guard,
+schema, allowance, tolerance or known transformer xfail was relaxed. Earlier failed
+checks/patches remain preserved. Editor diagnostics and Pylance syntax checks pass;
+static AST confirms only the two fixed checker call sites, no prohibited arithmetic/
+imports and CompositionStop-only catch. No fresh editor-interpreter/native/GPU/
+teacher/board qualification or extra opt-in C/sanitizer/Arm gate. Existing default
+regressions ran under the explicit gate renewal; not linked firmware/task quality.
+
+The first document validator rejected unchanged Markdown hard-break spacing on
+DESIGN lines 3/5. Confirmed those lines are historical and changed-line whitespace
+passes; corrected only the validator to preserve exact pre-existing spacing while
+rejecting new whitespace defects. No document cleanup or requirement relaxation.
+
+Tested Git blobs: diagnostics `278a0bf4c424d9090e9a02cd72554c91f395be7b`, test
+`952d8644261ac619db8aee3e132772bf3b0fd5b9`; SHA256
+`9dd77fe6a481bdfd83089f23e1381062346c03eaaa51f3562d3356c1b33763c6` /
+`fadf623895368b43882a3e28b6f966fd07b74878c7c6556b6efbe8143a2b309b`.
+Document checks pass: 596 actual reference uses/local targets, sections 1-132,
+preserved prior review/Sources/design/milestones/workflow/task tail, tested source
+hashes/old ASTs, exact five-file scope, ledger/failures/editor/whitespace. Exact
+diff/staged-byte review precedes the scoped local commit. The source gate is not repeated
+for documentation-only changes. Payloads remain invocation-memory-only; no persisted
+capture/report/cache/data, historical artifact regeneration, download/dependency,
+labels/splits/training, runtime/wire/default integration, background job, cleanup
+or assistant push. `1bb89fe`, Task 6/9, native motion/goals/relative transforms,
+source completeness/authority/work, teacher assets and ST/board remain blocked.
+
+**Outcome and next part.** Approved private package complete; all five new positions
+spent, no sixth run. Continue authorized same-helper conditional correctness/work
+review and concrete claim/premise/evidence brief without imports or executions.
+Recommend isolation and no accepted claim; correct cells can still join fabricated
+consistent stages. Further execution/acquisition, target/live/native/owner/consumer
+integration or proof/error/work allowance/Route C/totality/qualification requires
+a separate explicit decision. Preparing that decision does not adopt it.
+
+[sinc-composition-prototype-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

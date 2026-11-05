@@ -118,25 +118,25 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved design-only composition contract prepared (DESIGN.md §7 /
-  REVIEW.md §131): exact typed certificate joins, separate zero/no-cell branch,
-  J0-J7/CJ0-CJ7 and fixed sixteen-control/bounded future proposal. No source run,
-  implementation or claim adoption. Source package
-  §129 is complete in `9869129`; old ASTs/caps preserved, five invocations spent.
-  Five flags remain false; no proof/allowance
-  or Route C/totality/qualification adoption.
+- Approved private composition prototype complete (DESIGN.md §7 / REVIEW.md
+  §132), following §131's separately approved contract: exact typed joins,
+  separate zero/no-cell branch and sixteen fixed controls. Five new invocations
+  spent; root gate 2,213 plus known xfail/71 warnings. Named full-matrix attempt
+  totals: 32 composition/57 binding/48 pure-cell; old ASTs/caps preserved.
+  Five flags remain false; no proof/allowance or Route C/totality/qualification
+  adoption. §129's older five-invocation allowance remains exhausted.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `5341c41`; source gate
-  is §129's 2,197 plus known xfail/71 warnings.
-  No environment/native/GPU/teacher/board requalification or candidate consumer use.
-  Next decision: bounded private composition prototype and explicit affected-gate
-  renewal; no further capture/checker run, target/live/native acquisition,
-  integration or promotion. Broader evidence/consumer decisions remain unaccepted.
+  and native-work remain unresolved. Baseline was clean at `5391702`.
+  No native/GPU/teacher/board requalification or candidate consumer use.
+  Next authorized preparation: same-helper conditional correctness/work review
+  and concrete claim/premise/evidence brief, without new imports or executions.
+  No further capture/checker run, target/live/native acquisition, integration or
+  promotion. Broader evidence/consumer decisions remain unaccepted.
   Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved source executions are exhausted; no new source run is pending.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-131 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-132 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -147,9 +147,10 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-05): 2,197 passes plus known xfail, 71 existing
-  ONNX warnings; sixteen new binding cases, lint/changed-file format/editor diagnostics
-  and legacy AST preservation pass; hostile-key and format failures preserved in §129. No
+- Last source-test gate (2026-11-05): 2,213 passes plus known xfail, 71 existing
+  ONNX warnings; sixteen new composition cases, lint/changed-file format/editor
+  syntax/diagnostics and legacy AST preservation pass. Formatting and captured
+  ledger failures/repairs are preserved in §132; older failures stay intact. No
   runtime/C source change or additional opt-in sanitizer/
   Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1194,14 +1195,13 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §131 prepares
-the approved design-only exact-content composition contract/future proposal;
-§129 source package complete
-in `9869129`. Five invocations spent, 70 checker entries; old ASTs/caps preserved, five flags
-false; `1bb89fe` stays. No proof/
-allowance/Route C, consumer/native/source/work or totality acceptance. Last gate
-is §129's 2,197 plus known xfail/71 warnings; failures preserved.
-Next decision: private prototype/affected-gate renewal with explicit budget; no new
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §132 completes
+the separately approved private exact-content composition prototype. Five new
+invocations spent; full-matrix attempts 32 composition/57 binding/48 pure-cell;
+old ASTs/caps and five false flags preserved; `1bb89fe` stays. Last gate 2,213
+plus known xfail/71 warnings; failures preserved. No proof/allowance/Route C,
+consumer/native/source/work or totality acceptance.
+Next authorized preparation: same-helper conditional review/decision brief; no new
 capture/checker run/target/live/native/owner/query/reference/log adapter/acquisition/
 integration or promotion. No evidence/consumer/qualification adoption.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
@@ -1501,6 +1501,10 @@ Approved source executions are exhausted; no background job or cleanup pending.
   decision brief prepared; source/tests unchanged, no claim acceptance or new run.
   Composition contract (REVIEW.md §131): approved design-only J0-J7/CJ0-CJ7,
   exact joins/zero branch/fixed controls; prototype and renewed gates unapproved.
+  Composition prototype (REVIEW.md §132): separately approved private helper,
+  sixteen controls and affected gates complete; 2,213 plus known xfail/71 warnings.
+  Five new invocations spent; no additional execution or claim adoption. Same-helper
+  conditional review/decision preparation continues without imports or runs.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

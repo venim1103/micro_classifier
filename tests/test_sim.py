@@ -599,6 +599,250 @@ def synthetic_sinc_binding_pool(request):
     }
 
 
+@pytest.fixture(scope="module")
+def synthetic_sinc_composition_checks(request, synthetic_sinc_binding_pool):
+    from functools import wraps
+
+    from sim import diagnostics
+
+    counts = {"composition": 0, "binding": 0, "cell": 0}
+    journal = []
+    state = {"fault": None, "counts": counts, "journal": journal}
+    originals = (
+        diagnostics._check_synthetic_sinc_declared_binding,
+        diagnostics._check_synthetic_cell_certificate,
+    )
+
+    def invoke(kind, helper, arguments, keywords):
+        assert counts[kind] < 64
+        counts[kind] += 1
+        entry = {"kind": kind, "outcome": "pending"}
+        journal.append(entry)
+        try:
+            if kind == "cell" and state["fault"] == "cell_memory":
+                raise MemoryError("injected composition allocation")
+            output = helper(*arguments, **keywords)
+            if kind == "binding" and state["fault"] == "binding_profile":
+                output.pop("profile")
+            elif kind == "binding" and state["fault"] == "cell_limit":
+                diagnostics._SYNTHETIC_CELL_CHECK_BITS = 1
+            elif kind == "cell" and state["fault"] == "cell_interval":
+                output["certificate"]["interval"] = (
+                    (1, 1),
+                    output["certificate"]["interval"][1],
+                )
+            elif kind == "cell" and state["fault"] == "cell_profile":
+                output["word"] = output["certificate"]["word"]
+        except BaseException as error:
+            entry["outcome"] = type(error).__name__
+            raise
+        entry["outcome"] = output["status"]
+        return output
+
+    @wraps(originals[0])
+    def binding(*arguments, **keywords):
+        return invoke("binding", originals[0], arguments, keywords)
+
+    @wraps(originals[1])
+    def cell(*arguments, **keywords):
+        return invoke("cell", originals[1], arguments, keywords)
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(diagnostics, "_check_synthetic_sinc_declared_binding", binding)
+        patch.setattr(diagnostics, "_check_synthetic_cell_certificate", cell)
+        try:
+            yield state
+        finally:
+            reporter = request.config.pluginmanager.getplugin("terminalreporter")
+            capture = request.config.pluginmanager.getplugin("capturemanager")
+            if reporter is not None and capture is not None:
+                with capture.global_and_fixture_disabled():
+                    reporter.write_line(
+                        f"Composition attempt ledger: {counts}; "
+                        f"capture fixture: {synthetic_sinc_binding_pool['counts']}"
+                    )
+
+
+@pytest.mark.parametrize("control_index", range(16))
+def test_synthetic_sinc_composition(
+    control_index,
+    synthetic_sinc_binding_pool,
+    synthetic_sinc_composition_checks,
+    monkeypatch,
+):
+    import ast
+    import inspect
+    from copy import deepcopy
+
+    from sim import diagnostics
+
+    pool = synthetic_sinc_binding_pool
+    checks = synthetic_sinc_composition_checks
+    mapping = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 6, 7, 8, 9)
+    word, original_candidate, original_enclosure = pool["records"][
+        mapping[control_index]
+    ]
+    originals = deepcopy((original_candidate, original_enclosure))
+    candidate, enclosure = deepcopy(originals)
+    helper = diagnostics._check_synthetic_sinc_composition
+    attempts = 0
+    checks["fault"] = None
+
+    def forbidden(*arguments, **keywords):
+        raise AssertionError("composition reached an excluded producer/native path")
+
+    for name in (
+        "_candidate_synthetic_sinc_word",
+        "_enclose_synthetic_sinc_word",
+        "_certify_synthetic_sinc_cell",
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+        "_reference_synthetic_c1_motion",
+        "_audit_synthetic_controlled_candidate",
+        "_SyntheticC1ControlledMotionOwner",
+        "_SyntheticC1SourceRecorder",
+        "prepare_synthetic_c1_relative_input",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    syntax = ast.parse(inspect.getsource(helper))
+    assert not any(
+        isinstance(node, (ast.Import, ast.ImportFrom))
+        or isinstance(node, ast.Constant)
+        and type(node.value) is float
+        for node in ast.walk(syntax)
+    )
+    assert not any(
+        isinstance(node, ast.Name)
+        and node.id in {"Fraction", "np", "math", "float", "open", "deepcopy"}
+        for node in ast.walk(syntax)
+    )
+
+    def check(expected=word, **keywords):
+        nonlocal attempts
+        assert attempts < 2 and checks["counts"]["composition"] < 32
+        attempts += 1
+        checks["counts"]["composition"] += 1
+        return helper(expected, candidate, enclosure, **keywords)
+
+    before = dict(checks["counts"])
+    first = check(synthetic_test_only=True)
+    saved = deepcopy(first)
+    zero = mapping[control_index] < 6
+    assert first["status"] == (
+        "checked_declared_zero_binding"
+        if zero
+        else "checked_declared_binding_and_cell_content"
+    ), first
+    assert first["q_word"] == word and first["sign"] == word >> 63
+    assert first["certificate"] == candidate["certificate"]
+    assert first["work"]["binding_entries"] == 1
+    assert first["work"]["cell_entries"] == (0 if zero else 1)
+    assert checks["counts"]["binding"] - before["binding"] == 1
+    assert checks["counts"]["cell"] - before["cell"] == (0 if zero else 1)
+    if zero:
+        assert (
+            first["work"]["cell"] is None
+            and first["configuration"]["cell_bit_limit"] is None
+        )
+    else:
+        assert first["work"]["binding"]["canonical_pair_checks"] == 35
+        assert first["work"]["cell"]["canonical_pair_checks"] == 7
+        assert first["work"]["binding"]["dyadic_decodes"] == 1
+        assert first["work"]["cell"]["dyadic_decodes"] == 3
+        assert first["work"]["cell"]["midpoint_recomputations"] == 2
+        assert first["work"]["binding"]["rational_comparisons"] == 8
+        assert first["work"]["cell"]["rational_comparisons"] == 3
+        assert first["work"]["binding"]["rational_constructions"] == 36
+        assert first["work"]["cell"]["rational_constructions"] == 12
+    before_second = dict(checks["counts"])
+    try:
+        if control_index in (0, 1):
+            with pytest.raises(ValueError, match="synthetic_test_only"):
+                check(synthetic_test_only=False if control_index == 0 else 1)
+        elif control_index == 14:
+            checks["fault"] = "cell_memory"
+            with pytest.raises(MemoryError, match="injected composition allocation"):
+                check(synthetic_test_only=True)
+        elif control_index == 15:
+            second = check(synthetic_test_only=True)
+            candidate["work"]["cell"]["endpoint_iterations"][0] = 99
+            second["certificate"]["word"] = 0
+            second["work"]["binding"]["canonical_pair_checks"] = 99
+            second["work"]["cell"]["dyadic_decodes"] = 99
+            assert first == saved
+        else:
+            expected = word
+            if control_index == 2:
+                candidate.pop("certificate")
+            elif control_index == 3:
+                expected = pool["records"][1][0]
+            elif control_index == 4:
+
+                class HostileKey:
+                    def __hash__(self):
+                        return hash("enclosure")
+
+                    def __eq__(self, other):
+                        raise AssertionError("unexpected composition key equality")
+
+                declared = candidate["work"].pop("enclosure")
+                candidate["work"][HostileKey()] = declared
+            elif control_index == 5:
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_COMPOSITION_BITS", 65537)
+            elif control_index == 6:
+                neighbors = candidate["certificate"]["neighbors"]
+                candidate["certificate"]["neighbors"] = (
+                    neighbors[0],
+                    (neighbors[0][0], neighbors[1][1]),
+                    neighbors[2],
+                )
+            elif control_index == 7:
+                candidate["certificate"]["boundaries"] = candidate["certificate"][
+                    "boundaries"
+                ][::-1]
+            elif control_index == 8:
+                candidate["certificate"]["lower_order"] = float(
+                    candidate["certificate"]["lower_order"]
+                )
+            elif control_index in (9, 10, 11, 13):
+                checks["fault"] = {
+                    9: "cell_interval",
+                    10: "binding_profile",
+                    11: "cell_profile",
+                    13: "cell_limit",
+                }[control_index]
+                if control_index == 13:
+                    monkeypatch.setattr(
+                        diagnostics, "_SYNTHETIC_CELL_CHECK_BITS", 65536
+                    )
+            elif control_index == 12:
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_COMPOSITION_BITS", 1)
+            rejected = check(expected, synthetic_test_only=True)
+            assert (
+                rejected["status"] == "unresolved_synthetic_sinc_composition"
+                and "certificate" not in rejected
+            )
+            if control_index in (2, 3, 4, 5, 8, 10, 12, 13):
+                assert rejected["work"]["cell_entries"] == 0
+        assert attempts == 2
+        if control_index < 6 or control_index in (8, 10, 12, 13):
+            assert checks["counts"]["cell"] == before_second["cell"]
+    finally:
+        checks["fault"] = None
+    assert first == saved and (original_candidate, original_enclosure) == originals
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    ):
+        assert first[flag] is False
+    assert first["consumer_status"] == "ineligible_isolated_candidate"
+
+
 @pytest.mark.parametrize("control_index", range(16))
 def test_synthetic_sinc_declared_binding(
     control_index, synthetic_sinc_binding_pool, monkeypatch

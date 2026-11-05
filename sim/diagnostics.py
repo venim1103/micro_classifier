@@ -41,6 +41,439 @@ _SYNTHETIC_CELL_CHECK_BITS = 65536
 _SYNTHETIC_BIND_CHECK_BITS = 65536
 
 
+_SYNTHETIC_COMPOSITION_BITS = 65536
+
+
+def _check_synthetic_sinc_composition(
+    expected_q_word, candidate_record, enclosure_record, *, synthetic_test_only=False
+):
+    """Join declared binding and exact cell contents, never target or live evidence."""
+    if synthetic_test_only is not True:
+        raise ValueError("composition requires synthetic_test_only=True")
+    zero = type(expected_q_word) is int and expected_q_word in (0, 1 << 63)
+    limits = (
+        _SYNTHETIC_COMPOSITION_BITS,
+        _SYNTHETIC_BIND_CHECK_BITS,
+        None if zero else _SYNTHETIC_CELL_CHECK_BITS,
+    )
+    flags = {
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    }
+    statuses = {
+        "native_sinc_status": "unresolved_native_sinc_evidence",
+        "motion_status": "unresolved_motion_evidence",
+        "source_status": "unresolved_source_authority",
+        "native_work_status": "unresolved_native_work_evidence",
+        "consumer_status": "ineligible_isolated_candidate",
+    }
+    work = {
+        "composition_entries": 1,
+        "binding_entries": 0,
+        "cell_entries": 0,
+        "binding": None,
+        "cell": None,
+    }
+    result = {
+        "identity": "synthetic_sinc_composition_check_v0",
+        "allowed_use": "isolated_synthetic_sinc_composition_check_only",
+        "status": "unresolved_synthetic_sinc_composition",
+        "reason": "unsupported_composition",
+        "configuration": {
+            key: value if type(value) is int and 1 <= value <= 65536 else None
+            for key, value in zip(
+                ("raw_copy_bit_limit", "binding_bit_limit", "cell_bit_limit"),
+                limits,
+                strict=True,
+            )
+        },
+        **{flag: False for flag in flags},
+        **statuses,
+        "work": work,
+    }
+    if any(
+        type(value) is not int or not 1 <= value <= 65536
+        for value in limits[:2] + (() if zero else limits[2:])
+    ):
+        result["reason"] = "unsupported_composition_configuration"
+        return result
+    limit = limits[0]
+    profile = {"arctangent_terms": 32, "sinc_terms": 8, "rational_bit_limit": 65536}
+
+    class CompositionStop(ArithmeticError):
+        pass
+
+    def require(condition):
+        if not condition:
+            raise CompositionStop("inconsistent_composition")
+
+    def live():
+        current = (
+            _SYNTHETIC_COMPOSITION_BITS,
+            _SYNTHETIC_BIND_CHECK_BITS,
+            None if zero else _SYNTHETIC_CELL_CHECK_BITS,
+        )
+        require(all(type(value) is int for value in current[:2]))
+        require(zero or type(current[2]) is int)
+        require(current == limits)
+
+    def shape(value, keys):
+        require(type(value) is dict and len(value) == len(keys))
+        require(
+            all(type(key) is str and len(key) <= 32 and key in keys for key in value)
+        )
+
+    def number(value, minimum=None, maximum=None):
+        require(type(value) is int)
+        require(minimum is None or value >= minimum)
+        require(maximum is None or value <= maximum)
+        require(value.bit_length() <= limit)
+
+    def sequence(value, length, check):
+        require(type(value) is tuple and len(value) == length)
+        for item in value:
+            check(item)
+
+    def pair(value):
+        require(type(value) is tuple and len(value) == 2)
+        number(value[0])
+        number(value[1], 1)
+
+    def interval(value):
+        sequence(value, 2, pair)
+
+    def configuration(value):
+        shape(value, profile)
+        for key in profile:
+            number(value[key], 1, 65536)
+        require(value == profile)
+
+    def enclosure_work(value):
+        shape(value, {"rational_operations", "max_result_bits"})
+        number(value["rational_operations"], 0, (1 << 64) - 1)
+        number(value["max_result_bits"], 0, 65536)
+
+    def neighbor(value):
+        require(type(value) is tuple and len(value) == 2)
+        number(value[0], 0, 0x7FEFFFFFFFFFFFFF)
+        pair(value[1])
+
+    certificate_keys = {
+        "word",
+        "interval",
+        "neighbors",
+        "boundaries",
+        "closed_ties",
+        "lower_order",
+        "upper_order",
+        "whole_interval_contained",
+    }
+
+    def certificate(value):
+        shape(value, {"word", "interval", "branch"} if zero else certificate_keys)
+        number(value["word"], 1, 0x7FEFFFFFFFFFFFFE)
+        interval(value["interval"])
+        if zero:
+            require(type(value["branch"]) is str and value["branch"] == "zero")
+            require(value["word"] == 0x3FF0000000000000)
+            require(value["interval"] == ((1, 1), (1, 1)))
+        else:
+            sequence(value["neighbors"], 3, neighbor)
+            interval(value["boundaries"])
+            for key in ("closed_ties", "whole_interval_contained"):
+                require(type(value[key]) is bool)
+            for key in ("lower_order", "upper_order"):
+                number(value[key], -1, 1)
+
+    common_keys = {
+        "allowed_use",
+        "status",
+        "reason",
+        "target",
+        "q_word",
+        "work",
+        "sign",
+        "q_ratio",
+        "configuration",
+        "interval",
+        "native_sinc_status",
+        "motion_status",
+    } | flags
+
+    def input_record(value, candidate):
+        extra = (
+            {
+                "identity",
+                "source_status",
+                "native_work_status",
+                "consumer_status",
+                "certificate",
+                "enclosure_binding",
+            }
+            if candidate
+            else {"domain_ratio", "branch", "stages"}
+        )
+        shape(value, common_keys | extra)
+        for key in common_keys | extra:
+            if key in flags:
+                require(type(value[key]) is bool and value[key] is False)
+            elif key in {
+                "identity",
+                "allowed_use",
+                "status",
+                "reason",
+                "target",
+                "branch",
+                "native_sinc_status",
+                "motion_status",
+                "source_status",
+                "native_work_status",
+                "consumer_status",
+            }:
+                require(type(value[key]) is str and len(value[key]) <= 64)
+        number(value["q_word"], 0, (1 << 64) - 1)
+        number(value["sign"], 0, 1)
+        pair(value["q_ratio"])
+        interval(value["interval"])
+        configuration(value["configuration"])
+        if candidate:
+            certificate(value["certificate"])
+            binding = value["enclosure_binding"]
+            shape(binding, {"q_word", "sign", "q_ratio"})
+            number(binding["q_word"], 0, (1 << 64) - 1)
+            number(binding["sign"], 0, 1)
+            pair(binding["q_ratio"])
+            declared = value["work"]
+            shape(
+                declared,
+                {"enclosure_entries", "cell_entries", "enclosure"}
+                | (set() if zero else {"cell"}),
+            )
+            number(declared["enclosure_entries"], 1, 1)
+            number(declared["cell_entries"], 0 if zero else 1, 0 if zero else 1)
+            enclosure_work(declared["enclosure"])
+            if not zero:
+                cell = declared["cell"]
+                shape(
+                    cell,
+                    {
+                        "search_iterations",
+                        "endpoint_iterations",
+                        "dyadic_decodes",
+                        "midpoint_constructions",
+                        "rational_comparisons",
+                        "rational_constructions",
+                        "max_result_bits",
+                    },
+                )
+                for key in cell:
+                    if key != "endpoint_iterations":
+                        number(
+                            cell[key],
+                            0,
+                            65536 if key == "max_result_bits" else (1 << 64) - 1,
+                        )
+                require(
+                    type(cell["endpoint_iterations"]) is list
+                    and len(cell["endpoint_iterations"]) == 2
+                )
+                for count in cell["endpoint_iterations"]:
+                    number(count, 0, 64)
+                require(sum(cell["endpoint_iterations"]) == cell["search_iterations"])
+        else:
+            pair(value["domain_ratio"])
+            enclosure_work(value["work"])
+            stages = value["stages"]
+            shape(
+                stages,
+                set()
+                if zero
+                else {
+                    "arctangent",
+                    "pi",
+                    "squared_argument",
+                    "coefficients",
+                    "polynomial",
+                    "remainder",
+                },
+            )
+            if not zero:
+                sequence(stages["arctangent"], 2, interval)
+                for key in ("pi", "squared_argument", "polynomial", "remainder"):
+                    interval(stages[key])
+                sequence(stages["coefficients"], 8, pair)
+
+    def owned(value):
+        if type(value) is dict:
+            return {key: owned(item) for key, item in value.items()}
+        if type(value) is tuple:
+            return tuple(owned(item) for item in value)
+        if type(value) is list:
+            return [owned(item) for item in value]
+        return value
+
+    report_keys = (
+        {"identity", "allowed_use", "status", "reason", "configuration", "work"}
+        | flags
+        | set(statuses)
+    )
+    binding_fields = {
+        "q_word",
+        "sign",
+        "q_ratio",
+        "branch",
+        "profile",
+        "interval",
+        "certificate",
+    }
+
+    def checked_report(value, binding):
+        require(type(value) is dict and len(value) in (16, 23 if binding else 17))
+        complete = len(value) != 16
+        shape(
+            value,
+            report_keys
+            | ((binding_fields if binding else {"certificate"}) if complete else set()),
+        )
+        selectors = {
+            "identity": "synthetic_sinc_declared_binding_check_v0"
+            if binding
+            else "synthetic_cell_certificate_content_check_v0",
+            "allowed_use": "isolated_synthetic_declared_binding_only"
+            if binding
+            else "isolated_synthetic_cell_content_check_only",
+            "status": (
+                "verified_declared_sinc_binding"
+                if binding
+                else "verified_synthetic_cell_content"
+            )
+            if complete
+            else (
+                "unresolved_sinc_declared_binding"
+                if binding
+                else "unresolved_synthetic_cell_content"
+            ),
+            **statuses,
+        }
+        for key, expected in selectors.items():
+            require(type(value[key]) is str and value[key] == expected)
+        require(type(value["reason"]) is str and len(value["reason"]) <= 64)
+        for flag in flags:
+            require(type(value[flag]) is bool and value[flag] is False)
+        shape(value["configuration"], {"rational_bit_limit"})
+        number(value["configuration"]["rational_bit_limit"], 1, 65536)
+        require(
+            value["configuration"]["rational_bit_limit"] == limits[1 if binding else 2]
+        )
+        inner_work = value["work"]
+        shape(
+            inner_work,
+            {
+                "canonical_pair_checks",
+                "dyadic_decodes",
+                "rational_comparisons",
+                "rational_constructions",
+                "max_result_bits",
+            }
+            | (set() if binding else {"midpoint_recomputations"}),
+        )
+        for key in inner_work:
+            number(
+                inner_work[key], 0, 65536 if key == "max_result_bits" else (1 << 64) - 1
+            )
+        if complete:
+            require(
+                value["reason"]
+                == (
+                    "declared_correspondence_only"
+                    if binding
+                    else "independent_exact_cell_content_only"
+                )
+            )
+            certificate(value["certificate"])
+            if binding:
+                number(value["q_word"], 0, (1 << 64) - 1)
+                number(value["sign"], 0, 1)
+                pair(value["q_ratio"])
+                interval(value["interval"])
+                configuration(value["profile"])
+                require(
+                    type(value["branch"]) is str
+                    and value["branch"] == ("zero" if zero else "series")
+                )
+        work["binding" if binding else "cell"] = owned(inner_work)
+        return complete
+
+    try:
+        number(expected_q_word, 0, (1 << 64) - 1)
+        require((expected_q_word >> 52) & 2047 != 2047)
+        input_record(candidate_record, True)
+        input_record(enclosure_record, False)
+        candidate, enclosure = owned(candidate_record), owned(enclosure_record)
+        original_certificate = owned(candidate["certificate"])
+        original_interval = candidate["interval"]
+        original_ratio = candidate["q_ratio"]
+        enclosure_interval = enclosure["interval"]
+        enclosure_ratio = enclosure["q_ratio"]
+        small_ratio = candidate["enclosure_binding"]["q_ratio"]
+        live()
+        work["binding_entries"] += 1
+        binding = _check_synthetic_sinc_declared_binding(
+            expected_q_word,
+            candidate,
+            enclosure,
+            synthetic_test_only=True,
+        )
+        live()
+        require(checked_report(binding, True))
+        require(
+            binding["q_word"] == expected_q_word
+            and binding["sign"] == expected_q_word >> 63
+        )
+        require(binding["q_ratio"] == original_ratio == enclosure_ratio == small_ratio)
+        require(binding["interval"] == original_interval == enclosure_interval)
+        require(binding["certificate"] == original_certificate)
+        if not zero:
+            cell_input = owned(binding["certificate"])
+            live()
+            work["cell_entries"] += 1
+            cell = _check_synthetic_cell_certificate(
+                cell_input, synthetic_test_only=True
+            )
+            live()
+            require(checked_report(cell, False))
+            certificate(cell_input)
+            certificate(binding["certificate"])
+            require(
+                original_certificate
+                == binding["certificate"]
+                == cell_input
+                == cell["certificate"]
+            )
+        live()
+        result.update(
+            status="checked_declared_zero_binding"
+            if zero
+            else "checked_declared_binding_and_cell_content",
+            reason="declared_zero_binding_only"
+            if zero
+            else "declared_binding_and_exact_cell_content_only",
+            q_word=expected_q_word,
+            sign=expected_q_word >> 63,
+            q_ratio=original_ratio,
+            branch="zero" if zero else "series",
+            profile=owned(profile),
+            interval=original_interval,
+            certificate=owned(original_certificate),
+        )
+    except CompositionStop as error:
+        result["reason"] = str(error)
+    return result
+
+
 def _check_synthetic_sinc_declared_binding(
     expected_q_word, candidate_record, enclosure_record, *, synthetic_test_only=False
 ):

@@ -130,12 +130,15 @@ from them. Historical details below are reference material, not new approvals.
   Old §129/§132 allowances remain separately exhausted. Baseline clean at `e23c866`.
   No candidate consumer, task/data/dependency/hardware or native-sinc requalification.
   Same-helper conditional correctness/work review and decision brief prepared (§136)
-  without imports/new fixtures/runs or claim adoption. Only claim/premise/evidence or
-  next design-only target-to-cell contract decisions remain. Isolation stays
-  default; native motion/goals/relative transforms, source completeness/authority/
-  work and broader evidence/consumer decisions remain unresolved.
+  without imports/new fixtures/runs or claim adoption. Separately approved design-only
+  target-to-cell contract now prepared (§137): full typed stages/root/certificate,
+  zero/no-cell, independent limits and fixed bounded future controls/order protocol.
+  Next decision: private join prototype with explicit JX map/faults/limits/order and
+  affected/default gate renewal, or isolation. No code/import/run/claim adoption.
+  Isolation stays default; native motion/goals/relative transforms, source
+  completeness/authority/work and broader evidence/consumer decisions remain unresolved.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-136 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-137 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1194,15 +1197,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §136 target-content
-conditional review and decision brief prepared; §135 prototype/gates in `3f7d299`.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §137 design-only
+typed target-to-cell join contract prepared; §135 prototype/gates in `3f7d299`.
 Four of five positions used; fifth unnecessary, no new source run pending.
 Full named matrix:
 32 target/32 composition/57 binding/48 pure-cell; old ASTs/caps and five false
 flags preserved; `1bb89fe` stays. Last gate 2,229 plus known xfail/71 warnings;
 failures preserved. No proof/allowance/Route C/native/source/work/totality or
-consumer acceptance. Only claim/premise/evidence or next design-only typed join
-contract decisions remain; no imports/runs/acquisition/integration/promotion.
+consumer acceptance. Private join prototype/fixed JX map/faults/limits/order and
+affected/default gate renewal remain unapproved; no imports/runs/acquisition/
+integration/promotion. Isolation and broader claim/evidence decisions stay unchanged.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 Old §129/§132 budgets exhausted; no background job or cleanup pending.
 
@@ -1516,6 +1520,9 @@ Old §129/§132 budgets exhausted; no background job or cleanup pending.
   Target review (REVIEW.md §136): TC0-TC9 conditional arguments, phase/branch ledgers
   and concrete claim/premise/evidence brief prepared; no source/run/claim adoption.
   Only approval-blocked claim/evidence or design-only typed join scope remains.
+  Typed join contract (REVIEW.md §137): separately approved design-only TJ0-TJ9/
+  JI0-JI7, full stage/root/certificate and zero separation; bounded fixed future
+  JX/order/counter proposal prepared. No code/run/claim adoption or gate renewal.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

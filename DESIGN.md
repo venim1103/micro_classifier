@@ -7525,6 +7525,189 @@ explicit claim/premise/evidence or next design-only scope decisions remain block
 
 [sinc-target-paper-review]: REVIEW.md
 
+#### NF1 Target-to-Cell Typed Join Contract (2026-11-05)
+
+The user explicitly approved this next **design-only** contract after §136,
+keeping claims unaccepted and authorizing no code or runs. [Review §137][sinc-target-join-review]
+records the actual clean `320ef85` baseline and unchanged tested source. This is
+a candidate interface/guard/publication/budget contract, not an implementation,
+execution renewal, mathematical claim, Route C adoption or consumer qualification.
+
+**Boundary and Conditional Meaning.** Proposed additive private helper
+`_check_synthetic_sinc_target_cell_join(expected_q_word, candidate_record,
+enclosure_record, *, synthetic_test_only=False)` and separate
+`_SYNTHETIC_TARGET_JOIN_BITS`, default 65,536. Inputs are the complete existing
+23-field candidate and 20-field enclosure, not external target/composition reports,
+word/status/digest attestations, an owner, log, callback or oracle. Retain exact
+expected finite u64 q, sign and typed complete records. Domain and target remain
+real-pi sinc at stored q, |q|<=1/64. Both zeros stay separate; nonzero subnormals
+cannot enter the zero branch. Old helpers, ASTs/order/caps, defaults, wire and
+artifacts must remain unchanged; current composition accepts no target report.
+
+The candidate certificate alone is not target evidence, and the composition report
+has no stages. The join must retain the original complete enclosure stages/root
+and candidate certificate before either call. Proposed order: one target-content
+call, then at most one existing composition call. Each gets independent owned
+copies of the retained records; neither receives a previous callee's mutable input
+or an external report. The join calls no producer, decoder, Fraction/native trig,
+reference, owner or adapter, and no binding/cell checker directly. Composition
+retains its existing single binding and series-only cell calls.
+
+Under separately accepted TC/CO/binding/cell/math/runtime/ownership premises,
+successful series could connect F(q) in I to the exact certificate's whole-interval
+RN64 cell. Zero could connect F(0)=1 to the separately checked unit word and
+declared zero binding, without claiming a pure-cell check. Neither implication is
+adopted here. No installed native sinc parity, source authority, model/task quality,
+resource/totality or consumer benefit follows from a diagnostic join profile.
+
+| Boundary | Proposed Check / Join | Stop or Unaccepted Premise |
+| --- | --- | --- |
+| TJ0 / entry and retained limits | Literal opt-in; exact finite u64 expected q and complete builtin input profiles. Snapshot distinct join-raw, target, composition-raw, binding and applicable cell limits before any call; all active values exact nonboolean ints in 1..65,536. | Invalid/increased/malformed limits stop without delegation. Zero cell limit is None/not read, not a checked zero or borrowed series limit. |
+| TJ1 / guarded ownership | Validate every key/type/length/raw integer/string selector, work/certificate/stage container before copying or equality. Retain owned candidate/enclosure, original certificate, interval, stages, ratio/domain/branch/profile and expected word/sign. Build separate target and composition input copies. | No unrestricted deepcopy, caller hooks, shared mutable callee inputs or concurrent-caller snapshot guarantee. Serialized ownership/builtin behavior remain premises. |
+| TJ2 / target call | Reserve one target entry before direct delegation to the existing target-content checker. Recheck all active limits after return. Validate exact current 25-field success or 16-field unresolved profile before lookup/copy/join; unresolved stops before composition. | Target's conditional math/trusted-base proof and selected loaded-call identity remain unaccepted. Fixed report shape or counters are not authenticity. |
+| TJ3 / target correspondence | Exact expected q/sign/ratio/domain/target/branch/profile/root interval/all six series stages, or empty zero stages, match retained enclosure. Revalidate target-input schema and compare its complete owned contents to the retained enclosure after the call. | Changed stages with unchanged interval/word/status reject. Persistent callee-input mutation rejects; temporary mutation/restoration or faithful execution is not certified. |
+| TJ4 / composition call | Only after complete target correspondence reserve one composition entry. Use independent candidate/enclosure copies. Recheck all active limits; validate current 23-field success or 16-field unresolved composition profile and nested configuration/work. | Composition's declared binding and independent cell argument remain conditional. No direct extra binding/cell call or target oracle. |
+| TJ5 / full typed series join | Retained input certificate, composition-input certificate and returned composition certificate agree across all eight fields. Root interval equals retained enclosure, target and composition intervals, and certificate interval. Typed q/sign/ratio/branch/32-8 profile agree throughout. | Word/status/hash-only equality, normalized numeric aliases, partial certificates, stale reports and a different interval with the same word reject. |
+| TJ6 / zero and post-call inputs | Zero certificate has exactly word/interval/branch, word 0x3FF0000000000000, interval [1,1], branch zero. Composition has binding entry one, cell entry zero, cell work None. Revalidate both composition-input schemas and compare complete contents to retained records. | No eight-field pure-cell fiction, cell-cap read, midpoint/neighbor claim or nonzero-to-zero substitution. Mutated work/stages/inputs cannot bypass the retained joins. |
+| TJ7 / work and limits | Target and composition attempt/work remain distinct, nested binding/cell work retained separately. Saved limits rechecked before/after each call and immediately before publication; no raising, summing, retry, refund or hidden refinement. | Reported logical work is not independently measured runtime cost; setup/guard/copy/GCD/allocation/caller work and transient mutation stay outside counters. |
+| TJ8 / publication and errors | Publish complete fresh owned target/stage/certificate evidence only after both successful profiles, all exact joins and final limit checks. Ordinary private join stops omit all evidence; unexpected/allocation/interruption errors propagate. | No universal return, rollback or enforced atomic update. Successful allocation and stable selected functions/ownership remain premises. |
+| TJ9 / claim separation | Five false flags and native/motion/source/work unresolved, consumer ineligible; no target-to-cell adoption by this design. Zero and series have separately named diagnostic statuses. | Mathematical/proof/CT/SR/native/source/work/resource/totality/Route C/consumer decisions remain separate; Task 6/9 and hardware/data gates stay blocked. |
+
+**Exact Report Profiles.** Target success is currently 25 fields: sixteen fixed
+diagnostic keys plus q_word/sign/q_ratio/target/domain_ratio/branch/profile/interval/
+stages. Its reason is independent_declared_stage_content_only; zero and series
+statuses are checked_declared_mathematical_zero_content and
+checked_declared_mathematical_sinc_content. Work has seven exact fields and
+configuration five. Require the saved target bit limit and fixed 256/512/512/256
+ceilings; typed success counts retain §136's zero/series ledger. max_result_bits
+is bounded by that saved cap, not asserted equal to a sampled maximum.
+
+Composition success is currently 23 fields: the same sixteen diagnostic keys plus
+q_word/sign/q_ratio/branch/profile/interval/certificate, no stages/target/domain.
+Its status/reason is checked_declared_zero_binding/declared_zero_binding_only or
+checked_declared_binding_and_cell_content/declared_binding_and_exact_cell_content_only.
+Configuration has raw_copy_bit_limit/binding_bit_limit/cell_bit_limit, exactly
+matching the saved applicable limits. Work has composition_entries/binding_entries/
+cell_entries/binding/cell; success has 1/1/0 or 1/1/1 entries. Binding work is five
+fields, series cell work six; zero cell is exactly None. Preserve their existing
+canonical/decode/comparison/construction/midpoint schemas and typed success ledgers.
+No producer cell-work schema or fabricated root word/interval may be substituted.
+
+All returned records require builtin exact key sets/types, selectors, false flags,
+unresolved/ineligible statuses and guarded integer/rational/container leaves before
+equality or owned traversal, including revalidated post-call input records. A
+callee success is necessary, not sufficient; original all-stage/root/certificate
+content correspondence is the join's obligation. An unresolved callee may contribute
+owned attempted-work metadata but no partial target/certificate/stage evidence.
+
+Proposed new fixed root has sixteen diagnostic fields: identity/allowed_use/status/
+reason/configuration/work, five false flags and five unresolved/ineligible statuses.
+Success adds ten: q_word/sign/q_ratio/target/domain_ratio/branch/profile/interval/
+stages/certificate (26 total), never a root word or decision. Proposed identity
+synthetic_sinc_target_cell_join_v0, allowed use
+isolated_synthetic_sinc_target_cell_join_only. Proposed series status
+checked_conditional_sinc_target_cell_content; zero
+checked_conditional_zero_target_binding; otherwise
+unresolved_synthetic_sinc_target_cell_join. These are proposed diagnostic names,
+not accepted mathematical or native rounding claims.
+
+Configuration has five keys: raw_copy_bit_limit/target_bit_limit/
+composition_bit_limit/binding_bit_limit/cell_bit_limit. Work has five keys:
+join_entries/target_entries/composition_entries/target/composition. A complete
+success has entries 1/1/1, with fresh target work and existing composition work
+including its binding/cell work. The raw join cap cannot relax any callee limit;
+each active cap is snapshotted and rechecked independently. Zero cell configuration
+is None. Counters reserve before delegation, including failed attempts, with no
+refund or counters masquerading as native/trusted-base/resource evidence.
+
+| Gate | Required Separate Review / Decision |
+| --- | --- |
+| JI0 | Exact TJ/input/25-target/23-composition/26-join/zero profiles and post-call raw guards. |
+| JI1 | Owned immutable evidence and separate callee copies; precise typed full-stage/root/eight-field or zero certificate join. |
+| JI2 | Conditional TC/CO/binding/cell/math/runtime premises and F(q)-to-cell implication; no native or source authority claim. |
+| JI3 | Independent limits, reserved delegation, nested work/profile guards and publication/exception argument. |
+| JI4 | Fixed JX controls/map/faults, fixture ordering/counter protocol and explicit affected/default gate renewal. |
+| JI5 | Preserve old source/test ASTs/caps/defaults/wire/artifacts and all false/unresolved/ineligible flags. |
+| JI6 | Shared canonicalization/builtin/selected binding/ownership/math/evidence and requalification decisions. |
+| JI7 | Explicit narrow claim acceptance and separate consumer decision, if ever sought; no implicit Route C/resource/totality adoption. |
+
+**Fixed Future Prototype Proposal, Not Approval.** Reuse the complete existing
+twelve-slot capture and the exact map `(0,1,2,3,4,5,6,7,8,9,10,11,6,7,8,9)`.
+Sixteen join controls, exactly two join attempts each: ordinary plus one fixed
+second request; no hidden third attempt or variant. Old direct target/composition/
+binding/pure-cell matrices and the default root gate require explicit renewal.
+
+| Control / Slot | Fixed Second Request / Required Outcome |
+| --- | --- |
+| JX0 / 0 | False opt-in raises before any target/composition call. |
+| JX1 / 1 | Integer opt-in raises; ordinary negative zero retains sign, no cell attempt. |
+| JX2 / 2 | Remove enclosure stages key; raw-schema rejection before either call. |
+| JX3 / 3 | Flip expected zero sign bit; reject equal-ratio/opposite-word input before delegation. |
+| JX4 / 4 | Replace candidate-work enclosure key with a same-hash hostile key; reject before equality hook/delegation. |
+| JX5 / 5 | Set join-raw limit to 65,537; configuration rejection without changing old limits. |
+| JX6 / 6 | Target return hook changes only pi lower stage endpoint to (3,1); retain root interval/status, reject before composition. |
+| JX7 / 7 | Target return hook adds certificate key to its 25-field report; schema rejection before composition. |
+| JX8 / 8 | Target hook mutates its owned input pi after successful target calculation, returns unchanged success; post-call input join rejects before composition. |
+| JX9 / 9 | Composition return hook changes certificate lower boundary to (1,1), retaining word/root interval; full eight-field join rejects. |
+| JX10 / 10 | Composition return hook adds stages key to its 23-field report; schema rejection. |
+| JX11 / 11 | Target return hook changes saved binding cap to one; reject after target and before composition. |
+| JX12 / 6 | Set join-raw bit limit to one; guarded rejection without refinement/delegation. |
+| JX13 / 7 | Composition return hook changes saved target cap to one; post-call/final live-limit rejection. |
+| JX14 / 8 | Scoped target-delegation hook raises MemoryError before original target body; reserve attempt, propagate, no composition/evidence. |
+| JX15 / 9 | Repeat, then independent input/output/stage/certificate/nested-work mutations preserve saved first result and pool; no third request. |
+
+Hooks are bounded test-only controls, not a runtime callback/report interface.
+JX14 tests attempted target delegation/MemoryError, not original target-body work,
+interruption or transaction guarantees. No producer/capture/cell-producer interception
+inside the join, extra q/scenes, new truth or persistent payloads.
+
+Future new counting fixture must own call-family wrappers before the old target
+and composition fixtures activate, and place the new join matrix before their
+direct matrices in each named invocation and default collection. Reuse one shared
+capture; reserve before every actual target/composition/binding/pure-cell delegation.
+New outer totals distinguish join-induced and old direct entries. Keep the old
+target fixture's 32 direct-entry and old binding/cell wrappers' 64-entry caps
+unchanged. Install new family wrappers first; the old fixtures then wrap those
+wrappers for their old direct subsets. The first join matrix runs before those
+old subset wrappers activate. No bypass through __wrapped__, uncounted helper,
+refill, fixture reset, worker or ordering after old
+direct fixtures are already active. If ordering/complete pool/counter ownership
+cannot be established, abort; revise the proposal explicitly rather than raise a cap.
+
+Per complete invocation proposed named ceilings: 32 join/64 target/64 composition/
+96 binding/96 pure-cell. Existing direct target/composition account for 32 each;
+join nested calls account for at most 32 each. Binding/cell include all nested and
+direct entries, not just successful bodies. Capture remains 12 candidate/24
+enclosure/12 nested producer-cell/24 snapshots. At most five invocation positions,
+including failed probes/repairs/root gate: 160 join/320 target/320 composition/
+480 binding/480 pure-cell, capture 60/120/60/120. These ceilings are an unapproved
+counter proposal, not observed telemetry, success headroom or resource qualification.
+Existing default controls are separately renewed historical gates, not an exhaustive
+whole-root/native-work ledger. Failure/cancellation spends entries/positions without
+replacement; payloads remain invocation-memory-only.
+
+For a complete successful series join, target logical work is 24 canonical checks/
+1 decode/147 power steps/230 constructions/131 rational operations/57 comparisons;
+composition remains 42 canonical checks/4 decodes/2 midpoints/48 constructions/
+11 comparisons across binding/cell, with one binding/one cell entry. Zero target
+is 4/1/0/5/0/2; composition is ten canonical checks/one decode/eleven constructions/
+two comparisons and one binding/no cell. Do not replace either nested ledger by
+the other or add their bit limits. The join's own raw validation/copy/equality/
+publication and all runtime/allocator work are separate, not zero. No Fraction/
+native arithmetic is added by the proposed join and no complete resource bound
+is inferred from these conditional logical counts or future entry ceilings.
+
+Next decision: approve/modify this bounded private join prototype with the exact
+JX map/faults/limits/fixture-order protocol and affected/default gate renewal, or
+retain design-only isolation. No implementation/import/run/budget renewal or
+claim/premise/proof/allowance/Route C/totality/consumer adoption follows here.
+Old §129/§132 budgets remain exhausted and the unused §135 fifth position is not
+spent or transferred. Task 6/9, native motion/goals/relative transforms, source
+completeness/authority/work, physical/task evidence, teacher assets, dependency/
+data and ST/board gates remain unchanged and blocked.
+
+[sinc-target-join-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9536,7 +9719,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §136): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §137): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9774,6 +9957,10 @@ That conditional target-content review and concrete decision brief are prepared
 (§136): TC0-TC9, exact phase/branch ledgers and explicit shared-premise/evidence
 limits. Source/tests and the §135 gate are unchanged; no new run or claim adoption.
 Retain isolation; claim acceptance or a next design-only join contract needs decision.
+The separately approved design-only typed target-to-cell join contract is prepared
+(§137): TJ0-TJ9/JI0-JI7, retained full stages/root/certificate, distinct limits,
+zero/no-cell separation and fixed future JX controls/order/budget proposal. No
+checker/import/run/claim adoption; prototype and affected gate renewal unapproved.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

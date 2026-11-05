@@ -10066,6 +10066,111 @@ next design-only scope decisions remain; recommend isolation meanwhile.
 
 [sinc-target-paper-design]: DESIGN.md
 
+## 137. NF1 Target-to-Cell Typed Join Contract (2026-11-05)
+
+The user explicitly answered yes to the offered next design-only target-to-cell
+join contract, keeping claims unaccepted and authorizing no code or runs, then
+requested autonomous continuation and periodic local commits. Actual baseline
+is clean `320ef85`. The editor reported possible test-file changes; current
+status/diff, nearby file contents and Git object identity were checked. No worktree
+diff exists and tests still match the tested §135 blob; nothing was overwritten.
+[DESIGN.md §7][sinc-target-join-design] holds the proposed contract and future budget.
+
+**Local hypothesis and check.** The target checker supplies complete stage evidence;
+the composition checker returns a certificate but no stages. A prospective join
+can conditionally connect them only by retaining original full enclosure/candidate
+contents, passing independent owned copies and comparing typed expected q/profile/
+all stages/root interval/certificate. Word/status/digest-only equality cannot.
+The cheap disconfirming check is actual source AST/output-field/delegation/zero
+profile correspondence and the nearby fixture's counter ownership, not project
+imports, another capture, numerical/native oracle or a producer/checker run.
+
+Source inspection confirms target success 25 fields including target/domain/stages,
+composition success 23 without those three fields but with certificate; both have
+16 fixed diagnostic fields on unresolved results. Target has no direct checker
+call. Composition has one binding and series-only cell path; zero certificate is
+three fields, series eight. Existing target fixture caps direct entries at 32;
+composition fixture's binding/cell wrappers cap 64. Old source/test AST/caps remain
+unmodified. The new design's future wrapper/order protocol must account for nested
+join entries without charging them against those old direct-subset counters.
+
+Proposed additive `_check_synthetic_sinc_target_cell_join` and separate raw bit
+limit, neither implemented. Complete candidate23/enclosure20 plus retained expected
+finite word and literal opt-in; no external reports, owner/log/callback/oracle input.
+TJ0-TJ9 prescribe five independently retained limits before either call; target
+first, at most one existing composition next; reserve before delegation. Guard raw
+schemas before copy/lookup/equality, independently owned callee inputs, revalidated
+post-call input schemas and exact complete-content comparisons. All target stages/
+domain/target/profile/root join retained enclosure; all eight certificate fields
+join retained candidate/composition input/output and that root interval. Zero
+preserves signed words, exact unit/[1,1]/zero certificate, binding one/cell zero/
+cell work None/cell cap None. No rational/native arithmetic or extra checker in join.
+
+Exact current target work/configuration seven/five fields and composition work/
+configuration five/three, including nested binding five/series cell six work fields.
+New root proposes 16 unresolved/26 success keys, adding ten q/sign/ratio/target/
+domain/branch/profile/interval/stage/certificate keys, no root word or decision.
+New work five, configuration five; separate zero/series diagnostic statuses.
+Persistent input/limit changes reject; temporary mutation/restoration and runtime
+ownership/loaded identity are not certified. Only ordinary private stops would
+be caught; unexpected/MemoryError/interruption propagate, not universal rollback.
+Five flags false, native/motion/source/work unresolved and consumer ineligible.
+
+Sixteen future JX controls retain map `(0,1,2,3,4,5,6,7,8,9,10,11,6,7,8,9)` and
+exactly two join attempts each. Fixed opt-in/raw-key/zero/limit faults; changed
+target stage with unchanged interval, extra target certificate, mutated callee
+input; altered composition boundary with unchanged word/interval, extra stages;
+observed cross-callee limit changes; attempted target-delegation MemoryError and
+independent input/result/stage/certificate/nested-work copy isolation. No third
+request or additional fault variants. JX14 is a reserved attempted delegation,
+not original target-body/constructor work, interruption or atomicity evidence.
+
+Unapproved future fixture protocol: new call-family wrappers activate before old
+direct target/composition fixtures, new join matrix first in named/root order,
+one complete shared capture and no old-cap modification/__wrapped__ bypass/refill/
+worker/reset. Per invocation proposed join32/target64/composition64/binding96/
+pure-cell96; capture12/24/12/24. At most five positions including failures/root:
+join160/target320/composition320/binding480/pure-cell480; capture60/120/60/120.
+Old direct matrices/root gate require explicit renewal, not a borrowed allowance.
+Counter ownership/order failure aborts pending an explicit revised proposal.
+These are proposed bounds, not telemetry, body counts or resource qualification.
+
+JI0-JI7 separate exact profiles/typed joins, conditional math/runtime/ownership,
+work/publication/errors, fixed controls/budget, preservation, evidence and explicit
+claim/consumer decisions. No gate is adopted by design preparation. Native sinc,
+source completeness/authority, native work, proof/error/resource allowances,
+Route C/totality and qualification remain open. Existing helper contracts and
+`1bb89fe` stay; no student-visible input/default/wire/artifact change.
+
+Tested blobs unchanged: diagnostics `7e03114701ac79ed17452fa611d3e1938578cd65`,
+tests `59d55a9ff0b50d4fec015df0958e2c680a4f9145`. Last source gate remains §135's
+2,229 passes/known xfail/71 warnings, not rerun; fourth position was the gate,
+fifth unused and not spent/transferred. §129/§132 budgets stay separately exhausted.
+No project import/fixture/helper/native/model run, source/test edit, acquisition,
+episode/log/data/label/split, teacher/training/dependency/hardware, integration or
+claim adoption. No background job, cleanup or assistant push. Payloads remain
+unchanged and quarantined. Task 6/9, native motion/goals/relative transforms,
+source completeness/authority/work, teacher assets and ST/board remain blocked.
+
+The first contract edit is followed immediately by focused text/AST/profile/
+control-map/budget/reference/local-target/history/source-identity/whitespace
+checks: actual target25/composition23 fields, ten TJ/eight JI/sixteen JX and exact
+map/ceilings, 606 reference uses/local targets, preserved history/Sources/design/
+milestones and unchanged tested blobs all pass. A follow-up patch failed on a
+capitalization mismatch in an unchanged review context; targeted checks confirmed
+the design hunk did not land. Retried against actual text, clarifying the new-first/
+old-subset wrapper order and separate nested logical ledgers. No source run,
+guard/cap/assertion relaxation or counter refund occurred. Focused validation of
+the clarification passes, including the unchanged old 32-entry cap, nested ledgers,
+fixed controls/ceilings, 606 references/targets and exact source/history preservation.
+Editor diagnostics and scoped diff review pass; staged-byte checks precede commit.
+Next decision is approval/modification of the bounded private join prototype,
+exact fixed JX map/faults/limits/order protocol and affected/default gates, or
+design-only isolation.
+No further implementation/execution or claim acceptance follows automatically.
+
+[sinc-target-join-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

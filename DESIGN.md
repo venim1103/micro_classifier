@@ -7992,6 +7992,38 @@ Existing task/data/teacher/dependency/hardware gates and §138's source gate sta
 
 [sinc-binding-identity-review]: REVIEW.md
 
+#### NF1 Historical Code-Object Digest Comparison Boundary (2026-11-05)
+
+Following §141, the user separately approved one compile-only process and four
+comparisons against its historical code-object digests. The scope is compilation
+of the unchanged, pinned diagnostics bytes, not execution of that module or a new
+live-binding snapshot. [Review §142][sinc-compile-comparison-review] records the
+settings and all four unequal digests; the one-process approval is spent.
+
+The local correspondence hypothesis was that compiling the same source bytes
+with the recorded filename under the same reported Python version would reproduce
+the four historical serializations. It did not under this attempt's explicit
+flags=0, dont_inherit=True and optimize=0 settings. Source/version/filename/first-line
+agreement does not substitute for digest equality; no digest-match correspondence
+claim is available from this result. A completed comparison is not a passed match.
+
+Unequal marshalled-code-object digests alone do not identify a semantic difference,
+wrong source, substitution, corruption or a specific serialization cause. §141 did
+not record the full compilation/load/serialization conditions needed to establish
+cross-process comparability. No historical code-object bytes or structural fields
+were reconstructed, and no new live object was imported or compared. A hypothesis
+about serialization, interning, compiler conditions or loading remains unverified.
+
+Any disambiguation must have a separately approved scope, comparison representation,
+attempt budget and explicit outcome/stop conditions. It must distinguish structural
+code comparison from runtime authority and mathematical correctness; neither can be
+adopted through a changed digest method or a successful metadata comparison alone.
+No automatic retry, normalization, source change, renewed source gate or claim
+adoption follows. All fifteen verdicts remain undecided, the five flags false,
+consumer ineligible and broader native/source/work/task/data/hardware gates unchanged.
+
+[sinc-compile-comparison-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -10003,7 +10035,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §141): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §142): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -10265,6 +10297,11 @@ probe plus one separately approved corrective process; four checker/Fraction
 bindings and source/code-object metadata recorded, no checker or fixture calls.
 Process-local observations do not close U4; all fifteen verdicts undecided, no
 claim adoption or source-gate renewal. Further evidence/import work needs decision.
+The separately approved compile-only comparison is complete (§142): one process,
+one whole-module compilation and four historical code-digest comparisons, all
+unequal. Source/version/filename/first-line metadata agree; cause and semantic
+correspondence remain unresolved. No project import/execution or retry; approval
+spent. All verdicts/gates unchanged; disambiguation requires a new explicit scope.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

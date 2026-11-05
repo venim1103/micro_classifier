@@ -138,12 +138,15 @@ from them. Historical details below are reference material, not new approvals.
   identity audit complete (§141): failed metaclass probe and one approved corrective
   process; four checker/Fraction bindings and source/code-object metadata recorded.
   Both identity attempts spent; no checker/fixture calls or source-gate renewal.
-  All verdicts still undecided. Only named premise/evidence/claim or separately
-  authorized concrete evidence-direction decisions remain.
+  Separately approved compile-only comparison complete (§142): one process/compile,
+  four historical code digests unequal despite matching source/version/filename/
+  first lines. Cause/semantic correspondence unresolved; no project import/execution
+  or retry, approval spent. All verdicts still undecided. Only named evidence/claim
+  or separately authorized disambiguation scope/representation/budget decisions remain.
   Isolation default; native motion/goals/relative transforms, source completeness/
   authority/work, task/data/dependency/hardware and broader evidence remain blocked.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-141 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-142 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1202,8 +1205,8 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §141 bounded U4
-identity audit complete; §140 worksheet / §139 conditional review/brief prepared;
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §142 compile-only
+comparison complete; §141 U4 identity audit / §140 worksheet / §139 review prepared;
 §138 private prototype/gates in `8bf26d3`.
 Four of five positions used; fifth unnecessary, no new source run pending.
 Full named matrix: 32 joins/57 target/52 composition/77 binding/62 cell;
@@ -1211,9 +1214,12 @@ old ASTs/caps and five false flags preserved; `1bb89fe` stays. Gate 2,245 plus
 known xfail/71 warnings; position-two reservation gap/repair preserved. No proof/
 allowance/Route C/native/source/work/totality/consumer acceptance. Same-helper
 review/worksheet complete; separate U4 import/metadata audit used two approved
-processes, including failed metaclass probe. No checker/fixture/source-gate run or
-claim adoption. Five upstream families and JO0-JO9, all verdicts undecided. Only premise/
-evidence/claim or separately authorized concrete evidence-direction decisions remain;
+processes, including failed metaclass probe. Separate compile-only process used
+one compilation/four comparisons, all historical digests unequal; source/version/
+filename/first lines match, cause/semantic correspondence unresolved. No project
+import/execution in that comparison, no retry, all three process approvals spent.
+No checker/fixture/source-gate run or claim adoption. All fifteen verdicts undecided.
+Only named evidence/claim or separately approved disambiguation scope/budget remains;
 isolation default.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/cleanup pending.
@@ -1543,6 +1549,9 @@ Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/clean
   U4 identity audit (REVIEW.md §141): two individually approved import/metadata
   attempts spent; metaclass probe failure retained, corrective identity snapshot
   complete. No checker/fixture/source gate or claim adoption; U4 remains undecided.
+  Compile-only comparison (REVIEW.md §142): separately approved one process/compile,
+  four historical code digests unequal; cause/semantic correspondence unresolved.
+  No project import/execution/retry/claim adoption; scope spent, disambiguation blocked.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

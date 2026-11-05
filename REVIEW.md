@@ -10545,6 +10545,94 @@ explicit named premise/evidence/claim or separately approved concrete evidence w
 
 [sinc-binding-identity-design]: DESIGN.md
 
+## 142. Bounded Compile-Only Historical Digest Comparison (2026-11-05)
+
+After §141's checkpoint, the user requested autonomous continuation. The worktree
+was confirmed clean at `d933412`, and the current handoff had no authorized next
+runtime action. The user then explicitly selected **Approve the one compile-only
+comparison**: one CPU-only `/opt/venv/bin/python -I -S` process, one compilation of
+the pinned source bytes and four comparisons with §141's recorded code digests.
+No project imports/execution, checker/Fraction calls, fixtures, tests, downloads,
+installed-source inspection, claim adoption or automatic retry. Source/version
+drift stops the attempt; a digest mismatch is not automatically a semantic defect.
+Existing-document recording, focused validation and a local commit were included.
+[DESIGN.md §7][sinc-compile-comparison-design] records this evidence boundary.
+
+**Hypothesis and discriminating check.** The same source bytes, reported Python
+version and source filename might reproduce the four historical code-object
+serializations under explicit Python compilation settings. Compare exactly those
+four digests, retaining mismatches rather than changing the method or rerunning.
+The hypothesis was falsified for the settings and serialized objects observed here;
+semantic correspondence and the reason for the mismatches remain unresolved.
+
+**One approved process, spent; no retry.** The terminal's isolated standard-library
+snippet completed with exit0, status comparison_complete, process72277. It read
+271,168 source bytes and verified SHA256
+`be7f30a1559ef0c49d3992c923788c12a1c9e9d56718a44c1190837649aa5057`
+and the exact §141 sys.version before the one compile attempt. The executable was
+`/opt/venv/bin/python`, resolving to `/usr/bin/python3.12`; reported CPython,
+cache tag cpython-312, version `3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]`,
+marshal version4. These are reported identities/settings, not build/FP provenance.
+
+Compilation used the full filename `/workspaces/micro_classifier/sim/diagnostics.py`,
+mode exec, flags0, dont_inherit=True, optimize0. Mode exec denotes compilation mode:
+the resulting module code was never executed. Four unique top-level CodeType
+constants were selected by the fixed §141 names; each filename/first line matched
+its recorded value, and each reported qualname equalled its name and code_flags3.
+The one whole-module compilation creates other code objects too; four selected
+comparisons are not a count of all compiler-internal work or objects.
+
+Process flags were debug0, inspect0, interactive0, optimize0, dont_write_bytecode0,
+no_user_site1, no_site1, ignore_environment1, verbose0, bytes_warning0, quiet0,
+hash_randomization1, isolated1, dev_modeFalse, utf8_mode0,
+warn_default_encoding0, safe_pathTrue, int_max_str_digits4300. The snippet set
+sys.dont_write_bytecode=True after its standard-library imports; the immutable
+process-flags value0 is not that mutable setting. No project import or pyc export
+was performed; no all-transitive standard-library initialization/work claim.
+
+| Binding | First Line | Historical §141 SHA256 | Compile-Only SHA256 | Equal |
+| --- | --- | --- | --- | --- |
+| _check_synthetic_sinc_target_content | 669 | 9c3f49382d77f7c71045b799b404edd82f1bb83d5be054b65f732918a325984b | 9332a86918bd4b8fd0f83d7141a70233bdbea97f13402a76efa8a39ebbfdd60f | false |
+| _check_synthetic_sinc_composition | 1057 | 33e2ef61c8a5f4736d5edfaa76686df810a25ef95b23cd42560eff1a9e570db2 | 308e9c939ea66c2f009ed4a854bb17609544dafd9ca4fe8468430aee53a73cea | false |
+| _check_synthetic_sinc_declared_binding | 1487 | 798ad9cac9b249824e4297e8156d8cbf0511b2dbfd76fc2b570b5f2aac5fcfdd | fcb852c93fed84640842a8fd38b45ac4b07350147861fda1eb6b0323296878bd | false |
+| _check_synthetic_cell_certificate | 1873 | 290f24a2ebc7b1a03047726d2db592ab4fde591476f16a3317ee8b2d13318397 | dae89b7a9c606231df7f2a8833ea763923a202490edcf495c04166799b61ea30 | false |
+
+Matching digest count0 of4. All four new hashes are SHA256(marshal.dumps(code))
+with marshal's default serialization version; none equals its historical digest.
+The source hash matched a later read. No sim or sim.* module was present at the
+two namespace checks. The script did not import or execute project code or invoke
+any checker, Fraction constructor, fixture, owner, question, native comparison,
+episode, model/teacher/GPU, source acquisition or test gate. No fresh live object
+or historical serialized bytes/structural fields were inspected.
+
+Exit0 means the bounded comparison completed, not that source-to-recorded-code
+correspondence passed. §141's interpreter/load/compiler/interning/serialization
+conditions were not fully recorded; cross-process comparability is not established.
+Serialization sensitivity is a possible explanation, not an observed cause. These
+unequal digests alone do not prove semantic differences, wrong source, substitution
+or corruption. No method normalization, historical-data rewriting or repair run.
+
+Result retained in normal terminal/session history and this existing record; no
+persistent probe, raw report/cache artifact or cleanup requested. The source bytes
+and tested files remain unchanged; no default gate renewed. Scoped table/settings/
+approval/outcome/boundary/history/Sources/design/milestone/stable-rule/source-byte/
+whitespace checks pass, including 616 reference uses/local targets. No evidence-record
+check failed. Editor/diff/staged-byte checks precede this documentation checkpoint;
+these are distinct from the four negative digest comparisons, which were not repaired.
+
+The one compile-only approval is fully spent and independent of §141's two spent
+identity approvals and §138's four of five source positions; the fifth stays unused,
+old §129/§132 budgets exhausted and §135 fifth not borrowed. The last source gate
+remains 2,245 passes plus known xfail/71 warnings, not newly rerun evidence. All
+fifteen U/JO verdicts undecided, five flags false, native/motion/source/work unresolved
+and consumer ineligible. No proof/allowance/Route C/totality/source-to-code/U4/native/
+resource/consumer acceptance or runtime integration. Task6/9, physical/task-quality,
+motion/goals/relative transforms, source authority/completeness/work, teacher assets
+and ST/board stay blocked. Next needs a separately approved disambiguating evidence
+scope/representation/budget/stop protocol or another explicit named evidence decision.
+
+[sinc-compile-comparison-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

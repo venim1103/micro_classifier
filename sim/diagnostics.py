@@ -31,6 +31,342 @@ _SYNTHETIC_ARITHMETIC_BITS = 4096
 _SYNTHETIC_SINC_BITS = 65536
 
 
+_SYNTHETIC_SINC_CELL_BITS = 65536
+_SYNTHETIC_SINC_CELL_STEPS = 64
+
+
+def _certify_synthetic_sinc_cell(interval, *, synthetic_test_only=False):
+    """Check one exact rounding cell, without claiming sinc interval inclusion."""
+    if synthetic_test_only is not True:
+        raise ValueError("cell candidate requires synthetic_test_only=True")
+    limit = _SYNTHETIC_SINC_CELL_BITS
+    steps = _SYNTHETIC_SINC_CELL_STEPS
+    work = {
+        "search_iterations": 0,
+        "endpoint_iterations": [],
+        "dyadic_decodes": 0,
+        "midpoint_constructions": 0,
+        "rational_comparisons": 0,
+        "rational_constructions": 0,
+        "max_result_bits": 0,
+    }
+    result = {
+        "identity": "synthetic_sinc_interval_cell_candidate_v0",
+        "allowed_use": "isolated_synthetic_cell_controls_only",
+        "status": "unresolved_sinc_cell",
+        "reason": "unsupported_cell_interval",
+        "configuration": {"rational_bit_limit": limit, "endpoint_step_limit": steps},
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "producer_parity_qualified": False,
+        "native_sinc_status": "unresolved_native_sinc_evidence",
+        "motion_status": "unresolved_motion_evidence",
+        "source_status": "unresolved_source_authority",
+        "native_work_status": "unresolved_native_work_evidence",
+        "consumer_status": "ineligible_isolated_candidate",
+        "work": work,
+    }
+    if (
+        type(limit) is not int
+        or not 1 <= limit <= 65536
+        or type(steps) is not int
+        or not 1 <= steps <= 64
+    ):
+        result["reason"] = "unsupported_cell_configuration"
+        return result
+
+    class CellStop(ArithmeticError):
+        pass
+
+    def preflight(*sizes):
+        if (
+            type(_SYNTHETIC_SINC_CELL_BITS) is not int
+            or type(_SYNTHETIC_SINC_CELL_STEPS) is not int
+            or _SYNTHETIC_SINC_CELL_BITS != limit
+            or _SYNTHETIC_SINC_CELL_STEPS != steps
+        ):
+            raise CellStop("changed_cell_configuration")
+        if max(sizes) > limit:
+            raise CellStop("cell_rational_work_limit")
+
+    def bounded(value):
+        size = max(value.numerator.bit_length(), value.denominator.bit_length())
+        preflight(size)
+        work["max_result_bits"] = max(work["max_result_bits"], size)
+        return value
+
+    def rational(numerator, denominator=1):
+        preflight(numerator.bit_length(), denominator.bit_length())
+        work["rational_constructions"] += 1
+        return bounded(Fraction(numerator, denominator))
+
+    def compare(left, right):
+        preflight(
+            left.numerator.bit_length() + right.denominator.bit_length(),
+            right.numerator.bit_length() + left.denominator.bit_length(),
+        )
+        work["rational_comparisons"] += 1
+        first = left.numerator * right.denominator
+        second = right.numerator * left.denominator
+        return (first > second) - (first < second)
+
+    def decode(word):
+        work["dyadic_decodes"] += 1
+        if not 0 <= word <= 0x7FEFFFFFFFFFFFFF:
+            raise CellStop("unsupported_cell_neighbor")
+        exponent = (word >> 52) & 2047
+        significand = (word & ((1 << 52) - 1)) | ((1 << 52) if exponent else 0)
+        power = (exponent or 1) - 1075
+        preflight(significand.bit_length() + max(0, power), 1 + max(0, -power))
+        return rational(significand << max(0, power), 1 << max(0, -power))
+
+    def midpoint(left, right):
+        preflight(
+            max(
+                left.numerator.bit_length() + right.denominator.bit_length(),
+                right.numerator.bit_length() + left.denominator.bit_length(),
+            )
+            + 1,
+            left.denominator.bit_length() + right.denominator.bit_length() + 1,
+        )
+        work["midpoint_constructions"] += 1
+        numerator = (
+            left.numerator * right.denominator + right.numerator * left.denominator
+        )
+        denominator = (left.denominator * right.denominator) << 1
+        return rational(numerator, denominator)
+
+    def cell(word):
+        if not 1 <= word < 0x7FEFFFFFFFFFFFFF:
+            raise CellStop("unsupported_cell_edge")
+        values = tuple(decode(neighbor) for neighbor in (word - 1, word, word + 1))
+        return values, midpoint(values[0], values[1]), midpoint(values[1], values[2])
+
+    def contains(lower, upper, word, boundaries):
+        low_order = compare(lower, boundaries[0])
+        high_order = compare(upper, boundaries[1])
+        even = not word & 1
+        return (
+            low_order,
+            high_order,
+            (
+                (low_order > 0 or (low_order == 0 and even))
+                and (high_order < 0 or (high_order == 0 and even))
+            ),
+        )
+
+    def endpoint_word(value):
+        lower_word, upper_word = 1, 0x7FEFFFFFFFFFFFFF
+        attempts = 0
+        work["endpoint_iterations"].append(0)
+        while lower_word < upper_word:
+            if attempts >= steps:
+                raise CellStop("cell_search_work_limit")
+            preflight(0)
+            attempts += 1
+            work["search_iterations"] += 1
+            work["endpoint_iterations"][-1] = attempts
+            word = (lower_word + upper_word) // 2
+            boundary = midpoint(decode(word), decode(word + 1))
+            order = compare(value, boundary)
+            if order < 0 or (order == 0 and not word & 1):
+                upper_word = word
+            else:
+                lower_word = word + 1
+        _, lower_boundary, upper_boundary = cell(lower_word)
+        if not contains(value, value, lower_word, (lower_boundary, upper_boundary))[2]:
+            raise CellStop("unsupported_cell_edge")
+        return lower_word
+
+    try:
+        if type(interval) is not tuple or len(interval) != 2:
+            return result
+        endpoints = []
+        for pair in interval:
+            if (
+                type(pair) is not tuple
+                or len(pair) != 2
+                or any(type(component) is not int for component in pair)
+                or pair[1] <= 0
+            ):
+                return result
+            value = rational(*pair)
+            if (value.numerator, value.denominator) != pair:
+                result["reason"] = "noncanonical_cell_interval"
+                return result
+            endpoints.append(value)
+        lower, upper = endpoints
+        if lower.numerator <= 0 or compare(lower, upper) > 0:
+            return result
+        first, second = endpoint_word(lower), endpoint_word(upper)
+        if first != second:
+            result["reason"] = "interval_crosses_rounding_cells"
+            return result
+        values, lower_boundary, upper_boundary = cell(first)
+        lower_order, upper_order, contained = contains(
+            lower, upper, first, (lower_boundary, upper_boundary)
+        )
+        if not contained:
+            result["reason"] = "unresolved_whole_cell_containment"
+            return result
+        preflight(0)
+        result.update(
+            status="contained_synthetic_sinc_cell",
+            reason="whole_interval_in_exact_ties_even_cell",
+            certificate={
+                "word": first,
+                "interval": tuple(
+                    (value.numerator, value.denominator) for value in endpoints
+                ),
+                "neighbors": tuple(
+                    (neighbor, (value.numerator, value.denominator))
+                    for neighbor, value in zip(
+                        (first - 1, first, first + 1), values, strict=True
+                    )
+                ),
+                "boundaries": (
+                    (lower_boundary.numerator, lower_boundary.denominator),
+                    (upper_boundary.numerator, upper_boundary.denominator),
+                ),
+                "closed_ties": not first & 1,
+                "lower_order": lower_order,
+                "upper_order": upper_order,
+                "whole_interval_contained": True,
+            },
+        )
+    except CellStop as error:
+        result["reason"] = str(error)
+    return result
+
+
+def _candidate_synthetic_sinc_word(q_word, *, synthetic_test_only=False):
+    """Bind a partial mathematical word candidate to one local sinc enclosure."""
+    if synthetic_test_only is not True:
+        raise ValueError("sinc word candidate requires synthetic_test_only=True")
+    result = {
+        "identity": "controlled_mathematical_sinc_rn64_candidate_v0",
+        "allowed_use": "isolated_synthetic_sinc_word_candidate_only",
+        "status": "unresolved_sinc_word_candidate",
+        "reason": "unsupported_sinc_word",
+        "target": "real_pi_normalized_sinc_at_stored_binary64",
+        "q_word": None,
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "producer_parity_qualified": False,
+        "native_sinc_status": "unresolved_native_sinc_evidence",
+        "motion_status": "unresolved_motion_evidence",
+        "source_status": "unresolved_source_authority",
+        "native_work_status": "unresolved_native_work_evidence",
+        "consumer_status": "ineligible_isolated_candidate",
+        "work": {"enclosure_entries": 0, "cell_entries": 0},
+    }
+    if type(q_word) is not int or not 0 <= q_word < (1 << 64):
+        return result
+    result["q_word"] = q_word
+    exponent = (q_word >> 52) & 2047
+    if exponent == 2047:
+        result["reason"] = "nonfinite_sinc_word"
+        return result
+    sign = q_word >> 63
+    significand = (q_word & ((1 << 52) - 1)) | ((1 << 52) if exponent else 0)
+    power = (exponent or 1) - 1075
+    numerator = significand << max(0, power)
+    value = Fraction(-numerator if sign else numerator, 1 << max(0, -power))
+    result.update(sign=sign, q_ratio=(value.numerator, value.denominator))
+    if abs(value) > Fraction(1, 64):
+        result["reason"] = "outside_sinc_domain"
+        return result
+    result["work"]["enclosure_entries"] += 1
+    enclosure = _enclose_synthetic_sinc_word(q_word, synthetic_test_only=True)
+    if (
+        type(enclosure) is not dict
+        or type(enclosure.get("work")) is not dict
+        or set(enclosure["work"]) != {"rational_operations", "max_result_bits"}
+        or any(
+            type(count) is not int or count < 0 for count in enclosure["work"].values()
+        )
+    ):
+        result["reason"] = "inconsistent_sinc_enclosure_binding"
+        return result
+    result["work"]["enclosure"] = dict(enclosure["work"])
+    if enclosure.get("status") != "enclosed_mathematical_sinc":
+        result["reason"] = "unresolved_sinc_enclosure"
+        return result
+    expected_configuration = {
+        "arctangent_terms": 32,
+        "sinc_terms": 8,
+        "rational_bit_limit": 65536,
+    }
+    configuration = enclosure.get("configuration")
+    ratio = enclosure.get("q_ratio")
+    if (
+        type(enclosure.get("q_word")) is not int
+        or enclosure["q_word"] != q_word
+        or type(enclosure.get("sign")) is not int
+        or enclosure["sign"] != sign
+        or type(ratio) is not tuple
+        or len(ratio) != 2
+        or any(type(component) is not int for component in ratio)
+        or ratio != result["q_ratio"]
+        or enclosure.get("target") != result["target"]
+        or type(configuration) is not dict
+        or any(type(count) is not int for count in configuration.values())
+        or configuration != expected_configuration
+        or enclosure.get("branch") != ("zero" if not value else "series")
+    ):
+        result["reason"] = "inconsistent_sinc_enclosure_binding"
+        return result
+    interval = enclosure.get("interval")
+    if (
+        type(interval) is not tuple
+        or len(interval) != 2
+        or any(
+            type(pair) is not tuple
+            or len(pair) != 2
+            or any(type(component) is not int for component in pair)
+            or pair[1] <= 0
+            or max(component.bit_length() for component in pair) > 65536
+            for pair in interval
+        )
+    ):
+        result["reason"] = "inconsistent_sinc_enclosure_binding"
+        return result
+    if not value:
+        if interval != ((1, 1), (1, 1)):
+            result["reason"] = "inconsistent_zero_sinc_enclosure"
+            return result
+        certificate = {
+            "word": 0x3FF0000000000000,
+            "interval": ((1, 1), (1, 1)),
+            "branch": "zero",
+        }
+    else:
+        result["work"]["cell_entries"] += 1
+        cell_result = _certify_synthetic_sinc_cell(interval, synthetic_test_only=True)
+        result["work"]["cell"] = deepcopy(cell_result["work"])
+        if cell_result["status"] != "contained_synthetic_sinc_cell":
+            result["reason"] = cell_result["reason"]
+            return result
+        certificate = deepcopy(cell_result["certificate"])
+    result.update(
+        status="candidate_mathematical_sinc_word",
+        reason="conditional_mathematical_rounding_cell_only",
+        configuration=dict(expected_configuration),
+        interval=deepcopy(interval),
+        certificate=certificate,
+        enclosure_binding={
+            "q_word": q_word,
+            "sign": sign,
+            "q_ratio": result["q_ratio"],
+        },
+    )
+    return result
+
+
 def _enclose_synthetic_sinc_word(q_word, *, synthetic_test_only=False):
     """Enclose real-pi sinc at a stored word, not the installed native program."""
     if synthetic_test_only is not True:

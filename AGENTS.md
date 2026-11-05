@@ -113,29 +113,27 @@ python -m pytest -q && ruff check . && git diff --check
   optional) and a real bullet body. Do not push, create branches or rewrite
   history unless explicitly requested. Never revert another person's changes.
 
-## Current State (2026-11-04)
+## Current State (2026-11-05)
 
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only NF1 interval-to-word certificate
-  contract/work argument (DESIGN.md §7 / REVIEW.md §121), separate pure-cell and
-  q/enclosure claims, exact midpoint search/parity/edge checks, guarded paper
-  work ledger and ten acceptance obligations. Candidate/route/proof/error/work
-  allowance and total completion are not adopted.
-  No target import/run, new inspection or source/test change; five flags stay false.
+- Latest approved package complete: isolated NF1 word/cell prototype/tests
+  (DESIGN.md §7 / REVIEW.md §122), two private helpers and 28 new cases. Per
+  complete matrix: 24 word/17 enclosure/32 direct-cell/38 total-cell entries,
+  below approved 24/24/32/56 caps. All old source/test ASTs and caps stay unchanged;
+  five flags remain false. No Route C/proof/error/work allowance/totality adoption.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `b275c72`; last source
-  gate remains §116, not rerun here; no environment/native/GPU/teacher requalification.
-  Next proposed, not approved: isolated private prototype/tests, twelve reused q
-  positions / at most 24 word and enclosure entries, sixteen pure-cell controls /
-  at most 32 direct and 56 total cell entries per complete focused invocation.
-  No owner/event/trace/query/reference/log/native call, new scene, acquisition,
+  and native-work remain unresolved. Baseline was clean at `b8702af`; fresh source
+  gate is §122's 2,165 plus known xfail/71 warnings. Editor interpreter verified;
+  no native/GPU/teacher/board requalification. No candidate owner/trace/query/log use.
+  Next proposed, not approved: design-only conditional correctness/publication/
+  work review, not new imports/fixtures/runs, source edits, native inspection,
   integration or proof/allowance/qualification promotion. Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-121 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-122 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -146,9 +144,9 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-04): 2,137 passes plus known xfail, 71 existing
-  ONNX warnings; twelve new word cases, lint/changed-file format/editor diagnostics
-  and legacy AST preservation pass; failed format check preserved in §116. No
+- Last source-test gate (2026-11-05): 2,165 passes plus known xfail, 71 existing
+  ONNX warnings; 28 new cell/word cases, lint/changed-file format/editor diagnostics
+  and legacy AST preservation pass; failed format check preserved in §122. No
   runtime/C source change or additional opt-in sanitizer/
   Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1193,17 +1191,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §121 prepares
-the separately approved design-only interval-to-word certificate/work contract:
-separate interval/word claims, exact midpoint search/parity/edges, guarded paper
-ledger and ten obligations. Candidate/route/proof/allowance adoption stays absent.
-No target import/run, new inspection or source/test/bound/flag/verdict change;
-`1bb89fe` stays. Old 4,096/65,536-bit helpers remain unchanged.
-The last source gate remains §116's 2,137 plus known xfail, not rerun here.
-Next proposed, not approved: bounded private prototype/tests, twelve reused q
-positions / 24 word and enclosure entries, sixteen pure-cell controls / 32 direct
-and 56 total cell entries per complete focused invocation. No owner/event/trace/
-query/reference/log/native call, new scene, acquisition, integration or promotion.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §122 completes
+the separately approved private word/cell prototype: 28 new cases, 24 word/17
+enclosure/32 direct-cell/38 total-cell entries per complete matrix, old ASTs/caps
+preserved and all five flags false. `1bb89fe` stays; no Route C/proof/allowance
+or consumer/native/source/work qualification. Fresh gate: 2,165 plus known xfail,
+71 warnings; changed-file format/editor/lint pass, failed format check retained.
+Next proposed, not approved: design-only conditional correctness/publication/
+work review, not import/new fixtures/runs, source edits, native inspection,
+owner/query/reference/log adapter, integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1456,6 +1452,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   proof/allowance adoption or qualification. Next proposed, not approved: private
   prototype/tests under 24 word/24 enclosure/32 direct-cell/56 total-cell limits
   per complete focused invocation, not owners/adapters/integration or promotion.
+  NF1 word prototype (REVIEW.md §122): separately approved private helpers/tests
+  complete; 28 new cases, 24 word/17 enclosure/32 direct-cell/38 total-cell entries
+  per complete matrix, old ASTs/caps and false flags preserved; gate 2,165 plus
+  known xfail. No native/source/work or integration qualification. Next proposed,
+  not approved: design-only conditional correctness/publication/work review,
+  not new imports/fixtures/runs, source edits, native inspection or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

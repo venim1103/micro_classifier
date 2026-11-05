@@ -413,6 +413,316 @@ _ARITHMETIC_TRACE_LITERALS = (
 )
 
 
+@pytest.mark.parametrize("control_index", range(16))
+def test_synthetic_sinc_cell_candidate(control_index, monkeypatch):
+    from copy import deepcopy
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    unit = 0x3FF0000000000000
+    largest = 0x7FEFFFFFFFFFFFFF
+    center = Fraction(1)
+    lower = center - Fraction(1, 1 << 54)
+    upper = center + Fraction(1, 1 << 53)
+    odd_center = center + Fraction(1, 1 << 52)
+    odd_upper = center + Fraction(3, 1 << 53)
+    tiny = Fraction(1, 1 << 1074)
+    normal = Fraction(1, 1 << 1022)
+    high = _literal_binary64_fraction(largest - 1)
+    controls = (
+        ((center, center), unit),
+        ((lower, lower), unit),
+        ((upper, upper), unit),
+        (((upper + odd_center) / 2, odd_center), unit + 1),
+        ((odd_upper, odd_upper), unit + 2),
+        (((upper + odd_center) / 2, (odd_center + odd_upper) / 2), unit + 1),
+        ((lower, upper), unit),
+        ((upper - Fraction(1, 1 << 55), upper + Fraction(1, 1 << 55)), None),
+        ((tiny, tiny), 1),
+        ((normal - tiny / 2, normal - tiny / 2), 0x0010000000000000),
+        ((high, high), largest - 1),
+        ((_literal_binary64_fraction(largest),) * 2, None),
+        ((Fraction(0), center), None),
+        ((tiny / 2, tiny / 2), None),
+        (None, None),
+        ((center, center), unit),
+    )
+    values, expected = controls[control_index]
+    interval = (
+        tuple((value.numerator, value.denominator) for value in values)
+        if values is not None
+        else ((2, 2), (1, 1))
+    )
+    helper = diagnostics._certify_synthetic_sinc_cell
+    attempts = []
+    outputs = []
+
+    def certify(value, **keywords):
+        attempts.append(value)
+        assert len(attempts) <= 2
+        output = helper(value, **keywords)
+        outputs.append(output)
+        return output
+
+    result = certify(interval, synthetic_test_only=True)
+    saved = deepcopy(result)
+    if expected is None:
+        assert result["status"] == "unresolved_sinc_cell"
+        assert "certificate" not in result
+    else:
+        certificate = result["certificate"]
+        assert result["status"] == "contained_synthetic_sinc_cell"
+        assert certificate["word"] == expected
+        assert certificate["interval"] == interval
+        adjacent = tuple(
+            _literal_binary64_fraction(word)
+            for word in (expected - 1, expected, expected + 1)
+        )
+        boundaries = ((adjacent[0] + adjacent[1]) / 2, (adjacent[1] + adjacent[2]) / 2)
+        assert certificate["neighbors"] == tuple(
+            (word, (value.numerator, value.denominator))
+            for word, value in zip(
+                (expected - 1, expected, expected + 1), adjacent, strict=True
+            )
+        )
+        assert (
+            tuple(Fraction(*pair) for pair in certificate["boundaries"]) == boundaries
+        )
+        assert certificate["closed_ties"] is (expected % 2 == 0)
+        assert certificate["lower_order"] == (values[0] > boundaries[0]) - (
+            values[0] < boundaries[0]
+        )
+        assert certificate["upper_order"] == (values[1] > boundaries[1]) - (
+            values[1] < boundaries[1]
+        )
+        assert certificate["whole_interval_contained"] is True
+    if control_index in (0, 1):
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            certify(interval, synthetic_test_only=(False if control_index == 0 else 1))
+    elif control_index == 2:
+        repeated = certify(interval, synthetic_test_only=True)
+        repeated["certificate"]["word"] = 0
+        repeated["work"]["endpoint_iterations"].clear()
+    elif control_index in (8, 9, 10, 11, 13, 15):
+        if control_index == 8:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_SINC_CELL_BITS", 1)
+        elif control_index in (9, 10):
+            original = diagnostics.Fraction
+            allocations = []
+
+            def allocate(*arguments):
+                allocations.append(arguments)
+                if control_index == 10:
+                    raise MemoryError("injected cell allocation failure")
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_SINC_CELL_BITS", 1)
+                return original(*arguments)
+
+            monkeypatch.setattr(diagnostics, "Fraction", allocate)
+        elif control_index == 11:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_SINC_CELL_STEPS", 1)
+        elif control_index == 13:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_SINC_CELL_BITS", 65537)
+        else:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_SINC_CELL_STEPS", True)
+        if control_index == 10:
+            with pytest.raises(MemoryError, match="injected cell allocation failure"):
+                certify(interval, synthetic_test_only=True)
+            assert len(allocations) == 1
+        else:
+            rejected = certify(((1, 1), (1, 1)), synthetic_test_only=True)
+            assert rejected["status"] == "unresolved_sinc_cell"
+            assert "certificate" not in rejected
+            reasons = {
+                8: "cell_rational_work_limit",
+                9: "changed_cell_configuration",
+                11: "cell_search_work_limit",
+                13: "unsupported_cell_configuration",
+                15: "unsupported_cell_configuration",
+            }
+            assert rejected["reason"] == reasons[control_index]
+            if control_index == 9:
+                assert len(allocations) == 1
+            if control_index == 11:
+                assert rejected["work"]["search_iterations"] == 1
+    else:
+        malformed = {
+            3: ((True, 1), (1, 1)),
+            4: ((1.0, 1), (1, 1)),
+            5: ((1, -1), (1, 1)),
+            6: [(1, 1), (1, 1)],
+            7: ((2, 1), (1, 1)),
+            12: ((1 << 65536, 1), (1 << 65536, 1)),
+            14: ((1, 1),),
+        }
+        rejected = certify(malformed[control_index], synthetic_test_only=True)
+        assert rejected["status"] == "unresolved_sinc_cell"
+        assert "certificate" not in rejected
+        if control_index == 12:
+            assert rejected["reason"] == "cell_rational_work_limit"
+            assert rejected["work"]["rational_constructions"] == 0
+    assert len(attempts) == 2 and result == saved
+    for output in outputs:
+        assert output["work"]["search_iterations"] <= 128
+        assert output["work"]["dyadic_decodes"] <= 265
+        assert output["work"]["midpoint_constructions"] <= 134
+        assert output["work"]["rational_comparisons"] <= 135
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "producer_parity_qualified",
+        ):
+            assert output[flag] is False
+
+
+@pytest.mark.parametrize("literal_index", range(12))
+def test_synthetic_sinc_word_candidate(literal_index, monkeypatch):
+    import ast
+    import inspect
+    from copy import deepcopy
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    helper = diagnostics._candidate_synthetic_sinc_word
+    enclosure_helper = diagnostics._enclose_synthetic_sinc_word
+    cell_helper = diagnostics._certify_synthetic_sinc_cell
+    counts = {"word": 0, "enclosure": 0, "cell": 0}
+    outputs = []
+
+    def candidate(word, **keywords):
+        counts["word"] += 1
+        assert counts["word"] <= 2
+        output = helper(word, **keywords)
+        outputs.append(output)
+        return output
+
+    def enclose(word, **keywords):
+        counts["enclosure"] += 1
+        assert counts["enclosure"] <= 2
+        return enclosure_helper(word, **keywords)
+
+    def certify(interval, **keywords):
+        counts["cell"] += 1
+        assert counts["cell"] <= 2
+        return cell_helper(interval, **keywords)
+
+    def forbidden(*arguments, **keywords):
+        raise AssertionError("candidate reached a producer/native/owner path")
+
+    monkeypatch.setattr(diagnostics, "_enclose_synthetic_sinc_word", enclose)
+    monkeypatch.setattr(diagnostics, "_certify_synthetic_sinc_cell", certify)
+    for name in (
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+        "_reference_synthetic_c1_motion",
+        "_audit_synthetic_controlled_candidate",
+        "_SyntheticC1ControlledMotionOwner",
+        "_SyntheticC1SourceRecorder",
+        "prepare_synthetic_c1_relative_input",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for module, names in (
+        (diagnostics.np, ("sinc", "sin", "cos", "arctan2")),
+        (diagnostics.math, ("sin", "cos", "atan2")),
+    ):
+        for name in names:
+            monkeypatch.setattr(module, name, forbidden)
+    for function in (helper, cell_helper):
+        syntax = ast.parse(inspect.getsource(function))
+        assert not any(
+            isinstance(node, ast.Constant) and type(node.value) is float
+            for node in ast.walk(syntax)
+        )
+        assert not any(
+            isinstance(node, (ast.Import, ast.ImportFrom)) for node in ast.walk(syntax)
+        )
+        assert not any(
+            isinstance(node, ast.Name) and node.id in {"np", "math", "float", "open"}
+            for node in ast.walk(syntax)
+        )
+    word = _ARITHMETIC_TRACE_LITERALS[literal_index][2][4]
+    result = candidate(word, synthetic_test_only=True)
+    saved = deepcopy(result)
+    assert result["q_word"] == word and result["sign"] == word >> 63
+    assert Fraction(*result["q_ratio"]) == _literal_binary64_fraction(word)
+    assert result["work"]["enclosure_entries"] == 1
+    assert result["status"] == "candidate_mathematical_sinc_word", result["reason"]
+    certificate = result["certificate"]
+    if word & ((1 << 63) - 1) == 0:
+        assert certificate["word"] == 0x3FF0000000000000
+        assert certificate["branch"] == "zero" and result["work"]["cell_entries"] == 0
+    else:
+        assert result["work"]["cell_entries"] == 1
+        output_word = certificate["word"]
+        values = tuple(
+            _literal_binary64_fraction(value)
+            for value in (output_word - 1, output_word, output_word + 1)
+        )
+        lower, upper = (Fraction(*pair) for pair in result["interval"])
+        bounds = ((values[0] + values[1]) / 2, (values[1] + values[2]) / 2)
+        assert (lower > bounds[0] and upper < bounds[1]) or (
+            output_word % 2 == 0 and lower >= bounds[0] and upper <= bounds[1]
+        )
+        assert certificate["interval"] == result["interval"]
+    if literal_index in (0, 1):
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            candidate(word, synthetic_test_only=(False if literal_index == 0 else 1))
+    elif literal_index in (2, 3, 4, 5):
+        rejected = candidate(
+            {2: True, 3: -1, 4: 1 << 64, 5: 0x7FF8000000000000}[literal_index],
+            synthetic_test_only=True,
+        )
+        assert rejected["status"] == "unresolved_sinc_word_candidate"
+        assert "certificate" not in rejected
+    elif literal_index in (6, 7, 8, 9, 10):
+
+        def corrupted(word, **keywords):
+            output = enclose(word, **keywords)
+            if literal_index == 6:
+                output["q_word"] = True
+            elif literal_index == 7:
+                output["sign"] = float(output["sign"])
+            elif literal_index == 8:
+                output["configuration"]["sinc_terms"] = 8.0
+            elif literal_index == 9:
+                output["q_ratio"] = (float(output["q_ratio"][0]), output["q_ratio"][1])
+            else:
+                output.pop("interval")
+            return output
+
+        monkeypatch.setattr(diagnostics, "_enclose_synthetic_sinc_word", corrupted)
+        rejected = candidate(word, synthetic_test_only=True)
+        assert rejected["reason"] == "inconsistent_sinc_enclosure_binding"
+        assert "certificate" not in rejected and rejected["work"]["cell_entries"] == 0
+    else:
+
+        def allocate(*arguments):
+            raise MemoryError("injected word allocation failure")
+
+        monkeypatch.setattr(diagnostics, "Fraction", allocate)
+        with pytest.raises(MemoryError, match="injected word allocation failure"):
+            candidate(word, synthetic_test_only=True)
+    assert counts["word"] == 2 and result == saved
+    assert counts["enclosure"] <= 2 and counts["cell"] <= 2
+    for output in outputs:
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "producer_parity_qualified",
+        ):
+            assert output[flag] is False
+        assert output["native_sinc_status"] == "unresolved_native_sinc_evidence"
+        assert output["motion_status"] == "unresolved_motion_evidence"
+        assert output["consumer_status"] == "ineligible_isolated_candidate"
+
+
 @pytest.mark.parametrize("literal_index", range(12))
 def test_synthetic_sinc_word_enclosure(literal_index, monkeypatch):
     import ast

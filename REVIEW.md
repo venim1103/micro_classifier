@@ -8698,6 +8698,102 @@ default remains isolation. No such implementation or fixture work occurs here.
 
 [sinc-cell-design]: DESIGN.md
 
+## 122. NF1 Isolated Word Candidate Prototype (2026-11-05)
+
+The user explicitly approved §121's bounded private prototype/tests, normal
+source gates and autonomous local commits. Clean baseline is `b8702af`. Approval
+is implementation/testing only: not Route C, proof/error/work allowance, native
+parity, source qualification, consumer integration or task-data adoption.
+Fresh Pylance environment reports `/opt/venv/bin/python`; terminal activation
+alone was not used as editor evidence. No teacher assets/native/GPU/board
+qualification is inferred after the date/environment transition.
+
+**Local hypothesis and first validation.** First-true upper-midpoint search plus
+whole-interval verification could implement the partial cell contract without
+calling the old rounder or changing its cap. The nearby unchanged enclosure and
+existing literal tests controlled the implementation. First edit added two private
+helpers/constants; immediately one independently constructed unit upper-midpoint
+control passed, yielding the exact even unit word with false flags and bounded
+counts. No owner, q-word or native call occurred in that probe.
+
+**Implementation.** [DESIGN.md §7][sinc-word-design] records the additive
+cell component (204 lines), word entry (124 lines) and two constants. Cell
+configuration is strict and capped at 65,536 bits/64 steps, with mid-call change
+rejection. Exact finite dyadic decoding, guarded raw/canonical arithmetic,
+three-way comparisons and first-true ties-to-even search retain M as a finite
+neighbor but exclude it as a candidate. Full endpoint and whole-interval checks
+precede fresh owned certificate publication; unsupported/straddling/work cases
+omit the word/certificate. Unexpected/MemoryError exceptions propagate.
+
+The word entry decodes the supplied literal q independently, validates its domain
+and retains sign/ratio, then calls only the direct unchanged enclosure and at
+most one cell component. Zero requires exact [1,1] and no cell entry. Strict
+word/sign/ratio/configuration/interval metadata rejects numeric type aliases
+and missing/inconsistent bindings. Success is conditional mathematical candidate
+evidence, not native parity, authenticated source or accepted proof. All five
+flags remain false; native/source/motion/work/consumer statuses stay unresolved.
+No old cap/function/default/wire/owner/reference is changed or retagged.
+
+**Bounded tests and actual calls.** Two parametrized tests add 28 cases without
+new q positions/scenes: twelve reused q literals (six zero/six nonzero) and
+sixteen pure-cell controls, each at most two entries. Independent dyadic/cell
+expectations cover both parities, unequal exponent-transition spacing, subnormal/
+normal and extreme finite edges, closed intervals/straddles and unsupported cells.
+Tests cover canonical/builtin types, early preflight, configuration change after
+construction, search exhaustion, allocation propagation, preserved returned
+records and corrupted q/sign/ratio/configuration/interval binding. Poisoned
+producer/native/owner paths and helper AST checks guard isolation.
+
+Per complete new-entry matrix: 24 word attempts (12 candidates, nine unresolved,
+three exceptions), 17 direct enclosure calls, 32 direct cell attempts plus six
+nested calls = 38 total, under 24/24/32/56. Cell totals are 18 contained,
+17 unresolved and three exceptions. Two complete matrices ran (focused and
+default gate), plus the initial one-cell probe: 48 word attempts, 34 new-entry
+enclosure calls and 77 total cell attempts. The default suite also retained the
+old §116 matrix's 24 enclosure attempts separately; these are unchanged normal
+regression controls, not additional candidate cases or renewed experiment scope.
+Only the same fixed literal/control positions are used, not independent cohorts
+or task-quality data. Mock/component cells do not prove F(q) membership.
+
+**Checks and failure history.** Focused command:
+`/opt/venv/bin/python -m pytest -q tests/test_sim.py::test_synthetic_sinc_cell_candidate tests/test_sim.py::test_synthetic_sinc_word_candidate`
+passed 28 cases in 0.39 s. Changed-file lint passed; initial
+`ruff format --check sim/diagnostics.py tests/test_sim.py` failed only on new
+layouts. Formatted only those two files; the same format check passed. Then
+the required root gate (`/opt/venv/bin/python -m pytest -q && ruff check . && git diff --check`)
+passed 2,165 tests plus known transformer xfail, 71 existing warnings in 48.18 s,
+with no reported skips. No assertion/tolerance/guard/xfail was relaxed.
+
+Editor diagnostics pass; Pylance reports only unused private-symbol hints. All
+old top-level source/test AST nodes remain identical and ordered, before and
+after formatting: only four source and two test nodes added. New source/test
+blobs are `608f574bfaba9a742451995898719dd8523891e7` and
+`f7dc911ecc3bf929f2866d25efcdca7977c426ca`. Documentation checks pass: 575
+references/local targets, sections 1-122, previous review/Sources/design contracts,
+stable workflow/history/task-tail preservation, gate/call/failure/non-adoption/
+next-scope clauses, exact five-file scope and gated source identities. Whitespace
+and editor diagnostics pass; source/test/document diffs are reviewed. Final
+record/staged checks precede the checkpoint. No successful source
+gate is repeated merely for reassurance.
+
+No accepted proof, error/work allowance, uniform native bound or qualification.
+SR/CW/W0/TB0, actual native motion/goals/relative transforms, source authority,
+Task 6/9, numerical/physical/task-quality, teacher assets and ST/board gates remain.
+No new owner/event/trace/query/reference/log/native use by the candidate; existing
+default synthetic controls remain separate. No additional opt-in sanitizer/Arm/
+native/board gate, teacher experiment, download/dependency, scene/acquisition,
+labels/data/training, runtime/consumer integration, background job or cleanup.
+Old artifacts and `1bb89fe` remain unchanged; no push is authorized/performed.
+
+**Exit and next permission.** The approved bounded prototype is complete and
+exhausted on verification/local commit. Default remains isolation. Next proposed,
+not approved: design-only conditional correctness/publication/work review of the
+two helpers against CW0-CW9, separating exact-cell and F(q) claims, attempted-work
+ledger and trusted-base/native/consumer limits. No import/new fixture/run, source
+edit, native inspection, adapter/integration or proof/allowance promotion follows.
+
+[sinc-word-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

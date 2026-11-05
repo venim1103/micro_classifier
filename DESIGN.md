@@ -5956,6 +5956,64 @@ exhausted after documentation verification and a local checkpoint.
 
 [sinc-cell-review]: REVIEW.md
 
+#### NF1 Isolated Word Candidate Prototype (2026-11-05)
+
+The user separately approved §121's bounded private implementation/tests and
+normal source gates; [review §122][sinc-word-review] records evidence and limits.
+This implements a partial candidate, not adoption of Route C, an accepted proof,
+native accuracy/error/work allowance or consumer qualification.
+
+Additive private `_certify_synthetic_sinc_cell` in [diagnostics][c1-prototype-source]
+checks fixed canonical integer-pair endpoints against one exact ties-to-even
+cell. Separate `_candidate_synthetic_sinc_word` binds at most one direct call to
+the unchanged enclosure and, for nonzero q, at most one cell entry. Both zero
+signs require [1,1] and return the mathematical unit word without cell search.
+Malformed/nonfinite/out-of-domain words, inconsistent direct metadata, unsupported
+cell edges/straddles and work limits stay unresolved; unexpected allocation errors
+propagate. No old function/global cap, owner, input, wire or artifact is changed.
+
+The new cell-only constants default to 65,536 bits and 64 endpoint steps. Strict
+configuration validation prevents expansion beyond those prototype limits;
+mid-call changes reject. Raw shifts/products/sums/doubling/cross-products are
+guarded before Fraction construction, with canonical checks afterward. Exact
+upper-midpoint first-true searches assign ties to even words. M is excluded as
+a candidate but remains a finite upper neighbor of M-1. Endpoint full-cell checks
+and fresh whole-interval verification reuse three dyadic values and three-way
+comparisons, retaining neighbor/boundary/parity/order evidence. No float/native
+fallback, clipping, precision retry, cache, persistence or full search transcript.
+
+Fresh owned successful evidence is distinct from unresolved results, which omit
+the word/cell certificate. Five qualification flags remain false; source/native
+sinc/motion/work and consumer eligibility remain unresolved on every return.
+Direct declared binding does not authenticate a producer source or independently
+prove the shared enclosure. Logical/attempt counters do not measure primitive
+work, totality, time, live memory or firmware fit. Native motion/goals/relative
+transforms, W0/TB0 and SR/CW proof obligations remain open; `1bb89fe` stays.
+
+Two tests reuse twelve q-literal positions and sixteen independently derived
+pure-cell controls. Per complete new-entry matrix they make 24 word attempts,
+17 enclosure entries, 32 direct and six nested cell entries (38 total), below
+the approved 24/24/32/56 limits. Zero/sign, even/odd and exponent-transition
+ties, subnormal/normal and extreme finite edges, straddles, canonical/type
+rejection, preflight/change/exhaustion, owned results and allocation propagation
+are checked. Poisoned old/native/owner paths and source AST checks guard isolation.
+Independent cell expectations establish cell mechanics, not F(q) truth or native
+parity. Every old source/test top-level AST node is retained in order.
+
+Focused 28-case matrices and the required root gate pass; the fresh source gate
+is 2,165 passes plus the known transformer xfail and 71 existing warnings. Lint,
+changed-file format and editor diagnostics pass; the failed initial format check
+is retained in review. No additional opt-in native/sanitizer/Arm or board gate,
+new scene, collection, labels, dependency, teacher experiment or integration.
+
+Next proposed, not approved: design-only conditional correctness/publication/work
+review of the two private helpers against CW0-CW9, including trusted-base and
+attempt-counter limits. No new import/fixture/run, source change, native inspection,
+consumer/adapter integration or proof/error/work allowance/qualification adoption.
+The bounded prototype scope is exhausted; isolation remains the default.
+
+[sinc-word-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -7967,7 +8025,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-04, REVIEW.md §121): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §122): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8130,9 +8188,12 @@ interval-to-word certificate/work preparation was separately approved and is
 complete (§121): exact-cell search/verification, guarded work ledger, separate
 interval/word claims and ten
 acceptance obligations, with no route/proof/allowance adoption or source/test run.
-Next proposed, not approved: isolated private prototype/tests under the recorded
-24 word/24 enclosure/32 direct-cell/56 total-cell per-invocation limits; not a
-consumer, native comparison, acquisition, integration or qualification promotion.
+The separately approved private prototype/tests are complete (§122): 28 cases,
+24 word/17 enclosure/32 direct-cell/38 total-cell entries per complete new-entry
+matrix, unchanged old ASTs and a fresh 2,165-pass gate plus known xfail. No
+proof/allowance, native/source/work or consumer promotion. Next proposed, not
+approved: design-only conditional correctness/publication/work review, not a
+new import/fixture/run, source edit, native inspection or consumer integration.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

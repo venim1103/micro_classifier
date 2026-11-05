@@ -141,12 +141,15 @@ from them. Historical details below are reference material, not new approvals.
   Separately approved compile-only comparison complete (§142): one process/compile,
   four historical code digests unequal despite matching source/version/filename/
   first lines. Cause/semantic correspondence unresolved; no project import/execution
-  or retry, approval spent. All verdicts still undecided. Only named evidence/claim
-  or separately authorized disambiguation scope/representation/budget decisions remain.
+  or retry, approval spent. Separately approved design-only structural comparison
+  protocol prepared (§143): SC18-v0 eighteen fields/typed constants and proposed
+  guarded one-process import/compile limits, no adoption/implementation/execution.
+  All verdicts still undecided. Only representation/stops/runner/bounded evidence
+  or other named premise/claim decisions remain; isolation retained.
   Isolation default; native motion/goals/relative transforms, source completeness/
   authority/work, task/data/dependency/hardware and broader evidence remain blocked.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-142 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-143 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1205,8 +1208,8 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §142 compile-only
-comparison complete; §141 U4 identity audit / §140 worksheet / §139 review prepared;
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §143 design-only
+structural comparison protocol prepared; §142 compile-only / §141 identity complete;
 §138 private prototype/gates in `8bf26d3`.
 Four of five positions used; fifth unnecessary, no new source run pending.
 Full named matrix: 32 joins/57 target/52 composition/77 binding/62 cell;
@@ -1219,7 +1222,9 @@ one compilation/four comparisons, all historical digests unequal; source/version
 filename/first lines match, cause/semantic correspondence unresolved. No project
 import/execution in that comparison, no retry, all three process approvals spent.
 No checker/fixture/source-gate run or claim adoption. All fifteen verdicts undecided.
-Only named evidence/claim or separately approved disambiguation scope/budget remains;
+SC18-v0 fields/typed constants and proposed guarded single-process import/compile
+protocol prepared without imports/runs/source refresh/adoption. Only explicit
+representation/stops/runner/bounded evidence or other named decisions remain;
 isolation default.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/cleanup pending.
@@ -1552,6 +1557,9 @@ Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/clean
   Compile-only comparison (REVIEW.md §142): separately approved one process/compile,
   four historical code digests unequal; cause/semantic correspondence unresolved.
   No project import/execution/retry/claim adoption; scope spent, disambiguation blocked.
+  Structural protocol (REVIEW.md §143): separately approved design-only SC18-v0
+  fields/types/guards/attempt/node/byte/publication proposal prepared. No source
+  refresh/import/compile/adoption; future representation/runner/process unapproved.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

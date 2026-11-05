@@ -10633,6 +10633,84 @@ scope/representation/budget/stop protocol or another explicit named evidence dec
 
 [sinc-compile-comparison-design]: DESIGN.md
 
+## 143. Design-Only Same-Process Structural Comparison Protocol (2026-11-05)
+
+§142 completed in `bbee4dd`, clean worktree, with four unequal historical code-object
+digests and no inferred semantic cause. The user then explicitly selected **Approve
+the design-only comparison protocol**: use existing project records to specify code
+fields/recursively typed constants, proposed node/byte/attempt caps, source/version
+checks, retention and stops. No imports, compilation, fixtures, installed-source
+refresh or claim adoption; preserve all historical mismatches and fifteen undecided
+verdicts. Existing-document recording and a local commit are approved, not execution.
+[DESIGN.md §7][sinc-structural-protocol-design] contains the concrete SC18-v0 proposal.
+
+**Local hypothesis and paper check.** Exact agreement over a declared complete field
+list and type-preserving constant encoding could distinguish a structural difference
+from a digest-only mismatch without treating Python numeric equality or repr as an
+oracle. The cheapest preparation check is an exact eighteen-field/type inventory,
+explicit unsupported/incomplete outcomes, charged work before allocation and complete
+publication conditions. It is a document check, not evidence that a comparator runs,
+that all fields exist on the selected runtime, or that these limits fit the objects.
+
+The candidate selects only the same four §141 roots; no join/root extension or
+historical-object reconstruction. It proposes one future diagnostics import/compile
+process, eight snapshot attempts and four comparisons, then complete rechecks and
+fresh publication. The compiled module is not executed and no checker/Fraction
+constructor is deliberately called; imported dependency initialization still runs.
+Current source/line/version metadata from §§138/141/142 is a declared profile, not
+newly measured runtime evidence in this preparation.
+
+SC18-v0 includes counts/flags, instruction bytes/constants, names/locals, filename/
+name/qualname/first line, location/exception tables and closure names. Eighteen fields
+are explicit, recursively including CodeType constants. Exact-builtin typed tags
+preserve bool/int separation, integer sign/magnitude, binary64 float/complex bits,
+UTF-8 surrogatepass strings, literal bytes, ordered tuples and fully sorted frozenset
+encodings; no numeric/repr/digest fallback. Alias/private/adaptive/global/interpreter
+state is outside this representation, so equality would not be full-object equality,
+historical correspondence, a semantic proof or authority/qualification evidence.
+
+Proposed combined node visits8,192/depth64/integer bits65,536/leaf payload1,048,576
+bytes/difference paths64/report bytes65,536, plus nine bytes per visited-node encoding
+overhead. Eight snapshot/four comparison entries and one process/import/compile
+position are nonrefundable; no repair retry or hidden extra root. Guards precede
+encoding/recursion/copy/sort, and output exhaustion stops unresolved instead of
+truncating a completeness claim. These are proposed logical stops, not verified
+memory/time/import/compiler/primitive-work bounds. Their feasibility is unmeasured.
+
+The proposal keeps distinct equal/different/unresolved outcomes and rejects missing/
+duplicate/unsupported/changed/budget-exhausted evidence. Final two-point identity
+and hash rechecks cannot enforce ownership or detect every transient mutation.
+Unexpected failures/interruption publish no successful report. No marshal
+normalization or rewritten §141/§142 result; no outcome-driven adjustment of limits.
+Only complete declared-field agreement would support the narrow SC18-v0 observation,
+and even that is proposed, not adopted. All existing claim/qualification flags stay.
+
+No project/installed source was imported, compiled or refreshed in this design-only
+scope; no new structural field, constant, fixture, numerical/native/runtime result
+or resource measurement was obtained. No probe/cache/raw-constant artifact created,
+no collection/download/dependency/hardware action or cleanup. Scoped field/type/
+guard/budget/publication/non-adoption/history/Sources/design/milestone/stable-rule/
+tested-byte/whitespace checks pass, including the exact eighteen-field inventory
+and 618 reference uses/local targets. No preparation check failed. A framing/note
+clarification patch failed on unrelated context; a targeted check confirmed neither
+change landed, then a grounded retry applied without changing limits or criteria.
+The same focused checks passed after the retry, including explicit framing/payload
+charges; editor/diff/staged-byte checks precede the local documentation checkpoint.
+No default suite rerun.
+
+§142's one compile-only approval and §141's two identity approvals remain spent.
+§138 four of five source positions/fifth unused, old §129/§132 exhausted and §135
+fifth not borrowed; source gate stays 2,245 passes plus known xfail/71 warnings.
+All fifteen U/JO verdicts undecided, five flags false, native/motion/source/work
+unresolved, consumer ineligible. No proof/allowance/Route C/totality/native/source/
+resource/consumer adoption or runtime integration. Task6/9, physical/task-quality,
+source authority/completeness/work, motion/goals/relative transforms, teacher assets
+and ST/board remain blocked. Next decision: approve/modify the proposed SC18-v0
+representation, stops, runner and bounded future process scope, or keep isolation;
+preparing this protocol does not authorize that execution or its implementation.
+
+[sinc-structural-protocol-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -6413,6 +6413,150 @@ Isolation remains default; this review ends with document checks and a local com
 
 [sinc-checker-paper-review]: REVIEW.md
 
+#### NF1 V-bind Evidence and Interface Contract (2026-11-05)
+
+The user separately approved §126's design-only V-bind contract preparation;
+[review §127][sinc-bind-contract-review] records checks and limits. This is a
+proposal, not record capture, a checker, accepted evidence or implementation
+permission. Source/tests and all old helpers/caps/flags remain unchanged. No
+target import, fixture/helper/native run, installed inspection or acquisition.
+
+**Claim and proposed default.** V-bind means exact declared correspondence
+between a separately specified stored q word, a complete candidate record and
+a separately captured complete enclosure record. Matching records do not prove
+that either came from a particular invocation, that F(q) lies in the interval,
+that the word is its rounding result or that a native program agrees. V-cell
+content, V-target inclusion, V-live authority and actual resource work remain
+distinct. Keep all five flags false and every consumer ineligible.
+
+Propose a private, explicitly synthetic-only three-input boundary: expected
+q_word, candidate_record and enclosure_record. Do not obtain expected q from
+either record, call any producer/enclosure/cell/checker/owner/native helper,
+or capture a record inside verification. Status/reason/identity strings select
+an exact schema/profile only; they are not truth or origin evidence. Reject
+unresolved/partial/unknown-version records rather than completing them from
+defaults, copied binding metadata or a successful cell status. No existing
+helper/signature or record is changed by this proposal.
+
+**Complete input profile.** Use exact builtin dicts, bounded builtin string
+keys (at most 32 characters), exact key sets, bounded literal selector strings,
+fixed tuples, one exact two-item builtin endpoint list and nonboolean builtin
+integers/booleans as applicable. No coercion, arbitrary-object traversal,
+conversion/copy hooks, JSON/decimal parsing, pickle,
+deepcopy, import, persistence or cache. Serialize caller ownership until raw
+validation and a fresh fixed-field snapshot finish; this is a premise, not an
+atomic-read or thread-safety guarantee. Validate all supplied pair shapes/types/
+positive denominators/raw sizes before canonicalization or snapshot publication.
+
+| Record | Exact Required Successful Shape | Binding Rule / Missing Evidence |
+| --- | --- | --- |
+| Candidate | Current 23 root fields: identity, allowed_use, status, reason, target, q_word; five false flags; native_sinc_status, motion_status, source_status, native_work_status, consumer_status; work, sign, q_ratio, configuration, interval, certificate, enclosure_binding. | Require the current candidate/profile literals and ineligible/unresolved limits; no invented root branch or complete enclosure payload. |
+| Complete enclosure | Current 20 root fields: allowed_use, status, reason, target, domain_ratio, configuration, q_word; five false flags; native_sinc_status, motion_status; work, q_ratio, sign, branch, interval, stages. | No identity/source/consumer fields are currently emitted here; never fill those omissions as authority. |
+| Configuration | Exact arctangent_terms, sinc_terms, rational_bit_limit with nonboolean builtin values 32, 8, 65,536. | Compare candidate and enclosure independently to this profile; a lower verifier cap does not rewrite producer configuration. |
+| Small candidate binding | Exact q_word, sign, q_ratio. | Must equal expected decoded q and both complete records; this three-field object is not the enclosure transcript. |
+| Series stages | Exact arctangent, pi, squared_argument, coefficients, polynomial, remainder. Arctangent is two two-endpoint intervals; pi/squared_argument/polynomial/remainder each two endpoints; coefficients exactly eight pairs. | Twenty stage pairs must be present, canonical and shape/order-valid; this does not replay or prove the series/real-pi inclusion argument. |
+| Zero stages / certificate | Empty stages; exact three-key certificate word, interval, branch with unit word, [1,1] and zero. | Separate from the eight-field V-cell interface; signed q zeros retain distinct words/signs even though the canonical q ratio is (0,1). |
+| Series certificate | Exact current eight-key cell shape with seven canonical pairs, eligible output word and fixed neighbor/order/tie/containment types. | Certificate interval equals both root intervals; full cell recomputation is separate V-cell work, not claimed by V-bind. |
+| Declared work | Enclosure work has rational_operations/max_result_bits. Candidate work has enclosure_entries/cell_entries/enclosure, plus cell only for series. Cell has seven keys: search_iterations, endpoint_iterations, dyadic_decodes, midpoint_constructions, rational_comparisons, rational_constructions, max_result_bits. | Endpoint_iterations is an exact two-item builtin list of nonnegative counts at most 64 each, summing to search_iterations; snapshot it independently. Other counts are exact builtin nonnegative bounded integers. Exact copied enclosure-work equality is a declaration, not execution/capture/resource evidence. |
+
+All successful profile strings, fixed statuses and false flags must match their
+current branch-specific literals exactly, with builtin type checks before
+equality. Reject numeric aliases, missing/extra stages, partial records, unknown
+selectors, changed configuration, noncanonical pairs or inconsistent copies.
+Domain_ratio is exactly (1,64). No qualification is inferred from matching
+allowed_use/status/reason, file digests or a claimed work counter.
+
+**Independent q and correspondence.** Independently decode the expected exact
+builtin u64 word: reject exponent 2047; retain its stored sign; reconstruct the
+finite dyadic and canonical signed numerator/positive denominator with guarded
+integer-pair mathematics. For stored sign s, exponent e and fraction h, the
+zero-exponent value is $(-1)^s h2^{-1074}$; otherwise it is
+$(-1)^s(2^{52}+h)2^{e-1075}$. Preserve the stored sign separately from the
+canonical ratio. Both signed zeros produce (0,1), not the same stored
+word/sign. Nonzero subnormal q is never rewritten to zero. Require the absolute
+decoded value within 1/64, matching target/domain/profile and exact word/sign/
+canonical-ratio equality in the candidate, enclosure and small binding.
+
+Infer the branch from this independent q value, not a candidate root branch
+(none exists). For series require the enclosure branch/reason and full stage
+shape, positive ordered common interval, and exact equality with the candidate
+root and certificate interval. Order both arctangent intervals, pi, squared
+argument, polynomial and remainder intervals without evaluating their claimed
+mathematical relationship. Reject a reversed interval, not clip it. For zero
+require both roots/certificate to have [1,1], empty stages, the exact unit word
+and zero certificate branch; no V-cell call or fabricated eight-field record.
+Candidate enclosure_entries is one and cell_entries is zero/one for zero/series.
+Require candidate's copied enclosure work to equal the complete enclosure work.
+
+Even a fabricated but mutually consistent full tuple can satisfy declared
+correspondence. It is not capture authenticity, independent enclosure inclusion
+or source authority. A same-valued interval, unchanged digest or even-sinc
+symmetry cannot excuse a different expected q/sign/word. A later composition
+must bind any V-cell evidence to this exact certificate content, not just its
+status or output word; that composition is not adopted or implemented here.
+
+**Bounded checking and publication proposal.** Separate verifier ceiling L
+defaults to 65,536 bits; require an exact nonboolean builtin integer from 1
+through 65,536, snapshot and recheck before guarded stages/final publication.
+Invalid/increased/observed changed limits stop unresolved, with no precision
+retry or change to old caps. Preflight q shifts/power denominators, raw pair
+canonicalization and both products for every rational order/domain comparison;
+postcheck canonical component types/signs/sizes. Later cancellation cannot
+excuse an oversized raw operation. Special exact-zero decoding may avoid a
+large unreduced zero denominator; it may not collapse a nonzero subnormal.
+
+The proposed per-entry ledger is at most 35 input-pair canonical checks for
+series (11 candidate, 24 enclosure), or ten for zero (six candidate, four
+enclosure); one independent q decode/canonical construction; eight guarded
+order/domain comparisons for series (seven interval orders plus domain), or
+two for zero. Thus at most 36/11 counted Fraction constructions if used for
+canonicalization. Count duplicate supplied pairs even when equal; metadata,
+fixed word/radix/key setup, equality, snapshot and publication are separate.
+Declared producer work is not verifier work; require bounded builtin u64 counts
+and maximum canonical bits at most the declared producer cap, not measured RAM.
+The endpoint list is separately shape/type/bound checked and copied; it is not
+a scalar count or rational pair. Its consistency check does not prove execution.
+Attempt counters precede their own evaluation after applicable guards; retained
+max bits counts only accepted canonical outputs. GCD/allocation, early rejection
+of already allocated caller objects, totality, primitive/native/time/RAM work
+and live binding correctness remain unqualified CT0-CT2/CT5/W0/TB0 premises.
+
+Publish a fresh diagnostic-only record with a distinct proposed identity such
+as `synthetic_sinc_declared_binding_check_v0`, retained expected q/sign/ratio,
+branch/profile/common interval, exact certificate snapshot and separate attempted
+verifier-work metadata. Describe success only as `verified_declared_sinc_binding`,
+never certified rounding/enclosure/native/source/work or accepted proof. Five
+flags stay false, native/motion/source/work unresolved and consumer ineligible.
+Ordinary rejection omits verified binding/certificate content; unexpected/
+allocation/interruption errors propagate, including during publication. No
+input/old record mutation or universal return/rollback guarantee.
+
+**Independent evidence and decision gates.** Preparing these gates closes none:
+
+| Gate | Required Evidence / Decision | Stop Until Present |
+| --- | --- | --- |
+| VB0 / VC5 interface | Approve the exact profile, separate inputs, zero path, limits and a separately bounded capture/checker/test scope. | Design approval is not record acquisition, imports, fixture execution or code approval. |
+| VB1 / capture completeness | Separate owned candidate and complete enclosure snapshots for a prospectively declared expected q; exact schema/source identities and capture/attempt lineage. | Current small binding/work copies and matching hashes are not a transcript or same-invocation proof. |
+| VB2 / input ownership | Fixed builtin schemas, raw guards, serialized snapshot and fresh publication/exception argument. | No hooks, unlimited allocation, atomicity or universal rollback claim. |
+| VB3 / independent correspondence | Independent q/sign/ratio/domain/branch and exact profile/interval/certificate/work-copy argument, including signed zeros/subnormals. | Producer status, common expected builder or matching endpoints is not an independent oracle. |
+| VB4 / negative controls | Separately approved reused positions with swapped q/sign/config/interval/stages/zero shape/type/canonical/cap/ownership/allocation controls. | No fixtures or capture now; equal plausible forged records must not be advertised as target/live evidence. |
+| VB5 / preservation and work | Existing ASTs/caps/flags/defaults/wire preserved; separate attempted/capture budgets, source gates and trusted-base work argument. | Bounded logical counts do not close CT0-CT2/CT5/W0/TB0 or actual resources. |
+| VB6 / V-cell composition | Separately approved exact-content binding to independently checked cell evidence, or explicit zero mathematical path. | No producer/checker status alone, word-only join or implicit integration. |
+| VB7 / V-target | Independent SR/real-pi inclusion and accepted target/domain/arithmetic premises for this exact q/profile/transcript. | Structural full stages and declared binding do not prove F(q) inclusion or native parity. |
+| VB8 / V-live and consumer | Versioned capture/source/build/runtime/live-binding authority, requalification and resource/downstream decisions. | No hash, frozen record, paper argument or host fixture qualifies actual native work, motion, goals, relative transforms or a consumer. |
+
+Proposed default is isolation with V-bind/V-target/V-live/resource acceptance
+still absent. Next proposed, not approved: design-only capture/evidence/attempt-budget
+protocol for these separate records, including explicit reused-position,
+producer/capture/verifier entry counts, failure/retry accounting and retention.
+No capture/checker/import/new fixture/run/source edit, native inspection/
+acquisition, adapter/consumer integration or proof/error/work allowance/Route C/
+totality/qualification adoption follows. Task 6/9, source completeness/authority,
+teacher assets and ST/board remain blocked. This scope ends with document checks
+and a local commit, not closure of VC5/CT4 or permission to acquire evidence.
+
+[sinc-bind-contract-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8424,7 +8568,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §126): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §127): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8615,6 +8759,13 @@ work/trusted-base limits. No proof/allowance/VC/CT/resource or consumer acceptan
 Next proposed, not approved: design-only V-bind evidence/interface contract for
 separately captured candidate and complete enclosure records, not capture/checker/
 imports/runs/source edits/native inspection/acquisition/integration or promotion.
+The separately approved V-bind contract preparation is complete (§127): separate
+expected q/full candidate/full enclosure profiles, signed-zero/branch/interval/
+work-copy correspondence, guarded verification/publication and nine proposed
+evidence gates. Matching records are not target/live/resource truth; no capture,
+checker, run, proof/allowance or VC5/CT4/consumer acceptance. Next proposed, not
+approved: design-only capture/evidence/attempt-budget protocol, not acquisition/
+imports/new fixtures/runs/source edits/implementation/integration or promotion.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

@@ -9201,6 +9201,115 @@ or proof/error/work allowance/qualification promotion. Isolation remains default
 
 [sinc-checker-paper-design]: DESIGN.md
 
+## 127. NF1 V-bind Evidence and Interface Contract (2026-11-05)
+
+The user explicitly approved §126's offered design-only V-bind contract and
+autonomous local commits. Baseline is clean `759a342`; source/test identities
+still match §125. User terminal context reports a successful push, not assistant
+push permission or scope expansion. No code change, record capture, project
+import, fixture/helper/native run, installed inspection/acquisition or accepted
+proof/error/work allowance/Route C/totality/qualification occurs here.
+
+**Local hypothesis and routing.** The candidate retains a three-field enclosure
+binding plus work copies, not the complete enclosure stage record. A separate
+expected q and complete captured records can support declared correspondence,
+not enclosure truth or origin authority. Read current candidate/enclosure source,
+§126 and VC5/CT4; first edit prepared [DESIGN.md §7][sinc-bind-contract-design]
+with exact profiles, separate zero handling, bounded checking and evidence gates.
+The next action was static AST/text/preservation/hash/whitespace validation,
+without target imports or evaluating any fixture/helper input.
+
+**Concrete proposal, not adoption.** Three separate inputs: expected q_word,
+complete candidate_record and complete enclosure_record; expected q is not
+derived from either record. Candidate has 23 successful root fields, no root
+branch/stages; enclosure has 20, with branch/full stages but no identity/source/
+consumer fields. Schema/profile status/reason/identity literals are selectors,
+not proof that a record was emitted or its enclosure is correct. Reject partial,
+unresolved/unknown-profile/extra/missing fields, numeric aliases and coercions.
+Fixed builtin containers/pairs, exact configuration 32/8/65,536 and all false
+flags stay separate from source/build/live or consumer evidence.
+
+Independent finite-u64 q decoding retains sign and canonical ratio, rejects
+nonfinite/out-of-domain values and binds the expected word/sign/ratio exactly
+to both roots and the small binding. Derive branch from q; neither symmetry nor
+equal endpoints permits substitution of another q word/sign. For series, require
+all six stage keys and twenty stage pairs, ordered interval shapes and identical
+positive root/certificate intervals; no series/real-pi replay or inclusion claim.
+For both signed zeros, retain distinct words/signs and (0,1), exact [1,1], empty
+stages and the unit-word three-key zero certificate. Nonzero subnormals cannot
+become zero; no V-cell invocation or fabricated eight-key zero record.
+
+Candidate copied enclosure work must equal complete enclosure work. Cell work
+is the actual seven-field producer ledger: search_iterations, endpoint_iterations,
+dyadic_decodes, midpoint_constructions, rational_comparisons, rational_constructions,
+max_result_bits. Its endpoint_iterations is an exact two-item builtin list,
+counts at most 64 each with sum matching search_iterations; copy independently.
+Other declared counts are nonnegative builtin u64 integers with declared maximum
+canonical bits bounded by the producer cap. These checks establish internal
+declarations only, not actual calls/searches/capture/work/resource evidence.
+
+**Bounded verification and publication.** Proposed separate verifier ceiling
+defaults to 65,536, exact nonboolean builtin 1..65,536 with snapshot/rechecks,
+guarded q/rational construction/comparison products and canonical postchecks.
+Validate every raw supplied pair before reduction/snapshot publication; no
+cancellation/refinement/cap increase bypass. Exact-zero decoding may avoid an
+unreduced large zero denominator, never collapse nonzero q. Proposed upper
+ledger is 35/10 supplied canonical pairs (series/zero), one independent q decode,
+eight/two order/domain comparisons and at most 36/11 Fraction constructions.
+Metadata/equality/endpoint-list/word-lattice/container/snapshot/publication work
+is separate; GCD, caller allocation, actual resources and live bindings remain
+unqualified CT0-CT2/CT5/W0/TB0 premises, not measured costs or totality.
+
+Fresh proposed diagnostic identity/status records declared binding only, with
+retained exact q/profile/branch/common interval/certificate and separate attempted
+verifier work. Five flags stay false, native/motion/source/work unresolved and
+consumer ineligible. Ordinary rejection omits verified content; unexpected/
+allocation/interruption errors propagate. No atomic snapshot or universal return/
+rollback. Even fabricated mutually consistent records may pass V-bind: matching
+structure/digests/statuses never establish capture authority or F(q) inclusion.
+Later V-cell composition needs exact certificate-content binding and separate
+approval, not a word/status join or implicit integration.
+
+**Failed checks and repairs.** First focused AST check failed at the assumed
+six-field cell-work count after candidate/enclosure/binding/stage checks passed.
+Nearby source showed seven fields, distinct producer counter names and the
+endpoint list. Corrected that document profile and reran the same check; all AST
+assertions passed, then the strict next-scope prose match failed across the
+attempt-budget hyphen line wrap. Reflowed that phrase without changing scope or
+weakening assertions; same focused check passes, including two endpoint entries,
+nine VB0-VB8 gates, zero/subnormal/forged-record/ledger/no-capture clauses, exact
+prior DESIGN preservation, DESIGN-only scope, source/test identities/whitespace.
+These are documentation failures, not source defects or renewed run permission.
+
+**Verification and evidence limits.** All 586 reference uses/local targets,
+sections 1-127/fences/math, prior review/Sources/design/milestones/workflow/history/
+source-gate/task-tail preservation, nine proposed gates and profile/zero/ledger/
+forged-record/no-capture/no-run/failure-history clauses pass. Editor diagnostics
+are clear; exact three-document scope, source/test identities, empty initial
+index and whitespace pass. Exact diff review adds explicit signed finite-q
+decoding and tightens current handoff wording, without changing the proposal.
+Final content/staged-byte checks precede the local checkpoint. No code suite, fixture/
+helper/native gate or environment/native/GPU/teacher/board requalification;
+§125's 2,181 passes plus known xfail/71 warnings remain historical, not rerun.
+Source/test blobs are `937df87cc85652e324869e40a5340bfdd72df73b` and
+`f4d0c57b7a547a79a1b615694b7a4a78c55e763a`. No dependency/data/labels/training,
+adapter/consumer use, background job/cleanup or assistant push. Old helpers/caps/
+flags/defaults/wire/reports/logs and `1bb89fe` stay unchanged.
+
+**Exit and next permission.** Nine proposed VB0-VB8 gates keep VC5/CT4, V-cell
+composition, V-target/V-live/resources and all proof/allowance/qualification
+claims unaccepted. Approved design-only contract preparation ends with document
+checks/local commit, not capture or a checker. Next proposed, not approved:
+design-only capture/evidence/attempt-budget protocol for separate complete
+records, with explicit reused-position/producer/capture/verifier counts, failed/
+retried entry accounting and retention. No capture/checker/import/new fixtures/
+runs/source changes/native inspection/acquisition/adapter-consumer integration
+or proof/error/work allowance/Route C/totality/qualification adoption. Native
+motion/goals/relative transforms, source completeness/authority, Task 6/9,
+teacher assets and ST/board stay blocked. Isolation remains default.
+
+[sinc-bind-contract-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

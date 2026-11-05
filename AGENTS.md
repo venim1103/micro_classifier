@@ -118,24 +118,24 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only NF1 cell-checker correctness/
-  publication/work review (DESIGN.md §7 / REVIEW.md §126), ten conditional
-  obligations, guard/setup/snapshot/publication and attempted-work limits.
+- Latest approved package complete: design-only NF1 V-bind evidence/interface
+  contract (DESIGN.md §7 / REVIEW.md §127), full separate record profiles,
+  zero/correspondence/guard/publication/work limits and nine proposed gates.
   Source/test identities still match §125; no source change or new run.
   Five flags remain false; no proof/allowance
   or Route C/totality/qualification adoption.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `22046af`; source gate
+  and native-work remain unresolved. Baseline was clean at `759a342`; source gate
   remains §125's 2,181 plus known xfail/71 warnings, not rerun here.
   No environment/native/GPU/teacher/board requalification or candidate consumer use.
-  Next proposed, not approved: design-only V-bind evidence/interface contract,
+  Next proposed, not approved: design-only capture/evidence/attempt-budget protocol,
   not capture/checker, imports/fixtures/runs/source changes, target/live/native
   inspection/acquisition, integration or proof/allowance/qualification promotion.
   Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-126 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-127 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1193,16 +1193,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §126 completes
-the separately approved design-only cell-checker correctness/publication/work
-review: ten conditional obligations and guard/setup/snapshot/ledger/trusted-base
-boundaries. Source/test unchanged, five flags false; `1bb89fe` stays. No proof/
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §127 completes
+the separately approved design-only V-bind evidence/interface contract: separate
+expected q/full candidate/full enclosure, signed-zero/correspondence/guard/work/
+publication boundaries and nine proposed gates. Source/test unchanged, five flags
+false; `1bb89fe` stays. No proof/
 allowance/Route C, consumer/native/source/work or totality acceptance. Last gate
 is §125's 2,181 plus known xfail/71 warnings, not rerun here; failures preserved.
-Next proposed, not approved: design-only V-bind evidence/interface contract for
-separately captured candidate and complete enclosure records, not capture/checker/
-imports/new fixtures/runs/source changes/target/live/native/owner/query/reference/
-log adapter/acquisition/integration or promotion.
+Next proposed, not approved: design-only capture/evidence/attempt-budget protocol,
+not capture/checker/imports/new fixtures/runs/source changes/target/live/native/
+owner/query/reference/log adapter/acquisition/integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1483,6 +1483,11 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   arguments and attempted-work/trusted-base limits. No code/run/proof/allowance/
   flag change. Next proposed, not approved: design-only V-bind evidence/interface
   contract, not capture/checker/import/run/acquisition/integration or promotion.
+  V-bind contract (REVIEW.md §127): separately approved design-only preparation
+  complete; separate full record profiles, zero/correspondence/guard/work/publication
+  and nine proposed gates. No capture/checker/run/proof/allowance/flag change.
+  Next proposed, not approved: design-only capture/evidence/attempt-budget protocol,
+  not capture/import/run/source changes/acquisition/integration or promotion.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

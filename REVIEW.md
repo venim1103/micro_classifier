@@ -9869,6 +9869,119 @@ proposed exact Horner-stage requirement remains unchanged.
 
 [sinc-target-contract-design]: DESIGN.md
 
+## 135. NF1 Private Target-Content Prototype (2026-11-05)
+
+The user answered yes to the explicitly offered §134 private target-content
+prototype, fixed TS map/faults/limits and affected/default gates within five
+invocation positions, retaining unaccepted claims. Work began clean at `e23c866`.
+[DESIGN.md §7][sinc-target-prototype-design] records the additive boundary and
+implementation, not mathematical proof, source authority or native qualification.
+The user also requested continued autonomous work and periodic local commits;
+no assistant push, acquisition, integration, collection or promotion was authorized.
+
+**Local hypothesis/check.** The existing binding checker supplies the nearby
+fixed-schema/raw-guard pattern; the unchanged shared capture supplies twelve
+complete enclosures. Guarded independent stage reconstruction should match the
+ordinary TS6 series record and reject its fixed pi-lower perturbation. The first
+edit added one constant/private helper and the new bounded fixture/sixteen-control
+test. The immediate TS6 check passed. It did not use a native oracle or project
+snippet. The current contract and remaining controls were then checked locally.
+
+Only four new top-level AST nodes: `_SYNTHETIC_TARGET_CHECK_BITS`,
+`_check_synthetic_sinc_target_content`, `synthetic_sinc_target_checks` and
+`test_synthetic_sinc_target_content`. After scoped formatting the helper is 386
+lines, fixture 51 and test 188. Every old source/test AST node and its order is
+exactly preserved. No producer, decoder, binding/cell/composition, native trig,
+owner, recorder, motion reference or relative-input helper is delegated to by the
+new checker; fixed tests block those paths. No import/float constant/float/NumPy/
+math/open/deepcopy use in its AST. No existing default/wire/report was regenerated.
+
+Independent stored-q/domain/zero and complete canonical input checks precede
+explicit finite sums, Machin endpoint reversal, squared argument, independent
+factorials/coefficient generation, complete four-product Horner and positive
+TU^8/17! tail/root reconstruction. Raw keys/types/lengths precede lookup/copy/
+equality; same-hash hostile producer-work keys reject without equality callbacks.
+Full stage and root equality is required, not word/status/overlap/wider evidence.
+No output word/cell certificate or target-to-cell orchestrator. Fixed root 16/25,
+configuration five/work seven; five flags false and native/motion/source/work
+unresolved, consumer ineligible. Canonical/GCD/builtin/serialized ownership and
+stable bindings remain shared premises, not certified execution fidelity.
+
+The sixteen TS controls retain map `(0,1,2,3,4,5,6,7,8,9,10,11,6,7,8,9)`, exactly
+two target entries each. Successful zero ledger: 4 canonical checks/1 decode/
+0 power steps/5 constructors/0 operations/2 comparisons. Series: 24/1/147/230/
+131/57. Exact ledger assertions were added to those same requests. Reservations
+include reciprocal/multiply suboperations and precede work; Fraction/GCD/allocator/
+caller/publication costs are not included or declared zero. Ordinary stops omit
+all target evidence; unexpected/allocation/interruption errors propagate. The
+first-constructor MemoryError control is attempted-work evidence, not interruption
+or rollback evidence. Observed persistent cap change rejects; transient mutation
+or enforced ownership is not established.
+
+**Execution ledger: four of five positions used.** No refunds, workers, third
+requests, hidden variants, refills, new q/scenes or persistent payloads. The fifth
+position was unnecessary and remains unused; no further unchanged gate is planned.
+All four positions captured the unchanged twelve-slot pool: 12 candidate,
+12 nested plus 12 direct enclosure, six actual nested producer-cell entries and
+24 owned snapshots. Old §129/§132 budgets remain separately exhausted.
+
+1. `/opt/venv/bin/python -m pytest -q 'tests/test_sim.py::test_synthetic_sinc_target_content[6]'`:
+  1 passed in 1.22 s. Two target attempts; series success plus fixed pi rejection.
+  Successful work 24/1/147/230/131/57, maximum canonical result 12,442 bits.
+2. `/opt/venv/bin/python -m pytest -q tests/test_sim.py::test_synthetic_sinc_target_content tests/test_sim.py::test_synthetic_sinc_composition tests/test_sim.py::test_synthetic_sinc_declared_binding tests/test_sim.py::test_synthetic_cell_certificate_checker`:
+  64 passed in 1.81 s. TS3 now flips the retained sign bit rather than depending
+  on another pool position; comparison has an explicit raw postcheck, and opt-in
+  faults forbid constructors. Target32/composition32/binding57/pure-cell48.
+3. Same four matrices after exact successful-ledger assertions and scoped
+  formatting: 64 passed in 1.75 s; same attempt/capture ledgers.
+4. `/opt/venv/bin/python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`:
+  2,229 passed, known transformer xfail, 71 existing ONNX warnings in 55.39 s;
+  lint, changed-file formatting and whitespace pass. Same named attempt ledgers.
+
+Each full matrix reports 32 target attempts: six zero successes, eleven series
+successes, twelve ordinary unresolved returns, two ValueErrors and one MemoryError.
+Maximum successful/rejected observed work: 24 canonical checks, one decode,
+147 power steps, 230 constructors, 131 operations, 57 comparisons and 13,146 bits.
+Attempt totals across the four named positions: 98 target, 96 composition,
+171 binding and 144 pure-cell; captures 48/96/24/96 versus approved aggregate
+ceilings 60/120/60/120. Named target/composition/binding/pure-cell ceilings remain
+160/160/320/320. Other unchanged root controls are the separately renewed default
+gate, not included in these named counters or a complete execution/resource ledger.
+
+**Failed check and repairs retained.** No behavioral test failed. Initial lint
+passed, but changed-file format check failed on new layouts only. Ruff formatted
+only the two changed Python files; position three verified the added exact work
+assertions and formatting, then position four ran the required gate. The opposite-
+zero lookup and explicit comparison postcheck were local pre-matrix clarifications,
+not a relaxed assertion/guard or expanded TS control. No cap, tolerance, deadline,
+schema, xfail or safety condition was loosened.
+
+Pylance file syntax checks and editor diagnostics pass for both Python files.
+AST preservation passes before/after formatting. Tested source blobs are
+`7e03114701ac79ed17452fa611d3e1938578cd65` (diagnostics) and
+`59d55a9ff0b50d4fec015df0958e2c680a4f9145` (tests); SHA256 respectively
+`a6560a812ce501ff5e548ee3f76116502ce5dd520e5d693753504505f1a4c26d` /
+`48ef72cb89d97c51d94bbb27d7fc085f0a1efa23af2d4b66838e002be7cdd518`.
+Scoped references/local targets/history/Sources/diff/staged-byte checks precede
+the checkpoint commit. Code was not changed after the successful root gate.
+
+No C/runtime source change or additional opt-in sanitizer/Arm/build-audit gate;
+default root controls are not board/native-sinc/task/resource requalification.
+No GPU/teacher/model/hardware run, task episode/log/data/label/split, dependency,
+download, owner/query/reference adapter or candidate consumer integration. Raw
+payloads remained invocation-memory-only; no report/artifact was created. No
+background job or cleanup is pending. Existing reports, quarantine and `1bb89fe`
+stay. Task 6/9, native motion/goals/relative transforms, source completeness/
+authority/work, teacher assets and ST/board remain blocked.
+
+Next within continued preparation: same-helper conditional correctness/work
+review and concrete isolation-versus-narrow-claim decision brief, no project
+imports/fixture/helper execution or claim adoption. A target-to-cell join,
+mathematical/trusted-base/source/resource/Route C/totality/consumer acceptance or
+another source slice needs its own explicit decision; no automatic integration.
+
+[sinc-target-prototype-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

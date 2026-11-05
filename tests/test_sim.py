@@ -600,6 +600,251 @@ def synthetic_sinc_binding_pool(request):
 
 
 @pytest.fixture(scope="module")
+def synthetic_sinc_target_checks(request, synthetic_sinc_binding_pool):
+    from functools import wraps
+
+    from sim import diagnostics
+
+    state = {"attempts": 0, "journal": [], "work": []}
+    original = diagnostics._check_synthetic_sinc_target_content
+
+    @wraps(original)
+    def checked(*arguments, **keywords):
+        assert state["attempts"] < 32
+        state["attempts"] += 1
+        entry = {"outcome": "pending"}
+        state["journal"].append(entry)
+        try:
+            output = original(*arguments, **keywords)
+        except BaseException as error:
+            entry["outcome"] = type(error).__name__
+            raise
+        entry["outcome"] = output["status"]
+        state["work"].append(dict(output["work"]))
+        return output
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(diagnostics, "_check_synthetic_sinc_target_content", checked)
+        try:
+            yield state
+        finally:
+            reporter = request.config.pluginmanager.getplugin("terminalreporter")
+            capture = request.config.pluginmanager.getplugin("capturemanager")
+            if reporter is not None and capture is not None:
+                maxima = (
+                    {
+                        key: max(row[key] for row in state["work"])
+                        for key in state["work"][0]
+                    }
+                    if state["work"]
+                    else {}
+                )
+                outcomes = {
+                    entry["outcome"]: sum(
+                        other["outcome"] == entry["outcome"]
+                        for other in state["journal"]
+                    )
+                    for entry in state["journal"]
+                }
+                with capture.global_and_fixture_disabled():
+                    reporter.write_line(
+                        f"Target attempt ledger: {state['attempts']}; outcomes: {outcomes}; "
+                        f"work maxima: {maxima}; capture: {synthetic_sinc_binding_pool['counts']}"
+                    )
+
+
+@pytest.mark.parametrize("control_index", range(16))
+def test_synthetic_sinc_target_content(
+    control_index,
+    synthetic_sinc_binding_pool,
+    synthetic_sinc_target_checks,
+    monkeypatch,
+):
+    import ast
+    import inspect
+    from copy import deepcopy
+
+    from sim import diagnostics
+
+    pool = synthetic_sinc_binding_pool
+    mapping = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 6, 7, 8, 9)
+    word, _, original_record = pool["records"][mapping[control_index]]
+    original_saved = deepcopy(original_record)
+    record = deepcopy(original_record)
+    helper = diagnostics._check_synthetic_sinc_target_content
+    attempts = 0
+
+    def forbidden(*arguments, **keywords):
+        raise AssertionError("target checker reached an excluded producer/native path")
+
+    for name in (
+        "_enclose_synthetic_sinc_word",
+        "_candidate_synthetic_sinc_word",
+        "_certify_synthetic_sinc_cell",
+        "_check_synthetic_sinc_composition",
+        "_check_synthetic_sinc_declared_binding",
+        "_check_synthetic_cell_certificate",
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+        "_reference_synthetic_c1_motion",
+        "_audit_synthetic_controlled_candidate",
+        "_SyntheticC1ControlledMotionOwner",
+        "_SyntheticC1SourceRecorder",
+        "prepare_synthetic_c1_relative_input",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("sinc", "sin", "cos", "arctan2"):
+        monkeypatch.setattr(diagnostics.np, name, forbidden)
+    for name in ("sin", "cos", "atan2"):
+        monkeypatch.setattr(diagnostics.math, name, forbidden)
+    syntax = ast.parse(inspect.getsource(helper))
+    assert not any(
+        isinstance(node, (ast.Import, ast.ImportFrom))
+        or isinstance(node, ast.Constant)
+        and type(node.value) is float
+        or isinstance(node, ast.Name)
+        and node.id in {"float", "np", "math", "open", "deepcopy"}
+        for node in ast.walk(syntax)
+    )
+
+    def check(expected=word, **keywords):
+        nonlocal attempts
+        assert attempts < 2
+        attempts += 1
+        return helper(expected, record, **keywords)
+
+    first = check(synthetic_test_only=True)
+    saved = deepcopy(first)
+    zero = mapping[control_index] < 6
+    assert first["status"] == (
+        "checked_declared_mathematical_zero_content"
+        if zero
+        else "checked_declared_mathematical_sinc_content"
+    ), first
+    assert len(first) == 25
+    assert first["q_word"] == word and first["sign"] == word >> 63
+    assert first["q_ratio"] == record["q_ratio"]
+    assert (
+        first["interval"] == record["interval"] and first["stages"] == record["stages"]
+    )
+    assert first["profile"] == record["configuration"]
+    assert first["work"]["canonical_pair_checks"] == (4 if zero else 24)
+    assert first["work"]["dyadic_decodes"] == 1
+    assert first["work"]["integer_power_steps"] == (0 if zero else 147)
+    assert first["work"]["rational_constructions"] == (5 if zero else 230)
+    assert first["work"]["rational_operations"] == (0 if zero else 131)
+    assert first["work"]["rational_comparisons"] == (2 if zero else 57)
+    for key, bound in (
+        ("integer_power_steps", 256),
+        ("rational_constructions", 512),
+        ("rational_operations", 512),
+        ("rational_comparisons", 256),
+    ):
+        assert 0 <= first["work"][key] <= bound
+        assert first["configuration"][key + "_limit"] == bound
+    assert first["work"]["max_result_bits"] <= 65536
+    if control_index in (0, 1):
+        monkeypatch.setattr(diagnostics, "Fraction", forbidden)
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check(synthetic_test_only=False if control_index == 0 else 1)
+    elif control_index == 15:
+        second = check(synthetic_test_only=True)
+        record["stages"]["pi"] = ((0, 1), (0, 1))
+        record["work"]["rational_operations"] = 999
+        second["stages"]["pi"] = ((0, 1), (0, 1))
+        second["profile"]["sinc_terms"] = 0
+        second["work"]["rational_operations"] = 999
+        assert first == saved
+    else:
+        expected = word
+        if control_index == 2:
+            record.pop("interval")
+        elif control_index == 3:
+            expected = word ^ (1 << 63)
+        elif control_index == 4:
+
+            class HostileKey:
+                def __hash__(self):
+                    return hash("rational_operations")
+
+                def __eq__(self, other):
+                    raise AssertionError("unexpected target key equality")
+
+            value = record["work"].pop("rational_operations")
+            record["work"][HostileKey()] = value
+        elif control_index == 5:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_TARGET_CHECK_BITS", 65537)
+        elif control_index == 6:
+            record["stages"]["pi"] = ((3, 1), record["stages"]["pi"][1])
+        elif control_index == 7:
+            arctangents = record["stages"]["arctangent"]
+            record["stages"]["arctangent"] = (arctangents[0][::-1], arctangents[1])
+        elif control_index == 8:
+            coefficients = list(record["stages"]["coefficients"])
+            numerator, denominator = coefficients[1]
+            coefficients[1] = (numerator + denominator, denominator)
+            record["stages"]["coefficients"] = tuple(coefficients)
+        elif control_index in (9, 11):
+            owner = record["stages"] if control_index == 9 else record
+            key = "polynomial" if control_index == 9 else "interval"
+            owner[key] = tuple(
+                (numerator + denominator, denominator)
+                for numerator, denominator in owner[key]
+            )
+        elif control_index == 10:
+            lower, (numerator, denominator) = record["stages"]["remainder"]
+            record["stages"]["remainder"] = (
+                lower,
+                (numerator + denominator, denominator),
+            )
+        elif control_index == 12:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_TARGET_CHECK_BITS", 1)
+        elif control_index in (13, 14):
+            original_fraction = diagnostics.Fraction
+            constructions = 0
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_TARGET_CHECK_BITS", 65536)
+
+            def changed_constructor(*arguments, **keywords):
+                nonlocal constructions
+                constructions += 1
+                assert constructions == 1
+                if control_index == 14:
+                    raise MemoryError("injected target allocation")
+                value = original_fraction(*arguments, **keywords)
+                diagnostics._SYNTHETIC_TARGET_CHECK_BITS = 1
+                return value
+
+            monkeypatch.setattr(diagnostics, "Fraction", changed_constructor)
+        if control_index == 14:
+            with pytest.raises(MemoryError, match="injected target allocation"):
+                check(synthetic_test_only=True)
+            assert constructions == 1
+        else:
+            rejected = check(expected, synthetic_test_only=True)
+            assert rejected["status"] == "unresolved_synthetic_sinc_target_content"
+            assert (
+                len(rejected) == 16
+                and "interval" not in rejected
+                and "stages" not in rejected
+            )
+            if control_index == 13:
+                assert constructions == rejected["work"]["rational_constructions"] == 1
+    assert attempts == 2
+    assert first == saved and original_record == original_saved
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    ):
+        assert first[flag] is False
+    assert first["consumer_status"] == "ineligible_isolated_candidate"
+
+
+@pytest.fixture(scope="module")
 def synthetic_sinc_composition_checks(request, synthetic_sinc_binding_pool):
     from functools import wraps
 

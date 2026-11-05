@@ -7366,6 +7366,64 @@ assets, physical/task quality and ST/board remain unresolved and unchanged.
 
 [sinc-target-contract-review]: REVIEW.md
 
+#### NF1 Private Target-Content Prototype (2026-11-05)
+
+The user explicitly approved §134's private prototype, fixed TS0-TS15 map/faults,
+local limits and renewed affected/default gates under the five-invocation ceiling,
+keeping claims unaccepted. [Review §135][sinc-target-prototype-review] records the
+implementation and actual four-position ledger. The fifth position was not needed;
+completion does not authorize another unchanged gate or a different source slice.
+Old §129/§132 allowances remain separately exhausted.
+
+`_check_synthetic_sinc_target_content` is additive and private; it accepts only
+expected q plus the complete enclosure record and literal synthetic opt-in. The
+separate `_SYNTHETIC_TARGET_CHECK_BITS` defaults to 65,536. Old helper ASTs/order,
+limits, wire, defaults and artifacts are unchanged. No producer, decoder, owner,
+binding, cell, composition or native-trig helper is used by this checker.
+
+Fixed builtin schema/raw guards precede owned copying and rational reconstruction.
+All 24 series/four zero pairs must already be canonical. Expected q is independently
+decoded, including sign and both zeros, and compared to the exact domain/record.
+For series, explicit powers form each 32-term arctangent sum and positive 65th-power
+tail; independent Machin endpoint reversal reconstructs pi. Independent q-squared/
+pi-squared products, factorials through 17!, eight coefficients, seven four-product
+interval Horner steps and eight rational tail multiplications reconstruct every
+stage and the final interval exactly. Zero requires empty stages and [1,1]. A
+consistent fabricated record may match these contents without attesting execution.
+
+The fixed root is 16 fields on unresolved results and 25 on success, with separate
+zero/series status. Five configuration fields and seven work fields retain §134's
+limits: 256 power/factorial steps, 512 constructions, 512 rational operations and
+256 comparisons. Reservations precede attempted operations, including nested
+division/reciprocal/multiply work. Guarded raw arithmetic and canonical results
+have preflight/postchecks; saved-bit-limit changes reject before publication.
+Only the private ordinary stop is caught. Allocation/interruption/unexpected
+errors propagate; no universal return, transaction or resource claim follows.
+
+| Successful Branch | Canonical Pairs | Decodes | Power Steps | Constructions | Rational Operations | Comparisons |
+| --- | --- | --- | --- | --- | --- | --- |
+| Zero | 4 | 1 | 0 | 5 | 0 | 2 |
+| Series | 24 | 1 | 147 | 230 | 131 | 57 |
+
+These checked logical ledgers apply to the fixed reused controls, not complete
+Python/GCD/allocator work, measured resources or certified all-domain completion.
+The sixteen controls use the approved map and exactly two requests each; one
+ordinary request plus its fixed opt-in/key/zero/stage/cap/allocation/copy fault.
+Full affected matrices pass with 32 target/32 composition/57 binding/48 pure-cell
+attempts, reusing one complete twelve-slot capture. No target-to-cell orchestration,
+external-report input, runtime adoption or candidate consumer was added.
+
+Five flags remain false; native/motion/source/work statuses are unresolved and
+consumer ineligible. TV/TI mathematical, trusted-base, source, work/resource and
+claim decisions remain separate and unaccepted. Next authorized preparation is
+the same-helper conditional correctness/work review and concrete claim/premise/
+evidence decision brief, with no imports or additional fixture/helper execution.
+Any later join needs its own typed-content contract and explicit approval. No
+Route C, totality, numerical/physical/task qualification, collection, teacher,
+dependency or hardware approval; Task 6/9 and all broader gates stay blocked.
+
+[sinc-target-prototype-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9377,7 +9435,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §134): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §135): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9606,6 +9664,11 @@ The separately approved design-only target-inclusion content contract is prepare
 (§134): independent same-q/stage reconstruction, TV0-TV9/TI0-TI7, explicit zero
 branch and fixed sixteen-control/five-invocation future proposal. No checker/run/
 integration/proof/claim adoption; prototype and affected gates remain unapproved.
+The separately approved private target-content prototype is complete (§135):
+independent full-stage reconstruction, fixed sixteen controls and unchanged old
+ASTs/caps. Gate 2,229 plus known xfail/71 warnings; four of five positions used.
+No target/native/source/work/consumer claim adoption or target-to-cell integration;
+same-helper conditional review/decision preparation continues without new runs.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

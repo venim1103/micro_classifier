@@ -118,29 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Approved private composition prototype complete (DESIGN.md §7 / REVIEW.md
-  §132, `cbac6d8`), following §131's separately approved contract: exact typed joins,
-  separate zero/no-cell branch and sixteen fixed controls. Five new invocations
-  spent; root gate 2,213 plus known xfail/71 warnings. Named full-matrix attempt
-  totals: 32 composition/57 binding/48 pure-cell; old ASTs/caps preserved.
-  Five flags remain false; no proof/allowance or Route C/totality/qualification
-  adoption. §129's older five-invocation allowance remains exhausted.
-  Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `5391702`.
-  No native/GPU/teacher/board requalification or candidate consumer use.
-  Same-helper conditional review/decision brief prepared (§133); separately
-  approved design-only target-inclusion contract now prepared (§134): independent
-  same-q/stage reconstruction, TV0-TV9/TI0-TI7 and fixed bounded future proposal.
-  Next decision: private target-content prototype/affected-gate renewal with
-  explicit TS map/faults/limits, or isolation. No implementation/run/claim adoption
-  follows from the design; no imports or executions were renewed.
-  No further capture/checker run, target/live/native acquisition, integration or
-  promotion. Broader evidence/consumer decisions remain unaccepted.
-  Old helpers stay unchanged;
-  isolation stays default, with no dependency/data/hardware approval.
-  All approved source executions are exhausted; no new source run is pending.
+- Approved private target-content prototype complete (DESIGN.md §7 / REVIEW.md
+  §135), following §134's separately approved fixed TS map/faults/limits and
+  affected/default gate renewal. Independent same-q/full-stage reconstruction,
+  separate signed zeros and sixteen controls; every old AST/order/cap preserved.
+  Four of five new positions used; fifth unnecessary, no new source run pending.
+  Root gate 2,229 plus known xfail/71 warnings. Full named matrix attempts:
+  32 target/32 composition/57 binding/48 pure-cell; reused twelve-slot capture.
+  Five flags false, native/motion/source/work unresolved, consumer ineligible;
+  no proof/allowance/Route C/totality/qualification or target-to-cell adoption.
+  Old §129/§132 allowances remain separately exhausted. Baseline clean at `e23c866`.
+  No candidate consumer, task/data/dependency/hardware or native-sinc requalification.
+  Same-helper conditional correctness/work review and concrete decision preparation
+  continues without imports/new fixtures/runs or claim adoption. Isolation stays
+  default; native motion/goals/relative transforms, source completeness/authority/
+  work and broader evidence/consumer decisions remain unresolved.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-134 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-135 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -151,10 +145,10 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-05): 2,213 passes plus known xfail, 71 existing
-  ONNX warnings; sixteen new composition cases, lint/changed-file format/editor
-  syntax/diagnostics and legacy AST preservation pass. Formatting and captured
-  ledger failures/repairs are preserved in §132; older failures stay intact. No
+- Last source-test gate (2026-11-05): 2,229 passes plus known xfail, 71 existing
+  ONNX warnings; sixteen new target cases, lint/changed-file format/editor
+  syntax/diagnostics and legacy AST preservation pass. Formatting failure and
+  actual four-position ledger are preserved in §135; older failures stay intact. No
   runtime/C source change or additional opt-in sanitizer/
   Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1199,18 +1193,16 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §134 prepares
-the approved design-only target-inclusion contract/future proposal; §132 private
-prototype complete in `cbac6d8`. Five new invocations spent; full-matrix attempts
-32 composition/57 binding/48 pure-cell;
-old ASTs/caps and five false flags preserved; `1bb89fe` stays. Last gate 2,213
-plus known xfail/71 warnings; failures preserved. No proof/allowance/Route C,
-consumer/native/source/work or totality acceptance.
-Next decision: bounded target-content prototype/affected-gate renewal; no new
-capture/checker run/target/live/native/owner/query/reference/log adapter/acquisition/
-integration or promotion. No evidence/consumer/qualification adoption.
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §135 private
+target-content prototype and approved affected gates complete. Four of five
+positions used; fifth unnecessary, no new source run pending. Full named matrix:
+32 target/32 composition/57 binding/48 pure-cell; old ASTs/caps and five false
+flags preserved; `1bb89fe` stays. Last gate 2,229 plus known xfail/71 warnings;
+failures preserved. No proof/allowance/Route C/native/source/work/totality or
+consumer acceptance. Same-helper conditional review and concrete decision
+preparation continues without imports/runs/acquisition/integration/promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
-Approved source executions are exhausted; no background job or cleanup pending.
+Old §129/§132 budgets exhausted; no background job or cleanup pending.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1516,6 +1508,9 @@ Approved source executions are exhausted; no background job or cleanup pending.
   Target contract (REVIEW.md §134): separately approved design-only TV0-TV9/TI0-TI7,
   independent same-q/stage content and fixed TS controls/bounded future proposal.
   No code/run/claim adoption; prototype/affected-gate renewal remains unapproved.
+  Target prototype (REVIEW.md §135): separately approved private helper and sixteen
+  controls complete; 2,229 plus known xfail/71 warnings, four of five positions used.
+  Old ASTs/caps/flags preserved; no claim/consumer/join adoption or further run.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

@@ -44,6 +44,397 @@ _SYNTHETIC_BIND_CHECK_BITS = 65536
 _SYNTHETIC_COMPOSITION_BITS = 65536
 
 
+_SYNTHETIC_TARGET_CHECK_BITS = 65536
+
+
+def _check_synthetic_sinc_target_content(
+    expected_q_word, enclosure_record, *, synthetic_test_only=False
+):
+    """Check mathematical stage contents, never producer execution or native parity."""
+    if synthetic_test_only is not True:
+        raise ValueError("target checker requires synthetic_test_only=True")
+    limit = _SYNTHETIC_TARGET_CHECK_BITS
+    ceilings = {
+        "integer_power_steps": 256,
+        "rational_constructions": 512,
+        "rational_operations": 512,
+        "rational_comparisons": 256,
+    }
+    work = {
+        "canonical_pair_checks": 0,
+        "dyadic_decodes": 0,
+        "integer_power_steps": 0,
+        "rational_constructions": 0,
+        "rational_operations": 0,
+        "rational_comparisons": 0,
+        "max_result_bits": 0,
+    }
+    flags = {
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "producer_parity_qualified",
+    }
+    result = {
+        "identity": "synthetic_sinc_target_content_check_v0",
+        "allowed_use": "isolated_synthetic_sinc_target_content_check_only",
+        "status": "unresolved_synthetic_sinc_target_content",
+        "reason": "unsupported_target_content",
+        "configuration": {
+            "rational_bit_limit": limit
+            if type(limit) is int and 1 <= limit <= 65536
+            else None,
+            **{key + "_limit": value for key, value in ceilings.items()},
+        },
+        **{flag: False for flag in flags},
+        "native_sinc_status": "unresolved_native_sinc_evidence",
+        "motion_status": "unresolved_motion_evidence",
+        "source_status": "unresolved_source_authority",
+        "native_work_status": "unresolved_native_work_evidence",
+        "consumer_status": "ineligible_isolated_candidate",
+        "work": work,
+    }
+    if type(limit) is not int or not 1 <= limit <= 65536:
+        result["reason"] = "unsupported_target_check_configuration"
+        return result
+
+    class TargetStop(ArithmeticError):
+        pass
+
+    def require(condition):
+        if not condition:
+            raise TargetStop("inconsistent_target_content")
+
+    def preflight(*sizes):
+        if (
+            type(_SYNTHETIC_TARGET_CHECK_BITS) is not int
+            or _SYNTHETIC_TARGET_CHECK_BITS != limit
+        ):
+            raise TargetStop("changed_target_check_configuration")
+        if max(sizes) > limit:
+            raise TargetStop("target_rational_work_limit")
+
+    def reserve(key):
+        preflight(1)
+        if work[key] >= ceilings[key]:
+            raise TargetStop("target_attempt_limit")
+        work[key] += 1
+
+    def shape(value, keys):
+        require(type(value) is dict and len(value) == len(keys))
+        require(
+            all(type(key) is str and len(key) <= 32 and key in keys for key in value)
+        )
+
+    def integer(value, minimum, maximum):
+        require(type(value) is int and minimum <= value <= maximum)
+        preflight(value.bit_length())
+
+    collected = []
+
+    def pair(value):
+        require(type(value) is tuple and len(value) == 2)
+        require(all(type(part) is int for part in value) and value[1] > 0)
+        preflight(*(part.bit_length() for part in value))
+        collected.append(value)
+
+    def interval(value):
+        require(type(value) is tuple and len(value) == 2)
+        for endpoint in value:
+            pair(endpoint)
+
+    def owned(value):
+        if type(value) is dict:
+            return {key: owned(item) for key, item in value.items()}
+        if type(value) is tuple:
+            return tuple(owned(item) for item in value)
+        return value
+
+    def rational(numerator, denominator=1):
+        preflight(numerator.bit_length(), denominator.bit_length())
+        reserve("rational_constructions")
+        value = Fraction(numerator, denominator)
+        numerator, denominator = value.numerator, value.denominator
+        require(type(numerator) is int and type(denominator) is int and denominator > 0)
+        size = max(numerator.bit_length(), denominator.bit_length())
+        preflight(size)
+        work["max_result_bits"] = max(work["max_result_bits"], size)
+        return numerator, denominator
+
+    def raw_multiply(left, right, *, power_step=False):
+        preflight(left.bit_length() + right.bit_length())
+        if power_step:
+            reserve("integer_power_steps")
+        value = left * right
+        preflight(value.bit_length())
+        return value
+
+    def add(left, right):
+        preflight(
+            max(
+                left[0].bit_length() + right[1].bit_length(),
+                right[0].bit_length() + left[1].bit_length(),
+            )
+            + 1,
+            left[1].bit_length() + right[1].bit_length(),
+        )
+        reserve("rational_operations")
+        return rational(left[0] * right[1] + right[0] * left[1], left[1] * right[1])
+
+    def multiply(left, right):
+        preflight(
+            left[0].bit_length() + right[0].bit_length(),
+            left[1].bit_length() + right[1].bit_length(),
+        )
+        reserve("rational_operations")
+        return rational(left[0] * right[0], left[1] * right[1])
+
+    def divide(left, right):
+        require(right[0] > 0)
+        preflight(right[0].bit_length(), right[1].bit_length())
+        reserve("rational_operations")
+        return multiply(left, rational(right[1], right[0]))
+
+    def compare(left, right):
+        preflight(
+            left[0].bit_length() + right[1].bit_length(),
+            right[0].bit_length() + left[1].bit_length(),
+        )
+        reserve("rational_comparisons")
+        first, second = left[0] * right[1], right[0] * left[1]
+        preflight(first.bit_length(), second.bit_length())
+        return (first > second) - (first < second)
+
+    def interval_multiply(left, right):
+        products = [multiply(first, second) for first in left for second in right]
+        lower = upper = products[0]
+        for product in products[1:]:
+            if compare(product, lower) < 0:
+                lower = product
+            if compare(product, upper) > 0:
+                upper = product
+        return lower, upper
+
+    profile = {
+        "arctangent_terms": 32,
+        "sinc_terms": 8,
+        "rational_bit_limit": 65536,
+    }
+    stage_keys = {
+        "arctangent",
+        "pi",
+        "squared_argument",
+        "coefficients",
+        "polynomial",
+        "remainder",
+    }
+    keys = {
+        "allowed_use",
+        "status",
+        "reason",
+        "target",
+        "domain_ratio",
+        "configuration",
+        "q_word",
+        "q_ratio",
+        "sign",
+        "branch",
+        "interval",
+        "stages",
+        "work",
+        "native_sinc_status",
+        "motion_status",
+    } | flags
+    try:
+        integer(expected_q_word, 0, (1 << 64) - 1)
+        exponent = (expected_q_word >> 52) & 2047
+        require(exponent != 2047)
+        sign = expected_q_word >> 63
+        zero = expected_q_word & ((1 << 63) - 1) == 0
+        branch = "zero" if zero else "series"
+        shape(enclosure_record, keys)
+        selectors = {
+            "allowed_use": "isolated_synthetic_sinc_reference_only",
+            "status": "enclosed_mathematical_sinc",
+            "reason": "exact_mathematical_zero_branch"
+            if zero
+            else "real_pi_even_series_enclosure_only",
+            "target": "real_pi_normalized_sinc_at_stored_binary64",
+            "branch": branch,
+            "native_sinc_status": "unresolved_native_sinc_evidence",
+            "motion_status": "unresolved_motion_evidence",
+        }
+        require(
+            all(
+                type(enclosure_record[key]) is str and enclosure_record[key] == value
+                for key, value in selectors.items()
+            )
+        )
+        require(
+            all(
+                type(enclosure_record[key]) is bool and enclosure_record[key] is False
+                for key in flags
+            )
+        )
+        integer(enclosure_record["q_word"], 0, (1 << 64) - 1)
+        integer(enclosure_record["sign"], 0, 1)
+        require(enclosure_record["q_word"] == expected_q_word)
+        require(enclosure_record["sign"] == sign)
+        shape(enclosure_record["configuration"], profile)
+        for key, value in profile.items():
+            integer(enclosure_record["configuration"][key], 1, 65536)
+            require(enclosure_record["configuration"][key] == value)
+        declared_work = enclosure_record["work"]
+        shape(declared_work, {"rational_operations", "max_result_bits"})
+        integer(declared_work["rational_operations"], 0, (1 << 64) - 1)
+        integer(declared_work["max_result_bits"], 0, 65536)
+        pair(enclosure_record["q_ratio"])
+        pair(enclosure_record["domain_ratio"])
+        interval(enclosure_record["interval"])
+        stages = enclosure_record["stages"]
+        shape(stages, set() if zero else stage_keys)
+        if not zero:
+            require(
+                type(stages["arctangent"]) is tuple and len(stages["arctangent"]) == 2
+            )
+            for value in stages["arctangent"]:
+                interval(value)
+            for key in ("pi", "squared_argument", "polynomial", "remainder"):
+                interval(stages[key])
+            require(
+                type(stages["coefficients"]) is tuple
+                and len(stages["coefficients"]) == 8
+            )
+            for value in stages["coefficients"]:
+                pair(value)
+        record = owned(enclosure_record)
+        for value in collected:
+            work["canonical_pair_checks"] += 1
+            require(rational(*value) == value)
+        require(record["domain_ratio"] == (1, 64))
+        require(compare(*record["interval"]) <= 0)
+        if not zero:
+            for value in (
+                *record["stages"]["arctangent"],
+                record["stages"]["pi"],
+                record["stages"]["squared_argument"],
+                record["stages"]["polynomial"],
+                record["stages"]["remainder"],
+            ):
+                require(compare(*value) <= 0)
+        work["dyadic_decodes"] += 1
+        if zero:
+            ratio = rational(0, 1)
+        else:
+            significand = expected_q_word & ((1 << 52) - 1)
+            if exponent:
+                significand += 1 << 52
+            shift = exponent - 1075 if exponent else -1074
+            preflight(significand.bit_length() + max(0, shift), 1 + max(0, -shift))
+            numerator = significand << max(0, shift)
+            ratio = rational(-numerator if sign else numerator, 1 << max(0, -shift))
+        require(record["q_ratio"] == ratio)
+        require(compare((abs(ratio[0]), ratio[1]), (1, 64)) <= 0)
+        expected_stages = {}
+        computed_interval = ((1, 1), (1, 1))
+        if not zero:
+            arctangents = []
+            for denominator in (5, 239):
+                powers = [1]
+                for _ in range(65):
+                    powers.append(
+                        raw_multiply(powers[-1], denominator, power_step=True)
+                    )
+                partial = (0, 1)
+                for degree in range(32):
+                    odd = 2 * degree + 1
+                    term = rational(
+                        -1 if degree % 2 else 1, raw_multiply(odd, powers[odd])
+                    )
+                    partial = add(partial, term)
+                tail = rational(1, raw_multiply(65, powers[65]))
+                arctangents.append((partial, add(partial, tail)))
+            require(tuple(arctangents) == record["stages"]["arctangent"])
+            pi_interval = (
+                add(
+                    multiply((16, 1), arctangents[0][0]),
+                    multiply((-4, 1), arctangents[1][1]),
+                ),
+                add(
+                    multiply((16, 1), arctangents[0][1]),
+                    multiply((-4, 1), arctangents[1][0]),
+                ),
+            )
+            require(compare((3, 1), pi_interval[0]) < 0)
+            require(compare(*pi_interval) <= 0)
+            require(compare(pi_interval[1], (4, 1)) < 0)
+            require(pi_interval == record["stages"]["pi"])
+            squared_q = multiply(ratio, ratio)
+            squared_argument = tuple(
+                multiply(squared_q, multiply(endpoint, endpoint))
+                for endpoint in pi_interval
+            )
+            require(compare((0, 1), squared_argument[0]) < 0)
+            require(compare(*squared_argument) <= 0)
+            require(compare(squared_argument[1], (1, 256)) <= 0)
+            require(squared_argument == record["stages"]["squared_argument"])
+            factorial = 1
+            coefficients = []
+            for degree in range(1, 18):
+                factorial = raw_multiply(factorial, degree, power_step=True)
+                if degree % 2 and degree <= 15:
+                    coefficients.append(
+                        rational(-1 if (degree // 2) % 2 else 1, factorial)
+                    )
+            require(tuple(coefficients) == record["stages"]["coefficients"])
+            polynomial = (coefficients[7], coefficients[7])
+            for coefficient in reversed(coefficients[:7]):
+                product = interval_multiply(polynomial, squared_argument)
+                polynomial = tuple(add(endpoint, coefficient) for endpoint in product)
+            require(polynomial == record["stages"]["polynomial"])
+            tail_power = (1, 1)
+            for _ in range(8):
+                tail_power = multiply(tail_power, squared_argument[1])
+            remainder = ((0, 1), divide(tail_power, (factorial, 1)))
+            require(remainder == record["stages"]["remainder"])
+            computed_interval = tuple(
+                add(endpoint, tail)
+                for endpoint, tail in zip(polynomial, remainder, strict=True)
+            )
+            require(compare(*computed_interval) <= 0)
+            expected_stages = {
+                "arctangent": tuple(arctangents),
+                "pi": pi_interval,
+                "squared_argument": squared_argument,
+                "coefficients": tuple(coefficients),
+                "polynomial": polynomial,
+                "remainder": remainder,
+            }
+        require(record["interval"] == computed_interval)
+        require(record["stages"] == expected_stages)
+        preflight(1)
+        result.update(
+            status="checked_declared_mathematical_zero_content"
+            if zero
+            else "checked_declared_mathematical_sinc_content",
+            reason="independent_declared_stage_content_only",
+            q_word=expected_q_word,
+            sign=sign,
+            q_ratio=ratio,
+            target="real_pi_normalized_sinc_at_stored_binary64",
+            domain_ratio=(1, 64),
+            branch=branch,
+            profile=owned(profile),
+            interval=computed_interval,
+            stages=owned(expected_stages),
+            work=owned(work),
+        )
+    except TargetStop as error:
+        result["reason"] = str(error)
+    return result
+
+
 def _check_synthetic_sinc_composition(
     expected_q_word, candidate_record, enclosure_record, *, synthetic_test_only=False
 ):

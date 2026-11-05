@@ -7098,6 +7098,82 @@ bounded interface/control/gate execution is not blanket acceptance of those gate
 
 [sinc-composition-prototype-review]: REVIEW.md
 
+#### NF1 Composition Correctness and Work Review (2026-11-05)
+
+Autonomous next-part preparation after §132 reviews the same committed helper,
+not a new execution or proof/claim acceptance. [Review §133][sinc-composition-paper-review]
+records the conditional argument and decision brief. Source checkpoint `cbac6d8`,
+both tested source identities and five exhausted invocation positions stay intact.
+The default remains isolated diagnostic use with no accepted composition claim.
+
+**Conditional Statement.** Given faithful exact builtin operations, the separately
+reviewed binding/cell checkers, stable function/configuration bindings, serialized
+caller ownership and ordinary successful allocation, a successful series return
+connects the two checker statements to the same supplied certificate/interval.
+It does not prove that the supplied enclosure contains F(q). Zero returns only
+the separately checked declared zero binding; it does not invoke or borrow the
+eight-field cell theorem. No mathematical target, installed np.sinc equivalence,
+live/callee authority, numerical allowance or consumer eligibility follows.
+
+| Obligation | Conditional Same-Helper Argument | Premise / Remaining Limit |
+| --- | --- | --- |
+| CO0 / entry and caps | Literal opt-in precedes delegation. All applicable caps are exact nonboolean integers in 1..65,536, retained before binding; invalid/increased configurations stop. Zero cell cap is not applicable. | Configuration reads are serialized assumptions, not an atomic snapshot or a cap on all work. |
+| CO1 / fixed raw schemas | Root/key/string/container types, lengths and nonboolean integer leaves are checked before owned traversal or content equality. Exact key-type checks short-circuit before membership; both complete input schemas precede copying. | Builtin behavior and no concurrent mutation are premises. Input validation has its own range/key/size work; raw cap does not bound pre-existing object allocation. |
+| CO2 / ownership | Only fixed-schema dict/tuple/list contents are copied. Mutable work lists/dicts become fresh; rational/word/string/bool leaves are immutable. Original certificate/interval/ratio content is retained before delegation. | Validation-to-copy and later rereads are not synchronized against caller races; no general snapshot atomicity or live-source authentication. |
+| CO3 / declared binding | One reserved binding entry uses the owned records. Exact 23-field success/16-field unresolved schemas, selectors, false flags, work/configuration and typed q/sign/ratio/branch/profile/certificate/interval are validated before joins. | This reuses the conditional V-bind argument, not an independent proof of declared stages or faithful callee selection. |
+| CO4 / zero separation | Exact expected zero words retain their signs; the successful binding establishes canonical zero ratio and the three-field unit/[1,1]/zero certificate. No cell attempt, limit or work is claimed. | This does not qualify the installed wrapper's tiny-substitution branch or any nonzero word as zero. |
+| CO5 / series cell | Saved applicable cell cap is rechecked, then one entry is reserved. An owned eight-field binding certificate enters the existing independent cell checker; exact seventeen-field success/profile/work is required. | V-cell content correctness and runtime fidelity remain conditional; a test return hook is not production authentication. |
+| CO6 / exact join | Typed validated original/binding/cell-input/cell-output certificates compare equal across all eight fields. Original/binding and both supplied root intervals agree. Canonicality established by each checker is retained by exact content equality, not extra reduction. | Equal words/statuses/hashes are insufficient. Original retained intervals/ratios are immutable; mutable reports require serialized stable checker behavior, not a universal no-hook theorem. |
+| CO7 / work and live guards | Binding/cell attempts increment before delegation; applicable caps are rechecked after each call and immediately before ordinary publication. Work is separately copied, never merged into a larger cap. | Temporary mutation/restoration, primitive/GCD/runtime work and all allocations are not observed or certified by these checks. |
+| CO8 / publication and stops | No composed certificate is added until the final successful join. Only CompositionStop is caught; unexpected, MemoryError and interruption errors propagate. A returned unresolved result may retain partial attempted-work metadata, not partial composed evidence. | Local dictionary construction/update may fail; no universal return, rollback or externally enforced atomicity. Fixed CC14 tests MemoryError, not interruption. |
+| CO9 / claim separation | Both success branches keep five false flags and native/motion/source/work unresolved, consumer ineligible. All old helpers/caps/defaults/wire/1bb89fe are unchanged. | Accepted CT/SR/target/live/resource/consumer evidence and explicit claim adoption are still absent; correct cells can join fabricated consistent stages. |
+
+**Separate Ledgers.** Under those premises, complete series has one binding/one
+cell entry; 35+7 canonical-pair attempts, 1+3 dyadic decodes, two midpoints,
+8+3 comparisons and 36+12 Fraction attempts. Zero has one binding/no cell;
+ten canonical attempts, one decode, no midpoint, two comparisons and eleven
+Fraction attempts. The join adds no Fraction construction, reduction or float
+arithmetic. Do not remove duplicate certificate checks to make a smaller ledger.
+The actual §132 test-entry/capture counters are a different accounting layer.
+Reported checker work is copied, not independently measured native primitive cost.
+
+Fixed schemas bound traversal depth and field counts under the premises; they do
+not bound GCD cost, Python integer/storage/runtime internals, caller allocation,
+total live objects, stack/RAM/time or successful completion. Separate entry setup,
+integer range/bit_length checks, key-set construction, metadata equality, copying,
+report construction and final publication remain outside the rational-operation
+ledger. max_result_bits belongs to accepted canonical checker outputs, not peak
+raw/intermediate memory or a whole-composition resource measurement. Three limits
+remain distinct; no sum, raise, retry, precision refinement or new work allowance.
+
+**Concrete Decision Brief.** Candidate A/default: retain isolation and accept no
+claim; no new source/runtime/evidence policy is needed to keep abstention. Candidate
+B: explicitly review and accept only the conditional declared-correspondence plus
+cell-content statement above, separately specifying CT0-CT2/ownership/exception
+premises and admissible identity/runtime evidence. Benefit is a narrowly named
+diagnostic statement; cost is unresolved assumptions and no target/live/consumer
+benefit. Neither candidate authorizes another run or promotes flags.
+
+Before B, proposed paper acceptance checks are: exact zero/series/profile scope;
+CO0-CO9 guard/ownership/call/publication review against the pinned source; explicit
+shared builtin/Fraction/GCD/function-binding/configuration/serialized-caller premise
+decisions; separate logical/attempted/resource ledgers and exception evidence limits;
+and explicit narrowly worded claim recording with all exclusions. Source/schema/
+cap/profile/callee/runtime/ownership-policy changes invalidate that review and
+require affected-gate renewal or new admissible evidence, never automatic reuse.
+Git hashes pin bytes, not loaded function identity, selected environment or authority.
+
+For a stronger F(q)-to-cell statement, a separate same-q/32/8/profile target-inclusion
+argument and faithful complete stage generation are still required; V-bind alone
+checks declared correspondence. Native/live use additionally needs its own selected
+path/FP/uniform-error/source authority and resource/consumer evidence. These are
+precise missing decisions, not authorization for a target checker, transcript,
+acquisition, native run, owner/adapter integration or another fixture budget.
+CJ1-CJ3 conditional preparation is complete; proof/CT/W0/TB0/claim acceptance and
+CJ6-CJ7 evidence/consumer decisions remain unclosed. Recommend A now.
+
+[sinc-composition-paper-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9109,7 +9185,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §132): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §133): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9330,6 +9406,10 @@ fixed sixteen controls, typed joins and no-cell zero branch; old ASTs/caps intac
 Gate 2,213 plus known xfail/71 warnings; five new invocations spent. Same-helper
 conditional review/decision preparation continues without imports/new runs or
 claim adoption; broader source/runtime/resource/consumer evidence remains blocked.
+That conditional composition review and concrete isolation-versus-narrow-claim
+brief are now prepared (§133): CO0-CO9, distinct ledgers and explicit missing
+premise/target/live/resource/consumer decisions. No source/run/claim adoption;
+§132's tested gate and exhausted execution budget remain unchanged.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

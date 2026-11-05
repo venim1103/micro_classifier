@@ -9690,6 +9690,88 @@ a separate explicit decision. Preparing that decision does not adopt it.
 
 [sinc-composition-prototype-design]: DESIGN.md
 
+## 133. NF1 Composition Correctness and Work Review (2026-11-05)
+
+The user requested independent next-part continuation after the private package.
+This is routine same-helper conditional paper/decision preparation, not renewed
+execution, claim adoption or expanded evidence acquisition. Clean baseline/source
+checkpoint `cbac6d8`. [DESIGN.md §7][sinc-composition-paper-design] holds CO0-CO9,
+the separate ledgers and a concrete isolation-versus-narrow-claim brief.
+
+Local hypothesis: under faithful builtin/checker/runtime bindings and serialized
+ownership, raw guards before owned copying and typed joins before publication
+connect only declared binding plus cell content for one supplied certificate.
+The cheapest disconfirming check is committed AST statement/call/catch ordering,
+not another numerical fixture. The initial static check confirms fixed input
+validation before copying/delegation, saved certificate/ratios/intervals, reserved
+binding entry, post-call cap/report checks and final live guard before publication;
+local-stop-only catch and no join Fraction/float/import/native/producer path.
+No project import, helper/fixture execution or target/native computation occurred.
+
+**Conditional outcome.** No local ordering/correspondence contradiction found
+under the stated premises. This is not accepted proof, formal verification, a
+no-hook/atomicity theorem or runtime/resource qualification. Exact key/type checks
+precede unchecked lookup/equality/traversal; owned mutable containers and retained
+immutable intervals/ratios prevent ordinary output mutation from rewriting the
+saved content. Validation-to-copy, report rereads, mutable globals and function
+bindings still rely on serialized caller/runtime premises. Temporary cap changes
+that are restored are not detected or claimed covered.
+
+Series calls the binding checker once and pure-cell checker at most once, after
+the separately saved cell cap is revalidated. Exact 23/17 successful root schemas,
+5/6 work profiles and eight-field certificate correspondence are distinct; neither
+status nor equal word establishes compatible contents. Canonicality is inherited
+only from the two conditional checker statements plus exact typed equality, not
+new normalization. Zero has only its own signed expected-word/canonical zero/unit
+certificate branch and no cell entry/configuration/work. It does not qualify the
+installed native tiny-substitution branch. Native/motion/source/work remain
+unresolved and the consumer ineligible, with all five flags false.
+
+Conditional arithmetic ledger remains series 42 canonical attempts/four decodes/
+two midpoints/eleven comparisons/48 Fraction attempts; zero ten/one/zero/two/eleven.
+The join performs no new Fraction/reduction/float arithmetic. Its fixed-schema
+copy/setup/key/range/bit-length/metadata/report/publication work, caller allocations,
+GCD/integer/runtime internals, peak raw/live storage and stack/time/RAM are separate.
+Attempt counters precede delegation but are not measured resource cost; copied
+checker work is not independent primitive telemetry. max_result_bits does not
+cover rejected/raw/intermediate/total memory. CompositionStop-only ordinary
+rejection omits composed evidence while retaining attempted-work metadata; allocation/
+interruption/unexpected failure may prevent return. CC14 was MemoryError evidence
+only. No cap sum/increase, retry/refinement, totality or numerical allowance.
+
+**Decision brief and precise blocker.** Recommend continued isolation/no accepted
+claim (A). Alternative B is only a conditional supplied-record correspondence and
+cell-content statement under explicitly accepted builtin/Fraction/GCD/stable-binding/
+configuration/serialized-ownership/exception premises. Review CO0-CO9, exact zero/
+series/output profiles, separate attempted/logical/resource work and admissible
+identity/runtime evidence before explicitly recording B with all exclusions.
+Correct cells may still join fabricated consistent stages; B has no target/live/
+consumer benefit. Stronger F(q) inclusion needs an independent same-q/profile/stage
+generation argument; native/live use needs selected-path/FP/uniform-error/source
+authority/resources and an explicit consumer decision. No checker/transcript/
+acquisition/new fixture budget or integration is authorized by preparing this brief.
+
+Source/test blobs remain `278a0bf4c424d9090e9a02cd72554c91f395be7b` /
+`952d8644261ac619db8aee3e132772bf3b0fd5b9`. Last code gate remains §132's 2,213
+passes/known xfail/71 warnings, not rerun; five new invocation positions remain
+spent. §132's source-derived 130/230/194 named attempt totals and 60/120/30/120
+capture totals are unchanged; historical §129 budget is separately exhausted.
+No source/test/cap/flag/default/wire/old artifact change, imports, numerical/model/
+native/fixture run, installed-source inspection/acquisition, environment qualification,
+data/labels/splits/training/dependency, background job, cleanup or assistant push.
+`1bb89fe`, Task 6/9, native motion/goals/relative transforms, source completeness/
+authority/work, teacher assets and ST/board remain blocked. Further work requires
+the explicit claim/premise/admissible-evidence decision; no automatic next run.
+Focused static checks pass: guard/copy/entry/cell/typed-join/publication/catch
+ordering, actual 16/23/17/8 profiles, ten CO obligations and separate ledgers.
+All 598 references/local targets, sections 1-133, prior review/Sources/design/
+milestones/workflow/task tail, tested identities, three-document scope and
+whitespace pass. No failed check in this paper scope; earlier failures remain
+preserved. Final editor diagnostics and scoped diff/staged-byte checks precede
+the local paper checkpoint. The source suite is not rerun for these document edits.
+
+[sinc-composition-paper-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

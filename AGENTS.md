@@ -119,7 +119,7 @@ Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
 - Approved private composition prototype complete (DESIGN.md §7 / REVIEW.md
-  §132), following §131's separately approved contract: exact typed joins,
+  §132, `cbac6d8`), following §131's separately approved contract: exact typed joins,
   separate zero/no-cell branch and sixteen fixed controls. Five new invocations
   spent; root gate 2,213 plus known xfail/71 warnings. Named full-matrix attempt
   totals: 32 composition/57 binding/48 pure-cell; old ASTs/caps preserved.
@@ -128,15 +128,17 @@ from them. Historical details below are reference material, not new approvals.
   Native motion/goal/relative transforms, pending completeness/source authority
   and native-work remain unresolved. Baseline was clean at `5391702`.
   No native/GPU/teacher/board requalification or candidate consumer use.
-  Next authorized preparation: same-helper conditional correctness/work review
-  and concrete claim/premise/evidence brief, without new imports or executions.
+  Same-helper conditional review/decision brief now prepared (§133): CO0-CO9,
+  distinct ledgers and isolation versus a narrowly conditional diagnostic claim.
+  Next missing decision: explicit claim/premise/admissible-evidence acceptance;
+  no new imports or executions follow from the preparation.
   No further capture/checker run, target/live/native acquisition, integration or
   promotion. Broader evidence/consumer decisions remain unaccepted.
   Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved source executions are exhausted; no new source run is pending.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-132 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-133 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1195,13 +1197,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §132 completes
-the separately approved private exact-content composition prototype. Five new
-invocations spent; full-matrix attempts 32 composition/57 binding/48 pure-cell;
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §133 prepares
+the same-helper conditional composition review/decision brief; §132 private
+prototype complete in `cbac6d8`. Five new invocations spent; full-matrix attempts
+32 composition/57 binding/48 pure-cell;
 old ASTs/caps and five false flags preserved; `1bb89fe` stays. Last gate 2,213
 plus known xfail/71 warnings; failures preserved. No proof/allowance/Route C,
 consumer/native/source/work or totality acceptance.
-Next authorized preparation: same-helper conditional review/decision brief; no new
+Next missing decision: explicit claim/premise/admissible-evidence acceptance; no new
 capture/checker run/target/live/native/owner/query/reference/log adapter/acquisition/
 integration or promotion. No evidence/consumer/qualification adoption.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
@@ -1505,6 +1508,9 @@ Approved source executions are exhausted; no background job or cleanup pending.
   sixteen controls and affected gates complete; 2,213 plus known xfail/71 warnings.
   Five new invocations spent; no additional execution or claim adoption. Same-helper
   conditional review/decision preparation continues without imports or runs.
+  Composition review (REVIEW.md §133): CO0-CO9 conditional arguments, separate
+  ledgers and concrete claim/premise/evidence brief prepared. No source/run/claim
+  acceptance; only explicit approval-blocked work remains, with isolation retained.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

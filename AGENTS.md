@@ -118,23 +118,24 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved source package complete: NF1 declared-binding checker/capture/
-  sixteen controls (DESIGN.md §7 / REVIEW.md §129), full owned companion records,
-  exact declared correspondence and preserved old ASTs/caps. Five invocations spent.
+- Latest same-checker conditional review prepared (DESIGN.md §7 / REVIEW.md §130):
+  ten BR obligations, logical ledger and concrete decision brief; no accepted
+  correspondence/proof/trusted-base/resource or consumer claim. Source package
+  §129 is complete in `9869129`; old ASTs/caps preserved, five invocations spent.
   Five flags remain false; no proof/allowance
   or Route C/totality/qualification adoption.
   Native motion/goal/relative transforms, pending completeness/source authority
   and native-work remain unresolved. Baseline was clean at `5341c41`; source gate
   is §129's 2,197 plus known xfail/71 warnings.
   No environment/native/GPU/teacher/board requalification or candidate consumer use.
-  Next prerequisite: conditional guard/snapshot/publication/work review of the
-  exact checker; no further capture/checker run, target/live/native acquisition,
+  Next decision: exact conditional correspondence claim/premises and admissible
+  evidence; no further capture/checker run, target/live/native acquisition,
   integration or promotion. Broader evidence/consumer decisions remain unaccepted.
   Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved source executions are exhausted; no new source run is pending.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-129 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-130 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1192,13 +1193,13 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §129 completes
-the approved declared-binding checker/capture/sixteen-control package. Five source
-invocations spent, 70 checker entries; old ASTs/caps preserved, five flags
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §130 prepares
+the same-checker conditional review/decision brief; §129 source package complete
+in `9869129`. Five invocations spent, 70 checker entries; old ASTs/caps preserved, five flags
 false; `1bb89fe` stays. No proof/
 allowance/Route C, consumer/native/source/work or totality acceptance. Last gate
 is §129's 2,197 plus known xfail/71 warnings; failures preserved.
-Next prerequisite: conditional guard/snapshot/publication/work review; no new
+Next decision: exact correspondence claim/premises and admissible evidence; no new
 capture/checker run/target/live/native/owner/query/reference/log adapter/acquisition/
 integration or promotion. No evidence/consumer/qualification adoption.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
@@ -1494,6 +1495,8 @@ Approved source executions are exhausted; no background job or cleanup pending.
   fixture, sixteen controls; all old ASTs/caps preserved. Gate 2,197 plus known
   xfail/71 warnings, five invocations spent. BC8 hostile-key failure repaired;
   no target/live/consumer qualification or further capture/checker run.
+  Same-checker review (REVIEW.md §130): ten conditional obligations/ledger and
+  decision brief prepared; source/tests unchanged, no claim acceptance or new run.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

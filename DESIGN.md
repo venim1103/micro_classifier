@@ -6774,6 +6774,83 @@ is approved by completing the bounded source package. Isolation remains default.
 
 [sinc-bind-implementation-review]: REVIEW.md
 
+#### NF1 Declared-Binding Conditional Review (2026-11-05)
+
+The autonomous continuation prepares the same-checker conditional review identified
+in §129, using the committed source/test text at `9869129` only. This is routine
+paper preparation, not an accepted proof, correspondence claim, trusted-base
+qualification or renewed source execution. [Review §130][sinc-bind-paper-review]
+records static checks. The five source invocations remain exhausted; all source,
+tests, caps, flags, consumers and historical evidence stay unchanged.
+
+**Conditional Claim.** Assuming faithful builtin arithmetic/container operations,
+faithful terminating Fraction canonicalization, stable runtime bindings, serialized
+caller ownership and successful allocation/ordinary return, a verified result
+establishes the exact declared correspondence described in §127. It does not
+establish that supplied stages enclose F(q), that certificate neighbors/boundaries/
+ties are correct, or that any producer/capture/native/live source is authoritative.
+Matching fabricated records remain admissible to this deliberately weaker claim.
+
+| Obligation | Local Conditional Argument | Unclosed Premise / Claim Limit |
+| --- | --- | --- |
+| BR0 / VB2 interface | Literal opt-in and a separate exact builtin integer limit precede verification; invalid/increased limits return unresolved with no certificate. Exact dict length plus distinct allowed builtin string keys gives exact key coverage. | Builtin/runtime correctness and caller allocations are assumed; this does not bound all rejected-object or setup work. |
+| BR1 / VB2 no-hook boundary | Types/shapes precede nested lookups, equality, arithmetic and fixed-schema copying. Candidate-work shape precedes its enclosure lookup; both copied enclosure-work dictionaries and integer leaves precede equality. | BC8 establishes its finite hostile-key regression only. Stable keys/values and serialized ownership are required; no concurrent or malicious-runtime guarantee. |
+| BR2 / VB3 canonical inputs | Every supplied pair has exact builtin integer leaves, positive denominator and raw component guards before any Fraction call; canonical equality rejects reducible aliases. | Fraction/GCD termination/correctness, allocation and installed/live correspondence remain CT1/TB0 premises. |
+| BR3 / VB3 independent q | Finite u64 fields independently select sign/zero/series and the guarded dyadic; expected q is not read from either record. Absolute q must be at most 1/64 and both records/small binding match word/sign/canonical ratio. | Both zero words retain distinct signs and ratio (0,1); a nonzero subnormal is not zero. Exact integer decoding is assumed, not native floating-point qualification. |
+| BR4 / VB3 declared correspondence | Exact profile/branch/domain/common-interval/certificate-interval/work-copy checks and ordered series intervals establish those declarations. Zero additionally requires empty stages, unit word and [1,1]. | Series arithmetic, pi inclusion, coefficient truth and cell neighbor/boundary/parity/order truth are not recomputed; containment/status fields are not evidence of those claims. |
+| BR5 / VB2 guarded work | Raw pair guards, q shift/denominator guards, canonical postchecks and cross-product size sums precede the corresponding rational operations. The separate limit is rechecked through guarded stages and immediately before publication. | This detects observed changes, not temporary change-and-restoration or immutable bindings. Fixed word/key/metadata/copy work is outside the rational cap. |
+| BR6 / VB2 snapshot | Fixed validated schemas terminate owned traversal under the ownership premise. Dict/list copies are fresh; immutable builtin leaves/tuples may safely share values. The returned certificate is separately copied. | Validation rereads caller fields and canonicalizes collected original immutable pairs after copying; no atomic snapshot or enforced ownership. Allocation/interruption may prevent completion. |
+| BR7 / VB5 attempted ledger | Input canonical attempts, one q decode, guarded comparisons and Fraction attempts are counted at their actual stage boundaries; max_result_bits records accepted canonical outputs only. | Duplicate supplied pairs count separately. Rejected raw/products, GCD internals, caller/copy/publication objects and elapsed/native/RAM work are not measured by these counters. |
+| BR8 / VB2 publication | BindingStop returns only unresolved metadata/work; successful ordinary publication attaches a fresh diagnostic certificate after final preflight. Unexpected/allocation/interruption exceptions propagate. | No universal return, rollback or exception-atomic runtime claim. No source input mutation is prescribed under faithful bindings. |
+| BR9 / VB4-VB5 isolation | §129's bounded controls and exact preserved old ASTs/caps establish their recorded finite checks. Five flags remain false and every consumer stays ineligible. | Finite tests/file identities/private names do not accept VB2/VB3/VB5, CT0-CT2/CT4-CT5, W0/TB0, proof/allowance/totality or any downstream qualification. |
+
+**Paper Ledger.** Series candidate fields contribute eleven supplied pairs:
+q ratio, two root endpoints, seven certificate pairs and one small-binding ratio.
+The enclosure contributes twenty-four: q ratio, two root endpoints, domain and
+twenty stage pairs. Zero contributes six candidate plus four enclosure pairs.
+Thus complete successful paths have 35/10 canonical-pair attempts, one dyadic
+decode, 36/11 Fraction attempts and 8/2 comparisons. Series comparisons are domain,
+common interval and six stage interval orders; zero has domain and common interval.
+This is an exact conditional logical ledger, not new measurement or total cost.
+
+Raw validation collects all pairs before fixed-schema copying or canonicalization.
+Each canonical attempt precedes its rational call; each guarded rational/comparison
+attempt precedes its own evaluation after preflight. Conservative comparison
+guards use the sums of operand component bit lengths before both products; later
+cancellation/reduction does not excuse a rejected raw size. For any finite u64 q,
+the independent unreduced dyadic needs at most 1,024 numerator or 1,075 denominator
+bits, checked before its shift/power construction. Exact zero instead constructs
+(0,1); it does not construct the large zero denominator or alter nonzero semantics.
+
+Fixed word masks/bounds, key sets/profile/result setup precede these guards and are
+not governed by the rational limit. Metadata endpoint counts are separately bounded
+builtin integers; two counts at most 64 sum to search_iterations, not witnessed
+execution. Snapshot/publication and duplicate immutable value traversal are bounded
+by the accepted fixed schema, not by a certified stack/RAM/time/runtime allowance.
+Initial/final file identities are not loaded-code or callee authority. The fixture's
+companion-direct enclosure is a distinct call, not a candidate-callee transcript.
+
+**Decision Brief.** Recommend retaining isolation and no accepted claim for now.
+The narrow candidate for review is declared correspondence under the assumptions
+above, with all five flags false and no V-cell/V-target/V-live/resource/consumer
+promotion. Its benefit is separating structural evidence from mathematical/live
+claims; its cost is that internally consistent fabrications remain admissible and
+runtime/trusted-base work is still assumed. Accepting stronger language would need
+different evidence, not merely accepting this paper ledger or repeating fixtures.
+
+Proposed acceptance checks are: review BR0-BR9 against these exact source identities;
+accept or reject each CT0-CT2 ownership/arithmetic/exception premise explicitly;
+retain exact-content separation from V-cell and SR inclusion; define permitted
+source/runtime/resource evidence and requalification triggers; and record a narrowly
+worded claim decision without changing flags or consumers. These are unaccepted
+review gates, not execution permission. No new capture/checker run, integration,
+native/source acquisition or proof/error/work allowance/Route C/totality adoption.
+Task 6/9, native motion/goals/relative transforms, source completeness/authority,
+teacher assets and ST/board remain blocked. A broader composition or evidence
+package needs its own decision; the exhausted source approval cannot supply it.
+
+[sinc-bind-paper-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8785,7 +8862,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §129): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §130): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8993,6 +9070,10 @@ owned twelve-slot companion capture and sixteen controls; old ASTs/caps preserve
 Gate 2,197 plus known xfail/71 warnings; five invocations exhausted, no further
 capture/checker run. Declared correspondence is not V-target/V-live/resource or
 consumer qualification; conditional guard/snapshot/work review remains a prerequisite.
+That same-checker conditional review and concrete claim decision brief are now
+prepared (§130): ten BR0-BR9 obligations and the logical ledger, with unchanged
+source/tests and no new run. No correspondence/proof/trusted-base/resource or
+consumer claim is accepted; next is the explicit claim/premise/evidence decision.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

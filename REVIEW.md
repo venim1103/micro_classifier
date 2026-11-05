@@ -9445,6 +9445,70 @@ promotion follows. Keep isolation default; do not invent renewed execution scope
 
 [sinc-bind-implementation-design]: DESIGN.md
 
+## 130. NF1 Declared-Binding Conditional Review (2026-11-05)
+
+After the §129 source checkpoint `9869129`, continued the same-checker paper
+prerequisite under the user's autonomous-continuation request. Clean baseline;
+routine static preparation only, not renewed source execution or approval of
+proof, a correspondence/trusted-base/resource claim, consumer integration or a
+broader evidence package. [DESIGN.md §7][sinc-bind-paper-design] holds the ten
+conditional obligations and concrete decision brief.
+
+BR0-BR9 map exact profiles, no-hook guard order, canonical pairs, independent q,
+declared correspondence, rational guards, owned snapshots, attempted counters,
+ordinary publication and isolation to VB2/VB3/VB4/VB5. No contradiction identified
+in the checked local ordering/ledger claims under faithful builtin/Fraction
+bindings, serialized ownership and successful ordinary completion. Those premises
+remain assumptions; this is not a formal proof or CT0-CT2/CT4-CT5/W0/TB0 closure.
+Fabricated consistent records can pass; full stages and cell/status metadata do
+not establish F(q), cell correctness, callee capture, source or live authority.
+
+Paper ledger: series eleven candidate plus twenty-four enclosure pairs, zero
+six plus four; 35/10 canonical attempts, one dyadic decode, 36/11 Fraction attempts,
+8/2 comparisons. Nonzero finite-word shift/denominator work is explicitly guarded;
+the zero shortcut constructs (0,1). Fixed word/key/profile/result setup, metadata
+counts, snapshots/publication, rejected/raw/product/storage/GCD/runtime work and
+caller allocations remain distinct from rational caps/max accepted canonical bits.
+Serialized copying is not atomicity or enforced ownership; unexpected/allocation/
+interruption errors can prevent any return. Companion-direct is not same-callee
+capture evidence. None of these observations adopts a resource allowance.
+
+First focused standard-library text/AST check passed: candidate-work shape before
+lookup, all pair collection before snapshot/canonicalization, raw guards before
+collection, guard/counter/evaluation ordering for Fraction and comparisons, final
+preflight before publication and BindingStop-only catch. Ledger assertions match
+the recorded test text; ten obligations and exact prior DESIGN/source/test bytes
+remain preserved. No checker/helper/fixture/project import, numerical/native/model
+run, installed-source inspection/acquisition or environment requalification.
+Final checks pass: 592 actual references/local targets, sections 1-130, preserved
+prior review/Sources/design/milestones/workflow/history/source-gate/task tail,
+ten conditional obligations/ledger/no-run/non-adoption, exact tested source
+identities, three-document scope, editor diagnostics and whitespace. Exact diff
+review and staged-byte checks precede the local document commit.
+No failed check in this paper scope; all §129/earlier failures remain intact.
+
+**Decision brief and handoff.** Proposed default remains isolation/no accepted
+claim. Candidate: narrowly stated declared correspondence under explicitly reviewed
+arithmetic/ownership/exception premises, all flags false and consumer ineligible.
+Benefit: separate structural evidence from mathematical/live claims; limitations:
+consistent fabrications and unqualified runtime/work. Proposed review checks cover
+BR0-BR9, explicit CT0-CT2 premise decisions, exact-content V-cell/SR separation,
+permitted source/runtime/resource evidence/requalification and narrowly worded
+claim recording. These gates are unaccepted, not collection or execution approval.
+
+Source/test Git blobs remain `709dc01f1232dd76a66dd571bcd8365432365ded` and
+`955a39417a8d2e3a834dfc0efa836d4f43642767`; §129's 2,197 passes/known xfail/
+71 warnings is the last source gate, not rerun. Five source invocations exhausted;
+70 checker entries and 60/120/30/120 capture totals are unchanged. No new fixture,
+capture/export/cache/report/data, code/cap/flag/default/wire/old artifact change,
+background job, cleanup or assistant push. `1bb89fe`, native motion/goals/relative
+transforms, source completeness/authority, Task 6/9, teacher assets and ST/board
+remain blocked. Only claim/premise/evidence decisions remain for this preparation;
+no further capture/checker run, V-cell composition, owner/adapter/native integration
+or proof/error/work allowance/Route C/totality/qualification promotion follows.
+
+[sinc-bind-paper-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

@@ -10711,6 +10711,88 @@ preparing this protocol does not authorize that execution or its implementation.
 
 [sinc-structural-protocol-design]: DESIGN.md
 
+## 144. Rules-First Critical-Path Priority Reset (2026-11-05)
+
+The user interrupted the pending evidence work to request a documentation review
+against the original plan, then asked to **fix priorities first, document them and
+identify the next step**. [DESIGN.md §12][priority-reset-design] now puts the active
+delivery order before the historical checkpoint narrative. This adopts a scheduling
+reset toward a qualified simulation rules baseline, not new runtime/evidence/data
+permissions or a relaxation of existing qualification requirements.
+
+The review compared the original M0 scope/§12 milestones with the current README,
+§70's critical-path findings, the rules-first decision (§72), failed heuristic run
+(§75), full-input ambiguities (§77), conditional C1 question feasibility (§87) and
+latest audit/protocol checkpoints. Host codecs/simulator/teacher/export/verification
+tooling are substantial, but M1a's vendor compilation, M1b board validation and M2
+task-quality gates have not passed. There is no reviewed task dataset, trained
+student, task-level distillation comparison or deployed module. Recent numerical/
+identity work supports one qualification route but has not closed those gates.
+No completion percentage or remaining-time estimate is justified by test counts.
+
+**Priority order and gate ownership.**
+1. Baseline admission/evaluation brief: F21/M2, Tasks 6/9. One candidate sensing/
+  input/evidence profile, a three-question answer/unknown table, a proposed scene/
+  coverage/failure/grouping matrix and precise unresolved decisions. Preserve the
+  coverage-first choice; original single-view ambiguity cannot be tuned or learned
+  away. C1 is candidate evidence, not an adopted real sensor or input schema.
+2. Approved simulation rule/wire/host-control implementation, focused tests and a
+  separately bounded prospective evaluation. Preserve §75's four successes/two
+  collisions/two timeouts/25 clear-reference disagreements and all later failures.
+  Always rejecting is not useful task quality, and no frozen log becomes task data.
+3. Licensed ST tools and DK/ToF hardware readiness in parallel: M1a/M1b, Tasks 14/15.
+  These remain user-side licence/install/procurement/access decisions; real outputs
+  and measurements, not host objects, must support deployment/fidelity claims.
+4. Actual native/module and board/host integration after the applicable gates:
+  Tasks 13/15/M5. Reuse existing C tooling without calling it complete firmware;
+  keep host actuation, interlocks and fail-safes independent.
+5. A justified learned question with reviewed data/deployment readiness, then
+  distillation/quantized validation and later expansion: Tasks 10-12/M3/M4/M6.
+  The existing deterministic bundle does not itself need a teacher/student.
+
+**Immediate next deliverable.** A single reviewable baseline admission brief, not
+another general source/runtime audit. It must connect each unresolved coverage,
+return, motion/registration/body/domain/goal premise to its evidence source,
+unknown behaviour and next decision. Include the existing ambiguity cases and
+floor/height/missing/occluded/turning/delayed/stale cases in a proposed evaluation
+matrix, with coverage and failure criteria agreed before any bounded run. Preparing
+the candidate is not adopting its input profile, thresholds, fixture matrix or
+evaluation cohort; implementation/collection and exact budgets follow explicit review.
+
+**Deferred branch, not consumed authorization.** After §143 the user separately
+approved SC18-v0's representation/limits/transient runner and one CPU process,
+one diagnostics import/compile, eight snapshots and at most four comparisons under
+the proposed caps. It had not started when the progress question arrived; it remains
+unspent and is now deferred, not cancelled, refunded or an automatic next action.
+Reactivation needs an explicit priority decision tied to a concrete baseline or
+deployment gate; changing that scope/budget still requires approval. Preserve
+§141's failed/corrective identity attempts, §142's four unequal digests and §143's
+protocol/failure history. No claim about the mismatch cause or SC18-v0 feasibility.
+
+**Scope and verification.** Baseline clean at `b4bdfd9`; only DESIGN/REVIEW/AGENTS
+priority/status/task-summary documentation changes. README, source/tests, original
+M0-M6 gates, review history/Sources and stable agent workflow remain unchanged.
+Scoped priority-order/gate/next-deliverable/deferred-approval/non-adoption/history/
+whitespace checks pass, including 620 reference uses/local targets and exact original
+milestone/history/source-byte preservation. The first validator failed a wrapped-prose
+matcher; a targeted wording check confirmed the requirement, and the same validation
+passed after whitespace normalization only in prose assertions. No gate, order,
+identity or preservation assertion was relaxed. Editor/diff/staged-byte checks
+precede the local commit; no default suite rerun and no SC18-v0 import/compile or
+other experiment performed.
+
+Last source gate remains 2,245 passes plus known xfail/71 warnings. §138 four of
+five source positions/fifth unused, old §129/§132 exhausted and §135 fifth not
+borrowed; §141's two identity and §142's one compile-only processes stay spent.
+All fifteen U/JO verdicts undecided, five flags false, native/motion/source/work
+unresolved and consumer ineligible. Existing logs stay quarantined; no runtime/
+input/target/metric/risk change, new fixture/run/labels/data/splits/training/teacher
+asset restoration/dependency/download or hardware action is approved by this reset.
+No background job/artifact/cleanup pending. Next: prepare/review the baseline brief
+and its exact evidence/code/test/run scope, not resume the deferred audit branch.
+
+[priority-reset-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

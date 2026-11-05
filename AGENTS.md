@@ -118,38 +118,23 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Approved private target-to-cell join complete (DESIGN.md §7 / REVIEW.md §138,
-  `8bf26d3`),
-  following §137's explicit fixed JX map/faults/caps/counter protocol and renewed
-  affected/default gates. Complete typed stages/root/certificate, independent
-  inputs/reports/limits and zero/no-cell branch; old AST/order/caps preserved.
-  Four of five new positions used; fifth unused/unnecessary, no new run pending.
-  Gate 2,245 plus known xfail/71 warnings. Full named attempts: 32 joins,
-  57 target/52 composition/77 binding/62 cell; join versus old phases separate.
-  Legacy pre-body reservation gap repaired via existing journal, no extra calls.
-  Five flags false, native/motion/source/work unresolved, consumer ineligible;
-  no proof/allowance/Route C/totality/qualification or consumer claim adoption.
-  Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. Baseline `ae825dc`.
-  Same-helper conditional correctness/publication/work and concrete decision
-  brief prepared (§139); separately approved design-only premise/evidence worksheet
-  complete (§140): five upstream families and JO0-JO9 with proposed accept/stop/
-  invalidation conditions, all fifteen verdicts undecided. No imports/new fixtures/
-  runs/source refresh or claim adoption in that worksheet. Separately approved U4
-  identity audit complete (§141): failed metaclass probe and one approved corrective
-  process; four checker/Fraction bindings and source/code-object metadata recorded.
-  Both identity attempts spent; no checker/fixture calls or source-gate renewal.
-  Separately approved compile-only comparison complete (§142): one process/compile,
-  four historical code digests unequal despite matching source/version/filename/
-  first lines. Cause/semantic correspondence unresolved; no project import/execution
-  or retry, approval spent. Separately approved design-only structural comparison
-  protocol prepared (§143): SC18-v0 eighteen fields/typed constants and proposed
-  guarded one-process import/compile limits, no adoption/implementation/execution.
-  All verdicts still undecided. Only representation/stops/runner/bounded evidence
-  or other named premise/claim decisions remain; isolation retained.
-  Isolation default; native motion/goals/relative transforms, source completeness/
-  authority/work, task/data/dependency/hardware and broader evidence remain blocked.
-  No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-143 supersede conflicting historical
+- Priority reset accepted (DESIGN.md §12 / REVIEW.md §144): the next deliverable is
+  one baseline admission/evaluation brief for a qualified simulation rules baseline
+  (F21/M2, Tasks 6/9). Keep coverage-first; specify candidate sensing/input/evidence,
+  each question's answer/unknown conditions, a proposed evaluation matrix and precise
+  missing decisions before approved implementation/tests/bounded runs. No new input,
+  threshold, qualification, fixture/run/data or runtime scope is adopted by this plan.
+- ST licence/tools and DK/ToF readiness are parallel user-side M1a/M1b blockers;
+  native/board integration follows applicable gates. Learned questions/student/
+  distillation and M6 stay deferred, not prerequisites of the deterministic pilot.
+- General arithmetic/certificate/runtime-identity audit work is deferred, not the
+  default next task. The separately approved SC18-v0 one-process/import/compile/
+  eight-snapshot/four-comparison scope never started and remains unspent but deferred;
+  reactivate only by explicit priority decision tied to a named baseline/deployment
+  gate, with any scope change separately approved. Preserve §§138-143 evidence,
+  failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
+  No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
+- Latest decisions and results: REVIEW.md §§72-144 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1208,26 +1193,20 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §143 design-only
-structural comparison protocol prepared; §142 compile-only / §141 identity complete;
-§138 private prototype/gates in `8bf26d3`.
-Four of five positions used; fifth unnecessary, no new source run pending.
-Full named matrix: 32 joins/57 target/52 composition/77 binding/62 cell;
-old ASTs/caps and five false flags preserved; `1bb89fe` stays. Gate 2,245 plus
-known xfail/71 warnings; position-two reservation gap/repair preserved. No proof/
-allowance/Route C/native/source/work/totality/consumer acceptance. Same-helper
-review/worksheet complete; separate U4 import/metadata audit used two approved
-processes, including failed metaclass probe. Separate compile-only process used
-one compilation/four comparisons, all historical digests unequal; source/version/
-filename/first lines match, cause/semantic correspondence unresolved. No project
-import/execution in that comparison, no retry, all three process approvals spent.
-No checker/fixture/source-gate run or claim adoption. All fifteen verdicts undecided.
-SC18-v0 fields/typed constants and proposed guarded single-process import/compile
-protocol prepared without imports/runs/source refresh/adoption. Only explicit
-representation/stops/runner/bounded evidence or other named decisions remain;
-isolation default.
+Current checkpoint: [DESIGN.md][design] §12 / [REVIEW.md][review] §144 priority reset.
+Next planned deliverable: one baseline admission/evaluation brief for Tasks 6/9,
+retaining coverage-first and mapping each question's evidence to answers/unknowns.
+Review its candidate profile, missing evidence and prospective evaluation criteria
+before separately approved code/tests/runs. ST/toolchain/board readiness proceeds
+in parallel through user-side actions; native integration and learned work follow
+their gates. Do not resume the general audit branch as routine continuation.
+SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
+priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
+source gate 2,245 plus known xfail/71 warnings, §138 four of five/fifth unused,
+old §129/§132 exhausted, §135 fifth not borrowed; no gate renewed. All fifteen
+verdicts undecided/five flags false, no consumer/proof/native/source/work adoption.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
-Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/cleanup pending.
+No job/cleanup pending; original numbered task results below remain historical.
 
 1. [x] M0 scope: ask the M0 questions from REVIEW.md §10 in one batch, each with
    a proposed default, and record the answers in DESIGN.md §2 and REVIEW.md
@@ -1258,6 +1237,10 @@ Old §129/§132 budgets exhausted; §135 fifth unused/not borrowed. No job/clean
 6. [blocked: qualified floor-aware rules/evidence and representative scene envelope pending]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
+  Priority next action (2026-11-05, REVIEW.md §144): baseline admission/evaluation
+  brief with candidate coverage/input, three-question evidence/unknown table and
+  prospective acceptance matrix; review before code/fixture/run scope. No new audit
+  or data authorization; the dated results below are historical, not the active queue.
   Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
   mode; the complete three-answer Python/C contract passes 123 new tests. Legacy
   diagnostic catalogue/proxies remain unchanged and unqualified, not deployed

@@ -10150,7 +10150,78 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §143): the active
+### Active Priority Order (2026-11-05)
+
+The user requested a priority reset after reviewing progress against the original
+milestones. The next product deliverable is a **qualified simulation rules baseline**
+for the existing three-question rover pilot, not another isolated arithmetic or
+runtime-identity package. [Review §144][priority-reset-review] records the decision,
+the deferred audit authorization and unchanged evidence limits. M0-M6 below remain
+the roadmap; host tooling completion is not task-quality or deployment completion.
+
+1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
+  candidate and reviewable acceptance/evaluation checklist from existing evidence.
+  Retain the coverage-first direction: propose the sensing/input/retention profile
+  needed for the maneuver questions, rather than assuming the original single view
+  observes hidden obstacles. C1 may inform the proposal but is not an adopted or
+  buildable hardware profile. For each question, map required coverage, return,
+  motion/registration, body/domain and goal evidence to an answer or explicit unknown.
+  List unresolved premises with the specific decision/evidence needed to close them.
+  Propose a scenario matrix covering clear/obstacle/corridor/slalom, missing/occluded
+  returns, floor/height, turning/delay/staleness and the existing ambiguity cases.
+  State proposed coverage, false-clear, collision/timeout and grouping criteria;
+  useful answered coverage matters, so always rejecting is not task-quality success.
+  Exit: one candidate, a three-question evidence/unknown table, a bounded evaluation
+  proposal and an explicit approval/blocker list. No new profile or threshold is
+  adopted by preparing the brief, and no new logs/episodes are required to write it.
+2. **Approved simulation implementation and evaluation (F21/M2).** After the brief's
+  required decisions and exact code/test/run scope are approved, implement the
+  smallest complete rule-to-wire-to-host-control slice using existing interfaces.
+  Preserve negative baselines and ambiguity regressions; do not tune against a run
+  or count synthetic fixture success as representative quality. First verify the
+  approved evidence/rejection behaviour, then perform separately bounded closed-loop
+  evaluation against prospectively agreed criteria. Quarantined logs are not an
+  accepted cohort; new episode/data/split work needs its own scope. Exit: documented
+  useful task performance and failure/coverage evidence on the agreed simulation
+  domain, not physical qualification or an unconditional clearance guarantee.
+3. **Hardware/toolchain readiness in parallel (M1a/M1b; Tasks 14/15).** User-side
+  licensed ST tool installation and DK/ToF procurement unblock real compilation and
+  physical sensor/board work. Plan approved rover-relevant compiler probes and later
+  sensor/board measurements; do not fabricate timing, power, memory fit or fidelity
+  from host objects. Installation, purchases and hardware/data access stay separately
+  authorized user-side actions. No large labeling job precedes deployment feasibility.
+4. **Native and board integration after the relevant gates (Tasks 13/15; M5).**
+  Reuse the codec/history/math tooling, but implement and verify the actual approved
+  decision path before calling it module firmware. A Python wire loop is not on-device
+  inference. Host actuation/interlocks/fail-safes remain independent; linked target,
+  timing/memory/transport and arena evidence are distinct gates requiring approval.
+5. **Learning only for a justified question (Tasks 10-12; M3/M4), then expansion.**
+  Keep learned prediction/camera questions, teacher labeling and distillation deferred
+  until the task needs them and reviewed evidence/data/splits plus deployment gates
+  are ready. Restore/verify teacher assets only under an approved scope. The current
+  deterministic question bundle is not a reason by itself to train a student; a
+  second embodiment remains M6, not an active dependency of the rover baseline.
+
+Freeze further general arithmetic/certificate/trusted-runtime audits as the default
+next work, including the unstarted SC18-v0 process. Retain their results, failures,
+guards and unresolved verdicts. Reopen a specific issue only when it blocks a named
+baseline/deployment acceptance gate, with a discriminating check and bounded scope;
+required numerical/source evidence is not waived by this scheduling decision.
+The user-approved SC18-v0 scope remains recorded and unspent, but deferred; it needs
+an explicit priority-reactivation decision before execution, and scope changes need
+approval. No audit outcome is adopted as a correctness or consumer claim.
+
+This decision changes priorities and the next planning deliverable only. It approves
+no runtime/default/input/target change, new fixture/run budget, collection/labels/
+dataset/split, metric/risk policy, training/dependency/download or hardware action.
+Preserve the current catalogue, host safety ownership, quarantine, abstention and
+all existing qualification gates. Review the baseline brief before expanding scope.
+
+[priority-reset-review]: REVIEW.md
+
+### Historical Milestone Context Through §143
+
+Recorded checkpoint (2026-11-05, REVIEW.md §143): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle

@@ -9982,6 +9982,90 @@ another source slice needs its own explicit decision; no automatic integration.
 
 [sinc-target-prototype-design]: DESIGN.md
 
+## 136. NF1 Target-Content Conditional Review and Decision Brief (2026-11-05)
+
+After the completed source checkpoint `3f7d299`, the user's continued autonomous
+request was followed through the same-helper conditional review and concrete
+decision preparation specified in §135. This is paper work, not renewed code,
+imports, fixture/helper/native execution, acquisition, integration or claim adoption.
+[DESIGN.md §7][sinc-target-paper-design] contains TC0-TC9, the conditional statement,
+phase/branch work decomposition and the isolation-versus-narrow-claim brief.
+The worktree was clean; no background job or cleanup was pending.
+
+The owning `_check_synthetic_sinc_target_content` was anchored by standard-library
+AST inspection of exact committed/tested bytes, not target imports. Source locations:
+TargetStop 102-103; require 105-107; preflight 109-116; reserve 118-122; shape
+124-128; integer 130-132; pair/interval 136-145; owned 147-152; rational 154-163;
+raw_multiply 165-171; add/multiply/divide 173-197; compare/hull 199-217. Main
+profile checks, canonicalization, independent q and reconstruction follow; loops
+include two d values, 65 power steps per d, 32 included terms, factorials 1..17,
+seven reversed coefficients and eight tail products. Only TargetStop is caught;
+the sole success publication call is at 417. Git hashes pin bytes, not live identity.
+
+**Local hypothesis and check.** Under explicit builtin/Fraction/GCD/serialized-
+ownership/stable-binding and mathematical premises, exact independent stages
+can conditionally imply F(q) lies in the returned interval without asserting source
+authority or resources. The cheapest discriminating check is source AST/order/
+profile/loop/call/publication correspondence and independent paper counter sums,
+not another fixture/native oracle. The edit records the conditional statement,
+ten obligations, work phases, exceptions, missing evidence and concrete options;
+focused text/AST/reference/history/source preservation checks immediately follow.
+
+The conditional math chain is explicit signed dyadic/domain/zero, two alternating
+arctangent bounds, Machin identity/quadrant, positive squared interval, independent
+factorials/eight coefficients, quantified four-product Horner induction and positive
+TU^8/17! tail/final sum. Complete all-stage/root equality connects input contents;
+fabrication can still match correct mathematical contents without producer execution.
+Shared arithmetic and allocation/ownership/runtime premises are not certified by
+the tested fixed controls. No accepted proof, native error or F(q)-to-word join.
+
+Series phase constructors: 25 canonical/decode +132 arctangent +6 pi +5 squared
+argument +8 coefficients +42 Horner +10 tail/division +2 final =230. Operations:
+0+66+6+5+0+42+10+2=131. Comparisons: 8 initial +3 pi +3 squared argument +42
+hull selection +1 final =57. Power/factorial steps: 130+17=147. Zero is four
+canonical checks/one decode, five constructions, no powers/operations and two
+comparisons. Selection comparisons and nested reciprocal/multiply work are retained.
+Counters reserve only after successful raw preflight, before the attempted guarded
+operation; guard/key/copy/raw/GCD/allocator/caller/publication work remains separate.
+No construction refund or inference of resources/all-domain completion.
+
+Observed cap changes reject before publication under stable bindings. Transient
+mutation/restoration and caller races are not detected/enforced ownership. Only
+ordinary TargetStop becomes fixed unresolved metadata; unexpected/MemoryError/
+interruption propagates. TS14 proves a bounded MemoryError control, not interruption,
+universal return, rollback or atomic publication. max_result_bits is accepted
+canonical results; observed 13,146 is not all-q, peak raw memory or a smaller bound.
+
+A/default retains isolation and accepts no claim. B would explicitly review and
+accept only the narrow conditional target-content/F(q)-in-I statement for this
+pinned helper after mathematical, exact-arithmetic, canonicalization, stable-
+binding/ownership/exception and admissible-evidence decisions. No option is adopted
+here. Proposed checks and requalification triggers are concrete; no consumer/runtime
+benefit, source authority, certified native/work/totality or Route C follows from B.
+A separate design-only same-q/full-stage/root typed target-to-cell join contract
+is a possible next scope; not implementation, execution renewal or claim adoption.
+
+No source/test/default/wire/artifact changed; tested blobs stay diagnostics
+`7e03114701ac79ed17452fa611d3e1938578cd65`, tests
+`59d55a9ff0b50d4fec015df0958e2c680a4f9145`. Last source gate remains §135's
+2,229 passes/known xfail/71 warnings, not rerun. Four of five §135 positions used,
+fifth unused/unnecessary; old §129/§132 budgets remain exhausted. No target helper
+or capture was invoked during this paper work. Focused paper checks pass: ten TC
+obligations, phase sums, exception/publication/Fraction AST anchors, 604 reference
+uses/local targets, exact prior history/Sources/design/milestones/tested source,
+three-document scope and whitespace. Editor diagnostics and scoped diff review
+pass; exact staged-byte checks precede local commit. No paper check failed.
+
+No accepted math/trusted-base/source/native/work/resource/totality/Route C or
+consumer claim, additional source slice/run, owner/adapter/log/data/collection,
+teacher/model/training/dependency/download or hardware action. No assistant push,
+background job or cleanup. `1bb89fe`, quarantine, Task 6/9, native motion/goals/
+relative transforms, source completeness/authority/work, teacher assets and ST/board
+remain unchanged and blocked. Only explicit claim/premise/admissible-evidence or
+next design-only scope decisions remain; recommend isolation meanwhile.
+
+[sinc-target-paper-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

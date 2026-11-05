@@ -7424,6 +7424,107 @@ dependency or hardware approval; Task 6/9 and all broader gates stay blocked.
 
 [sinc-target-prototype-review]: REVIEW.md
 
+#### NF1 Target-Content Conditional Correctness and Work Review (2026-11-05)
+
+Following the approved private prototype and autonomous continuation, this
+same-helper paper review prepares conditional arguments and a concrete decision
+brief. [Review §136][sinc-target-paper-review] records the exact `3f7d299` source
+anchor, static checks and unchanged §135 gate. No project import, new fixture,
+helper/native execution, source edit, evidence acquisition or claim adoption.
+The unused fifth §135 position is not spent on another successful gate.
+
+**Conditional Statement, Not Acceptance.** Fix a builtin finite stored word w
+whose exact signed dyadic q satisfies |q| <= 1/64, a complete fixed-schema record,
+and literal synthetic opt-in. Assume exact builtin integer/container operations,
+Fraction canonicalization/GCD, stable selected helper/configuration bindings,
+serialized input ownership, successful ordinary allocation/publication, and the
+real-pi Machin/alternating-series/interval facts below. If this pinned private
+helper returns its complete checked success profile, its owned interval I is
+exactly the independently reconstructed interval and F(q) lies in I. Both zero
+words preserve their signs and have I=[1,1]. This is a conditional content argument,
+not an accepted proof, faithful loaded-code attestation, producer execution,
+source authority, totality, native parity or consumer qualification.
+
+| Obligation | Conditional Source / Mathematical Argument | Premise or Limit Still Open |
+| --- | --- | --- |
+| TC0 / entry and limits | Literal opt-in precedes all target work. Exact nonboolean bit limit lies in 1..65,536; four local logical ceilings stay fixed. Invalid configuration returns only fixed unresolved metadata. | Global configuration reads and trusted local bindings are not an atomic snapshot or universal temporary-mutation detector. |
+| TC1 / raw schema and canonicality | Builtin key types short-circuit before membership; complete root/profile/work/stage shapes and builtin integer pairs precede owned traversal. Four/24 canonical pair checks require exact Fraction equality, not normalization of an invalid input into acceptance. | Shared builtin/GCD behavior, validation-to-copy serialization and pre-existing input allocation remain premises. |
+| TC2 / q and zero | Finite signed u64 decode is independent; guarded shifts retain nonzero subnormals. Exact q/sign/domain correspondence and empty zero stages/unit interval reject opposite-zero aliases. | Expected-word source authority is absent; sign preservation is metadata, not an installed wrapper tiny-branch qualification. |
+| TC3 / arctangents | Guarded powers d^0..d^65 and explicit 32-term sum reconstruct each A_d. For d=5,239 alternating terms decrease; the first omitted positive 1/(65*d^65) encloses atan(1/d) above its partial sum. Exact stage equality is required. | The quantified alternating-series theorem and exact guarded arithmetic are assumptions to review, not observed accuracy from test samples. |
+| TC4 / pi | Conditional Machin identity pi=16*atan(1/5)-4*atan(1/239), with its quadrant justification, gives endpoint reversal for the negative term. Exact declared pi and 3<pL<=pU<4 are checked. | The numerical bracket alone does not prove Machin's identity or a native pi constant/error bound. |
+| TC5 / squared argument and coefficients | Since pi bounds are positive, q²*[pL²,pU²] contains (pi*q)². Exact domain/ordering/positivity and TU<=1/256 are checked. Factorials 1..17 independently give eight (-1)^k/(2k+1)! coefficients and 17! divisor. | No floating underflow, rounded q/pi or producer factorial state is admitted; raw and canonical guards are not all-domain completion evidence. |
+| TC6 / whole polynomial | For every t in T, four exact endpoint products enclose interval multiplication. Starting at [c7,c7], seven such hulls plus coefficient addition inductively enclose the same scalar polynomial, with exact declared polynomial equality. | Endpoint samples alone are not this quantified argument. Dependency overestimation may widen the enclosure but does not license arbitrary wider input profiles. |
+| TC7 / remainder and final interval | Sinc's real-pi even series in t has decreasing magnitudes on 0<t<=1/256. After indices 0..7 the tail is nonnegative and at most t^8/17!<=TU^8/17!. Eight guarded rational multiplications, reciprocal/division and endpoint sums reconstruct the exact remainder and root interval. | Alternating-tail and analytic sinc identities remain mathematical premises; no accepted uniform native error or floating arithmetic certification follows. |
+| TC8 / correspondence and publication | Every declared stage/root must equal independent canonical contents. Only after final guards are the nine success fields and copied work published; zero and series are separate. Only TargetStop is caught; unexpected/allocation/interruption errors propagate. | Dict/tuple construction/update can fail. No enforced atomic publication, universal return/rollback or interruption test evidence; TS14 is MemoryError only. |
+| TC9 / work and claim separation | Reservations precede constructors/operations, including division's reciprocal and multiply. Saved-bit-limit preflight/postchecks reject observed changes; no cap sums, raises, refunds or retries. False flags and unresolved/ineligible statuses persist. | Setup/copy/raw guards/GCD/runtime/allocator/caller work and transient mutation are outside counters. No proof/resource/Route C/totality/source/consumer acceptance. |
+
+**Logical Work Decomposition.** Keep the actual source counters distinct from
+§135's fixture/checker entry ledger and from all resource costs. Guards may stop
+before a constructor/operation is reserved; that guard work is separate, not zero.
+An entered constructor is reserved before Fraction, including a constructor that
+raises MemoryError. Successful zero uses four canonical constructors plus one
+decode constructor, no powers/rational operations, and root-order/domain comparisons.
+It is not a fabricated eight-field cell result or nonzero approximation.
+
+| Series Phase | Constructions | Rational Operations | Comparisons | Power Steps |
+| --- | --- | --- | --- | --- |
+| Canonical input and q decode | 25 | 0 | 8 | 0 |
+| Two arctangent sums and endpoints | 132 | 66 | 0 | 130 |
+| Machin pi bracket | 6 | 6 | 3 | 0 |
+| Squared argument | 5 | 5 | 3 | 0 |
+| Coefficients / factorials | 8 | 0 | 0 | 17 |
+| Seven whole-interval Horner steps | 42 | 42 | 42 | 0 |
+| Eight tail products and division | 10 | 10 | 0 | 0 |
+| Final interval sums/order | 2 | 2 | 1 | 0 |
+| Total | 230 | 131 | 57 | 147 |
+
+The initial eight comparisons are one root-order, six supplied-stage order and
+one domain comparison. Each Horner hull constructs four products and two sums,
+and charges six selection comparisons; do not replace its whole interval with
+samples or omit selection work. Each arctangent has 32 term constructors, 32 sum
+constructors, one tail constructor and one endpoint-sum constructor. Tail division
+charges its own operation plus reciprocal constructor and multiply, hence two
+constructions/two operations in addition to eight tail products. These conditional
+finite-control ledgers agree with the fixed assertions, not independent measurement
+of Python primitive/runtime cost or proof of successful completion over the domain.
+
+Guard sizes cover accepted raw/canonical operands/results; max_result_bits covers
+accepted canonical outputs only. The observed 13,146-bit maximum is not a maximum
+over all q, raw intermediates, peak live memory or a smaller certified cap. Preflight
+bit-length checks, fixed u64 masks/shifts, integer denominator products, key sets,
+string/metadata equality, traversal, copying, report setup/publication, call overhead,
+Fraction/GCD internals and allocations remain separate. No time/stack/RAM/native-work
+budget or all-domain success bound is inferred from 256/512/512/256 ceilings.
+
+**Concrete Decision Brief.** A/default: retain private isolation and accept no
+claim; abstention and all false/unresolved flags remain unchanged. B: explicitly
+accept only the conditional F(q)-in-I/content statement above for the pinned helper,
+after reviewing TC0-TC9 and deciding the mathematical/builtin/Fraction/GCD/stable-
+binding/serialized-ownership/exception premises and admissible implementation evidence.
+B yields a narrowly worded mathematical diagnostic statement, not a source/runtime
+or consumer benefit. No claim has been accepted by preparing this alternative.
+
+Before B, proposed acceptance checks are exact word/domain/zero/input/success scope;
+the finite-sum/Machin/positive-square/Horner/tail arguments; complete guard/counter/
+canonical/publication and exception review; explicit shared-premise and evidence
+decisions; separate logical/attempted/resource ledgers; and exact recording of the
+narrow claim and exclusions. Source/schema/profile/cap/runtime/canonicalization/
+ownership or mathematical-premise changes invalidate the review and need separate
+affected-gate/evidence decisions. Hashes identify bytes, not selected loaded code,
+environment, source authority or trustworthy sensor inputs.
+
+A later F(q)-to-word claim still needs its own same-q/profile/full-stage/root
+interval typed join with the existing binding/cell composition, plus separate
+accepted premises for every helper. No word/status/hash-only or external stale-report
+join is adequate. A design-only join contract is a concrete possible next task,
+not an implemented orchestrator, renewed fixture budget or claim/Route C adoption.
+Native/live use separately needs selected-path/FP/uniform-error/source-completeness/
+authority/resource/consumer evidence. No acquisition, code, imports, new runs, owner/
+adapter/log/data/teacher/dependency/hardware work follows. Recommend A; review and
+explicit claim/premise/evidence or next design-only scope decisions remain blocked.
+
+[sinc-target-paper-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9435,7 +9536,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §135): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §136): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9669,6 +9770,10 @@ independent full-stage reconstruction, fixed sixteen controls and unchanged old
 ASTs/caps. Gate 2,229 plus known xfail/71 warnings; four of five positions used.
 No target/native/source/work/consumer claim adoption or target-to-cell integration;
 same-helper conditional review/decision preparation continues without new runs.
+That conditional target-content review and concrete decision brief are prepared
+(§136): TC0-TC9, exact phase/branch ledgers and explicit shared-premise/evidence
+limits. Source/tests and the §135 gate are unchanged; no new run or claim adoption.
+Retain isolation; claim acceptance or a next design-only join contract needs decision.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

@@ -119,8 +119,8 @@ Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
 - Approved private target-content prototype complete (DESIGN.md §7 / REVIEW.md
-  §135), following §134's separately approved fixed TS map/faults/limits and
-  affected/default gate renewal. Independent same-q/full-stage reconstruction,
+  §135, `3f7d299`), following §134's separately approved fixed TS map/faults/limits
+  and affected/default gate renewal. Independent same-q/full-stage reconstruction,
   separate signed zeros and sixteen controls; every old AST/order/cap preserved.
   Four of five new positions used; fifth unnecessary, no new source run pending.
   Root gate 2,229 plus known xfail/71 warnings. Full named matrix attempts:
@@ -129,12 +129,13 @@ from them. Historical details below are reference material, not new approvals.
   no proof/allowance/Route C/totality/qualification or target-to-cell adoption.
   Old §129/§132 allowances remain separately exhausted. Baseline clean at `e23c866`.
   No candidate consumer, task/data/dependency/hardware or native-sinc requalification.
-  Same-helper conditional correctness/work review and concrete decision preparation
-  continues without imports/new fixtures/runs or claim adoption. Isolation stays
+  Same-helper conditional correctness/work review and decision brief prepared (§136)
+  without imports/new fixtures/runs or claim adoption. Only claim/premise/evidence or
+  next design-only target-to-cell contract decisions remain. Isolation stays
   default; native motion/goals/relative transforms, source completeness/authority/
   work and broader evidence/consumer decisions remain unresolved.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-135 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-136 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1193,14 +1194,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §135 private
-target-content prototype and approved affected gates complete. Four of five
-positions used; fifth unnecessary, no new source run pending. Full named matrix:
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §136 target-content
+conditional review and decision brief prepared; §135 prototype/gates in `3f7d299`.
+Four of five positions used; fifth unnecessary, no new source run pending.
+Full named matrix:
 32 target/32 composition/57 binding/48 pure-cell; old ASTs/caps and five false
 flags preserved; `1bb89fe` stays. Last gate 2,229 plus known xfail/71 warnings;
 failures preserved. No proof/allowance/Route C/native/source/work/totality or
-consumer acceptance. Same-helper conditional review and concrete decision
-preparation continues without imports/runs/acquisition/integration/promotion.
+consumer acceptance. Only claim/premise/evidence or next design-only typed join
+contract decisions remain; no imports/runs/acquisition/integration/promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 Old §129/§132 budgets exhausted; no background job or cleanup pending.
 
@@ -1511,6 +1513,9 @@ Old §129/§132 budgets exhausted; no background job or cleanup pending.
   Target prototype (REVIEW.md §135): separately approved private helper and sixteen
   controls complete; 2,229 plus known xfail/71 warnings, four of five positions used.
   Old ASTs/caps/flags preserved; no claim/consumer/join adoption or further run.
+  Target review (REVIEW.md §136): TC0-TC9 conditional arguments, phase/branch ledgers
+  and concrete claim/premise/evidence brief prepared; no source/run/claim adoption.
+  Only approval-blocked claim/evidence or design-only typed join scope remains.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

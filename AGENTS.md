@@ -128,17 +128,19 @@ from them. Historical details below are reference material, not new approvals.
   Native motion/goal/relative transforms, pending completeness/source authority
   and native-work remain unresolved. Baseline was clean at `5391702`.
   No native/GPU/teacher/board requalification or candidate consumer use.
-  Same-helper conditional review/decision brief now prepared (§133): CO0-CO9,
-  distinct ledgers and isolation versus a narrowly conditional diagnostic claim.
-  Next missing decision: explicit claim/premise/admissible-evidence acceptance;
-  no new imports or executions follow from the preparation.
+  Same-helper conditional review/decision brief prepared (§133); separately
+  approved design-only target-inclusion contract now prepared (§134): independent
+  same-q/stage reconstruction, TV0-TV9/TI0-TI7 and fixed bounded future proposal.
+  Next decision: private target-content prototype/affected-gate renewal with
+  explicit TS map/faults/limits, or isolation. No implementation/run/claim adoption
+  follows from the design; no imports or executions were renewed.
   No further capture/checker run, target/live/native acquisition, integration or
   promotion. Broader evidence/consumer decisions remain unaccepted.
   Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved source executions are exhausted; no new source run is pending.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-133 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-134 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -1197,14 +1199,14 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §133 prepares
-the same-helper conditional composition review/decision brief; §132 private
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §134 prepares
+the approved design-only target-inclusion contract/future proposal; §132 private
 prototype complete in `cbac6d8`. Five new invocations spent; full-matrix attempts
 32 composition/57 binding/48 pure-cell;
 old ASTs/caps and five false flags preserved; `1bb89fe` stays. Last gate 2,213
 plus known xfail/71 warnings; failures preserved. No proof/allowance/Route C,
 consumer/native/source/work or totality acceptance.
-Next missing decision: explicit claim/premise/admissible-evidence acceptance; no new
+Next decision: bounded target-content prototype/affected-gate renewal; no new
 capture/checker run/target/live/native/owner/query/reference/log adapter/acquisition/
 integration or promotion. No evidence/consumer/qualification adoption.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
@@ -1511,6 +1513,9 @@ Approved source executions are exhausted; no background job or cleanup pending.
   Composition review (REVIEW.md §133): CO0-CO9 conditional arguments, separate
   ledgers and concrete claim/premise/evidence brief prepared. No source/run/claim
   acceptance; only explicit approval-blocked work remains, with isolation retained.
+  Target contract (REVIEW.md §134): separately approved design-only TV0-TV9/TI0-TI7,
+  independent same-q/stage content and fixed TS controls/bounded future proposal.
+  No code/run/claim adoption; prototype/affected-gate renewal remains unapproved.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

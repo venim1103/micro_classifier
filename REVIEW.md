@@ -9772,6 +9772,103 @@ the local paper checkpoint. The source suite is not rerun for these document edi
 
 [sinc-composition-paper-design]: DESIGN.md
 
+## 134. NF1 Target-Inclusion Content Contract (2026-11-05)
+
+After the general continuation request, the current worktree was verified clean
+at `203019f`. All implementation/claim work remained approval-blocked; the user
+explicitly selected **Design-only target-inclusion contract**, with no code,
+runs, acquisition, integration or claim adoption. The five §132 positions and
+older §129 allowance remain exhausted. [DESIGN.md §7][sinc-target-contract-design]
+holds the proposed TV0-TV9 boundary, TI0-TI7 gates and bounded future package.
+
+The owning producer is `_enclose_synthetic_sinc_word`: real-pi normalized sinc
+at finite stored q, exact |q| <= 1/64, separate signed zeros, 32 terms in each
+arctangent bracket, eight polynomial coefficients, seven interval Horner steps
+and positive TU^8/17! remainder. Its six stored stage keys are arctangent/pi/
+squared_argument/coefficients/polynomial/remainder. The §117 review supplies
+conditional math arguments, not accepted proof or an independent content check.
+A first nearby historical read landed in §119 rather than §117; the targeted
+§117/owning-source read corrected routing without any execution or new evidence
+acquisition. Existing source/test identities remain the tested §132 bytes.
+
+**Hypothesis and discriminating check.** Independent reconstruction of every
+mathematical stage can conditionally connect the supplied interval to F(q)
+without trusting producer execution history. Merely matching q/profile/interval
+cannot. The cheapest disconfirming check is producer AST/stored-schema/zero/
+32-term/8-coefficient/17! tail correspondence, plus exact prior contract/source
+preservation; not another fixture, native oracle or producer call. The first edit
+defines expected-q/full-enclosure input, independent finite sums/coefficient
+construction/whole-interval Horner/tail, exact output, guard/work/publication and
+fixed future limits. Static text/AST checks follow immediately.
+
+Proposes one additive private target-content checker and independent 65,536-bit
+ceiling, not implemented. Exact 20-field input, 24 series/four zero canonical
+pairs; independent signed finite dyadic decoding and exact target/profile/domain.
+Both zero signs retain their words; nonzero subnormals never zero. Series must
+exactly reconstruct both arctangent intervals, negative Machin endpoint reversal,
+pi, squared argument, eight coefficients, whole interval polynomial, positive
+remainder and final root interval. No arbitrary wider/overlapping interval profile,
+producer helper reuse, native trig/float conversion, candidate/cell/owner/log input
+or stale external target report. Consistent fabricated content that matches the
+independent construction may support conditional mathematical contents, never
+source execution/authentication. The declared producer work is not an oracle.
+
+Proposed diagnostic root 16 fixed/25 successful fields; success adds q/sign/ratio/
+target/domain/branch/profile/interval/all stages, not a cell word/certificate or
+decision. Zero and series statuses are separate. Work has seven fields, local
+configuration five, distinct from the old producer and binding/cell profiles.
+Proposed fixed logical caps: 256 integer-power/factorial steps, 512 constructions,
+512 rational operations, 256 comparisons plus guarded 65,536-bit operands/results.
+These conservative proposed ceilings are unvalidated paper choices, not resources,
+headroom proof, all-domain completion, numerical allowance or changed old caps.
+Exact guard/counter/phase/work review and shared builtin/Fraction/GCD/stable-binding/
+serialized-ownership/publication premises remain unaccepted. Ordinary stops omit
+target evidence; allocation/interruption/unexpected errors propagate, not universal
+rollback. Five flags false, native/motion/source/work unresolved, consumer ineligible.
+
+Future only: sixteen TS0-TS15 controls use the exact reused map
+`(0,1,2,3,4,5,6,7,8,9,10,11,6,7,8,9)` and two target requests each. Fixed
+zero/type/key/cap faults and exact stage/interval perturbations, observed cap
+change, MemoryError and independent mutations; no extra variants/third calls.
+Maximum five invocation positions with renewed affected/default gates: per-position
+capture 12/24/12/24, target32/composition32/binding64/pure-cell64; aggregate
+capture60/120/60/120, target160/composition160/binding320/pure-cell320. No worker/
+refill/persistence/new q/scene/callee interception. Named entries are not complete
+root-suite/native resources; existing historical default controls need explicit
+renewal. This proposal is unapproved; no capture/checker/import/run is performed.
+Any later target-to-cell composition needs its own complete typed-content contract;
+the current composition API and all old ASTs/caps remain unchanged.
+
+Next decision: bounded private target-content prototype plus explicit fixed TS
+fault/map/limit/affected-gate approval, or isolation. No accepted target/SR/CT proof,
+native error/work allowance, Route C/totality/consumer claim, task data, acquisition,
+teacher/training/dependency or hardware action. Last code gate remains §132's 2,213
+passes/known xfail/71 warnings, not rerun or environment requalification. No source/
+test/default/wire/artifact change, background job, cleanup or assistant push.
+`1bb89fe`, Task 6/9, native motion/goals/relative transforms, source completeness/
+authority/work, teacher assets and ST/board stay blocked.
+Source/test blobs remain `278a0bf4c424d9090e9a02cd72554c91f395be7b` /
+`952d8644261ac619db8aee3e132772bf3b0fd5b9`. Focused static checks pass for
+actual producer stage/loop/zero/tail AST, ten TV boundaries/eight TI gates/sixteen
+TS controls, proposed exact profiles/maps/limits and nested attempt accounting.
+All 600 references/local targets, sections 1-134, preserved earlier review/Sources/
+design/milestones/workflow/task tail, tested identities, three-document scope and
+whitespace pass. Editor diagnostics and exact diff/staged-byte checks precede the
+local design commit; the source suite is not rerun for these documentation edits.
+
+The initial focused static check passed for the actual producer stage/loop/zero/
+tail schema, ten boundaries, sixteen controls, proposed profiles/limits and 600
+references/targets with exact earlier history/source preservation. A follow-up
+patch failed on wrapped context; targeted text checks confirmed neither hunk
+landed. Retried with the actual paragraph context, making eight gates explicit
+and nested constructor/division/comparison accounting nonrefundable. This failed
+patch consumed no execution; no schema/guard/limit/assertion was loosened.
+Diff review clarified that endpoint samples alone lack a whole-interval proof,
+not that a separately proved endpoint method is mathematically impossible. The
+proposed exact Horner-stage requirement remains unchanged.
+
+[sinc-target-contract-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

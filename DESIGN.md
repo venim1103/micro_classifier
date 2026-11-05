@@ -7174,6 +7174,198 @@ CJ6-CJ7 evidence/consumer decisions remain unclosed. Recommend A now.
 
 [sinc-composition-paper-review]: REVIEW.md
 
+#### NF1 Target-Inclusion Content Contract (2026-11-05)
+
+The user explicitly authorized the next **design-only target-inclusion contract**,
+keeping claims unaccepted and the execution budget exhausted. [Review §134][sinc-target-contract-review]
+records that decision. This defines independent mathematical-content evidence and
+a bounded future proposal, not a checker, run, acquisition, integration or proof.
+Source checkpoint `cbac6d8` and latest document checkpoint `203019f` remain the
+anchors; the existing five false flags, helpers/caps and `1bb89fe` are unchanged.
+
+**Target and Evidence Boundary.** The target is the real-pi normalized sinc at
+the independently retained finite stored binary64 q, with exact zero target one:
+
+$$
+F(q)=\begin{cases}1,&q=0,\\ \sin(\pi q)/(\pi q),&q\ne0.\end{cases}
+$$
+
+The domain remains exact |q| <= 1/64, not an ideal motion argument, rounded native
+pi product or a float approximation. Both zero words retain distinct word/sign
+metadata; a nonzero subnormal is never classified as zero. Proposed private input
+is only expected_q_word plus one complete 20-field enclosure record and literal
+synthetic opt-in. No candidate/cell/native/owner/log inputs, external successful
+target report, producer re-execution, capture or arbitrary verifier callback.
+Proposed source surface is additive `_check_synthetic_sinc_target_content` and
+`_SYNTHETIC_TARGET_CHECK_BITS`; this design implements neither.
+
+A fabricated record that exactly matches an independently justified mathematical
+construction can support its conditional mathematical contents without proving
+that the original producer ran. Conversely, matching q/profile/interval between
+two fabricated records does not establish inclusion. The proposed checker must
+reconstruct every mathematical stage independently; status, hashes, work counters,
+source identities and the final interval alone cannot substitute for that argument.
+Expected-q source authority and selected/runtime arithmetic fidelity stay separate.
+
+**Exact Input and Independent Reconstruction.** Retain the existing complete
+enclosure schema, target/domain selectors, producer profile 32/8/65,536, exact
+q/sign/q_ratio/branch, five false flags, native/motion statuses and two-field
+declared producer work. Validate builtin keys/types/lengths/raw sizes before
+lookup/copy/equality; collect and canonical-check all 24 series rational pairs or
+four zero pairs. Take fixed-schema owned snapshots under explicit serialized
+ownership. Decode expected q independently with guarded integer dyadic arithmetic;
+never call the old decoder, reference, enclosure, binding, cell or composition
+helper. No float conversion, NumPy/math trig, native oracle or hidden refinement.
+
+| Boundary | Proposed Mathematical Check | Missing Evidence / Stop |
+| --- | --- | --- |
+| TV0 / entry and records | Literal opt-in; exact 20-field input profile, raw guards and owned snapshot before arithmetic/equality; retain local checker limits separately from the declared producer profile. | Malformed/unsupported profiles, keys, types or sizes stop; no caller hooks or unrestricted deepcopy. |
+| TV1 / q and zero | Independent finite u64 signed dyadic decoding, exact domain, typed equality to declared q/sign/ratio; both zero words require empty stages and interval [1,1]. | Nonzero is never zero; opposite-zero word/sign rejects even when ratios match. Native tiny substitution remains outside this target. |
+| TV2 / canonical evidence | Independently check every input rational pair with positive denominator and exact canonical equality before using stages; preserve typed interval ordering. | Numeric aliases, noncanonical or oversized pairs reject, not normalize into acceptable evidence. Shared integer/Fraction/GCD semantics remain premises. |
+| TV3 / arctangent stages | For each d=5,239 reconstruct the explicit 32-term finite sum and its positive next magnitude d^-65/65; require exact equality to both declared endpoints. | Do not call/reuse producer partials, operation helpers or recorded counters as an oracle. Bounds need the alternating-series argument, not samples. |
+| TV4 / real pi | Independently apply 16*A5 - 4*A239 with negative endpoint reversal, require exact declared pi interval and 3 < pL <= pU < 4. | The Machin identity/quadrant justification is a separate mathematical premise; merely passing the numeric pi bracket is insufficient. |
+| TV5 / squared argument and coefficients | Reconstruct T=[q^2*pL^2,q^2*pU^2], require exact declared T and 0 < TL <= TU <= 1/256 for series. Independently reconstruct coefficients (-1)^k/(2k+1)! for k=0..7 and 17! tail divisor. | No rounded pi, zero underflow, substituted q or producer factorial state. Guard integer powers/factorials before construction. |
+| TV6 / whole polynomial | Starting from [c7,c7], independently reconstruct seven interval Horner steps with four-product hulls and exact endpoint addition; require exact declared polynomial interval. | Endpoint samples alone do not establish whole-interval inclusion; retain the quantified interval induction rather than assuming unproved monotonicity. |
+| TV7 / tail and final interval | Reconstruct [0,TU^8/17!] and its exact sum with the polynomial interval; require exact remainder and complete root interval. | Eight included terms give a positive first omitted tail. Wrong sign/order/denominator or merely overlapping/wider arbitrary intervals reject this fixed-content profile. |
+| TV8 / publication and correspondence | Publish only complete fresh owned q/profile/interval/all-stage evidence after every check and final saved-limit recheck; zero has its separate success status. | Ordinary stop omits all target evidence; unexpected/allocation/interruption errors propagate. No universal return or rollback. |
+| TV9 / limits and claims | Independent guarded operations/counters, stable bindings and serialized ownership; five flags false, native/motion/source/work unresolved and consumer ineligible. | No accepted proof, source authority, uniform native error, work/resource allowance, totality, Route C or consumer qualification. |
+
+For d=5,239 the independently specified endpoints are
+
+$$
+S_d=\sum_{k=0}^{31}\frac{(-1)^k}{(2k+1)d^{2k+1}},\qquad
+A_d=[S_d,S_d+1/(65d^{65})].
+$$
+
+The explicit finite-sum specification differs from trusting the producer's
+odd-power recurrence; its implementation must still guard power/denominator/sum
+construction and share no producer arithmetic helper. The two brackets plus the
+conditional Machin identity enclose real pi. Interval Horner induction encloses
+the same scalar polynomial for every t in T; the alternating tail is nonnegative
+after indices 0..7. These obligations inherit no accepted SR/CT/W0/TB0 proof.
+Exact reconstruction rejects changed stages even if word/status/interval or a
+separate cell certificate still looks compatible. It is deliberately stricter
+than a general arbitrary-enclosure inclusion verifier; no broader profile is adopted.
+
+**Proposed Result and Work Profiles.** Fixed diagnostic root has sixteen fields:
+identity/allowed_use/status/reason/configuration/work, the five existing false
+flags and the five unresolved/ineligible native/motion/source/work/consumer fields.
+Complete success adds nine fields: q_word, sign, q_ratio, target, domain_ratio,
+branch, profile, interval and stages (25 total). It carries no word/cell certificate
+or decision. Proposed identity synthetic_sinc_target_content_check_v0 and allowed
+use isolated_synthetic_sinc_target_content_check_only; series status
+checked_declared_mathematical_sinc_content, zero
+checked_declared_mathematical_zero_content, otherwise
+unresolved_synthetic_sinc_target_content. These are proposed diagnostic statuses,
+not accepted target or numerical certification. Unsupported returns retain only
+fixed configuration/attempted work, not a partial target interval/stage bundle.
+
+Propose a separate exact nonboolean raw/rational bit limit 1..65,536, default
+65,536, snapshotted before any canonical construction and rechecked at each
+preflight/postcheck and final publication; no change to old limits or producer
+profile. Additional fixed attempt ceilings are 256 guarded integer power/factorial
+steps, 512 rational constructions, 512 add/multiply/division operations and 256
+rational comparisons. Reserve before each attempted construction/operation; no
+refund, retry, precision increase or cap sum. The five configuration keys are
+rational_bit_limit, integer_power_steps_limit, rational_constructions_limit,
+rational_operations_limit and rational_comparisons_limit. Work has seven keys:
+canonical_pair_checks, dyadic_decodes, integer_power_steps, rational_constructions,
+rational_operations, rational_comparisons and max_result_bits. Canonical checks
+include their constructors; explicit powers/factorials have separate accounting.
+These are conservative proposed logical ceilings, not a validated ledger, success
+guarantee or resource bound. Precise guard/counter/phase decomposition and rejection
+headroom require a separate correctness/work review before any allowance adoption.
+
+Count one integer_power_steps attempt before each guarded integer multiplication
+used to build d powers or factorials; fixed q masks/shifts and denominator
+cross-products have separate raw guards, not hidden power steps. Build TU^8 by
+eight guarded rational multiplications, not an opaque Fraction power. Count every
+explicit rational constructor, including input canonical checks and reciprocal
+construction; internal GCD/allocator work is excluded, not described as zero.
+Count every add/multiply/division attempt; if division delegates to a reciprocal
+constructor and multiply, charge those nested attempts too. Each three-way rational
+comparison is charged once before guarded cross-products; interval selection may
+not silently erase comparisons. No reuse of producer/canonical results to hide work.
+
+Raw shifts, cross-products, sums, powers, factorials, reciprocal construction,
+interval selection and canonical results require preflight/postchecks; fixed-u64
+setup/key/traversal/copy/publication/caller/GCD/runtime work remains separate.
+max_result_bits covers accepted canonical results only. Stable function/Fraction/
+configuration bindings, successful allocation and serialized copying are premises,
+not temporary-mutation detection, enforced ownership or live/build attestation.
+
+**Future Composition and Unaccepted Gates.** A later separately approved join
+would have to bind the same retained expected q, producer profile, complete owned
+enclosure stages and exact root interval to both target-content and current
+composition statements. No status/word/digest-only or stale external-report join.
+The current composition API stays unchanged and accepts no target report; this
+proposal adds no orchestrator, consumer, owner or adapter. Under separately accepted
+checker/math/runtime premises, target inclusion plus whole-interval cell containment
+could imply the mathematical RN64 word; it would still not imply native parity,
+source authority, task quality or resources. No such implication is adopted here.
+
+| Gate | Required Separate Review / Decision |
+| --- | --- |
+| TI0 | Exact TV0-TV9/input/output/zero profiles, without treating the interface as a runtime API. |
+| TI1 | Independent decode/canonical/raw-guard/fixed-copy/ownership argument and shared arithmetic assumptions. |
+| TI2 | Quantified finite-sum/Machin/Horner/tail correctness and exact-content target-inclusion argument. |
+| TI3 | Complete attempted-work/bit-guard/construction/comparison/publication ledger; no inferred resource allowance. |
+| TI4 | Fixed TS0-TS15 map/faults, five-position budget and explicit affected/default gate renewal. |
+| TI5 | Preserve old AST/cap/flag/default/wire/artifacts; any later target-to-cell join needs its own contract/approval. |
+| TI6 | Explicit shared CT/SR/trusted-base/runtime/ownership/admissible-evidence decisions and requalification triggers. |
+| TI7 | Narrowly worded mathematical claim acceptance and a separate consumer decision, with native/source/resource exclusions. |
+
+None is closed by this design preparation. Interface/prototype permission is
+separate from mathematical/trusted-base/claim acceptance and later consumer use.
+
+**Fixed Bounded Future Proposal, Not Approval.** Reuse the complete twelve-slot
+§132 capture fixture and sixteen target controls with mapping
+`(0,1,2,3,4,5,6,7,8,9,10,11,6,7,8,9)`, exactly two target attempts per case.
+One ordinary control plus one fixed second request; no hidden third call/variants.
+The pool includes repeated zero/series q values, not twelve independent inputs.
+
+| Control | Proposed Second Request / Required Outcome |
+| --- | --- |
+| TS0 / 0 | False opt-in raises before arithmetic. |
+| TS1 / 1 | Integer opt-in raises; ordinary negative zero preserves its sign. |
+| TS2 / 2 | Missing root interval rejects with no target evidence. |
+| TS3 / 3 | Opposite-zero expected word rejects despite equal zero ratio. |
+| TS4 / 4 | Replace producer-work rational_operations key with a same-hash hostile key; reject before its equality hook. |
+| TS5 / 5 | Increase target bit limit to 65,537; reject without altering old caps. |
+| TS6 / 6 | Replace pi lower endpoint with (3,1); independent stage reconstruction rejects. |
+| TS7 / 7 | Reverse the first arctangent interval; reject while preserving original series q/sign. |
+| TS8 / 8 | Add one to the first negative coefficient by adding its denominator to its numerator; canonical but wrong coefficient rejects. |
+| TS9 / 9 | Add one to both polynomial endpoints as canonical pairs; ordered but wrong stage rejects. |
+| TS10 / 10 | Add one to the remainder upper endpoint as a canonical pair; wrong tail rejects. |
+| TS11 / 11 | Add one to both root interval endpoints as canonical pairs; ordered wrong final interval rejects. |
+| TS12 / 6 | Reduce target bit limit to one; guard rejection, no refinement/retry. |
+| TS13 / 7 | Scoped constructor hook changes target cap after the first reserved constructor; observed mutation rejects without publication. |
+| TS14 / 8 | Scoped first-constructor hook raises MemoryError; propagate, count attempt, publish nothing. |
+| TS15 / 9 | Repeat plus independent input/result/stage/work mutations preserves saved result and pool. |
+
+Test-only hooks are not a runtime callback interface. TS14 covers MemoryError,
+not interruption; interruption remains a propagation requirement without new
+executed evidence. A later approval must explicitly renew the old affected
+composition/binding/cell and default matrices, not reuse an exhausted allowance.
+Per invocation named maxima: capture 12 candidate/24 enclosure/12 nested producer
+cell/24 snapshots; 32 new target entries, 32 existing composition entries, 64
+binding and 64 pure-cell entries. At most five invocation positions including
+failed probes/repairs/root gate: 60/120/60/120 capture maxima, 160 target/160
+composition/320 binding/320 pure-cell. Existing unchanged root controls are a
+separate explicitly renewed historical gate, not an exhaustive resource ledger.
+Complete owned pool or abort; reserve before delegation, no refunds/workers/refill/
+replacement/new q/scene/callee interception/persistent capture. No producer call
+inside the proposed target checker. Payloads would remain invocation-memory-only.
+
+Next decision: approve/modify the private target-content prototype, exact TS map/
+faults/limits and affected-gate renewal, or retain design-only isolation. No source
+edit/import/fixture/target/native/model run, acquisition/dependency/data, claim/
+proof/error/work allowance/Route C/totality/consumer adoption follows. Task 6/9,
+native motion/goals/relative transforms, source completeness/authority/work, teacher
+assets, physical/task quality and ST/board remain unresolved and unchanged.
+
+[sinc-target-contract-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -9185,7 +9377,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §133): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §134): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -9410,6 +9602,10 @@ That conditional composition review and concrete isolation-versus-narrow-claim
 brief are now prepared (§133): CO0-CO9, distinct ledgers and explicit missing
 premise/target/live/resource/consumer decisions. No source/run/claim adoption;
 §132's tested gate and exhausted execution budget remain unchanged.
+The separately approved design-only target-inclusion content contract is prepared
+(§134): independent same-q/stage reconstruction, TV0-TV9/TI0-TI7, explicit zero
+branch and fixed sixteen-control/five-invocation future proposal. No checker/run/
+integration/proof/claim adoption; prototype and affected gates remain unapproved.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

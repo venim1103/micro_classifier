@@ -6245,6 +6245,68 @@ limits; the present design-only scope ends with document checks and a local comm
 
 [sinc-certificate-plan-review]: REVIEW.md
 
+#### NF1 Isolated Cell Certificate Checker (2026-11-05)
+
+The user separately approved §124's isolated checker/tests, sixteen reused
+positions/at most 32 attempts per complete focused invocation and normal source
+gates. [Review §125][sinc-cell-check-review] records implementation, executions
+and limits. This is bounded synthetic content verification, not V-bind/V-target/
+V-live implementation, accepted proof/allowance, Route C adoption or integration.
+
+Additive private `_check_synthetic_cell_certificate` in
+[diagnostics][c1-prototype-source] accepts exactly the eight certificate fields,
+literal opt-in, builtin nonboolean word/order integers, exact boolean claims and
+fixed builtin dict/string/tuple shapes. It checks seven capped canonical pairs,
+rejects input hooks/subclasses and creates a fresh fixed-field snapshot. Separate
+`_SYNTHETIC_CELL_CHECK_BITS` defaults to 65,536; invalid/increased or observed
+changed limits stop unresolved. Existing caps and all old functions stay intact.
+Caller input allocation/serialized ownership and faithful runtime bindings remain
+assumptions, not qualified concurrency, allocation or source evidence.
+
+Independent integer-pair arithmetic reconstructs three neighbors using bit-field
+division, two guarded exact midpoints and three three-way comparisons. Supplied
+neighbor values, boundaries, parity/order/containment claims must match independent
+recomputations and complete positive closed-interval inclusion. M is excluded as
+an output but remains the finite upper neighbor of M-1; both supported tie parities,
+subnormal/normal spacing and unsupported edges are preserved. No search, producer/
+word/enclosure/old-RN64/native call, float conversion, retry, cache or persistence.
+Fraction canonicalization/GCD is a shared assumed runtime dependency, not producer
+helper reuse or closed CT0/CT1 evidence. The three-field zero word certificate
+is outside this eight-field content interface; no q/enclosure binding is checked.
+
+Successful diagnostic reports have distinct content-check identity, freshly
+recomputed certificate/work containers and false qualification flags. Ordinary
+unresolved reports omit a verified certificate; unexpected allocation/interruption
+errors propagate. No producer status is consumed. Whole-interval inclusion here
+concerns supplied contents, not independent F(q) truth or live-source authority.
+Attempt counts include seven input canonical checks, three decodes, two midpoints,
+three comparisons and at most twelve Fraction constructions. Accepted canonical
+bit sizes do not measure raw/rejected/live allocation, primitive work, time or RAM.
+
+One test reuses sixteen positions with independently derived contents and expected
+outcomes, exactly two checker attempts each. A complete matrix gives 12 verified,
+17 unresolved and three exceptions; new tests call no producer/cell/word/enclosure,
+owner/reference/native path. Tampered values/boundaries/parity/order/flags, numeric
+aliases, noncanonical/oversized inputs, hostile dict hooks, cap changes/exhaustion,
+fresh outputs and MemoryError propagation are controlled. No new q, scene or data.
+All previous source/test top-level AST nodes remain identical and ordered.
+
+Focused checks and the required root gate pass: 2,181 tests plus the known
+transformer xfail/71 existing warnings. Scoped lint/format/editor/Pylance syntax
+and post-format old-AST checks pass; the initial format failure and VS Code test
+discovery mismatch are preserved in review. No extra opt-in native/sanitizer/Arm,
+GPU/teacher/board or installed-source requalification; no dependencies/collection/
+labels/training/consumer use. Native motion/goals/relative transforms, source/work,
+SR/VC/CT/W0/TB0 obligations and Task 6/9 remain unresolved; `1bb89fe` stays.
+
+Next proposed, not approved: design-only conditional correctness/publication/work
+review of the new checker against VC1-VC4/CT0-CT3. No new imports/fixtures/runs,
+source changes, binding/target/live checker, native inspection/acquisition,
+consumer integration or proof/error/work allowance/qualification promotion.
+The separately approved implementation scope is exhausted; isolation stays default.
+
+[sinc-cell-check-review]: REVIEW.md
+
 [c1-motion-source]: sim/rover.py
 [c1-prototype-source]: sim/diagnostics.py
 [floor-rules]: sim/rules.py
@@ -8256,7 +8318,7 @@ needs inputs above about 12 k tokens or runs on the two-GPU d3 host (§4).
 
 ## 12. Implementation Milestones
 
-Current critical-path checkpoint (2026-11-05, REVIEW.md §124): the active
+Current critical-path checkpoint (2026-11-05, REVIEW.md §125): the active
 three-question rules contract resolves F19, not M2 task quality. The remaining
 critical step is F21 sensor/scene evidence qualification before data collection,
 then a qualified closed-loop rules baseline. Privileged simulator truth is permitted in principle
@@ -8434,6 +8496,13 @@ private pure-cell checker/tests, sixteen reused positions/at most 32 checker
 attempts per complete focused invocation and normal source gates, not binding/
 target/live/native/consumer work or promotion. New tests call no word/enclosure/
 producer-cell; unchanged default regressions need explicit gate approval.
+That separately approved isolated checker/tests package is complete (§125):
+eight-field content verification, sixteen reused positions/32 attempts per matrix,
+independent cell reconstruction, fresh diagnostic reports and old AST/cap
+preservation. Fresh gate: 2,181 plus known xfail/71 warnings; no proof/allowance
+or V-bind/V-target/V-live/native/work/consumer qualification. Next proposed, not
+approved: design-only conditional checker correctness/publication/work review,
+not new imports/fixtures/runs/source changes/acquisition/integration or promotion.
 All broader gates stay unchanged.
 
 | Milestone | Deliverable | Exit condition |

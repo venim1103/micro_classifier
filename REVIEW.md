@@ -8985,6 +8985,118 @@ adoption follows. Implementation approval must explicitly include those limits.
 
 [sinc-certificate-plan-design]: DESIGN.md
 
+## 125. NF1 Isolated Cell Certificate Checker (2026-11-05)
+
+The user explicitly approved §124's offered isolated private checker/tests using
+sixteen reused positions/at most 32 attempts per complete focused invocation,
+normal source gates and local commits. Baseline was clean `85fc015`; old source/
+test identities matched §122. User terminal context reports a successful push;
+no assistant push/wider permission follows. No producer/word-wrapper/owner/
+binding/target/live checker integration or proof/allowance/qualification adoption.
+
+**Local hypothesis and edit/check.** Independently reconstructed eight-field
+cell content can be verified without consulting a producer; inconsistent claims
+must reject. Read the published fields and nearby independent controls/§124 plan,
+then added one private helper/limit and one bounded test matrix. The next action
+requested the single unit control through VS Code tests; discovery matched no
+new parametrized item and executed nothing. The configured pytest fallback for
+the same unit control passed before widening to the full matrix. No assertion,
+tolerance, cap or qualification flag was relaxed to obtain a pass.
+
+**Implementation.** [DESIGN.md §7][sinc-cell-check-design] describes the isolated
+`_check_synthetic_cell_certificate` and `_SYNTHETIC_CELL_CHECK_BITS`. Exactly eight
+builtin-key fields, fixed tuple shapes, nonboolean builtin words/orders and exact
+boolean claims are required. All seven rational pairs are raw-size/shape/type
+checked before canonicalization and fresh fixed-field snapshot; hostile objects
+are not converted or copied through hooks. Noncanonical pairs, unsupported words/
+intervals/configuration, mismatched content and failed guards stay unresolved.
+Configuration defaults to 65,536, cannot increase and is rechecked at preflight.
+
+Separate integer-pair decoding uses finite word bit fields, guarded significand/
+shift operations, exact midpoint products/sum/doubling and comparison cross-products.
+Three actual neighbor words/values and two boundaries are reconstructed; positive
+ordered interval, lower/upper inclusion and supplied parity/order/true claims must
+match independent checks. M-1's upper neighbor M is finite, never an output.
+There is no search, producer decoder/cell/word/enclosure, old RN64, native sine,
+float, retry, cache or persistence call. Fraction/GCD remains a shared assumed
+runtime dependency; private helper separation is not independent runtime or proof
+qualification. Serialized caller ownership/faithful bindings remain assumptions.
+
+The distinct content-check result builds fresh recomputed certificate/work
+containers on success. Unresolved ordinary returns omit a certificate; unexpected
+allocation/interruption errors propagate. All five flags stay false and source/
+native sinc/motion/work/consumer statuses remain unresolved. This checks declared
+cell contents, not q/enclosure binding, F(q) inclusion or live source authority.
+The three-field zero word shape remains outside this interface. It does not
+retag or alter old records, producer/default/wire meaning or `1bb89fe`.
+
+**Bounded controls and counts.** One parametrized test reuses sixteen independent
+positions, two checker attempts per case. The complete new matrix makes exactly
+32 attempts: 12 verified, 17 unresolved and three exceptions. Reused unit/even/
+odd/tie/straddle/subnormal/normal/extreme/unsupported/nonpositive/noncanonical
+controls construct neighbor/boundary/order evidence independently before calls.
+Second attempts exercise literal opt-in rejection, word boolean/order float,
+tampered neighbor/boundary/parity/true claims, oversized raw pairs, reduced/
+increased/changed cap, hostile dict hooks, owned records and allocation failure.
+Poisoned producer/cell/word/enclosure/old arithmetic/owner/reference/native paths
+and AST bans on imports/float/np/math/open/deepcopy guard the new test slice.
+No new q position, scene, task data or producer-derived expected certificate.
+
+Per return, work assertions bound seven canonical-pair checks, three decodes,
+two midpoints, three comparisons and twelve rational constructions. Successful
+controls use exactly those counts. Counters record attempted upper-level stages;
+maximum bits records passed canonical results, not raw/rejected/concurrently live
+allocation or primitive/native/time/RAM bounds. No CT/SR/W0/TB0 resource or proof
+obligation closes. The fixture expectations establish finite cell mechanics,
+not complete domain correctness, independent F(q) truth or native parity.
+
+**Executed checks and failure history.** VS Code test-name discovery executed
+zero attempts and did not validate the request; pytest fallback was used once.
+Single control: `python -m pytest -q
+'tests/test_sim.py::test_synthetic_cell_certificate_checker[0]'` passed (1, 0.20 s,
+two attempts). Complete focused matrix passed (16, 0.25 s, 32 attempts).
+Initial scoped lint passed; changed-file format check failed only new layouts.
+`ruff format sim/diagnostics.py tests/test_sim.py` changed only those two files;
+the same format check then passed. Old AST preservation passed before/after format:
+exactly two new source nodes and one test node, all earlier nodes unchanged/ordered.
+
+Required root gate `/opt/venv/bin/python -m pytest -q && ruff check . &&
+git diff --check` passed: 2,181 tests, one known transformer xfail, 71 existing
+ONNX warnings, 50.46 s and no reported skips. It executed the unchanged old
+regression controls under the explicit normal-gate approval, not a new study.
+New checker executions total 66 attempts across single/focused/root invocations
+(2/32/32); no complete invocation exceeds 32. No unchanged successful gate was
+rerun. Scoped format/lint, editor diagnostics and Pylance syntax checks pass.
+Pylance selected `/opt/venv/bin/python` and environment tooling reports the
+existing Python 3.12.3 venv; no install/new environment. No extra opt-in native/
+sanitizer/Arm or board gate, teacher/GPU run or installed/native requalification.
+
+The first checkpoint-document patch was rejected for a duplicate DESIGN.md path;
+actual diff confirmed only the two Python files changed and no partial document
+edit. Reapplied with one section per file, preserving tested source and failures.
+New tested source/test blobs are `937df87cc85652e324869e40a5340bfdd72df73b` and
+`f4d0c57b7a547a79a1b615694b7a4a78c55e763a`. Final 582-reference/local-target,
+sections 1-125/fences/math, prior review/Sources/design/workflow/history/task-tail,
+actual budget/gate/failure/limits and exact-scope/tested-identity checks pass.
+Document diagnostics and scoped diff/whitespace checks pass; exact five-file
+staged checks precede the local checkpoint. Old reports/logs/cache artifacts,
+all historical failed checks and native/source/work limits remain intact. No
+download/dependency, scene/collection/labels/training/consumer use, background job
+or cleanup; no assistant push. Host tests are not board execution or task quality.
+
+**Exit and next permission.** Approved isolated implementation/test/gate package
+is complete after final document verification/local commit. No proof/error/work
+allowance, Route C/totality/source/native/task-quality or consumer qualification
+is adopted. Five flags stay false; native motion/goals/relative transforms,
+pending source completeness/authority and native work remain unresolved; Task 6/9,
+teacher assets and ST/board stay blocked. Next proposed, not approved: design-only
+conditional checker correctness/publication/work review against VC1-VC4/CT0-CT3.
+No new imports/fixtures/runs/source changes, binding/target/live checker, native
+inspection/acquisition, adapter/consumer integration or proof/allowance/promotion.
+Isolation remains default; all approved scopes are exhausted.
+
+[sinc-cell-check-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

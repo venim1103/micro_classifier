@@ -118,26 +118,24 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest approved package complete: design-only NF1 certificate verification/
-  trusted-base closure plan (DESIGN.md §7 / REVIEW.md §124), four distinct claims,
-  exact eight-field pure-cell boundary and nine proposed gates. Source/test
-  identities still match §122;
-  no source/test change or new run. Five flags remain false; no proof/allowance
+- Latest approved package complete: isolated NF1 cell-content checker/tests
+  (DESIGN.md §7 / REVIEW.md §125), exact eight-field boundary, one private helper/
+  limit and sixteen reused controls/32 attempts per complete matrix. Old source/
+  test ASTs/caps remain unchanged; new tests call no producer/cell/word/enclosure.
+  Five flags remain false; no proof/allowance
   or Route C/totality/qualification adoption.
   Native motion/goal/relative transforms, pending completeness/source authority
-  and native-work remain unresolved. Baseline was clean at `f9878aa`; source
-  gate remains §122's 2,165 plus known xfail/71 warnings, not rerun here.
-  No environment/native/GPU/teacher/board requalification or candidate consumer use.
-  Next proposed, not approved: isolated private pure-cell checker/tests, sixteen
-  reused positions/at most 32 checker attempts per complete focused invocation,
-  plus normal source gates. New tests call no word/enclosure/producer-cell;
-  default gates need explicit approval. No binding/target/live/native/consumer
-  work, acquisition, integration or proof/allowance/qualification promotion.
+  and native-work remain unresolved. Baseline was clean at `85fc015`; fresh source
+  gate is §125's 2,181 plus known xfail/71 warnings. Editor interpreter verified;
+  no native/GPU/teacher/board requalification or candidate consumer use.
+  Next proposed, not approved: design-only checker correctness/publication/work
+  review, not new imports/fixtures/runs/source changes, binding/target/live checker,
+  native inspection/acquisition, integration or proof/allowance/qualification promotion.
   Old helpers stay unchanged;
   isolation stays default, with no dependency/data/hardware approval.
   All approved scopes are exhausted.
   No background job is running; no runtime integration or collection is authorized.
-- Latest decisions and results: REVIEW.md §§72-124 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-125 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -148,9 +146,9 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-05): 2,165 passes plus known xfail, 71 existing
-  ONNX warnings; 28 new cell/word cases, lint/changed-file format/editor diagnostics
-  and legacy AST preservation pass; failed format check preserved in §122. No
+- Last source-test gate (2026-11-05): 2,181 passes plus known xfail, 71 existing
+  ONNX warnings; sixteen new checker cases, lint/changed-file format/editor diagnostics
+  and legacy AST preservation pass; failed format check/discovery preserved in §125. No
   runtime/C source change or additional opt-in sanitizer/
   Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1195,17 +1193,15 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §124 completes
-the separately approved design-only certificate verification/trusted-base plan:
-four distinct claims, eight-field pure-cell content checks and nine proposed
-gates. Source/test unchanged, five flags false; `1bb89fe` stays. No proof/
+Current checkpoint: [DESIGN.md][design] §7 / [REVIEW.md][review] §125 completes
+the separately approved isolated pure-cell checker/tests: eight-field content,
+sixteen reused controls/32 attempts per matrix, independent reconstruction and
+old AST/cap preservation. Five flags false; `1bb89fe` stays. No proof/
 allowance/Route C, consumer/native/source/work or totality acceptance. Last gate
-is §122's 2,165 plus known xfail/71 warnings, not rerun here; failures preserved.
-Next proposed, not approved: isolated private pure-cell checker/tests, sixteen
-reused positions/at most 32 checker attempts per complete focused invocation
-plus normal source gates. New tests call no word/enclosure/producer-cell;
-unchanged default regressions need explicit approval. No binding/target/live/
-native/owner/query/reference/log adapter/acquisition/integration or promotion.
+is §125's fresh 2,181 plus known xfail/71 warnings; failed checks preserved.
+Next proposed, not approved: design-only checker correctness/publication/work
+review, not import/new fixtures/runs/source changes, binding/target/live/native/
+owner/query/reference/log adapter/acquisition/integration or promotion.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 All bounded scopes are exhausted; no background job or cleanup is pending.
 
@@ -1475,6 +1471,12 @@ All bounded scopes are exhausted; no background job or cleanup is pending.
   proof/allowance/flag change. Next proposed, not approved: private pure-cell
   checker/tests, sixteen reused positions/32 checker attempts per complete focused
   invocation plus normal source gates, not binding/target/native/consumer work.
+  Cell-content checker (REVIEW.md §125): separately approved private implementation
+  complete; sixteen reused controls/32 attempts per matrix, old ASTs/caps and five
+  false flags preserved. Gate: 2,181 plus known xfail/71 warnings; no producer calls
+  in new tests, binding/target/live/native/consumer or qualification adoption.
+  Next proposed, not approved: design-only conditional checker correctness/work
+  review, not new imports/fixtures/runs/source edits/acquisition/integration.
   Partial result (2026-10-15): approved draft/test-only tooling now includes
   a versioned JSON catalogue and deterministic sensor proxies, 37 focused tests,
   explicit unreviewed/training-disabled metadata and no generated dataset.

@@ -414,6 +414,241 @@ _ARITHMETIC_TRACE_LITERALS = (
 
 
 @pytest.mark.parametrize("control_index", range(16))
+def test_synthetic_cell_certificate_checker(control_index, monkeypatch):
+    import ast
+    import inspect
+    from copy import deepcopy
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    unit = 0x3FF0000000000000
+    largest = 0x7FEFFFFFFFFFFFFF
+    center = Fraction(1)
+    lower = center - Fraction(1, 1 << 54)
+    upper = center + Fraction(1, 1 << 53)
+    odd_center = center + Fraction(1, 1 << 52)
+    odd_upper = center + Fraction(3, 1 << 53)
+    tiny = Fraction(1, 1 << 1074)
+    normal = Fraction(1, 1 << 1022)
+    high = _literal_binary64_fraction(largest - 1)
+    controls = (
+        ((center, center), unit, True),
+        ((lower, lower), unit, True),
+        ((upper, upper), unit, True),
+        (((upper + odd_center) / 2, odd_center), unit + 1, True),
+        ((odd_upper, odd_upper), unit + 2, True),
+        (((upper + odd_center) / 2, (odd_center + odd_upper) / 2), unit + 1, True),
+        ((lower, upper), unit, True),
+        ((upper - Fraction(1, 1 << 55), upper + Fraction(1, 1 << 55)), unit, False),
+        ((tiny, tiny), 1, True),
+        ((normal - tiny / 2, normal - tiny / 2), 0x0010000000000000, True),
+        ((high, high), largest - 1, True),
+        ((_literal_binary64_fraction(largest),) * 2, largest, False),
+        ((Fraction(0), center), unit, False),
+        ((tiny / 2, tiny / 2), 1, False),
+        ((center, center), unit, False),
+        ((center, center), unit, True),
+    )
+
+    def pair(value):
+        return value.numerator, value.denominator
+
+    def certificate(values, word):
+        neighbor_word = min(word, largest - 1)
+        adjacent = tuple(
+            _literal_binary64_fraction(value)
+            for value in (neighbor_word - 1, neighbor_word, neighbor_word + 1)
+        )
+        boundaries = ((adjacent[0] + adjacent[1]) / 2, (adjacent[1] + adjacent[2]) / 2)
+        return {
+            "word": word,
+            "interval": tuple(pair(value) for value in values),
+            "neighbors": tuple(
+                (value, pair(decoded))
+                for value, decoded in zip(
+                    (neighbor_word - 1, neighbor_word, neighbor_word + 1),
+                    adjacent,
+                    strict=True,
+                )
+            ),
+            "boundaries": tuple(pair(value) for value in boundaries),
+            "closed_ties": word % 2 == 0,
+            "lower_order": (values[0] > boundaries[0]) - (values[0] < boundaries[0]),
+            "upper_order": (values[1] > boundaries[1]) - (values[1] < boundaries[1]),
+            "whole_interval_contained": True,
+        }
+
+    values, word, expected = controls[control_index]
+    record = certificate(values, word)
+    if control_index == 14:
+        record["interval"] = ((2, 2), (1, 1))
+    unit_record = certificate((center, center), unit)
+    helper = diagnostics._check_synthetic_cell_certificate
+    calls = []
+    outputs = []
+
+    def check(value, **keywords):
+        calls.append(value)
+        assert len(calls) <= 2
+        output = helper(value, **keywords)
+        outputs.append(output)
+        return output
+
+    def forbidden(*arguments, **keywords):
+        raise AssertionError("checker reached a producer/native/owner path")
+
+    for name in (
+        "_certify_synthetic_sinc_cell",
+        "_candidate_synthetic_sinc_word",
+        "_enclose_synthetic_sinc_word",
+        "_synthetic_binary64_value",
+        "_synthetic_rn64",
+        "_synthetic_binary64_operation",
+        "_trace_synthetic_binary64_rows",
+        "_reference_synthetic_c1_motion",
+        "_audit_synthetic_controlled_candidate",
+        "_SyntheticC1ControlledMotionOwner",
+        "_SyntheticC1SourceRecorder",
+        "prepare_synthetic_c1_relative_input",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for module, names in (
+        (diagnostics.np, ("sinc", "sin", "cos", "arctan2")),
+        (diagnostics.math, ("sin", "cos", "atan2")),
+    ):
+        for name in names:
+            monkeypatch.setattr(module, name, forbidden)
+    syntax = ast.parse(inspect.getsource(helper))
+    assert not any(
+        isinstance(node, ast.Constant) and type(node.value) is float
+        for node in ast.walk(syntax)
+    )
+    assert not any(
+        isinstance(node, (ast.Import, ast.ImportFrom)) for node in ast.walk(syntax)
+    )
+    assert not any(
+        isinstance(node, ast.Name)
+        and node.id in {"np", "math", "float", "open", "deepcopy"}
+        for node in ast.walk(syntax)
+    )
+    result = check(record, synthetic_test_only=True)
+    saved = deepcopy(result)
+    if expected:
+        assert result["status"] == "verified_synthetic_cell_content", result["reason"]
+        assert result["certificate"] == record
+        assert result["work"]["canonical_pair_checks"] == 7
+        assert result["work"]["dyadic_decodes"] == 3
+        assert result["work"]["midpoint_recomputations"] == 2
+        assert result["work"]["rational_comparisons"] == 3
+        assert result["work"]["rational_constructions"] == 12
+    else:
+        assert result["status"] == "unresolved_synthetic_cell_content"
+        assert "certificate" not in result
+    damaged = deepcopy(unit_record)
+    if control_index in (0, 1):
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check(damaged, synthetic_test_only=(False if control_index == 0 else 1))
+    elif control_index == 10:
+        allocations = []
+
+        def allocate(*arguments):
+            allocations.append(arguments)
+            raise MemoryError("injected checker allocation failure")
+
+        monkeypatch.setattr(diagnostics, "Fraction", allocate)
+        with pytest.raises(MemoryError, match="injected checker allocation failure"):
+            check(damaged, synthetic_test_only=True)
+        assert len(allocations) == 1
+    elif control_index == 15:
+        repeated = check(record, synthetic_test_only=True)
+        record["word"] = 0
+        repeated["certificate"]["word"] = 0
+        repeated["work"]["rational_constructions"] = 0
+    else:
+        if control_index == 2:
+            damaged["word"] = True
+        elif control_index == 3:
+            neighbors = list(damaged["neighbors"])
+            neighbors[1] = (unit, pair(odd_center))
+            damaged["neighbors"] = tuple(neighbors)
+        elif control_index == 4:
+            damaged["boundaries"] = (pair(center), damaged["boundaries"][1])
+        elif control_index == 5:
+            damaged["closed_ties"] = False
+        elif control_index == 6:
+            damaged["lower_order"] = 1.0
+        elif control_index == 7:
+            damaged["interval"] = ((1 << 65536, 1), (1 << 65536, 1))
+        elif control_index == 8:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_CELL_CHECK_BITS", 1)
+        elif control_index == 9:
+            original = diagnostics.Fraction
+            allocations = []
+
+            def allocate(*arguments):
+                allocations.append(arguments)
+                monkeypatch.setattr(diagnostics, "_SYNTHETIC_CELL_CHECK_BITS", 1)
+                return original(*arguments)
+
+            monkeypatch.setattr(diagnostics, "Fraction", allocate)
+        elif control_index == 11:
+            damaged["status"] = "verified_synthetic_cell_content"
+        elif control_index == 12:
+
+            class HostileDict(dict):
+                def __len__(self):
+                    raise AssertionError("checker called an input hook")
+
+                def __iter__(self):
+                    raise AssertionError("checker called an input hook")
+
+                def __getitem__(self, key):
+                    raise AssertionError("checker called an input hook")
+
+                def __deepcopy__(self, memo):
+                    raise AssertionError("checker called an input hook")
+
+            damaged = HostileDict(damaged)
+        elif control_index == 13:
+            monkeypatch.setattr(diagnostics, "_SYNTHETIC_CELL_CHECK_BITS", 65537)
+        else:
+            damaged["whole_interval_contained"] = False
+        rejected = check(damaged, synthetic_test_only=True)
+        assert rejected["status"] == "unresolved_synthetic_cell_content"
+        assert "certificate" not in rejected
+        if control_index in (7, 8):
+            assert rejected["work"]["rational_constructions"] == 0
+            assert rejected["reason"] == "cell_check_rational_work_limit"
+        elif control_index == 9:
+            assert len(allocations) == 1
+            assert rejected["reason"] == "changed_cell_check_configuration"
+        elif control_index == 13:
+            assert rejected["reason"] == "unsupported_cell_check_configuration"
+    assert len(calls) == 2 and result == saved
+    for output in outputs:
+        assert output["work"]["canonical_pair_checks"] <= 7
+        assert output["work"]["dyadic_decodes"] <= 3
+        assert output["work"]["midpoint_recomputations"] <= 2
+        assert output["work"]["rational_comparisons"] <= 3
+        assert output["work"]["rational_constructions"] <= 12
+        assert output["work"]["max_result_bits"] <= 65536
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "producer_parity_qualified",
+        ):
+            assert output[flag] is False
+        assert output["native_sinc_status"] == "unresolved_native_sinc_evidence"
+        assert output["motion_status"] == "unresolved_motion_evidence"
+        assert output["source_status"] == "unresolved_source_authority"
+        assert output["native_work_status"] == "unresolved_native_work_evidence"
+        assert output["consumer_status"] == "ineligible_isolated_candidate"
+
+
+@pytest.mark.parametrize("control_index", range(16))
 def test_synthetic_sinc_cell_candidate(control_index, monkeypatch):
     from copy import deepcopy
     from fractions import Fraction

@@ -35,6 +35,238 @@ _SYNTHETIC_SINC_CELL_BITS = 65536
 _SYNTHETIC_SINC_CELL_STEPS = 64
 
 
+_SYNTHETIC_CELL_CHECK_BITS = 65536
+
+
+def _check_synthetic_cell_certificate(certificate, *, synthetic_test_only=False):
+    """Independently verify supplied cell contents, never sinc inclusion or source."""
+    if synthetic_test_only is not True:
+        raise ValueError("cell checker requires synthetic_test_only=True")
+    limit = _SYNTHETIC_CELL_CHECK_BITS
+    work = {
+        "canonical_pair_checks": 0,
+        "dyadic_decodes": 0,
+        "midpoint_recomputations": 0,
+        "rational_comparisons": 0,
+        "rational_constructions": 0,
+        "max_result_bits": 0,
+    }
+    result = {
+        "identity": "synthetic_cell_certificate_content_check_v0",
+        "allowed_use": "isolated_synthetic_cell_content_check_only",
+        "status": "unresolved_synthetic_cell_content",
+        "reason": "unsupported_cell_certificate",
+        "configuration": {
+            "rational_bit_limit": limit
+            if type(limit) is int and 1 <= limit <= 65536
+            else None
+        },
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "producer_parity_qualified": False,
+        "native_sinc_status": "unresolved_native_sinc_evidence",
+        "motion_status": "unresolved_motion_evidence",
+        "source_status": "unresolved_source_authority",
+        "native_work_status": "unresolved_native_work_evidence",
+        "consumer_status": "ineligible_isolated_candidate",
+        "work": work,
+    }
+    if type(limit) is not int or not 1 <= limit <= 65536:
+        result["reason"] = "unsupported_cell_check_configuration"
+        return result
+
+    class CheckStop(ArithmeticError):
+        pass
+
+    def preflight(*sizes):
+        if (
+            type(_SYNTHETIC_CELL_CHECK_BITS) is not int
+            or _SYNTHETIC_CELL_CHECK_BITS != limit
+        ):
+            raise CheckStop("changed_cell_check_configuration")
+        if max(sizes) > limit:
+            raise CheckStop("cell_check_rational_work_limit")
+
+    def rational(numerator, denominator=1):
+        preflight(numerator.bit_length(), denominator.bit_length())
+        work["rational_constructions"] += 1
+        value = Fraction(numerator, denominator)
+        numerator, denominator = value.numerator, value.denominator
+        if (
+            type(numerator) is not int
+            or type(denominator) is not int
+            or denominator <= 0
+        ):
+            raise CheckStop("unsupported_cell_check_canonical_result")
+        size = max(numerator.bit_length(), denominator.bit_length())
+        preflight(size)
+        work["max_result_bits"] = max(work["max_result_bits"], size)
+        return numerator, denominator
+
+    def decode(word):
+        work["dyadic_decodes"] += 1
+        exponent, significand = divmod(word, 1 << 52)
+        if exponent:
+            preflight(53)
+            significand += 1 << 52
+            shift = exponent - 1075
+        else:
+            shift = -1074
+        preflight(significand.bit_length() + max(0, shift), 1 + max(0, -shift))
+        return rational(significand << max(0, shift), 1 << max(0, -shift))
+
+    def midpoint(left, right):
+        preflight(
+            max(
+                left[0].bit_length() + right[1].bit_length(),
+                right[0].bit_length() + left[1].bit_length(),
+            )
+            + 1,
+            left[1].bit_length() + right[1].bit_length() + 1,
+        )
+        work["midpoint_recomputations"] += 1
+        numerator = left[0] * right[1] + right[0] * left[1]
+        denominator = (left[1] * right[1]) << 1
+        return rational(numerator, denominator)
+
+    def compare(left, right):
+        preflight(
+            left[0].bit_length() + right[1].bit_length(),
+            right[0].bit_length() + left[1].bit_length(),
+        )
+        work["rational_comparisons"] += 1
+        first = left[0] * right[1]
+        second = right[0] * left[1]
+        return (first > second) - (first < second)
+
+    expected_keys = {
+        "word",
+        "interval",
+        "neighbors",
+        "boundaries",
+        "closed_ties",
+        "lower_order",
+        "upper_order",
+        "whole_interval_contained",
+    }
+    if type(certificate) is not dict or len(certificate) != 8:
+        return result
+    if any(
+        type(key) is not str or len(key) > 24 or key not in expected_keys
+        for key in certificate
+    ):
+        return result
+    word = certificate["word"]
+    if type(word) is not int or not 1 <= word < 0x7FEFFFFFFFFFFFFF:
+        result["reason"] = "unsupported_cell_certificate_word"
+        return result
+    if (
+        type(certificate["closed_ties"]) is not bool
+        or type(certificate["whole_interval_contained"]) is not bool
+        or any(
+            type(certificate[name]) is not int or certificate[name] not in (-1, 0, 1)
+            for name in ("lower_order", "upper_order")
+        )
+    ):
+        return result
+    interval = certificate["interval"]
+    boundaries = certificate["boundaries"]
+    neighbors = certificate["neighbors"]
+    if (
+        type(interval) is not tuple
+        or len(interval) != 2
+        or type(boundaries) is not tuple
+        or len(boundaries) != 2
+        or type(neighbors) is not tuple
+        or len(neighbors) != 3
+        or any(
+            type(neighbor) is not tuple
+            or len(neighbor) != 2
+            or type(neighbor[0]) is not int
+            or not 0 <= neighbor[0] <= 0x7FEFFFFFFFFFFFFF
+            for neighbor in neighbors
+        )
+    ):
+        return result
+    pairs = interval + tuple(neighbor[1] for neighbor in neighbors) + boundaries
+    try:
+        for pair in pairs:
+            if (
+                type(pair) is not tuple
+                or len(pair) != 2
+                or any(type(component) is not int for component in pair)
+                or pair[1] <= 0
+            ):
+                return result
+            preflight(pair[0].bit_length(), pair[1].bit_length())
+        snapshot = {
+            "word": word,
+            "interval": tuple((pair[0], pair[1]) for pair in interval),
+            "neighbors": tuple(
+                (neighbor[0], (neighbor[1][0], neighbor[1][1]))
+                for neighbor in neighbors
+            ),
+            "boundaries": tuple((pair[0], pair[1]) for pair in boundaries),
+            "closed_ties": certificate["closed_ties"],
+            "lower_order": certificate["lower_order"],
+            "upper_order": certificate["upper_order"],
+            "whole_interval_contained": certificate["whole_interval_contained"],
+        }
+        for pair in pairs:
+            work["canonical_pair_checks"] += 1
+            if rational(*pair) != pair:
+                raise CheckStop("noncanonical_cell_certificate_pair")
+        lower, upper = snapshot["interval"]
+        if lower[0] <= 0 or compare(lower, upper) > 0:
+            raise CheckStop("unsupported_cell_certificate_interval")
+        neighbor_words = (word - 1, word, word + 1)
+        values = tuple(decode(neighbor) for neighbor in neighbor_words)
+        expected_neighbors = tuple(zip(neighbor_words, values, strict=True))
+        if snapshot["neighbors"] != expected_neighbors:
+            raise CheckStop("inconsistent_cell_certificate_neighbors")
+        expected_boundaries = (
+            midpoint(values[0], values[1]),
+            midpoint(values[1], values[2]),
+        )
+        if snapshot["boundaries"] != expected_boundaries:
+            raise CheckStop("inconsistent_cell_certificate_boundaries")
+        lower_order = compare(lower, expected_boundaries[0])
+        upper_order = compare(upper, expected_boundaries[1])
+        even = not word & 1
+        contained = (lower_order > 0 or (lower_order == 0 and even)) and (
+            upper_order < 0 or (upper_order == 0 and even)
+        )
+        if not contained:
+            raise CheckStop("interval_outside_declared_cell")
+        if (
+            snapshot["closed_ties"] is not even
+            or snapshot["lower_order"] != lower_order
+            or snapshot["upper_order"] != upper_order
+            or snapshot["whole_interval_contained"] is not True
+        ):
+            raise CheckStop("inconsistent_cell_certificate_claims")
+        preflight(0)
+        result.update(
+            status="verified_synthetic_cell_content",
+            reason="independent_exact_cell_content_only",
+            certificate={
+                "word": word,
+                "interval": (lower, upper),
+                "neighbors": expected_neighbors,
+                "boundaries": expected_boundaries,
+                "closed_ties": even,
+                "lower_order": lower_order,
+                "upper_order": upper_order,
+                "whole_interval_contained": True,
+            },
+        )
+    except CheckStop as error:
+        result["reason"] = str(error)
+    return result
+
+
 def _certify_synthetic_sinc_cell(interval, *, synthetic_test_only=False):
     """Check one exact rounding cell, without claiming sinc interval inclusion."""
     if synthetic_test_only is not True:

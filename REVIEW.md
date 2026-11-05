@@ -11040,7 +11040,7 @@ replay or code-suite rerun occurred; §146's 2,269-pass gate remains historical
 tested evidence, not a new merge-time test result. No task data, model run or
 dependency change occurred. Final staged-byte verification precedes the commit.
 
-[concurrent-architecture-review]: ARCHITECTURE_IMPROVEMENTS.md
+[concurrent-architecture-review]: REVIEW.md#149-standalone-review-removal-2026-11-05
 
 ## 148. Architecture Review Validation and Improvement Plan (2026-11-05)
 
@@ -11150,7 +11150,7 @@ files preserved, three-document scope and clean whitespace/editor diagnostics.
 Final result-record and staged-byte checks precede the local planning checkpoint;
 the code suite is not rerun for these documentation-only changes.
 
-[architecture-validation-source]: ARCHITECTURE_IMPROVEMENTS.md
+[architecture-validation-source]: REVIEW.md#149-standalone-review-removal-2026-11-05
 [architecture-prompt-source]: teacher/label_pipeline.py
 [architecture-rover-source]: sim/rover.py
 [architecture-arm-build]: interface/build_audit.py
@@ -11162,6 +11162,26 @@ the code suite is not rerun for these documentation-only changes.
 [architecture-public-readme]: README.md
 [architecture-validation-plan]: DESIGN.md
 [architecture-sensor-spec]: https://www.st.com/en/imaging-and-photonics-solutions/vl53l8cx.html
+
+## 149. Standalone Review Removal (2026-11-05)
+
+The user explicitly requested removing the standalone architecture review after
+its useful findings were recorded. The assessment in §148 and the five gated
+improvements in [DESIGN §12][architecture-validation-plan] are retained unchanged.
+The original review remains available in Git with
+`git show 045ae67:ARCHITECTURE_IMPROVEMENTS.md`; the two historical review links
+now point to this evidence note rather than a deleted local file. Earlier
+statements that the review was retained describe their historical checkpoints.
+
+An initial metadata check assumed a GitHub origin and failed before edits;
+the archive reference instead uses verified local Git history. Scoped checks
+passed: original Git snapshot, all prior review/findings and unchanged DESIGN/
+AGENTS, two links and their section anchor, ordered sections 1-149, two-file
+scope, whitespace and editor diagnostics. Final staged-byte checks precede the
+local cleanup checkpoint. The code suite is not rerun for this documentation-only
+removal.
+No source, input, target, qualification, run budget or implementation scope changes;
+the baseline admission decisions and existing deployment gates remain unchanged.
 
 ## Sources
 

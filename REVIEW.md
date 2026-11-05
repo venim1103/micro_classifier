@@ -10899,6 +10899,119 @@ learning follow their existing gates; general audits are not the next task.
 
 [baseline-admission-design]: DESIGN.md
 
+## 146. Bounded Conditional C1 Wire Rejection Increment (2026-11-05)
+
+The user accepted the preceding recommendation to continue with the bounded
+conditional input-to-wire/rejection test increment and reiterated autonomous,
+independent work. Scope: a private fixture adapter and at most 24 new cases/
+eight reused complete scenes, 48 new-family coordinator attempts per invocation,
+four verification positions including failures/repairs/root, and the required
+default-gate renewal with old regression controls/caps unchanged. Startup,
+actuation, command guards and episode/evaluation runs remained blocked; D1's
+source evidence and D4's cohort/criteria were not adopted.
+
+Baseline `b72adb5` was clean and matched the local tracking reference after the
+user's reported push. Pylance selected `/opt/venv/bin/python`; it and existing
+caches/dependencies were reused without install or environment changes. Nearby
+source/Pylance facts identified an encoder-only State boundary in the old
+relative fixture bridge. The new [private adapter][c1-wire-rejection-source]
+instead decodes actual bytes and rejects changed source values before C1.
+Encoded 0.6 m/s demonstrably rounds upward; no tolerance or speed limit was
+changed. The exact 0.5 m/s fixture can reach conditional questions but cannot
+become a usable recommendation.
+
+**Implementation and exit.** One source function and one fixture/24-case test
+family were added; all 64 prior source and 277 prior test top-level AST nodes
+remain identical and ordered. No old function/signature/default was edited.
+Exact source-frame binding, decoded values, validity/ages and existing C1
+input/work rejection precede diagnostic serialization. Invalid candidate/status/
+false-flag summaries fail closed; contradiction suppresses all candidates and
+the injected unexpected computation failure is logged as an empty `FAULT`.
+Strict opt-in errors remain API errors. On ordinary return every wire frame
+is a rejection/fault, including complete three-answer fixture results. Null
+questions are absent, not encoded as `none`/zero; catalogue 1/model 0, existing
+confidence and packet sizes/ordering remain unchanged.
+
+The 24 fixed cases cover exact clear/blocked, source rounding, at-rest partial
+evidence, host/capture staleness, missing validity, source/CRC/profile/byte-type/
+goal mismatches, unknown body/domain/transform, masked returns, work exhaustion,
+fake-only conflicting/partial/invalid summaries, fake qualification aliases,
+injected computation failure, strict opt-in and held/owned outputs. Exactly two
+adapter requests per matrix case are charged before calling it, including API
+errors. Coordinator wrappers charge before execution and retain the 48 ceiling.
+Conditional evidence and frames are copied/round-tripped; stream parsing and
+the unchanged host's rejection/absence braking outputs pass. No rover step,
+startup action, command-sweep guard, task labels or collection was executed.
+
+**Actual four-position verification ledger.** New-family counts are distinct
+from renewed old default-suite controls and are not independent scene cohorts.
+
+| Position | Check and outcome | Adapter / relative / coordinator | Captures / complete scenes |
+| --- | --- | --- | --- |
+| 1 | Initial rounding-before-query regression: 1 pass, 0.99 s. | 1 / 0 / 0 | 0 / 0 |
+| 2 | Full matrix: 24 behavior passes, then one reporter teardown error, 1.57 s. | 48 / 32 / 10, assertion/source-supported; reporter did not print | 2 / 2, assertion/source-supported |
+| 3 | Same matrix after reporter repair: 24 passes, 2.02 s; ledger printed. | 48 / 32 / 10 | 2 / 2 |
+| 4 | Required root gate: 2,269 passes, known xfail, 71 warnings, no reported skips, 54.07 s; ledger printed. | 48 / 32 / 10 | 2 / 2 |
+
+The reused scene records are the old clear and 0.30 m-cylinder fixtures at
+start (2,2,0), goal (5,2), capture (1.91,2,0)/tick 20 and reference tick 23.
+No new geometry, start, goal or object-height declaration was introduced.
+Cumulative new-adapter requests are 145; new relative/coordinator/capture
+counts are 96/30/6, combining printed positions 3/4 with position 2's fixed-map
+and passed-assertion evidence. The first position constructs no Scene/capture.
+All four positions are spent. No fifth invocation, old unused fifth position,
+extra command-guard budget or deferred SC18-v0 execution was borrowed.
+
+**Retained failures and repairs.** Position 2's reporter used nonexistent
+`pytest.capture_disabled`; behavior passed but the invocation did not. The
+repair reused the existing capture-manager `global_and_fixture_disabled`
+pattern with a no-manager fallback, without changing assertions or limits.
+Focused lint then found a blind exception handler and an unused new import;
+logging the injected question failure and removing that import passed the same
+lint check. The initial changed-file format check required new-layout wrapping;
+Ruff formatted only the two changed Python files and its check passed. These
+static/format checks execute no fixture and are not extra verification positions.
+No threshold, assertion, work ceiling, qualification flag or xfail was relaxed.
+
+Final gate, from the root:
+`/opt/venv/bin/python -m pytest -q && ruff check . && git diff --check`.
+Changed-file `ruff format --check sim/diagnostics.py tests/test_sim.py`, Pylance
+syntax/editor checks, prior-AST preservation and whitespace pass. There is no
+C/native or normal runtime path change or extra opt-in sanitizer/Arm gate. Existing default
+controls are not linked firmware, board execution, numerical/source authority,
+memory/WCET or task-quality evidence. The known transformer xfail remains.
+No unchanged successful gate is rerun for the documentation checkpoint.
+
+Tested source SHA-256 values, unchanged after the final gate:
+
+- `sim/diagnostics.py`: `626591447ca18c15117c006375f999a495ab8b3cf5c90cf4a605e4e4517aec95`.
+- `tests/test_sim.py`: `85a72f4b59847326be20028b681770090927980d7c98a833ffed2b1a87a916a0`.
+
+**Handoff and boundaries.** The approved diagnostic increment is complete,
+not D1 source qualification, D2 command admission, M2 or Task 6/9 completion.
+All qualification/training/host-command flags stay false and every submitted
+result remains unusable by the host. General arithmetic/identity audits and
+SC18-v0 stay deferred, all fifteen prior verdicts undecided and old evidence/
+failures/guards retained. No proof/allowance/native/source/work promotion,
+quarantined-log replay/regeneration, new study/task cohort/split, teacher/model
+run, training, dependency/download or hardware action occurred. Tests use
+ephemeral fixtures only; no raw artifact, background job or cleanup is pending.
+Nothing pushed by the assistant. Scoped documentation/reference/history/tested-
+byte checks passed: 631 reference uses and 25 inline links/local targets,
+REVIEW sections 1-146 in order, exact prior design/review/Sources and stable
+workflow/history/task-result preservation, five-file scope and tested Python
+SHA-256 equality. Document editor diagnostics and whitespace pass. Diff/staged-
+byte review precedes the local checkpoint; no code suite was rerun for the docs.
+
+Next: a concrete decision on admissible baseline source evidence and host-owned
+startup/actual command/fallback interface and its acceptance checks. Do not
+manufacture `OK` from this always-reject diagnostic path or call its fixture
+coverage representative navigation performance. Further executable work requires
+a new named scope; D4's prospective episodes, native/board integration, learned
+questions and user-side ST/ToF readiness remain behind their existing gates.
+
+[c1-wire-rejection-source]: sim/diagnostics.py
+
 ## Sources
 
 Hardware and tools:

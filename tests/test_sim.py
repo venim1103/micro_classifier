@@ -6146,6 +6146,337 @@ def test_synthetic_c1_relative_input_rejects_malformed(c1_history, field, value)
         prepare_synthetic_c1_relative_input(c1_history, **settings)
 
 
+@pytest.fixture(scope="module")
+def c1_wire_fixtures(request):
+    from dataclasses import asdict
+
+    from interface.protocol import State
+    from sim import diagnostics
+
+    fixtures = {
+        "inputs": {},
+        "scene_records": set(),
+        "cases": 0,
+        "adapter_attempts": 0,
+        "relative_attempts": 0,
+        "coordinator_attempts": 0,
+        "capture_attempts": 0,
+        "source_state": State(
+            sequence=23,
+            timestamp_us=1150000,
+            velocity_m_s=(0.5, 0, 0),
+            goal_m=(3, 0, 0),
+        ),
+    }
+    for blocked in (False, True):
+        scene = Scenario(
+            start=(2, 2, 0),
+            goal=(5, 2),
+            obstacles=((2.6, 2, 0.30),) if blocked else (),
+        )
+        fixtures["scene_records"].add(json.dumps(asdict(scene), sort_keys=True))
+        assert len(fixtures["scene_records"]) <= 8
+        fixtures["capture_attempts"] += 1
+        record = diagnostics.capture_synthetic_c1_views(
+            scene,
+            pose_m_rad=[1.91, 2, 0],
+            capture_tick=20,
+            synthetic_test_only=True,
+        )
+        fixtures["inputs"][blocked] = diagnostics.prepare_synthetic_c1_relative_input(
+            [record],
+            reference_tick=23,
+            reference_pose_m_rad=scene.start,
+            fixture_goal_m=scene.goal,
+            synthetic_test_only=True,
+        )
+    yield fixtures
+    assert fixtures["adapter_attempts"] == 2 * fixtures["cases"] <= 48
+    assert fixtures["coordinator_attempts"] <= 48
+    assert fixtures["capture_attempts"] == len(fixtures["scene_records"]) == 2
+    message = (
+        "C1 wire ledger: "
+        f"cases={fixtures['cases']} "
+        f"adapter={fixtures['adapter_attempts']} "
+        f"relative={fixtures['relative_attempts']} "
+        f"coordinator={fixtures['coordinator_attempts']} "
+        f"captures={fixtures['capture_attempts']} "
+        f"scenes={len(fixtures['scene_records'])}"
+    )
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print(message)
+    else:
+        with capture.global_and_fixture_disabled():
+            print(message)
+
+
+@pytest.mark.parametrize(
+    "case",
+    range(24),
+    ids=(
+        "rounding-before-query",
+        "exact-clear",
+        "exact-blocked",
+        "rest-is-partial",
+        "stale-host",
+        "missing-host-group",
+        "frame-binding",
+        "bad-crc",
+        "bad-profile",
+        "non-bytes",
+        "strict-opt-in",
+        "body-unknown",
+        "domain-unknown",
+        "transform-unknown",
+        "goal-binding",
+        "stale-capture",
+        "missing-returns",
+        "work-exhaustion",
+        "conflict-summary",
+        "partial-summary",
+        "invalid-summary",
+        "computation-fault",
+        "false-qualification",
+        "held-owned-output",
+    ),
+)
+def test_synthetic_c1_wire_rejection(c1_wire_fixtures, monkeypatch, case):
+    import zlib
+    from dataclasses import replace
+
+    from interface.protocol import (
+        CRC,
+        RULES_QUESTIONS,
+        FrameDecoder,
+        Status,
+        decode_decision,
+        decode_state,
+        encode_state,
+    )
+    from sim import diagnostics
+    from sim.rules import host_action
+
+    fixtures = c1_wire_fixtures
+    fixtures["cases"] += 1
+    assert fixtures["cases"] <= 24
+    relative = deepcopy(fixtures["inputs"][case == 2])
+    source = fixtures["source_state"]
+    settings = {"fixture_current_body_clear": True, "fixture_controlled_envelope": True}
+    expected_status = Status.REJECT_OUT_OF_DOMAIN
+    expected_candidates = None
+    expected_reason = "unqualified_fixture_evidence"
+    expected_queries = case in (1, 2, 3, 17, 23)
+    if case == 0:
+        source = replace(source, velocity_m_s=(0.6, 0, 0))
+        expected_reason = "decoded_fixture_state_changed"
+    elif case == 1 or case == 23:
+        expected_candidates = ("false", "centre", "3")
+    elif case == 2:
+        expected_candidates = ("true", "none", "0")
+    elif case == 3:
+        source = replace(source, velocity_m_s=(0, 0, 0))
+    elif case == 4:
+        source = replace(source, ages_us=(50000, *source.ages_us[1:]))
+        expected_status = Status.REJECT_STALE_INPUT
+        expected_reason = "stale_fixture_host_state"
+    elif case == 5:
+        source = replace(
+            source,
+            validity=6,
+            velocity_m_s=(0, 0, 0),
+            ages_us=(0xFFFFFFFF, *source.ages_us[1:]),
+        )
+        expected_reason = "unsupported_fixture_host_validity"
+    elif case in (7, 8, 9):
+        expected_status = Status.REJECT_UNSUPPORTED_SCHEMA
+        expected_reason = (
+            "unsupported_fixture_state_frame"
+            if case == 9
+            else "invalid_fixture_state_frame"
+        )
+    elif case == 11:
+        settings["fixture_current_body_clear"] = False
+    elif case == 12:
+        settings["fixture_controlled_envelope"] = False
+    elif case == 13:
+        settings["fixture_transform_error_m"] = 0.001
+    elif case == 14:
+        relative["fixture_goal_body_m"] = [3.25, 0]
+    elif case == 15:
+        relative["reference_tick"] = 24
+        source = replace(source, timestamp_us=1200000)
+        expected_status = Status.REJECT_STALE_INPUT
+        expected_reason = "stale_fixture_capture"
+    elif case == 16:
+        relative["history"][0]["tof_valid"][:] = False
+        relative["history"][0]["tof_m"][:] = 0
+    elif case == 17:
+        settings["max_cells"] = 0
+    elif case == 18:
+        expected_reason = "inconsistent_fixture_evidence"
+    elif case == 19:
+        expected_candidates = ("false", None, "2")
+    elif case in (20, 22):
+        expected_status = Status.FAULT
+        expected_reason = "unsupported_fixture_question_result"
+    elif case == 21:
+        expected_status = Status.FAULT
+        expected_reason = "fixture_question_computation_failed"
+
+    frame = encode_state(source)
+    if case == 0:
+        assert decode_state(frame).velocity_m_s[0] > source.velocity_m_s[0]
+    if case == 6:
+        frame = encode_state(replace(source, sequence=24))
+        expected_reason = "fixture_state_frame_binding_mismatch"
+    elif case == 7:
+        frame = frame[:25] + bytes([frame[25] ^ 1]) + frame[26:]
+    elif case == 8:
+        payload = bytearray(frame[:-4])
+        payload[8] ^= 1
+        frame = bytes(payload) + CRC.pack(zlib.crc32(payload))
+    elif case == 9:
+        frame = bytearray(frame)
+    elif case == 23:
+        relative["history"].append(deepcopy(relative["history"][0]))
+
+    original_relative = diagnostics.probe_synthetic_c1_relative_questions
+    original_coordinator = diagnostics.probe_synthetic_c1_questions
+    before_queries = fixtures["coordinator_attempts"]
+
+    def coordinator(*args, **kwargs):
+        fixtures["coordinator_attempts"] += 1
+        assert fixtures["coordinator_attempts"] <= 48
+        return original_coordinator(*args, **kwargs)
+
+    def relative_questions(*args, **kwargs):
+        fixtures["relative_attempts"] += 1
+        assert kwargs["fixture_state"] == decode_state(frame)
+        if case == 21:
+            raise RuntimeError("injected fixture computation failure")
+        if 18 <= case <= 22:
+            report = {
+                "schema": "micro-classifier/synthetic-c1-relative-questions/1",
+                "allowed_use": "controlled_synthetic_qualification_only",
+                "training_approved": False,
+                "real_input_qualified": False,
+                "free_space_qualified": False,
+                "numerically_certified": False,
+                "status": "resolved_under_fixture_assumptions",
+                "reason": "fake_fixture_summary_only",
+                "candidate_values": {
+                    "path_blocked": "false",
+                    "clear_sector": "centre",
+                    "speed_tier": "3",
+                },
+                "queries": {},
+                "unique_motion_queries": 0,
+            }
+            if case == 18:
+                report["status"] = "inconsistent_fixture_evidence"
+            elif case == 19:
+                report["status"] = "partial_fixture_evidence"
+                report["candidate_values"] = {
+                    "path_blocked": "false",
+                    "clear_sector": None,
+                    "speed_tier": "2",
+                }
+            elif case == 20:
+                report["candidate_values"]["path_blocked"] = 0
+            elif case == 22:
+                report["real_input_qualified"] = 0
+            return report
+        return original_relative(*args, **kwargs)
+
+    monkeypatch.setattr(diagnostics, "probe_synthetic_c1_questions", coordinator)
+    monkeypatch.setattr(
+        diagnostics, "probe_synthetic_c1_relative_questions", relative_questions
+    )
+    outputs = []
+    for request in range(2):
+        fixtures["adapter_attempts"] += 1
+        assert fixtures["adapter_attempts"] <= 48
+        if case == 10:
+            with pytest.raises(ValueError, match="synthetic_test_only"):
+                diagnostics._probe_synthetic_c1_wire_rejection(
+                    relative,
+                    fixture_state_frame=frame,
+                    fixture_source_state=source,
+                    synthetic_test_only=False if request == 0 else 1,
+                    **settings,
+                )
+            continue
+        result = diagnostics._probe_synthetic_c1_wire_rejection(
+            relative,
+            fixture_state_frame=frame,
+            fixture_source_state=source,
+            synthetic_test_only=True,
+            **settings,
+        )
+        decision = decode_decision(result["decision_frame"])
+        assert result["status"] == "rejection_diagnostics_only"
+        assert result["reason"] == expected_reason
+        assert decision.status == expected_status != Status.OK
+        assert (decision.catalogue_version, decision.model_version) == (1, 0)
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_input_qualified",
+            "host_command_admitted",
+        ):
+            assert result[flag] is False
+        if expected_candidates is not None:
+            assert tuple(result["candidate_values"].values()) == expected_candidates
+        if case == 3:
+            assert result["candidate_values"]["clear_sector"] is None
+        if case in (0, 4, 5, 6, 7, 8, 9, 18, 20, 21, 22):
+            assert decision.answers == ()
+        names = {
+            question.name.lower(): (question, options)
+            for question, (_, options) in RULES_QUESTIONS.items()
+        }
+        for name, value in result["candidate_values"].items():
+            question, options = names[name]
+            answers = [
+                answer for answer in decision.answers if answer.question_id == question
+            ]
+            if value is None:
+                assert not answers
+            else:
+                assert len(answers) == 1
+                assert answers[0].selected == options.index(value)
+                assert answers[0].probabilities == tuple(
+                    float(option == value) for option in options
+                )
+        decoder = FrameDecoder()
+        split = len(result["decision_frame"]) // 2
+        assert decoder.feed(result["decision_frame"][:split]) == []
+        assert decoder.feed(result["decision_frame"][split:]) == [decision]
+        assert np.array_equal(
+            host_action(encode_state(source), result["decision_frame"]), np.zeros(2)
+        )
+        assert np.array_equal(host_action(encode_state(source), None), np.zeros(2))
+        if result["evidence"] is not None:
+            assert result["evidence"]["unique_motion_queries"] <= 6
+        outputs.append(result)
+        if case == 23 and request == 0:
+            result["candidate_values"]["path_blocked"] = "true"
+            result["evidence"]["candidate_values"]["path_blocked"] = "true"
+    assert fixtures["coordinator_attempts"] - before_queries == (
+        2 if expected_queries else 0
+    )
+    if outputs and case != 23:
+        assert outputs[0] == outputs[1]
+    if case == 23:
+        assert outputs[1]["candidate_values"]["path_blocked"] == "false"
+        assert decode_decision(outputs[0]["decision_frame"]) == decode_decision(
+            outputs[1]["decision_frame"]
+        )
+
+
 def test_synthetic_c1_relative_input_preserves_boundary(c1_history):
     from sim.diagnostics import prepare_synthetic_c1_relative_input
 

@@ -1855,6 +1855,68 @@ and M6 remain deferred. Preparing this brief adopts none of these proposals.
 [baseline-admission-review]: REVIEW.md
 [baseline-host-source]: sim/rules.py
 
+#### Conditional C1 Input-to-Wire Rejection Tooling (2026-11-05)
+
+The user approved the brief's recommended bounded conditional input-to-wire/
+rejection increment, keeping startup, actuation and episode runs blocked.
+That increment is complete. It does not adopt D1's input/source qualifications,
+D2's host command policy, runtime probability calibration or D4's evaluation
+scope. [Review §146][c1-wire-rejection-review] records actual checks and the
+four-position budget, including the failed reporter teardown.
+
+The private `_probe_synthetic_c1_wire_rejection` in the [C1 prototype][c1-prototype-source]
+accepts an explicitly synthetic source State, its actual encoded bytes and an
+existing relative fixture. Literal synthetic opt-in is required. It validates
+the frame through the decoder, binds exact frame bytes to the source and rejects
+changed decoded values before any C1 query. This tests correspondence, not the
+source's authority: unchanged bytes do not qualify registration, scene/body
+declarations or numerical allowances. In particular, encoded 0.6 m/s rounds
+above the source value and is rejected, not clamped or granted a new tolerance.
+The exact 0.5 m/s fixture reaches conditional questions without changing defaults.
+
+Missing host groups, nonzero ego/goal ages, unsupported/CRC-invalid frames and
+source-frame mismatches reject. Existing C1 checks retain invalid goal binding,
+unsupported transform/domain/body evidence, missing returns, stale captures,
+bounded-work exhaustion and at-rest sector unknown. Candidate summary controls
+reject invalid options/status combinations or nonliteral false qualification
+flags; a contradiction discards every outer candidate. Injected unexpected
+question-evaluation failures are logged and map to empty `FAULT` diagnostics.
+This is a bounded fixture path, not a general live input or callback API and
+not a universal allocation/publication guarantee.
+
+On ordinary return, it serializes only known candidates as degenerate diagnostic
+distributions with catalogue 1/model 0 and echoes a successfully decoded frame.
+Nulls omit answers rather than becoming false/`none`/tier 0. Even three resolved
+fixture answers remain `REJECT_OUT_OF_DOMAIN`: no `OK` escape hatch exists.
+Training, real-input/free-space/numerical/source qualification and host-command
+admission remain false. The existing Python host rejects every resulting frame
+and caller-declared absence; tests assert braking output without stepping the
+rover or claiming physical braking. Codec-derived confidence is unchanged and
+uncalibrated; the diagnostic convention is not adopted as runtime uncertainty.
+
+Twenty-four cases reuse two existing complete scenes, within the approved eight-
+scene/48-coordinator-attempt/four-invocation ceilings. Each complete new matrix
+makes 48 adapter requests, 32 relative-bridge calls and ten coordinator calls,
+with two captures; old six-query/per-query bounds remain unchanged. Exact clear/
+blocked, partial/rest, held-copy ownership, stale/frame/goal mismatch, missing/
+masked input, unknown body/domain/error, work exhaustion, fake-only summary/
+conflict/flag/fault and strict opt-in controls pass. Partial or even full
+rejection diagnostics round-trip through the codec/stream and never reach host
+actuation. This is neither representative option coverage nor M2/task quality.
+
+The required root gate passes 2,269 tests plus the known transformer xfail and
+71 existing warnings; changed-file formatting, syntax/editor diagnostics,
+whitespace and exact prior source/test AST preservation pass. Normal simulator/
+rules/host paths, catalogue/wire/profile defaults, old fixtures and historical
+artifacts stay unchanged. All four approved verification positions are spent;
+existing root regressions ran only within the approved default-gate renewal.
+No further fixture replay, source-gate repeat or unused old budget follows.
+Next: decide admissible baseline source evidence and independent startup/actual
+command/fallback owner, interface and acceptance checks. Until then no admitted
+closed-loop baseline, source-verdict promotion or new task-data run exists.
+
+[c1-wire-rejection-review]: REVIEW.md
+
 ### Dataset Construction
 
 - Define the ground-truth policy and review an evaluation set before generating
@@ -10384,10 +10446,12 @@ the deferred audit authorization and unchanged evidence limits. M0-M6 below rema
 the roadmap; host tooling completion is not task-quality or deployment completion.
 
 Current planning checkpoint: the [baseline admission brief (§145)][baseline-admission-review]
-is prepared in §7. Review D1-D3's ideal input/evidence, independent startup and
-actual command/fallback contract, output policy and bounded test scope next.
-D4's prospective evaluation remains separate and unapproved. The brief adopts
-no runtime profile, threshold, source verdict or fixture/run/data scope.
+is prepared in §7 and its separately approved conditional input/wire/rejection
+increment is complete ([§146][c1-wire-rejection-review]). It emits no usable `OK`
+recommendation; source qualification and startup/actual command/fallback admission
+remain decisions, not completed runtime gates. D4's prospective evaluation stays
+separate and unapproved. No runtime profile, threshold or source verdict is adopted;
+the four-position fixture verification scope is spent, not renewed by this status.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
   candidate and reviewable acceptance/evaluation checklist from existing evidence.

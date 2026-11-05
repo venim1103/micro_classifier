@@ -118,14 +118,16 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Baseline admission brief prepared (DESIGN.md §7/12 / REVIEW.md §145), following
-  §144's coverage-first priority reset. Candidate: ideal C1/latest-relative-batch
-  evidence, explicit per-question unknowns and prospective coverage/failure gates.
-  Next review D1-D3: admissible input/setup/decoded-wire evidence, independent
-  startup and actual command/fallback admission, output policy and bounded tests.
-  The old host loop is not a compatible C1 maneuver executor. D4's future evaluation
-  is separate; no profile, threshold, qualification, fixture/run/data or runtime
-  scope is adopted by the brief. Tasks 6/9 remain blocked, not completed.
+- Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
+  REVIEW.md §146), following §145's admission brief and coverage-first priority.
+  Private fixture adapter rejects changed decoded source values and emits only
+  unusable rejection/fault diagnostics, even for complete candidate bundles.
+  Twenty-four cases/two reused scenes pass; all four verification positions are
+  spent. Next: admissible baseline source evidence and independent startup/actual
+  command/fallback owner/interface and acceptance decisions. D4 evaluation remains
+  separate; no normal profile, source qualification, threshold, actuation or run
+  scope is adopted. The old host loop is not a compatible C1 maneuver executor;
+  Tasks 6/9 remain blocked, not completed.
 - ST licence/tools and DK/ToF readiness are parallel user-side M1a/M1b blockers;
   native/board integration follows applicable gates. Learned questions/student/
   distillation and M6 stay deferred, not prerequisites of the deterministic pilot.
@@ -136,7 +138,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-145 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-146 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
@@ -147,12 +149,13 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-05): 2,245 passes plus known xfail, 71 existing
-  ONNX warnings; sixteen new join cases, lint/changed-file format/editor
-  syntax/diagnostics and legacy AST preservation pass. Position-two accounting
-  gap, repair and actual four-position ledger preserved in §138; older failures stay. No
-  runtime/C source change or additional opt-in sanitizer/
-  Arm gate; earlier opt-in evidence remains historical, not deployment/task quality.
+- Last source-test gate (2026-11-05): 2,269 passes plus known xfail/71 existing
+  warnings, 24 new wire cases; lint/changed-file format/syntax/editor and all old
+  AST nodes pass. §146 records all four positions, the reporter teardown failure
+  and repair, and 48 adapter/32 relative/10 coordinator attempts per complete
+  new matrix. Old §138 accounting/failures stay historical and unchanged. No
+  normal runtime/C source change or extra opt-in sanitizer/Arm gate; host checks are
+  not source/numerical qualification, linked firmware or task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
   predictive targets, never as student input. Observation-only human review
   remains for semantic/real-world data. Existing logs stay quarantined; no label,
@@ -1195,20 +1198,22 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §145 brief prepared.
-Next decision: D1-D3 candidate input/evidence, independent startup and exact
-command/fallback owner/interface, output policy and bounded integration tests.
-Proposed new family: 24 cases/eight reused scenes, 48 coordinator attempts per
-invocation/four invocations (192 total); affected old regression gates need
-explicit renewal and command guards separate accounting. These limits are not
-approved. D4's 32-episode prospective cohort/criteria/resource scope stays separate
-and unapproved. No source qualification or normal runtime/profile change follows.
+Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §146 rejection increment complete.
+Next decision: admissible source evidence and independently supported startup/
+actual command/fallback owner/interface and acceptance checks. No usable C1 `OK`
+or host actuation is admitted; this fixture-only wire path always rejects.
+The approved 24-case/eight-scene/48-coordinator/four-position verification scope
+is spent (actual two reused scenes; 48 adapter/32 relative/10 coordinator per full
+matrix). No fifth invocation or separate command-guard budget follows. D4's
+32-episode prospective cohort/criteria/resource scope remains separate/unapproved.
+No source qualification, normal runtime/profile or target change follows.
 ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
 priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
-source gate 2,245 plus known xfail/71 warnings, §138 four of five/fifth unused,
-old §129/§132 exhausted, §135 fifth not borrowed; no gate renewed. All fifteen
+source gate now 2,269 plus known xfail/71 warnings under §146's spent default-gate
+renewal; §138 four of five/fifth unused, old §129/§132 exhausted, §135 fifth not
+borrowed. No standalone old scope renewed. All fifteen
 verdicts undecided/five flags false, no consumer/proof/native/source/work adoption.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
 No job/cleanup pending; original numbered task results below remain historical.
@@ -1239,14 +1244,15 @@ No job/cleanup pending; original numbered task results below remain historical.
    round-trip tests.
   Result (2026-10-15): approved provisional host-side contract, 62 focused
   tests, generated C offsets and five golden frames; no hardware freeze.
-6. [blocked: baseline input, startup/command admission and implementation approval pending]
+6. [blocked: baseline source qualification and startup/command admission pending]
   Rover question catalogue v0 as data (types, options, and label source per
    question) and deterministic labelers for the computable questions.
-  Planning result (2026-11-05, REVIEW.md §145): one concrete ideal-C1 admission
-  brief, evidence/unknown table and prospective evaluation matrix prepared.
-  Priority next action: review D1-D3 input/source, startup/actual command and
-  bounded tests; no code/fixture/run scope is adopted. Existing C1 answers do
-  not qualify the old host's commands. Dated results below remain historical.
+  Bounded result (2026-11-05, REVIEW.md §146): private decoded-input-to-wire
+  rejection tooling and 24 cases complete, no usable `OK` or actuation; source
+  qualifications/flags stay false. All four verification positions spent.
+  Priority next action: decide admissible source evidence and independently
+  supported startup/actual command/fallback interface. §145's brief remains
+  proposed; no new fixture/run or runtime scope. Dated results below are historical.
   Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
   mode; the complete three-answer Python/C contract passes 123 new tests. Legacy
   diagnostic catalogue/proxies remain unchanged and unqualified, not deployed
@@ -1686,7 +1692,7 @@ No job/cleanup pending; original numbered task results below remain historical.
 9. [blocked: no reviewed task dataset or locked splits] Baselines (rules and a classical model) and the evaluation suite
    (macro-F1, per-class recall, NLL, Brier score, calibration error, and
    coverage curves) on locked splits.
-  Priority decision (2026-11-05, REVIEW.md §145): D4's prospective rules-only
+  Priority decision (2026-11-05, REVIEW.md §146): D4's prospective rules-only
   cohort/lineage/duplicate/coverage/failure protocol follows D1-D3 admission
   gates. Proposed 32-episode scope is unapproved; no task data or split accepted.
   Current diagnostic result (2026-10-20, REVIEW.md §75): an observation-only

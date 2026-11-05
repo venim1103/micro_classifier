@@ -6660,6 +6660,188 @@ def probe_synthetic_c1_relative_questions(
     return result
 
 
+def _probe_synthetic_c1_wire_rejection(
+    relative_input,
+    *,
+    fixture_state_frame,
+    fixture_source_state,
+    fixture_current_body_clear=False,
+    fixture_controlled_envelope=False,
+    fixture_transform_error_m=0.0,
+    fixture_heading_error_rad=0.0,
+    fixture_clock_error_s=0.0,
+    curved_segments=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Serialize conditional fixture evidence as unusable rejection diagnostics."""
+    import logging
+
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        ProtocolError,
+        State,
+        Status,
+        decode_state,
+        encode_decision,
+        encode_state,
+    )
+
+    if synthetic_test_only is not True:
+        raise ValueError("C1 wire diagnostics require synthetic_test_only=True")
+    if type(fixture_source_state) is not State:
+        raise TypeError("C1 wire diagnostics require a synthetic source State")
+    source_frame = encode_state(fixture_source_state)
+    state = None
+    result = {
+        "schema": "micro-classifier/synthetic-c1-wire-rejection/1",
+        "allowed_use": "conditional_fixture_wire_diagnostics_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "source_input_qualified": False,
+        "host_command_admitted": False,
+        "status": "rejection_diagnostics_only",
+        "reason": "unsupported_fixture_state_frame",
+        "candidate_values": {
+            "path_blocked": None,
+            "clear_sector": None,
+            "speed_tier": None,
+        },
+        "evidence": None,
+        "decision_frame": None,
+    }
+
+    def rejected(reason, status=Status.REJECT_OUT_OF_DOMAIN):
+        answers = []
+        for question, (_, options) in RULES_QUESTIONS.items():
+            value = result["candidate_values"][question.name.lower()]
+            if value is not None:
+                selected = options.index(value)
+                answers.append(
+                    Answer(
+                        question,
+                        tuple(
+                            float(index == selected) for index in range(len(options))
+                        ),
+                        selected,
+                    )
+                )
+        decision = Decision(
+            sequence=0 if state is None else state.sequence,
+            timestamp_us=0 if state is None else state.timestamp_us,
+            status=status,
+            answers=tuple(answers),
+        )
+        result["reason"] = reason
+        result["decision_frame"] = encode_decision(decision)
+        return result
+
+    if type(fixture_state_frame) is not bytes:
+        return rejected(
+            "unsupported_fixture_state_frame", Status.REJECT_UNSUPPORTED_SCHEMA
+        )
+    try:
+        state = decode_state(fixture_state_frame)
+    except ProtocolError:
+        return rejected("invalid_fixture_state_frame", Status.REJECT_UNSUPPORTED_SCHEMA)
+    if fixture_state_frame != source_frame:
+        return rejected("fixture_state_frame_binding_mismatch")
+    if (
+        any(
+            type(value) not in (int, float)
+            for values in (
+                fixture_source_state.velocity_m_s,
+                fixture_source_state.angular_velocity_rad_s,
+                fixture_source_state.goal_m,
+            )
+            for value in values
+        )
+        or state != fixture_source_state
+    ):
+        return rejected("decoded_fixture_state_changed")
+    if state.validity & 7 != 7:
+        return rejected("unsupported_fixture_host_validity")
+    if state.ages_us[:3] != (0, 0, 0):
+        return rejected("stale_fixture_host_state", Status.REJECT_STALE_INPUT)
+    try:
+        evidence = probe_synthetic_c1_relative_questions(
+            relative_input,
+            fixture_state=state,
+            fixture_current_body_clear=fixture_current_body_clear,
+            fixture_controlled_envelope=fixture_controlled_envelope,
+            fixture_transform_error_m=fixture_transform_error_m,
+            fixture_heading_error_rad=fixture_heading_error_rad,
+            fixture_clock_error_s=fixture_clock_error_s,
+            curved_segments=curved_segments,
+            max_cells=max_cells,
+            max_depth=max_depth,
+            radius_bands=radius_bands,
+            config=config,
+            synthetic_test_only=True,
+        )
+        if (
+            type(evidence) is not dict
+            or evidence.get("schema")
+            != "micro-classifier/synthetic-c1-relative-questions/1"
+            or evidence.get("allowed_use") != "controlled_synthetic_qualification_only"
+            or any(
+                evidence.get(key) is not False
+                for key in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                )
+            )
+        ):
+            return rejected("unsupported_fixture_question_result", Status.FAULT)
+        candidates = evidence.get("candidate_values")
+        if type(candidates) is not dict or set(candidates) != set(
+            result["candidate_values"]
+        ):
+            return rejected("unsupported_fixture_question_result", Status.FAULT)
+        for question, (_, options) in RULES_QUESTIONS.items():
+            value = candidates[question.name.lower()]
+            if value is not None and (type(value) is not str or value not in options):
+                return rejected("unsupported_fixture_question_result", Status.FAULT)
+        count = sum(value is not None for value in candidates.values())
+        status = evidence.get("status")
+        if status == "inconsistent_fixture_evidence":
+            result["evidence"] = deepcopy(evidence)
+            return rejected("inconsistent_fixture_evidence")
+        if (
+            (status == "unknown" and count != 0)
+            or (status == "partial_fixture_evidence" and not 1 <= count <= 2)
+            or (status == "resolved_under_fixture_assumptions" and count != 3)
+            or status
+            not in (
+                "unknown",
+                "partial_fixture_evidence",
+                "resolved_under_fixture_assumptions",
+            )
+        ):
+            return rejected("unsupported_fixture_question_result", Status.FAULT)
+        result["evidence"] = deepcopy(evidence)
+        result["candidate_values"] = deepcopy(candidates)
+    except (TypeError, ValueError, KeyError, OverflowError):
+        return rejected("unsupported_fixture_question_input")
+    except Exception:
+        logging.getLogger(__name__).exception(
+            "Conditional C1 question evaluation failed"
+        )
+        return rejected("fixture_question_computation_failed", Status.FAULT)
+    if evidence["reason"] == "stale_capture":
+        return rejected("stale_fixture_capture", Status.REJECT_STALE_INPUT)
+    return rejected("unqualified_fixture_evidence")
+
+
 class DiagnosticRoverEnv(RoverEnv):
     """Keep acquisition references outside the unchanged student observations."""
 

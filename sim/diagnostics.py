@@ -50,6 +50,351 @@ _SYNTHETIC_TARGET_CHECK_BITS = 65536
 _SYNTHETIC_TARGET_JOIN_BITS = 65536
 
 
+class _C1CommandArithmetic:
+    """Work-limited rational arithmetic for the isolated command fixture."""
+
+    def __init__(self, max_terms, max_bits, work):
+        self.max_terms = max_terms
+        self.max_bits = max_bits
+        self.work = work
+
+    def value(self, value):
+        if type(value) not in (int, float):
+            raise ValueError("command fixture values must be finite real numbers")
+        try:
+            number = float(value)
+        except OverflowError as error:
+            raise ValueError("command fixture value is unrepresentable") from error
+        if not math.isfinite(number):
+            raise ValueError("command fixture values must be finite real numbers")
+        numerator, denominator = number.as_integer_ratio()
+        if max(abs(numerator).bit_length(), denominator.bit_length()) > self.max_bits:
+            raise ArithmeticError("integer_budget_exhausted")
+        return Fraction(numerator, denominator)
+
+    def binary(self, left, right, operation):
+        left_num, left_den = (
+            abs(left.numerator).bit_length(),
+            left.denominator.bit_length(),
+        )
+        right_num, right_den = (
+            abs(right.numerator).bit_length(),
+            right.denominator.bit_length(),
+        )
+        if operation in ("add", "sub", "less"):
+            growth = max(left_num + right_den, right_num + left_den) + 1
+            denominator = left_den + right_den
+        elif operation == "mul":
+            growth, denominator = left_num + right_num, left_den + right_den
+        elif operation == "div":
+            if right == 0:
+                raise ArithmeticError("undefined_fixture_arithmetic")
+            growth, denominator = left_num + right_den, left_den + right_num
+        else:
+            raise ValueError("unsupported fixture operation")
+        if max(growth, denominator) > self.max_bits:
+            raise ArithmeticError("integer_budget_exhausted")
+        if operation == "add":
+            return left + right
+        if operation == "sub":
+            return left - right
+        if operation == "mul":
+            return left * right
+        if operation == "div":
+            return left / right
+        return left < right
+
+    def bounds(self, values):
+        lower = upper = values[0]
+        for value in values[1:]:
+            if self.binary(value, lower, "less"):
+                lower = value
+            if self.binary(upper, value, "less"):
+                upper = value
+        return lower, upper
+
+    def product(self, left, right):
+        return self.bounds(
+            [self.binary(first, second, "mul") for first in left for second in right]
+        )
+
+    def plus(self, left, right):
+        return tuple(
+            self.binary(first, second, "add") for first, second in zip(left, right)
+        )
+
+    def clip(self, value, lower, upper):
+        if self.binary(value, lower, "less"):
+            return lower
+        if self.binary(upper, value, "less"):
+            return upper
+        return value
+
+    def speed_step(self, speeds, target, change):
+        return tuple(
+            self.binary(
+                speed,
+                self.clip(self.binary(target, speed, "sub"), -change, change),
+                "add",
+            )
+            for speed in speeds
+        )
+
+    def trig(self, angle):
+        if self.max_terms == 0:
+            raise ArithmeticError("series_term_budget_exhausted")
+        if not self.binary(abs(angle), self.value(1), "less"):
+            raise ArithmeticError("unsupported_arc_domain")
+        square = self.binary(angle, angle, "mul")
+        intervals = []
+        for offset, initial in ((0, self.value(1)), (1, angle)):
+            total, term = self.value(0), initial
+            for index in range(8):
+                if self.work["series_terms"] >= self.max_terms:
+                    raise ArithmeticError("series_term_budget_exhausted")
+                self.work["series_terms"] += 1
+                if index:
+                    divisor = self.value(
+                        (2 * index - 1 + offset) * (2 * index + offset)
+                    )
+                    term = -self.binary(
+                        self.binary(term, square, "mul"), divisor, "div"
+                    )
+                if index < 7:
+                    total = self.binary(total, term, "add")
+                else:
+                    intervals.append(
+                        self.bounds((total, self.binary(total, term, "add")))
+                    )
+        return intervals
+
+    def outward(self, value, upward):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ArithmeticError("unsupported_outward_conversion")
+        rounded = self.value(number)
+        if (
+            self.binary(rounded, value, "less")
+            if upward
+            else self.binary(value, rounded, "less")
+        ):
+            number = math.nextafter(number, math.inf if upward else -math.inf)
+        if not math.isfinite(number):
+            raise ArithmeticError("unsupported_outward_conversion")
+        rounded = self.value(number)
+        if (
+            self.binary(rounded, value, "less")
+            if upward
+            else self.binary(value, rounded, "less")
+        ):
+            raise ArithmeticError("unsupported_outward_conversion")
+        return number
+
+    def box(self, point):
+        return [
+            [self.outward(lower, False), self.outward(upper, True)]
+            for lower, upper in point
+        ]
+
+
+def _probe_synthetic_c1_discrete_motion(
+    *,
+    initial_speed,
+    target_speed,
+    turn_rate,
+    error_evidence=None,
+    profile=None,
+    hold_ticks=1,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    max_integer_bits=16384,
+    synthetic_test_only=False,
+):
+    """Enclose an ideal discrete command/braking fixture, never an actual permit."""
+    if synthetic_test_only is not True:
+        raise ValueError("discrete command fixture requires synthetic_test_only=True")
+    for limit, lower, upper in (
+        (max_braking_ticks, 0, 16),
+        (max_chords, 0, 128),
+        (max_terms, 0, 16),
+        (max_integer_bits, 1, 16384),
+    ):
+        if type(limit) is not int or not lower <= limit <= upper:
+            raise ValueError("discrete command work limits must be bounded integers")
+    work = {"command_ticks": 0, "braking_ticks": 0, "chords": 0, "series_terms": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-discrete-motion/1",
+        "allowed_use": "conditional_ideal_motion_fixture_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "source_qualified": False,
+        "native_execution_qualified": False,
+        "command_admission_qualified": False,
+        "fixture_motion_enclosed": False,
+        "status": "unknown",
+        "reason": "error_evidence_missing",
+        "work": work,
+    }
+    expected_profile = {
+        "dt": 0.05,
+        "acceleration": 1.0,
+        "max_speed": 0.6,
+        "max_turn_rate": 1.5,
+        "radius": 0.18,
+    }
+    profile = expected_profile if profile is None else profile
+    arithmetic = _C1CommandArithmetic(max_terms, max_integer_bits, work)
+    try:
+        raw_speeds = (
+            initial_speed
+            if type(initial_speed) in (tuple, list)
+            else (initial_speed, initial_speed)
+        )
+        if len(raw_speeds) != 2:
+            raise ValueError("initial speed requires a scalar or two endpoints")
+        speeds = tuple(arithmetic.value(value) for value in raw_speeds)
+        target, angular_rate = (
+            arithmetic.value(target_speed),
+            arithmetic.value(turn_rate),
+        )
+        if (
+            type(hold_ticks) is not int
+            or hold_ticks != 1
+            or type(profile) is not dict
+            or set(profile) != set(expected_profile)
+            or any(type(profile[key]) is not float for key in expected_profile)
+            or profile != expected_profile
+        ):
+            result["reason"] = "unsupported_profile_or_hold"
+            return result
+        if error_evidence is None:
+            return result
+        if (
+            type(error_evidence) is not dict
+            or set(error_evidence)
+            != {"position_error_m", "heading_error_rad", "profile_exact"}
+            or error_evidence["profile_exact"] is not True
+        ):
+            result["reason"] = "unsupported_error_evidence"
+            return result
+        position_error = arithmetic.value(error_evidence["position_error_m"])
+        heading_error = arithmetic.value(error_evidence["heading_error_rad"])
+        zero, one = arithmetic.value(0), arithmetic.value(1)
+        seconds = arithmetic.value(profile["dt"])
+        change = arithmetic.binary(
+            arithmetic.value(profile["acceleration"]), seconds, "mul"
+        )
+        maximum = arithmetic.value(profile["max_speed"])
+        yaw_maximum = arithmetic.value(profile["max_turn_rate"])
+        if (
+            arithmetic.binary(speeds[0], zero, "less")
+            or arithmetic.binary(speeds[1], speeds[0], "less")
+            or arithmetic.binary(maximum, speeds[1], "less")
+            or arithmetic.binary(position_error, zero, "less")
+            or arithmetic.binary(heading_error, zero, "less")
+        ):
+            result["reason"] = "unsupported_error_evidence"
+            return result
+        target = arithmetic.clip(target, zero, maximum)
+        angular_rate = arithmetic.clip(angular_rate, -yaw_maximum, yaw_maximum)
+        if max_chords == 0:
+            raise ArithmeticError("chord_budget_exhausted")
+        work["command_ticks"] = 1
+        speeds = arithmetic.speed_step(speeds, target, change)
+        command_speeds = speeds
+        angle = arithmetic.binary(angular_rate, seconds, "mul")
+        cosine, sine = arithmetic.trig(angle) if angle else ((one, one), (zero, zero))
+        if angular_rate:
+            inverse = arithmetic.binary(one, angular_rate, "div")
+            unit_step = (
+                arithmetic.product(sine, (inverse, inverse)),
+                arithmetic.product(
+                    (
+                        arithmetic.binary(one, cosine[1], "sub"),
+                        arithmetic.binary(one, cosine[0], "sub"),
+                    ),
+                    (inverse, inverse),
+                ),
+            )
+        else:
+            unit_step = ((seconds, seconds), (zero, zero))
+        position = tuple(
+            arithmetic.product(speeds, component) for component in unit_step
+        )
+        vertices = [((zero, zero), (zero, zero)), position]
+        speed_steps = [speeds]
+        work["chords"] = 1
+        length_upper = arithmetic.binary(speeds[1], seconds, "mul")
+        sagitta = arithmetic.binary(
+            arithmetic.binary(length_upper, abs(angle), "mul"),
+            arithmetic.value(8),
+            "div",
+        )
+        while speeds[1] != zero:
+            if work["braking_ticks"] >= max_braking_ticks:
+                raise ArithmeticError("braking_budget_exhausted")
+            if work["chords"] >= max_chords:
+                raise ArithmeticError("chord_budget_exhausted")
+            work["braking_ticks"] += 1
+            work["chords"] += 1
+            speeds = arithmetic.speed_step(speeds, zero, change)
+            distances = arithmetic.product(speeds, (seconds, seconds))
+            displacement = tuple(
+                arithmetic.product(distances, direction) for direction in (cosine, sine)
+            )
+            position = tuple(
+                arithmetic.plus(component, step)
+                for component, step in zip(position, displacement)
+            )
+            vertices.append(position)
+            speed_steps.append(speeds)
+            length_upper = arithmetic.binary(length_upper, distances[1], "add")
+        body_radius = arithmetic.binary(
+            arithmetic.binary(
+                arithmetic.value(profile["radius"]), position_error, "add"
+            ),
+            arithmetic.binary(length_upper, heading_error, "mul"),
+            "add",
+        )
+        boxes = [arithmetic.box(point) for point in vertices]
+        chords = [
+            {
+                "start_box_m": boxes[index],
+                "end_box_m": boxes[index + 1],
+                "radius_upper_m": arithmetic.outward(
+                    arithmetic.binary(
+                        body_radius, sagitta if index == 0 else zero, "add"
+                    ),
+                    True,
+                ),
+            }
+            for index in range(work["chords"])
+        ]
+        result.update(
+            status="enclosed_under_fixture_assumptions",
+            reason="complete_ideal_command_and_discrete_braking_enclosure",
+            fixture_motion_enclosed=True,
+            assumption="stored_input_words_as_reals_not_native_execution",
+            centerline_boxes_m=boxes,
+            chords=chords,
+            speed_intervals_m_s=[
+                [arithmetic.outward(lower, False), arithmetic.outward(upper, True)]
+                for lower, upper in speed_steps
+            ],
+            command_speed_interval_m_s=[
+                arithmetic.outward(command_speeds[0], False),
+                arithmetic.outward(command_speeds[1], True),
+            ],
+            command_sagitta_upper_m=arithmetic.outward(sagitta, True),
+        )
+    except ArithmeticError as error:
+        result["reason"] = str(error)
+    return result
+
+
 def _check_synthetic_sinc_target_cell_join(
     expected_q_word, candidate_record, enclosure_record, *, synthetic_test_only=False
 ):

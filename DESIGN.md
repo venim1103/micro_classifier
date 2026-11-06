@@ -2067,19 +2067,20 @@ authorization follows; physical host actuation and fail-safes remain independent
 [admission-dynamics-source]: sim/rover.py
 [source-command-admission-review]: REVIEW.md
 
-##### Next Implementation Proposal: Discrete Motion Core
+##### Conditional Discrete Motion Core (2026-11-06)
 
-**Prepared for approval, not authorized by requirements adoption.** The first
-useful increment should compute the command/braking motion required above,
-not add another identity checker or expose a permit before source qualification.
+**Implemented and fixture-tested under separate bounded approval; not source
+qualification or command admission.** The private increment computes the
+conditional command/braking motion required above; it exposes no permit.
 The named consumer is the future S4 actual-command sweep guard. Existing C1
 enclosure/witness APIs hardwire `_c1_curved_centerline` and its continuous
 braking phase; neither accepts an arbitrary acceleration-limited discrete path.
 Their current clear/blocked results cannot qualify the new command by relabeling
-the trajectory. [Review §152][admission-motion-core-review] records this boundary.
+the trajectory. [Reviews §§152-153][admission-motion-core-review] record the
+proposal, separate approval, results and remaining boundary.
 
-**Proposed code boundary.** Add only a private conditional motion producer in
-the existing C1 diagnostics module, with controls in the existing simulator
+**Implemented code boundary.** The private conditional motion producer lives
+in the existing C1 diagnostics module, with controls in the existing simulator
 tests. It takes explicit artificial motion/configuration/error assumptions and
 returns an owned bounded path/enclosure or unknown. Model the acceleration and
 clipping update before the command interval, then each zero-target/zero-yaw
@@ -2098,14 +2099,14 @@ this first proposal. Existing helpers/defaults and their rejection/alias
 regressions stay unchanged; later source and path-aware coverage work needs
 its own evidence and scope.
 
-| Fixed control groups | Required discrimination in the future test increment |
+| Fixed control groups | Required discrimination |
 | --- | --- |
 | G01-G04 | Rest launch, moving straight command, acceleration clipping and zero-target braking. The declared supported straight controls must produce a complete conditional enclosure, not all unknown. Check the discrete stopping tail against an independent exact-rational recurrence. |
 | G05-G08 | Mirrored nonzero command turns and both signs of a declared source/decoded discrepancy. Require the declared conditional enclosures to retain the full assumed errors through command and braking; no zero-error substitution. Use an independently bounded circular-arc reference for the command interval, not the producer or old continuous-braking helper as its own oracle. |
 | G09-G12 | Missing/unsupported error evidence, invalid/nonfinite/boolean inputs, unsupported hold or configuration, and unchanged caller-owned inputs/outputs on rejection. Keep the rejection/unknown outcomes below fixed. |
 | G13-G16 | Reduced braking/chord budgets, independent-reference work exhaustion and held-result ownership. Exhaustion cannot publish a partial enclosure, relax a bound, become admitted motion or silently retry. |
 
-**Fixed prospective inputs.** Numeric decimal literals below mean their exact
+**Fixed fixture inputs.** Numeric decimal literals below mean their exact
 stored binary64 words, not exact decimal real values. The shared profile is
 `dt=0.05`, acceleration `1.0`, maximum speed `0.6`, maximum yaw rate `1.5`,
 radius `0.18`, initial body-frame position `(0.0, 0.0)` and yaw `0.0`. Default
@@ -2135,7 +2136,7 @@ operations are exact or that its zero-error fixtures qualify S4.
 | G15 | Repeat G05 with independent-reference term budget zero | Reference unknown, `reference_term_budget_exhausted`, supplies no correctness evidence for the producer. No retry or fallback oracle is allowed. |
 | G16 | Repeat G02 with independent-reference intermediate cap one bit; hold a preceding owned result | Reference unknown, `reference_integer_budget_exhausted`, before oversized arithmetic; the held result stays unchanged, with no producer admission or hidden reference retry. |
 
-**Proposed producer/reference separation.** The private producer models the
+**Producer/reference separation.** The private producer models the
 order of `RoverEnv.step` as an ideal discrete recurrence: clip the target, apply
 the acceleration-limited speed update, integrate that constant-speed command
 interval, then apply zero target/yaw and the same update before each braking
@@ -2163,29 +2164,30 @@ registration and actual-executor discrepancy still need separate S4 evidence;
 this bounded ideal reference is neither a proof acceptance nor an alternative
 general arithmetic/certificate program. No NF1/owner/typed-join helper is called.
 
-This is a fixed prospective approval matrix, not an executed one. If its method
-or limits cannot meet an expected conditional success, retain that failure and
+The fixed matrix passed under its separate bounded approval; this is fixture
+evidence, not native execution or source qualification. If a later approved
+increment cannot meet an expected conditional success, retain that failure and
 request a revised scope; do not replace a row, weaken a bound or quietly change
 success to unknown. Existing false-clear/near-contact/outer-tube regressions and
 the 0.6 m/s decoded-source rejection remain unchanged. No scenes or task data
 are created, and no global navigation target is narrowed.
 
-| Prospective ledger | Limit and accounting rule; all unapproved |
+| Bounded fixture ledger | Separately approved limits; results in REVIEW §153 |
 | --- | --- |
 | New controls | Exactly 16 fixed IDs; at most 32 producer entries and 32 independent-reference entries per complete matrix. Count invalid, early-return, faulted and abandoned entries before work; no unmetered debug/reference calls. |
 | Producer work | At most one command interval, 16 modeled braking ticks and 128 chords per entry, plus at most 16 arc-series terms and 16,384-bit integer intermediates, with pre-operation growth guards/capacity reservation. No adaptive cap increase or retry; report attempted ticks/chords/terms separately. |
-| Independent reference | At most 16 series terms and 16,384-bit integer intermediates per reference entry, with pre-operation growth guards. These proposed limits are not demonstrated feasibility or accepted arithmetic proof; failure stops that control. Do not reuse the unaccepted NF1/typed-join certificates as authority. |
+| Independent reference | At most 16 series terms and 16,384-bit integer intermediates per reference entry, with pre-operation growth guards. Fixed controls passed within these limits; this is not general feasibility or accepted arithmetic proof. Failure stops that control. Do not reuse the unaccepted NF1/typed-join certificates as authority. |
 | Geometry/source/runtime entries | Zero new C1 coordinator, exclusion, occupied-witness, capture, relative-input/registration, owner-event, wire-adapter or rover reset/step calls in this family. Zero permit/executor/actuation, tokenizer/model, episode/log-replay or board operations. |
-| Verification positions | At most four complete or aborted execution positions, including failed imports/teardowns, focused checks, repairs and a final root gate: at most 128 producer and 128 reference entries total. No fifth position or borrowing from an older scope. |
-| Old regression renewal | Propose exactly one final invocation of the current default suite under unchanged existing per-family controls, including current simulator/C1 and interface regressions; preserve the known QDQ xfail. This is compatibility checking only, not renewal of standalone old experiments, deferred SC18-v0, opt-in native studies or historical report generation. A failed root gate needs renewed old-regression permission before another root invocation. |
+| Verification positions | At most four complete or aborted execution positions, including failed imports/teardowns, focused checks, repairs and a final root gate: at most 128 producer and 128 reference entries total. Three positions used, totaling 54 producer/35 reference entries; the unused fourth is not a follow-on run approval. No fifth position or borrowing from an older scope. |
+| Old regression renewal | Exactly one final invocation of the current default suite under unchanged existing per-family controls, including current simulator/C1 and interface regressions; preserve the known QDQ xfail. This one renewal is spent. It is compatibility checking only, not renewal of standalone old experiments, deferred SC18-v0, opt-in native studies or historical report generation. Any further root invocation needs renewed old-regression permission. |
 | Resources and artifacts | Serial CPU-only, in-memory synthetic fixtures; no download, dependency, GPU, environment or hardware change. Retain any failed-command evidence in the existing ignored run area; no task log, dataset, new report or artifact cleanup is authorized. Loop/bit caps are work limits, not measured wall-clock/RSS or target-fit evidence. |
 
-The default source gate remains `python -m pytest -q && ruff check . && git diff --check`,
-plus changed-file formatting, but is not executed by this planning/adoption
-checkpoint. The proposed root renewal covers only its one approved position
-if this exact scope is subsequently accepted; all old spent positions remain
-historical, not refunded. Source qualification and later full-guard derived
-coverage/witness/registration work are deliberately outside the zero-query
+The default source gate `python -m pytest -q && ruff check . && git diff --check`
+and changed-file formatting passed at the source checkpoint: 2,285 passes,
+the known QDQ xfail and 71 existing warnings. That single root renewal is spent;
+all old spent positions remain historical, not refunded. No failed test or
+relaxed bound was used to obtain this result. Source qualification and later
+full-guard derived coverage/witness/registration work are outside the zero-query
 motion-core ledger and need separate accounting before their implementation.
 
 [admission-motion-core-review]: REVIEW.md
@@ -10729,11 +10731,16 @@ the four-position fixture verification scope is spent, not renewed by this statu
 The source/startup/command contract in §7 is adopted as requirements only
 ([preparation §151][source-command-admission-review], adoption §152): five evidence
 obligations, an explicit simulation guard boundary and candidate startup/map/
-fallback/work limits. No evidence is satisfied or implementation/run authorized.
-The next prepared proposal is the isolated discrete motion core, with sixteen
-fixed prospective controls and a zero-C1-query ledger; its exact implementation/
-regression scope still need approval. S1-S5 qualification and the full guard
-remain later gates, not achievements of this requirements decision.
+fallback/work limits. That requirements adoption alone satisfies no evidence
+and authorizes no implementation/run scope.
+The separately approved isolated discrete motion core is implemented and its
+sixteen fixed controls pass ([§153][admission-motion-core-review]): three of four
+positions used, 54 producer/35 reference entries total, zero new-family C1/source/
+runtime queries. The one default-root renewal is spent. This supplies conditional
+ideal motion enclosures only, not native arithmetic/registration or S1-S5
+qualification. Next: separately scope source-error evidence and path-aware
+coverage support for the actual-command guard; no full guard or usable trial is
+authorized by completing the motion core.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
   candidate and reviewable acceptance/evaluation checklist from existing evidence.

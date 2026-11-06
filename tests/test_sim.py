@@ -35,6 +35,371 @@ from sim.rover import (
 )
 
 
+def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
+    from fractions import Fraction
+
+    used = 0
+
+    def number(value):
+        numerator, denominator = float(value).as_integer_ratio()
+        if max(abs(numerator).bit_length(), denominator.bit_length()) > max_bits:
+            raise ArithmeticError("reference_integer_budget_exhausted")
+        return Fraction(numerator, denominator)
+
+    def calculate(operation, first, second):
+        first_bits = max(
+            abs(first.numerator).bit_length(), first.denominator.bit_length()
+        )
+        second_bits = max(
+            abs(second.numerator).bit_length(), second.denominator.bit_length()
+        )
+        if first_bits + second_bits + 1 > max_bits:
+            raise ArithmeticError("reference_integer_budget_exhausted")
+        if operation == "+":
+            return first + second
+        if operation == "-":
+            return first - second
+        if operation == "*":
+            return first * second
+        if operation == "/":
+            return first / second
+        return first < second
+
+    def order(values):
+        lowest = highest = values[0]
+        for value in values[1:]:
+            if calculate("<", value, lowest):
+                lowest = value
+            if calculate("<", highest, value):
+                highest = value
+        return lowest, highest
+
+    def multiply(first, second):
+        return order(
+            [calculate("*", left, right) for left in first for right in second]
+        )
+
+    def clipped(value, lower, upper):
+        if calculate("<", value, lower):
+            return lower
+        return upper if calculate("<", upper, value) else value
+
+    zero, one, duration = number(0), number(1), number(0.05)
+    acceleration_step = duration
+    initial = settings["initial_speed"]
+    speed = tuple(
+        number(value)
+        for value in (initial if type(initial) is tuple else (initial, initial))
+    )
+    target = clipped(number(settings["target_speed"]), zero, number(0.6))
+    angular_rate = clipped(number(settings["turn_rate"]), number(-1.5), number(1.5))
+    speed = tuple(
+        calculate(
+            "+",
+            value,
+            clipped(
+                calculate("-", target, value), -acceleration_step, acceleration_step
+            ),
+        )
+        for value in speed
+    )
+    first_speeds = speed
+    integrals = []
+    if angular_rate:
+        if max_terms == 0:
+            raise ArithmeticError("reference_term_budget_exhausted")
+        square = calculate(
+            "*",
+            calculate("*", angular_rate, angular_rate),
+            calculate("*", duration, duration),
+        )
+        for parity in (0, 1):
+            partial, term = zero, zero
+            for index in range(8):
+                if used >= max_terms:
+                    raise ArithmeticError("reference_term_budget_exhausted")
+                used += 1
+                if index == 0:
+                    term = (
+                        duration
+                        if parity == 0
+                        else calculate(
+                            "/",
+                            calculate(
+                                "*", angular_rate, calculate("*", duration, duration)
+                            ),
+                            number(2),
+                        )
+                    )
+                else:
+                    divisor = number((2 * index + parity) * (2 * index + parity + 1))
+                    term = -calculate("/", calculate("*", term, square), divisor)
+                if index < 7:
+                    partial = calculate("+", partial, term)
+                else:
+                    integrals.append(order((partial, calculate("+", partial, term))))
+        sine = multiply((angular_rate, angular_rate), integrals[0])
+        omega_integral = multiply((angular_rate, angular_rate), integrals[1])
+        cosine = (
+            calculate("-", one, omega_integral[1]),
+            calculate("-", one, omega_integral[0]),
+        )
+    else:
+        integrals = [(duration, duration), (zero, zero)]
+        cosine, sine = (one, one), (zero, zero)
+    point = tuple(multiply(speed, component) for component in integrals)
+    vertices = [((zero, zero), (zero, zero)), point]
+    speeds = [speed]
+    while speed[1] != zero:
+        assert len(speeds) <= 16
+        speed = tuple(
+            clipped(calculate("-", value, acceleration_step), zero, number(0.6))
+            for value in speed
+        )
+        distance = multiply(speed, (duration, duration))
+        movement = [multiply(distance, direction) for direction in (cosine, sine)]
+        point = tuple(
+            tuple(calculate("+", value, delta) for value, delta in zip(component, step))
+            for component, step in zip(point, movement)
+        )
+        vertices.append(point)
+        speeds.append(speed)
+    deviation = calculate(
+        "/",
+        calculate(
+            "*",
+            calculate("*", first_speeds[1], abs(angular_rate)),
+            calculate("*", duration, duration),
+        ),
+        number(8),
+    )
+    return {
+        "vertices": vertices,
+        "speeds": speeds,
+        "deviation": deviation,
+        "terms": used,
+    }
+
+
+@pytest.fixture(scope="module")
+def c1_discrete_motion_fixtures(request):
+    from sim import diagnostics
+
+    ledger = {"cases": 0, "producer": 0, "reference": 0, "forbidden": 0}
+
+    def producer(settings):
+        ledger["producer"] += 1
+        assert ledger["producer"] <= 32
+        return diagnostics._probe_synthetic_c1_discrete_motion(**settings)
+
+    def reference(settings, **limits):
+        ledger["reference"] += 1
+        assert ledger["reference"] <= 32
+        return _c1_discrete_motion_reference(settings, **limits)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("motion fixtures cannot call C1/source/runtime paths")
+
+    yield ledger, producer, reference, forbidden
+    assert ledger["cases"] == 16
+    assert ledger["producer"] <= 32 and ledger["reference"] <= 32
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    message = "C1 discrete-motion ledger: " + json.dumps(ledger, sort_keys=True)
+    if capture is None:
+        print(message)
+    else:
+        with capture.global_and_fixture_disabled():
+            print(message)
+
+
+@pytest.mark.parametrize(
+    "case", range(1, 17), ids=[f"G{number:02}" for number in range(1, 17)]
+)
+def test_synthetic_c1_discrete_motion(c1_discrete_motion_fixtures, monkeypatch, case):
+    import struct
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    ledger, producer, reference, forbidden = c1_discrete_motion_fixtures
+    ledger["cases"] += 1
+    for name in (
+        "inspect_synthetic_c1_history",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "capture_synthetic_c1_views",
+        "prepare_synthetic_c1_relative_input",
+        "_probe_synthetic_c1_wire_rejection",
+        "_c1_curved_centerline",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    settings = {
+        "initial_speed": 0.5,
+        "target_speed": 0.5,
+        "turn_rate": 0.0,
+        "error_evidence": {
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        "synthetic_test_only": True,
+    }
+    if case == 1:
+        settings.update(initial_speed=0.0, target_speed=0.125)
+    elif case == 3:
+        settings["target_speed"] = 1.0
+    elif case == 4:
+        settings.update(initial_speed=0.125, target_speed=0.0)
+    elif case in (5, 6, 15):
+        settings["turn_rate"] = -1.5 if case == 6 else 1.5
+    elif case in (7, 8):
+        words = (
+            (0x3FC999999999999A, 0x3FC99999A0000000)
+            if case == 7
+            else (0x3FD6666660000000, 0x3FD6666666666666)
+        )
+        settings.update(
+            initial_speed=tuple(
+                struct.unpack(">d", word.to_bytes(8, "big"))[0] for word in words
+            ),
+            turn_rate=0.75 if case == 7 else -0.75,
+        )
+    elif case == 9:
+        settings["error_evidence"] = None
+    elif case == 10:
+        settings.update(initial_speed=True, target_speed=math.inf, turn_rate=math.nan)
+    elif case == 11:
+        settings.update(
+            hold_ticks=2,
+            profile={
+                "dt": 0.05,
+                "acceleration": 0.0,
+                "max_speed": 0.6,
+                "max_turn_rate": 1.5,
+                "radius": 0.18,
+            },
+        )
+    elif case in (13, 14):
+        settings["max_braking_ticks" if case == 13 else "max_chords"] = 0
+    original = deepcopy(settings)
+    if case == 10:
+        with pytest.raises(ValueError):
+            producer(settings)
+        assert settings["initial_speed"] is True
+        assert settings["target_speed"] == math.inf and math.isnan(
+            settings["turn_rate"]
+        )
+        return
+    result = producer(settings)
+    assert settings == original
+    assert all(
+        result[field] is False
+        for field in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+    if case in (9, 11, 13, 14):
+        reasons = {
+            9: "error_evidence_missing",
+            11: "unsupported_profile_or_hold",
+            13: "braking_budget_exhausted",
+            14: "chord_budget_exhausted",
+        }
+        assert result["status"] == "unknown" and result["reason"] == reasons[case]
+        assert result["fixture_motion_enclosed"] is False
+        assert "chords" not in result and "centerline_boxes_m" not in result
+        return
+    assert result["status"] == "enclosed_under_fixture_assumptions"
+    assert result["fixture_motion_enclosed"] is True
+    if case in (15, 16):
+        held = deepcopy(result)
+        if case == 16:
+            assert producer(settings) == result
+        with pytest.raises(
+            ArithmeticError,
+            match="reference_term_budget_exhausted"
+            if case == 15
+            else "reference_integer_budget_exhausted",
+        ):
+            reference(settings, **({"max_terms": 0} if case == 15 else {"max_bits": 1}))
+        assert result == held
+        return
+    expected = reference(settings)
+    if case == 6:
+        mirrored_settings = deepcopy(settings)
+        mirrored_settings["turn_rate"] = 1.5
+        mirrored = reference(mirrored_settings)
+        for point, reflected in zip(expected["vertices"], mirrored["vertices"]):
+            assert point[0] == reflected[0]
+            assert point[1] == (-reflected[1][1], -reflected[1][0])
+    assert (
+        len(result["chords"])
+        == len(expected["vertices"]) - 1
+        == result["work"]["chords"]
+        <= 128
+    )
+    assert result["work"]["command_ticks"] == 1
+    assert result["work"]["braking_ticks"] == len(expected["speeds"]) - 1 <= 16
+    assert result["speed_intervals_m_s"][-1] == [0.0, 0.0]
+    assert result["work"]["series_terms"] == expected["terms"] <= 16
+    for actual_point, exact_point in zip(
+        result["centerline_boxes_m"], expected["vertices"]
+    ):
+        for (lower, upper), (exact_lower, exact_upper) in zip(
+            actual_point, exact_point
+        ):
+            assert (
+                Fraction.from_float(lower)
+                <= exact_lower
+                <= exact_upper
+                <= Fraction.from_float(upper)
+            )
+    for actual_speed, exact_speed in zip(
+        result["speed_intervals_m_s"], expected["speeds"]
+    ):
+        assert (
+            Fraction.from_float(actual_speed[0])
+            <= exact_speed[0]
+            <= exact_speed[1]
+            <= Fraction.from_float(actual_speed[1])
+        )
+    assert (
+        Fraction.from_float(result["command_sagitta_upper_m"]) >= expected["deviation"]
+    )
+    for index, chord in enumerate(result["chords"]):
+        radius = Fraction.from_float(0.18) + (
+            expected["deviation"] if index == 0 else 0
+        )
+        assert Fraction.from_float(chord["radius_upper_m"]) >= radius
+        assert chord["start_box_m"] == result["centerline_boxes_m"][index]
+        assert chord["end_box_m"] == result["centerline_boxes_m"][index + 1]
+    if case in (7, 8):
+        assert expected["speeds"][0][0] < expected["speeds"][0][1]
+        assert (
+            result["command_speed_interval_m_s"][0]
+            < result["command_speed_interval_m_s"][1]
+        )
+    if case == 1:
+        assert result["command_speed_interval_m_s"] == [0.05, 0.05]
+    if case == 12:
+        second = producer(settings)
+        held = deepcopy(second)
+        result["chords"][0]["end_box_m"][0][0] = 123.0
+        assert second == held and settings == original
+
+
 @pytest.mark.parametrize(
     "word,numerator,denominator,sign",
     [

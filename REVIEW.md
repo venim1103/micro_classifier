@@ -11415,6 +11415,91 @@ correction, not a changed failed fixture, tuning, new numeric run or relaxation
 of source equality. Documentation content/scope/whitespace and staged-byte
 checks apply; source/test bytes and all spent/unapproved execution scope stay.
 
+## 153. Bounded Conditional Discrete Motion Core (2026-11-06)
+
+After the §152/`742fb37` handoff, the user explicitly selected **Approve Bounded
+Prototype** for fixed G01-G16 inputs/method, at most four execution positions
+including failures/repairs/final root, 32 producer/32 reference entries per
+matrix and exactly one old-default-regression renewal. This is separate code/
+test approval, not S1-S5 satisfaction, source qualification, a permit/executor
+runtime, actuation, task data or general audit reactivation. The requirements-
+only adoption and historical pre-execution control correction remain intact.
+
+**Implemented.** [The private motion producer][discrete-motion-source] models
+the stored input words as reals: clip target speed/yaw, update speed before
+the one constant-speed command interval, then repeat zero-target/zero-yaw
+updates before each discrete braking interval. Whole initial-speed intervals
+propagate through clipping/acceleration and the complete stopping tail. A
+separate guarded rational sine/cosine expansion bounds the command arc; outward
+binary64 boxes and chord body radii include the declared translation/heading
+errors and between-vertex sagitta. All result flags remain false; successful
+results mean conditional ideal motion enclosure only, not clearance or permit.
+Unknown publishes no partial path. Returned paths are independently owned.
+
+Term/bit/tick/chord guards bound this prototype's declared arithmetic work;
+they do not certify its Python/Fraction/native trusted base or wall-clock/RSS/
+target fit. Native simulator roundoff, pose/range/registration/clock evidence
+and actual execution are deliberately unqualified. The [test reference][discrete-motion-tests]
+directly integrates the command power series and derives its own clipped
+straight recurrence/tail; it reuses no producer arithmetic/coefficient/path or
+old centreline. The fixed straight/left/right/discrepancy/ownership/rejection/
+exhaustion controls pass, including exact mirror comparison and distinct
+G07/G08 post-update endpoints. Test guards reject C1/source/runtime calls.
+
+**Verification ledger.** Pylance's selected interpreter is `/opt/venv/bin/python`;
+both target files initially had no diagnostics. Actual executions from root:
+
+| Position | Command and outcome | New-family ledger |
+| --- | --- | --- |
+| 1 | `/opt/venv/bin/python -m pytest -q tests/test_sim.py -k synthetic_c1_discrete_motion`: 16 pass, 1,346 deselected, 0.30 s. | 18 producer, 11 reference, zero forbidden calls. |
+| 2 | Same fixed matrix after local pre-operation reference-term reservation, strict profile-type and explicit mirror-check improvements: 16 pass, 1,346 deselected, 1.19 s. No input/expected-outcome/bound changed. | 18 producer, 12 reference, zero forbidden calls. |
+| 3 | `/opt/venv/bin/python -m pytest -q && ruff check . && git diff --check`: 2,285 pass, known transformer QDQ xfail, 71 existing warnings, no skips, 52.32 s; lint/whitespace pass. | 18 producer, 12 reference, zero forbidden calls; old fixture controls below ran only under the one explicit renewal. |
+
+Total: **54 producer/35 reference entries**, each matrix's 16 cases within the
+32/32 caps; no failed fixture, import or teardown. Three of four positions used;
+the unused fourth is not a follow-on execution approval. Exactly one approved
+root renewal is spent; do not repeat it or borrow an old unused position.
+Existing root reporters retained C1 wire 24 cases/48 adapter/32 relative/10
+coordinator/two captures/two scenes, composition 32, target 32 and join 32 under
+their unchanged per-family controls. These compatibility checks do not restart
+standalone old experiments or adopt their numerical/source/work claims.
+
+`ruff format` touched only the two changed Python files; changed-file lint and
+format checks pass. Pylance syntax and editor diagnostics pass. A standard-
+library AST comparison proves all **65 old diagnostics nodes and 279 old test
+nodes unchanged**, adding only the private arithmetic class/producer and the
+three independent reference/fixture/test nodes. No old API, default, wire,
+source flag, historical artifact/report or normal controller changed. Final
+documentation checks pass: exact five-file scope, ordered sections 1-153,
+unchanged prior REVIEW/Sources, eight adopted evidence/record rows, sixteen fixed
+input/outcome rows, stable workflow/task history, 661 prose reference uses,
+25 inline links, 69 local targets/Markdown anchors, whitespace and editor
+diagnostics. Scoped diff and staged-byte checks apply before commit; the
+successful code gate is not rerun for these documentation edits.
+
+Source SHA256: diagnostics
+`d300e20eb8621d67e057b6f28f93542629ec5d9874b63ecab335c02b1d0cda9a`;
+tests `00e8e8cda8e45285f1d105af6334421395cdb08560e18ed14929193a90cbf2f1`.
+
+**Retention and evidence limits.** Fixtures/results are in-memory; no new task
+log, scene, dataset, report, download, dependency, GPU/model/tokenizer, training,
+ST/licence or hardware operation. Root compatibility tests include their
+existing synthetic export/native controls, not a trained model, new opt-in
+native study, source authority, linked firmware or board evidence. No cleanup,
+push or running job. No benchmark or task-quality improvement is claimed.
+
+**Next boundary.** The approved motion-core increment is complete. S1-S5
+evidence, especially native/source-error/registration support, plus path-aware
+coverage/witness composition for the actual command remain missing. Prepare
+only a separately scoped next proposal tied to that guard; no silent permit/
+executor implementation, another old fixture run, generic arithmetic/checker
+ladder or general SC18-v0 audit. Tasks 6/9 and D4's separate cohort remain blocked;
+all fifteen old verdicts stay undecided/five flags false, and historical spent
+budgets remain spent. ST/tool/board readiness remains parallel user-side work.
+
+[discrete-motion-source]: sim/diagnostics.py
+[discrete-motion-tests]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

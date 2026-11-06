@@ -124,10 +124,12 @@ from them. Historical details below are reference material, not new approvals.
   unusable rejection/fault diagnostics, even for complete candidate bundles.
   Twenty-four cases/two reused scenes pass; all four verification positions are
   spent. Source/startup/command requirements are adopted (§152), not implemented
-  or satisfied. The next prepared proposal is a conditional discrete motion
-  core: 16 fixed controls, zero new C1/source/runtime queries, four proposed
-  execution positions with one separate root-regression renewal. Fixed inputs/
-  method and exact scope are prepared, not approved for execution. D4 remains
+  or satisfied. Separately approved conditional discrete motion core complete
+  (§153): 16 fixed controls pass, 54 producer/35 reference entries across three
+  positions, zero new-family C1/source/runtime queries. The one renewed root
+  gate passed 2,285 tests plus known xfail/71 warnings and is spent; unused fourth
+  position is not follow-on scope. Next: scope source-error/path-aware coverage
+  evidence for the actual-command guard, without general audit work. D4 remains
   separate; no normal profile, source qualification, threshold, actuation or run
   scope is adopted. The old host loop is not a compatible C1 maneuver executor;
   Tasks 6/9 remain blocked, not completed.
@@ -141,7 +143,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-152 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-153 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - Architectural review assessed (REVIEW.md §148 / DESIGN.md §12): supported
@@ -162,11 +164,13 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-05): 2,269 passes plus known xfail/71 existing
-  warnings, 24 new wire cases; lint/changed-file format/syntax/editor and all old
-  AST nodes pass. §146 records all four positions, the reporter teardown failure
-  and repair, and 48 adapter/32 relative/10 coordinator attempts per complete
-  new matrix. Old §138 accounting/failures stay historical and unchanged. No
+- Last source-test gate (2026-11-06): 2,285 passes plus known xfail/71 existing
+  warnings, 16 new conditional motion cases; lint/changed-file format/syntax/editor
+  and all 65 old source/279 test AST nodes pass. §153 records three positions,
+  54 producer/35 reference attempts total and zero new-family C1/source/runtime
+  entries. §146's four positions/failure/repair and 48 adapter/32 relative/10
+  coordinator matrix stay historical, unchanged; one root-regression renewal was
+  separately approved and is now spent. Old §138 accounting/failures stay. No
   normal runtime/C source change or extra opt-in sanitizer/Arm gate; host checks are
   not source/numerical qualification, linked firmware or task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1213,12 +1217,13 @@ on missing tools, and continue with the next unblocked task.
 
 Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §146 rejection
 increment complete; §152 requirements-only source/startup/command adoption.
-Next proposal: conditional discrete command/braking motion core, 16 fixed controls,
-32 producer/32 reference entries per matrix, zero new C1/source/runtime queries,
-four execution positions and one proposed final-root regression renewal. Fixed
-literal inputs/expected results/method are prepared; approve the exact scope
-before implementation. S1-S5 satisfaction/full guard/usable trial remain separate
-gates. No usable C1 `OK`
+Conditional discrete command/braking motion core complete (§153), 16 fixed
+controls, 54 producer/35 reference attempts across three of four positions,
+zero new-family C1/source/runtime queries. One approved root-regression renewal
+passed and is spent; no fourth invocation follows automatically. Next scope:
+source-error evidence/path-aware coverage for the actual-command guard, not
+general arithmetic/identity audits. S1-S5 satisfaction/full guard/usable trial
+remain separate gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
 The approved 24-case/eight-scene/48-coordinator/four-position verification scope
 is spent (actual two reused scenes; 48 adapter/32 relative/10 coordinator per full
@@ -1229,13 +1234,14 @@ Validated improvement queue: [DESIGN.md][design] §12 / [REVIEW.md][review] §14
 I2 public-doc clarity complete (§150). Prioritize sensor/coverage admission. Scratch/
 target optimization follows actual deployment gates, prompt work a justified
 teacher question and approved assets/use. Queue acceptance is not execution
-approval and does not qualify the source or authorize the motion-core increment.
+approval and does not qualify the source or authorize follow-on guard work.
 ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
 priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
-source gate now 2,269 plus known xfail/71 warnings under §146's spent default-gate
-renewal; §138 four of five/fifth unused, old §129/§132 exhausted, §135 fifth not
+source gate now 2,285 plus known xfail/71 warnings under §153's one spent default-
+gate renewal; §146 all four spent, §138 four of five/fifth unused, old §129/§132
+exhausted, §135 fifth not
 borrowed. No standalone old scope renewed. All fifteen
 verdicts undecided/five flags false, no consumer/proof/native/source/work adoption.
 Task 6/9, physical/numerical/task-quality, teacher assets and ST/board gates stay.
@@ -1273,9 +1279,11 @@ No job/cleanup pending; original numbered task results below remain historical.
   Bounded result (2026-11-05, REVIEW.md §146): private decoded-input-to-wire
   rejection tooling and 24 cases complete, no usable `OK` or actuation; source
   qualifications/flags stay false. All four verification positions spent.
-  Priority next action: decide admissible source evidence and independently
-  supported startup/actual command/fallback interface. §145's brief remains
-  proposed; no new fixture/run or runtime scope. Dated results below are historical.
+  Current follow-up (2026-11-06, REVIEW.md §153): requirements adopted only;
+  conditional discrete motion core/16 controls complete, not source or command
+  admission. Next: separately scope source-error/path-aware coverage evidence for
+  the independently supported guard. No new fixture/run/runtime follows; the one
+  renewed default regression is spent. Dated results below remain historical.
   Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
   mode; the complete three-answer Python/C contract passes 123 new tests. Legacy
   diagnostic catalogue/proxies remain unchanged and unqualified, not deployed

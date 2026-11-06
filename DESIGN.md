@@ -2432,10 +2432,18 @@ qualification/admission/training flags and supplies no executor or usable permit
 
 [Review §161][command-path-review] records sixteen controls, independent rational
 source/decoded motion endpoints, centre/mirrored commands, rejection stages and
-owned repeats. Next cover the adopted at-rest 0.125 m/s zero-turn startup request
-and unsupported command domains with finite synthetic controls. Source/setup,
-native/range/pose/clock error, one-use execution/expiry and representative task
-quality remain separate; no normal runtime, actuation or study is admitted.
+owned repeats. The test-only startup/domain follow-up ([§162][command-path-review])
+checks the adopted at-rest 0.125 m/s zero-turn request against exact rest history:
+acceleration limits the command to the stored 0.05 m/s word, followed by one
+discrete braking tick. The endpoint encloses the product of the two stored 0.05
+words, not decimal-exact 0.0025 or measured motion. Missing body support and
+excessive requested speed/turn reject without clamping or partial composition.
+At-rest sector choice remains unknown; no sector query or normal `OK` is forged.
+Source/setup, native/range/pose/clock error, one-use execution/expiry and
+representative task quality remain separate; no normal runtime, permit,
+actuation or study is admitted. Next replace the supplied initial-body/setup
+premise with independently checked, owned fixture evidence bound to declared
+epoch/configuration; geometry stays offline, not in command selection.
 
 [command-path-review]: REVIEW.md
 
@@ -10992,10 +11000,13 @@ The actual-frame motion bridge (§157), complete-history registration bound
 (§158), registered-prefix cylinder consumer (§159) and optional discrete-path
 point margins (§160) each pass sixteen controls. Their current-frame command/
 point-margin composition (§161) now passes sixteen controls; the required
-new-source root gate passes 2,417 tests plus the known xfail/71 warnings. Prior
-spent standalone scopes remain spent. Next: finite at-rest startup/unsupported
-command controls in the same conditional composition, retaining explicit motion/
-error/profile and actual source/native/pose/range/clock/expiry qualification gates.
+new-source root gate passed 2,417 tests plus the known xfail/71 warnings. The
+test-only startup/domain follow-up (§162) adds four controls and passes its root,
+2,421 plus the same known xfail/71 warnings, with all production bytes unchanged.
+Prior spent standalone scopes remain spent. Next: explicit owned initial-body/
+setup fixture evidence bound to epoch/configuration, not a supplied true flag;
+retain complete motion/error/profile and actual source/native/pose/range/clock/
+expiry qualification gates. Geometry stays offline, never command selection.
 These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.
 

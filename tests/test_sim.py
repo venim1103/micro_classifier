@@ -1747,6 +1747,149 @@ def test_synthetic_c1_command_path_uses_owned_history(
     )
 
 
+@pytest.mark.parametrize("case", range(4))
+def test_synthetic_c1_command_path_startup_and_command_domain(
+    c1_discrete_path_fixtures, c1_command_path_ledger, monkeypatch, case
+):
+    from fractions import Fraction
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics
+
+    ledger = c1_command_path_ledger
+    for key, name in (
+        ("bridge", "_probe_synthetic_c1_state_motion"),
+        ("binding", "_bind_synthetic_c1_state_intervals"),
+        ("motion", "_probe_synthetic_c1_discrete_motion"),
+        ("path", "_probe_synthetic_c1_discrete_path_enclosure"),
+        ("inspection", "inspect_synthetic_c1_history"),
+        ("prefix", "_c1_low_free_segments"),
+        ("history", "_bound_synthetic_c1_history_registration"),
+        ("cell", "_c1_exclude_path_cells"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (128 if _key == "binding" else 32)
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "startup fixture must not query sectors, collect or actuate"
+        )
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "_c1_curved_centerline",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "probe_synthetic_c1_questions",
+        "_probe_synthetic_c1_wire_rejection",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    record = deepcopy(c1_discrete_path_fixtures["records"][0])
+    states = [State(sequence=tick, timestamp_us=tick * 50000) for tick in range(20, 23)]
+    frames = [encode_state(state) for state in states]
+    evidence = {
+        "source_states": states,
+        "state_frames": frames,
+        "history_assumptions": dict.fromkeys(
+            (
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            ),
+            True,
+        ),
+        "prefix_history_binding_exact": True,
+        "remaining_point_error_m": 1e-8,
+        "point_radius_m": 4.0,
+    }
+    settings = {
+        "reference_tick": 22,
+        "reference_pose_m_rad": [2.0, 2.0, 0.0],
+        "target_speed": 0.7 if case == 2 else 0.125,
+        "turn_rate": 2.0 if case == 3 else 0.0,
+        "error_evidence": {
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        "current_body_clear": case != 1,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+    saved_record, saved_evidence = deepcopy(record), deepcopy(evidence)
+    before = dict(ledger)
+    ledger["wrapper"] += 1
+    result = diagnostics._probe_synthetic_c1_command_path_enclosure(
+        [record], evidence, **settings
+    )
+    assert result["fixture_command_path_excluded"] is (case == 0)
+    assert ledger["bridge"] - before["bridge"] == int(case != 1)
+    assert ledger["motion"] - before["motion"] == int(case == 0)
+    for key in ("path", "inspection", "prefix", "history", "cell"):
+        assert ledger[key] - before[key] == int(case == 0)
+    assert ledger["binding"] - before["binding"] == (4 if case == 0 else int(case != 1))
+    if case == 0:
+        ledger["reference"] += 1
+        assert ledger["reference"] <= 32
+        duration = Fraction(0.05)
+        distance = duration * duration
+        motion = result["state_motion"]["motion"]
+        assert result["requested_command"] == {
+            "target_speed_m_s": 0.125,
+            "turn_rate_rad_s": 0.0,
+        }
+        assert result["state_motion"]["initial_speed_interval_m_s"] == (0.0, 0.0)
+        assert motion["command_speed_interval_m_s"] == [0.05, 0.05]
+        assert motion["work"] == {
+            "command_ticks": 1,
+            "braking_ticks": 1,
+            "chords": 2,
+            "series_terms": 0,
+        }
+        for box in motion["centerline_boxes_m"][1:]:
+            assert Fraction(box[0][0]) <= distance <= Fraction(box[0][1])
+            assert box[1] == [0.0, 0.0]
+        assert (
+            result["path_enclosure"]["registration_bound"]["upper_bounds"][
+                "registered_point_m"
+            ]
+            == 0.0
+        )
+        assert result["current_state_frame_hex"] == frames[-1].hex()
+    else:
+        assert result["reason"] == (
+            "current_body_clear_not_established"
+            if case == 1
+            else "unsupported_command_domain"
+        )
+        assert result["status"] == "unknown"
+        assert "state_motion" not in result and "path_enclosure" not in result
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    assert evidence == saved_evidence
+    assert json.dumps(record, default=json_value, sort_keys=True) == json.dumps(
+        saved_record, default=json_value, sort_keys=True
+    )
+
+
 def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
     from fractions import Fraction
 

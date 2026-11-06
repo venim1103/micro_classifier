@@ -12335,6 +12335,92 @@ deferral and protected evidence/resource gates remain unchanged.
 [command-path-source]: sim/diagnostics.py
 [command-path-controls]: tests/test_sim.py
 
+## 162. Conditional Startup and Command-Domain Controls (2026-11-06)
+
+Checkpoint §161 was committed and normally pushed as
+`e3050ce356bb55861121df9dab7de12c2ba7f383`; main was clean/synchronized.
+Continue its explicit test-only startup/domain follow-up under standing authority.
+
+**Pre-execution hypothesis and finite scope.** The adopted at-rest startup
+request is target 0.125 m/s/zero turn for one acceleration-limited stored tick,
+then repeated discrete zero-command braking. For exact zero source/decoded
+current/history words, the unchanged composition should conditionally exclude
+the reused clear fixture, advance at only 0.05 m/s for the command tick and stop
+after one modeled braking tick. Independent expected displacement is the product
+of two stored 0.05 binary64 values, not decimal-exact 0.0025 or measured dynamics.
+No at-rest sector query is required or permitted by these controls. Missing body
+premise and requested target 0.7/turn 2.0 reject, never silently clamp or actuate.
+
+Before execution: four fixed synthetic cases in the existing test file/ledger;
+at most three verification positions including failures/aborts, repairs and the
+required test-source root. New four-case slice: four wrapper/three bridge/six
+binder/one motion-path-inspection-prefix-history-cell/one rational-reference
+entries per complete invocation. Root additionally reuses unchanged §161 controls
+under its existing per-family 32-entry/128-binder ceilings; no limit/fixture/control
+change or standalone old experiment renewal. Reuse the same two-capture/three-
+motion preparation and two scenes per position; no new source/native/owner/rover/
+episode/data/model/hardware action. All existing motion/history/arithmetic/cell
+hard bounds, tolerances, false flags and source bytes remain unchanged. Test only;
+record failures and stop unsupported evidence before admission, no cleanup.
+
+The first four-case check passed all three rejection controls and startup
+exclusion, then failed its speed-interval shape assertion: the unchanged motion
+producer returns a list, not the asserted tuple. The actual values were exactly
+the expected two 0.05 words. Repair the expected list shape only; retain this
+failed position without changing numeric expectations, source, tolerance, radius
+or motion/fixture limits. Rerun the same four controls before any wider check.
+
+**Implemented and verified, test only.** All four controls now pass in the
+existing simulator test file. Startup uses exact rest history at ticks 20-22 and
+the already delivered tick-20 capture/default two-tick latency. The command speed
+is the two 0.05 words, not the requested target 0.125; one command tick and one
+braking tick produce two chords and zero trig terms. Both endpoint boxes contain
+the exact stored-word product. Zero registered word error is not zero remaining
+point error or qualified timing/pose/range evidence. Missing body evidence stops
+before binding; excessive speed/turn stop after current binding, before motion or
+path. Unknown results retain no partial composition; all seven flags stay false.
+
+Three positions are spent: first `1 failed, 3 passed, 1494 deselected` in 1.29 s,
+the list-shape repair `4 passed, 1494 deselected` in 1.15 s, then required root
+`2421 passed, 1 xfailed, 71 warnings` in 53.82 s, no skips. The known transformer
+QDQ xfail and every tolerance/assertion/hard work bound remain unchanged. Each
+focused position used four wrapper/three bridge/six binder/one motion-path-
+inspection-prefix-history-cell/reference entries. Root shared ledger includes
+unchanged §161 compatibility controls: 23 wrapper/17 bridge/41 binder/12 motion/
+nine path-inspection-prefix-history/seven cell/nine reference, forbidden zero.
+Totals across all three positions: 31 wrapper/23 bridge/53 binder/14 motion/
+11 path-inspection-prefix-history/nine cell/11 reference. Preparation: two reused
+captures/three motions per position, six/nine total, same two scenes; no extra
+family/runtime/source/native/capture/rover/question calls after preparation.
+
+Commands: `/opt/venv/bin/python -m pytest -q tests/test_sim.py -k
+test_synthetic_c1_command_path_startup_and_command_domain` twice; required root
+`/opt/venv/bin/python -m pytest -q && ruff check . && ruff format --check
+tests/test_sim.py && git diff --check`. Complete-AST-preserving format, narrow
+lint, editor diagnostics and syntax parse pass; all 297 prior test nodes remain
+exact/in order, one additive test. All 74 production source nodes and complete
+source bytes remain exact; no signature or source implementation changes.
+
+Root-tested SHA-256: diagnostics
+`7db3cf670f722887eaf62f48cb3fd8e15ce969374567db348695e3b530206d43`;
+tests `57d6ee02836d89a8c0c9c8521124f3188da9350bba8529ab9931b3c5559e259d`.
+Prior successful code gate is not rerun for documentation. Scoped history/link/
+whitespace/AST/root-tested-byte and editor checks pass: 678 prose references,
+25 inline links and 70 existing local targets. All prior review/source sections,
+stable workflow and numbered task history remain exact. Final staging preserves
+the tested bytes; record/synchronize the verified checkpoint normally.
+
+No production/runtime/C/native or opt-in sanitizer/Arm change/gate; unchanged
+default host/native controls are compatibility, not qualification, linked
+firmware or task quality. No new source/setup/clock/native/pose/range, one-use
+executor/expiry, usable permit, task-data/trial or qualification adoption. S1-S5,
+Tasks 6/9/D4 and general-audit deferral remain unchanged. Next finite local
+prerequisite: explicit owned initial-body/setup fixture evidence rather than a
+supplied true premise. Bind complete static setup to its declared epoch/config
+and independently check body/domain support; no online geometry-selected command
+or source-authority promotion. Request/expiry/executor and source qualification
+remain separate gates. No job, new artifact or cleanup pending.
+
 ## Sources
 
 Hardware and tools:

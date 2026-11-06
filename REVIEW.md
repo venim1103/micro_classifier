@@ -12637,6 +12637,94 @@ Do not wire it to the old controller, consume partial decisions, alter meanings/
 thresholds or issue a permit. Exact request/receipt/expiry/one-use execution and
 source/quality remain separate; learned/ST/board work and general audits deferred.
 
+## 165. Isolated Normal-Command Selection Mapper (2026-11-06)
+
+Conditional startup checkpoint §164 was committed and normally pushed as
+`a918b99ee229be29c3121843620c8bb726118b1d`; main was clean/synchronized. Continue
+its selected normal-command-map prerequisite under standing authority; no runtime
+controller, source/guard/permit/executor or task-quality adoption follows.
+
+**Pre-execution hypothesis and scope.** The old `host_action` applies extra
+goal-bearing centre steering, clips speed by goal range/bearing and may turn while
+requesting zero speed; those are not the adopted candidate map. A separate private
+codec-backed mapper in the existing rules module can require complete fresh active
+catalogue-1/model-0 `OK` bytes bound to the exact current nominal State/tick, then
+use explicit selected values (not argmax/confidence) for `+max_turn_rate`/zero/
+`-max_turn_rate` and literal `max_speed * tier / 3`. Blocked/none/tier-zero or
+unusable input yields both zero targets; it is a braking request candidate, not an
+instantaneous stop, clearance proof or actual execution. Preserve existing
+RuleSettings/default age formula/1e-12 comparison exactly, no new threshold.
+
+Finite synthetic frame-only scope: 24 fixed controls, all nine sector/nonzero-tier
+combinations, blocking/none/zero, absent/partial/rejected/legacy/CRC/stale/binding/
+missing-group/fault/mutable-frame/no-opt-in controls and owned repeat. No Scene,
+C1/history/geometry/source query, capture, episode, runtime/controller action,
+model/data/hardware/dependency or download. New family per complete invocation
+maxima 32 mapper, 32 State decodes and 32 Decision decodes, including repeats and
+failed attempts; at most three verification positions including failures/aborts,
+local repairs and necessary new-source root. Frames are actual immutable bytes
+bounded to 1-128; exact reference ticks use the existing 0-85899/50000-us fixture
+domain, not measured deadlines. All seven flags false. Keep old APIs/source nodes,
+heuristic bytes, tolerances/caps/failures and every old family budget unchanged;
+required-root old fixtures are compatibility only, not standalone renewal.
+
+Implemented as a private opt-in helper; the immediate check used the 24 controls.
+The centre control combines a small off-axis goal with nonargmax/uniform selected
+answers to disconfirm goal steering/range clipping or an invented confidence gate.
+
+First fixture position: `24 passed, 1530 deselected` in 2.14 s; 25 mapper/22
+State decode/22 Decision decode/zero forbidden entries. AST-preserving formatter
+then preserved all 20 prior rules/302 prior test nodes but narrow lint stopped
+on `I001`: the two imported catalogue constants must precede `Answer`/`Decision`.
+This style-preparation failure is retained as position two with zero fixture/
+codec calls. Repair only import order, then make position three start with the
+same narrow lint and proceed to the already-required root only if it passes.
+No behavior/status/numeric/tolerance/threshold/cap change or extra fixture run.
+
+**Completed verification.** Position three passed the repaired narrow lint, then
+`/opt/venv/bin/python -m pytest -q && ruff check . && ruff format --check
+sim/rules.py tests/test_sim.py && git diff --check`: **2,477 passed**, one known
+transformer QDQ xfail, 71 existing warnings, no skips, 80.52 s. All three positions
+are spent; the root repeated 25 mapper/22 State/22 Decision/zero forbidden entries.
+New-family cumulative totals are 50 mapper/44 State/44 Decision/zero forbidden,
+including the zero-query style failure. No new-family scenes/captures/C1/source/
+motion/history/runtime/episodes/data; required-root old controls are unchanged
+compatibility fixtures only, not standalone scope renewal or qualifying evidence.
+
+Formatter preserved complete ASTs; all 20 prior rules and 302 prior test nodes
+remain exact/in order, with one source/two test additions. Entire diagnostics
+source is unchanged. AST syntax, editor diagnostics, lint, format and whitespace
+pass. Language-server references resolve only the definition and one test call;
+there is no normal controller/guard/executor integration. Root-tested SHA-256:
+
+| File | SHA-256 |
+| --- | --- |
+| `sim/rules.py` | `18c32dc4b7345d56016f9adc5e17b696ed19187bd6eb686752060e7f8c63f5c4` |
+| `tests/test_sim.py` | `ebf7e68e9a8487f84b0c1c4680f3000cd8c255d3ebf0e27edce2cd2993224747` |
+
+All seven flags false; no usable C1 `OK`, permit or actuation. No default/profile/
+threshold/target/wire/C/native change, dependency/download/environment/model/
+hardware action or new study/task data. No additional opt-in sanitizer/Arm gate
+was required or run. Host fixtures are not source/numerical/physical/task-quality
+qualification or linked firmware. Historical failures/ledgers and §§138-164 remain
+unchanged; SC18/general audits and D4 remain deferred/separately gated.
+
+Next useful isolated prerequisite: bind this derived exact-frame command to
+original-State/actual-frame discrepancy intervals and bounded command/braking
+motion, with no arbitrary supplied command/path or qualified fallback. Complete
+source/path/request/receipt/expiry/executor/S1-S5/quality gates remain closed.
+Documentation records the compatible choice and current evidence. Scoped checks
+pass for exact prior REVIEW §§1-164/Sources, stable workflow/older task results,
+prior design/roadmap, 681 prose references/25 inline links/70 local targets and
+anchors, five-file scope, tested bytes/diff/whitespace. No successful root rerun
+for docs. Only these checkpoint files enter the local commit/normal existing-
+upstream push; no job, artifact or cleanup is pending.
+
+Checkpoint command failure retained: Git rejected two unflagged bullet paragraphs
+with exit 129 (`unknown switch`). Verified HEAD still `a918b99` and exactly the
+five intended files staged with clean whitespace. Repair commit-message arguments
+only by prefixing every paragraph with its own `-m`; no source or gate rerun.
+
 ## Sources
 
 Hardware and tools:

@@ -2500,10 +2500,34 @@ expiry/executor or allow a trial. [Review §164][initial-setup-review] records t
 sixteen controls and retained reason-literal failures. No normal controller,
 wire, task-data/study or physical behavior changes.
 
-Next implement the adopted normal-command map as an isolated codec-backed
-candidate, not the old goal-proportional host loop. Full fresh active-`OK`
-selection mapping and braking rejection are prerequisites, not command admission;
-source, exact request/receipt/expiry/executor and task quality stay separate.
+##### Conditional Normal-Command Mapping (2026-11-06)
+
+The private `_map_synthetic_c1_normal_command` in the existing rules module
+requires immutable bounded State/Decision bytes, exact current nominal tick/
+timestamp correspondence and complete fresh active catalogue-1/model-0 `OK`
+selections. It preserves existing host-group/task/fault and RuleSettings/default
+age checks, including the unchanged comparison tolerance. Explicit selections,
+not argmax or an invented confidence threshold, determine signed maximum left/
+right yaw or zero centre yaw and literal `max_speed * tier / 3` target order.
+There is no extra goal-bearing steering, distance clipping or runtime wiring.
+
+Blocked/none/tier-zero, unusable frames or unsupported current/profile evidence
+return both zero targets with a fallback reason and no partial frame binding.
+That is a conditional repeated-braking request candidate, not an instantaneous
+stop, verified path, permit or executed action. The existing diagnostic heuristic,
+`host_action`, wire loop and every prior rules/diagnostic node are unchanged.
+All seven qualification/admission/training flags remain false. Prototype tick/
+frame bounds are local content checks, not measured clock/freshness guarantees.
+[Review §165][normal-command-map-review] records 24 controls and the retained
+import-order-only style failure. No Scene, C1 or geometry query chooses a command.
+
+Next bind this exact decoded-frame candidate to original-State/actual-frame
+discrepancy intervals and bounded command/braking motion, without accepting
+caller-supplied commands or interpreting a fallback as qualified braking. Source,
+complete path margins, exact request/receipt/expiry/executor, S1-S5 and task quality
+stay separate; no normal controller, usable `OK`, actuation or trial is admitted.
+
+[normal-command-map-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11065,8 +11089,10 @@ Prior spent standalone scopes remain spent. Isolated owned initial-body/setup
 content is now implemented (§163), sixteen controls/root 2,437 plus known
 xfail/71 warnings, all earlier nodes exact. Conditional initial-rest startup
 composition (§164) now passes sixteen controls/root 2,453 plus the same xfail/71
-warnings, all earlier nodes exact. Next is the isolated active-`OK` normal-command
-mapper/braking rejection prerequisite, not the old host loop or a usable permit;
+warnings, all earlier nodes exact. Isolated normal-command mapping (§165) passes
+24 controls/root 2,477 plus the same xfail/71 warnings; old rules nodes and all
+C1 diagnostics are unchanged. Next bind the mapped decoded-frame command to
+original-State discrepancy and bounded braking motion, not the old loop or permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

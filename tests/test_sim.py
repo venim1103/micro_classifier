@@ -10285,6 +10285,224 @@ def test_floor_rules_host_brakes_on_missing_or_invalid_decisions(defect):
     )
 
 
+@pytest.fixture(scope="module")
+def c1_normal_command_ledger(request):
+    counts = {"mapper": 0, "state_decode": 0, "decision_decode": 0, "forbidden": 0}
+    yield counts
+    assert all(
+        counts[key] <= 32 for key in ("mapper", "state_decode", "decision_decode")
+    )
+    assert counts["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 normal-command ledger:", json.dumps(counts, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 normal-command ledger:", json.dumps(counts, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(24))
+def test_synthetic_c1_normal_command_maps_complete_wire_selections(
+    c1_normal_command_ledger, monkeypatch, case
+):
+    from dataclasses import replace
+
+    from interface.protocol import (
+        QUESTIONS,
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        State,
+        Status,
+        encode_decision,
+        encode_state,
+    )
+    from sim import rules
+
+    ledger = c1_normal_command_ledger
+    sector, tier = (case // 3, case % 3 + 1) if case < 9 else (0, 3)
+    selected = (int(case == 9), 3 if case == 10 else sector, 0 if case == 11 else tier)
+    answers = tuple(
+        Answer(
+            question,
+            tuple(0.25 for _ in options)
+            if case == 4 and len(options) == 4
+            else tuple(float(index == choice) for index in range(len(options))),
+            choice,
+        )
+        for (question, (_, options)), choice in zip(
+            RULES_QUESTIONS.items(), selected, strict=True
+        )
+    )
+    state = State(
+        sequence=22,
+        timestamp_us=1100000,
+        goal_m=(0.01, 0.02, 0.0) if case == 4 else (3.0, 1.0, 0.0),
+    )
+    decision = Decision(
+        sequence=22, timestamp_us=1100000, status=Status.OK, answers=answers
+    )
+    if case == 13:
+        decision = replace(
+            decision, status=Status.REJECT_OUT_OF_DOMAIN, answers=answers[:1]
+        )
+    elif case == 14:
+        legacy_answers = tuple(
+            Answer(
+                question, tuple(float(index == 0) for index in range(len(options))), 0
+            )
+            for question, (_, options) in QUESTIONS.items()
+        )
+        decision = replace(
+            decision, catalogue_version=0, model_version=1, answers=legacy_answers
+        )
+    elif case == 16:
+        decision = replace(decision, sequence=23)
+    elif case == 17:
+        decision = replace(decision, timestamp_us=1100001)
+    elif case == 19:
+        state = replace(state, ages_us=(160000, *state.ages_us[1:]))
+    elif case == 20:
+        state = replace(
+            state,
+            validity=3,
+            goal_m=(0.0, 0.0, 0.0),
+            ages_us=(0, 0, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF),
+        )
+    elif case == 21:
+        state = replace(state, validity=23, faults=1, ages_us=(0, 0, 0, 0xFFFFFFFF, 0))
+    state_frame, decision_frame = encode_state(state), encode_decision(decision)
+    if case == 12:
+        decision_frame = None
+    elif case == 15:
+        decision_frame = decision_frame[:-1] + bytes([decision_frame[-1] ^ 1])
+    elif case == 22:
+        state_frame = bytearray(state_frame)
+    settings = {
+        "reference_tick": 23 if case == 18 else 22,
+        "synthetic_test_only": case != 23,
+    }
+    saved_state, saved_decision, saved_settings = (
+        deepcopy(state_frame),
+        deepcopy(decision_frame),
+        deepcopy(settings),
+    )
+    for key, name in (
+        ("state_decode", "decode_state"),
+        ("decision_decode", "decode_decision"),
+    ):
+        original = getattr(rules, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= 32
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(rules, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "normal mapper must not choose heuristic answers, steer by goals or actuate"
+        )
+
+    for name in (
+        "host_action",
+        "wire_step",
+        "decide",
+        "_diagnostic_episode",
+        "run_diagnostics",
+        "write_episode",
+    ):
+        monkeypatch.setattr(rules, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    monkeypatch.setattr(rules.math, "atan2", forbidden)
+    monkeypatch.setattr(rules.math, "hypot", forbidden)
+
+    def check(**changes):
+        ledger["mapper"] += 1
+        assert ledger["mapper"] <= 32
+        return rules._map_synthetic_c1_normal_command(
+            state_frame, decision_frame, **{**settings, **changes}
+        )
+
+    if case == 23:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check()
+        return
+    before = dict(ledger)
+    result = check()
+    mapped = case < 9
+    assert result["fixture_command_mapped"] is mapped
+    assert ledger["state_decode"] - before["state_decode"] == int(case not in (12, 22))
+    assert ledger["decision_decode"] - before["decision_decode"] == int(
+        case not in (12, 22)
+    )
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    if mapped:
+        assert result["status"] == "mapped_conditional_normal_fixture"
+        assert result["requested_command"] == {
+            "target_speed_m_s": Config().max_speed * tier / 3,
+            "turn_rate_rad_s": (1.5, 0.0, -1.5)[sector],
+        }
+        assert (
+            result["state_frame_hex"] == state_frame.hex()
+            and result["decision_frame_hex"] == decision_frame.hex()
+        )
+        if case == 4:
+            assert result["requested_command"]["turn_rate_rad_s"] == 0.0
+            assert decision.answers[1].selected != max(
+                range(4), key=decision.answers[1].probabilities.__getitem__
+            )
+            assert decision.answers[2].confidence == 0.0
+        if case == 0:
+            saved = deepcopy(result)
+            result["requested_command"]["target_speed_m_s"] = 10.0
+            result["work"]["state_decode_entries"] = 100
+            assert check() == saved
+    else:
+        assert result["status"] == "fallback"
+        assert result["requested_command"] == {
+            "target_speed_m_s": 0.0,
+            "turn_rate_rad_s": 0.0,
+        }
+        assert "state_frame_hex" not in result and "decision_frame_hex" not in result
+        assert (
+            result["reason"]
+            == {
+                9: "normal_selection_requests_braking",
+                10: "normal_selection_requests_braking",
+                11: "normal_selection_requests_braking",
+                12: "unsupported_normal_frames",
+                13: "complete_active_ok_missing",
+                14: "complete_active_ok_missing",
+                15: "invalid_normal_frames",
+                16: "normal_decision_binding_mismatch",
+                17: "normal_decision_binding_mismatch",
+                18: "current_state_binding_mismatch",
+                19: "stale_host_groups",
+                20: "unsupported_host_groups",
+                21: "unsupported_host_task_or_faults",
+                22: "unsupported_normal_frames",
+            }[case]
+        )
+    assert (
+        state_frame == saved_state
+        and decision_frame == saved_decision
+        and settings == saved_settings
+    )
+
+
 @pytest.mark.parametrize(
     "settings",
     [

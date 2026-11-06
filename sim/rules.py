@@ -194,6 +194,119 @@ def decide(observation, *, config=None, settings=None):
     return replace(rejected, status=Status.OK, answers=answers)
 
 
+def _map_synthetic_c1_normal_command(
+    state_frame,
+    decision_frame,
+    *,
+    reference_tick,
+    config=None,
+    settings=None,
+    synthetic_test_only=False,
+):
+    """Map complete decoded fixture selections, never authorize their execution."""
+    if synthetic_test_only is not True:
+        raise ValueError("normal command fixture requires synthetic_test_only=True")
+    work = {"state_decode_entries": 0, "decision_decode_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-normal-command/1",
+        "allowed_use": "conditional_decoded_normal_command_fixture_only",
+        "status": "fallback",
+        "reason": "unsupported_reference_tick",
+        "fixture_command_mapped": False,
+        "requested_command": {"target_speed_m_s": 0.0, "turn_rate_rad_s": 0.0},
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    if type(reference_tick) is not int or not 0 <= reference_tick <= 85899:
+        return result
+    config = Config() if config is None else config
+    settings = RuleSettings() if settings is None else settings
+    if (
+        type(config) is not Config
+        or type(settings) is not RuleSettings
+        or config.dt != 0.05
+    ):
+        result["reason"] = "unsupported_normal_mapping_profile"
+        return result
+    if any(
+        type(frame) is not bytes or not 1 <= len(frame) <= 128
+        for frame in (state_frame, decision_frame)
+    ):
+        result["reason"] = "unsupported_normal_frames"
+        return result
+    try:
+        work["state_decode_entries"] = 1
+        state = decode_state(state_frame)
+        work["decision_decode_entries"] = 1
+        decision = decode_decision(decision_frame)
+    except (TypeError, ValueError):
+        result["reason"] = "invalid_normal_frames"
+        return result
+    if state.sequence != reference_tick or state.timestamp_us != reference_tick * 50000:
+        result["reason"] = "current_state_binding_mismatch"
+        return result
+    if (
+        decision.sequence != state.sequence
+        or decision.timestamp_us != state.timestamp_us
+    ):
+        result["reason"] = "normal_decision_binding_mismatch"
+        return result
+    if (
+        decision.status != Status.OK
+        or decision.catalogue_version != RULES_CATALOGUE_VERSION
+        or decision.model_version != 0
+    ):
+        result["reason"] = "complete_active_ok_missing"
+        return result
+    if state.validity & 7 != 7:
+        result["reason"] = "unsupported_host_groups"
+        return result
+    if state.task_id != 1 or state.faults != 0:
+        result["reason"] = "unsupported_host_task_or_faults"
+        return result
+    maximum_age = settings.max_age_s
+    if maximum_age is None:
+        maximum_age = (config.latency_ticks + 1) * config.dt
+    if max(state.ages_us[:3]) / 1_000_000 > maximum_age + 1e-12:
+        result["reason"] = "stale_host_groups"
+        return result
+    if tuple(answer.question_id for answer in decision.answers) != tuple(
+        RULES_QUESTIONS
+    ):
+        result["reason"] = "complete_active_ok_missing"
+        return result
+    blocked, sector, tier = (answer.selected for answer in decision.answers)
+    if blocked or sector == 3 or tier == 0:
+        result["reason"] = "normal_selection_requests_braking"
+        return result
+    result.update(
+        status="mapped_conditional_normal_fixture",
+        reason="complete_active_selections_mapped_without_goal_steering",
+        fixture_command_mapped=True,
+        requested_command={
+            "target_speed_m_s": config.max_speed * tier / 3,
+            "turn_rate_rad_s": (config.max_turn_rate, 0.0, -config.max_turn_rate)[
+                sector
+            ],
+        },
+        state_frame_hex=state_frame.hex(),
+        decision_frame_hex=decision_frame.hex(),
+        reference_tick=reference_tick,
+    )
+    return result
+
+
 def host_action(state_frame, decision_frame, *, config=None, settings=None):
     """Diagnostic host controller; caller-declared absence/rejection commands braking."""
     config = Config() if config is None else config

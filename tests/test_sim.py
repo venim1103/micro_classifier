@@ -2041,6 +2041,278 @@ def test_synthetic_c1_initial_setup_owns_domain_and_body(
     assert scene == saved_scene and settings == saved_settings
 
 
+@pytest.fixture(scope="module")
+def c1_startup_path_fixtures(request):
+    from sim import diagnostics
+
+    counts = dict.fromkeys(
+        (
+            "capture",
+            "setup_preparation",
+            "wrapper",
+            "setup",
+            "digest",
+            "binding",
+            "command",
+            "bridge",
+            "motion",
+            "path",
+            "inspection",
+            "prefix",
+            "history",
+            "cell",
+            "forbidden",
+        ),
+        0,
+    )
+    records, setups = [], []
+    for obstacles in ((), ((2.3, 2.0, 0.05),)):
+        scene = Scenario(start=(2.0, 2.0, 0.0), obstacles=obstacles)
+        counts["capture"] += 1
+        records.append(
+            diagnostics.capture_synthetic_c1_views(
+                scene, pose_m_rad=scene.start, capture_tick=0, synthetic_test_only=True
+            )
+        )
+        counts["setup_preparation"] += 1
+        setups.append(
+            diagnostics._check_synthetic_c1_initial_setup(
+                scene, epoch="a" * 32, synthetic_test_only=True
+            )
+        )
+    yield {"records": records, "setups": setups, "counts": counts}
+    assert counts["capture"] == counts["setup_preparation"] == 2
+    assert (
+        counts["forbidden"] == 0 and counts["binding"] <= 192 and counts["digest"] <= 96
+    )
+    assert all(
+        counts[key] <= 32
+        for key in (
+            "wrapper",
+            "setup",
+            "command",
+            "bridge",
+            "motion",
+            "path",
+            "inspection",
+            "prefix",
+            "history",
+            "cell",
+        )
+    )
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 startup-path ledger:", json.dumps(counts, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 startup-path ledger:", json.dumps(counts, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_startup_path_uses_rechecked_rest_setup(
+    c1_startup_path_fixtures, monkeypatch, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics
+
+    fixtures = c1_startup_path_fixtures
+    ledger = fixtures["counts"]
+    for key, name in (
+        ("setup", "_check_synthetic_c1_initial_setup"),
+        ("digest", "_c1_source_binding_digest"),
+        ("binding", "_bind_synthetic_c1_state_intervals"),
+        ("command", "_probe_synthetic_c1_command_path_enclosure"),
+        ("bridge", "_probe_synthetic_c1_state_motion"),
+        ("motion", "_probe_synthetic_c1_discrete_motion"),
+        ("path", "_probe_synthetic_c1_discrete_path_enclosure"),
+        ("inspection", "inspect_synthetic_c1_history"),
+        ("prefix", "_c1_low_free_segments"),
+        ("history", "_bound_synthetic_c1_history_registration"),
+        ("cell", "_c1_exclude_path_cells"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (
+                192 if _key == "binding" else 96 if _key == "digest" else 32
+            )
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "startup join must not capture, choose questions, collect or actuate"
+        )
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "_audit_synthetic_c1_source_binding",
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "_probe_synthetic_c1_wire_rejection",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    index = int(case == 1)
+    record = deepcopy(fixtures["records"][index])
+    states = [
+        State(sequence=tick, timestamp_us=tick * 50000, goal_m=(3.0, 1.0, 0.0))
+        for tick in range(3)
+    ]
+    if case == 2:
+        states[1] = replace(states[1], velocity_m_s=(-0.0, 0.0, 0.0))
+    elif case == 7:
+        states[1] = replace(states[1], velocity_m_s=(0.2, 0.0, 0.0))
+    frames = [encode_state(state) for state in states]
+    evidence = {
+        "epoch": "a" * 32,
+        "initial_setup": deepcopy(fixtures["setups"][index]),
+        "point_error_evidence": {
+            "source_states": states,
+            "state_frames": frames,
+            "history_assumptions": dict.fromkeys(
+                (
+                    "starting_pose_exact",
+                    "nominal_tick_binding_exact",
+                    "stored_word_dt_exact",
+                    "interval_ending_twist_exact",
+                ),
+                True,
+            ),
+            "prefix_history_binding_exact": True,
+            "remaining_point_error_m": 1e-8,
+            "point_radius_m": 4.0,
+        },
+    }
+    settings = {
+        "reference_tick": 2,
+        "reference_pose_m_rad": [2.0, 2.0, 0.0],
+        "error_evidence": {
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        "synthetic_test_only": True,
+    }
+    if case == 3:
+        evidence["initial_setup"] = {
+            "fixture_initial_body_clear": True,
+            "fixture_controlled_envelope": True,
+        }
+    elif case == 4:
+        evidence["epoch"] = "b" * 32
+    elif case == 5:
+        evidence["initial_setup"]["binding"]["config"]["dt"] = 0.1
+    elif case == 6:
+        evidence["initial_setup"]["binding"]["scenario"]["start"] = (2.1, 2.0, 0.0)
+    elif case == 8:
+        del states[1]
+        del frames[1]
+    elif case == 9:
+        frames[1] = encode_state(replace(states[1], sequence=9))
+    elif case == 10:
+        settings["reference_pose_m_rad"][0] = 2.1
+    elif case == 11:
+        evidence["initial_setup"]["work"]["body_checks"] = True
+    elif case == 12:
+        settings["error_evidence"] = None
+    elif case == 13:
+        settings["max_braking_ticks"] = 0
+    elif case == 14:
+        evidence["point_error_evidence"]["history_assumptions"][
+            "starting_pose_exact"
+        ] = False
+    elif case == 15:
+        settings["synthetic_test_only"] = False
+    saved_record, saved_evidence, saved_settings = (
+        deepcopy(record),
+        deepcopy(evidence),
+        deepcopy(settings),
+    )
+
+    def check():
+        ledger["wrapper"] += 1
+        assert ledger["wrapper"] <= 32
+        return diagnostics._probe_synthetic_c1_startup_path_enclosure(
+            [record], evidence, **settings
+        )
+
+    if case == 15:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check()
+        return
+    before = dict(ledger)
+    result = check()
+    assert result["fixture_startup_path_excluded"] is (case in (0, 1, 2))
+    assert ledger["setup"] - before["setup"] == int(case not in (3, 4, 5, 11))
+    assert ledger["command"] - before["command"] == int(case in (0, 1, 2, 12, 13))
+    assert ledger["motion"] - before["motion"] == int(case in (0, 1, 2, 12, 13))
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    if case in (0, 1, 2):
+        assert result["initial_setup"] == evidence["initial_setup"]
+        assert result["command_path"]["requested_command"] == {
+            "target_speed_m_s": 0.125,
+            "turn_rate_rad_s": 0.0,
+        }
+        assert result["work"] == {
+            "setup_entries": 1,
+            "rest_binding_entries": 3,
+            "command_entries": 1,
+        }
+        distance = Fraction(0.05) ** 2
+        box = result["command_path"]["state_motion"]["motion"]["centerline_boxes_m"][-1]
+        assert Fraction(box[0][0]) <= distance <= Fraction(box[0][1])
+        if case == 0:
+            saved_result = deepcopy(result)
+            result["initial_setup"]["binding"]["scenario"]["start"] = (0.0, 0.0, 0.0)
+            result["command_path"]["requested_command"]["target_speed_m_s"] = 0.6
+            assert check() == saved_result
+    else:
+        assert (
+            result["status"] == "unknown"
+            and "initial_setup" not in result
+            and "command_path" not in result
+        )
+        assert (
+            result["reason"]
+            == {
+                3: "unsupported_startup_evidence",
+                4: "startup_epoch_mismatch",
+                5: "startup_config_mismatch",
+                6: "startup_setup_content_mismatch",
+                7: "initial_history_not_exact_rest",
+                8: "unsupported_initial_rest_history",
+                9: "source_frame_binding_mismatch",
+                10: "startup_initial_pose_mismatch",
+                11: "unsupported_startup_evidence",
+                12: "error_evidence_missing",
+                13: "braking_budget_exhausted",
+                14: "unsupported_initial_rest_history",
+            }[case]
+        )
+    assert evidence == saved_evidence and settings == saved_settings
+    assert json.dumps(record, default=json_value, sort_keys=True) == json.dumps(
+        saved_record, default=json_value, sort_keys=True
+    )
+
+
 def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
     from fractions import Fraction
 

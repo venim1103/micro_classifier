@@ -2469,13 +2469,41 @@ S1 satisfaction, runtime body-clear support or a usable permit. Existing source
 auditor guards, aliases, motion/path APIs and hard limits stay unchanged.
 
 [Review §163][initial-setup-review] records sixteen fixed controls and the retained
-digest-reference accounting repair. Next recheck and join this owned content to
-the declared epoch/canonical config, initial reference pose and complete exact-
-rest source/frame history in a separate conditional startup composition. The
-launch request stays fixed at target 0.125/zero turn; no source authority, normal
-`OK`, expiry/one-use executor, actuation or study approval follows.
+digest-reference accounting repair. The separate conditional startup consumer
+below now rechecks and joins this content; a body/domain flag alone cannot qualify
+a runtime source. The launch stays fixed at target 0.125/zero turn; no source
+authority, normal `OK`, expiry/one-use executor, actuation or study approval follows.
 
 [initial-setup-review]: REVIEW.md
+
+##### Conditional Initial-Rest Startup Composition (2026-11-06)
+
+The private `_probe_synthetic_c1_startup_path_enclosure` bounds/rechecks the owned
+initial-setup record, declared epoch and exact canonical C1 config, requires its
+initial pose to match the reference and verifies complete consecutive source/
+actual-frame history from tick zero. All source/decoded linear/angular intervals
+must be exactly zero under the existing explicit history premises; signed zeros
+retain their metadata. Only then does the unchanged command/point-margin consumer
+receive derived conditional body/domain results and the fixed 0.125/zero request.
+Callers cannot supply an arbitrary command/path or a body-clear flag to this join.
+
+Mismatched setup/digest/epoch/config/pose, missing/changed/nonrest frames, missing
+motion/error/profile evidence and work exhaustion stay unknown without partial
+startup content. Every existing hard limit and all seven false flags remain.
+Reference ticks 0-3 are the local prototype's complete initial-history domain,
+not an adopted startup deadline or evidence that simulated ticks meet real timing.
+The separately prepared tick-zero captures use the same two static unit scenes;
+no old capture timestamp is changed to manufacture delivery or initial history.
+Declared correspondence does not attest source authority/completeness, satisfy
+S1-S5, qualify native/range/pose/clock error, provide a normal `OK`, one-use permit,
+expiry/executor or allow a trial. [Review §164][initial-setup-review] records the
+sixteen controls and retained reason-literal failures. No normal controller,
+wire, task-data/study or physical behavior changes.
+
+Next implement the adopted normal-command map as an isolated codec-backed
+candidate, not the old goal-proportional host loop. Full fresh active-`OK`
+selection mapping and braking rejection are prerequisites, not command admission;
+source, exact request/receipt/expiry/executor and task quality stay separate.
 
 ### Dataset Construction
 
@@ -11035,10 +11063,12 @@ test-only startup/domain follow-up (§162) adds four controls and passes its roo
 2,421 plus the same known xfail/71 warnings, with all production bytes unchanged.
 Prior spent standalone scopes remain spent. Isolated owned initial-body/setup
 content is now implemented (§163), sixteen controls/root 2,437 plus known
-xfail/71 warnings, all earlier nodes exact. Continue a separate conditional at-
-rest startup join of rechecked setup, epoch/config/initial pose and complete
-source/frame history, not a supplied true flag; retain complete motion/error/
-profile and actual source/native/pose/range/clock/expiry qualification gates.
+xfail/71 warnings, all earlier nodes exact. Conditional initial-rest startup
+composition (§164) now passes sixteen controls/root 2,453 plus the same xfail/71
+warnings, all earlier nodes exact. Next is the isolated active-`OK` normal-command
+mapper/braking rejection prerequisite, not the old host loop or a usable permit;
+retain complete motion/error/profile and actual source/native/pose/range/clock/
+request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.
 These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.

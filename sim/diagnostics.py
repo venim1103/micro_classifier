@@ -4526,6 +4526,271 @@ def _probe_synthetic_c1_command_path_enclosure(
     return result
 
 
+def _probe_synthetic_c1_startup_path_enclosure(
+    history,
+    startup_evidence,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    error_evidence=None,
+    profile=None,
+    config=None,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    synthetic_test_only=False,
+):
+    """Join rechecked initial setup and exact-rest fixtures, never issue a permit."""
+    from interface.protocol import State
+    from sim.rover import Scenario
+
+    if synthetic_test_only is not True:
+        raise ValueError("startup path fixture requires synthetic_test_only=True")
+    work = {"setup_entries": 0, "rest_binding_entries": 0, "command_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-startup-path-enclosure/1",
+        "allowed_use": "conditional_initial_setup_startup_fixture_only",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "fixture_startup_path_excluded": False,
+        "status": "unknown",
+        "reason": "unsupported_startup_evidence",
+        "work": work,
+    }
+    if type(startup_evidence) is not dict or set(startup_evidence) != {
+        "epoch",
+        "initial_setup",
+        "point_error_evidence",
+    }:
+        return result
+    setup = startup_evidence["initial_setup"]
+    if (
+        type(setup) is not dict
+        or set(setup)
+        != {
+            "schema",
+            "allowed_use",
+            "status",
+            "reason",
+            "fixture_initial_body_clear",
+            "fixture_controlled_envelope",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+            "work",
+            "binding",
+            "config_sha256",
+            "setup_sha256",
+        }
+        or setup["schema"] != "micro-classifier/synthetic-c1-initial-setup/1"
+        or setup["allowed_use"] != "offline_declared_initial_setup_fixture_only"
+        or setup["status"] != "checked_declared_initial_fixture"
+        or setup["reason"] != "declared_domain_and_initial_body_strictly_separated"
+        or setup["fixture_initial_body_clear"] is not True
+        or setup["fixture_controlled_envelope"] is not True
+        or any(
+            setup[flag] is not False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        )
+        or type(setup["work"]) is not dict
+        or set(setup["work"]) != {"obstacles_inspected", "body_checks"}
+        or any(
+            type(setup["work"][key]) is not int
+            or not 0 <= setup["work"][key] <= maximum
+            for key, maximum in (("obstacles_inspected", 32), ("body_checks", 36))
+        )
+        or any(
+            type(setup[key]) is not str
+            or len(setup[key]) != 64
+            or any(character not in "0123456789abcdef" for character in setup[key])
+            for key in ("config_sha256", "setup_sha256")
+        )
+        or type(setup["binding"]) is not dict
+        or set(setup["binding"]) != {"epoch", "config", "scenario"}
+    ):
+        return result
+    binding = setup["binding"]
+    if (
+        type(startup_evidence["epoch"]) is not str
+        or startup_evidence["epoch"] != binding["epoch"]
+    ):
+        result["reason"] = "startup_epoch_mismatch"
+        return result
+    try:
+        owned_config = _c1_config(config)
+        canonical = asdict(owned_config)
+        if (
+            type(binding["config"]) is not dict
+            or set(binding["config"]) != set(canonical)
+            or any(
+                type(binding["config"][key]) is not type(value)
+                or binding["config"][key] != value
+                for key, value in canonical.items()
+            )
+        ):
+            result["reason"] = "startup_config_mismatch"
+            return result
+        if type(binding["scenario"]) is not dict or set(binding["scenario"]) != {
+            "name",
+            "bounds",
+            "start",
+            "goal",
+            "obstacles",
+            "obstacle_heights",
+        }:
+            return result
+        work["setup_entries"] = 1
+        checked = _check_synthetic_c1_initial_setup(
+            Scenario(**binding["scenario"]),
+            epoch=binding["epoch"],
+            config=owned_config,
+            synthetic_test_only=True,
+        )
+        result["setup_work"] = deepcopy(checked["work"])
+        if checked["fixture_initial_body_clear"] is not True:
+            result["reason"] = checked["reason"]
+            return result
+        if _c1_source_binding_digest(setup) != _c1_source_binding_digest(checked):
+            result["reason"] = "startup_setup_content_mismatch"
+            return result
+        if (
+            type(reference_pose_m_rad) not in (tuple, list)
+            or len(reference_pose_m_rad) != 3
+            or any(
+                type(value) not in (int, float)
+                or not math.isfinite(value)
+                or (type(value) is int and float(value) != value)
+                for value in reference_pose_m_rad
+            )
+            or tuple(reference_pose_m_rad) != checked["binding"]["scenario"]["start"]
+        ):
+            result["reason"] = "startup_initial_pose_mismatch"
+            return result
+        points = startup_evidence["point_error_evidence"]
+        if type(points) is not dict or set(points) != {
+            "source_states",
+            "state_frames",
+            "history_assumptions",
+            "prefix_history_binding_exact",
+            "remaining_point_error_m",
+            "point_radius_m",
+        }:
+            result["reason"] = "unsupported_point_error_evidence"
+            return result
+        states, frames = points["source_states"], points["state_frames"]
+        if (
+            type(reference_tick) is not int
+            or not 0 <= reference_tick <= 3
+            or type(states) not in (tuple, list)
+            or type(frames) not in (tuple, list)
+            or len(states) != reference_tick + 1
+            or len(frames) != len(states)
+            or any(type(state) is not State for state in states)
+            or any(
+                type(frame) is not bytes or not 1 <= len(frame) <= 128
+                for frame in frames
+            )
+            or type(points["history_assumptions"]) is not dict
+            or set(points["history_assumptions"])
+            != {
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            }
+            or any(
+                value is not True for value in points["history_assumptions"].values()
+            )
+        ):
+            result["reason"] = "unsupported_initial_rest_history"
+            return result
+        owned_points = deepcopy(points)
+        for tick, (state, frame) in enumerate(
+            zip(
+                owned_points["source_states"], owned_points["state_frames"], strict=True
+            )
+        ):
+            if state.sequence != tick or state.timestamp_us != tick * 50000:
+                result["reason"] = "initial_rest_frame_tick_mismatch"
+                return result
+            work["rest_binding_entries"] += 1
+            words = _bind_synthetic_c1_state_intervals(
+                state, frame, synthetic_test_only=True
+            )
+            if words["fixture_words_bound"] is not True:
+                result["reason"] = words["reason"]
+                return result
+            if any(
+                Fraction(*pair) != 0
+                for field in ("velocity_m_s", "angular_velocity_rad_s")
+                for component in words["fields"][field]
+                for pair in component["interval"]
+            ):
+                result["reason"] = "initial_history_not_exact_rest"
+                return result
+        work["command_entries"] = 1
+        command = _probe_synthetic_c1_command_path_enclosure(
+            history,
+            owned_points,
+            reference_tick=reference_tick,
+            reference_pose_m_rad=deepcopy(reference_pose_m_rad),
+            target_speed=0.125,
+            turn_rate=0.0,
+            error_evidence=deepcopy(error_evidence),
+            profile=deepcopy(profile),
+            config=owned_config,
+            current_body_clear=checked["fixture_initial_body_clear"],
+            controlled_envelope=checked["fixture_controlled_envelope"],
+            max_braking_ticks=max_braking_ticks,
+            max_chords=max_chords,
+            max_terms=max_terms,
+            max_cells=max_cells,
+            max_depth=max_depth,
+            radius_bands=radius_bands,
+            synthetic_test_only=True,
+        )
+        result["command_work"] = deepcopy(command["work"])
+        if command["fixture_command_path_excluded"] is not True:
+            result["reason"] = command["reason"]
+            return result
+        result.update(
+            status="excluded_from_rechecked_initial_rest_fixture",
+            reason="fixed_startup_path_and_braking_conditionally_excluded",
+            fixture_startup_path_excluded=True,
+            epoch=checked["binding"]["epoch"],
+            initial_setup=deepcopy(checked),
+            command_path=deepcopy(command),
+        )
+    except (TypeError, ValueError, OverflowError):
+        result["reason"] = "malformed_startup_evidence_or_profile"
+    return result
+
+
 def _c1_exclude_registered_path_cells(
     free_segments,
     path_points,

@@ -12523,6 +12523,120 @@ initial reference pose and complete exact-rest source/frame history; derive the
 fixed adopted launch/body/domain premises without a supplied true flag or current
 geometry-selected command. Still no usable guard, one-use executor or actuation.
 
+## 164. Conditional Initial-Setup and Exact-Rest Startup Join (2026-11-06)
+
+Isolated setup checkpoint §163 was committed and normally pushed as
+`d8022900622013b92b6f89515ce34db0fc66aced`; main was clean/synchronized. Continue
+its named conditional startup consumer under standing authority; do not qualify
+source authority, S1-S5, a usable permit, a normal profile or execution.
+
+**Pre-execution hypothesis and finite scope.** Recheck bounded owned setup
+content and its declared epoch/canonical C1 config/initial reference pose; require
+every exact source/decoded velocity/angular component in complete consecutive
+tick-zero history to be zero under existing literal history premises. Only then
+derive body/domain premises and generate the fixed target 0.125/zero-turn command
+through the unchanged command/motion/point-margin composition. A changed setup,
+epoch/config/pose or omitted/nonrest history rejects before motion; missing error
+or exhausted motion work remains unknown, never partial startup or actuation.
+This is declared same-epoch fixture correspondence, not independently qualified
+source ownership/completeness/clock/timing or one-use runtime admission.
+
+Sixteen fixed new-consumer controls; at most three verification positions,
+including failures/aborts, local repairs and necessary new-source root. Preparation
+is two tick-zero captures of the same two static nominal scenes plus two existing
+setup-content checker records; no prepared motions/episodes. Old tick-20 captures
+cannot be relabeled as initial captures or establish the missing initial history.
+New consumer-family ceilings per complete invocation: 32 wrapper/setup-checker/
+command/bridge/motion/path/inspection/prefix/history/cell entries, 192 source-word
+binder entries, 96 digest entries; setup preparation has two checker/four digest
+entries separately counted. No hard geometry/arithmetic/history/motion/cell limit
+is changed. Old §163 24-checker/16-digest and every other per-family control stay
+unchanged; required-root reuse is compatibility only, not a fourth §163 or old
+standalone experiment. Record all direct/indirect entries and failed positions;
+no independent source-auditor/question/oracle/rover/runtime/collection/data/model/
+hardware call after preparation, no artifact or cleanup. Replanning does not
+qualify uncertainty or erase missed history. All seven flags stay false.
+
+The sixteen controls cover
+fixed launch, exact-rest signed zeros, forged/mutated setup, epoch/config/pose,
+missing/nonrest/frame history, supplied true flags, motion errors/budget and copies.
+
+First position: `3 failed, 13 passed, 1514 deselected` in 0.99 s. All three
+successful startup controls excluded and all unsupported controls returned unknown
+at their expected stage; the three failures were invented expected reason labels.
+Existing helper reasons are `source_frame_binding_mismatch`,
+`error_evidence_missing` and `braking_budget_exhausted`, not the asserted
+bytes/declared-motion/tick variants. Repair only these literal expectations and
+rerun the same controls; no source/status/number/assertion-bound/cap relaxation.
+Printed consumer ledger: 17 wrapper/12 setup/48 digest/40 binder/six command-
+bridge-motion/four path-inspection-prefix-history-cell/zero forbidden. Preparation
+is two captures/two checker/four digest entries separately retained; all count
+toward actual totals, not qualification or a refunded verification position.
+
+**Implemented and verified, conditional only.** The separate private
+`_probe_synthetic_c1_startup_path_enclosure` accepts no target/turn or supplied
+body/domain flag. It bounds the successful setup-record shape, literal false
+qualification flags, work metadata and digests before rechecking its Scene/
+canonical config/epoch through the unchanged initial-setup checker. Typed full
+content equality and initial pose equality precede complete tick-zero State/frame
+history verification. Every source/decoded linear/angular component must be exact
+zero, retaining signed-zero metadata. A changed/omitted/nonrest history rejects
+before generating motion; body/domain premises are derived only from rechecked
+initial content under the explicit existing exact-history assumptions.
+
+The unchanged command/motion/path consumer generates target 0.125/zero turn and
+discrete braking with complete declared point margins. It supplies no partial
+startup result on rejection, missing error or cap exhaustion. Successful outputs
+are owned conditional initial-rest setup/command evidence, all seven flags false,
+no `OK`/question/permit or one-use token. Fixture complete-history feasibility is
+reference ticks 0-3 under the unchanged four-frame history bound, not a new global
+startup deadline or measured clock guarantee. Later or gapped startup remains
+unsupported; tick-20 captures are never relabeled to invent initial delivery.
+
+Three positions are spent: first 13 passes/three reason-only failures/0.99 s
+above; literal repair `16 passed, 1514 deselected` in 1.66 s; required root
+`2453 passed, 1 xfailed, 71 warnings` in 69.99 s, no skips. Each complete position
+reports the same consumer ledger: 17 wrapper/12 setup/48 digest/40 binder/six
+command-bridge-motion/four path-inspection-prefix-history-cell/zero forbidden.
+Consumer totals: 51 wrapper/36 setup/144 digest/120 binder/18 command-bridge-
+motion/12 path-inspection-prefix-history-cell. Separate preparation totals six
+tick-zero captures/six setup checker/twelve digest entries, same two nominal
+static scenes; combined startup-family totals 42 setup checker/156 digest.
+No prepared motion, new-family source-auditor/question/oracle/rover/runtime/
+episode/data action. All unchanged default-root old controls and per-family
+ceilings ran only as required new-source compatibility, not standalone renewal.
+
+Commands: `/opt/venv/bin/python -m pytest -q tests/test_sim.py -k
+test_synthetic_c1_startup_path_uses_rechecked_rest_setup` twice; required root
+`/opt/venv/bin/python -m pytest -q && ruff check . && ruff format --check
+sim/diagnostics.py tests/test_sim.py && git diff --check`. AST-preserving format,
+lint/changed-file format/syntax parse/editor checks pass; all 75 prior source/
+300 prior test nodes remain exact/in order, one source/two test nodes added.
+Pylance resolves the single new test call compatibly; no prior signature changes.
+Root-tested SHA-256 diagnostics
+`b42079cea3e9ed7552d11331bc762428104aeefadcfca0ed870be6187c368ff7`;
+tests `3c24de2c5ddc4c645e84d269e2be841137ff671219fddcc0aec887deb7d5f5b3`.
+Scoped history/reference/local-target/whitespace/AST/root-tested-byte and editor
+checks pass: 680 prose references, 25 inline links and 70 existing local targets.
+Prior review/source/workflow/numbered task history remains exact. Stage only
+matching verified files and synchronize normally, without another code gate.
+
+No normal runtime/C/native change or extra opt-in sanitizer/Arm gate. Host fixture
+checks are not source authority/completeness, S1-S5/numerical/physical/clock/
+task-quality qualification or linked firmware; no permit/expiry/executor, normal
+profile or study admission. §163/162/161/160 and every old ledger/failure/cap/
+unused position remain historical, not renewed. No job/artifact/cleanup.
+
+Priority reassessment: initial setup/rest fixture joining is complete, while the
+old host controller still uses extra goal-proportional centre steering and is not
+the adopted candidate mapper/executor. Next finite compatible prerequisite is an
+isolated codec-backed normal-command mapper: complete fresh catalogue-1/model-0
+`OK` selections only, left/centre/right `+max_turn_rate`/zero/`-max_turn_rate`,
+`max_speed * tier / 3`, and braking for blocked/none/tier-zero/unusable inputs.
+Do not wire it to the old controller, consume partial decisions, alter meanings/
+thresholds or issue a permit. Exact request/receipt/expiry/one-use execution and
+source/quality remain separate; learned/ST/board work and general audits deferred.
+
 ## Sources
 
 Hardware and tools:

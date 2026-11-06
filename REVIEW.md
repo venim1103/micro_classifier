@@ -11613,6 +11613,93 @@ a checkpoint/commit/push is progress, not an open-ended session's finish gate.
 
 [autonomy-workflow]: AGENTS.md
 
+## 155. Bounded Path-Cell Geometry Prerequisite (2026-11-06)
+
+The user reloaded and requested project continuation from the current handoff.
+The worktree was clean/synchronized at `713da4b`; Pylance selected the existing
+`/opt/venv/bin/python`. Under §154's standing authority, choose the smallest
+local spatial prerequisite for S2/S4's actual-command guard: the old C1 helpers
+hardwire a continuous-turn/braking path, whereas §153 provides discrete command
+endpoint boxes. No generic arithmetic/identity audit is reactivated.
+
+**Hypothesis and scope.** The existing strict free-prefix/continuous-cylinder-
+center method can check an explicitly supplied path tube without recomputing
+the old motion. Complete declared prefixes must exclude supported clear tubes;
+a hidden contacting cylinder, missing premise or exhausted search must not.
+Scope recorded before execution: twelve fixed spatial controls, at most 32
+new-family kernel entries per complete matrix and four verification phases
+including repairs/final root, at most 128 entries. No new scenes, captures,
+source, motion, coordinator, witness, owner, wire, rover or runtime queries.
+CPU-only in-memory fixtures; at most 81 artificial prefixes and three vertices
+in these controls. No collection/model/dependency/hardware work. Preserve all
+existing cell/depth/band/command caps and failures; no bound relaxation/retry.
+
+**Implemented.** [The additive private kernel][path-cell-source] accepts at
+most 512 planar prefixes and 129 vertices, a complete tube radius and optional
+outer query bound. It rejects a bound smaller than the complete tube and
+invalid radius/shape/work inputs. The existing 0.18 m current-body premise is
+explicit. Every possible cylinder-center cell is either strictly outside the
+outer tube, inside the assumed current-body exclusion, or wholly contained
+within a declared free-prefix cylinder constraint. Otherwise subdivide within
+the unchanged radius-band/cell/depth caps or remain unresolved. Endpoint-only
+or sampled-center clearance is not substituted.
+
+[The twelve controls][path-cell-tests] cover straight/bent/enlarged tubes,
+independently constructed hidden contact, missing prefixes/body premise,
+zero cell/depth budgets, undersized query bound/radius, boolean and nonfinite
+radii, plus unchanged caller arrays. The contacting cylinder's center is
+outside the current body but inside the supplied path's swept body; declared
+prefixes end before its first intersection. Test guards forbid the old C1
+encloser, continuous centreline and discrete motion producer. This is a
+spatial fixture, not a C1 sensor emulator or new study scene.
+
+**Verification and attempts.**
+
+| Phase | Command/result | New kernel entries |
+| --- | --- | --- |
+| 1 | Focused first clear-prefix test: 1 pass, 0.23 s. | 1 |
+| 2 | `/opt/venv/bin/python -m pytest -q tests/test_sim.py -k synthetic_c1_path_cells`: 12 pass, 1,362 deselected, 0.28 s. | 12 |
+| 3 | Changed-file Ruff lint passed; format check failed only the newly wrapped circle-prefix expression. One formatting-only line repair; same lint/format check then passed. Pylance/editor diagnostics had no errors, only private-symbol hints; standard-library AST syntax/isolation checks passed. | 0 |
+| 4 | `/opt/venv/bin/python -m pytest -q && ruff check . && git diff --check`: 2,297 pass, known QDQ xfail, 71 existing warnings, no skips, 49.57 s; lint/whitespace pass. | 12 |
+
+Total **25 entries**, source-supported by the single explicit call per test
+control; no failed fixture/import/teardown. All four phases complete; unused
+entry headroom is not standalone follow-on scope. The static formatting failure
+is retained, not counted as a geometry call or erased. Future meaningful source
+increments receive required gates under standing authority; old experiment
+ledgers and hard limits are not refunded. Root compatibility reporters retained
+wire 48 adapter/32 relative/10 coordinator/two captures/two scenes, discrete
+motion 18 producer/12 reference and the old composition/target/join controls.
+These old controls ran only as the necessary gate for this new source change,
+not renewed standalone studies or accepted proof/source/work evidence.
+
+All **67 prior diagnostics AST nodes and 282 prior test nodes** are unchanged
+in order, adding one kernel and one twelve-case test. Existing APIs, defaults,
+normal C1/wire/host paths, source flags and historical artifacts are unchanged.
+Source SHA256: diagnostics
+`75afe0fd84607b23a4be89031998bfcffba8316cb1a36a9c5c2a78db6cb56d53`;
+tests `95912d2d6822d731115f6014854c821ffb9a87aa2cafcdf1f9ff1152451829fb`.
+Documentation/history/reference/whitespace/diff/staged-byte checks apply before
+the checkpoint; the successful source gate is not rerun for these doc edits.
+
+**Evidence limits and next step.** Kernel exclusion is conditional cylinder
+geometry only: no wall support, verified C1/registration/error source, relation
+to actual command execution, numerical certification, S1-S5 satisfaction,
+question answer or usable permit. Fixtures are in-memory; no new persistent
+log/report/data, downloads, dependencies, GPU/model/tokenizer, ST/board command
+or cleanup. Historical §§146/153 ledgers remain unchanged. Tasks 6/9 and D4,
+all fifteen undecided verdicts/five false flags, and hardware/teacher gates stay.
+
+Continue independently with a separately bounded fixture-only latest-C1-prefix
+and complete-discrete-path adapter, including wall support and whole endpoint
+box/radius containment. Keep source/registration/numerical/admission flags false;
+no arbitrary midpoint replacement, permit/executor, normal profile or new study
+run follows from this kernel. Source-error/registration qualification remains
+an actual evidence gate, not a routine approval request or agent default.
+
+[path-cell-source]: sim/diagnostics.py
+[path-cell-tests]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

@@ -35,6 +35,96 @@ from sim.rover import (
 )
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "straight",
+        "bend",
+        "enlarged_tube",
+        "hidden_contact",
+        "no_prefixes",
+        "body_unknown",
+        "cell_budget",
+        "depth_budget",
+        "small_query_bound",
+        "small_radius",
+        "boolean_radius",
+        "nonfinite_radius",
+    ),
+)
+def test_synthetic_c1_path_cells_exclude_complete_prefix_fixture(monkeypatch, case):
+    from sim import diagnostics
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("path-cell fixtures must not query C1 or compute motion")
+
+    for name in (
+        "_c1_curved_centerline",
+        "probe_synthetic_c1_enclosure",
+        "_probe_synthetic_c1_discrete_motion",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    ordinates = np.linspace(-1.0, 1.0, 81)
+    segments = np.array([[[-1.0, value], [1.0, value]] for value in ordinates])
+    path = np.array([[0.0, 0.0], [0.15, 0.0]])
+    radius = 0.18
+    settings = {"current_body_clear": True, "guard": 1e-12}
+    if case == "bend":
+        path = np.array([[0.0, 0.0], [0.1, 0.04], [0.15, 0.06]])
+    elif case == "enlarged_tube":
+        radius = 0.25
+    elif case == "hidden_contact":
+        for index, ordinate in enumerate(ordinates):
+            if abs(ordinate) < 0.05:
+                segments[index, 1, 0] = 0.3 - math.sqrt(0.05**2 - ordinate**2) - 1e-12
+        assert 0.3 > 0.18 + 0.05
+        assert 0.3 - path[-1, 0] < radius + 0.05
+    elif case == "no_prefixes":
+        segments = np.empty((0, 2, 2))
+    elif case == "body_unknown":
+        settings["current_body_clear"] = False
+    elif case == "cell_budget":
+        settings["max_cells"] = 0
+    elif case == "depth_budget":
+        settings["max_depth"] = 0
+    elif case == "small_query_bound":
+        settings["query_bound"] = 0.125
+    elif case == "small_radius":
+        radius = 0.125
+    elif case == "boolean_radius":
+        radius = True
+    elif case == "nonfinite_radius":
+        radius = float("nan")
+    original_segments, original_path = segments.copy(), path.copy()
+    if case in (
+        "small_query_bound",
+        "small_radius",
+        "boolean_radius",
+        "nonfinite_radius",
+    ):
+        with pytest.raises(ValueError):
+            diagnostics._c1_exclude_path_cells(segments, path, radius, **settings)
+    else:
+        result = diagnostics._c1_exclude_path_cells(segments, path, radius, **settings)
+        clear = case in ("straight", "bend", "enlarged_tube")
+        assert result["fixture_enclosure_excluded"] is clear
+        reasons = {
+            "hidden_contact": "unexcluded_center_cell",
+            "no_prefixes": "no_low_height_free_segments",
+            "body_unknown": "current_body_clear_not_established",
+            "cell_budget": "cell_budget_exhausted",
+            "depth_budget": "unexcluded_center_cell",
+        }
+        assert result["reason"] == (
+            "all_allowed_cylinder_centers_excluded_from_path_tube"
+            if clear
+            else reasons[case]
+        )
+        assert 0 <= result["cells_checked"] <= settings.get("max_cells", 32768)
+    np.testing.assert_array_equal(path, original_path)
+    np.testing.assert_array_equal(segments, original_segments)
+
+
 def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
     from fractions import Fraction
 

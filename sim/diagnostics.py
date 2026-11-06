@@ -3457,6 +3457,134 @@ def _c1_low_free_segments(record, inspection, reference_pose_m_rad, config):
     return np.stack((starts, ends), axis=1), guard
 
 
+def _c1_exclude_path_cells(
+    free_segments,
+    path_points,
+    tube_radius,
+    *,
+    current_body_clear=False,
+    guard=0.0,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    query_bound=None,
+):
+    """Check declared planar prefixes against a whole fixture path tube."""
+    for value, lower, upper in (
+        (max_cells, 0, 65536),
+        (max_depth, 0, 12),
+        (radius_bands, 1, 16),
+    ):
+        if type(value) is not int or not lower <= value <= upper:
+            raise ValueError("path exclusion work limits require bounded integers")
+    if (
+        type(free_segments) is not np.ndarray
+        or free_segments.ndim != 3
+        or free_segments.shape[1:] != (2, 2)
+        or len(free_segments) > 512
+        or type(path_points) is not np.ndarray
+        or path_points.ndim != 2
+        or path_points.shape[1:] != (2,)
+        or not 2 <= len(path_points) <= 129
+    ):
+        raise ValueError("path exclusion requires bounded planar arrays")
+    free_segments = _c1_array(free_segments, free_segments.shape).astype(float)
+    path_points = _c1_array(path_points, path_points.shape).astype(float)
+    if any(type(value) not in (float, int) for value in (tube_radius, guard)):
+        raise ValueError("path exclusion radii require finite numbers")
+    tube_radius, guard = map(float, _c1_array([tube_radius, guard], (2,)))
+    if tube_radius < 0.18 or guard < 0 or np.any(path_points[0] != 0):
+        raise ValueError("path exclusion requires the declared current body")
+    bound = float(np.linalg.norm(path_points, axis=1).max()) + tube_radius
+    if query_bound is not None:
+        if type(query_bound) not in (float, int):
+            raise ValueError("path query bound requires a finite number")
+        query_bound = float(_c1_array([query_bound], (1,))[0])
+        if query_bound < bound:
+            raise ValueError("path query bound must enclose the complete tube")
+        bound = query_bound
+    if not math.isfinite(bound):
+        raise ValueError("path exclusion bound is not representable")
+    result = {
+        "fixture_enclosure_excluded": False,
+        "reason": "current_body_clear_not_established",
+        "cells_checked": 0,
+    }
+    if current_body_clear is not True:
+        return result
+    if not len(free_segments):
+        result["reason"] = "no_low_height_free_segments"
+        return result
+    path_starts, path_steps = path_points[:-1], np.diff(path_points, axis=0)
+    path_squared = np.sum(path_steps * path_steps, axis=1)
+    starts = free_segments[:, 0]
+    steps = free_segments[:, 1] - starts
+    squared = np.sum(steps * steps, axis=1)
+    for lower, upper in pairwise(np.linspace(0.05, 0.30, radius_bands + 1)):
+        extent = bound + upper + guard
+        pending = [(0.0, 0.0, extent, 0)]
+        while pending:
+            if result["cells_checked"] >= max_cells:
+                result["reason"] = "cell_budget_exhausted"
+                return result
+            center_x, center_y, half, depth = pending.pop()
+            result["cells_checked"] += 1
+            center = np.array([center_x, center_y])
+            norm, cell_radius = math.hypot(center_x, center_y), math.sqrt(2) * half
+            if norm - cell_radius > extent + guard:
+                continue
+            path_relative = center - path_starts
+            fractions = np.divide(
+                np.sum(path_relative * path_steps, axis=1),
+                path_squared,
+                out=np.zeros_like(path_squared),
+                where=path_squared > 0,
+            )
+            residual = path_relative - np.clip(fractions, 0, 1)[:, None] * path_steps
+            separation = float(np.linalg.norm(residual, axis=1).min())
+            if separation - cell_radius > tube_radius + upper + guard:
+                continue
+            if norm + cell_radius < 0.18 + lower - guard:
+                continue
+            relative = center - starts
+            fractions = np.divide(
+                np.sum(relative * steps, axis=1),
+                squared,
+                out=np.zeros_like(squared),
+                where=squared > 0,
+            )
+            residual = relative - np.clip(fractions, 0, 1)[:, None] * steps
+            separation = float(np.linalg.norm(residual, axis=1).min())
+            if separation + cell_radius < lower - guard:
+                continue
+            if depth >= max_depth:
+                result.update(
+                    reason="unexcluded_center_cell",
+                    unresolved_cell={
+                        "center_m": center.tolist(),
+                        "half_width_m": half,
+                        "radius_interval_m": [float(lower), float(upper)],
+                    },
+                )
+                return result
+            child = half / 2
+            pending.extend(
+                (
+                    center_x + horizontal * child,
+                    center_y + vertical * child,
+                    child,
+                    depth + 1,
+                )
+                for horizontal in (-1, 1)
+                for vertical in (-1, 1)
+            )
+    result.update(
+        fixture_enclosure_excluded=True,
+        reason="all_allowed_cylinder_centers_excluded_from_path_tube",
+    )
+    return result
+
+
 def _c1_curved_centerline(speed, turn_rate, age, config, pieces, braking_turn_rate=0.0):
     position = np.zeros(2)
     points, yaw, error, deviation = [position.copy()], 0.0, 0.0, 0.0

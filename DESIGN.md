@@ -2192,6 +2192,38 @@ motion-core ledger and need separate accounting before their implementation.
 
 [admission-motion-core-review]: REVIEW.md
 
+##### Conditional Path-Cell Kernel (2026-11-06)
+
+The resumed autonomous workflow implemented an additive spatial prerequisite
+for the named actual-command guard, not another arithmetic/identity audit.
+The private `_c1_exclude_path_cells` checks an explicitly supplied planar path
+tube against declared low-height free prefixes and the existing continuous
+cylinder-center/radius-band search. It does not derive a path from the old
+continuous braking formula. At most 512 prefixes and 129 path vertices are
+accepted; the existing 65,536-cell/12-depth/16-band hard ceilings remain.
+Default cell/depth/band limits stay 32,768/10/8. The assumed current body is
+the existing 0.18 m disk; absent body-clear evidence or free prefixes stays
+unknown. A reduced query bound must not omit any part of the supplied tube.
+
+Whole-cell strict separation and free-prefix containment retain contact,
+missing support and work-exhaustion abstention. The kernel's exclusion is only
+conditional cylinder geometry; it does not establish wall support, sensor
+source/registration errors, the supplied path's relation to actual motion,
+numerical certification, S1-S5 satisfaction or command admission. It adds no
+public/runtime/wire path. Existing C1 helpers and all prior source/test nodes
+are unchanged. [Review §155][path-cell-review] records the twelve fixed
+controls, verification and remaining boundary.
+
+The next compatible prerequisite is a separate fixture-only adapter from
+the discrete command's complete endpoint boxes/body radii and latest C1
+prefixes into this kernel, with wall support and explicit unknown/error
+handling. Enclose the full boxes and every chord, not only a midpoint path;
+retain all source/registration/numerical/admission flags as false. Its finite
+derived-query budget is agent-owned work under the standing workflow, not
+permission for episode collection, source qualification or a usable permit.
+
+[path-cell-review]: REVIEW.md
+
 ### Dataset Construction
 
 - Define the ground-truth policy and review an evaluation set before generating
@@ -10738,9 +10770,12 @@ sixteen fixed controls pass ([§153][admission-motion-core-review]): three of fo
 positions used, 54 producer/35 reference entries total, zero new-family C1/source/
 runtime queries. The one default-root renewal is spent. This supplies conditional
 ideal motion enclosures only, not native arithmetic/registration or S1-S5
-qualification. Next: separately scope source-error evidence and path-aware
-coverage support for the actual-command guard; no full guard or usable trial is
-authorized by completing the motion core.
+qualification. The additive path-cell kernel and twelve fixed controls are now
+complete (§155); the new-source root gate passes 2,297 tests plus the known
+xfail/71 warnings under standing verification authority. Next: connect complete
+discrete path boxes to latest C1 prefixes and wall support within a bounded
+fixture-only scope, then address the remaining source-error/registration gates.
+Neither kernel nor motion-core completion admits a full guard or usable trial.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
   candidate and reviewable acceptance/evaluation checklist from existing evidence.

@@ -202,9 +202,9 @@ from them. Historical details below are reference material, not new approvals.
   independently; later user tests provide course corrections, not routine gates.
   Periodic verified checkpoint commits and normal upstream pushes are delegated
   as well; retain local progress and diagnose failures without a force-push.
-  Current request updates documentation only; project execution resumes on a
-  later continuation request. Source evidence and completed-run ledgers below
-  remain unchanged.
+  Project continuation resumed after reload (§155). The additive path-cell
+  kernel/twelve controls are complete; continue with the bounded C1-prefix/
+  discrete-path adapter, retaining all evidence and protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
   Private fixture adapter rejects changed decoded source values and emits only
@@ -215,8 +215,10 @@ from them. Historical details below are reference material, not new approvals.
   (§153): 16 fixed controls pass, 54 producer/35 reference entries across three
   positions, zero new-family C1/source/runtime queries. The one renewed root
   gate passed 2,285 tests plus known xfail/71 warnings and is spent; unused fourth
-  position is not follow-on scope. Next: scope source-error/path-aware coverage
-  evidence for the actual-command guard, without general audit work. D4 remains
+  position is not follow-on scope. The new path-cell kernel (§155) passes twelve
+  controls and its required new-source gate, 2,297 plus known xfail/71 warnings.
+  Next: bound and implement the C1-prefix/discrete-path adapter and wall support,
+  then source-error/registration evidence, without general audit work. D4 remains
   separate; no normal profile, source qualification, threshold, actuation or run
   scope is adopted. The old host loop is not a compatible C1 maneuver executor;
   Tasks 6/9 remain blocked, not completed.
@@ -230,7 +232,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-154 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-155 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation, required local verification and periodic verified
   checkpoint commits/normal pushes, with protected evidence/resource limits intact.
@@ -253,13 +255,14 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-06): 2,285 passes plus known xfail/71 existing
-  warnings, 16 new conditional motion cases; lint/changed-file format/syntax/editor
-  and all 65 old source/279 test AST nodes pass. §153 records three positions,
-  54 producer/35 reference attempts total and zero new-family C1/source/runtime
-  entries. §146's four positions/failure/repair and 48 adapter/32 relative/10
-  coordinator matrix stay historical, unchanged; one root-regression renewal was
-  separately approved and is now spent. Old §138 accounting/failures stay. No
+- Last source-test gate (2026-11-06, §155): 2,297 passes plus known xfail/71 existing
+  warnings; twelve new spatial controls, all 67 prior source/282 test AST nodes
+  unchanged. Lint/changed-file format/syntax/editor pass; one formatting-only
+  failure/repair retained. Twenty-five new kernel entries across the single probe,
+  fixed matrix and root; zero new-family scene/source/runtime calls. §153's
+  54 producer/35 reference entries and §146's four spent positions/failure/repair
+  remain historical. Root reused their unchanged controls only as the required
+  gate for this meaningful new source increment. Old §138 accounting stays. No
   normal runtime/C source change or extra opt-in sanitizer/Arm gate; host checks are
   not source/numerical qualification, linked firmware or task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1309,10 +1312,12 @@ Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §146 rejec
 increment complete; §152 requirements-only source/startup/command adoption.
 Conditional discrete command/braking motion core complete (§153), 16 fixed
 controls, 54 producer/35 reference attempts across three of four positions,
-zero new-family C1/source/runtime queries. One approved root-regression renewal
-passed and is spent; no fourth invocation follows automatically. Next scope:
-source-error evidence/path-aware coverage for the actual-command guard, not
-general arithmetic/identity audits. S1-S5 satisfaction/full guard/usable trial
+zero new-family C1/source/runtime queries; that old root renewal stays spent.
+The additive path-cell kernel (§155) and twelve spatial controls are complete;
+25 new kernel entries, zero new-family scene/source/runtime calls. Next scope:
+C1-prefix/discrete-path adapter and wall support, then source-error/registration
+evidence for the actual-command guard, not general arithmetic/identity audits.
+S1-S5 satisfaction/full guard/usable trial
 remain separate gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
 The approved 24-case/eight-scene/48-coordinator/four-position verification scope
@@ -1332,8 +1337,9 @@ ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
 priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
-source gate now 2,285 plus known xfail/71 warnings under §153's one spent default-
-gate renewal; §146 all four spent, §138 four of five/fifth unused, old §129/§132
+source gate now 2,297 plus known xfail/71 warnings for §155's new-source increment;
+§153's old root renewal stays spent, §146 all four spent, §138 four of five/fifth
+unused, old §129/§132
 exhausted, §135 fifth not
 borrowed. No standalone old scope renewed. All fifteen
 verdicts undecided/five flags false, no consumer/proof/native/source/work adoption.

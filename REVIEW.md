@@ -13276,6 +13276,98 @@ prior ASTs/unchanged mapper/five-file scope. No documentation failure or extra
 fixture/root invocation; stage only this checkpoint and normally push through the
 existing configured upstream. No job, generated artifact or cleanup pending.
 
+## 172. Owned Capture/Current Request Path Join (2026-11-06)
+
+§171 committed/normally pushed as `8c8c77140216fe384b1419f49298e10f773c253d`;
+current continuation verified clean worktree including the reported test change,
+Python 3.12.3 at `/opt/venv/bin/python`. Normal push retained stale helper warnings
+without configuration/security changes. Continue the named owned-capture join,
+not general audits, source qualification, full guard, actuation or studies.
+
+**Pre-execution hypothesis/check.** §170 consumes caller history and §171 owns
+matching full capture content separately. An additive private wrapper can first
+match/own the actual capture, pass only that one owned record to the unchanged
+current-source/request/path consumer and rehash it before publication. Compare
+capture/path request hashes and path/request motion identity. One-ulp input
+substitution must stop before the path; caller mutation after ownership must not
+change consumed data; consumed-owned mutation must reject without partial path
+binding. A single capture is conservative: no unmatched older history or online
+capture/geometry selection is admitted. Complete State-frame motion history,
+Config/error/profile/body/envelope, nominal expiry and all old guards remain.
+Always UNKNOWN/no permission/all seven flags false, even conditional exclusion.
+
+Finite sixteen-control CPU/in-memory scope, at most four focused/failed/aborted/
+repair/style/root positions, final position reserved for the required root.
+Reuse the same two existing static records/module fixture, exactly two captures/
+three preparation motions per constructed fixture, tracked separately/shared with
+old root controls. Per complete matrix max32 wrapper/capture/request-path/recheck/
+command/path/inspection/prefix/history/cell, max128 matcher/normal/mapper/State and
+Decision decodes/bridge/motion, max96 preparer, max256 binder and max384 digest
+including setup/rechecks/post-use content/repeat, zero forbidden. No new family/
+Scene/study episode/source-owner/auditor/reference/rover/runtime/data/model/
+dependency/download/hardware. Capture, geometry command selection, question/audit/
+controller/reset/step are forbidden after unchanged fixture setup. Preserve all
+source4096/motion16384/1-command/16-brake/128-chord/16-term/spatial ceilings,
+tolerances, assertions and known QDQ xfail. Old spent scopes/unused positions are
+not borrowed; new-source root controls are required compatibility only. Failed
+checks retain evidence; no successful output/artifact is published on failure.
+No reports/logs regenerated or persistent data/job/cleanup. Next sixteen focused
+controls; source/ray/clock/pose/body/error/native/registration/ID/one-use/S1-S5/
+physical/task-quality and protected study/data/hardware gates stay closed.
+
+**Implementation and verification.** One additive private wrapper plus two test
+nodes; all 82 prior diagnostics/316 prior test nodes AST-exact/in order, mapper
+bytes unchanged. One owned matching capture, not independently selected history,
+is consumed. No input/output mutation on ordinary calls; injected caller mutation
+after ownership cannot change consumed data, and injected consumed-owned mutation
+rejects without path/hash publication. These controls test local correspondence,
+not hostile-code/thread/source qualification or permission.
+
+1. Sixteen focused controls pass, 1,658 deselected, 2.34 s. Actual ledger:
+  17 wrapper/15 capture-checker/12 request-path/12 source-recheck/39 matcher/
+  28 preparer/39 normal/39 mapper/39 State decode/39 Decision decode/48 bridge/
+  72 binder/48 motion/214 digest/11 command/9 path/9 inspection/9 prefix/9 history/
+  7 cell/zero forbidden. Setup exactly two reused captures/three preparation
+  motions. Owned output repeat included; no opt-in/unsupported target stop before
+  checking, expired/changed receipt or capture substitution before path work.
+2. Zero-query AST-preserving formatting/import-order/lint/format/whitespace pass;
+  one new import order mechanically fixed, all prior nodes/mapper exact. AST
+  syntax/editor diagnostics pass; language-server definition+one test-only caller.
+3. Required root `python -m pytest -q && ruff check . && ruff format --check
+  sim/diagnostics.py tests/test_sim.py && git diff --check` passes **2,597 plus
+  known transformer QDQ xfail/71 warnings**, no skips, 63.95 s. New ledger exactly
+  the focused matrix; unchanged old controls are required compatibility, not
+  standalone renewal. No extra opt-in native/sanitizer/Arm/board/model gate.
+
+Three of four positions used, unused fourth not follow-on scope; no new failure.
+Cumulative **34 wrapper/30 capture-checker/24 request-path/24 source-recheck/
+78 matcher/56 preparer/78 normal/78 mapper/78 State decode/78 Decision decode/
+96 bridge/144 binder/96 motion/428 digest/22 command/18 path/18 inspection/
+18 prefix/18 history/14 cell/zero forbidden**. Separate setup four captures/six
+motions on the same two static scenes, not new studies or independent cohorts.
+Root-tested source SHA256
+`9198cf971d378fe4f503c8bfd09e72544683b5ac8d439e955b5a49a6cae43a38`;
+test SHA256 `92e9ecca72cec8eaee342ca8b9f2da515166c21216fc95b07c7448164ffa116f`.
+No source/test edits after root. All seven flags false/UNKNOWN/no permission,
+no normal runtime/usable `OK`/actuation or new study/data/model/dependency/
+download/hardware/generated report/job/cleanup. Old failures/ledgers remain.
+
+Checkpoint reassessment: owned capture now reaches the current request/path
+consumer without re-selection and is content-rechecked before publication. Next
+local prerequisite is owned capture/complete-frame-history/declared-current-
+reference-pose correspondence; actual source/clock/ray/body/error/native/
+registration/ID/one-use/S1-S5/physical/task-quality gates remain unqualified.
+This advances coverage admission, not the old host controller or deferred audits.
+Scoped documentation/history/links/root-tested-byte checks, checkpoint commit and
+normal upstream synchronization follow; no unchanged successful root rerun.
+
+Scoped documentation checks pass: exact prior REVIEW §§1-171/Sources, stable
+workflow/older task history/design contracts/roadmap, 688 prose references/25
+inline links/70 local targets+anchors, editor diagnostics, root-tested bytes/
+prior ASTs/unchanged mapper and five-file scope. No documentation failure or
+extra fixture/root invocation. Stage only verified checkpoint files; synchronize
+through the configured upstream without force/security/configuration changes.
+
 ## Sources
 
 Hardware and tools:

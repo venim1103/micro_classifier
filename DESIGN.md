@@ -2647,13 +2647,33 @@ no geometric/path query and does not establish actual producer/source authority.
 [Review §171][request-capture-review] records sixteen controls on two reused
 scenes, prior nodes/mapper exact, and owned repeat.
 
-Next connect the owned matched capture to the existing current-request/path
-consumer without capture re-selection. Source/clock/ray/pose/body/error/native/
+[request-capture-review]: REVIEW.md
+
+##### Conditional Owned Capture/Current Request Path (2026-11-06)
+
+The additive private `_probe_synthetic_c1_owned_capture_request_path` first runs
+the capture-content checker, then supplies only its owned matching record to the
+unchanged current-source/request/path consumer. No caller-selected older history
+or second capture selection is accepted. This single-capture restriction is
+conservative; it does not change existing history APIs or adopt a product format.
+Complete State/frame history, current command/motion, Config/error/profile,
+current-body/envelope and nominal-expiry checks remain the existing prerequisites.
+
+Before publishing a conditional exclusion, rehash the consumed owned record and
+match capture/path request identity plus path/request motion identity. Input
+substitution rejects before path work; later caller mutation cannot alter the
+owned record, and consumed-record mutation rejects without partial path binding.
+Outputs own their path enclosure and always remain UNKNOWN/no permission/all
+seven flags false. [Review §172][owned-capture-path-review] records sixteen reused
+controls, prior nodes/mapper exact, no source/runtime/qualification claim.
+
+Next check correspondence between owned capture, complete frame history and the
+declared current reference pose. Source/clock/ray/pose/body/error/native/
 registration/ID/one-use/S1-S5/task-quality evidence remains separate; no usable
 `OK`, actuation, normal controller or trial is admitted. General arithmetic/
 identity audits and protected studies stay deferred.
 
-[request-capture-review]: REVIEW.md
+[owned-capture-path-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11227,8 +11247,10 @@ frame/motion request recheck (§169) passes sixteen/root 2,549 plus the same xfa
 71 warnings. Current matched request/path-margin composition (§170) passes
 sixteen/root 2,565 plus the same xfail/71 warnings, all earlier nodes/mapper exact;
 declared request/C1 capture-content check (§171) passes sixteen/root 2,581 plus
-the same xfail/71 warnings, prior nodes/mapper exact. Next owned-capture/current-
-request path composition, not the old loop or a matching-hash permit;
+the same xfail/71 warnings, prior nodes/mapper exact. Owned capture/current-request
+path composition (§172) passes sixteen/root 2,597 plus the same xfail/71 warnings,
+prior nodes/mapper exact. Next owned capture/frame-history/current-reference-pose
+correspondence, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

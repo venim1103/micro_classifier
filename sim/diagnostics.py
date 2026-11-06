@@ -4846,6 +4846,122 @@ def _check_synthetic_c1_request_capture_content(
     return result
 
 
+def _probe_synthetic_c1_owned_capture_request_path(
+    retained_request,
+    received_request,
+    source_state,
+    state_frame,
+    decision_frame,
+    capture_record,
+    point_error_evidence,
+    *,
+    current_tick,
+    reference_pose_m_rad,
+    config=None,
+    settings=None,
+    error_evidence=None,
+    current_body_clear=False,
+    controlled_envelope=False,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    synthetic_test_only=False,
+):
+    """Consume only owned matching capture content, never grant permission."""
+    if synthetic_test_only is not True:
+        raise ValueError("owned capture path requires synthetic_test_only=True")
+    work = {
+        "capture_content_entries": 0,
+        "request_path_entries": 0,
+        "digest_entries": 0,
+    }
+    result = {
+        "schema": "micro-classifier/synthetic-c1-owned-capture-request-path/1",
+        "allowed_use": "conditional_owned_capture_request_path_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_owned_capture_request_path",
+        "fixture_capture_path_excluded": False,
+        "fixture_permission_granted": False,
+        "guard_status": "UNKNOWN",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    work["capture_content_entries"] = 1
+    capture = _check_synthetic_c1_request_capture_content(
+        retained_request,
+        received_request,
+        capture_record,
+        current_tick=current_tick,
+        synthetic_test_only=True,
+    )
+    result["capture_content_work"] = deepcopy(capture["work"])
+    if capture["fixture_capture_content_matched"] is not True:
+        result["reason"] = capture["reason"]
+        return result
+    owned_record = capture["capture_record"]
+    work["request_path_entries"] = 1
+    path = _probe_synthetic_c1_current_request_path(
+        retained_request,
+        received_request,
+        source_state,
+        state_frame,
+        decision_frame,
+        [owned_record],
+        point_error_evidence,
+        current_tick=current_tick,
+        reference_pose_m_rad=reference_pose_m_rad,
+        config=config,
+        settings=settings,
+        error_evidence=error_evidence,
+        current_body_clear=current_body_clear,
+        controlled_envelope=controlled_envelope,
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        max_cells=max_cells,
+        max_depth=max_depth,
+        radius_bands=radius_bands,
+        synthetic_test_only=True,
+    )
+    result["request_path_work"] = deepcopy(path["work"])
+    if path["fixture_request_path_excluded"] is not True:
+        result["reason"] = path["reason"]
+        return result
+    work["digest_entries"] = 1
+    if (
+        _c1_source_binding_digest(owned_record) != capture["c1_capture_sha256"]
+        or path["request_sha256"] != capture["request_sha256"]
+        or path["motion_sha256"] != received_request["motion_sha256"]
+    ):
+        result["reason"] = "owned_capture_path_binding_mismatch"
+        return result
+    result.update(
+        status="excluded_from_owned_capture_current_request_fixture",
+        reason="conditional_capture_path_source_and_guard_unqualified",
+        fixture_capture_path_excluded=True,
+        request_sha256=path["request_sha256"],
+        c1_capture_sha256=capture["c1_capture_sha256"],
+        motion_sha256=path["motion_sha256"],
+        current_tick=current_tick,
+        path_enclosure=deepcopy(path["path_enclosure"]),
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

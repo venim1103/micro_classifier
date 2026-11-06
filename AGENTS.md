@@ -244,7 +244,9 @@ from them. Historical details below are reference material, not new approvals.
   current recheck (§178) remains complete; UNKNOWN/no permission/all seven flags
   false. Next independently supported source/coverage/setup/error/timing evidence,
   then guard/executor dependencies, not more matching hashes or actual execution.
-  See REVIEW.md §179 for exact qualification/protected-run and remaining-queue gates.
+  The Q0-Q5 source/named-consumer qualification packet is prepared (§180); it
+  adopts no evidence, profile, allowance or run. See REVIEW.md §§179-180 for exact
+  independent-evidence/protected-run and remaining-queue gates.
 - Workflow update (REVIEW.md §154): use recommended defaults without
   questionnaire/finish dialogs; continue useful agreed work across checkpoints.
   Continuation correction (§175): persist across recaps and side requests;
@@ -1453,7 +1455,8 @@ from them. Historical details below are reference material, not new approvals.
 ## Task List
 
 Latest increment: §179 owned event ID/cadence/delivery integrity is verified;
-next independently supported admission evidence; see the exact §179 handoff. The §176
+Q0-Q5 source/named-consumer qualification packet is prepared (§180), not adopted.
+Next independently supported admission evidence; see §§179-180. The §176
 dependency map and §175 persistent-continuation/final-answer gate apply; keep all
 qualification, actual execution and protected-action boundaries closed.
 

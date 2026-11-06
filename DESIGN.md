@@ -2141,6 +2141,53 @@ qualification study remain protected; synthetic tests cannot replace them.
 [owned-current-recheck-review]: REVIEW.md#178-owned-current-request-rechecking-2026-11-06
 [owned-delivery-review]: REVIEW.md#179-owned-delivery-integrity-and-qualification-handoff-2026-11-06
 
+##### Source and Consumer Qualification Packet (2026-11-06)
+
+**Prepared candidate, not evidence acceptance or a run approval.** This packet
+advances the remaining dependencies after owned request/currentness/delivery
+rejection. It names the actual producers and consumers; no new source profile,
+allowance, request/response schema, permit, numerical verdict or study scope is
+adopted. [The dated packet review][qualification-packet-review] records the
+verified code anchors, independent-method gaps and remaining protected actions.
+The [actual dynamics/source producer][qualification-dynamics] and
+[conditional guard consumers][qualification-consumers] are the code of record.
+
+Retain the adopted candidate values and limits: stored-word dt/acceleration/
+speed/yaw/body profile, source/decoded discrepancy, one command tick followed
+by at most 16 braking ticks/128 chords, existing retention and whole-body contact
+semantics. Do not narrow normal commands to zero yaw just to reuse the isolated
+straight-history checker; unsupported past motion remains unknown. The accepted
+0.6 m/s binary32 rejection remains until a separately qualified source path
+supports and propagates its discrepancy. No tolerance or hard-cap change follows.
+
+| Packet row / named producer | Named consumer / evidence needed | Independent acceptance and failure rule |
+| --- | --- | --- |
+| Q0 source and setup: offline setup auditor, `_SyntheticC1SourceRecorder.record_tick`, actual host state owner | Request preparation/current recheck plus S1 body and S2 swept-region coverage. Bind supported setup, immutable config/epoch, actual source events, all eight view payloads/masks and retained capture/reference lineage. | Supply independently supported setup/source/return/coverage provenance. Self-consistent metadata is not authority; missing/occluded/unsupported sweep or predecessor means unknown. Current recorder accepts supplied fixture poses/States and is not by itself the actual dynamics owner. |
+| Q1 decoded state: `state_from_observation`, State encoder/decoder and exact source-word binder | `_probe_synthetic_c1_state_motion`, history registration and mapped-command sweep. Preserve actual source and decoded speed/yaw/goal values, signed discrepancies, validity and ego/goal ages. | Enclose source-to-decoded error and propagate every affected component. Matching decoded bytes or sampled parity does not qualify actual source state; no clamp or guessed epsilon. |
+| Q2 native update and trajectory: `RoverEnv.step` and `integrate` | `_probe_synthetic_c1_discrete_motion` and actual-command path/cell guard. Bound clipping/subtraction/acceleration update before integration, yaw clipping, segment selection/duration, native `sinc`/sin/cos, vector position update and stored-yaw wrapping. | Independent uniform computed-program error evidence plus domain closure for the full command/braking sweep, not only endpoint equality. The ideal rational motion enclosure is a separate reference, not native-error evidence; unsupported operation/path or work bound rejects. Preserve source-scale and accumulated predecessor errors. |
+| Q3 capture/reference transformation: C1 acquisition, complete bound State/frame history | `_bound_synthetic_c1_history_registration`, `_check_synthetic_c1_straight_capture_reference_pose` and `_probe_synthetic_c1_owned_capture_request_path`. Separate range/pose/time/source errors from outward reference-rounding and remaining point margin. | Independent pose/range/clock/transform enclosures cover every retained ray prefix and point, including heading lever arms and native transforms. Each contribution is counted once; no zero source error, age-times-current-twist replacement or reset at re-planning. |
+| Q4 timing and realized receipt: source/reference owner, future guard and host executor | S5 expiry, one-use response consumption and S1 admitted-predecessor continuity. Require submitted command, clipping result, each actually traversed integration interval, interrupted/collision segment, application/fallback times and error lineage. | Independently qualify clock/receipt/application correspondence, serialized consume and failure gaps. `RoverEnv.step` publishes final `applied_action` after collision may zero velocity; that field alone is not a full realized-motion receipt. No admitted chain from final speed, old tick or request hash. |
+| Q5 task-quality release | Complete supported source/guard/executor path, then prospective D4 evaluation against its independent task references and accepted criteria/cohort. | Admission evidence first; separately authorized run/resource/lineage scope next. Always rejecting, unit fixtures, old quarantined logs or token/model fit do not qualify a baseline. |
+
+The packet for each row must contain the exact claim/domain/producer revision,
+consumer and propagation rule; independent reference/proof or measurement method;
+versioned result and evidence limits; invalidation triggers; and its explicit
+acceptance decision. Missing a field leaves that row unsupported. These are
+review contents, not a newly implemented record parser or an acceptance token.
+
+Recommended order: supported offline setup and actual source/return authority,
+Q1 discrepancies with Q2/Q3 uniform allowances and Q4 clock contract, then an
+evidence-supported guard and serialized one-use executor/receipts, then later-body
+continuity and Q5 trial. Prepare available evidence independently, but do not
+invent uniform bounds, accept undecided certificates, restore models, run a
+new qualification study, integrate hardware or launch D4 under routine unit-test
+authority. General audits/SC18 and learned work stay deferred. Host fail-safes
+remain independent; no actual command execution is authorized by this packet.
+
+[qualification-packet-review]: REVIEW.md#180-source-and-consumer-qualification-packet-2026-11-06
+[qualification-dynamics]: sim/rover.py
+[qualification-consumers]: sim/diagnostics.py
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -13898,6 +13898,62 @@ target/current status/five-file scope/whitespace pass. Root-tested source SHA256
 test SHA256 `610a2ab41d9479bd259b5d5ab2c60ce92fdaeeea58998d0a466cd93ba67859e0`.
 No additional source/fixture gate or source/test edit after root.
 
+## 180. Source and Consumer Qualification Packet (2026-11-06)
+
+Delivery checkpoint `8f43f17` normally pushed; clean synchronized `main`, no
+owned job/cleanup. Continued with the finite prerequisite from §179: prepare
+the source/named-consumer qualification packet from existing code/contracts.
+Documentation only, at most three static attempts including repairs; no project
+imports, numerical/fixture/episode/model/native/hardware execution, source edits,
+downloads, evidence acceptance or source-gate reruns. Required source gate stays
+§179: 2,669 passes/known QDQ xfail/71 warnings, not newly rerun evidence.
+
+Concrete code facts: `RoverEnv.step` converts finite two-value actions, clips
+target, applies acceleration-limited speed update, clips yaw, selects bounded
+integration intervals, calls `integrate`, then handles collision and increments
+the tick. `integrate` uses native angle/midpoint/`np.sinc`/sin/cos/vector position
+arithmetic and modulo-wrapped stored yaw. `state_from_observation` exports ego/
+goal, ages and rounded timestamps, not the complete physical/implementation-error
+history. The separate discrete-motion helper encloses an ideal fixture model;
+its false native/source flags are not missing paperwork.
+
+One discriminating receipt fact: a collision can zero speed/yaw before the
+returned `applied_action` is formed, after earlier integration intervals may
+have been accepted. Source inspection, not a new collision run, establishes
+that final action alone cannot certify the full realized sweep. The proposed
+Q4 packet must distinguish submitted/clipped/final action, traversed and rejected
+intervals, timestamps, fallback and retained uncertainty. No runtime receipt
+hook or changed normal simulator/controller output is implemented here.
+
+DESIGN.md §7 now contains six Q0-Q5 rows with actual producers, named consumers,
+independent evidence requirements and conservative stop rules: setup/source,
+source-to-decoded discrepancy, native computed motion, capture/reference
+registration, timing/realized receipts, and task-quality release. Each packet
+requires claim/domain/revision, consumer/propagation, independent method/result/
+limits, invalidation and explicit acceptance. Existing profile, normal turns,
+0.6 rounding rejection, whole-sweep contact and source/motion/braking/chord caps
+remain unchanged. No new allowance/profile/record schema/permit or protected
+qualification/D4/model/hardware scope is adopted.
+
+The packet is now a concrete prerequisite, not a request for routine planning
+permission. Available content/currentness checks are complete; accepted source/
+setup/coverage evidence and uniform named-consumer bounds/clock support are not
+present. Further admission requires those independently supported inputs and
+their protected acceptance; actual guard/executor and task-quality execution
+remain downstream. ST tools directory is empty (§179), native/board readiness
+remains user-side; learned/model work and general audits remain deferred. Do
+not fill these gaps with further matching hashes, guessed allowances, old study
+reruns or an unqualified permit. Check scoped references/code-anchor facts and
+exact unchanged source/history, checkpoint and normally synchronize; preserve
+all prior failures/ledgers and distinguish this prepared packet from adoption.
+
+First static attempt passes all six packet rows, actual code anchors and speed/
+yaw/loop/final-receipt order, local reference targets, exact prior design outside
+the packet, REVIEW §§1-179/Sources, unchanged source/test bytes, three-document
+scope and whitespace. These are source-inspection facts, not runtime/numerical
+qualification. Link the named producer/consumer files and verify the final
+documentation before checkpoint; the successful §179 code suite is not rerun.
+
 ## Sources
 
 Hardware and tools:

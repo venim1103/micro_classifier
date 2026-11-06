@@ -2604,12 +2604,35 @@ full guard/executor qualification remain unresolved.
 mapped sector/tier/speed combinations, substitution/error/budget rejection and
 owned repeat. No geometry selects the command and no normal controller is wired.
 
-Next compose this matched current request with the existing command/path-margin
-consumer under unchanged module-fixture source/body/error assumptions. Full
-source/path/one-use/S1-S5/task-quality gates remain separate; no usable `OK`,
-actuation or trial is admitted.
-
 [normal-request-source-review]: REVIEW.md
+
+##### Conditional Current Request/Path Margins (2026-11-06)
+
+The private `_probe_synthetic_c1_current_request_path` rechecks the current
+request, requires the separate point-history's last original State/frame to
+match that source, and derives command/profile internally. It checks all eight
+latest uint32 capture ticks against the declared capture context, then calls the
+unchanged command/path consumer and requires its returned current frame and
+generated motion fingerprint to match the request. No geometry selects a command;
+the complete interval-ending history remains necessary for registration.
+
+Only an explicit ideal C1 fixture Config, conditional body/envelope declarations
+and complete point/motion assumptions support these fixture checks. Normal noisy
+Config is not stripped or qualified. Changed/expired requests, foreign last
+State/frame, a changed capture tick, incomplete history, unsupported error or
+domain/body assumptions and unresolved margins do not publish a partial path
+binding. Success owns conditional request/path correspondence, always `UNKNOWN`,
+permission false/all seven qualification/admission/training flags false.
+[Review §170][normal-request-path-review] records sixteen controls on two reused
+C1 scenes, all eighty earlier source/312 test nodes exact and unchanged mapper.
+
+Next bind actual C1 record content/configuration to the declared request context,
+not just matching ticks. Content identity cannot establish source/clock/ray/pose/
+body/error authority or one-use execution. Full source/path/guard/S1-S5/task-quality
+gates remain separate; no usable `OK`, actuation, normal controller or trial is
+admitted. General arithmetic/identity audits and protected studies stay deferred.
+
+[normal-request-path-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11180,8 +11203,9 @@ nodes exact, identifiers/source/uniqueness still unqualified. Conditional exact
 request matching/nominal-expiry rejection (§168) passes sixteen/root 2,533 plus
 the same xfail/71 warnings, all earlier nodes/mapper unchanged. Current source/
 frame/motion request recheck (§169) passes sixteen/root 2,549 plus the same xfail/
-71 warnings, all earlier nodes/mapper exact; next current-request/path-margin
-composition, not the old loop or a matching-hash permit;
+71 warnings. Current matched request/path-margin composition (§170) passes
+sixteen/root 2,565 plus the same xfail/71 warnings, all earlier nodes/mapper exact;
+next actual C1 content/context recheck, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

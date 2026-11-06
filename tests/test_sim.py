@@ -1427,6 +1427,361 @@ def test_synthetic_c1_request_source_rechecks_actual_inputs(
 
 
 @pytest.fixture(scope="module")
+def c1_request_path_ledger(request):
+    ledger = dict.fromkeys(
+        (
+            "wrapper",
+            "recheck",
+            "checker",
+            "prepare",
+            "normal",
+            "mapper",
+            "state_decode",
+            "decision_decode",
+            "bridge",
+            "binding",
+            "motion",
+            "digest",
+            "command",
+            "path",
+            "inspection",
+            "prefix",
+            "history",
+            "cell",
+            "forbidden",
+        ),
+        0,
+    )
+    yield ledger
+    assert ledger["binding"] <= 192 and ledger["digest"] <= 256
+    assert all(
+        ledger[key]
+        <= (
+            64
+            if key
+            in (
+                "checker",
+                "normal",
+                "mapper",
+                "state_decode",
+                "decision_decode",
+                "bridge",
+                "motion",
+            )
+            else 48
+            if key == "prepare"
+            else 32
+        )
+        for key in ledger
+        if key not in ("binding", "digest", "forbidden")
+    )
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 current-request-path ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 current-request-path ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_current_request_path_binds_request_motion(
+    c1_discrete_path_fixtures, c1_request_path_ledger, monkeypatch, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        State,
+        Status,
+        decode_state,
+        encode_decision,
+        encode_state,
+    )
+    from sim import diagnostics, rules
+
+    ledger = c1_request_path_ledger
+    for key, module, name in (
+        ("recheck", diagnostics, "_recheck_synthetic_c1_normal_request_source"),
+        ("checker", diagnostics, "_check_synthetic_c1_normal_request_binding"),
+        ("prepare", diagnostics, "_prepare_synthetic_c1_normal_request"),
+        ("normal", diagnostics, "_probe_synthetic_c1_normal_state_motion"),
+        ("mapper", rules, "_map_synthetic_c1_normal_command"),
+        ("state_decode", rules, "decode_state"),
+        ("decision_decode", rules, "decode_decision"),
+        ("bridge", diagnostics, "_probe_synthetic_c1_state_motion"),
+        ("binding", diagnostics, "_bind_synthetic_c1_state_intervals"),
+        ("motion", diagnostics, "_probe_synthetic_c1_discrete_motion"),
+        ("digest", diagnostics, "_c1_source_binding_digest"),
+        ("command", diagnostics, "_probe_synthetic_c1_command_path_enclosure"),
+        ("path", diagnostics, "_probe_synthetic_c1_discrete_path_enclosure"),
+        ("inspection", diagnostics, "inspect_synthetic_c1_history"),
+        ("prefix", diagnostics, "_c1_low_free_segments"),
+        ("history", diagnostics, "_bound_synthetic_c1_history_registration"),
+        ("cell", diagnostics, "_c1_exclude_path_cells"),
+    ):
+        original = getattr(module, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            maximum = (
+                256
+                if _key == "digest"
+                else 192
+                if _key == "binding"
+                else 64
+                if _key
+                in (
+                    "checker",
+                    "normal",
+                    "mapper",
+                    "state_decode",
+                    "decision_decode",
+                    "bridge",
+                    "motion",
+                )
+                else 48
+                if _key == "prepare"
+                else 32
+            )
+            assert ledger[_key] <= maximum
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(module, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "request-path composition must not collect, choose geometry steering or actuate"
+        )
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "_c1_curved_centerline",
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_enclosure",
+        "_probe_synthetic_c1_wire_rejection",
+        "_audit_synthetic_c1_source_binding",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("host_action", "wire_step", "decide", "run_diagnostics"):
+        monkeypatch.setattr(rules, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    sector = case if case < 3 else 0
+    speed = (0.5, 0.2, 0.35)[case] if case < 3 else 0.5
+    states = [
+        State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(0.2 if tick < 22 else speed, 0.0, 0.0),
+            goal_m=(3.0, 1.0, 0.0),
+        )
+        for tick in range(20, 23)
+    ]
+    frames = [encode_state(state) for state in states]
+    source, state_frame = states[-1], frames[-1]
+    choices = (0, sector, sector + 1)
+    answers = tuple(
+        Answer(
+            question,
+            tuple(float(index == choice) for index in range(len(options))),
+            choice,
+        )
+        for (question, (_, options)), choice in zip(
+            RULES_QUESTIONS.items(), choices, strict=True
+        )
+    )
+    decision_frame = encode_decision(
+        Decision(sequence=22, timestamp_us=1100000, status=Status.OK, answers=answers)
+    )
+    error = {"position_error_m": 0.0, "heading_error_rad": 0.0, "profile_exact": True}
+    config = Config.from_record(c1_discrete_path_fixtures["records"][0]["config"])
+    retained = diagnostics._prepare_synthetic_c1_normal_request(
+        source,
+        state_frame,
+        decision_frame,
+        request_id="d" * 32,
+        source_context={
+            "epoch": "a" * 32,
+            "source_identity": "b" * 64,
+            "c1_reference_identity": "c" * 64,
+            "capture_tick": 20,
+            "reference_tick": 22,
+        },
+        reference_tick=22,
+        config=config,
+        error_evidence=error,
+        synthetic_test_only=True,
+    )
+    assert retained["fixture_request_prepared"] is True
+    received = deepcopy(retained["request"])
+    history = [deepcopy(c1_discrete_path_fixtures["records"][int(case == 7)])]
+    distance = sum(
+        Fraction(decode_state(frame).velocity_m_s[0]) for frame in frames[1:]
+    ) * Fraction(0.05)
+    evidence = {
+        "source_states": states,
+        "state_frames": frames,
+        "history_assumptions": dict.fromkeys(
+            (
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            ),
+            True,
+        ),
+        "prefix_history_binding_exact": True,
+        "remaining_point_error_m": 1e-8,
+        "point_radius_m": 4.0,
+    }
+    options = {
+        "current_tick": 23 if case == 3 else 22,
+        "reference_pose_m_rad": [float(Fraction(2) + distance), 2.0, 0.0],
+        "config": config,
+        "error_evidence": error,
+        "current_body_clear": case != 12,
+        "controlled_envelope": case != 13,
+        "synthetic_test_only": case != 14,
+    }
+    if case == 4:
+        received["command_words"]["target_speed_m_s"] ^= 1
+    elif case == 5:
+        states[-1] = replace(source, goal_m=(2.0, 1.0, 0.0))
+        frames[-1] = encode_state(states[-1])
+    elif case == 6:
+        states[-1] = replace(source, goal_m=(2.0, 1.0, 0.0))
+    elif case == 8:
+        history[-1]["capture_ticks"][0] = 21
+    elif case == 9:
+        evidence["remaining_point_error_m"] = None
+    elif case == 10:
+        states.pop(1)
+        frames.pop(1)
+    elif case == 11:
+        evidence["remaining_point_error_m"] = 2.0
+    elif case == 15:
+        options["target_speed"] = 0.4
+    saved = deepcopy(
+        (
+            retained,
+            received,
+            source,
+            state_frame,
+            decision_frame,
+            history,
+            evidence,
+            options,
+        )
+    )
+
+    def probe():
+        ledger["wrapper"] += 1
+        assert ledger["wrapper"] <= 32
+        return diagnostics._probe_synthetic_c1_current_request_path(
+            retained,
+            received,
+            source,
+            state_frame,
+            decision_frame,
+            history,
+            evidence,
+            **options,
+        )
+
+    before = dict(ledger)
+    if case in (14, 15):
+        with pytest.raises(
+            ValueError if case == 14 else TypeError,
+            match="synthetic_test_only" if case == 14 else "target_speed",
+        ):
+            probe()
+        assert (
+            ledger["recheck"] == before["recheck"] and ledger["path"] == before["path"]
+        )
+    else:
+        result = probe()
+        assert result["fixture_request_path_excluded"] is (case < 3)
+        assert (
+            result["guard_status"] == "UNKNOWN"
+            and result["fixture_permission_granted"] is False
+        )
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case < 3:
+            assert result["request_sha256"] == retained["request_sha256"]
+            assert result["motion_sha256"] == retained["request"]["motion_sha256"]
+            assert result["status"] == "excluded_from_current_matched_request_fixture"
+            assert result["work"] == {
+                "source_recheck_entries": 1,
+                "normal_motion_entries": 1,
+                "path_entries": 1,
+                "digest_entries": 3,
+            }
+            assert (
+                result["path_enclosure"]["registration_bound"]["source_bindings"][-1][
+                    "state_frame"
+                ]
+                == state_frame
+            )
+            if case == 0:
+                original = deepcopy(result)
+                result["path_enclosure"]["registration_bound"][
+                    "source_bindings"
+                ].clear()
+                assert probe() == original
+        else:
+            assert (
+                result["status"] == "unknown"
+                and "request_sha256" not in result
+                and "path_enclosure" not in result
+            )
+            if case in (3, 4, 5, 6, 8, 9, 10, 12, 13):
+                assert (
+                    result["reason"]
+                    == {
+                        3: "request_expired",
+                        4: "request_content_mismatch",
+                        5: "request_path_current_frame_mismatch",
+                        6: "request_path_current_source_mismatch",
+                        8: "request_c1_capture_context_mismatch",
+                        9: "remaining_point_error_missing",
+                        10: "incomplete_frame_history",
+                        12: "current_body_clear_not_established",
+                        13: "controlled_envelope_not_established",
+                    }[case]
+                )
+            else:
+                assert result["reason"]
+            if case in (3, 4, 5, 6, 8):
+                assert ledger["path"] == before["path"]
+    assert (
+        retained,
+        received,
+        source,
+        state_frame,
+        decision_frame,
+        evidence,
+        options,
+    ) == (saved[0], saved[1], saved[2], saved[3], saved[4], saved[6], saved[7])
+    assert json.dumps(history, default=json_value, sort_keys=True) == json.dumps(
+        saved[5], default=json_value, sort_keys=True
+    )
+
+
+@pytest.fixture(scope="module")
 def c1_history_registration_ledger(request):
     ledger = dict.fromkeys(("bound", "binding", "reference", "forbidden"), 0)
     yield ledger

@@ -13071,6 +13071,120 @@ diff/whitespace. Stage only these files and normally push via the configured
 upstream; no unchanged root rerun for docs. No job, generated artifact or cleanup
 pending.
 
+## 170. Current Matched Request/Path-Margin Composition (2026-11-06)
+
+Checkpoint §169 committed/normally pushed as
+`146c336b912dc9caca1010b5c5bff7efb5540306`; main clean/upstream 0/0. Continue
+conditional source-request/path composition, not source/full-guard qualification,
+normal runtime, actuation, task-data or study authority.
+
+**Pre-execution hypothesis/check.** The command/path-margin consumer chooses its
+current State/frame from separate point-history evidence. Bind its last frame and
+original-State fingerprint to the freshly rechecked request, derive command/profile
+internally, and require both generated motion fingerprints and returned current
+frame to match. A regenerated foreign goal frame has the same braking path but must
+reject before spatial checking. C1 latest capture tick must match declared request
+context; IDs/source/ray/clock/pose/body/error authority remain unqualified. Existing
+fixture body-clear/envelope declarations are conditional assumptions, never true
+qualification flags or a usable guard. All outputs retain `UNKNOWN`, no permission
+and all seven flags false. Do not select a command from geometry.
+
+Finite sixteen-control CPU scope, up to four focused/failed/aborted/repair/style/
+required-root positions. Reuse the existing two C1 static scenes and unchanged
+discrete-path module fixture: each constructed fixture has exactly two captures
+and three preparation motion controls, tracked by its existing ledger; root shares
+that single fixture with old controls. No new world/study episode/reference/owner/
+auditor/rover/runtime/data/model/dependency/download/hardware. Capture is forbidden
+inside the new consumer/tests after fixture setup. Parent per complete position:
+max32 wrapper/recheck/command/path/inspection/prefix/history/cell, max48 preparer,
+max64 matcher/normal/mapper/State decode/Decision decode/bridge/motion, max192 binder,
+max256 digest including initial request preparation, rechecks, frame/source/path
+fingerprints and repeats; zero forbidden. These accounting caps cover the added
+nested joins and complete history, not changes to any old family/work limit or
+standalone scope renewal. Existing 1-command/16-brake/128-chord/16-term/source4096/
+motion16384/65536-cell/12-depth/16-band ceilings and tolerances unchanged. Local
+bounded point-history/latest-record ingress checks are fixture content checks, not
+source attestation, accepted product format or measured resources. No saved logs or
+reports are regenerated; all task-data/S1-S5/one-use/physical/numerical gates stay.
+
+First position: sixteen failed, 1,626 deselected, 3.78 s. Producer read confirms
+the actual C1 record has eight uint32 `capture_ticks`, not scalar `capture_tick`;
+the guessed field stopped all spatial work. Ownership comparison also sent frame
+bytes to the existing NumPy-only JSON default callback, which correctly rejects
+bytes. Repair only the new consumer to check all eight actual ticks and the new
+test to compare State/bytes directly and serialize only array-containing C1
+history. Same sixteen cases/expected outcomes/caps retained; no assertion/guard
+relaxed. Failed actual ledger: 16 wrapper/14 recheck/26 matcher/28 preparer/28
+normal/28 mapper/28 State decode/28 Decision decode/28 bridge/28 binder/28 motion/
+149 digest/zero command/path/inspection/prefix/history/cell/forbidden. Fixture
+preparation exactly two captures/three motion controls.
+
+Second position: six failed/ten passed, 1,626 deselected, 6.73 s. New capture-array
+and ownership checks pass; the six path calls reject the test's normal noisy
+Config at `_c1_config`, whose existing declared ideal C1 error profile remains
+strict. Repair only the new test to reconstruct the fixture's recorded Config
+with existing `Config.from_record`, binding that same Config in initial request
+preparation and current/path recheck. No normal Config/default/guard changes,
+noise stripping or tolerance relaxation. Actual second ledger: 16 wrapper/14
+recheck/26 matcher/28 preparer/37 normal/37 mapper/37 State decode/37 Decision
+decode/37 bridge/37 binder/37 motion/158 digest/9 command/zero path/inspection/
+prefix/history/cell/forbidden, plus two captures/three preparation motion controls.
+Third repair position: same sixteen pass, 1,626 deselected, 2.49 s. The associated
+zero-query import-order repair/format/lint/format-check/whitespace pass; Ruff fixes
+one new import order only, all eighty prior diagnostics/312 prior test module
+nodes AST-exact/in order, one source/two test nodes added. Actual ledger:
+17 wrapper/15 recheck/28 matcher/29 preparer/39 normal/39 mapper/39 State decode/
+39 Decision decode/46 bridge/64 binder/46 motion/170 digest/10 command/7 path/
+7 inspection/7 prefix/7 history/5 cell/zero forbidden, plus two captures/three
+preparation motion controls. Owned repeat is included. Foreign last frame/source
+and a single changed view tick stop before path work; no opt-in/unsupported target
+stop before source recheck. Three mapped sector/tier/speed combinations exclude
+conditionally; occupied geometry/unresolved large point margins remain unknown.
+
+Fourth/final position: required root `/opt/venv/bin/python -m pytest -q &&
+ruff check . && ruff format --check sim/diagnostics.py tests/test_sim.py &&
+git diff --check` passes **2,565 plus known transformer QDQ xfail/71 warnings**,
+no skips, 63.55 s. Actual new ledger identical to third; root shares the single
+unchanged fixture with old discrete-path controls. Old root fixtures are necessary
+compatibility, not standalone old experiment/audit renewal. No normal runtime/C/
+native source or extra opt-in sanitizer/Arm/board/model gate changed or ran.
+
+All four positions spent, no fifth/borrowed old slot. Actual cumulative new ledger
+**66 wrapper/58 recheck/108 matcher/114 preparer/143 normal/143 mapper/143 State
+decode/143 Decision decode/157 bridge/193 binder/157 motion/647 digest/29 command/
+14 path/14 inspection/14 prefix/14 history/10 cell/zero forbidden**; separately
+unchanged fixture preparation eight captures/twelve motion controls, always the
+same two scenes, not independent cohorts or a new study. Both failed matrices
+remain historical; no assertions/tolerances/caps/flags relaxed.
+
+Root-tested source SHA256
+`0c2efbc4e159ae68562f123073d0478ffd3b90dd0d9dd2d69051659cce5062bf`;
+test SHA256 `4398925695e7ad291d82d8e8981ef1a2b95165b8b2e64be697b71623888e461a`.
+Entire mapper SHA256 `18c32dc4b7345d56016f9adc5e17b696ed19187bd6eb686752060e7f8c63f5c4`
+unchanged. AST syntax/editor checks pass; language-server definition+one test-only
+reference, no normal call site. No source/test edit after root. Request/frame/
+motion correspondence and all eight declared tick matches do not qualify C1
+record identity, source authority, native/range/pose/clock/body/error evidence,
+ID uniqueness, expiry clock, one-use executor, physical or task quality. Every
+output is `UNKNOWN`, permission false/all seven flags false; no usable `OK`,
+actuation/trial, accepted data, new generated report or cleanup pending.
+
+Checkpoint reassessment: this closes the named current-request/path content
+prerequisite, not S1-S5. Next actual C1 record content/configuration-to-context
+recheck, since §170 matches view ticks but not declared C1 identity. A matching
+content hash still cannot provide owner/source authority or permission. Retain
+unchanged complete-history registration, motion/error/profile/body/envelope gates;
+do not resume general arithmetic/identity audits or protected studies. Scoped
+documentation/history/links/root-tested-byte/diff checks and checkpoint commit/
+normal configured-upstream synchronization follow; no unchanged root rerun.
+
+Scoped documentation checks pass: exact prior REVIEW §§1-169/Sources, stable
+workflow/older task results, prior design contracts/roadmap, 686 prose references/
+25 inline links/70 local targets+anchors, editor/whitespace and five-file scope.
+The documentation tool reported a repeated DESIGN file header and automatically
+regrouped it; all three documentation files applied and were validated afterward.
+No fixture/root rerun, data regeneration or security/environment change follows.
+
 ## Sources
 
 Hardware and tools:

@@ -4494,6 +4494,217 @@ def _recheck_synthetic_c1_normal_request_source(
     return result
 
 
+def _probe_synthetic_c1_current_request_path(
+    retained_request,
+    received_request,
+    source_state,
+    state_frame,
+    decision_frame,
+    history,
+    point_error_evidence,
+    *,
+    current_tick,
+    reference_pose_m_rad,
+    config=None,
+    settings=None,
+    error_evidence=None,
+    current_body_clear=False,
+    controlled_envelope=False,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    synthetic_test_only=False,
+):
+    """Tie a matched current request to the conditional fixture path consumer."""
+    from dataclasses import asdict
+
+    from interface.protocol import State
+
+    if synthetic_test_only is not True:
+        raise ValueError("request path requires synthetic_test_only=True")
+    work = {
+        "source_recheck_entries": 0,
+        "normal_motion_entries": 0,
+        "path_entries": 0,
+        "digest_entries": 0,
+    }
+    result = {
+        "schema": "micro-classifier/synthetic-c1-current-request-path/1",
+        "allowed_use": "conditional_current_request_path_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_current_request_path",
+        "fixture_request_path_excluded": False,
+        "fixture_permission_granted": False,
+        "guard_status": "UNKNOWN",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    work["source_recheck_entries"] = 1
+    source = _recheck_synthetic_c1_normal_request_source(
+        retained_request,
+        received_request,
+        source_state,
+        state_frame,
+        decision_frame,
+        current_tick=current_tick,
+        config=config,
+        settings=settings,
+        error_evidence=error_evidence,
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        synthetic_test_only=True,
+    )
+    result["source_recheck_work"] = deepcopy(source["work"])
+    if source["fixture_request_source_rechecked"] is not True:
+        result["reason"] = source["reason"]
+        return result
+    keys = {
+        "source_states",
+        "state_frames",
+        "history_assumptions",
+        "prefix_history_binding_exact",
+        "remaining_point_error_m",
+        "point_radius_m",
+    }
+    if (
+        type(point_error_evidence) is not dict
+        or len(point_error_evidence) != len(keys)
+        or any(type(key) is not str for key in point_error_evidence)
+        or set(point_error_evidence) != keys
+    ):
+        result["reason"] = "unsupported_point_error_evidence"
+        return result
+    states, frames = (
+        point_error_evidence["source_states"],
+        point_error_evidence["state_frames"],
+    )
+    if (
+        type(states) not in (list, tuple)
+        or type(frames) not in (list, tuple)
+        or not 1 <= len(states) == len(frames) <= 4
+        or type(states[-1]) is not State
+        or type(frames[-1]) is not bytes
+        or not 1 <= len(frames[-1]) <= 128
+    ):
+        result["reason"] = "unsupported_frame_history"
+        return result
+    if frames[-1] != state_frame:
+        result["reason"] = "request_path_current_frame_mismatch"
+        return result
+
+    def digest(value):
+        work["digest_entries"] += 1
+        return _c1_source_binding_digest(value)
+
+    if digest(asdict(states[-1])) != source["source_state_sha256"]:
+        result["reason"] = "request_path_current_source_mismatch"
+        return result
+    if (
+        type(history) not in (list, tuple)
+        or not 1 <= len(history) <= 8
+        or type(history[-1]) is not dict
+        or not 1 <= len(history[-1]) <= 128
+        or any(type(key) is not str for key in history[-1])
+    ):
+        result["reason"] = "request_c1_capture_context_mismatch"
+        return result
+    ticks = history[-1].get("capture_ticks")
+    if (
+        type(ticks) is not np.ndarray
+        or ticks.shape != (8,)
+        or ticks.dtype != np.dtype(np.uint32)
+        or not np.all(ticks == received_request["source_context"]["capture_tick"])
+    ):
+        result["reason"] = "request_c1_capture_context_mismatch"
+        return result
+    config = Config() if config is None else config
+    work["normal_motion_entries"] = 1
+    normal = _probe_synthetic_c1_normal_state_motion(
+        source_state,
+        state_frame,
+        decision_frame,
+        reference_tick=current_tick,
+        config=config,
+        settings=settings,
+        error_evidence=error_evidence,
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        synthetic_test_only=True,
+    )
+    result["normal_motion_work"] = deepcopy(normal["work"])
+    if normal["fixture_normal_motion_enclosed"] is not True:
+        result["reason"] = normal["reason"]
+        return result
+    if (
+        normal["requested_command_words"] != received_request["command_words"]
+        or digest(normal["state_motion"]["motion"]) != source["motion_sha256"]
+    ):
+        result["reason"] = "request_generated_motion_mismatch"
+        return result
+    command = normal["mapped_command"]["requested_command"]
+    profile = {
+        key: getattr(config, key)
+        for key in ("dt", "acceleration", "max_speed", "max_turn_rate", "radius")
+    }
+    work["path_entries"] = 1
+    path = _probe_synthetic_c1_command_path_enclosure(
+        history,
+        point_error_evidence,
+        reference_tick=current_tick,
+        reference_pose_m_rad=reference_pose_m_rad,
+        target_speed=command["target_speed_m_s"],
+        turn_rate=command["turn_rate_rad_s"],
+        error_evidence=error_evidence,
+        profile=profile,
+        current_body_clear=current_body_clear,
+        controlled_envelope=controlled_envelope,
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        max_cells=max_cells,
+        max_depth=max_depth,
+        radius_bands=radius_bands,
+        config=config,
+        synthetic_test_only=True,
+    )
+    result["path_work"] = deepcopy(path["work"])
+    if path["fixture_command_path_excluded"] is not True:
+        result["reason"] = path["reason"]
+        return result
+    if (
+        path["current_state_frame_hex"] != received_request["state_frame_hex"]
+        or digest(path["state_motion"]["motion"]) != source["motion_sha256"]
+    ):
+        result["reason"] = "request_path_motion_binding_mismatch"
+        return result
+    result.update(
+        status="excluded_from_current_matched_request_fixture",
+        reason="conditional_path_margins_source_and_guard_unqualified",
+        fixture_request_path_excluded=True,
+        request_sha256=source["request_sha256"],
+        motion_sha256=source["motion_sha256"],
+        current_tick=current_tick,
+        path_enclosure=deepcopy(path["path_enclosure"]),
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

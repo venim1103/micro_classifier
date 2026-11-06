@@ -249,6 +249,194 @@ def test_synthetic_c1_source_intervals_bind_actual_wire(case, monkeypatch):
 
 
 @pytest.fixture(scope="module")
+def c1_state_motion_ledger(request):
+    ledger = dict.fromkeys(("bridge", "binding", "motion", "reference", "forbidden"), 0)
+    yield ledger
+    assert all(
+        ledger[key] <= 32 for key in ("bridge", "binding", "motion", "reference")
+    )
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 state-motion ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 state-motion ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_state_motion_propagates_actual_frame(
+    c1_state_motion_ledger, monkeypatch, case
+):
+    import struct
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics
+
+    ledger = c1_state_motion_ledger
+    for key, name in (
+        ("binding", "_bind_synthetic_c1_state_intervals"),
+        ("motion", "_probe_synthetic_c1_discrete_motion"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= 32
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("state-motion bridge must not query C1 or execute a rover")
+
+    for name in (
+        "inspect_synthetic_c1_history",
+        "capture_synthetic_c1_views",
+        "_probe_synthetic_c1_discrete_path_enclosure",
+        "_probe_synthetic_c1_wire_rejection",
+        "_c1_curved_centerline",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    speed, turn = (
+        (0.2, 0.75) if case == 0 else (0.35, -0.75) if case == 1 else (0.5, 0.0)
+    )
+    if case == 3:
+        speed = 0.0
+    elif case == 4:
+        speed = 0.6
+    source = State(
+        sequence=22,
+        timestamp_us=1100000,
+        velocity_m_s=(speed, 0.0, 0.0),
+        goal_m=(3.0, 0.0, 0.0),
+    )
+    if case == 5:
+        source = replace(source, velocity_m_s=(speed, math.ulp(0.0), 0.0))
+    elif case == 6:
+        source = replace(source, angular_velocity_rad_s=(0.01, 0.0, 0.0))
+    elif case == 7:
+        source = replace(source, goal_m=(3.0, 0.0, 0.01))
+    elif case == 9:
+        source = replace(source, timestamp_us=1150000)
+    elif case == 11:
+        source = replace(source, ages_us=(1, *source.ages_us[1:]))
+    elif case == 12:
+        source = replace(
+            source, validity=23, faults=1, ages_us=(*source.ages_us[:4], 0)
+        )
+    frame = encode_state(source)
+    if case == 10:
+        frame = encode_state(replace(source, sequence=23))
+    errors = {"position_error_m": 0.0, "heading_error_rad": 0.0, "profile_exact": True}
+    if case == 13:
+        errors = None
+    settings = {
+        "reference_tick": 22.0 if case == 8 else 22,
+        "target_speed": 0.125 if case == 3 else 0.5,
+        "turn_rate": turn,
+        "error_evidence": errors,
+        "max_braking_ticks": 0 if case == 14 else 16,
+        "synthetic_test_only": case != 15,
+    }
+    saved_source, saved_errors = source, deepcopy(errors)
+    before = dict(ledger)
+    ledger["bridge"] += 1
+    if case == 15:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._probe_synthetic_c1_state_motion(source, frame, **settings)
+        assert ledger["binding"] == before["binding"]
+        assert ledger["motion"] == before["motion"]
+    else:
+        result = diagnostics._probe_synthetic_c1_state_motion(source, frame, **settings)
+        supported = case in (0, 1, 2, 3)
+        assert result["fixture_motion_enclosed"] is supported
+        assert ledger["binding"] - before["binding"] == int(case != 8)
+        assert ledger["motion"] - before["motion"] == int(case in (0, 1, 2, 3, 13, 14))
+        assert result["work"] == {
+            "binding_entries": int(case != 8),
+            "motion_entries": int(case in (0, 1, 2, 3, 13, 14)),
+        }
+        for key in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[key] is False
+        if supported:
+            received = struct.unpack("<f", struct.pack("<f", speed))[0]
+            assert result["initial_speed_interval_m_s"] == (
+                min(speed, received),
+                max(speed, received),
+            )
+            assert result["source_intervals"]["state_frame"] == frame
+            assert result["status"] == "enclosed_from_bound_source_fixture"
+            motion = result["motion"]
+            if case in (0, 1):
+                assert (
+                    motion["command_speed_interval_m_s"][0]
+                    < motion["command_speed_interval_m_s"][1]
+                )
+            for value in (speed, received):
+                ledger["reference"] += 1
+                reference = _c1_discrete_motion_reference(
+                    {
+                        "initial_speed": value,
+                        "target_speed": settings["target_speed"],
+                        "turn_rate": turn,
+                    }
+                )
+                for index, box in enumerate(motion["centerline_boxes_m"]):
+                    point = reference["vertices"][
+                        min(index, len(reference["vertices"]) - 1)
+                    ]
+                    for coordinate, (lower, upper) in zip(point, box, strict=True):
+                        assert (
+                            Fraction(lower)
+                            <= coordinate[0]
+                            <= coordinate[1]
+                            <= Fraction(upper)
+                        )
+            for key in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ):
+                assert motion[key] is False
+            result["motion"]["centerline_boxes_m"][0][0][0] = 123.0
+        else:
+            reasons = {
+                4: "source_interval_outside_motion_domain",
+                5: "unsupported_planar_source_intervals",
+                6: "unsupported_planar_source_intervals",
+                7: "unsupported_planar_source_intervals",
+                8: "unsupported_reference_tick",
+                9: "frame_tick_binding_mismatch",
+                10: "source_frame_binding_mismatch",
+                11: "stale_host_state",
+                12: "unsupported_host_task_or_faults",
+                13: "error_evidence_missing",
+                14: "braking_budget_exhausted",
+            }
+            assert result["reason"] == reasons[case]
+            assert result["status"] == "unknown" and "motion" not in result
+    assert source == saved_source and errors == saved_errors
+
+
+@pytest.fixture(scope="module")
 def c1_discrete_path_fixtures(request):
     from sim import diagnostics
 

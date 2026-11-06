@@ -2260,12 +2260,44 @@ later consumers must reject unsupported domains. The old wire helper's changed-
 decoded-value rejection remains unchanged. [Review §156][path-source-review]
 records the fixed controls, retained failures and separate verification ledgers.
 
-Next connect these exact source-word intervals to the named discrete-motion
-and capture-registration consumers, preserving complete uncertainty and actual
-frame/event identity. A partial fixture bridge must not become a permit, hide
-missing native/clock/source evidence or claim a qualified normal profile.
+The separate state-to-motion bridge below now propagates the complete speed
+interval. Capture-registration propagation remains a separate prerequisite;
+preserve complete history and frame identity, not just a current-frame error.
 
 [path-source-review]: REVIEW.md
+
+##### Conditional Actual-Frame Motion Bridge (2026-11-06)
+
+The private `_probe_synthetic_c1_state_motion` connects the actual-wire/source-
+word binder to the existing discrete-motion producer's two-endpoint
+`initial_speed` input. It binds a bounded declared reference tick to the actual
+frame's nominal `tick * 50000` microsecond timestamp, requires the rover fixture
+task/no faults, and rejects nonplanar source intervals. A source lateral value
+that rounds to zero on wire is still nonplanar. Complete speed/yaw-rate
+intervals must fit the existing motion domain; decoded `0.6` overshoot is not
+clamped. Unsupported command domains reject before motion rather than silently
+changing the requested command.
+
+Both source/decoded speed endpoints pass through the acceleration update and
+complete discrete braking tail. Explicit position/heading/profile error
+evidence remains necessary; a successful source-word binding supplies none of
+it. Missing evidence or bounded-work failure stays unknown without partial
+geometry. The source-word and motion integer ceilings remain 4,096 and 16,384
+bits; the one-command/16-braking-tick/128-chord/16-term limits are unchanged.
+Inputs and returned evidence are separately owned. All qualification,
+admission and training flags remain false. [Review §157][state-motion-review]
+records sixteen controls, both scalar endpoint references and retained failure.
+
+Frame/tick correspondence is not source/event authority, measured clock
+synchronization, native execution or a permit. The bridge exposes no runtime
+action/wire decision and admits no startup/full guard. Next independently
+bound registration from complete acquisition-to-reference interval-ending
+source/decoded frame history and explicit timing/profile assumptions. Do not
+multiply the current frame's discrepancy by capture age: earlier intervals can
+differ when the current fields are exact. Keep pose, return/range, native and
+clock evidence distinct; passing this bridge satisfies none of S1-S5.
+
+[state-motion-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -10815,11 +10847,12 @@ runtime queries. The one default-root renewal is spent. This supplies conditiona
 ideal motion enclosures only, not native arithmetic/registration or S1-S5
 qualification. The additive path-cell kernel and twelve fixed controls are
 complete (§155). The discrete-path/wall adapter and exact actual-wire/source-
-word interval boundary now pass 24 and 16 fixed controls respectively (§156);
-the repaired new-source root gate passes 2,337 tests plus the known xfail/71
-warnings. Prior spent standalone scopes remain spent. Next: propagate the
-source-word bounds into named motion/registration consumers, then close the
-actual source/native/clock evidence gates. These conditional prerequisites
+word interval boundary now pass 24 and 16 fixed controls respectively (§156).
+The actual-frame motion bridge passes sixteen controls (§157); the required
+new-source root gate passes 2,353 tests plus the known xfail/71 warnings. Prior
+spent standalone scopes remain spent. Next: complete-history registration
+discrepancy propagation, then actual source/native/clock evidence gates.
+These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete

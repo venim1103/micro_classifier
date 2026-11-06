@@ -11824,6 +11824,88 @@ actions or a standalone replay of these spent matrices.
 [path-source-implementation]: sim/diagnostics.py
 [path-source-controls]: tests/test_sim.py
 
+## 157. Bound Actual-Frame Intervals Into Discrete Motion (2026-11-06)
+
+Checkpoint §156 was committed and normally pushed as
+`ac8bc937244afbe8b6708cf1dc7568305054020b`; the worktree/upstream were clean and
+synchronized. Stale credential-helper warnings did not block the push; no
+remote, credential or security setting changed. Continued the named S4 motion
+consumer under standing authority, not a new study or arithmetic/identity audit.
+
+**Hypothesis and scope.** The motion producer already accepts two `initial_speed`
+endpoints. The exact actual-frame source/decoded interval can enter this input
+without discarding either discrepancy sign, and both scalar endpoint paths must
+remain enclosed after acceleration/discrete braking. Reject unsupported decoded
+domains before motion, not by clamping. Recorded before execution: sixteen
+fixed actual-wire controls; at most 32 new-family bridge/binder/motion/reference
+entries per matrix and four verification positions including failures/repairs/
+root. Existing 4,096/16,384-bit, one-command/16-braking-tick/128-chord/16-term
+ceilings unchanged. CPU-only in-memory states/frames, zero new C1 capture,
+scene/owner/rover/runtime/model queries or task data. No positive permit.
+
+**Implemented.** [The additive bridge][state-motion-source] binds source `State`
+and actual bytes with §156's unchanged binder, checks nominal frame timestamp
+against a bounded declared fixture tick, rover task/no faults and complete
+planar source intervals. Original subnormal lateral data cannot disappear just
+because wire decoding yields zero. Complete speed/yaw-rate intervals must fit
+the existing domain; unsupported requests reject before motion. Exactly
+representable speed endpoints enter the unchanged ideal motion producer with
+separately owned explicit error/profile evidence and unchanged work limits.
+Unknown source/error/work cases publish no partial motion geometry. All source,
+native, numerical, free-space, real-input, admission and training flags remain
+false; nominal timestamp correspondence is not clock/source/event authority.
+
+[Sixteen controls][state-motion-controls] cover positive/negative discrepancy,
+exact speed, at-rest artificial startup motion, decoded `0.6` overshoot, original
+subnormal lateral data, angular/goal nonplanarity, noninteger ticks, wrong
+timestamps, changed frames, stale input, valid fresh fault flags, missing error
+evidence, braking exhaustion and omitted synthetic opt-in. Four supported
+cases compare both scalar endpoint trajectories with the existing independent
+direct-integral-series reference. Shorter zero-speed reference tails are held
+at their final vertex; every complete returned endpoint box contains both
+references. This is fixture enclosure, not numerical/physical/task quality.
+
+| Position | Check/result | Bridge / binder / motion / reference |
+| --- | --- | --- |
+| 1 | Two discrepancy-sign probes: 2 pass, 1,414 deselected, 0.26 s. | 2 / 2 / 2 / 4 |
+| 2 | Fixed sixteen controls: 15 pass, one setup failure before the bridge, 1,414 deselected, 1.39 s. | 15 / 13 / 6 / 8 |
+| 3 | Same fixed matrix after fixture repair: 16 pass, 1,414 deselected, 1.01 s. | 16 / 14 / 6 / 8 |
+| 4 | Required root `python -m pytest -q && ruff check . && git diff --check`: 2,353 pass, known QDQ xfail, 71 existing warnings, no skips, 56.68 s; lint/whitespace pass. | 16 / 14 / 6 / 8 |
+
+All four positions are **spent**. Totals **49 / 43 / 20 / 28**, including the
+failed setup, with zero forbidden calls. The failed fault fixture encoded a
+nonzero field while its group was invalid/unknown-age. Marking the existing
+fault group valid with zero age repaired the fixture; codec validation and
+bridge rejection were not changed. No assertion, cap or tolerance was relaxed.
+Required root reused unchanged §156 path 24/11/7/6/two captures/three motion,
+source-word sixteen controls, §153 motion 18/12, old wire 48/32/10/two scenes
+and composition/target/join controls as compatibility gates only. No old
+standalone experiment ledger is refunded or reactivated.
+
+Ruff lint/changed-file format, editor and Pylance file syntax checks pass.
+Pylance resolved both bridge call sites as signature-compatible. All **70
+prior diagnostics AST nodes and 286 prior test nodes** are unchanged in order,
+adding one source and two test/fixture nodes. Tested SHA256: diagnostics
+`2f1b201117cff94722cbc22a73109e27354524bcb89fdbe58681ec12a9a5a64d`;
+tests `60fc084bea6bac28581593ef2a52286089f1bd3521ead9eb349ad85ce0c70b64`.
+Scoped documentation/history/references/targets/whitespace/diff/staged-byte
+checks apply before commit; the successful source gate is not rerun for docs.
+No normal C/runtime source or public API, persistent artifact/log/report/data,
+dependencies/downloads, teacher/tokenizer/GPU, ST/hardware or additional opt-in
+sanitizer/Arm work changed. No job or cleanup remains.
+
+**Next.** Independently scope complete-history acquisition-to-reference
+registration discrepancy propagation, retaining nominal/stored-word timing and
+source/native/return evidence separation. Current-frame delta times age is not
+a history bound: previous interval-ending speed/yaw fields may have rounded
+while the current ones are exact. Retain explicit start/timing assumptions and
+complete frame identity; no source/clock/registration qualification or full
+guard follows. Tasks 6/9/D4/S1-S5, physical/task-quality, all fifteen undecided
+verdicts/five old false flags and hardware/teacher-asset gates remain unchanged.
+
+[state-motion-source]: sim/diagnostics.py
+[state-motion-controls]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

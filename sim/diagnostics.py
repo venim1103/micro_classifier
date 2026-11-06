@@ -3568,6 +3568,131 @@ def _bind_synthetic_c1_state_intervals(
     return result
 
 
+def _probe_synthetic_c1_state_motion(
+    source_state,
+    state_frame,
+    *,
+    reference_tick,
+    target_speed,
+    turn_rate,
+    error_evidence=None,
+    profile=None,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    source_max_integer_bits=4096,
+    motion_max_integer_bits=16384,
+    synthetic_test_only=False,
+):
+    """Propagate bound host-word speed intervals into the ideal motion fixture."""
+    from interface.protocol import decode_state
+
+    if synthetic_test_only is not True:
+        raise ValueError("state motion requires synthetic_test_only=True")
+    work = {"binding_entries": 0, "motion_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-state-motion/1",
+        "allowed_use": "conditional_source_word_motion_fixture_only",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "fixture_motion_enclosed": False,
+        "status": "unknown",
+        "reason": "unsupported_reference_tick",
+        "work": work,
+    }
+    if type(reference_tick) is not int or not 0 <= reference_tick <= 85899:
+        return result
+    work["binding_entries"] = 1
+    binding = _bind_synthetic_c1_state_intervals(
+        source_state,
+        state_frame,
+        max_integer_bits=source_max_integer_bits,
+        synthetic_test_only=True,
+    )
+    result["source_intervals"] = deepcopy(binding)
+    if binding["fixture_words_bound"] is not True:
+        result["reason"] = binding["reason"]
+        return result
+    decoded = decode_state(state_frame)
+    if decoded.timestamp_us != reference_tick * 50000:
+        result["reason"] = "frame_tick_binding_mismatch"
+        return result
+    if decoded.task_id != 1 or decoded.faults != 0:
+        result["reason"] = "unsupported_host_task_or_faults"
+        return result
+    fields = binding["fields"]
+    for field, indices in (
+        ("velocity_m_s", (1, 2)),
+        ("angular_velocity_rad_s", (0, 1)),
+        ("goal_m", (2,)),
+    ):
+        for index in indices:
+            if any(Fraction(*pair) != 0 for pair in fields[field][index]["interval"]):
+                result["reason"] = "unsupported_planar_source_intervals"
+                return result
+    speeds = tuple(Fraction(*pair) for pair in fields["velocity_m_s"][0]["interval"])
+    yaw = tuple(
+        Fraction(*pair) for pair in fields["angular_velocity_rad_s"][2]["interval"]
+    )
+    if (
+        speeds[0] < 0
+        or speeds[1] > Fraction(0.6)
+        or yaw[0] < Fraction(-1.5)
+        or yaw[1] > Fraction(1.5)
+    ):
+        result["reason"] = "source_interval_outside_motion_domain"
+        return result
+    if (
+        type(target_speed) not in (int, float)
+        or type(turn_rate) not in (int, float)
+        or not 0 <= target_speed <= 0.6
+        or not -1.5 <= turn_rate <= 1.5
+    ):
+        result["reason"] = "unsupported_command_domain"
+        return result
+    endpoints = tuple(float(speed) for speed in speeds)
+    if any(
+        Fraction(value) != speed for value, speed in zip(endpoints, speeds, strict=True)
+    ):
+        result["reason"] = "unsupported_speed_endpoint_conversion"
+        return result
+    work["motion_entries"] = 1
+    motion = _probe_synthetic_c1_discrete_motion(
+        initial_speed=endpoints,
+        target_speed=target_speed,
+        turn_rate=turn_rate,
+        error_evidence=deepcopy(error_evidence),
+        profile=deepcopy(profile),
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        max_integer_bits=motion_max_integer_bits,
+        synthetic_test_only=True,
+    )
+    if motion["fixture_motion_enclosed"] is not True:
+        result["reason"] = motion["reason"]
+        result["motion_work"] = deepcopy(motion["work"])
+        return result
+    result.update(
+        status="enclosed_from_bound_source_fixture",
+        reason="complete_source_word_speed_interval_propagated",
+        fixture_motion_enclosed=True,
+        initial_speed_interval_m_s=endpoints,
+        motion=deepcopy(motion),
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

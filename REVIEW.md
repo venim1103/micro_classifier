@@ -12421,6 +12421,108 @@ and independently check body/domain support; no online geometry-selected command
 or source-authority promotion. Request/expiry/executor and source qualification
 remain separate gates. No job, new artifact or cleanup pending.
 
+## 163. Isolated Initial-Setup Fixture Evidence (2026-11-06)
+
+The test-only startup checkpoint §162 was committed and normally pushed as
+`6ae302e68354eaea1e05aa9e23dabab00b87d9d6`; main was clean/synchronized. Continue
+the named S1 initial-body/setup prerequisite under standing authority, not a
+general source/arithmetic/identity audit or admission decision.
+
+**Local hypothesis and scope before execution.** The existing current-frame
+composition needs literal body/envelope premises; the old source auditor uses
+current private geometry and a floating hypot guard. A separate offline checker
+can own a bounded declared initial Scenario/config/epoch, enforce the existing
+cylinder radius/height and wall profile and require strict exact stored-word wall
+and squared-circle separation. Tangency/overlap/missing/malformed/out-of-domain/
+over-budget data returns unknown without partial setup evidence. A successful
+record is only declared fixture content, not authority/completeness attestation,
+measured error, S1 satisfaction or permission to set runtime/body flags. No live
+path/question/guard consumer is wired in this increment.
+
+Finite pre-execution budget: sixteen fixed controls using the same two nominal
+scene geometries plus deterministic malformed/contact/budget variants, zero
+captures/episodes/owners/rover/motion/history/prefix/cell/question/current-source
+auditor calls. At most 24 checker entries/16 digest entries per complete
+invocation, including rejection and ownership repeats; expected eighteen checker
+entries/eight digests. Three verification positions including failures/aborts,
+repairs and the necessary new-source root. Every old cap/fixture/control and spent
+standalone budget stays unchanged; default-root old controls are compatibility
+only. New helper limits: at most 32 obstacle rows, rational operand/result growth
+4096 bits, fixed shape/type/name/epoch bounds before owned copying/hashing.
+No new sensor/scenario product requirement, tolerance, uniform/native allowance,
+profile adoption, source/qualification flag, runtime/wire/actuation, task data,
+study/model/dependency/download/hardware action or cleanup.
+
+The sixteen controls include exact cylinder/wall tangency, malformed shape,
+boolean/inexact integer sources, changed epoch, missing opt-in and owned repeats.
+All seven qualification/admission/training flags remain false.
+
+First position: `16 passed, 1498 deselected` in 0.32 s; printed eighteen checker/
+eight instrumented digest entries, forbidden zero. Two additional direct original-
+helper digest references bypassed the instrumentation: actual first-position
+digest entries are ten. Retain both the printed eight and actual ten; change the
+test references to the counted wrapper, no extra helper call or cap increase.
+Rerun the same controls before the root. This is accounting repair, not a source,
+numeric expectation or behavior change; expected complete-position digest count
+is ten, still below the original sixteen-entry ceiling.
+
+**Implemented and verified, isolated only.** The private
+`_check_synthetic_c1_initial_setup` checks bounded literal Scenario/config/epoch
+content. All four axis-wall and every cylinder-body comparison use guarded exact
+stored-word rational arithmetic; squared-circle separation avoids a floating
+hypot/epsilon. Cylinder tangency is exact in the control: the stored 0.18 and
+0.07 radius words sum to exact 0.25, matching the stored center displacement.
+Contact/overlap stays unknown, not a blocked question label. Only successful
+content checks publish owned config/scene/epoch and two binding digests;
+unsupported/malformed/budget data publishes work, never partial binding.
+Scene name, epoch, tuple shapes/row count and arithmetic limits are checked before
+copy/hash. Original integer geometry must be exactly binary64, not silently
+rounded. Existing `_c1_config`, bounded arithmetic and typed source digest are
+reused; all earlier implementations/signatures remain exact. These are initial
+stored-fixture checks only, not present-body truth queries or attestation that
+the supplied Scenario is the authoritative complete source.
+
+All three positions are spent: first sixteen passes/1498 deselected/0.32 s above;
+counted-reference repair sixteen passes/1498 deselected/1.19 s; required root
+`2437 passed, 1 xfailed, 71 warnings` in 55.05 s, no skips. Second/root each report
+18 checker/10 digest/zero forbidden. Actual total 54 checker/30 digest; first
+printed eight plus two retained direct references are included, not refunded.
+Zero new-family captures, owners, source auditors, rovers, motions, prefixes,
+cells, question queries, episodes or data. The default gate reuses all unchanged
+controls and their unchanged ceilings only as required source compatibility.
+Old §161/162/160/159/158/157/156/155/153/146/138 ledgers, failures, unused positions
+and qualification limits remain historical, not standalone renewal.
+
+Commands: `/opt/venv/bin/python -m pytest -q tests/test_sim.py -k
+test_synthetic_c1_initial_setup_owns_domain_and_body` twice; required root
+`/opt/venv/bin/python -m pytest -q && ruff check . && ruff format --check
+sim/diagnostics.py tests/test_sim.py && git diff --check`. Complete-AST-preserving
+format/lint/changed-file format/syntax parse/editor checks pass. All 74 prior
+source/298 prior test nodes remain exact/in order; one source/two test nodes
+added. Pylance resolves the single test call compatibly; source/test diagnostics
+have no error/warning, only ten/74 unused-code hints (severity 4), including the
+intentionally isolated checker. No signature changes or unused-code cleanup.
+
+Root-tested SHA-256: diagnostics
+`29d823dec26c3103480cc9be5782a21405d1f7a174256e21890db0c0e9ad082a`;
+tests `e708c4e70e864c7191718bcee42c7e7f5eb4c2ac72ed99ef98b8037e52a3579e`.
+Scoped history/reference/local-target/whitespace/AST/root-tested-byte and editor
+checks pass: 679 prose references, 25 inline links and 70 existing local targets.
+All prior review/source sections, stable workflow and numbered task history stay
+exact. Stage only verified checkpoint files with matching tested bytes and
+synchronize normally; no successful code gate is rerun for docs.
+
+No normal runtime/C/native change or extra opt-in sanitizer/Arm gate. Host
+compatibility is not numerical certification, source authority/completeness,
+native/physical/clock evidence, linked firmware or task quality. S1-S5, usable
+permit/expiry/executor, Tasks 6/9/D4, source/teacher/ST/board and general-audit
+deferral remain unchanged; all seven flags stay false. No job/artifact/cleanup.
+Next finite local increment: consume rechecked owned initial setup in a separate
+conditional at-rest startup composition. Require matching epoch/canonical config,
+initial reference pose and complete exact-rest source/frame history; derive the
+fixed adopted launch/body/domain premises without a supplied true flag or current
+geometry-selected command. Still no usable guard, one-use executor or actuation.
+
 ## Sources
 
 Hardware and tools:

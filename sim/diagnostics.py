@@ -4205,6 +4205,167 @@ def _probe_synthetic_c1_discrete_path_enclosure(
     return result
 
 
+def _check_synthetic_c1_initial_setup(
+    scenario,
+    *,
+    epoch,
+    config=None,
+    max_obstacles=32,
+    max_integer_bits=4096,
+    synthetic_test_only=False,
+):
+    """Check declared initial fixture geometry offline, never admit a command."""
+    from sim.rover import Scenario
+
+    if synthetic_test_only is not True:
+        raise ValueError("initial setup fixture requires synthetic_test_only=True")
+    for limit, maximum in ((max_obstacles, 32), (max_integer_bits, 4096)):
+        if (
+            type(limit) is not int
+            or not (0 if maximum == 32 else 1) <= limit <= maximum
+        ):
+            raise ValueError("initial setup limits must be bounded integers")
+    work = {"obstacles_inspected": 0, "body_checks": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-initial-setup/1",
+        "allowed_use": "offline_declared_initial_setup_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_initial_setup",
+        "fixture_initial_body_clear": False,
+        "fixture_controlled_envelope": False,
+        "training_approved": False,
+        "real_input_qualified": False,
+        "free_space_qualified": False,
+        "numerically_certified": False,
+        "source_qualified": False,
+        "native_execution_qualified": False,
+        "command_admission_qualified": False,
+        "work": work,
+    }
+    if (
+        type(epoch) is not str
+        or len(epoch) != 32
+        or any(character not in "0123456789abcdef" for character in epoch)
+    ):
+        result["reason"] = "unsupported_setup_epoch"
+        return result
+    if type(scenario) is not Scenario or (
+        config is not None and type(config) is not Config
+    ):
+        return result
+    if (
+        type(scenario.name) is not str
+        or not 1 <= len(scenario.name) <= 64
+        or not scenario.name.isascii()
+        or any(
+            type(value) is not tuple or len(value) != length
+            for value, length in (
+                (scenario.bounds, 2),
+                (scenario.start, 3),
+                (scenario.goal, 2),
+            )
+        )
+        or type(scenario.obstacles) is not tuple
+        or type(scenario.obstacle_heights) is not tuple
+        or (
+            scenario.obstacle_heights
+            and len(scenario.obstacle_heights) != len(scenario.obstacles)
+        )
+    ):
+        return result
+    if len(scenario.obstacles) > max_obstacles:
+        result["reason"] = "setup_obstacle_budget_exhausted"
+        return result
+    arithmetic = _C1CommandArithmetic(0, max_integer_bits, work)
+
+    def word(value):
+        if type(value) is int and abs(value).bit_length() > max_integer_bits:
+            raise ArithmeticError("integer_budget_exhausted")
+        converted = arithmetic.value(value)
+        if type(value) is int and converted != value:
+            raise ValueError("setup integer must be exactly representable as binary64")
+        return converted
+
+    try:
+        owned_config = _c1_config(config)
+        if (
+            owned_config.radius != 0.18
+            or owned_config.max_speed != 0.6
+            or owned_config.acceleration != 1.0
+            or owned_config.max_turn_rate != 1.5
+            or owned_config.wall_height != 1.0
+        ):
+            result["reason"] = "unsupported_initial_setup_profile"
+            return result
+        radius = word(owned_config.radius)
+        bounds = tuple(word(value) for value in scenario.bounds)
+        start = tuple(word(value) for value in scenario.start)
+        tuple(word(value) for value in scenario.goal)
+        diameter = arithmetic.binary(radius, radius, "add")
+        if any(not arithmetic.binary(diameter, bound, "less") for bound in bounds):
+            result["reason"] = "unsupported_initial_setup_domain"
+            return result
+        obstacles = []
+        for index, obstacle in enumerate(scenario.obstacles):
+            work["obstacles_inspected"] += 1
+            if type(obstacle) is not tuple or len(obstacle) != 3:
+                return result
+            center_x, center_y, cylinder_radius = (word(value) for value in obstacle)
+            height = word(
+                scenario.obstacle_heights[index]
+                if scenario.obstacle_heights
+                else owned_config.obstacle_height
+            )
+            if (
+                arithmetic.binary(cylinder_radius, word(0.05), "less")
+                or arithmetic.binary(word(0.30), cylinder_radius, "less")
+                or arithmetic.binary(height, word(0.05), "less")
+                or arithmetic.binary(word(1.0), height, "less")
+            ):
+                result["reason"] = "unsupported_initial_setup_domain"
+                return result
+            obstacles.append((center_x, center_y, cylinder_radius))
+        for coordinate, bound in zip(start[:2], bounds, strict=True):
+            for clearance in (coordinate, arithmetic.binary(bound, coordinate, "sub")):
+                work["body_checks"] += 1
+                if not arithmetic.binary(radius, clearance, "less"):
+                    result["reason"] = "initial_body_contact_or_overlap"
+                    return result
+        for center_x, center_y, cylinder_radius in obstacles:
+            work["body_checks"] += 1
+            delta_x = arithmetic.binary(center_x, start[0], "sub")
+            delta_y = arithmetic.binary(center_y, start[1], "sub")
+            distance_squared = arithmetic.binary(
+                arithmetic.binary(delta_x, delta_x, "mul"),
+                arithmetic.binary(delta_y, delta_y, "mul"),
+                "add",
+            )
+            combined_radius = arithmetic.binary(radius, cylinder_radius, "add")
+            contact_squared = arithmetic.binary(combined_radius, combined_radius, "mul")
+            if not arithmetic.binary(contact_squared, distance_squared, "less"):
+                result["reason"] = "initial_body_contact_or_overlap"
+                return result
+        binding = {
+            "epoch": epoch,
+            "config": asdict(owned_config),
+            "scenario": asdict(deepcopy(scenario)),
+        }
+        result.update(
+            status="checked_declared_initial_fixture",
+            reason="declared_domain_and_initial_body_strictly_separated",
+            fixture_initial_body_clear=True,
+            fixture_controlled_envelope=True,
+            binding=binding,
+            config_sha256=_c1_source_binding_digest(binding["config"]),
+            setup_sha256=_c1_source_binding_digest(binding),
+        )
+    except ArithmeticError as error:
+        result["reason"] = str(error)
+    except (TypeError, ValueError, OverflowError):
+        result["reason"] = "malformed_initial_setup_or_profile"
+    return result
+
+
 def _probe_synthetic_c1_command_path_enclosure(
     history,
     point_error_evidence,

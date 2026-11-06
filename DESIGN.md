@@ -2441,11 +2441,41 @@ excessive requested speed/turn reject without clamping or partial composition.
 At-rest sector choice remains unknown; no sector query or normal `OK` is forged.
 Source/setup, native/range/pose/clock error, one-use execution/expiry and
 representative task quality remain separate; no normal runtime, permit,
-actuation or study is admitted. Next replace the supplied initial-body/setup
-premise with independently checked, owned fixture evidence bound to declared
-epoch/configuration; geometry stays offline, not in command selection.
+actuation or study is admitted. The separate initial-setup content checker below
+supplies owned conditional fixture evidence, not permission to set runtime body/
+domain flags. Geometry stays offline, never current-frame command selection.
 
 [command-path-review]: REVIEW.md
+
+##### Isolated Initial-Setup Content (2026-11-06)
+
+The private `_check_synthetic_c1_initial_setup` is an offline S1 prerequisite,
+not an admitted source or guard. It owns the declared static Scenario, canonical
+existing C1 config and bounded epoch identity only after checking their literal
+types/shapes/profile, existing cylinder radius/height envelope, wall profile and
+strict initial circular-body separation. Four wall comparisons and squared-circle
+comparisons use guarded exact stored-word rational arithmetic, not a hypot or
+guessed epsilon. Tangency/overlap/malformed/missing/unsupported/exhausted evidence
+stays unknown and publishes no partial binding; successful content carries owned
+config/scene/epoch with typed digests and all seven false flags.
+
+Prototype bounds are 32 obstacle rows, 4096-bit preflight rational growth, a
+64-character ASCII scene name and 32 lowercase-hex epoch characters; they are
+local fixture-work/representation limits, not new global scene or device
+requirements. The check does not attest that a supplied Scenario is authoritative
+or complete, measure source/native/range/pose/clock uncertainty, qualify goal/
+sector answers, or use current privileged geometry to select commands. It is not
+S1 satisfaction, runtime body-clear support or a usable permit. Existing source
+auditor guards, aliases, motion/path APIs and hard limits stay unchanged.
+
+[Review §163][initial-setup-review] records sixteen fixed controls and the retained
+digest-reference accounting repair. Next recheck and join this owned content to
+the declared epoch/canonical config, initial reference pose and complete exact-
+rest source/frame history in a separate conditional startup composition. The
+launch request stays fixed at target 0.125/zero turn; no source authority, normal
+`OK`, expiry/one-use executor, actuation or study approval follows.
+
+[initial-setup-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11003,10 +11033,13 @@ point-margin composition (§161) now passes sixteen controls; the required
 new-source root gate passed 2,417 tests plus the known xfail/71 warnings. The
 test-only startup/domain follow-up (§162) adds four controls and passes its root,
 2,421 plus the same known xfail/71 warnings, with all production bytes unchanged.
-Prior spent standalone scopes remain spent. Next: explicit owned initial-body/
-setup fixture evidence bound to epoch/configuration, not a supplied true flag;
-retain complete motion/error/profile and actual source/native/pose/range/clock/
-expiry qualification gates. Geometry stays offline, never command selection.
+Prior spent standalone scopes remain spent. Isolated owned initial-body/setup
+content is now implemented (§163), sixteen controls/root 2,437 plus known
+xfail/71 warnings, all earlier nodes exact. Continue a separate conditional at-
+rest startup join of rechecked setup, epoch/config/initial pose and complete
+source/frame history, not a supplied true flag; retain complete motion/error/
+profile and actual source/native/pose/range/clock/expiry qualification gates.
+Geometry stays offline, never command selection.
 These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.
 

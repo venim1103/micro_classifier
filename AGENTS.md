@@ -208,9 +208,10 @@ from them. Historical details below are reference material, not new approvals.
   registered-prefix cylinder cells (§159) and optional discrete-path point
   margins (§160) and current-frame command/point-margin composition (§161) are
   complete. Adopted startup/rest and unsupported-command test controls (§162)
-  pass. Continue explicit owned initial-body/setup fixture evidence bound to
-  declared epoch/configuration, not supplied true flags or online geometry
-  command selection; retain all evidence and protected-action limits.
+  pass; isolated initial-body/setup content (§163) is implemented. Continue a
+  separate conditional exact-rest startup join of rechecked owned setup,
+  epoch/config/initial pose and complete source/frame history; no supplied true
+  flags or online geometry command selection. Retain all protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
   Private fixture adapter rejects changed decoded source values and emits only
@@ -231,8 +232,10 @@ from them. Historical details below are reference material, not new approvals.
   sixteen controls; required root 2,417 plus known xfail/71 warnings. Startup/
   domain test-only follow-up (§162) adds four passing controls; required root
   2,421 plus the same known xfail/71 warnings, all production bytes unchanged.
-  Next: explicit owned initial-body/setup fixture evidence; retain complete
-  history, motion/error/profile and qualification gates, not general audits.
+  Isolated initial-setup content (§163) passes sixteen controls/root 2,437 plus
+  known xfail/71 warnings. Next: conditional exact-rest startup composition of
+  rechecked owned setup/epoch/config/pose/history; retain motion/error/profile
+  and qualification gates, not general audits or current truth selection.
   Four adapter positions and four source-word positions are spent; required
   new-source roots reused unchanged adapter controls, not standalone renewal.
   No source/native/registration claim is qualified. D4 remains
@@ -249,7 +252,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-162 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-163 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation, required local verification and periodic verified
   checkpoint commits/normal pushes, with protected evidence/resource limits intact.
@@ -272,35 +275,23 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-06, §161): 2,417 passes plus known xfail/71 existing
-  warnings; sixteen current-frame command/path controls. All 73 prior source/295
-  prior test AST nodes remain exact; only one source/two test nodes are added.
-  Lint/changed-file format/Pylance syntax/editor and five/three/eight resolved
-  composition/bridge/path calls pass. Three positions used, 41 wrapper/30 bridge/
-  75 binder/23 motion/17 path-history-inspection-prefix/13 cell/16 reference;
-  zero forbidden calls after two reused captures/three motions per position.
-  Current motion is generated only from owned final history frame; matching
-  registered binding and complete margins precede conditional exclusion, never
-  a usable permit. Actual source/native/pose/range/clock/expiry remain unqualified.
-  §160's four spent positions/44-36-34-26-62-19 and both failures, plus §159's
-  three positions/39-22-50-18-32, origin-probe/style limits and §158's
-  guarded repair/four positions/58-92-44 and §157 fault/four/49-43-20-28 stay evidence.
-  Old §156's four adapter/four binder positions, 98/60 entries and failures,
-  §155 kernel/§153 motion/§146 wire/§138 evidence stay historical; required root
-  reused unchanged controls only for this meaningful new source increment. No
-  normal runtime/C source change or extra opt-in sanitizer/Arm gate; host checks are
-  not source/numerical qualification, linked firmware or task quality.
-- Latest test-only gate (2026-11-06, §162): 2,421 plus known xfail/71 warnings,
-  no skips; four startup/domain controls, all 74 source nodes/complete bytes and
-  297 previous test nodes unchanged, one added test. Three positions spent:
-  list-shape assertion failure, exact repair/four passes, required root; no
-  numeric expectation, tolerance or hard-limit change. Totals 31 wrapper/23
-  bridge/53 binder/14 motion/11 path-history-inspection-prefix/nine cell/11
-  reference/zero forbidden, two reused captures/three motions per position.
-  At rest, target 0.125/zero turn becomes stored 0.05 speed for one command tick,
-  then one braking tick; endpoint encloses stored tick-word product, not measured
-  dynamics. Missing body and excessive commands reject; no sector/permit/actuation.
-  Next: explicit owned initial-body/setup evidence, not supplied true flags;
+- Last source-test gate (2026-11-06, §163): 2,437 passes plus known xfail/71
+  warnings, no skips; sixteen isolated initial-setup controls. All 74 prior
+  source/298 test nodes exact, one source/two test nodes added. Strict stored-word
+  wall/squared-circle comparisons reject tangency, malformed/unsupported/budget
+  evidence and supplied true flags; owned config/scene/epoch digests are content,
+  not authority/completeness or permission to set runtime/body flags. Three
+  positions spent; first eight logged digests plus two uncounted references
+  retained/corrected, actual totals 54 checker/30 digest/zero forbidden. No new-
+  family capture/motion/history/owner/source-auditor/runtime/question/data calls.
+  Lint/format/syntax/editor and one resolved Pylance test call pass; ten/74
+  severity-4 unused-code hints are not errors/warnings. All seven flags remain
+  false. Prior §162 three spent positions/list-shape failure and §161 three
+  positions/unused fourth, §160 four positions/both failures and §§155-159/153/
+  146/138 evidence remain historical, not standalone renewal. No normal runtime/C
+  change or extra opt-in sanitizer/Arm gate; host checks are not source/numerical
+  qualification, linked firmware or task quality. Next: conditional exact-rest
+  startup join of rechecked setup/epoch/config/pose/complete source-frame history;
   source authority, S1-S5, request/expiry/executor and task quality remain gated.
 - Privileged simulator truth is now permitted in principle for geometric and
   predictive targets, never as student input. Observation-only human review
@@ -1358,14 +1349,17 @@ registered-prefix cylinder cells (§159) and optional path point margins (§160)
 each pass sixteen; current-frame command/path composition (§161) passes sixteen,
 all qualification flags false. Startup/domain test-only follow-up (§162) adds
 four passing controls/root 2,421 plus known xfail/71 warnings, production unchanged.
-Next: explicit owned initial-body/setup fixture evidence bound to epoch/config,
-not supplied true flags or online geometry-selected commands; retain complete
-frame/history and motion/error/profile premises, not current delta times age or
+Isolated initial-setup content (§163) adds sixteen controls/root 2,437 plus known
+xfail/71 warnings. Next: conditional exact-rest startup join of rechecked owned
+setup/epoch/config/initial pose/complete source-frame history, not supplied true
+flags or online geometry-selected commands; retain motion/error/profile, not
+current delta times age or
 general arithmetic/identity audits. Four adapter/four binder/four bridge/four
 history positions are spent; three registered-prefix positions used, the unused
 fourth is not follow-on scope; four point-margin positions are spent. Necessary
 new-source roots are compatibility only; three command-composition positions
-used, unused fourth not follow-on scope; all three startup-test positions spent.
+used, unused fourth not follow-on scope; all three startup-test and all three
+initial-setup positions spent, actual 54 checker/30 digest/zero forbidden.
 S1-S5 satisfaction/full guard/usable trial
 remain separate gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
@@ -1386,8 +1380,8 @@ ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
 priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
-source gate now 2,417 plus known xfail/71 warnings for §161's new-source increment;
-latest §162 test-only root 2,421 plus the same xfail/71 warnings, source unchanged;
+source gate now 2,437 plus known xfail/71 warnings for §163's isolated setup
+increment; prior §161 2,417 and §162 test-only 2,421 gates remain historical;
 §153's old root renewal stays spent, §146 all four spent, §138 four of five/fifth
 unused, old §129/§132
 exhausted, §135 fifth not
@@ -1428,12 +1422,13 @@ No job/cleanup pending; original numbered task results below remain historical.
   Bounded result (2026-11-05, REVIEW.md §146): private decoded-input-to-wire
   rejection tooling and 24 cases complete, no usable `OK` or actuation; source
   qualifications/flags stay false. All four verification positions spent.
-  Current follow-up (2026-11-06, REVIEW.md §162): four startup/domain test controls
-  pass; required root 2,421 plus known xfail/71 warnings, production bytes exact.
-  All three positions spent; list-shape failure retained. Source/command
-  qualification remains blocked. Next: explicit owned initial-body/setup fixture
-  evidence bound to epoch/configuration, not true flags or online geometry
-  selection; retain complete history/motion/error/profile and all broader gates.
+  Current follow-up (2026-11-06, REVIEW.md §163): sixteen isolated initial-setup
+  controls pass/root 2,437 plus known xfail/71 warnings; all earlier nodes exact,
+  all three positions spent/54 checker/30 digest/zero forbidden, reference-counter
+  repair retained. Source/command qualification remains blocked. Next: conditional
+  exact-rest startup join of rechecked owned setup/epoch/config/pose/complete
+  source-frame history, not true flags or current geometry selection; all broader
+  qualification, request/expiry/executor, task-data/run and hardware gates stay.
   Dated results below remain historical; no usable trial or actuation is admitted.
   Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
   mode; the complete three-answer Python/C contract passes 123 new tests. Legacy

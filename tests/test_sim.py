@@ -1890,6 +1890,157 @@ def test_synthetic_c1_command_path_startup_and_command_domain(
     )
 
 
+@pytest.fixture(scope="module")
+def c1_initial_setup_ledger(request):
+    counts = {"checker": 0, "digest": 0, "forbidden": 0}
+    yield counts
+    assert counts["checker"] <= 24 and counts["digest"] <= 16
+    assert counts["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 initial-setup ledger:", json.dumps(counts, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 initial-setup ledger:", json.dumps(counts, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_initial_setup_owns_domain_and_body(
+    c1_initial_setup_ledger, monkeypatch, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    ledger = c1_initial_setup_ledger
+    scene = Scenario(
+        start=(2.0, 2.0, 0.0),
+        obstacles=((2.3, 2.0, 0.05),) if case in (1, 4, 5, 6, 12) else (),
+    )
+    settings = {"epoch": "a" * 32, "synthetic_test_only": True}
+    expected = "declared_domain_and_initial_body_strictly_separated"
+    if case == 2:
+        scene = replace(scene, obstacles=((2.25, 2.0, 0.07),))
+        assert Fraction(0.18) + Fraction(0.07) == Fraction(0.25)
+        expected = "initial_body_contact_or_overlap"
+    elif case == 3:
+        scene = replace(scene, start=(0.18, 2.0, 0.0))
+        expected = "initial_body_contact_or_overlap"
+    elif case == 4:
+        scene = replace(scene, obstacles=((2.3, 2.0, 0.005),))
+        expected = "unsupported_initial_setup_domain"
+    elif case == 5:
+        scene = replace(scene, obstacle_heights=(0.01,))
+        expected = "unsupported_initial_setup_domain"
+    elif case == 6:
+        scene = replace(scene, obstacle_heights=(0.5, 0.5))
+        expected = "unsupported_initial_setup"
+    elif case == 7:
+        scene = {"initial_body_clear": True, "controlled_envelope": True}
+        expected = "unsupported_initial_setup"
+    elif case == 8:
+        scene = replace(scene, start=(True, 2.0, 0.0))
+        expected = "malformed_initial_setup_or_profile"
+    elif case == 9:
+        scene = replace(scene, start=(2**54 + 1, 2.0, 0.0))
+        expected = "malformed_initial_setup_or_profile"
+    elif case == 10:
+        settings["epoch"] = True
+        expected = "unsupported_setup_epoch"
+    elif case == 11:
+        settings["config"] = Config()
+        expected = "malformed_initial_setup_or_profile"
+    elif case == 12:
+        settings["max_obstacles"] = 0
+        expected = "setup_obstacle_budget_exhausted"
+    elif case == 13:
+        settings["max_integer_bits"] = 8
+        expected = "integer_budget_exhausted"
+    elif case == 14:
+        settings["synthetic_test_only"] = False
+    elif case == 15:
+        settings["config"] = Config(noise_std=0, dropout=0, wall_height=0.5)
+        expected = "unsupported_initial_setup_profile"
+    saved_scene, saved_settings = deepcopy(scene), deepcopy(settings)
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def digest(*args, **kwargs):
+        ledger["digest"] += 1
+        assert ledger["digest"] <= 16
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "initial setup must not capture, move, query or audit current truth"
+        )
+
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    for name in (
+        "capture_synthetic_c1_views",
+        "inspect_synthetic_c1_history",
+        "_audit_synthetic_c1_source_binding",
+        "_probe_synthetic_c1_discrete_motion",
+        "_probe_synthetic_c1_command_path_enclosure",
+        "probe_synthetic_c1_questions",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+
+    def check(**changes):
+        ledger["checker"] += 1
+        assert ledger["checker"] <= 24
+        return diagnostics._check_synthetic_c1_initial_setup(
+            scene, **{**settings, **changes}
+        )
+
+    if case == 14:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check()
+        return
+    result = check()
+    assert result["reason"] == expected
+    assert result["fixture_initial_body_clear"] is (case in (0, 1))
+    assert result["fixture_controlled_envelope"] is (case in (0, 1))
+    assert result["status"] == (
+        "checked_declared_initial_fixture" if case in (0, 1) else "unknown"
+    )
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    if case in (0, 1):
+        assert result["work"] == {"obstacles_inspected": case, "body_checks": 4 + case}
+        assert result["binding"]["epoch"] == settings["epoch"]
+        assert result["binding"]["scenario"]["start"] == scene.start
+        assert result["setup_sha256"] == digest(result["binding"])
+        if case == 1:
+            delta = Fraction(2.3) - Fraction(2.0)
+            radii = Fraction(0.18) + Fraction(0.05)
+            assert delta * delta > radii * radii
+        else:
+            saved = deepcopy(result)
+            result["binding"]["scenario"]["start"] = (0.0, 0.0, 0.0)
+            result["binding"]["config"]["radius"] = 10.0
+            result["work"]["body_checks"] = 100
+            assert check() == saved
+            foreign = check(epoch="b" * 32)
+            assert foreign["config_sha256"] == saved["config_sha256"]
+            assert foreign["setup_sha256"] != saved["setup_sha256"]
+    else:
+        assert "binding" not in result and "setup_sha256" not in result
+    assert scene == saved_scene and settings == saved_settings
+
+
 def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
     from fractions import Fraction
 

@@ -3457,6 +3457,337 @@ def _c1_low_free_segments(record, inspection, reference_pose_m_rad, config):
     return np.stack((starts, ends), axis=1), guard
 
 
+def _bind_synthetic_c1_state_intervals(
+    source_state, state_frame, *, max_integer_bits=4096, synthetic_test_only=False
+):
+    """Bind exact source/decoded dyadics as fixture bounds, never source authority."""
+    from interface.protocol import ProtocolError, State, decode_state, encode_state
+
+    if synthetic_test_only is not True:
+        raise ValueError("source intervals require synthetic_test_only=True")
+    if type(source_state) is not State:
+        raise TypeError("source intervals require a synthetic source State")
+    if type(max_integer_bits) is not int or not 1 <= max_integer_bits <= 4096:
+        raise ValueError("source interval integer limit must be from one through 4096")
+    result = {
+        "schema": "micro-classifier/synthetic-c1-source-intervals/1",
+        "allowed_use": "conditional_source_word_fixture_only",
+        "training_approved": False,
+        "real_input_qualified": False,
+        "numerically_certified": False,
+        "source_qualified": False,
+        "command_admission_qualified": False,
+        "fixture_words_bound": False,
+        "status": "unknown",
+        "reason": "unsupported_state_frame",
+        "component_pairs_checked": 0,
+    }
+    if type(state_frame) is not bytes:
+        return result
+    try:
+        decoded = decode_state(state_frame)
+        source_frame = encode_state(source_state)
+    except (ProtocolError, OverflowError, TypeError):
+        result["reason"] = "invalid_state_frame_or_source"
+        return result
+    if source_frame != state_frame:
+        result["reason"] = "source_frame_binding_mismatch"
+        return result
+    if decoded.validity & 7 != 7:
+        result["reason"] = "unsupported_host_validity"
+        return result
+    if decoded.ages_us[:3] != (0, 0, 0):
+        result["reason"] = "stale_host_state"
+        return result
+    fields = {}
+    for field in ("velocity_m_s", "angular_velocity_rad_s", "goal_m"):
+        values = []
+        for source, received in zip(
+            getattr(source_state, field), getattr(decoded, field), strict=True
+        ):
+            result["component_pairs_checked"] += 1
+            if type(source) not in (int, float):
+                result["reason"] = "unsupported_source_numeric_type"
+                return result
+            if type(source) is int and source.bit_length() > max_integer_bits:
+                result["reason"] = "source_integer_budget_exhausted"
+                return result
+            number = float(source)
+            if type(source) is int and number != source:
+                result["reason"] = "source_integer_not_exact_binary64"
+                return result
+            source = number
+            left, left_denominator = source.as_integer_ratio()
+            right, right_denominator = received.as_integer_ratio()
+            denominator = max(left_denominator, right_denominator)
+            left_scale, right_scale = (
+                denominator // left_denominator,
+                denominator // right_denominator,
+            )
+            if (
+                denominator.bit_length() > max_integer_bits
+                or left.bit_length() + left_scale.bit_length() > max_integer_bits
+                or right.bit_length() + right_scale.bit_length() > max_integer_bits
+                or max(
+                    left.bit_length() + left_scale.bit_length(),
+                    right.bit_length() + right_scale.bit_length(),
+                )
+                + 1
+                > max_integer_bits
+            ):
+                result["reason"] = "source_integer_budget_exhausted"
+                return result
+            difference = Fraction(right * right_scale - left * left_scale, denominator)
+            source_pair = (left, left_denominator)
+            decoded_pair = (right, right_denominator)
+            values.append(
+                {
+                    "source": source_pair,
+                    "decoded": decoded_pair,
+                    "interval": [source_pair, decoded_pair]
+                    if source <= received
+                    else [decoded_pair, source_pair],
+                    "decoded_minus_source": (
+                        difference.numerator,
+                        difference.denominator,
+                    ),
+                    "source_hex": source.hex(),
+                    "decoded_hex": received.hex(),
+                }
+            )
+        fields[field] = values
+    result.update(
+        status="bound_under_fixture_assumptions",
+        reason="exact_source_frame_and_decoded_dyadic_intervals",
+        fixture_words_bound=True,
+        state_frame=state_frame,
+        sequence=decoded.sequence,
+        timestamp_us=decoded.timestamp_us,
+        fields=fields,
+    )
+    return result
+
+
+def _probe_synthetic_c1_discrete_path_enclosure(
+    history,
+    motion,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    current_body_clear=False,
+    controlled_envelope=False,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Check C1 fixture prefixes against a complete supplied discrete path tube."""
+    if synthetic_test_only is not True:
+        raise ValueError("discrete path enclosure requires synthetic_test_only=True")
+    for value, lower, upper in (
+        (max_cells, 0, 65536),
+        (max_depth, 0, 12),
+        (radius_bands, 1, 16),
+    ):
+        if type(value) is not int or not lower <= value <= upper:
+            raise ValueError("discrete path work limits require bounded integers")
+    config = _c1_config(config)
+    work = {"inspection_entries": 0, "prefix_entries": 0, "cell_entries": 0}
+    flags = (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+    result = {
+        "schema": "micro-classifier/synthetic-c1-discrete-path-enclosure/1",
+        "allowed_use": "conditional_ideal_path_fixture_only",
+        **{flag: False for flag in flags},
+        "fixture_enclosure_excluded": False,
+        "status": "unknown",
+        "reason": "unsupported_motion_fixture",
+        "work": work,
+        "cells_checked": 0,
+    }
+    if (
+        type(motion) is not dict
+        or any(type(key) is not str for key in motion)
+        or motion.get("schema") != "micro-classifier/synthetic-c1-discrete-motion/1"
+        or motion.get("allowed_use") != "conditional_ideal_motion_fixture_only"
+        or motion.get("status") != "enclosed_under_fixture_assumptions"
+        or motion.get("fixture_motion_enclosed") is not True
+        or motion.get("assumption")
+        != "stored_input_words_as_reals_not_native_execution"
+        or any(motion.get(flag) is not False for flag in flags)
+    ):
+        return result
+    boxes, chords = motion.get("centerline_boxes_m"), motion.get("chords")
+    if (
+        type(boxes) is not list
+        or type(chords) is not list
+        or not 1 <= len(chords) <= 128
+        or len(boxes) != len(chords) + 1
+    ):
+        return result
+    motion_work = motion.get("work")
+    if (
+        type(motion_work) is not dict
+        or any(type(key) is not str for key in motion_work)
+        or set(motion_work)
+        != {"command_ticks", "braking_ticks", "chords", "series_terms"}
+        or any(type(value) is not int for value in motion_work.values())
+        or motion_work["command_ticks"] != 1
+        or motion_work["braking_ticks"] != len(chords) - 1
+        or not 0 <= motion_work["braking_ticks"] <= 16
+        or motion_work["chords"] != len(chords)
+        or not 0 <= motion_work["series_terms"] <= 16
+    ):
+        return result
+    try:
+        boxes = _c1_array(boxes, (len(boxes), 2, 2)).astype(float)
+        if np.any(boxes[..., 0] > boxes[..., 1]) or np.any(boxes[0] != 0):
+            return result
+        speeds = _c1_array(motion.get("speed_intervals_m_s"), (len(chords), 2))
+        if (
+            np.any(speeds[:, 0] < 0)
+            or np.any(speeds[:, 1] > config.max_speed)
+            or np.any(speeds[:, 0] > speeds[:, 1])
+            or np.any(speeds[-1] != 0)
+        ):
+            return result
+        radii = []
+        for index, chord in enumerate(chords):
+            if (
+                type(chord) is not dict
+                or any(type(key) is not str for key in chord)
+                or set(chord) != {"start_box_m", "end_box_m", "radius_upper_m"}
+                or type(chord["radius_upper_m"]) not in (int, float)
+            ):
+                return result
+            start = _c1_array(chord["start_box_m"], (2, 2))
+            end = _c1_array(chord["end_box_m"], (2, 2))
+            radius = float(_c1_array([chord["radius_upper_m"]], (1,))[0])
+            if (
+                not np.array_equal(start, boxes[index])
+                or not np.array_equal(end, boxes[index + 1])
+                or radius < config.radius
+            ):
+                return result
+            radii.append(radius)
+    except (TypeError, ValueError, OverflowError):
+        return result
+    if current_body_clear is not True:
+        result["reason"] = "current_body_clear_not_established"
+        return result
+    if controlled_envelope is not True:
+        result["reason"] = "controlled_envelope_not_established"
+        return result
+    if (
+        config.radius,
+        config.acceleration,
+        config.max_speed,
+        config.max_turn_rate,
+        config.max_range,
+        config.wall_height,
+    ) != (0.18, 1, 0.6, 1.5, 4, 1):
+        result["reason"] = "unsupported_dynamics_or_wall_profile"
+        return result
+    work["inspection_entries"] = 1
+    inspection = inspect_synthetic_c1_history(
+        history,
+        reference_tick=reference_tick,
+        reference_pose_m_rad=reference_pose_m_rad,
+        config=config,
+        synthetic_test_only=True,
+    )
+    if inspection["status"] != "registered_fixture":
+        result["reason"] = inspection["reason"]
+        return result
+    reference = _c1_array(reference_pose_m_rad, (3,)).astype(float)
+    record = history[-1]
+    pose = record["capture_poses_m_rad"][0]
+    age = inspection["latest_age_ticks"] * config.dt
+    guard = float(
+        256
+        * np.finfo(float).eps
+        * max(
+            1.0,
+            config.max_range,
+            *np.abs(reference),
+            *np.abs(pose),
+            *np.abs(boxes.flat),
+        )
+    )
+    yaw_delta = math.atan2(
+        math.sin(pose[2] - reference[2]), math.cos(pose[2] - reference[2])
+    )
+    if (
+        math.hypot(float(pose[0]) - reference[0], float(pose[1]) - reference[1])
+        > config.max_speed * age + guard
+        or abs(yaw_delta) > config.max_turn_rate * age + guard
+    ):
+        result["reason"] = "unsupported_capture_to_reference_motion"
+        return result
+    work["prefix_entries"] = 1
+    segments, prefix_guard = _c1_low_free_segments(
+        record, inspection, reference, config
+    )
+    guard = max(guard, float(prefix_guard))
+    if not len(segments):
+        result["reason"] = "no_low_height_free_segments"
+        return result
+    points = boxes[..., 0] + (boxes[..., 1] - boxes[..., 0]) / 2
+    widths = np.maximum(points - boxes[..., 0], boxes[..., 1] - points)
+    errors = np.sum(widths, axis=1)
+    tube_radius = (
+        float(np.max(np.asarray(radii) + np.maximum(errors[:-1], errors[1:]))) + guard
+    )
+    if not math.isfinite(tube_radius) or not np.all(np.isfinite(points)):
+        result["reason"] = "unsupported_path_bound"
+        return result
+    cosine, sine = math.cos(reference[2]), math.sin(reference[2])
+    rotation = np.array([[cosine, sine], [-sine, cosine]])
+    world_prefixes = segments[..., :2].reshape(-1, 2) @ rotation
+    world_path = points @ rotation
+    if not (
+        np.all(
+            world_prefixes.min(axis=0) < world_path.min(axis=0) - tube_radius - guard
+        )
+        and np.all(
+            world_prefixes.max(axis=0) > world_path.max(axis=0) + tube_radius + guard
+        )
+    ):
+        result["reason"] = "axis_aligned_wall_support_incomplete"
+        return result
+    work["cell_entries"] = 1
+    cells = _c1_exclude_path_cells(
+        segments[..., :2],
+        points,
+        tube_radius,
+        current_body_clear=True,
+        guard=guard,
+        max_cells=max_cells,
+        max_depth=max_depth,
+        radius_bands=radius_bands,
+    )
+    result.update(cells)
+    result.update(
+        path_points_body_m=points.tolist(),
+        path_tube_radius_m=tube_radius,
+        free_segment_count=len(segments),
+    )
+    if cells["fixture_enclosure_excluded"]:
+        result.update(
+            status="excluded_under_fixture_assumptions",
+            reason="complete_discrete_path_and_axis_aligned_walls_excluded",
+        )
+    return result
+
+
 def _c1_exclude_path_cells(
     free_segments,
     path_points,

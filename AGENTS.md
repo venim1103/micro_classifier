@@ -202,9 +202,10 @@ from them. Historical details below are reference material, not new approvals.
   independently; later user tests provide course corrections, not routine gates.
   Periodic verified checkpoint commits and normal upstream pushes are delegated
   as well; retain local progress and diagnose failures without a force-push.
-  Project continuation resumed after reload (§155). The additive path-cell
-  kernel/twelve controls are complete; continue with the bounded C1-prefix/
-  discrete-path adapter, retaining all evidence and protected-action limits.
+  Project continuation resumed after reload (§155). Path-cell kernel plus
+  discrete-path/wall adapter and actual-wire source-word binder are complete
+  (§156); continue with bounded motion/registration discrepancy propagation,
+  retaining all evidence and protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
   Private fixture adapter rejects changed decoded source values and emits only
@@ -217,8 +218,12 @@ from them. Historical details below are reference material, not new approvals.
   gate passed 2,285 tests plus known xfail/71 warnings and is spent; unused fourth
   position is not follow-on scope. The new path-cell kernel (§155) passes twelve
   controls and its required new-source gate, 2,297 plus known xfail/71 warnings.
-  Next: bound and implement the C1-prefix/discrete-path adapter and wall support,
-  then source-error/registration evidence, without general audit work. D4 remains
+  The discrete-path/wall adapter and exact source-word binder (§156) pass 24/16
+  controls; final new-source gate 2,337 plus known xfail/71 warnings. Next: bind
+  these intervals to motion/registration consumers, without general audit work.
+  Four adapter positions and four source-word positions are spent; required
+  new-source roots reused unchanged adapter controls, not standalone renewal.
+  No source/native/registration claim is qualified. D4 remains
   separate; no normal profile, source qualification, threshold, actuation or run
   scope is adopted. The old host loop is not a compatible C1 maneuver executor;
   Tasks 6/9 remain blocked, not completed.
@@ -232,7 +237,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-155 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-156 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation, required local verification and periodic verified
   checkpoint commits/normal pushes, with protected evidence/resource limits intact.
@@ -255,14 +260,15 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-06, §155): 2,297 passes plus known xfail/71 existing
-  warnings; twelve new spatial controls, all 67 prior source/282 test AST nodes
-  unchanged. Lint/changed-file format/syntax/editor pass; one formatting-only
-  failure/repair retained. Twenty-five new kernel entries across the single probe,
-  fixed matrix and root; zero new-family scene/source/runtime calls. §153's
-  54 producer/35 reference entries and §146's four spent positions/failure/repair
-  remain historical. Root reused their unchanged controls only as the required
-  gate for this meaningful new source increment. Old §138 accounting stays. No
+- Last source-test gate (2026-11-06, §156): 2,337 passes plus known xfail/71 existing
+  warnings; 24 adapter/16 source-word controls, all 68 prior source/283 test AST
+  nodes unchanged. Lint/changed-file format/syntax/editor pass; numeric-boundary,
+  ownership-test, lint and integer/overflow repairs retained. Passing adapter
+  matrices report 24/11/7/6 adapter/inspection/prefix/cell, two reused captures,
+  three motion fixtures and no forbidden calls. Four old adapter positions plus
+  two required new-source root controls give 98 source-supported adapter entries;
+  source-word four positions give 60 entries. Old §155 kernel/§153 motion/§146
+  wire and §138 accounting remain historical, not standalone scope renewal. No
   normal runtime/C source change or extra opt-in sanitizer/Arm gate; host checks are
   not source/numerical qualification, linked firmware or task quality.
 - Privileged simulator truth is now permitted in principle for geometric and
@@ -1314,9 +1320,12 @@ Conditional discrete command/braking motion core complete (§153), 16 fixed
 controls, 54 producer/35 reference attempts across three of four positions,
 zero new-family C1/source/runtime queries; that old root renewal stays spent.
 The additive path-cell kernel (§155) and twelve spatial controls are complete;
-25 new kernel entries, zero new-family scene/source/runtime calls. Next scope:
-C1-prefix/discrete-path adapter and wall support, then source-error/registration
-evidence for the actual-command guard, not general arithmetic/identity audits.
+25 new kernel entries, zero new-family scene/source/runtime calls. The separate
+discrete-path/wall adapter and actual-wire source-word binder (§156) pass 24/16
+controls, with false qualification/admission flags. Next: propagate exact source
+intervals into named motion/registration consumers for the actual-command guard,
+not general arithmetic/identity audits. Four adapter positions and four binder
+positions are spent; necessary new-source roots are compatibility gates only.
 S1-S5 satisfaction/full guard/usable trial
 remain separate gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
@@ -1337,7 +1346,7 @@ ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
 priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
-source gate now 2,297 plus known xfail/71 warnings for §155's new-source increment;
+source gate now 2,337 plus known xfail/71 warnings for §156's repaired increment;
 §153's old root renewal stays spent, §146 all four spent, §138 four of five/fifth
 unused, old §129/§132
 exhausted, §135 fifth not
@@ -1378,11 +1387,12 @@ No job/cleanup pending; original numbered task results below remain historical.
   Bounded result (2026-11-05, REVIEW.md §146): private decoded-input-to-wire
   rejection tooling and 24 cases complete, no usable `OK` or actuation; source
   qualifications/flags stay false. All four verification positions spent.
-  Current follow-up (2026-11-06, REVIEW.md §153): requirements adopted only;
-  conditional discrete motion core/16 controls complete, not source or command
-  admission. Next: separately scope source-error/path-aware coverage evidence for
-  the independently supported guard. No new fixture/run/runtime follows; the one
-  renewed default regression is spent. Dated results below remain historical.
+  Current follow-up (2026-11-06, REVIEW.md §156): discrete-path/wall adapter and
+  actual-wire source-word binder pass 24/16 controls; required repaired root
+  2,337 plus known xfail/71 warnings. Source/command qualification remains blocked.
+  Next: independently scope named motion/registration discrepancy propagation;
+  four adapter/four binder positions are spent, not standalone run renewal.
+  Dated results below remain historical; no usable trial or actuation is admitted.
   Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
   mode; the complete three-answer Python/C contract passes 123 new tests. Legacy
   diagnostic catalogue/proxies remain unchanged and unqualified, not deployed

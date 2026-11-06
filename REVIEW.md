@@ -11700,6 +11700,130 @@ an actual evidence gate, not a routine approval request or agent default.
 [path-cell-source]: sim/diagnostics.py
 [path-cell-tests]: tests/test_sim.py
 
+## 156. Discrete-Path Adapter and Actual-Wire Source Intervals (2026-11-06)
+
+Continued the coverage-first S2/S4 prerequisites under §154's standing authority,
+from the synchronized `aab89bd5a07c458786e0fe94b9363d95a26a8e48` kernel checkpoint.
+No general arithmetic/certificate/runtime-identity audit was reactivated. The
+existing environment, default profiles, search limits, source flags and old
+wire rejection remain unchanged. Chosen finite CPU-only fixture work uses the
+existing two artificial scenes, not a study cohort, rollout or task dataset.
+
+**Path hypothesis and implementation.** Complete discrete endpoint boxes and
+body/chord radii can conservatively enter the existing path-cell search if
+every box is enclosed, every chord is retained and walls receive independent
+axis support. The [private adapter][path-source-implementation] validates the
+motion schema/assumptions/false flags, joined chords/boxes, complete work and
+terminal zero speed before inspecting C1. It makes at most one history
+inspection, one latest-low-prefix extraction and one cell query. Midpoint
+vertices are expanded by full endpoint-box L1 half-widths; the maximum chord
+radius plus those errors and the existing source-scale guard expands the whole
+tube. Strict arena-axis support includes all path extrema and the tube radius.
+No arbitrary midpoint-only, sampled-cell or old continuous-path substitution.
+
+The [24 fixed adapter controls][path-source-controls] retain straight/left/right
+and enlarged-box conditional exclusions, hidden contact, missing premises,
+stale/masked evidence, excessive translation/yaw, malformed/changed/nonfinite
+boxes/chords, undersized radii, promoted flags, terminal/work errors, empty
+paths, cell exhaustion, incomplete walls, opt-in and unsupported-profile
+rejection. Caller records/motion stay unchanged. Guards forbid old C1
+encloser/witness/question/wire paths and rover execution; fixture preparation
+alone makes two reused captures and three motion records per complete matrix.
+No new geometry family, normal input, usable `OK`, permit or actuation is added.
+
+**Adapter budget and failures.** Scope recorded before execution: 24 controls,
+two reused scenes, at most 32 adapter/inspection/prefix/cell entries per matrix
+and four verification positions, including failures/repairs/root. Actual four
+positions were: first single probe failed when a NumPy-derived scalar reached
+the strict built-in numeric kernel boundary (0.51 s); explicit casts repaired
+the adapter without relaxing the kernel and the same probe passed (0.26 s);
+the full 24-case matrix reached an ownership assertion failure; the same
+repaired matrix passed (1.03 s, 1,374 deselected). The ownership test had called
+`json_value` on a whole dict; that utility is a JSON `default` callback, so the
+repair used `json.dumps(..., default=json_value)` on both saved/current records.
+No serializer/runtime utility or behavioral assertion was weakened.
+
+All four adapter positions are **spent**; its required root had not yet run.
+No fifth standalone adapter invocation or refund followed. The separately
+named actual-wire source-discrepancy prerequisite below is substantive new
+source work, with its own recorded finite scope and necessary compatibility
+gate. Its two roots reuse unchanged adapter controls only as required new-source
+regressions, not a restarted adapter study. The passing matrix and both roots
+each report 24 adapter / 11 inspection / seven prefix / six cell entries, two
+captures, three motion records and zero forbidden calls. The failed full matrix
+has source-supported 24 entries, not complete independent historical telemetry.
+Including the two initial probes and the two new-source root controls gives
+98 adapter entries, with failures retained. Old §§146/153/155 ledgers are not
+refunded or treated as standalone permission.
+
+**Source-word hypothesis and implementation.** Exact frame-byte correspondence
+does not make decoded binary32 values equal the source. A separate private
+`_bind_synthetic_c1_state_intervals` can retain both stored dyadics and enclose
+each scalar discrepancy without relabeling the old rounding rejection as clear.
+The binder requires literal synthetic opt-in, source `State`, exact encoded
+bytes and fresh valid ego/goal groups; it returns exact ordered source/decoded
+intervals and signed rational differences for nine components, retaining both
+zero-word hexadecimal forms. Unsupported/mismatched/invalid/stale frames or
+work exhaustion publish no partial fields. The 4,096-bit local ceiling guards
+scaled numerator/difference construction; it is not a codec/import/native or
+measured memory/time bound. All qualification/admission/training flags stay
+false. Source `0.6` retains its decoded upper endpoint, never a clamp.
+
+Initial scope: 14 fixed actual-wire controls, at most 32 binder entries per
+matrix/nine component pairs per entry, four verification positions including
+repairs/root and two repair-only positions after the first focused/root pair.
+No C1/source owner/motion/rover/model query inside the binder. The first controls
+passed; Ruff rejected one unnecessary test `map`, repaired to a generator and
+the same lint/format check passed. After the first root, a substantive local
+review found integer-to-float conversion could discard an original integer
+source value. Two boundary controls were added within the unchanged 32-entry
+matrix cap and remaining repair positions: non-binary64 integer sources and
+encoding overflow now reject without escaping or publishing partial bounds.
+All prior 14 controls remain, including opposite discrepancy signs, angular/
+goal components, signed zero, subnormal-to-zero encoding and complete ownership.
+
+| Source-word position | Command/result | Binder entries / adapter compatibility |
+| --- | --- | --- |
+| 1 | `/opt/venv/bin/python -m pytest -q tests/test_sim.py -k synthetic_c1_source_intervals --tb=short`: 14 pass, 1,398 deselected, 0.27 s. | 14 / none |
+| 2 | Required root `python -m pytest -q && ruff check . && git diff --check`: 2,335 pass, known QDQ xfail, 71 existing warnings, 51.05 s. | 14 / 24 |
+| 3 | Same focused source slice after integer/overflow repair: 16 pass, 1,398 deselected, 1.08 s. | 16 / none |
+| 4 | Same required root after substantive repair: 2,337 pass, known QDQ xfail, 71 warnings, no skips, 51.30 s; lint/whitespace pass. | 16 / 24 |
+
+Total **60 binder entries**; the four source-word positions are spent. No extra
+unchanged gate was run. Final changed-file Ruff format/lint, editor diagnostics,
+syntax/isolation and checkpoint checks pass. All 68 prior diagnostics top-level
+AST nodes and 283 prior test nodes remain unchanged in order; two source nodes
+and three test/fixture nodes are additive. No old codec/C/runtime/normal-state
+source changed; no extra opt-in native/sanitizer/Arm gate was launched. Default
+roots reused old wire 48/32/10/two captures/two scenes, motion 18/12 and unchanged
+composition/target/join controls, not proof/source/native/work qualification.
+
+Tested source SHA256: diagnostics
+`fd9d05240fc1ed08bb8c3855403550fd04b8fb2758802b3f794a645f24561724`;
+tests `4c99bd4cbdd40bd163f439de56edec137e6e889d5e65721d3aad276950d0de54`.
+Documentation/history/reference/local-target/whitespace/diff/staged-byte checks
+apply before the scoped checkpoint; the successful source gate is not rerun
+for these documentation edits. No persistent log/report/task data, download,
+dependency, teacher/tokenizer/GPU, ST/board command or cleanup was created.
+
+**Evidence limits and next step.** The wall/path adapter and source-word binder
+are conditional fixtures, not source authority, uniform native/range/registration
+error, timing/goal evidence, numerical proof, S1-S5 satisfaction or a full guard.
+Tasks 6/9/D4 and physical/task-quality/teacher-assets/ST-board gates remain;
+all fifteen old verdicts are undecided and five old flags false. Source-qualified
+and command-admission flags do not become true because these tests pass.
+
+Next independently bound the small actual-wire/source-interval-to-discrete-motion
+bridge and the named capture-registration discrepancy propagation, preserving
+all complete intervals and frame/event identity. Reject domain/planarity/time
+gaps; do not assume native/clock/source qualification or launch a normal profile,
+permit/executor, new study or task cohort. The standing workflow authorizes
+compatible local prerequisites and their necessary gates, not those protected
+actions or a standalone replay of these spent matrices.
+
+[path-source-implementation]: sim/diagnostics.py
+[path-source-controls]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

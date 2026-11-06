@@ -2214,15 +2214,58 @@ public/runtime/wire path. Existing C1 helpers and all prior source/test nodes
 are unchanged. [Review §155][path-cell-review] records the twelve fixed
 controls, verification and remaining boundary.
 
-The next compatible prerequisite is a separate fixture-only adapter from
-the discrete command's complete endpoint boxes/body radii and latest C1
-prefixes into this kernel, with wall support and explicit unknown/error
-handling. Enclose the full boxes and every chord, not only a midpoint path;
-retain all source/registration/numerical/admission flags as false. Its finite
-derived-query budget is agent-owned work under the standing workflow, not
-permission for episode collection, source qualification or a usable permit.
+The separate fixture-only adapter described below now connects complete
+discrete endpoint boxes/body radii to latest C1 prefixes and wall support.
+The kernel and adapter retain source/registration/numerical/admission limits;
+neither permits episode collection, source qualification or a usable permit.
 
 [path-cell-review]: REVIEW.md
+
+##### Conditional Discrete-Path and Source-Word Boundaries (2026-11-06)
+
+The private `_probe_synthetic_c1_discrete_path_enclosure` consumes the complete
+discrete-motion fixture, not a recomputed continuous path. It requires joined
+chords/endpoint boxes, supported work metadata and a terminal zero-speed
+interval. Midpoint vertices are usable only after expanding every chord radius
+by the complete endpoint-box L1 half-width; the maximum expanded radius encloses
+the complete path tube. The latest low-height C1 prefixes enter the path-cell
+kernel at most once. Missing body/domain premises, stale/masked captures,
+unsupported capture-to-reference motion, malformed motion or exhausted work
+remain unknown. No radius, age, dynamics or search tolerance is relaxed.
+
+Axis-aligned wall support is checked separately by rotating the complete path
+and prefixes into arena axes and requiring strict prefix support beyond all
+path extrema plus the expanded tube radius. This remains an ideal fixture
+declaration, not independent return/registration evidence or numerical proof.
+The adapter's exclusion has a separate experimental schema and all training,
+real-input, free-space, numerical, source, native and command-admission flags
+remain false. Existing C1 question/witness/wire/runtime paths are unchanged.
+
+The separate `_bind_synthetic_c1_state_intervals` binds a synthetic source
+`State` to the actual encoded host-frame bytes and actual decoded values.
+Fresh, valid velocity/angular-velocity/goal groups produce exact source and
+decoded dyadics, their ordered closed intervals and signed decoded-minus-source
+differences. Signed-zero word metadata is retained. An integer source must be
+exactly representable as binary64; malformed/changed frames, stale/missing
+groups, unsupported values, encoding overflow or exhausted dyadic arithmetic
+stay unknown without partial fields. The local integer ceiling is 4,096 bits
+and applies before scaled numerator/difference construction. Encoding a value
+onto the wire does not imply that the decoded value equals the source.
+
+This binder exposes conditional source-word discrepancy only. It does not
+establish source authority, acquisition clocks, native motion/goal arithmetic,
+registration/range bounds, S1-S5 satisfaction or command admission. The decoded
+upper endpoint of source speed `0.6` is not clamped to the configured maximum;
+later consumers must reject unsupported domains. The old wire helper's changed-
+decoded-value rejection remains unchanged. [Review §156][path-source-review]
+records the fixed controls, retained failures and separate verification ledgers.
+
+Next connect these exact source-word intervals to the named discrete-motion
+and capture-registration consumers, preserving complete uncertainty and actual
+frame/event identity. A partial fixture bridge must not become a permit, hide
+missing native/clock/source evidence or claim a qualified normal profile.
+
+[path-source-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -10770,12 +10813,14 @@ sixteen fixed controls pass ([§153][admission-motion-core-review]): three of fo
 positions used, 54 producer/35 reference entries total, zero new-family C1/source/
 runtime queries. The one default-root renewal is spent. This supplies conditional
 ideal motion enclosures only, not native arithmetic/registration or S1-S5
-qualification. The additive path-cell kernel and twelve fixed controls are now
-complete (§155); the new-source root gate passes 2,297 tests plus the known
-xfail/71 warnings under standing verification authority. Next: connect complete
-discrete path boxes to latest C1 prefixes and wall support within a bounded
-fixture-only scope, then address the remaining source-error/registration gates.
-Neither kernel nor motion-core completion admits a full guard or usable trial.
+qualification. The additive path-cell kernel and twelve fixed controls are
+complete (§155). The discrete-path/wall adapter and exact actual-wire/source-
+word interval boundary now pass 24 and 16 fixed controls respectively (§156);
+the repaired new-source root gate passes 2,337 tests plus the known xfail/71
+warnings. Prior spent standalone scopes remain spent. Next: propagate the
+source-word bounds into named motion/registration consumers, then close the
+actual source/native/clock evidence gates. These conditional prerequisites
+admit no full guard, normal profile, usable trial or new study episodes.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
   candidate and reviewable acceptance/evaluation checklist from existing evidence.

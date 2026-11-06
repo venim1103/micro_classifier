@@ -125,6 +125,345 @@ def test_synthetic_c1_path_cells_exclude_complete_prefix_fixture(monkeypatch, ca
     np.testing.assert_array_equal(segments, original_segments)
 
 
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_source_intervals_bind_actual_wire(case, monkeypatch):
+    import struct
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics
+
+    source = State(
+        sequence=22,
+        timestamp_us=1100000,
+        velocity_m_s=(0.5, 0.0, 0.0),
+        goal_m=(3.0, 0.0, 0.0),
+    )
+    if case == 1:
+        source = replace(source, velocity_m_s=(0.2, 0.0, 0.0))
+    elif case == 2:
+        source = replace(source, velocity_m_s=(0.35, 0.0, 0.0))
+    elif case == 3:
+        source = replace(source, velocity_m_s=(0.6, 0.0, 0.0))
+    elif case == 4:
+        source = replace(
+            source, angular_velocity_rad_s=(0.0, 0.0, 0.2), goal_m=(-0.35, 0.2, 0.0)
+        )
+    elif case == 5:
+        source = replace(source, velocity_m_s=(-0.0, 0.0, 0.0))
+    elif case == 8:
+        source = replace(source, ages_us=(50000, *source.ages_us[1:]))
+    elif case == 9:
+        source = replace(
+            source,
+            validity=6,
+            velocity_m_s=(0.0, 0.0, 0.0),
+            ages_us=(0xFFFFFFFF, *source.ages_us[1:]),
+        )
+    elif case == 13:
+        source = replace(source, velocity_m_s=(math.ulp(0.0), 0.0, 0.0))
+    elif case == 14:
+        source = replace(source, goal_m=(2**53 + 1, 0.0, 0.0))
+    frame = encode_state(source)
+    if case == 6:
+        frame = encode_state(replace(source, sequence=23))
+    elif case == 7:
+        frame = frame[:-1] + bytes([frame[-1] ^ 1])
+    elif case == 12:
+        frame = bytearray(frame)
+    elif case == 15:
+        source = replace(source, goal_m=(1 << 4096, 0.0, 0.0))
+    settings = {
+        "synthetic_test_only": case != 11,
+        "max_integer_bits": 1 if case == 10 else 4096,
+    }
+    saved_source, saved_frame = source, deepcopy(frame)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError(
+            "source-word fixtures must not inspect C1 or compute motion"
+        )
+
+    for name in (
+        "inspect_synthetic_c1_history",
+        "_probe_synthetic_c1_discrete_motion",
+        "_probe_synthetic_c1_discrete_path_enclosure",
+        "_probe_synthetic_c1_wire_rejection",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case == 11:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._bind_synthetic_c1_state_intervals(source, frame, **settings)
+    else:
+        result = diagnostics._bind_synthetic_c1_state_intervals(
+            source, frame, **settings
+        )
+        supported = case in (0, 1, 2, 3, 4, 5, 13)
+        assert result["fixture_words_bound"] is supported
+        assert result["component_pairs_checked"] <= 9
+        for key in (
+            "training_approved",
+            "real_input_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[key] is False
+        if supported:
+            assert result["state_frame"] == frame
+            assert result["status"] == "bound_under_fixture_assumptions"
+            for field in ("velocity_m_s", "angular_velocity_rad_s", "goal_m"):
+                for value, record in zip(
+                    getattr(source, field), result["fields"][field], strict=True
+                ):
+                    received = struct.unpack("<f", struct.pack("<f", value))[0]
+                    lower, upper = (Fraction(*pair) for pair in record["interval"])
+                    assert lower == min(Fraction(value), Fraction(received))
+                    assert upper == max(Fraction(value), Fraction(received))
+                    assert Fraction(*record["decoded_minus_source"]) == Fraction(
+                        received
+                    ) - Fraction(value)
+                    assert record["source_hex"] == float(value).hex()
+                    assert record["decoded_hex"] == received.hex()
+            if case in (1, 2, 3):
+                difference = Fraction(
+                    *result["fields"]["velocity_m_s"][0]["decoded_minus_source"]
+                )
+                assert (difference > 0) is (case != 2)
+            result["fields"]["velocity_m_s"][0]["interval"][0] = (123, 1)
+        else:
+            assert "fields" not in result and "state_frame" not in result
+            reasons = {
+                14: "source_integer_not_exact_binary64",
+                15: "invalid_state_frame_or_source",
+                6: "source_frame_binding_mismatch",
+                7: "invalid_state_frame_or_source",
+                8: "stale_host_state",
+                9: "unsupported_host_validity",
+                10: "source_integer_budget_exhausted",
+                12: "unsupported_state_frame",
+            }
+            assert result["reason"] == reasons[case]
+    assert source == saved_source and frame == saved_frame
+
+
+@pytest.fixture(scope="module")
+def c1_discrete_path_fixtures(request):
+    from sim import diagnostics
+
+    counts = dict.fromkeys(
+        ("capture", "producer", "adapter", "inspection", "prefix", "cell", "forbidden"),
+        0,
+    )
+    records, motions = [], []
+    for obstacles in ((), ((2.3, 2.0, 0.05),)):
+        counts["capture"] += 1
+        records.append(
+            diagnostics.capture_synthetic_c1_views(
+                Scenario(start=(2, 2, 0), obstacles=obstacles),
+                pose_m_rad=[2, 2, 0],
+                capture_tick=20,
+                synthetic_test_only=True,
+            )
+        )
+    for turn in (0.0, 1.5, -1.5):
+        counts["producer"] += 1
+        motions.append(
+            diagnostics._probe_synthetic_c1_discrete_motion(
+                initial_speed=0.5,
+                target_speed=0.5,
+                turn_rate=turn,
+                error_evidence={
+                    "position_error_m": 0.0,
+                    "heading_error_rad": 0.0,
+                    "profile_exact": True,
+                },
+                synthetic_test_only=True,
+            )
+        )
+    yield {"records": records, "motions": motions, "counts": counts}
+    assert counts["capture"] == 2 and counts["producer"] == 3
+    assert all(counts[key] <= 32 for key in ("adapter", "inspection", "prefix", "cell"))
+    assert counts["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 discrete-path ledger:", json.dumps(counts, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 discrete-path ledger:", json.dumps(counts, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(24))
+def test_synthetic_c1_discrete_path_enclosure_clear_fixture(
+    c1_discrete_path_fixtures, monkeypatch, case
+):
+    from sim import diagnostics
+
+    fixtures = c1_discrete_path_fixtures
+    counts = fixtures["counts"]
+    for key, name in (
+        ("adapter", "_probe_synthetic_c1_discrete_path_enclosure"),
+        ("inspection", "inspect_synthetic_c1_history"),
+        ("prefix", "_c1_low_free_segments"),
+        ("cell", "_c1_exclude_path_cells"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _original=original, _key=key, **kwargs):
+            counts[_key] += 1
+            assert counts[_key] <= 32
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        counts["forbidden"] += 1
+        raise AssertionError(
+            "discrete path fixtures must not call old C1/runtime paths"
+        )
+
+    for name in (
+        "_c1_curved_centerline",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "probe_synthetic_c1_questions",
+        "_probe_synthetic_c1_wire_rejection",
+        "_probe_synthetic_c1_discrete_motion",
+        "capture_synthetic_c1_views",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    record = deepcopy(fixtures["records"][1 if case == 3 else 0])
+    motion = deepcopy(fixtures["motions"][case if case in (1, 2) else 0])
+    settings = {
+        "reference_tick": 22,
+        "reference_pose_m_rad": [2, 2, 0],
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+    reason = "unsupported_motion_fixture"
+    if case == 3:
+        reason = "unexcluded_center_cell"
+        end = motion["centerline_boxes_m"][-1][0][0]
+        assert 0.3 > 0.18 + 0.05
+        assert 0.3 - end < 0.18 + 0.05
+    elif case == 4:
+        for box in motion["centerline_boxes_m"][1:]:
+            box[0][1] += 0.01
+        for index, chord in enumerate(motion["chords"]):
+            chord["start_box_m"] = deepcopy(motion["centerline_boxes_m"][index])
+            chord["end_box_m"] = deepcopy(motion["centerline_boxes_m"][index + 1])
+    elif case == 5:
+        settings["current_body_clear"] = False
+        reason = "current_body_clear_not_established"
+    elif case == 6:
+        settings["controlled_envelope"] = False
+        reason = "controlled_envelope_not_established"
+    elif case == 7:
+        settings["reference_tick"] = 24
+        reason = "stale_capture"
+    elif case == 8:
+        record["tof_valid"][:] = False
+        record["tof_m"][:] = 0
+        reason = "unsupported_points"
+    elif case == 9:
+        settings["reference_pose_m_rad"] = [3, 2, 0]
+        reason = "unsupported_capture_to_reference_motion"
+    elif case == 10:
+        settings["reference_pose_m_rad"] = [2, 2, 1.0]
+        reason = "unsupported_capture_to_reference_motion"
+    elif case == 11:
+        motion["chords"][0]["extra"] = 0
+    elif case == 12:
+        motion["chords"][0]["end_box_m"][0][1] += 0.01
+        motion["centerline_boxes_m"] = deepcopy(motion["centerline_boxes_m"])
+        motion["centerline_boxes_m"][1][0][1] -= 0.01
+    elif case == 13:
+        motion["centerline_boxes_m"][1][0] = [0.1, 0.0]
+    elif case == 14:
+        motion["centerline_boxes_m"][1][0][1] = float("inf")
+    elif case == 15:
+        motion["chords"][0]["radius_upper_m"] = 0.125
+    elif case == 16:
+        motion["source_qualified"] = True
+    elif case == 17:
+        motion["speed_intervals_m_s"][-1] = [0.05, 0.05]
+    elif case == 18:
+        motion["work"]["chords"] = True
+    elif case == 19:
+        motion["chords"] = []
+    elif case == 20:
+        settings["max_cells"] = 0
+        reason = "cell_budget_exhausted"
+    elif case == 21:
+        for chord in motion["chords"]:
+            chord["radius_upper_m"] = 2.0
+        reason = "axis_aligned_wall_support_incomplete"
+    elif case == 22:
+        settings["synthetic_test_only"] = False
+    elif case == 23:
+        settings["config"] = Config(noise_std=0, dropout=0, max_range=3.0)
+        reason = "unsupported_dynamics_or_wall_profile"
+    saved_record, saved_motion = deepcopy(record), deepcopy(motion)
+    if case == 22:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._probe_synthetic_c1_discrete_path_enclosure(
+                [record], motion, **settings
+            )
+    else:
+        result = diagnostics._probe_synthetic_c1_discrete_path_enclosure(
+            [record], motion, **settings
+        )
+        clear = case in (0, 1, 2, 4)
+        assert result["fixture_enclosure_excluded"] is clear
+        assert result["reason"] == (
+            "complete_discrete_path_and_axis_aligned_walls_excluded"
+            if clear
+            else reason
+        )
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        assert all(value in (0, 1) for value in result["work"].values())
+        assert result["cells_checked"] <= settings.get("max_cells", 32768)
+        if clear:
+            assert result["status"] == "excluded_under_fixture_assumptions"
+            assert result["work"] == {
+                "inspection_entries": 1,
+                "prefix_entries": 1,
+                "cell_entries": 1,
+            }
+            radius = result["path_tube_radius_m"]
+            for point, box in zip(
+                result["path_points_body_m"], motion["centerline_boxes_m"], strict=True
+            ):
+                for horizontal in box[0]:
+                    for vertical in box[1]:
+                        assert (
+                            math.hypot(horizontal - point[0], vertical - point[1])
+                            <= radius - 0.18
+                        )
+            if case == 4:
+                assert radius >= 0.185
+            result["path_points_body_m"][0][0] = 123.0
+        else:
+            assert result["status"] == "unknown"
+    assert json.dumps(record, default=json_value, sort_keys=True) == json.dumps(
+        saved_record, default=json_value, sort_keys=True
+    )
+    assert motion == saved_motion
+
+
 def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
     from fractions import Fraction
 

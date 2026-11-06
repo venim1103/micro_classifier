@@ -1917,6 +1917,151 @@ closed-loop baseline, source-verdict promotion or new task-data run exists.
 
 [c1-wire-rejection-review]: REVIEW.md
 
+#### Proposed Source and Command Admission Contract (2026-11-06)
+
+**Design-only candidate, not an adopted interface or permission to execute.**
+The user approved preparing this contract after I2. It refines D1/D2 without
+changing the three question meanings, complete catalogue-1/model-0 `OK`,
+normal profiles, source verdicts or the completed rejection adapter. It proposes
+an opt-in ideal-simulation trial with the existing C1 latest synchronized batch,
+relative inputs and synthetic cylinder/floor/wall envelope. It is not a device
+profile, numerical certificate, physical safety claim or task-data approval.
+
+**Source admission is a record of evidence, not a supplied true flag.** Proposed
+records bind a profile/source revision, immutable configuration identity,
+simulation epoch, host sequence/timestamp, exact state-frame bytes, source event,
+C1 capture identity/tick, reference tick and predecessor admission identity.
+Hashes establish correspondence, not authority. Require all of the following
+independently supported rows; missing or inconsistent evidence means unknown.
+
+| Obligation | Proposed owner and admissible evidence | Stop / invalidation |
+| --- | --- | --- |
+| S1: Domain and initial body | Separate setup auditor checks the declared static synthetic scene envelope and initial body against the complete fixture, then binds the result to the epoch/configuration. Private geometry stays offline, not in command selection. Later body-clear support requires the preceding admitted sweep and its retained uncertainty. | Unsupported object/floor/wall, absent setup evidence, reset, changed scene or a gap in the predecessor chain invalidates admission. No absence-of-hit or current oracle answer can supply body-clear. |
+| S2: Sensor source and coverage | Module-side C1 source retains all eight synchronized virtual views, exact payload/masks, mounting and capture/reference provenance under the existing retention rules. Independent return/coverage checks must support the requested swept region, including occlusion and missing returns. | Mixed epochs/views, missing or unsupported returns, unsupported swept regions or expired retention stay unknown. Keep normal/slender-cylinder, masked and floor/height counterexamples. |
+| S3: Host and decoded state | Host state owner supplies the exact source event and encoded frame; the module decodes actual bytes and verifies the event/frame/profile binding, validity and fresh ego/goal groups. Source intervals enclose the actual simulated state, not just the decoded values. | CRC/schema/binding/age failures reject. World goal/pose cannot replace decoded host input or select an action. Source authority is not established by matching bytes. |
+| S4: Quantization and numerical/registration error | Independently check exact stored source and binary32 words, enclose their discrepancies, and propagate them with timing, pose, range, arithmetic and motion-implementation allowances into every affected sweep/rank/goal claim. Each allowance needs its declared domain, method, version and remaining gap. | No clamp, guessed epsilon, Gaussian-sigma conversion or unaccepted certificate closes a gap. Unsupported or overlapping bounds abstain; re-planning does not reset accumulated error. |
+| S5: Clock and execution identity | Source/guard owners bind capture, reference, host receipt, requested command, application tick and fallback to one epoch and immutable configuration; external qualification must establish the timing/error contract. First candidate keeps fresh host ego/goal requirements. | Missing timing support, delayed application, replay, out-of-order state, changed configuration or epoch expiry invalidates the response. A simulated tick is not a wall-clock deadline. |
+
+S4 is a specific missing baseline gate, not permission to resume general
+arithmetic audits or the deferred SC18-v0 process. A future numerical study
+would need its own named consumer, independent method and approved bounded
+scope; the existing undecided verdicts and false flags do not become evidence.
+The old 0.6 m/s rounding rejection must remain. A separately implemented source
+profile could admit decoded inputs only with qualified discrepancy enclosures
+and their propagation, not by weakening `_probe_synthetic_c1_wire_rejection`
+or declaring decoded values equal to the true simulated state. No such profile
+or propagation implementation is supplied by this contract.
+
+**Proposed interface and ownership.** Keep state/decision bytes unchanged.
+For this opt-in simulation candidate only, introduce a separate, explicitly
+named in-process request/response boundary; it is not an existing API or UART
+message. A future board/transport design needs separate review. The host
+proposes a command from decoded state and permitted decision fields; a
+module-side guard owns C1 access. The sensorless host receives no raw C1,
+private geometry or reference answers. A simulation executor is the sole
+consumer of a matching one-use guard response and remains host-owned.
+The in-process boundary freezes host-owned command/state fields together with
+module-owned C1/reference identities before checking. The host does not choose
+a capture or need raw sensor access; the response carries the frozen binding.
+
+| Proposed record | Required content / semantics |
+| --- | --- |
+| Command request | Unique request ID; exact finite binary64 target speed and yaw-rate words for this host simulation; application tick; `STARTUP` or `NORMAL` control phase; source/profile/config/epoch, host-frame and C1/reference identities; one-tick hold; declared braking fallback. Phase is not a new question or a `mode` label. A normal request also binds the exact complete-`OK` decision bytes. |
+| Guard response | Exact request identity/content, source-admission identity, `ADMIT`, `DENY`, `UNKNOWN` or `FAULT`, rejection reason, swept-motion evidence identity and expiry at the requested application tick. Distinguish an established constraint/policy denial from missing or unresolved evidence. Only `ADMIT` with fully supported evidence can authorize that exact request once; status is not a confidence score, collision label or catalogue answer. |
+| Executor receipt | Request/response identities, application tick and the exact submitted command; distinguish requested command, acceleration/clipping result and actual applied motion. A changed, duplicate, missing, late or mismatched response cannot authorize a different command. An execution gap invalidates the predecessor chain. |
+
+An `OK` decision alone never admits a command. In `NORMAL`, absent, partial,
+rejected or expired question output always causes fallback; a guard response
+cannot manufacture missing normal answers. In `STARTUP`, expected at-rest
+question unknown/rejection is not an authorization: only the separate supported
+setup and dedicated startup permit may admit the one-shot candidate. Fresh
+valid host/source evidence is still mandatory. In either phase, state/transport
+failure or a missing, denied, unknown, faulty or expired permit means braking,
+never partial-selection consumption. The executor serializes check-and-consume
+before application, rejects already-consumed IDs and records an application
+failure as a gap, not an automatic retry.
+Do not silently overload health/task/validity fields or encode a permit in
+confidence, a diagnostic selection or an old rejection packet.
+
+Record fallback execution even when no new permit exists. A retained admitted
+braking tail supports later body-clear only while the actual actions, timing
+and uncertainty stay within that tail; otherwise body-clear becomes unknown
+and independent braking continues. Permit expiry cannot authorize a new motion
+from an old tail. A new reset/epoch needs new independently supported setup,
+not an automatic rearm of the one-shot launch allowance.
+
+**One concrete startup/command proposal, still unaccepted.** After a separately
+supported at-rest setup, the host may propose one straight launch: target
+speed **0.125 m/s**, yaw rate **0 rad/s**, held for **one configured tick**.
+These are proposed simulation parameters, not hardware limits or adoption of
+a new default. The independently evidenced guard must admit its actual sweep
+and braking tail before application. It needs no partial sector choice or
+oracle-selected launch. Startup is a separate host protocol; sector stays
+unknown at rest and the normal complete-`OK` rule is unchanged. No blind launch,
+automatic relaunch or exclusion of failed startup from outcomes is permitted.
+
+For `NORMAL`, propose a deterministic candidate mapper: left/centre/right
+request `+max_turn_rate`/zero/`-max_turn_rate`; forward target is
+`max_speed * tier / 3`. Blocked, `none`, tier zero or unusable/expired decision
+requests braking. There is no additional goal-proportional centre steering.
+This map is a proposal, not promotion of [the old host controller][baseline-host-source].
+The centre-only capacity answer never qualifies its combination with a side
+turn: the separate guard must support the complete proposed command or reject.
+
+The proposed fallback is a repeatedly issued `(0.0, 0.0)` target, not an
+instantaneous stop or a proof that braking space is clear. [The simulator's
+actual step][admission-dynamics-source] clips target speed, applies the
+acceleration-limited speed update, clips yaw rate and then integrates motion
+at the updated speed in bounded segments. Every fallback tick repeats that
+discrete update. Guard the whole one-command-tick-plus-braking swept body,
+including numerical/registration allowances, not just endpoints or the old
+continuous braking formula. Existing C1 question tubes do not constitute an
+implemented guard for this new piecewise motion. Unknown braking clearance
+must be reported; it does not disable independent braking or imply safe recovery.
+
+Propose one guard attempt per requested application tick, at most one command
+interval plus **16 modeled braking ticks**, and **128 total motion chords**
+per attempt. If supported enclosure/stopping cannot be established inside those
+caps, deny the request; do not extend them or retry automatically. These are
+candidate work limits, not measured feasibility, latency or renewed allowances.
+Actual fail-safe braking continues independently of a search cap. Before any
+implementation, separately bound and account every derived coverage/witness/
+registration query and all rejected entries; a chord cap is not that ledger.
+Existing six-question-query controls and every historical fixture budget stay
+unchanged. A fresh test increment and affected-regression renewal need approval.
+
+**Acceptance checks before adoption or a usable trial.**
+
+- Independently verify S1-S5 and the request/response/executor join. Tampered
+  source/frame/capture/config/epoch, expired/duplicate permits and omitted
+  evidence must fail closed; an identity match alone must not qualify a source.
+- Preserve the old exact-rounding rejection and at-rest partial diagnostics.
+  A future non-exact source needs bounded decoded/source discrepancies propagated
+  through the actual command, fallback and question evidence, including both
+  signs and near-contact cases; no tolerance relaxation or true-flag shortcut.
+- Check a denied startup issues only fallback; an admitted launch is one use,
+  one tick and independently guarded, with no `OK` forgery or repeated reset.
+  Verify centre steering and side/tier counterexamples against actual requests.
+- Independently check the acceleration-limited, piecewise command/braking sweep,
+  tangency/occlusion/missing returns, timing gaps, uncertainty and cap exhaustion.
+  A whole outer tube containing a hit is not a collision witness; an unsupported
+  region is not free space. Preserve all old aliases and failure evidence.
+- Review exact request/query/regression budgets and real receipt-to-command/
+  fallback timing separately before implementation or real-time integration.
+  D4 cohort/threshold/resource approval remains separate; always rejecting or
+  passing conditional fixtures cannot satisfy baseline task quality.
+
+**Decision requested.** Accept or revise the S1-S5 evidence owners/requirements,
+the explicit simulation-only guard boundary, one-shot startup/map/fallback and
+proposed work caps. These design choices are not adopted by preparing them.
+Uniform numerical/registration support, concrete guard implementation/work
+accounting and representative evaluation remain missing evidence, not completed
+gates. No source, runtime, wire, collection, model/dependency, hardware or run
+authorization follows; physical host actuation and fail-safes remain independent.
+
+[admission-dynamics-source]: sim/rover.py
+[source-command-admission-review]: REVIEW.md
+
 ### Dataset Construction
 
 - Define the ground-truth policy and review an evaluation set before generating
@@ -10452,6 +10597,12 @@ recommendation; source qualification and startup/actual command/fallback admissi
 remain decisions, not completed runtime gates. D4's prospective evaluation stays
 separate and unapproved. No runtime profile, threshold or source verdict is adopted;
 the four-position fixture verification scope is spent, not renewed by this status.
+
+The design-only source/startup/command contract is now prepared in §7
+([§151][source-command-admission-review]): five evidence obligations, an explicit
+simulation guard interface and concrete proposed startup/map/fallback/work caps.
+It is not adopted, implemented or source-qualified; the evidence and interface
+decisions and any new query/regression scope still require review.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
   candidate and reviewable acceptance/evaluation checklist from existing evidence.

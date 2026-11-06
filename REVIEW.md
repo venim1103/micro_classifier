@@ -11235,6 +11235,87 @@ separate/unapproved, and SC18-v0 stays deferred. ST licences/tools and board/ToF
 readiness remain parallel user-side gates. No qualification verdict, question
 meaning, default, wire format, risk convention or executable scope is adopted.
 
+## 151. Source, Startup and Actual-Command Admission Contract (2026-11-06)
+
+After the I2 checkpoint `901fe9a`, the user selected **Prepare the design-only
+contract** when asked about the next source/startup/command step. This approves
+concrete preparation using existing evidence, not implementation, new runs,
+qualification claims or renewal of §146's spent fixture/default-gate scope.
+The worktree was clean before this contract; I2 remains complete.
+
+**Prepared candidate.** [DESIGN §7][source-command-admission-design] now specifies
+S1-S5 owners/evidence for domain and initial/continued body-clear, synchronized
+C1 source/coverage, exact host/frame binding, quantization plus numerical/
+registration allowances, and timing/execution identity. Matching hashes or
+fixture booleans do not qualify a source. Private geometry is confined to a
+separate setup/evaluation role, never online command selection. Missing or
+unsupported evidence stays unknown; all original verdicts and flags remain.
+
+The proposed opt-in simulation boundary has three records: command request,
+one-use guard response and executor receipt. Request IDs and exact binary64
+command words bind this host simulation; responses distinguish admission,
+constraint/policy denial, unknown evidence and fault. C1 stays module-local; a sensorless
+host neither receives raw C1 nor infers a permit from a complete `OK`. Current
+state/decision bytes are unchanged, and this proposed in-process interface
+is not an existing API or a production UART design. Startup is separate from
+normal question consumption, not a new `mode` label or partial-OK exception.
+The boundary, not the sensorless host, attaches module-owned capture/reference
+identities. Normal question rejection always falls back; startup requires its
+own independently supported permit despite expected at-rest unknown answers.
+State/transport or permit failure falls back in either phase. The executor
+serializes one-use consumption and never retries a failed application.
+
+Concrete unaccepted defaults are one independently guarded straight launch at
+target 0.125 m/s, zero yaw, one configured tick; a normal candidate mapper with
+centre yaw zero and side yaw at the signed configured maximum; and repeated
+zero speed/yaw fallback. A centre-only tier cannot authorize a side/tier pair.
+The guard must enclose the actual acceleration-limited command tick followed
+by discrete braking, with retained uncertainty and fallback execution receipts.
+Proposed caps are one guard attempt per application tick, at most 16 modeled
+braking ticks after the command interval and 128 total motion chords. They
+are neither measured feasibility nor approved query, wall-clock or run budgets.
+Every derived coverage/witness/registration call and rejected entry still needs
+a separate ledger before any implementation is authorized.
+
+**Source-only findings.** The current diagnostic `host_action` rejects non-OK
+and adds goal-proportional centre steering. `RoverEnv.step` clips target speed,
+updates speed using acceleration times dt, then integrates the updated speed
+in segments; fallback repeats the same update. The C1 question coordinator
+leaves sector unknown at rest and queries capacity with centre braking. The
+wire-rejection helper still requires exact source/decoded equality and rejects
+changed binary32 values. These are local text/AST observations, not a new
+runtime or numerical experiment. They justify a distinct command guard and
+explicit discrepancy propagation; they do not prove an enclosing algorithm.
+The 0.6 m/s rejection and old helper remain unchanged. No general arithmetic
+audit or deferred SC18-v0 activity is reactivated by naming the S4 baseline gap.
+
+**Verification.** The first isolated standard-library check passed five source
+obligations, the three-record boundary, startup/map/fallback/work proposals,
+non-adoption/acceptance limits and nearby source AST anchors. All prior DESIGN
+text was exactly preserved and links/scope/whitespace passed. DESIGN editor
+diagnostics were clean. Final proposal/handoff checks passed: five source rows,
+three records, concrete proposals, braking-tail continuity/expiry/non-adoption,
+665 reference uses/25 inline links, 69 local targets/anchors and ordered
+sections 1-151. Exact prior DESIGN/review/Sources, stable AGENTS/task history
+and I2 README are preserved; scope/whitespace and all three editor diagnostics
+pass. Final record-format and staged-byte checks precede the local checkpoint;
+the code suite is not rerun.
+No project import or function, fixture, native compiler, model/tokenizer,
+episode/log replay, training, dependency/download, environment or hardware
+operation is executed. No raw artifact or cleanup is required; nothing is pushed.
+
+**Decision and remaining gates.** Accept/revise the S1-S5 authority/evidence
+requirements, explicit simulation guard boundary, one-shot launch, mapper,
+fallback and proposed work caps before any implementation scope. Uniform
+numerical/registration support, concrete guard/work accounting and prospective
+task quality are still missing evidence. Tasks 6/9 are not complete; all four
+§146 positions are spent, D4's cohort/threshold/resource proposal remains
+separate/unapproved, and ST tools/board readiness stay user-side parallel gates.
+Prepared design is not source qualification, accepted risk/threshold policy,
+normal runtime/wire adoption, task-data acceptance or physical clearance.
+
+[source-command-admission-design]: DESIGN.md
+
 ## Sources
 
 Hardware and tools:

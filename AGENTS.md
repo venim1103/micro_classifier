@@ -123,8 +123,9 @@ from them. Historical details below are reference material, not new approvals.
   Private fixture adapter rejects changed decoded source values and emits only
   unusable rejection/fault diagnostics, even for complete candidate bundles.
   Twenty-four cases/two reused scenes pass; all four verification positions are
-  spent. Next: admissible baseline source evidence and independent startup/actual
-  command/fallback owner/interface and acceptance decisions. D4 evaluation remains
+  spent. The design-only source/startup/command contract is prepared (§151),
+  not adopted. Next: decide S1-S5 evidence requirements/owners, explicit guard
+  interface, startup/map/fallback/caps and acceptance. D4 evaluation remains
   separate; no normal profile, source qualification, threshold, actuation or run
   scope is adopted. The old host loop is not a compatible C1 maneuver executor;
   Tasks 6/9 remain blocked, not completed.
@@ -138,7 +139,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-150 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-151 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - Architectural review assessed (REVIEW.md §148 / DESIGN.md §12): supported
@@ -1208,9 +1209,11 @@ Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
-Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §146 rejection increment complete.
-Next decision: admissible source evidence and independently supported startup/
-actual command/fallback owner/interface and acceptance checks. No usable C1 `OK`
+Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §146 rejection
+increment complete; §151 source/startup/command proposal prepared, not adopted.
+Next decision: accept/revise S1-S5 evidence requirements/owners, explicit simulation
+guard interface and proposed one-shot startup/map/fallback/caps; any implementation
+needs prerequisites and a new exact query/regression scope. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
 The approved 24-case/eight-scene/48-coordinator/four-position verification scope
 is spent (actual two reused scenes; 48 adapter/32 relative/10 coordinator per full

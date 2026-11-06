@@ -123,9 +123,11 @@ from them. Historical details below are reference material, not new approvals.
   Private fixture adapter rejects changed decoded source values and emits only
   unusable rejection/fault diagnostics, even for complete candidate bundles.
   Twenty-four cases/two reused scenes pass; all four verification positions are
-  spent. The design-only source/startup/command contract is prepared (§151),
-  not adopted. Next: decide S1-S5 evidence requirements/owners, explicit guard
-  interface, startup/map/fallback/caps and acceptance. D4 evaluation remains
+  spent. Source/startup/command requirements are adopted (§152), not implemented
+  or satisfied. The next prepared proposal is a conditional discrete motion
+  core: 16 fixed controls, zero new C1/source/runtime queries, four proposed
+  execution positions with one separate root-regression renewal. Fixed inputs/
+  method and exact scope are prepared, not approved for execution. D4 remains
   separate; no normal profile, source qualification, threshold, actuation or run
   scope is adopted. The old host loop is not a compatible C1 maneuver executor;
   Tasks 6/9 remain blocked, not completed.
@@ -139,7 +141,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-151 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-152 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - Architectural review assessed (REVIEW.md §148 / DESIGN.md §12): supported
@@ -1210,10 +1212,13 @@ a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
 on missing tools, and continue with the next unblocked task.
 
 Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §146 rejection
-increment complete; §151 source/startup/command proposal prepared, not adopted.
-Next decision: accept/revise S1-S5 evidence requirements/owners, explicit simulation
-guard interface and proposed one-shot startup/map/fallback/caps; any implementation
-needs prerequisites and a new exact query/regression scope. No usable C1 `OK`
+increment complete; §152 requirements-only source/startup/command adoption.
+Next proposal: conditional discrete command/braking motion core, 16 fixed controls,
+32 producer/32 reference entries per matrix, zero new C1/source/runtime queries,
+four execution positions and one proposed final-root regression renewal. Fixed
+literal inputs/expected results/method are prepared; approve the exact scope
+before implementation. S1-S5 satisfaction/full guard/usable trial remain separate
+gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
 The approved 24-case/eight-scene/48-coordinator/four-position verification scope
 is spent (actual two reused scenes; 48 adapter/32 relative/10 coordinator per full
@@ -1224,7 +1229,7 @@ Validated improvement queue: [DESIGN.md][design] §12 / [REVIEW.md][review] §14
 I2 public-doc clarity complete (§150). Prioritize sensor/coverage admission. Scratch/
 target optimization follows actual deployment gates, prompt work a justified
 teacher question and approved assets/use. Queue acceptance is not execution
-approval and does not change the next blocked source/startup/command decision.
+approval and does not qualify the source or authorize the motion-core increment.
 ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit

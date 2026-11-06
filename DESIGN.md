@@ -1917,24 +1917,28 @@ closed-loop baseline, source-verdict promotion or new task-data run exists.
 
 [c1-wire-rejection-review]: REVIEW.md
 
-#### Proposed Source and Command Admission Contract (2026-11-06)
+#### Source and Command Admission Contract (2026-11-06)
 
-**Design-only candidate, not an adopted interface or permission to execute.**
-The user approved preparing this contract after I2. It refines D1/D2 without
-changing the three question meanings, complete catalogue-1/model-0 `OK`,
-normal profiles, source verdicts or the completed rejection adapter. It proposes
-an opt-in ideal-simulation trial with the existing C1 latest synchronized batch,
-relative inputs and synthetic cylinder/floor/wall envelope. It is not a device
-profile, numerical certificate, physical safety claim or task-data approval.
+**Requirements adopted; not implemented, qualified or authorized to execute.**
+The user accepted the recommended requirements-only adoption after the design
+preparation in [Review §151][source-command-admission-review]. This fixes the
+S1-S5 obligations, simulation-only boundary and candidate startup/map/fallback/
+work limits for future scoped work. It does not change the question meanings,
+complete catalogue-1/model-0 `OK`, normal profiles, source verdicts or the
+completed rejection adapter. The candidate remains an opt-in ideal-simulation
+trial with the existing C1 latest synchronized batch, relative inputs and
+synthetic cylinder/floor/wall envelope. No evidence is thereby satisfied, no
+source/test/run budget is renewed, and no device profile, numerical certificate,
+physical safety claim or task-data approval follows.
 
-**Source admission is a record of evidence, not a supplied true flag.** Proposed
+**Source admission is a record of evidence, not a supplied true flag.** Required
 records bind a profile/source revision, immutable configuration identity,
 simulation epoch, host sequence/timestamp, exact state-frame bytes, source event,
 C1 capture identity/tick, reference tick and predecessor admission identity.
 Hashes establish correspondence, not authority. Require all of the following
 independently supported rows; missing or inconsistent evidence means unknown.
 
-| Obligation | Proposed owner and admissible evidence | Stop / invalidation |
+| Obligation | Required owner/evidence; satisfaction unverified | Stop / invalidation |
 | --- | --- | --- |
 | S1: Domain and initial body | Separate setup auditor checks the declared static synthetic scene envelope and initial body against the complete fixture, then binds the result to the epoch/configuration. Private geometry stays offline, not in command selection. Later body-clear support requires the preceding admitted sweep and its retained uncertainty. | Unsupported object/floor/wall, absent setup evidence, reset, changed scene or a gap in the predecessor chain invalidates admission. No absence-of-hit or current oracle answer can supply body-clear. |
 | S2: Sensor source and coverage | Module-side C1 source retains all eight synchronized virtual views, exact payload/masks, mounting and capture/reference provenance under the existing retention rules. Independent return/coverage checks must support the requested swept region, including occlusion and missing returns. | Mixed epochs/views, missing or unsupported returns, unsupported swept regions or expired retention stay unknown. Keep normal/slender-cylinder, masked and floor/height counterexamples. |
@@ -1952,8 +1956,8 @@ and their propagation, not by weakening `_probe_synthetic_c1_wire_rejection`
 or declaring decoded values equal to the true simulated state. No such profile
 or propagation implementation is supplied by this contract.
 
-**Proposed interface and ownership.** Keep state/decision bytes unchanged.
-For this opt-in simulation candidate only, introduce a separate, explicitly
+**Simulation-only interface requirements.** Keep state/decision bytes unchanged.
+For this opt-in simulation candidate only, require a separate, explicitly
 named in-process request/response boundary; it is not an existing API or UART
 message. A future board/transport design needs separate review. The host
 proposes a command from decoded state and permitted decision fields; a
@@ -1964,7 +1968,7 @@ The in-process boundary freezes host-owned command/state fields together with
 module-owned C1/reference identities before checking. The host does not choose
 a capture or need raw sensor access; the response carries the frozen binding.
 
-| Proposed record | Required content / semantics |
+| Required record; not implemented | Required content / semantics |
 | --- | --- |
 | Command request | Unique request ID; exact finite binary64 target speed and yaw-rate words for this host simulation; application tick; `STARTUP` or `NORMAL` control phase; source/profile/config/epoch, host-frame and C1/reference identities; one-tick hold; declared braking fallback. Phase is not a new question or a `mode` label. A normal request also binds the exact complete-`OK` decision bytes. |
 | Guard response | Exact request identity/content, source-admission identity, `ADMIT`, `DENY`, `UNKNOWN` or `FAULT`, rejection reason, swept-motion evidence identity and expiry at the requested application tick. Distinguish an established constraint/policy denial from missing or unresolved evidence. Only `ADMIT` with fully supported evidence can authorize that exact request once; status is not a confidence score, collision label or catalogue answer. |
@@ -1990,25 +1994,26 @@ and independent braking continues. Permit expiry cannot authorize a new motion
 from an old tail. A new reset/epoch needs new independently supported setup,
 not an automatic rearm of the one-shot launch allowance.
 
-**One concrete startup/command proposal, still unaccepted.** After a separately
+**Startup/command requirements for the candidate trial.** After a separately
 supported at-rest setup, the host may propose one straight launch: target
 speed **0.125 m/s**, yaw rate **0 rad/s**, held for **one configured tick**.
-These are proposed simulation parameters, not hardware limits or adoption of
-a new default. The independently evidenced guard must admit its actual sweep
-and braking tail before application. It needs no partial sector choice or
+These are simulation-only candidate requirements, not hardware limits, normal
+defaults or permission to launch. The independently evidenced guard must admit
+its actual sweep and braking tail before application. It needs no partial
+sector choice or
 oracle-selected launch. Startup is a separate host protocol; sector stays
 unknown at rest and the normal complete-`OK` rule is unchanged. No blind launch,
 automatic relaunch or exclusion of failed startup from outcomes is permitted.
 
-For `NORMAL`, propose a deterministic candidate mapper: left/centre/right
+For `NORMAL`, require a deterministic candidate mapper: left/centre/right
 request `+max_turn_rate`/zero/`-max_turn_rate`; forward target is
 `max_speed * tier / 3`. Blocked, `none`, tier zero or unusable/expired decision
 requests braking. There is no additional goal-proportional centre steering.
-This map is a proposal, not promotion of [the old host controller][baseline-host-source].
+This map does not promote [the old host controller][baseline-host-source].
 The centre-only capacity answer never qualifies its combination with a side
 turn: the separate guard must support the complete proposed command or reject.
 
-The proposed fallback is a repeatedly issued `(0.0, 0.0)` target, not an
+The required fallback is a repeatedly issued `(0.0, 0.0)` target, not an
 instantaneous stop or a proof that braking space is clear. [The simulator's
 actual step][admission-dynamics-source] clips target speed, applies the
 acceleration-limited speed update, clips yaw rate and then integrates motion
@@ -2019,7 +2024,7 @@ continuous braking formula. Existing C1 question tubes do not constitute an
 implemented guard for this new piecewise motion. Unknown braking clearance
 must be reported; it does not disable independent braking or imply safe recovery.
 
-Propose one guard attempt per requested application tick, at most one command
+Require at most one guard attempt per requested application tick, one command
 interval plus **16 modeled braking ticks**, and **128 total motion chords**
 per attempt. If supported enclosure/stopping cannot be established inside those
 caps, deny the request; do not extend them or retry automatically. These are
@@ -2030,7 +2035,7 @@ registration query and all rejected entries; a chord cap is not that ledger.
 Existing six-question-query controls and every historical fixture budget stay
 unchanged. A fresh test increment and affected-regression renewal need approval.
 
-**Acceptance checks before adoption or a usable trial.**
+**Acceptance checks before a usable trial.**
 
 - Independently verify S1-S5 and the request/response/executor join. Tampered
   source/frame/capture/config/epoch, expired/duplicate permits and omitted
@@ -2051,9 +2056,9 @@ unchanged. A fresh test increment and affected-regression renewal need approval.
   D4 cohort/threshold/resource approval remains separate; always rejecting or
   passing conditional fixtures cannot satisfy baseline task quality.
 
-**Decision requested.** Accept or revise the S1-S5 evidence owners/requirements,
+**Adoption and remaining gates.** Requirements-only adoption covers S1-S5,
 the explicit simulation-only guard boundary, one-shot startup/map/fallback and
-proposed work caps. These design choices are not adopted by preparing them.
+work caps. It is not evidence that any owner or implementation satisfies them.
 Uniform numerical/registration support, concrete guard implementation/work
 accounting and representative evaluation remain missing evidence, not completed
 gates. No source, runtime, wire, collection, model/dependency, hardware or run
@@ -2061,6 +2066,125 @@ authorization follows; physical host actuation and fail-safes remain independent
 
 [admission-dynamics-source]: sim/rover.py
 [source-command-admission-review]: REVIEW.md
+
+##### Next Implementation Proposal: Discrete Motion Core
+
+**Prepared for approval, not authorized by requirements adoption.** The first
+useful increment should compute the command/braking motion required above,
+not add another identity checker or expose a permit before source qualification.
+The named consumer is the future S4 actual-command sweep guard. Existing C1
+enclosure/witness APIs hardwire `_c1_curved_centerline` and its continuous
+braking phase; neither accepts an arbitrary acceleration-limited discrete path.
+Their current clear/blocked results cannot qualify the new command by relabeling
+the trajectory. [Review §152][admission-motion-core-review] records this boundary.
+
+**Proposed code boundary.** Add only a private conditional motion producer in
+the existing C1 diagnostics module, with controls in the existing simulator
+tests. It takes explicit artificial motion/configuration/error assumptions and
+returns an owned bounded path/enclosure or unknown. Model the acceleration and
+clipping update before the command interval, then each zero-target/zero-yaw
+braking update until stopped, retaining uncertainty at every tick. Cover the
+whole body between vertices, not only endpoints. Keep the one-command-tick,
+16-braking-tick and 128-total-chord limits; zero-length phases still count as
+attempted ticks. Unsupported bounds, nontermination inside the cap, overflow
+or ambiguous evidence must return unknown, not a shorter path or clearance.
+
+This producer supplies conditional mathematical/fixture evidence only. It
+does not establish native integration/registration error, S1-S5 satisfaction,
+question answers or command admission. All existing qualification/training
+flags remain false. No source adapter, request/permit/executor runtime, wire
+change, normal controller replacement or C1 geometry-query extension is in
+this first proposal. Existing helpers/defaults and their rejection/alias
+regressions stay unchanged; later source and path-aware coverage work needs
+its own evidence and scope.
+
+| Fixed control groups | Required discrimination in the future test increment |
+| --- | --- |
+| G01-G04 | Rest launch, moving straight command, acceleration clipping and zero-target braking. The declared supported straight controls must produce a complete conditional enclosure, not all unknown. Check the discrete stopping tail against an independent exact-rational recurrence. |
+| G05-G08 | Mirrored nonzero command turns and both signs of a declared source/decoded discrepancy. Require the declared conditional enclosures to retain the full assumed errors through command and braking; no zero-error substitution. Use an independently bounded circular-arc reference for the command interval, not the producer or old continuous-braking helper as its own oracle. |
+| G09-G12 | Missing/unsupported error evidence, invalid/nonfinite/boolean inputs, unsupported hold or configuration, and unchanged caller-owned inputs/outputs on rejection. Keep the rejection/unknown outcomes below fixed. |
+| G13-G16 | Reduced braking/chord budgets, independent-reference work exhaustion and held-result ownership. Exhaustion cannot publish a partial enclosure, relax a bound, become admitted motion or silently retry. |
+
+**Fixed prospective inputs.** Numeric decimal literals below mean their exact
+stored binary64 words, not exact decimal real values. The shared profile is
+`dt=0.05`, acceleration `1.0`, maximum speed `0.6`, maximum yaw rate `1.5`,
+radius `0.18`, initial body-frame position `(0.0, 0.0)` and yaw `0.0`. Default
+input is initial speed `0.5`, target `0.5`, command yaw rate `0.0`, hold one
+tick, complete explicit zero-error *artificial* input intervals, 16 braking
+ticks, 128 chords and 16 reference terms/16,384-bit intermediates. Each table
+row overrides only the stated fields. The mathematical interval model treats
+these stored input words as reals; it does not claim that native simulator
+operations are exact or that its zero-error fixtures qualify S4.
+
+| ID | Fixed overrides | Expected outcome |
+| --- | --- | --- |
+| G01 | Initial speed `0.0`, target `0.125` | Complete conditional launch-and-stop enclosure; speed changes before the first movement, not an instant jump to target. |
+| G02 | No overrides | Complete constant-command straight enclosure including every discrete braking tick. |
+| G03 | Target `1.0` | Complete conditional motion enclosure after the model's target-speed clipping and acceleration limit. This raw out-of-map target is not an allowed NORMAL command or permit. |
+| G04 | Initial speed `0.125`, target `0.0` | Complete discrete brake-only enclosure, not instantaneous stop or continuous stopping-distance substitution. |
+| G05 | Command yaw rate `1.5` | Complete left-command/straight-braking conditional enclosure. |
+| G06 | Command yaw rate `-1.5` | Complete mirrored right-command/straight-braking enclosure; exact reflection of the G05 mathematical intervals must be contained. |
+| G07 | Target `0.25`, command yaw rate `0.75`; initial-speed interval from binary64 words `0x3fc999999999999a` through `0x3fc99999a0000000` | Complete conditional enclosure for the full source/decoded interval, including positive binary32 discrepancy, without substituting its midpoint. |
+| G08 | Target `0.375`, command yaw rate `-0.75`; initial-speed interval from `0x3fd6666660000000` through `0x3fd6666666666666` | Complete conditional enclosure including the negative binary32 discrepancy. The word identities are artificial test inputs, not authority to relax source equality. |
+| G09 | Error-evidence record absent | Unknown, `error_evidence_missing`, before motion/reference work; a fixture zero cannot be invented. |
+| G10 | Initial speed `True`, target positive infinity, command yaw rate NaN | `ValueError` before motion/reference work; no writes to caller-owned data. |
+| G11 | Hold two ticks and profile acceleration `0.0` | Unknown, `unsupported_profile_or_hold`; no integration or accepted shorter hold. |
+| G12 | Repeat G02 twice; mutate the first returned path after the second return | Both independent enclosures complete; source inputs and the held second result remain unchanged. Two entries count, including ownership checks. |
+| G13 | Braking budget zero | Unknown, `braking_budget_exhausted`, with no publishable partial enclosure; independent real braking is not capped by this failed search. |
+| G14 | Chord budget zero | Unknown, `chord_budget_exhausted`, before a partial path can be published; no implicit larger budget. |
+| G15 | Repeat G05 with independent-reference term budget zero | Reference unknown, `reference_term_budget_exhausted`, supplies no correctness evidence for the producer. No retry or fallback oracle is allowed. |
+| G16 | Repeat G02 with independent-reference intermediate cap one bit; hold a preceding owned result | Reference unknown, `reference_integer_budget_exhausted`, before oversized arithmetic; the held result stays unchanged, with no producer admission or hidden reference retry. |
+
+**Proposed producer/reference separation.** The private producer models the
+order of `RoverEnv.step` as an ideal discrete recurrence: clip the target, apply
+the acceleration-limited speed update, integrate that constant-speed command
+interval, then apply zero target/yaw and the same update before each braking
+interval. Bound uncertain speeds through the whole recurrence. For a nonzero
+command yaw rate, form rational interval sine/cosine enclosures for the short
+command arc, then a straight braking tail at its bounded final heading. Exact
+rational comparisons and outward conversion must enclose every returned
+binary64 endpoint; bound between-vertex sagitta and the full body/error radius.
+Do not call the old centreline or claim to enclose native roundoff by this model.
+Reserve/check term and integer-growth budgets before arithmetic; use the same
+16-term/16,384-bit ceilings for the producer's arc arithmetic as for reference.
+An unresolved enclosure returns unknown; no extra terms or guessed epsilon.
+
+The test reference must independently derive the discrete straight recurrence
+and integrate the sine/cosine power series directly for the command interval,
+including an explicit tail bound. It must not reuse producer coefficients,
+interval helpers, polyline, trigonometric results or the old continuous-braking
+centreline. Check all interval endpoints, both curved mirrors, complete stopping
+and between-vertex/body bounds, not only a nominal endpoint. Native arithmetic,
+registration and actual-executor discrepancy still need separate S4 evidence;
+this bounded ideal reference is neither a proof acceptance nor an alternative
+general arithmetic/certificate program. No NF1/owner/typed-join helper is called.
+
+This is a fixed prospective approval matrix, not an executed one. If its method
+or limits cannot meet an expected conditional success, retain that failure and
+request a revised scope; do not replace a row, weaken a bound or quietly change
+success to unknown. Existing false-clear/near-contact/outer-tube regressions and
+the 0.6 m/s decoded-source rejection remain unchanged. No scenes or task data
+are created, and no global navigation target is narrowed.
+
+| Prospective ledger | Limit and accounting rule; all unapproved |
+| --- | --- |
+| New controls | Exactly 16 fixed IDs; at most 32 producer entries and 32 independent-reference entries per complete matrix. Count invalid, early-return, faulted and abandoned entries before work; no unmetered debug/reference calls. |
+| Producer work | At most one command interval, 16 modeled braking ticks and 128 chords per entry, plus at most 16 arc-series terms and 16,384-bit integer intermediates, with pre-operation growth guards/capacity reservation. No adaptive cap increase or retry; report attempted ticks/chords/terms separately. |
+| Independent reference | At most 16 series terms and 16,384-bit integer intermediates per reference entry, with pre-operation growth guards. These proposed limits are not demonstrated feasibility or accepted arithmetic proof; failure stops that control. Do not reuse the unaccepted NF1/typed-join certificates as authority. |
+| Geometry/source/runtime entries | Zero new C1 coordinator, exclusion, occupied-witness, capture, relative-input/registration, owner-event, wire-adapter or rover reset/step calls in this family. Zero permit/executor/actuation, tokenizer/model, episode/log-replay or board operations. |
+| Verification positions | At most four complete or aborted execution positions, including failed imports/teardowns, focused checks, repairs and a final root gate: at most 128 producer and 128 reference entries total. No fifth position or borrowing from an older scope. |
+| Old regression renewal | Propose exactly one final invocation of the current default suite under unchanged existing per-family controls, including current simulator/C1 and interface regressions; preserve the known QDQ xfail. This is compatibility checking only, not renewal of standalone old experiments, deferred SC18-v0, opt-in native studies or historical report generation. A failed root gate needs renewed old-regression permission before another root invocation. |
+| Resources and artifacts | Serial CPU-only, in-memory synthetic fixtures; no download, dependency, GPU, environment or hardware change. Retain any failed-command evidence in the existing ignored run area; no task log, dataset, new report or artifact cleanup is authorized. Loop/bit caps are work limits, not measured wall-clock/RSS or target-fit evidence. |
+
+The default source gate remains `python -m pytest -q && ruff check . && git diff --check`,
+plus changed-file formatting, but is not executed by this planning/adoption
+checkpoint. The proposed root renewal covers only its one approved position
+if this exact scope is subsequently accepted; all old spent positions remain
+historical, not refunded. Source qualification and later full-guard derived
+coverage/witness/registration work are deliberately outside the zero-query
+motion-core ledger and need separate accounting before their implementation.
+
+[admission-motion-core-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -10598,11 +10722,14 @@ remain decisions, not completed runtime gates. D4's prospective evaluation stays
 separate and unapproved. No runtime profile, threshold or source verdict is adopted;
 the four-position fixture verification scope is spent, not renewed by this status.
 
-The design-only source/startup/command contract is now prepared in §7
-([§151][source-command-admission-review]): five evidence obligations, an explicit
-simulation guard interface and concrete proposed startup/map/fallback/work caps.
-It is not adopted, implemented or source-qualified; the evidence and interface
-decisions and any new query/regression scope still require review.
+The source/startup/command contract in §7 is adopted as requirements only
+([preparation §151][source-command-admission-review], adoption §152): five evidence
+obligations, an explicit simulation guard boundary and candidate startup/map/
+fallback/work limits. No evidence is satisfied or implementation/run authorized.
+The next prepared proposal is the isolated discrete motion core, with sixteen
+fixed prospective controls and a zero-C1-query ledger; its exact implementation/
+regression scope still need approval. S1-S5 qualification and the full guard
+remain later gates, not achievements of this requirements decision.
 
 1. **Baseline admission brief first (F21/M2; Tasks 6/9).** Prepare one concrete
   candidate and reviewable acceptance/evaluation checklist from existing evidence.

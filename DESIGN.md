@@ -2687,13 +2687,33 @@ false. Metadata correspondence does not bind full capture content, a current
 request/source or actual producer/clock/registration authority. [Review §173]
 [capture-reference-pose-review] records sixteen controls, prior nodes/mapper exact.
 
-Next join this checker to the owned capture/current-request path, preserving full
-source/point error and accounting for reference rounding separately. Source/clock/
-ray/pose/body/error/native/registration/ID/one-use/S1-S5/task-quality evidence remains
-separate; no usable `OK`, actuation, normal controller or trial is admitted. General
-arithmetic/identity audits and protected studies stay deferred.
-
 [capture-reference-pose-review]: REVIEW.md
+
+##### Opt-In Capture/Request/Pose Join (2026-11-06)
+
+`_probe_synthetic_c1_owned_capture_request_path` now accepts the explicit literal-
+bool `check_straight_reference_pose=False`. Its default diagnostic behavior is
+unchanged. Opt-in checks the owned capture against complete bound history and
+owns the declared current pose before path work. Unsupported past turn/heading
+still abstains, without changing command meanings or the surrounding product.
+
+Compute a rational L1 enclosure between supplied pose and nominal binary64 pose
+endpoints, outward-convert it and add only that rounding component to a copied
+remaining-point-error record. The full source/registration error remains separately
+consumed by the existing path checker. Compare pose/path source bindings and
+publish pose metadata only after final owned-capture/request/motion checks pass.
+No default/schema/wire/normal controller/threshold or old hard-cap change follows.
+[Review §174][checked-pose-path-review] records sixteen controls, the repaired
+publication order and lint failure, four spent positions and unchanged defaults.
+
+This remains conditional fixture content, always UNKNOWN/no permission/all seven
+flags false. Current-body, source/profile, clock/ray/pose/error/native, one-use
+executor, S1-S5 and task-quality evidence are not established by pose/hash matches.
+Next map the exact adopted S1/body/executor evidence gaps before choosing further
+implementation, not another metadata wrapper or deferred general audit. No normal
+profile/runtime, usable `OK`, actuation, trial, study or data acceptance follows.
+
+[checked-pose-path-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11271,8 +11291,10 @@ the same xfail/71 warnings, prior nodes/mapper exact. Owned capture/current-requ
 path composition (§172) passes sixteen/root 2,597 plus the same xfail/71 warnings,
 prior nodes/mapper exact. Isolated straight capture/reference-pose correspondence
 (§173) passes sixteen/root 2,613 plus the same xfail/71 warnings, prior nodes/mapper
-exact. Next owned capture/current-request/straight-pose join with explicit rounding
-margin, not the old loop or a matching-hash permit;
+exact. Opt-in owned capture/request/straight-pose join (§174) passes sixteen/root
+2,629 plus the same xfail/71 warnings; defaults/83 other source nodes/320 old tests/
+mapper unchanged. Next S1/body/executor evidence-gap mapping, not the old loop or
+a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

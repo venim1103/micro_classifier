@@ -13455,6 +13455,107 @@ file scope. No documentation failure or extra fixture/root invocation. Stage
 only this verified checkpoint and normally synchronize configured upstream;
 no force/security/configuration changes.
 
+## 174. Opt-In Owned Capture/Request/Pose Join (2026-11-06)
+
+§173 committed/normally pushed as `772e1922429f8a7c7da3be0037c95105207c3f70`,
+clean main/upstream 0/0; stale helper warnings retained without configuration/
+security changes. Continue the named owned-path/straight-pose/rounding prerequisite.
+
+**Pre-execution hypothesis/check.** The existing owned-capture wrapper can gain
+an explicit literal-bool `check_straight_reference_pose=False` option without
+changing its default fixture outputs, other old APIs or command meanings. On
+opt-in, check that owned capture metadata against complete State/frame history
+before path work, own the current reference pose, then add only the rationally
+computed reference-box L1 rounding enclosure to a copied remaining-point-error
+record. Existing full registration/source-error bounds remain separately consumed.
+Compare final path/pose source bindings; never substitute metadata matching for
+full capture/request/current-source binding. A shifted pose must reject before
+path; the consumed point error must be at least original remaining error plus
+explicit reference-rounding upper bound. Unsupported past turn/heading abstains.
+Default old controls/outputs remain compatible, no online steering or permission.
+
+Finite sixteen-control CPU/in-memory scope, at most four focused/failed/aborted/
+repair/style/root positions, final reserved for required root. Same reused module
+fixture/two scenes, exactly two captures/three preparation motions per constructed
+fixture, separately accounted/shared in root. New ledger max32 wrapper, max64
+capture/pose/request-path/history, max256 binder, max384 digest, max128 normal/
+preparer/matcher/motion, zero forbidden. No new family/study/Scene/source-owner/
+auditor/reference/rover/runtime/data/model/dependency/download/hardware; capture/
+geometry steering/questions/audits/controller/reset/step forbidden after setup.
+Preserve every old cap/ledger, source4096/arithmetic16384/history3/motion16-brake/
+128-chord/16-term/spatial limits, tolerances, assertions and known QDQ xfail.
+Modify only this owning wrapper; other source nodes/mapper and all old test nodes
+remain exact. Validate actual callers/default compatibility, guard closed point
+evidence before copy, reject missing/nonfinite/negative errors without partial
+publication. Old unused/spent positions not borrowed, root compatibility only.
+Always UNKNOWN/no permission/all seven flags false. No reports/logs/new data/job/
+cleanup; failures retain evidence. Next sixteen focused controls. Actual source/
+clock/ray/body/error/native/registration/ID/one-use/S1-S5/physical/task-quality and
+protected study/data/hardware gates remain closed.
+
+**Implementation, repair and verification.** Modified only the existing owned-
+capture wrapper, adding the explicit optional keyword and checked branch; all 83
+other source nodes/320 prior tests AST-exact/in order, mapper bytes unchanged.
+Default §172 controls/outputs/counters remain unchanged. Opt-in uses owned capture
+metadata, an owned reference pose and copied point evidence, carries only the
+computed reference-rounding margin into remaining error and compares final pose/
+path source bindings. All bound/source-error components stay separate.
+
+1. Initial sixteen controls pass, 1,690 deselected, 0.57 s: 17 wrapper/16 capture/
+  12 pose/5 request-path/16 history/76 binder/162 digest/26 normal/21 preparer/
+  26 matcher/31 motion/zero forbidden. Two reused captures/three preparation
+  motions separately. The initial extra-point-key control rejects before path.
+  Subsequent local review found pose metadata published before final capture
+  digest acceptance; not a test failure or unsafe actuation. Moved publication
+  after all checks and replaced that control with consumed-capture mutation.
+2. Repaired sixteen controls pass, 1,690 deselected, 0.64 s: 17 wrapper/16 capture/
+  13 pose/6 request-path/18 history/85 binder/172 digest/28 normal/22 preparer/
+  28 matcher/34 motion/zero forbidden. Injected consumed-capture mutation rejects
+  with no partial pose/path/hash publication. Default compatibility, three future
+  command directions, pose shifts, unsupported past motion, missing/negative/
+  nonfinite errors and literal-bool/capture substitution controls pass.
+3. Zero-query style position fixes one new import order/formats new code, then
+  fails SIM102 on nested pose/history `if`. Retain this failure; manually combine
+  the equivalent short-circuit condition, no unsafe autofix or assertion change.
+  Editor diagnostics clear; actual definition+old/new test callers verified.
+4. Final position starts with repaired lint/format/whitespace and AST/byte scope
+  checks, all pass without fixture queries, then runs the one required root
+  `python -m pytest -q && ruff check . && ruff format --check sim/diagnostics.py
+  tests/test_sim.py && git diff --check`: **2,629 plus known transformer QDQ
+  xfail/71 warnings**, no skips, 59.77 s. New matrix exactly the repaired position;
+  all old controls unchanged compatibility only. No extra focused matrix/root,
+  standalone scope renewal or opt-in native/sanitizer/Arm/board/model gate.
+
+All four positions spent. Cumulative **51 wrapper/48 capture/38 pose/17 request-
+path/52 history/246 binder/506 digest/82 normal/65 preparer/82 matcher/99 motion/
+zero forbidden**, separately six captures/nine preparation motions/same two
+scenes. Root-tested source SHA256
+`93dd0219eb0871ec013e7a1a2a8d0c3e6792dadf83aecdb2d6a2a8e49af0665c`;
+test SHA256 `584524bdd83dd558d90db5810618d08f73da92fd1cbe360c65ecf525731f35ec`.
+No source/test edits after root. UNKNOWN/no permission/all seven flags false;
+no normal profile/runtime, usable `OK`, actuation, qualified source/native/
+numerical/physical/task quality or new study/data/model/dependency/download/
+hardware/generated report/job/cleanup. Earlier failures/budgets stay historical.
+
+Checkpoint reassessment: the named owned-capture/request/straight-pose join now
+exists as opt-in conditional tooling, including separate rounding and source
+components. Remaining source/profile/current-body/one-use executor/quality gates
+are not missing hashes or routine test permission. Next map exact S1/body/executor
+evidence gaps from adopted requirements before choosing further implementation;
+do not add more metadata wrappers merely to fill a qualification blocker. Native/
+physical/task-quality and protected study/profile/data/hardware boundaries remain;
+general audits stay deferred. Scoped documentation/history/references/root-tested
+byte checks and checkpoint commit/normal upstream synchronization follow, without
+rerunning the unchanged successful gate.
+
+Scoped documentation checks pass: exact prior REVIEW §§1-173/Sources, stable
+workflow/older task history/design contracts/roadmap, 690 prose references
+(including wrapped labels)/25 inline links/70 local targets+anchors, editor
+diagnostics, root-tested bytes/83 non-owning source nodes/320 old test nodes/
+unchanged mapper and five-file scope. No documentation failure or extra fixture/
+root invocation. Stage only this verified checkpoint and normally synchronize
+configured upstream without force/security/configuration changes.
+
 ## Sources
 
 Hardware and tools:

@@ -4984,6 +4984,7 @@ def _probe_synthetic_c1_owned_capture_request_path(
     error_evidence=None,
     current_body_clear=False,
     controlled_envelope=False,
+    check_straight_reference_pose=False,
     max_braking_ticks=16,
     max_chords=128,
     max_terms=16,
@@ -4995,6 +4996,8 @@ def _probe_synthetic_c1_owned_capture_request_path(
     """Consume only owned matching capture content, never grant permission."""
     if synthetic_test_only is not True:
         raise ValueError("owned capture path requires synthetic_test_only=True")
+    if type(check_straight_reference_pose) is not bool:
+        raise ValueError("check_straight_reference_pose must be a literal bool")
     work = {
         "capture_content_entries": 0,
         "request_path_entries": 0,
@@ -5035,6 +5038,100 @@ def _probe_synthetic_c1_owned_capture_request_path(
         result["reason"] = capture["reason"]
         return result
     owned_record = capture["capture_record"]
+    pose = None
+    path_points, path_reference = point_error_evidence, reference_pose_m_rad
+    if check_straight_reference_pose:
+        from interface.protocol import State
+
+        keys = {
+            "source_states",
+            "state_frames",
+            "history_assumptions",
+            "prefix_history_binding_exact",
+            "remaining_point_error_m",
+            "point_radius_m",
+        }
+        if (
+            type(point_error_evidence) is not dict
+            or len(point_error_evidence) != len(keys)
+            or any(type(key) is not str for key in point_error_evidence)
+            or set(point_error_evidence) != keys
+        ):
+            result["reason"] = "unsupported_point_error_evidence"
+            return result
+        states, frames = (
+            point_error_evidence["source_states"],
+            point_error_evidence["state_frames"],
+        )
+        if (
+            type(states) not in (list, tuple)
+            or type(frames) not in (list, tuple)
+            or not 1 <= len(states) == len(frames) <= 4
+            or any(type(state) is not State for state in states)
+            or any(
+                type(frame) is not bytes or not 1 <= len(frame) <= 128
+                for frame in frames
+            )
+        ):
+            result["reason"] = "unsupported_frame_history"
+            return result
+        remaining = point_error_evidence["remaining_point_error_m"]
+        if remaining is None:
+            result["reason"] = "remaining_point_error_missing"
+            return result
+        if type(remaining) not in (int, float) or type(
+            point_error_evidence["point_radius_m"]
+        ) not in (int, float):
+            result["reason"] = "unsupported_point_error_input"
+            return result
+        work["pose_entries"] = 1
+        pose = _check_synthetic_c1_straight_capture_reference_pose(
+            owned_record["capture_ticks"],
+            owned_record["capture_poses_m_rad"],
+            states,
+            frames,
+            reference_tick=current_tick,
+            reference_pose_m_rad=reference_pose_m_rad,
+            assumptions=point_error_evidence["history_assumptions"],
+            synthetic_test_only=True,
+        )
+        result["pose_work"] = deepcopy(pose["work"])
+        if pose["fixture_reference_pose_matched"] is not True:
+            result["reason"] = pose["reason"]
+            return result
+        rounding_work = {}
+        arithmetic = _C1CommandArithmetic(0, 16384, rounding_work)
+        try:
+            remaining = arithmetic.value(remaining)
+            radius = arithmetic.value(point_error_evidence["point_radius_m"])
+            zero = arithmetic.value(0)
+            if remaining < zero or radius < zero or radius > arithmetic.value(4):
+                result["reason"] = "unsupported_point_error_domain"
+                return result
+            rounding = zero
+            for supplied, (lower, upper) in zip(
+                pose["reference_pose_m_rad"],
+                pose["nominal_pose_bounds_m_rad"],
+                strict=True,
+            ):
+                value = arithmetic.value(supplied)
+                delta = max(
+                    abs(arithmetic.binary(value, arithmetic.value(lower), "sub")),
+                    abs(arithmetic.binary(value, arithmetic.value(upper), "sub")),
+                )
+                rounding = arithmetic.binary(rounding, delta, "add")
+            rounding_upper = arithmetic.outward(rounding, True)
+            combined = arithmetic.binary(
+                remaining, arithmetic.value(rounding_upper), "add"
+            )
+            effective_remaining = arithmetic.outward(combined, True)
+        except (ArithmeticError, ValueError, OverflowError):
+            result["reason"] = "unsupported_point_error_input"
+            return result
+        path_points = deepcopy(point_error_evidence)
+        path_points["remaining_point_error_m"] = effective_remaining
+        path_reference = pose["reference_pose_m_rad"]
+        result["reference_rounding_work"] = deepcopy(rounding_work)
     work["request_path_entries"] = 1
     path = _probe_synthetic_c1_current_request_path(
         retained_request,
@@ -5043,9 +5140,9 @@ def _probe_synthetic_c1_owned_capture_request_path(
         state_frame,
         decision_frame,
         [owned_record],
-        point_error_evidence,
+        path_points,
         current_tick=current_tick,
-        reference_pose_m_rad=reference_pose_m_rad,
+        reference_pose_m_rad=path_reference,
         config=config,
         settings=settings,
         error_evidence=error_evidence,
@@ -5062,6 +5159,12 @@ def _probe_synthetic_c1_owned_capture_request_path(
     result["request_path_work"] = deepcopy(path["work"])
     if path["fixture_request_path_excluded"] is not True:
         result["reason"] = path["reason"]
+        return result
+    if pose is not None and (
+        path["path_enclosure"]["registration_bound"]["source_bindings"]
+        != pose["history_bound"]["source_bindings"]
+    ):
+        result["reason"] = "reference_pose_path_history_mismatch"
         return result
     work["digest_entries"] = 1
     if (
@@ -5081,6 +5184,9 @@ def _probe_synthetic_c1_owned_capture_request_path(
         current_tick=current_tick,
         path_enclosure=deepcopy(path["path_enclosure"]),
     )
+    if pose is not None:
+        result["reference_pose_binding"] = deepcopy(pose)
+        result["reference_rounding_error_m"] = rounding_upper
     return result
 
 

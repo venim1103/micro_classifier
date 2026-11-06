@@ -2567,6 +2567,344 @@ def test_synthetic_c1_straight_capture_reference_pose_matches_complete_history(
 
 
 @pytest.fixture(scope="module")
+def c1_checked_pose_path_ledger(request):
+    ledger = dict.fromkeys(
+        (
+            "wrapper",
+            "capture",
+            "pose",
+            "request_path",
+            "history",
+            "binding",
+            "digest",
+            "normal",
+            "prepare",
+            "matcher",
+            "motion",
+            "forbidden",
+        ),
+        0,
+    )
+    yield ledger
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 checked-pose path ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 checked-pose path ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_owned_capture_path_checks_pose_and_rounding(
+    c1_discrete_path_fixtures, c1_checked_pose_path_ledger, monkeypatch, case
+):
+    from fractions import Fraction
+
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        State,
+        Status,
+        decode_state,
+        encode_decision,
+        encode_state,
+    )
+    from sim import diagnostics, rules
+
+    ledger = c1_checked_pose_path_ledger
+    consumed = []
+    for key, name in (
+        ("capture", "_check_synthetic_c1_request_capture_content"),
+        ("pose", "_check_synthetic_c1_straight_capture_reference_pose"),
+        ("request_path", "_probe_synthetic_c1_current_request_path"),
+        ("history", "_bound_synthetic_c1_history_registration"),
+        ("binding", "_bind_synthetic_c1_state_intervals"),
+        ("digest", "_c1_source_binding_digest"),
+        ("normal", "_probe_synthetic_c1_normal_state_motion"),
+        ("prepare", "_prepare_synthetic_c1_normal_request"),
+        ("matcher", "_check_synthetic_c1_normal_request_binding"),
+        ("motion", "_probe_synthetic_c1_discrete_motion"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (
+                384
+                if _key == "digest"
+                else 256
+                if _key == "binding"
+                else 128
+                if _key in ("normal", "prepare", "matcher", "motion")
+                else 64
+            )
+            if _key == "request_path":
+                consumed.append(deepcopy(args[6]))
+                if case != 0:
+                    assert args[6] is not evidence
+                    assert kwargs["reference_pose_m_rad"] is not reference
+            output = _original(*args, **kwargs)
+            if _key == "request_path" and case == 13:
+                args[5][0]["tof_valid"].fill(False)
+                args[5][0]["tof_m"].fill(0)
+            return output
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("pose/path join must not select, collect or actuate")
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "_c1_curved_centerline",
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_enclosure",
+        "_audit_synthetic_c1_source_binding",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("host_action", "wire_step", "decide", "run_diagnostics"):
+        monkeypatch.setattr(rules, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    record = deepcopy(c1_discrete_path_fixtures["records"][0])
+    if case == 8:
+        record["capture_poses_m_rad"][:, 2] = 0.1
+    config = Config.from_record(record["config"])
+    sector = case - 1 if case in (2, 3) else 0
+    speed = 0.2 if case == 2 else 0.35 if case == 3 else 0.5
+    states = [
+        State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(0.2 if tick < 22 else speed, 0.0, 0.0),
+            angular_velocity_rad_s=(0.0, 0.0, 0.1 if case == 7 else 0.0),
+            goal_m=(3.0, 1.0, 0.0),
+        )
+        for tick in range(20, 23)
+    ]
+    frames = [encode_state(state) for state in states]
+    source, state_frame = states[-1], frames[-1]
+    choices = (0, sector, sector + 1)
+    answers = tuple(
+        Answer(
+            question,
+            tuple(float(index == choice) for index in range(len(options))),
+            choice,
+        )
+        for (question, (_, options)), choice in zip(
+            RULES_QUESTIONS.items(), choices, strict=True
+        )
+    )
+    decision_frame = encode_decision(
+        Decision(sequence=22, timestamp_us=1100000, status=Status.OK, answers=answers)
+    )
+    error = {"position_error_m": 0.0, "heading_error_rad": 0.0, "profile_exact": True}
+    retained = diagnostics._prepare_synthetic_c1_normal_request(
+        source,
+        state_frame,
+        decision_frame,
+        request_id="d" * 32,
+        source_context={
+            "epoch": "a" * 32,
+            "source_identity": "b" * 64,
+            "c1_reference_identity": diagnostics._c1_source_binding_digest(record),
+            "capture_tick": 20,
+            "reference_tick": 22,
+        },
+        reference_tick=22,
+        config=config,
+        error_evidence=error,
+        synthetic_test_only=True,
+    )
+    assert retained["fixture_request_prepared"] is True
+    received = deepcopy(retained["request"])
+    distance = sum(
+        Fraction(decode_state(frame).velocity_m_s[0]) for frame in frames[1:]
+    ) * Fraction(0.05)
+    reference = [float(Fraction(2) + distance), 2.0, 0.0]
+    evidence = {
+        "source_states": states,
+        "state_frames": frames,
+        "history_assumptions": dict.fromkeys(
+            (
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            ),
+            True,
+        ),
+        "prefix_history_binding_exact": True,
+        "remaining_point_error_m": 1e-8,
+        "point_radius_m": 4.0,
+    }
+    options = {
+        "current_tick": 22,
+        "reference_pose_m_rad": reference,
+        "config": config,
+        "error_evidence": error,
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+        "check_straight_reference_pose": case != 0,
+    }
+    if case in (4, 5, 6):
+        reference[case - 4] += 0.01
+    elif case == 9:
+        states.pop(1)
+        frames.pop(1)
+    elif case == 10:
+        evidence["remaining_point_error_m"] = None
+    elif case == 11:
+        evidence["remaining_point_error_m"] = -1.0
+    elif case == 12:
+        evidence["remaining_point_error_m"] = float("nan")
+    elif case == 14:
+        options["check_straight_reference_pose"] = 1
+    elif case == 15:
+        visible = int(np.flatnonzero(record["tof_valid"])[0])
+        record["tof_m"].flat[visible] = np.nextafter(
+            record["tof_m"].flat[visible], np.float32(0)
+        )
+    saved = deepcopy(
+        (
+            retained,
+            received,
+            source,
+            state_frame,
+            decision_frame,
+            record,
+            evidence,
+            options,
+        )
+    )
+
+    def probe():
+        ledger["wrapper"] += 1
+        assert ledger["wrapper"] <= 32
+        return diagnostics._probe_synthetic_c1_owned_capture_request_path(
+            retained,
+            received,
+            source,
+            state_frame,
+            decision_frame,
+            record,
+            evidence,
+            **options,
+        )
+
+    before = dict(ledger)
+    if case == 14:
+        with pytest.raises(ValueError, match="literal bool"):
+            probe()
+        assert ledger["capture"] == before["capture"]
+    else:
+        output = probe()
+        assert output["fixture_capture_path_excluded"] is (case < 4)
+        assert (
+            output["guard_status"] == "UNKNOWN"
+            and output["fixture_permission_granted"] is False
+        )
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert output[flag] is False
+        if case < 4:
+            if case == 0:
+                assert (
+                    "reference_pose_binding" not in output
+                    and "pose_entries" not in output["work"]
+                )
+                assert (
+                    consumed[-1]["remaining_point_error_m"]
+                    == evidence["remaining_point_error_m"]
+                )
+            else:
+                assert (
+                    output["reference_pose_binding"]["fixture_reference_pose_matched"]
+                    is True
+                )
+                margin = Fraction(output["reference_rounding_error_m"])
+                assert margin >= 0
+                assert (
+                    Fraction(consumed[-1]["remaining_point_error_m"])
+                    >= Fraction(1e-8) + margin
+                )
+                assert (
+                    consumed[-1]["source_states"] == states
+                    and consumed[-1]["state_frames"] == frames
+                )
+                assert (
+                    output["reference_pose_binding"]["history_bound"]["source_bindings"]
+                    == output["path_enclosure"]["registration_bound"]["source_bindings"]
+                )
+                if case == 1:
+                    original_output = deepcopy(output)
+                    output["reference_pose_binding"]["history_bound"][
+                        "source_bindings"
+                    ].clear()
+                    assert probe() == original_output
+        else:
+            assert (
+                output["status"] == "unknown"
+                and "path_enclosure" not in output
+                and "request_sha256" not in output
+            )
+            assert (
+                "reference_pose_binding" not in output
+                and "reference_rounding_error_m" not in output
+            )
+            assert output["reason"] == (
+                "capture_history_reference_pose_mismatch"
+                if case in (4, 5, 6)
+                else "unsupported_nonzero_history_turn"
+                if case == 7
+                else "unsupported_nonzero_capture_heading"
+                if case == 8
+                else "incomplete_frame_history"
+                if case == 9
+                else "remaining_point_error_missing"
+                if case == 10
+                else "unsupported_point_error_domain"
+                if case == 11
+                else "unsupported_point_error_input"
+                if case == 12
+                else "owned_capture_path_binding_mismatch"
+                if case == 13
+                else "c1_capture_content_mismatch"
+            )
+            assert ledger["request_path"] == before["request_path"] + int(case == 13)
+    assert (retained, received, source, state_frame, decision_frame) == (
+        saved[0],
+        saved[1],
+        saved[2],
+        saved[3],
+        saved[4],
+    )
+    assert (
+        evidence.keys() == saved[6].keys()
+        and evidence["source_states"] == saved[6]["source_states"]
+        and evidence["state_frames"] == saved[6]["state_frames"]
+    )
+    assert json.dumps(record, default=json_value, sort_keys=True) == json.dumps(
+        saved[5], default=json_value, sort_keys=True
+    )
+    assert json.dumps(evidence["remaining_point_error_m"]) == json.dumps(
+        saved[6]["remaining_point_error_m"]
+    )
+    assert options == saved[7]
+
+
+@pytest.fixture(scope="module")
 def c1_history_registration_ledger(request):
     ledger = dict.fromkeys(("bound", "binding", "reference", "forbidden"), 0)
     yield ledger

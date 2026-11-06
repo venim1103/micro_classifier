@@ -11403,6 +11403,18 @@ ST/tool/board readiness stays user-side and teacher work remains deferred.
 
 [admission-requirements-design]: DESIGN.md
 
+**Post-checkpoint control correction.** After local `6ce9dba`, static review
+found that the proposed G07/G08 targets (0.25/0.375 m/s) were reached during
+the first acceleration update. That would erase their declared input-speed
+interval before movement and make them weak discrepancy-propagation controls.
+Both proposed targets are now 0.5 m/s, retaining the original word intervals,
+opposite turn signs and all budgets. The future independent reference must
+establish that the two initial-speed endpoints remain distinct after that
+update and that both paths are enclosed. This is a pre-execution proposal
+correction, not a changed failed fixture, tuning, new numeric run or relaxation
+of source equality. Documentation content/scope/whitespace and staged-byte
+checks apply; source/test bytes and all spent/unapproved execution scope stay.
+
 ## Sources
 
 Hardware and tools:

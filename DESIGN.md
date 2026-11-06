@@ -2124,8 +2124,8 @@ operations are exact or that its zero-error fixtures qualify S4.
 | G04 | Initial speed `0.125`, target `0.0` | Complete discrete brake-only enclosure, not instantaneous stop or continuous stopping-distance substitution. |
 | G05 | Command yaw rate `1.5` | Complete left-command/straight-braking conditional enclosure. |
 | G06 | Command yaw rate `-1.5` | Complete mirrored right-command/straight-braking enclosure; exact reflection of the G05 mathematical intervals must be contained. |
-| G07 | Target `0.25`, command yaw rate `0.75`; initial-speed interval from binary64 words `0x3fc999999999999a` through `0x3fc99999a0000000` | Complete conditional enclosure for the full source/decoded interval, including positive binary32 discrepancy, without substituting its midpoint. |
-| G08 | Target `0.375`, command yaw rate `-0.75`; initial-speed interval from `0x3fd6666660000000` through `0x3fd6666666666666` | Complete conditional enclosure including the negative binary32 discrepancy. The word identities are artificial test inputs, not authority to relax source equality. |
+| G07 | Target `0.5`, command yaw rate `0.75`; initial-speed interval from binary64 words `0x3fc999999999999a` through `0x3fc99999a0000000` | Complete conditional enclosure for the full source/decoded interval, including positive binary32 discrepancy, without substituting its midpoint or eliminating it by reaching the target before movement. |
+| G08 | Target `0.5`, command yaw rate `-0.75`; initial-speed interval from `0x3fd6666660000000` through `0x3fd6666666666666` | Complete conditional enclosure including the negative binary32 discrepancy through the nonsaturated first update. The word identities are artificial test inputs, not authority to relax source equality. |
 | G09 | Error-evidence record absent | Unknown, `error_evidence_missing`, before motion/reference work; a fixture zero cannot be invented. |
 | G10 | Initial speed `True`, target positive infinity, command yaw rate NaN | `ValueError` before motion/reference work; no writes to caller-owned data. |
 | G11 | Hold two ticks and profile acceleration `0.0` | Unknown, `unsupported_profile_or_hold`; no integration or accepted shorter hold. |
@@ -2154,7 +2154,11 @@ and integrate the sine/cosine power series directly for the command interval,
 including an explicit tail bound. It must not reuse producer coefficients,
 interval helpers, polyline, trigonometric results or the old continuous-braking
 centreline. Check all interval endpoints, both curved mirrors, complete stopping
-and between-vertex/body bounds, not only a nominal endpoint. Native arithmetic,
+and between-vertex/body bounds, not only a nominal endpoint. G07/G08 must
+independently establish that their two initial-speed endpoints remain distinct
+after the command update and that the enclosure contains both resulting paths;
+a saturated single-target path does not exercise discrepancy propagation.
+Native arithmetic,
 registration and actual-executor discrepancy still need separate S4 evidence;
 this bounded ideal reference is neither a proof acceptance nor an alternative
 general arithmetic/certificate program. No NF1/owner/typed-join helper is called.

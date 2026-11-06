@@ -10525,7 +10525,7 @@ fixture/run, collection, model/dependency or hardware authorization.
 | Item | Priority / Trigger | Exit Condition Before Adoption |
 | --- | --- | --- |
 | I1: Sensor response and coverage qualification | Active F21/M2 input/source admission, alongside the baseline's startup/actual-command decisions. | Independently supported zone/return/status/error, mounting/timing and swept-region coverage contract; retain normal-cylinder, slender, masked/occluded and delayed aliases and explicit unknowns. A footprint/frustum model is a candidate, not guaranteed detection or a selected 5.6-degree zone. |
-| I2: Public documentation clarity | Independent documentation-only follow-up; do not delay source/command admission. | A concise README introduction, implemented-versus-planned architecture diagram and maturity matrix; preserve host fail-safe ownership and on-device/host-only distinctions. Put history and reusable commands in existing audience-appropriate documents; check links and do not imply deployed student/NPU runtime or invent CI evidence. |
+| I2: Public documentation clarity | Complete (documentation only, 2026-11-06); independent of source/command admission. | The [public introduction][public-doc-readme] provides a labelled architecture diagram, maturity matrix, safety/licensing boundaries and links to the existing detailed documents and APIs. REVIEW.md §150 records verification and historical README recovery. No baseline, deployment or execution gate is cleared. |
 | I3: Caller-owned head scratch | Native/board integration only if the selected deployment uses this head or a named memory gate requires it. | Explicit ownership/capacity/non-overlap and unchanged atomic-output contract; retain the existing partial-sum reference and cancellation/parity controls. Measure current hard-float callee and complete-call-chain/interrupt stack plus caller RAM. Moving storage is not total-RAM reduction; no less-than-128-byte target or RTOS-fit claim is adopted. |
 | I4: Qualified target-specific optimization | Actual deployed-path profiling/numerical gates justify a separate fp32/fixed-point/MVE candidate. | Keep the high-precision reference; establish justified error, decision/confidence/wire/rejection parity and measured target cost with applicable host/sanitizer/Arm/linked-board gates. Native double is supported; neither mandatory fp32 nor removal of all `libm` dependencies is a requirement. Preserve the known QDQ xfail and existing bounds. |
 | I5: Exact prompt representation improvements | Deferred until a justified learned question needs teacher work and the assets/use scope are approved. | Compare any whole-frame-reference draft with existing exact row interning; reconstruct every original field/type/mask/age and identity, and measure complete requests at the unchanged 2,048-token ceiling after approved asset restoration/verification. Integer units require a separately qualified source/schema/precision contract, not rounding existing float inputs. No 70% saving or budget/quality success is assumed. |
@@ -10541,6 +10541,7 @@ gates before implementation. Do not reopen general arithmetic audits, restore
 teachers or collect episodes merely because these improvements are now queued.
 
 [architectural-improvement-review]: REVIEW.md
+[public-doc-readme]: README.md
 
 ### Historical Milestone Context Through §143
 

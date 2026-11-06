@@ -113,7 +113,7 @@ python -m pytest -q && ruff check . && git diff --check
   optional) and a real bullet body. Do not push, create branches or rewrite
   history unless explicitly requested. Never revert another person's changes.
 
-## Current State (2026-11-05)
+## Current State (2026-11-06)
 
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
@@ -138,16 +138,19 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-148 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-150 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation and focused local commits, not pushing.
 - Architectural review assessed (REVIEW.md §148 / DESIGN.md §12): supported
-  planning queue covers sensor response/coverage and public-doc clarity, gated
+  queue prioritizes sensor response/coverage, gated
   caller scratch/target optimization and deferred exact prompt improvements.
+  I2 public-doc clarity is complete (REVIEW.md §150): README distinguishes
+  host diagnostics from planned board deployment and links detailed evidence,
+  contracts, setup and licensing. Source/startup/command admission stays blocked.
   Existing row dedup and native double/hard-float support are recorded; blanket
   lossless-mm, 70%-saving, guaranteed cone detection, fp32-only and <128-byte
   results are not adopted.
-  Planning only: no source/run budget or qualification is renewed.
+  No source/run budget or qualification is renewed by this documentation work.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
   `mode` is absent from the active catalogue and stays unlabeled. Learned
   prediction/camera questions and distillation are deferred.
@@ -1214,8 +1217,8 @@ is spent (actual two reused scenes; 48 adapter/32 relative/10 coordinator per fu
 matrix). No fifth invocation or separate command-guard budget follows. D4's
 32-episode prospective cohort/criteria/resource scope remains separate/unapproved.
 No source qualification, normal runtime/profile or target change follows.
-Validated improvement queue: [DESIGN.md][design] §12 / [REVIEW.md][review] §148.
-Prioritize sensor/coverage admission; public-doc clarity is independent. Scratch/
+Validated improvement queue: [DESIGN.md][design] §12 / [REVIEW.md][review] §148;
+I2 public-doc clarity complete (§150). Prioritize sensor/coverage admission. Scratch/
 target optimization follows actual deployment gates, prompt work a justified
 teacher question and approved assets/use. Queue acceptance is not execution
 approval and does not change the next blocked source/startup/command decision.

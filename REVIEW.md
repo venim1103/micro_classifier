@@ -11183,6 +11183,58 @@ removal.
 No source, input, target, qualification, run budget or implementation scope changes;
 the baseline admission decisions and existing deployment gates remain unchanged.
 
+## 150. Public Introduction and Maturity Clarity (2026-11-06)
+
+The user requested autonomous continuation of the existing plan. The worktree
+was clean at `ba10e84`; the standalone review cleanup was already committed.
+With source/startup/command admission still blocked, this completes the
+independent I2 documentation item from §148 / [DESIGN §12][architecture-validation-plan].
+It does not reactivate general audits or authorize the other queue items.
+
+**Change.** The [public introduction][architecture-public-readme] is now
+136 lines rather than 877. It leads with the rules-first pilot, the actual
+three-question contract and maturity limits, not teacher experiments. A
+Mermaid diagram explicitly separates the implemented Python diagnostic loop
+from planned board deployment. The maturity table distinguishes simulator,
+conditional C1/navigation studies, host C references, fake/synthetic review
+and evaluation tools, teacher tooling, export preparation and planned learning.
+Host actuation/fail-safe ownership, no in-flight motor cut, 92/100-byte active
+frames, unqualified clearance/confidence, rejected C1 output and model/data/
+board limits remain explicit. Apache-2.0 was checked against LICENSE; external
+model/tool licences and training-data provenance remain separate obligations.
+
+The README links the existing design/contracts, dated review evidence,
+environment guide, contributor workflow, source and headers instead of
+repeating historical measurements and opt-in experiment tutorials. No new
+Markdown document or environment change is needed. The previous introduction,
+including its detailed example commands, remains recoverable with
+`git show ba10e84:README.md`; no historical review, report, log or API is removed.
+DESIGN marks only I2 complete; AGENTS updates the concise current handoff,
+not its stable workflow, old task results or source verification ledger.
+
+**Immediate verification.** The isolated standard-library content/link check
+passed: 20 reference uses, 14 local targets and the milestone anchor resolve;
+active contract, safety/licensing limits, implemented/planned diagram labels,
+verification command text, README-only scope and whitespace pass. README
+editor diagnostics are clean. This is static diagram structure/content checking,
+not a Mermaid rendering check. Final four-document validation passed: 681
+reference uses/25 inline links, 74 local targets and anchors, ordered sections
+1-150, exact prior review/Sources and unchanged other design items, stable
+AGENTS workflow/task history, four-document scope and whitespace. All four
+editor diagnostics are clean; staged-byte review precedes the local checkpoint.
+The code suite is not rerun for these documentation-only changes. No project
+import, fixture/helper, native compiler, model/tokenizer, collection, training,
+dependency/download or hardware command is executed.
+
+**Next substantive action.** I1 source/coverage admission and the independent
+startup/actual-command/fallback owner, interface, expiry and acceptance decisions
+remain required by §145 and §7. The completed always-reject fixture path is not
+a qualified baseline or usable maneuver executor. Tasks 6/9 remain blocked;
+all four §146 verification positions stay spent, D4's proposed 32 episodes are
+separate/unapproved, and SC18-v0 stays deferred. ST licences/tools and board/ToF
+readiness remain parallel user-side gates. No qualification verdict, question
+meaning, default, wire format, risk convention or executable scope is adopted.
+
 ## Sources
 
 Hardware and tools:

@@ -2111,10 +2111,23 @@ recorder methods are unchanged. This method does not consume a permit, advance
 the simulator, ensure request-ID uniqueness or establish physical timing.
 
 See [the bounded implementation evidence][owned-event-request-review]. Current-
-owner rechecking after advancement remains a separate local ownership boundary;
-it cannot be replaced by a caller-declared old current tick or matching hash.
+owner rechecking after advancement is implemented by the private
+`recheck_normal_request` method. It takes retained/received request content and
+explicit fixture error evidence, never a caller-selected current tick or context.
+It matches at the actual owned tick, internally prepares from current owned
+State/frame/latest capture, and rechecks source files, event and request content
+before publication. Old nominal application ticks expire even when old request
+hashes still match. No raw capture, prepared request, permission or execution is
+published by rechecking; UNKNOWN and all seven false flags remain.
+
+[The bounded recheck evidence][owned-current-recheck-review] includes actual
+recorder advancement and mutations during preparation/final matching. Nominal
+expiry remains distinct from qualified clock deadlines or one-use execution.
+Next inspect owned delivery/retention chronology against the recorder's actual
+capture schedule, not another matching-hash qualification shortcut.
 
 [owned-event-request-review]: REVIEW.md#177-owned-latest-event-request-preparation-2026-11-06
+[owned-current-recheck-review]: REVIEW.md#178-owned-current-request-rechecking-2026-11-06
 
 ##### Conditional Discrete Motion Core (2026-11-06)
 
@@ -2758,9 +2771,12 @@ publication order and lint failure, four spent positions and unchanged defaults.
 This remains conditional fixture content, always UNKNOWN/no permission/all seven
 flags false. Current-body, source/profile, clock/ray/pose/error/native, one-use
 executor, S1-S5 and task-quality evidence are not established by pose/hash matches.
-Next map the exact adopted S1/body/executor evidence gaps before choosing further
-implementation, not another metadata wrapper or deferred general audit. No normal
-profile/runtime, usable `OK`, actuation, trial, study or data acceptance follows.
+The adopted S1/body/executor dependency map is complete; owned latest-event
+preparation and current-owner rechecking now remove caller-selected context/tick.
+Actual setup/source/coverage/error/timing and admitted predecessor/executor
+evidence remain missing. Advance those dependencies without treating content
+matches as qualification; general audits remain deferred. No normal profile/
+runtime, usable `OK`, actuation, trial, study or data acceptance follows.
 
 [checked-pose-path-review]: REVIEW.md
 
@@ -11342,8 +11358,12 @@ prior nodes/mapper exact. Isolated straight capture/reference-pose correspondenc
 (§173) passes sixteen/root 2,613 plus the same xfail/71 warnings, prior nodes/mapper
 exact. Opt-in owned capture/request/straight-pose join (§174) passes sixteen/root
 2,629 plus the same xfail/71 warnings; defaults/83 other source nodes/320 old tests/
-mapper unchanged. Next S1/body/executor evidence-gap mapping, not the old loop or
-a matching-hash permit;
+mapper unchanged. The admission dependency map is complete (§176). Recorder-owned
+latest-event request preparation (§177) passes eight controls/root 2,637; actual
+current-owner retained-request rechecking (§178) passes sixteen/root 2,653, both
+with the same known xfail/71 warnings and all four positions spent. Next inspect
+S2 owned delivery/retention chronology, then remaining supported source/coverage/
+setup/error/timing/executor dependencies, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

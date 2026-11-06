@@ -13737,6 +13737,85 @@ design contract/workflow, new link/current ledger, five-file scope and whitespac
 Documentation editor diagnostics were clear. No successful root rerun or extra
 fixture query; stage only this checkpoint and normally synchronize upstream.
 
+## 178. Owned Current-Request Rechecking (2026-11-06)
+
+Resumed from clean synchronized `main` at `14ab74d` under the user's explicit
+continuation. The new private recorder method `recheck_normal_request` takes
+retained/received content and fixture error evidence, with no current-tick or
+source-context override. It checks nominal expiry using the actual owned current
+tick, prepares from current owned State/frame/latest capture, matches the complete
+fresh request and checks event/source/request stability before publishing only
+recheck diagnostics. No raw capture or prepared request is returned. All seven
+qualification flags remain false, guard UNKNOWN and permission false.
+
+Hypothesis/check: old matching hashes cannot rescue an expired or changed owned
+event; mutations during preparation or final matching must fail before publication.
+Sixteen fixed controls cover current match, actual recorder advancement, capture/
+State/epoch/source/delivery changes, forged context, received mismatch, missing
+owner evidence, callee mutation, final-event/input mutation and forbidden old-tick/
+nonliteral opt-in arguments. Existing source4096/motion16384-bit, one-command/
+16-braking/128-chord/16-term limits remain unchanged.
+
+Finite new-source verification scope: four positions including failures/repairs,
+focused/style controls and the required root. Per matrix ceilings 16 owned rechecks,
+16 low-level preparations, 32 binding entries and 160 digest entries; zero geometry/
+coverage/episode/rover execution after instrumentation. Shared existing empty-scene
+recorder fixture has three declared ticks/two captures; baseline request preparation
+is separately accounted once per setup. The strengthened expiry control adds one
+declared `record_tick(23)` and capture before instrumentation, not an episode or
+rollout. Serial CPU/in-memory, no GPU/download/dependency/hardware/report/job.
+On failure repair the same slice, retain failures, never relax limits or borrow
+old budgets. Old root families run only unchanged compatibility controls.
+
+1. First focused command `python -m pytest -q tests/test_sim.py -k
+  recorder_rechecks_current_owned_request --tb=short`: 13 passed/3 failed,
+  2.63 s. Test defects: missing `replace` import, changed capture rejected earlier
+  as `unsupported_c1_capture_record`, and mutation hook fired during the nested
+  capture-binding check rather than final outer binding. Ledger 15 owned/
+  7 preparations/22 bindings/98 digests/zero forbidden. No unsafe success.
+2. Repair imports/expected existing reason and select the final outer binding
+  by the actual distinct received object. Same sixteen controls pass, 1.54 s;
+  16 owned/8 preparations/24 bindings/105 digests/zero forbidden.
+3. Strengthen expiry to actual recorder advancement and compare against an
+  independently held fixture copy. Same sixteen pass, 0.33 s, same ledger.
+  Ruff formats only the changed test file; root lint/changed-file format and
+  whitespace pass. Editor-selected interpreter is `/opt/venv/bin/python`;
+  source/test editor diagnostics are clear.
+4. Required root `python -m pytest -q && ruff check . && ruff format --check
+  sim/diagnostics.py tests/test_sim.py && git diff --check`: **2,653 passed,
+  one known transformer QDQ xfail, 71 warnings**, no skips, 57.40 s; lint and
+  formatting pass. New matrix ledger unchanged. All four positions are spent;
+  no extra focused/root/native/sanitizer/Arm/model/study invocation follows.
+
+Cumulative instrumented new controls: 63 owned/31 preparations/94 bindings/
+413 digests/zero forbidden. Four shared three-event/two-capture fixture setups
+and four separately prepared baseline requests; two additional declared tick23
+events/captures in the strengthened focused/root controls. No source/test change
+after root. Legacy recorder methods/helpers/defaults are unchanged. Conditional
+content/currentness is not clock qualification, request-ID uniqueness, one-use
+execution, admitted predecessor continuity or a qualified rover baseline.
+
+Checkpoint reassessment: §176 mapping is complete, not the next milestone.
+Refresh the stale §7/§12 narrative and current status accordingly. Next S2
+prerequisite is owned delivery/retention chronology against the recorder's real
+capture schedule. Inspect the fields computed by `record_tick`; preparation
+currently trusts declared event ID/delivery fields. Strengthen rejection if a
+bounded control establishes a gap, without promoting the source or creating
+another matching-hash permit. Supported setup, source/return/coverage/error/
+timing, actual guard/one-use executor and later-body evidence remain separate
+missing dependencies. General audits, training and unapproved study/D4 runs
+stay deferred; ST/tool/board readiness stays user-side. Scoped static history/
+reference/diff checks, local checkpoint commit and normal push follow; no
+unchanged successful source gate is rerun.
+
+Scoped static checks pass: all prior source/test module ASTs preserved after
+excluding only the new method and two new test nodes; exact REVIEW §§1-177/
+Sources and stable workflow preserved, new local anchor/current status/five-file
+scope/whitespace pass. Root-tested source SHA256
+`56c503d75c021510b66822d5f36229429b143ac1b246f2f630a3b5cc2f8ea513`;
+test SHA256 `16503196c7d57f27b862f233544621f0f94ad2f5dd21708837df43efb8f59e1d`.
+No new source gate, fixture query or source/test change occurred after root.
+
 ## Sources
 
 Hardware and tools:

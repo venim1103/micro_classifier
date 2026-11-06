@@ -9171,6 +9171,114 @@ class _SyntheticC1SourceRecorder:
         )
         return result
 
+    def recheck_normal_request(
+        self,
+        retained_request,
+        received_request,
+        *,
+        error_evidence,
+        synthetic_test_only=False,
+    ):
+        """Reject obsolete fixture requests against the owner's current event."""
+        if synthetic_test_only is not True:
+            raise ValueError("owned request recheck requires synthetic_test_only=True")
+        work = {"binding_entries": 0, "preparation_entries": 0, "digest_entries": 0}
+        result = {
+            "schema": "micro-classifier/synthetic-c1-owned-request-recheck/1",
+            "allowed_use": "owned_current_request_rejection_fixture_only",
+            "status": "unknown",
+            "reason": "missing_owned_current_event",
+            "fixture_owned_request_rechecked": False,
+            "fixture_permission_granted": False,
+            "guard_status": "UNKNOWN",
+            **{
+                flag: False
+                for flag in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            "work": work,
+        }
+        if self._current is None or self._latest is None:
+            return result
+        tick = self._current[0]
+        work["binding_entries"] += 1
+        initial = _check_synthetic_c1_normal_request_binding(
+            retained_request,
+            received_request,
+            current_tick=tick,
+            synthetic_test_only=True,
+        )
+        result["initial_binding_work"] = deepcopy(initial["work"])
+        if initial["fixture_request_matched"] is not True:
+            result["reason"] = initial["reason"]
+            return result
+        request = deepcopy(received_request)
+        expected_digest = initial["request_sha256"]
+
+        def digest(value):
+            work["digest_entries"] += 1
+            return _c1_source_binding_digest(value)
+
+        def event_binding():
+            current_tick, _, state, frame = self._current
+            return {
+                "epoch": self._epoch,
+                "config": asdict(self._config),
+                "source_files": self._identities,
+                "current_tick": current_tick,
+                "state": asdict(state),
+                "frame": frame,
+                "latest_event": self._latest,
+            }
+
+        binding = digest(event_binding())
+        work["preparation_entries"] += 1
+        current = self.prepare_normal_request(
+            bytes.fromhex(request["decision_frame_hex"]),
+            request_id=request["request_id"],
+            error_evidence=deepcopy(error_evidence),
+            synthetic_test_only=True,
+        )
+        result["current_preparation_work"] = deepcopy(current["work"])
+        if current["fixture_owned_request_prepared"] is not True:
+            result["reason"] = current["reason"]
+            return result
+        work["binding_entries"] += 1
+        matched = _check_synthetic_c1_normal_request_binding(
+            current["prepared_request"],
+            request,
+            current_tick=tick,
+            synthetic_test_only=True,
+        )
+        result["current_binding_work"] = deepcopy(matched["work"])
+        if matched["fixture_request_matched"] is not True:
+            result["reason"] = matched["reason"]
+            return result
+        if (
+            self._source_files() != self._identities
+            or digest(event_binding()) != binding
+            or digest(retained_request["request"]) != expected_digest
+            or digest(received_request) != expected_digest
+        ):
+            result["reason"] = "owned_request_or_event_changed_during_recheck"
+            return result
+        result.update(
+            status="rechecked_owned_current_request_fixture",
+            reason="owned_current_content_bound_source_and_guard_unqualified",
+            fixture_owned_request_rechecked=True,
+            request_sha256=expected_digest,
+            current_tick=tick,
+            expires_at_tick=tick,
+        )
+        return result
+
     def snapshot(self):
         if self._current is None or not self._history:
             raise ValueError("C1 recorder needs a delivered fixture capture")

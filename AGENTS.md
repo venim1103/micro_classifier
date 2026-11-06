@@ -237,13 +237,13 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest source increment (§177): existing recorder derives normal-request
-  context from its own current State/frame/latest delivered capture, rechecks
-  content before publication, exposes no raw C1 and grants no permission.
-  Eight controls/root 2,637 plus known xfail/71 warnings pass; all four positions
-  spent, Ruff repair retained. Legacy APIs/methods/defaults unchanged/all seven
-  flags false. Next current-owner retained-request source/capture/expiry recheck,
-  not a caller-supplied old tick, qualification, permit or simulator execution.
+- Latest source increment (§178): recorder rechecks retained/received requests
+  against its actual current tick/State/frame/latest capture, with final source/
+  event/request stability checks. Sixteen controls/root 2,653 plus known xfail/
+  71 warnings pass; all four positions spent, three initial test defects retained/
+  repaired. UNKNOWN/no permission/all seven flags false; earlier methods unchanged.
+  Next S2 owned delivery/retention chronology, not more matching hashes or actual
+  execution. The admission map is complete; qualification dependencies stay open.
 - Workflow update (REVIEW.md §154): use recommended defaults without
   questionnaire/finish dialogs; continue useful agreed work across checkpoints.
   Continuation correction (§175): persist across recaps and side requests;
@@ -274,8 +274,9 @@ from them. Historical details below are reference material, not new approvals.
   defaults unchanged; source/rounding error separate, publication after all checks.
   No supplied true flags, online geometry selection or normal controller wiring.
   S1/body/executor dependency map is prepared (§176); initial setup and matched
-  paths are not an admitted predecessor chain. Next evaluate existing-owner
-  latest-capture/request context binding, never a matching-hash permit;
+  paths are not an admitted predecessor chain. Owned latest-event context (§177)
+  and actual-current recheck (§178) are complete; next owned delivery integrity,
+  never a matching-hash permit;
   retain source/request/expiry/executor and protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
@@ -314,8 +315,9 @@ from them. Historical details below are reference material, not new approvals.
   Isolated straight capture/reference pose (§173) passes sixteen/root 2,613 plus
   the same xfail/71 warnings. Opt-in owned capture/request/pose join (§174) passes
   sixteen/root 2,629 plus the same xfail/71 warnings, defaults unchanged.
-  S1/body/executor dependency mapping is prepared (§176); next evaluate owned
-  latest-capture/request context binding, not qualification; retain
+  S1/body/executor dependency mapping is complete (§176); owned request preparation
+  (§177)/current recheck (§178) pass eight/sixteen controls, root 2,637/2,653.
+  Next owned delivery/retention chronology, not qualification; retain
   motion/error/profile and
   source/request/expiry/executor/quality gates, not old controller or general
   audits/current truth.
@@ -358,7 +360,12 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-06, §174): 2,629 passes plus known xfail/71
+- Last source-test gate (2026-11-06, §178): 2,653 passes plus known xfail/71
+  warnings, no skips, 57.40 s; sixteen actual-current request controls. All four
+  verification positions spent; UNKNOWN/no permission/all seven flags false.
+  Initial three test defects and repairs retained in REVIEW.md; earlier source
+  gates and spent budgets below are historical, not standalone renewals.
+- Historical source-test gate (2026-11-06, §174): 2,629 passes plus known xfail/71
   warnings, no skips; sixteen opt-in pose/path controls. Only owning wrapper
   changed; 83 other source/320 old test nodes/mapper/default outputs unchanged.
   Separate rounding/source bounds, no partial publication; UNKNOWN/no permission/
@@ -1437,8 +1444,8 @@ from them. Historical details below are reference material, not new approvals.
 
 ## Task List
 
-Latest increment: §177 owned latest-event normal-request preparation is verified;
-next current-owner retained-request source/capture/expiry recheck. The §176
+Latest increment: §178 actual-current retained-request rechecking is verified;
+next S2 owned delivery/retention chronology and missing admission evidence. The §176
 dependency map and §175 persistent-continuation/final-answer gate apply; keep all
 qualification, actual execution and protected-action boundaries closed.
 

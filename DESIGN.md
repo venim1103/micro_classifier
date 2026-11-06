@@ -2067,6 +2067,32 @@ authorization follows; physical host actuation and fail-safes remain independent
 [admission-dynamics-source]: sim/rover.py
 [source-command-admission-review]: REVIEW.md
 
+##### Admission Evidence Dependencies (2026-11-06)
+
+This map clarifies the adopted contract; it accepts no new evidence, profile,
+allowance, permit or run. Conditional correspondence and actual admission remain
+separate. [The dated gap assessment][admission-gap-review] records current status.
+
+| Obligation | Available conditional prerequisite | Missing evidence / owner | Conservative invalidation |
+| --- | --- | --- | --- |
+| S1 initial setup | Offline complete-scene/config/epoch content checker and isolated exact-rest startup composition. | Independently supported setup-auditor result with accepted domain/epoch/config provenance; declared content is not admission. | Missing setup, reset, scene/config change or unsupported envelope means unknown; no launch. |
+| S1 later body | Command/braking path enclosures and current capture/request/path correspondence under fixture assumptions. | Actually admitted predecessor sweep, retained uncertainty and matching actual execution receipts; no pose/hash/true flag supplies this chain. | Predecessor gap or action/time/error mismatch makes later body unknown; independent braking remains. |
+| S2 source/coverage | Recorder-owned cadence/latest delivery and synchronized capture-content/path-prefix checks. | Accepted module-side source/retention authority plus independent return/occlusion/missing-return coverage for the sweep; host cannot select the capture. | Mixed/expired/unsupported source or swept region stays unknown; aliases remain controls. |
+| S3 state | Actual decoding, original/source-word discrepancies, normal mapping and current-request source recheck. | Accepted event/frame/profile authority and independent evidence that intervals enclose actual state, including fresh ego/goal. | Invalid/stale/nonplanar/mismatched input rejects; retain exact-rounding rejection and no world-truth steering. |
+| S4 allowances | Conditional discrete motion, complete-history discrepancies, path-cell margins and isolated straight-pose rounding composition. | Independently supported range/pose/clock/arithmetic/native-motion bounds for named consumers and accumulated predecessor uncertainty. | Unsupported turns, missing bounds, overlap or cap exhaustion abstain; no guessed error or error reset. |
+| S5 timing | Frozen request words/frames/profile/context and nominal tick/expiry matching, without permission. | Accepted capture/reference/receipt/application/fallback timing/epoch contract, with external clock/error qualification. | Tick equality is not a deadline; replay, lateness or epoch/config changes invalidate. |
+| Guard/executor | Exact request/capture/path content checks, always UNKNOWN/no permission. | Evidence-supported response, serialized one-use check/consume and actual requested/clipped/applied/fallback receipts. | Missing/denied/unknown/fault/expired response means fallback; duplicate/failed application cannot create a predecessor or rearm. |
+| Trial/task quality | Synthetic controls and quarantined historical failure evidence. | Admission gates, separately authorized prospective D4 cohort/criteria/resource scope and independent task evidence. | Always rejecting does not admit a trial, dataset/split or baseline-quality claim. |
+
+The dependency is supported setup and source/error/timing evidence, then a
+supported sweep, then one-use execution/receipts, then later-body continuity.
+It is not setup-hash to permit or matched pose to body truth. Do not substitute
+metadata helpers for missing acceptance evidence. A local ownership prerequisite
+may remove caller-selected capture/context without closing S1-S5 or authorizing
+execution; all qualification and rejection boundaries remain.
+
+[admission-gap-review]: REVIEW.md#176-admission-evidence-gap-mapping-2026-11-06
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

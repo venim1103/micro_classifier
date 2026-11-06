@@ -266,8 +266,9 @@ from them. Historical details below are reference material, not new approvals.
   Opt-in owned capture/request/straight-pose join (§174) is implemented/verified,
   defaults unchanged; source/rounding error separate, publication after all checks.
   No supplied true flags, online geometry selection or normal controller wiring.
-  Next exact adopted S1/body/executor evidence-gap mapping,
-  never a matching-hash permit;
+  S1/body/executor dependency map is prepared (§176); initial setup and matched
+  paths are not an admitted predecessor chain. Next evaluate existing-owner
+  latest-capture/request context binding, never a matching-hash permit;
   retain source/request/expiry/executor and protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
@@ -306,7 +307,8 @@ from them. Historical details below are reference material, not new approvals.
   Isolated straight capture/reference pose (§173) passes sixteen/root 2,613 plus
   the same xfail/71 warnings. Opt-in owned capture/request/pose join (§174) passes
   sixteen/root 2,629 plus the same xfail/71 warnings, defaults unchanged.
-  Next S1/body/executor evidence-gap mapping; retain
+  S1/body/executor dependency mapping is prepared (§176); next evaluate owned
+  latest-capture/request context binding, not qualification; retain
   motion/error/profile and
   source/request/expiry/executor/quality gates, not old controller or general
   audits/current truth.

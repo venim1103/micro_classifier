@@ -13611,6 +13611,58 @@ without an end-of-checkpoint final answer or another continue vote.
 
 [continuation-workflow]: AGENTS.md#continuation-and-stopping
 
+## 176. Admission Evidence-Gap Mapping (2026-11-06)
+
+Continuation resumed after the workflow side request (§175), without a finish/
+continue vote. Scope: documentation-only assessment of adopted S1-S5/current-
+body/executor dependencies using the current contract, source recorder and
+verified §163-174 records. At most three static documentation validation
+attempts including repairs; zero project imports, fixture/coverage/reference
+queries, simulation steps, studies, models, compiler/hardware actions or source
+gate reruns. Old ledgers stay spent and seven qualification flags stay false.
+
+Initial setup content/exact-rest composition does not create admission. Later
+body-clear requires a previously admitted sweep, retained uncertainty and matching
+actual execution; no such chain is supplied by current request/path/pose fixtures.
+Actual source/coverage, range/pose/timing/native arithmetic/motion allowances and
+one-use executor evidence remain separate missing gates. Nominal expiry is not
+wall-clock timing. The wire adapter remains rejection-only and preserves the
+0.6 m/s binary32 change; hashes and declared source equality are not authority.
+
+[The dependency map][admission-dependencies] separates eight rows: S1 initial
+setup, S1 later body, S2 source/coverage, S3 actual state/frame, S4 allowances,
+S5 timing, guard/executor and trial/task quality. Each identifies available
+conditional prerequisites, missing evidence/owner and conservative invalidation.
+No requirement, meaning, profile, allowance, source verdict, permit or trial
+scope changed. D4 remains separate/unapproved; SC18/general audits stay deferred.
+ST tools/board and restored approved teacher assets remain separately gated.
+
+A compatible local prerequisite remains: `_SyntheticC1SourceRecorder` already
+owns cadence, pending/latest delivery, epoch/config/source identities and current
+frame. Its snapshot is a private fixture bundle, not an admitted module source.
+Request preparation still accepts caller-declared context/capture identity.
+Recommended next step: evaluate binding the existing owned latest event to
+request context without host-selected capture/epoch/reference fields, geometry-
+selected commands, normal controller wiring, admission or simulation execution.
+Reuse the owner, not a new source abstraction; binding is not qualification.
+Before source editing, select the controlling path and focused ownership/
+substitution check and record a finite new unit scope with its required gate.
+
+Workflow checkpoint `0f57a35` was normally pushed; the worktree was clean afterward.
+Redirect/stale credential-helper warnings remained, but synchronization succeeded;
+no remote/security/credential changes or retry. The first mapping patch was
+rejected by stale AGENTS status context; actual Git inspection proved no partial
+edit. Retry uses verified current-status anchors. This is a patch failure, not
+fixture execution or relaxed validation. Validate history/references, unchanged
+code/contract and whitespace, checkpoint and continue the ownership prerequisite.
+
+First scoped validation passed all eight rows and both new anchors, exact
+previous design contract and REVIEW §§1-175/Sources, stable workflow/history,
+unchanged source/test bytes, three-document scope and whitespace. All three
+documents had clear editor diagnostics. No fixture or source gate was rerun.
+
+[admission-dependencies]: DESIGN.md#admission-evidence-dependencies-2026-11-06
+
 ## Sources
 
 Hardware and tools:

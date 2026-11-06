@@ -237,6 +237,13 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
+- Latest source increment (§177): existing recorder derives normal-request
+  context from its own current State/frame/latest delivered capture, rechecks
+  content before publication, exposes no raw C1 and grants no permission.
+  Eight controls/root 2,637 plus known xfail/71 warnings pass; all four positions
+  spent, Ruff repair retained. Legacy APIs/methods/defaults unchanged/all seven
+  flags false. Next current-owner retained-request source/capture/expiry recheck,
+  not a caller-supplied old tick, qualification, permit or simulator execution.
 - Workflow update (REVIEW.md §154): use recommended defaults without
   questionnaire/finish dialogs; continue useful agreed work across checkpoints.
   Continuation correction (§175): persist across recaps and side requests;
@@ -390,7 +397,7 @@ from them. Historical details below are reference material, not new approvals.
   §160 both failures and all old caps/ledgers stay historical, not standalone
   renewal. No normal runtime/C/native change or extra opt-in sanitizer/Arm gate;
   host checks are not source/numerical/physical/task-quality qualification or
-  linked firmware. Next exact adopted S1/body/executor evidence-gap mapping;
+  linked firmware. Historical §174 handoff: S1/body/executor evidence-gap mapping;
   S1-S5, source/request/expiry/executor/quality and study/board gates stay closed.
 - Privileged simulator truth is now permitted in principle for geometric and
   predictive targets, never as student input. Observation-only human review
@@ -1429,6 +1436,11 @@ from them. Historical details below are reference material, not new approvals.
   policy, ST and board gates remain deferred; no task is newly unblocked.
 
 ## Task List
+
+Latest increment: §177 owned latest-event normal-request preparation is verified;
+next current-owner retained-request source/capture/expiry recheck. The §176
+dependency map and §175 persistent-continuation/final-answer gate apply; keep all
+qualification, actual execution and protected-action boundaries closed.
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
 a one-line result. Mark a task `[blocked: reason]` for missing actual evidence,

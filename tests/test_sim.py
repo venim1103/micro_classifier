@@ -9176,6 +9176,176 @@ def test_synthetic_controlled_candidate_independent_audit(
     print(f"independent {case}: {counts}; published_events=8")
 
 
+@pytest.fixture(scope="module")
+def c1_owned_normal_request_fixture(request):
+    from interface.protocol import State
+    from sim import diagnostics
+
+    owner = diagnostics._SyntheticC1SourceRecorder(
+        Scenario(start=(2, 2, 0)), synthetic_test_only=True
+    )
+    for tick in range(20, 23):
+        owner.record_tick(
+            tick,
+            pose_m_rad=[2, 2, 0],
+            fixture_state=State(
+                sequence=tick,
+                timestamp_us=tick * 50000,
+                velocity_m_s=(0.5, 0.0, 0.0),
+                goal_m=(3.0, 1.0, 0.0),
+            ),
+        )
+    ledger = dict.fromkeys(("owned", "prepare", "capture", "digest", "forbidden"), 0)
+    yield {"owner": owner, "ledger": ledger}
+    assert ledger["owned"] <= 16 and ledger["prepare"] <= 16
+    assert ledger["capture"] <= 16 and ledger["digest"] <= 96
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 owned normal-request ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 owned normal-request ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(8))
+def test_synthetic_c1_recorder_prepares_owned_normal_request(
+    c1_owned_normal_request_fixture, monkeypatch, case
+):
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        Status,
+        encode_decision,
+    )
+    from sim import diagnostics
+
+    owner = deepcopy(c1_owned_normal_request_fixture["owner"])
+    ledger = c1_owned_normal_request_fixture["ledger"]
+    decision = encode_decision(
+        Decision(
+            sequence=22,
+            timestamp_us=1100000,
+            status=Status.OK,
+            answers=tuple(
+                Answer(
+                    question,
+                    tuple(float(index == choice) for index in range(len(options))),
+                    choice,
+                )
+                for (question, (_, options)), choice in zip(
+                    RULES_QUESTIONS.items(), (0, 0, 3), strict=True
+                )
+            ),
+        )
+    )
+    options = {
+        "request_id": "d" * 32,
+        "error_evidence": {
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        "synthetic_test_only": case != 7,
+    }
+    for key, name in (
+        ("prepare", "_prepare_synthetic_c1_normal_request"),
+        ("capture", "_check_synthetic_c1_request_capture_content"),
+        ("digest", "_c1_source_binding_digest"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _original=original, _key=key, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (96 if _key == "digest" else 16)
+            result = _original(*args, **kwargs)
+            if case == 5 and _key == "prepare":
+                owner._latest["capture"]["capture_poses_m_rad"][0, 0] = 3.0
+            return result
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        pytest.fail("owned request preparation cannot recapture, query or execute")
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    if case == 1:
+        owner._latest["delivery_tick"] = 23
+    elif case == 2:
+        owner._latest["clock_epoch"] = "f" * 32
+    elif case == 3:
+        owner._latest["capture"]["capture_ticks"][1] = 21
+    elif case == 4:
+        monkeypatch.setattr(owner, "_source_files", dict)
+    elif case == 6:
+        options["source_context"] = {"capture_tick": 19}
+    ledger["owned"] += 1
+    if case == 6:
+        with pytest.raises(TypeError, match="source_context"):
+            owner.prepare_normal_request(decision, **options)
+        return
+    if case == 7:
+        with pytest.raises(ValueError, match="synthetic_test_only=True"):
+            owner.prepare_normal_request(decision, **options)
+        return
+    result = owner.prepare_normal_request(decision, **options)
+    assert result["guard_status"] == "UNKNOWN"
+    assert result["fixture_permission_granted"] is False
+    assert all(
+        result[flag] is False
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+    if case == 0:
+        assert result["fixture_owned_request_prepared"] is True
+        prepared = result["prepared_request"]
+        context = prepared["request"]["source_context"]
+        assert context == {
+            "epoch": owner._epoch,
+            "source_identity": diagnostics._c1_source_binding_digest(owner._identities),
+            "c1_reference_identity": diagnostics._c1_source_binding_digest(
+                owner._latest["capture"]
+            ),
+            "capture_tick": 20,
+            "reference_tick": 22,
+        }
+        assert "capture_record" not in result and "private_source" not in result
+        prepared["request"]["source_context"]["epoch"] = "a" * 32
+        assert owner._epoch != "a" * 32
+    else:
+        assert result["fixture_owned_request_prepared"] is False
+        assert "prepared_request" not in result
+        assert (
+            result["reason"]
+            == {
+                1: "unsupported_owned_capture_event",
+                2: "unsupported_owned_capture_event",
+                3: "unsupported_owned_capture_ticks",
+                4: "owned_source_files_changed",
+                5: "owned_event_changed_during_preparation",
+            }[case]
+        )
+
+
 def test_synthetic_c1_source_recorder_owns_capture():
     from interface.protocol import State
     from sim.diagnostics import _SyntheticC1SourceRecorder

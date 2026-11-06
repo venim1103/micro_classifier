@@ -2093,6 +2093,29 @@ execution; all qualification and rejection boundaries remain.
 
 [admission-gap-review]: REVIEW.md#176-admission-evidence-gap-mapping-2026-11-06
 
+##### Owned Latest-Event Request Content (2026-11-06)
+
+The private `_SyntheticC1SourceRecorder.prepare_normal_request` derives context
+from its current State/frame and latest delivered C1 event. The host-facing
+inputs to this fixture method are decision bytes, request ID and explicit
+fixture error evidence, not capture/epoch/reference selection. It checks source
+file correspondence, delivery/epoch/synchronized ticks, freezes event content,
+reuses existing normal request/capture checks and rechecks the event before
+publication. No new source abstraction or normal controller wiring is added.
+
+Returned request content is owned; raw capture, private scene and reference pose
+are not exposed. Every result retains UNKNOWN/no permission and seven false
+qualification flags. Actual source/coverage/error/clock/predecessor/executor
+acceptance remains missing. Existing declared-context preparation and earlier
+recorder methods are unchanged. This method does not consume a permit, advance
+the simulator, ensure request-ID uniqueness or establish physical timing.
+
+See [the bounded implementation evidence][owned-event-request-review]. Current-
+owner rechecking after advancement remains a separate local ownership boundary;
+it cannot be replaced by a caller-declared old current tick or matching hash.
+
+[owned-event-request-review]: REVIEW.md#177-owned-latest-event-request-preparation-2026-11-06
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

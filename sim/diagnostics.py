@@ -9046,6 +9046,131 @@ class _SyntheticC1SourceRecorder:
         self._current = tick, pose, state, frame
         self._binding = None
 
+    def prepare_normal_request(
+        self,
+        decision_frame,
+        *,
+        request_id,
+        error_evidence,
+        synthetic_test_only=False,
+    ):
+        """Bind the owned latest fixture event, never admit a command."""
+        if synthetic_test_only is not True:
+            raise ValueError("owned request requires synthetic_test_only=True")
+        work = {"request_entries": 0, "capture_entries": 0, "digest_entries": 0}
+        result = {
+            "schema": "micro-classifier/synthetic-c1-owned-normal-request/1",
+            "allowed_use": "owned_latest_request_content_fixture_only",
+            "status": "unknown",
+            "reason": "missing_owned_capture_event",
+            "fixture_owned_request_prepared": False,
+            "fixture_permission_granted": False,
+            "guard_status": "UNKNOWN",
+            **{
+                flag: False
+                for flag in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            "work": work,
+        }
+        if self._current is None or self._latest is None:
+            return result
+        if self._source_files() != self._identities:
+            result["reason"] = "owned_source_files_changed"
+            return result
+        tick, _, state, frame = self._current
+        event = self._latest
+        if (
+            event["clock_epoch"] != self._epoch
+            or type(event["delivery_tick"]) is not int
+            or event["delivery_tick"] > tick
+        ):
+            result["reason"] = "unsupported_owned_capture_event"
+            return result
+        capture = deepcopy(event["capture"])
+        ticks = capture["capture_ticks"]
+        if (
+            type(ticks) is not np.ndarray
+            or ticks.shape != (8,)
+            or ticks.dtype != np.dtype(np.uint32)
+            or not np.all(ticks == ticks[0])
+        ):
+            result["reason"] = "unsupported_owned_capture_ticks"
+            return result
+
+        def digest(value):
+            work["digest_entries"] += 1
+            return _c1_source_binding_digest(value)
+
+        def event_binding():
+            current_tick, _, current_state, current_frame = self._current
+            return {
+                "epoch": self._epoch,
+                "config": asdict(self._config),
+                "source_files": self._identities,
+                "current_tick": current_tick,
+                "state": asdict(current_state),
+                "frame": current_frame,
+                "latest_event": self._latest,
+            }
+
+        binding = digest(event_binding())
+        context = {
+            "epoch": self._epoch,
+            "source_identity": digest(self._identities),
+            "c1_reference_identity": digest(capture),
+            "capture_tick": int(ticks[0]),
+            "reference_tick": tick,
+        }
+        work["request_entries"] = 1
+        prepared = _prepare_synthetic_c1_normal_request(
+            deepcopy(state),
+            frame,
+            decision_frame,
+            request_id=request_id,
+            source_context=context,
+            reference_tick=tick,
+            config=self._config,
+            error_evidence=deepcopy(error_evidence),
+            synthetic_test_only=True,
+        )
+        result["request_work"] = deepcopy(prepared["work"])
+        if prepared["fixture_request_prepared"] is not True:
+            result["reason"] = prepared["reason"]
+            return result
+        work["capture_entries"] = 1
+        matched = _check_synthetic_c1_request_capture_content(
+            prepared,
+            prepared["request"],
+            capture,
+            current_tick=tick,
+            synthetic_test_only=True,
+        )
+        result["capture_work"] = deepcopy(matched["work"])
+        if matched["fixture_capture_content_matched"] is not True:
+            result["reason"] = matched["reason"]
+            return result
+        if (
+            self._source_files() != self._identities
+            or digest(event_binding()) != binding
+        ):
+            result["reason"] = "owned_event_changed_during_preparation"
+            return result
+        result.update(
+            status="prepared_owned_normal_request_fixture",
+            reason="owned_latest_content_bound_source_unqualified",
+            fixture_owned_request_prepared=True,
+            prepared_request=deepcopy(prepared),
+        )
+        return result
+
     def snapshot(self):
         if self._current is None or not self._history:
             raise ValueError("C1 recorder needs a delivered fixture capture")

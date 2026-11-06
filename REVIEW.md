@@ -13663,6 +13663,80 @@ documents had clear editor diagnostics. No fixture or source gate was rerun.
 
 [admission-dependencies]: DESIGN.md#admission-evidence-dependencies-2026-11-06
 
+## 177. Owned Latest-Event Request Preparation (2026-11-06)
+
+New local prerequisite under standing authority: a private recorder method
+derives request context from its own current State/frame and latest delivered
+C1 event, reuses existing request/capture checks and rechecks the event before
+publishing owned request content. No caller-selected context/capture, new source
+abstraction, geometry-selected command, normal controller, permit or execution.
+All seven qualification flags remain false, guard UNKNOWN and permission false.
+Source authority, actual motion, timing and predecessor evidence stay separate.
+
+Pre-execution scope: eight synthetic ownership/rejection controls in the existing
+test module, one shared old empty-scene fixture/one recorder/three declared
+events/two captures per matrix setup. At most four verification positions,
+including failed/aborted checks, repairs, style and the required new-source root;
+per matrix at most 16 owned calls/16 preparer calls/16 capture-content calls/96
+digest calls, zero new geometry/coverage/episode/rover execution. Existing source
+4096/motion16384-bit, one-command/16-braking/128-chord/16-term limits unchanged.
+Serial CPU/in-memory; no downloads/GPU/model/dependency/hardware/artifact. On
+failure, diagnose the same local slice and repair within scope; no fifth or
+borrowed old position, no tolerance/cap relaxation or partial request publication.
+Required old root controls are compatibility only, not experiment renewal.
+
+Hypothesis: internally deriving context eliminates caller-selected capture/
+epoch/reference input, and a callee-time capture change is rejected before any
+request publication. Focused eight-case pytest is the first discriminating check;
+no source gate or fixture run occurred before this edit.
+
+Position 1 passed eight controls (1,706 deselected, 0.33 s): 8 owned/2 preparer/
+2 capture-content/22 digest/zero forbidden calls; one recorder/three declared
+events/two captures in setup. Position 2 performed import-order repair and
+formatting but failed Ruff PIE807 at the test-only empty-dictionary lambda,
+before AST checks or root execution; zero fixture queries. Replace that lambda
+with `dict` and rerun the same focused controls before the root. Editor source/
+test diagnostics were clear. The code-usages tool rejected URI input; retry
+with workspace-relative path, without treating a tool failure as a session stop.
+
+Position 3: the same eight controls passed again (0.33 s), same 8/2/2/22/zero
+ledger; root lint/changed-file format/whitespace and existing named-definition/
+old recorder-method AST preservation checks passed. Position 4: the required
+root passed **2,637 plus known transformer QDQ xfail/71 warnings**, no skips,
+63.69 s; lint/changed-file format/whitespace passed. New matrix ledger unchanged;
+old families ran as unchanged compatibility controls only. All four positions
+spent; no fifth, old experiment borrowing or extra sanitizer/Arm/native gate.
+
+Cumulative new controls: **24 owned/6 preparer/6 capture-content/66 digest/zero
+forbidden**, with three recorder constructions/nine declared events/six captures
+across three matrix setups of the same old empty-scene fixture, not new study
+episodes. Source SHA256 `2249a38ee65872abb605bdbb66f79d939de527ff4a78ab3ad2ca0f82319714b0`;
+test SHA256 `d65030bdcf403099c5ea3129a8edf14b592f9a61fd650fc4ccc4b2c03982435d`.
+No code edit after root. Editor diagnostics clear. Code-usages retry found only
+the definition, so it does not prove all caller coverage; executed test calls
+and final ordered AST checks supply the local evidence, not runtime integration.
+
+New method binds request content, not actual physical source/clock/motion or an
+admission response. No raw capture/private geometry is returned, no caller can
+select context through this method, and callee-time capture mutation rejects
+without partial request publication. Legacy declared-context API and all prior
+recorder methods/defaults remain unchanged. Seven flags false/UNKNOWN/no
+permission; all S1-S5/current-body/executor/quality/protected-study/data/model/
+dependency/hardware gates remain. No generated artifact, job or cleanup.
+
+Next compatible ownership prerequisite: evaluate current-owner source/capture/
+nominal-expiry recheck of a retained request after owner advancement. A caller-
+supplied old current tick must not stand in for the owner's actual retained
+current event. This remains rejection/content work, not source/clock qualification
+or one-use execution; independently scope any source increment before tests.
+
+Final scoped checks passed exact ordered previous source/test module ASTs after
+excluding only the new recorder method and two new test nodes, root-tested
+hashes, three actual test call sites, prior REVIEW §§1-176/Sources, existing
+design contract/workflow, new link/current ledger, five-file scope and whitespace.
+Documentation editor diagnostics were clear. No successful root rerun or extra
+fixture query; stage only this checkpoint and normally synchronize upstream.
+
 ## Sources
 
 Hardware and tools:

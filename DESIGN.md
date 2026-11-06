@@ -2106,8 +2106,8 @@ publication. No new source abstraction or normal controller wiring is added.
 Returned request content is owned; raw capture, private scene and reference pose
 are not exposed. Every result retains UNKNOWN/no permission and seven false
 qualification flags. Actual source/coverage/error/clock/predecessor/executor
-acceptance remains missing. Existing declared-context preparation and earlier
-recorder methods are unchanged. This method does not consume a permit, advance
+acceptance remains missing. Existing declared-context preparation and recorder
+event production are unchanged. This method does not consume a permit, advance
 the simulator, ensure request-ID uniqueness or establish physical timing.
 
 See [the bounded implementation evidence][owned-event-request-review]. Current-
@@ -2123,11 +2123,23 @@ published by rechecking; UNKNOWN and all seven false flags remain.
 [The bounded recheck evidence][owned-current-recheck-review] includes actual
 recorder advancement and mutations during preparation/final matching. Nominal
 expiry remains distinct from qualified clock deadlines or one-use execution.
-Next inspect owned delivery/retention chronology against the recorder's actual
-capture schedule, not another matching-hash qualification shortcut.
+Owned event preparation now also checks the exact four-field event schema,
+canonical epoch/capture ID, supported acquisition cadence and delivery at capture
+tick plus the recorder's configured latency. A future capture or inconsistent
+event rejects before low-level request preparation. This verifies consistency
+with the actual recorder policy, not source authority or external clocks.
+[Delivery-integrity evidence][owned-delivery-review] retains the failed controls
+and unchanged valid-event output.
+
+The next admission step is independently supported source/coverage and named
+S4 numerical/registration/timing evidence, not additional request hashes. Current
+conditional tooling supplies no accepted source-admission record, admitted
+predecessor sweep or executor receipt. Evidence acceptance and any new
+qualification study remain protected; synthetic tests cannot replace them.
 
 [owned-event-request-review]: REVIEW.md#177-owned-latest-event-request-preparation-2026-11-06
 [owned-current-recheck-review]: REVIEW.md#178-owned-current-request-rechecking-2026-11-06
+[owned-delivery-review]: REVIEW.md#179-owned-delivery-integrity-and-qualification-handoff-2026-11-06
 
 ##### Conditional Discrete Motion Core (2026-11-06)
 
@@ -11361,9 +11373,12 @@ exact. Opt-in owned capture/request/straight-pose join (§174) passes sixteen/ro
 mapper unchanged. The admission dependency map is complete (§176). Recorder-owned
 latest-event request preparation (§177) passes eight controls/root 2,637; actual
 current-owner retained-request rechecking (§178) passes sixteen/root 2,653, both
-with the same known xfail/71 warnings and all four positions spent. Next inspect
-S2 owned delivery/retention chronology, then remaining supported source/coverage/
-setup/error/timing/executor dependencies, not the old loop or a matching-hash permit;
+with the same known xfail/71 warnings and all four positions spent. S2 owned event
+ID/cadence/delivery rejection (§179) passes sixteen new and 24 adjacent controls;
+root 2,669 plus the same known xfail/71 warnings. Three of four positions used;
+unused fourth is not follow-on scope. Next independently supported source/coverage/
+setup/error/timing evidence and then guard/executor dependencies, not the old loop
+or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

@@ -237,13 +237,14 @@ python -m pytest -q && ruff check . && git diff --check
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
-- Latest source increment (§178): recorder rechecks retained/received requests
-  against its actual current tick/State/frame/latest capture, with final source/
-  event/request stability checks. Sixteen controls/root 2,653 plus known xfail/
-  71 warnings pass; all four positions spent, three initial test defects retained/
-  repaired. UNKNOWN/no permission/all seven flags false; earlier methods unchanged.
-  Next S2 owned delivery/retention chronology, not more matching hashes or actual
-  execution. The admission map is complete; qualification dependencies stay open.
+- Latest source increment (§179): recorder preparation rejects inconsistent
+  capture ID/cadence/delivery before request work. Sixteen new/24 adjacent controls
+  and root 2,669 plus known xfail/71 warnings pass; three of four positions used,
+  unused fourth not follow-on scope. Initial 12-control failure retained. Actual-
+  current recheck (§178) remains complete; UNKNOWN/no permission/all seven flags
+  false. Next independently supported source/coverage/setup/error/timing evidence,
+  then guard/executor dependencies, not more matching hashes or actual execution.
+  See REVIEW.md §179 for exact qualification/protected-run and remaining-queue gates.
 - Workflow update (REVIEW.md §154): use recommended defaults without
   questionnaire/finish dialogs; continue useful agreed work across checkpoints.
   Continuation correction (§175): persist across recaps and side requests;
@@ -275,7 +276,8 @@ from them. Historical details below are reference material, not new approvals.
   No supplied true flags, online geometry selection or normal controller wiring.
   S1/body/executor dependency map is prepared (§176); initial setup and matched
   paths are not an admitted predecessor chain. Owned latest-event context (§177)
-  and actual-current recheck (§178) are complete; next owned delivery integrity,
+  and actual-current recheck (§178)/delivery integrity (§179) are complete;
+  next independently supported admission evidence,
   never a matching-hash permit;
   retain source/request/expiry/executor and protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
@@ -317,7 +319,8 @@ from them. Historical details below are reference material, not new approvals.
   sixteen/root 2,629 plus the same xfail/71 warnings, defaults unchanged.
   S1/body/executor dependency mapping is complete (§176); owned request preparation
   (§177)/current recheck (§178) pass eight/sixteen controls, root 2,637/2,653.
-  Next owned delivery/retention chronology, not qualification; retain
+  Owned delivery integrity (§179) passes sixteen new/root 2,669. Actual source/
+  coverage/setup/error/timing qualification remains missing; retain
   motion/error/profile and
   source/request/expiry/executor/quality gates, not old controller or general
   audits/current truth.
@@ -360,7 +363,12 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-06, §178): 2,653 passes plus known xfail/71
+- Last source-test gate (2026-11-06, §179): 2,669 passes plus known xfail/71
+  warnings, no skips, 57.80 s; sixteen delivery controls and 24 adjacent controls.
+  Three of four verification positions used; unused fourth not follow-on scope.
+  UNKNOWN/no permission/all seven flags false. Red integrity controls and repair
+  retained in REVIEW.md; existing successful controls remain compatibility only.
+- Historical source-test gate (2026-11-06, §178): 2,653 passes plus known xfail/71
   warnings, no skips, 57.40 s; sixteen actual-current request controls. All four
   verification positions spent; UNKNOWN/no permission/all seven flags false.
   Initial three test defects and repairs retained in REVIEW.md; earlier source
@@ -1444,8 +1452,8 @@ from them. Historical details below are reference material, not new approvals.
 
 ## Task List
 
-Latest increment: §178 actual-current retained-request rechecking is verified;
-next S2 owned delivery/retention chronology and missing admission evidence. The §176
+Latest increment: §179 owned event ID/cadence/delivery integrity is verified;
+next independently supported admission evidence; see the exact §179 handoff. The §176
 dependency map and §175 persistent-continuation/final-answer gate apply; keep all
 qualification, actual execution and protected-action boundaries closed.
 

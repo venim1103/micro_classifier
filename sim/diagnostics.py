@@ -9088,14 +9088,20 @@ class _SyntheticC1SourceRecorder:
         tick, _, state, frame = self._current
         event = self._latest
         if (
-            event["clock_epoch"] != self._epoch
+            type(event) is not dict
+            or any(type(key) is not str for key in event)
+            or set(event) != {"clock_epoch", "capture_id", "delivery_tick", "capture"}
+            or type(event["clock_epoch"]) is not str
+            or event["clock_epoch"] != self._epoch
+            or type(event["capture_id"]) is not str
             or type(event["delivery_tick"]) is not int
             or event["delivery_tick"] > tick
+            or type(event["capture"]) is not dict
         ):
             result["reason"] = "unsupported_owned_capture_event"
             return result
         capture = deepcopy(event["capture"])
-        ticks = capture["capture_ticks"]
+        ticks = capture.get("capture_ticks")
         if (
             type(ticks) is not np.ndarray
             or ticks.shape != (8,)
@@ -9103,6 +9109,15 @@ class _SyntheticC1SourceRecorder:
             or not np.all(ticks == ticks[0])
         ):
             result["reason"] = "unsupported_owned_capture_ticks"
+            return result
+        capture_tick = int(ticks[0])
+        if (
+            capture_tick > tick
+            or (capture_tick != 0 and capture_tick % 4 == 1)
+            or event["capture_id"] != f"{self._epoch}:{capture_tick}"
+            or event["delivery_tick"] != capture_tick + self._config.latency_ticks
+        ):
+            result["reason"] = "unsupported_owned_capture_chronology"
             return result
 
         def digest(value):
@@ -9126,7 +9141,7 @@ class _SyntheticC1SourceRecorder:
             "epoch": self._epoch,
             "source_identity": digest(self._identities),
             "c1_reference_identity": digest(capture),
-            "capture_tick": int(ticks[0]),
+            "capture_tick": capture_tick,
             "reference_tick": tick,
         }
         work["request_entries"] = 1

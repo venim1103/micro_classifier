@@ -13816,6 +13816,88 @@ scope/whitespace pass. Root-tested source SHA256
 test SHA256 `16503196c7d57f27b862f233544621f0f94ad2f5dd21708837df43efb8f59e1d`.
 No new source gate, fixture query or source/test change occurred after root.
 
+## 179. Owned Delivery Integrity and Qualification Handoff (2026-11-06)
+
+Checkpoint `56b6aac` was normally pushed; clean `main` synchronized afterward.
+Stale credential-helper warnings did not prevent synchronization; no credentials,
+remotes or security settings changed. Continued with the named S2 prerequisite,
+not a general audit or qualification run.
+
+Hypothesis from `record_tick`: recorder-created canonical epoch/capture ID,
+acquisition cadence and capture-plus-latency delivery must be checked before
+request work; a new matching digest cannot rescue inconsistent event metadata.
+Sixteen new controls reuse the prior shared empty-scene recorder/request fixture.
+Finite scope: four verification positions maximum including failures/repairs/
+style/root; per new matrix 16 owned/16 preparer/16 capture-checker/160 digest
+entry ceilings, zero recapture/coverage/query/rover/runtime/data/model/hardware
+after setup. Existing three-event/two-capture setup and one baseline preparation
+are separately accounted once per invocation. No old hard cap or tolerance change.
+
+1. Focused `python -m pytest -q tests/test_sim.py -k
+  recorder_rejects_inconsistent_delivery --tb=short`: **12 failed/4 passed**,
+  3.84 s. Nine inconsistent events prepared request content: early/before-capture
+  delivery, wrong/nonstring/missing/extra/noncanonical/empty ID metadata and an
+  altered earlier capture tick. Three others rejected only downstream after
+  preparation. Permission always false. Ledger 16 owned/13 preparer/
+  11 capture-checker/114 digest/zero forbidden.
+2. Repair the owning preparation method: exact built-in event schema/types,
+  synchronized uint32 ticks, nonfuture capture, actual cadence rule, canonical
+  `epoch:capture_tick` and configured delivery before any request entry. Prior
+  coherent-epoch mutation now expects the earlier chronology rejection; no
+  assertion weakened. Sixteen new plus 24 adjacent preparation/current-recheck
+  controls pass, 1.76 s. New ledger 16/1/1/10/zero; adjacent recheck 16 owned/
+  7 preparations/22 bindings/94 digests/zero; old preparation 8/2/2/22/zero.
+  Ruff lint/format/whitespace and editor checks pass; no reformatting needed.
+3. Required root `python -m pytest -q && ruff check . && ruff format --check
+  sim/diagnostics.py tests/test_sim.py && git diff --check`: **2,669 passed,
+  one known transformer QDQ xfail/71 warnings**, no skips, 57.80 s. New and
+  adjacent ledgers match position two. Historical controls are compatibility
+  only, not experiment renewal or native/sanitizer/Arm/model qualification.
+
+Three of four positions used; fourth unused/not follow-on scope. Cumulative
+new controls 48 owned/15 preparer/13 capture-checker/134 digests/zero forbidden.
+Three shared setups/six setup captures/three baseline requests; adjacent actual
+advancement adds one declared tick23/capture in positions two and three.
+All data is in memory, valid-event output unchanged. All flags false/UNKNOWN/
+no permission; event production/normal runtime/defaults unchanged. No source/
+test edit after root, generated report, job or cleanup. Earlier failures and
+spent scopes remain historical. Initial documentation patch failed on a stale
+line-wrap context; targeted inspection confirmed no partial doc edit, grounded
+retry preserved source/test bytes and requirements.
+
+**Qualification handoff.** The owner-selected request, actual-current expiry
+and event-integrity defects identified in §§176-179 are implemented. Next useful
+baseline work requires independently supported admission evidence, not another
+request wrapper. Remaining agreed queue and compatible prerequisites:
+
+| Gate | Exact missing evidence / next admissible action | Conservative state |
+| --- | --- | --- |
+| S1/S2/S3 | Supported offline setup-auditor result and accepted epoch/config/source/retention authority; independent return/missing/occluded coverage and actual State/frame correspondence for the swept-body consumer. Assemble a qualification packet from independent evidence, not self-attested hashes. | No accepted source-admission record/current-body truth. |
+| S4 | Uniform range/pose/timing/native-arithmetic/motion/registration bounds for named actual-command sweep/rank/goal consumers, retaining accumulated uncertainty. Independent method must enclose the complete supported domain, not sampled residuals or old conditional certificates. New qualification study needs explicit bounded authority. | No guessed allowance, true flag or numerical promotion; general audits/SC18 deferred. |
+| S5/guard/executor | Accepted capture/reference/receipt/application/fallback timing, evidence-supported response and serialized one-use application receipts. Implement/integrate against supported records; current matching requests supply no predecessor. | No permit, actual execution or admitted predecessor chain. |
+| Task quality | Admission first, then separately authorized D4 criteria/cohort/run budget and independent task evidence. | Old data quarantined, spent runs not renewed; Tasks 6/9 blocked. |
+| Hardware/native | `.devcontainer/tools` checked and empty; licensed ST installation/board readiness are user-side prerequisites before actual target integration. | M1a/M1b/linked-board work blocked; host objects not board evidence. |
+| Learned work | Justified learned question, restored approved assets/use, reviewed task data and deployment gates. | Training/teachers deferred; no model/dependency/download run. |
+
+Routine compatible code/design and its necessary tests remain delegated; missing
+routine planning/testing approval is not a blocker. Standing authority cannot
+create independent source/numerical/physical evidence, accept a new bound/profile/
+verdict, or authorize protected studies/data/hardware. Recommended pending action:
+source-and-named-consumer qualification packet with independent evidence and
+explicit claim/domain/method/acceptance limits, followed by supported guard/
+executor integration. No evidence or protected scope is adopted here; do not
+spend unused positions on additional hashes or reactivate old general audits.
+Scoped history/reference/source-diff checks and checkpoint commit/normal push
+follow without rerunning the unchanged successful root gate.
+
+Scoped static checks pass: all previous source ASTs preserved except the owning
+preparation method; test ASTs preserved except the one earlier rejection reason
+and two new nodes. Exact REVIEW §§1-178/Sources and stable workflow, new reference
+target/current status/five-file scope/whitespace pass. Root-tested source SHA256
+`d4c3c35c34faabaaa1cd9530849958ed4d2057106aa7053a3fa677c07738a846`;
+test SHA256 `610a2ab41d9479bd259b5d5ab2c60ce92fdaeeea58998d0a466cd93ba67859e0`.
+No additional source/fixture gate or source/test edit after root.
+
 ## Sources
 
 Hardware and tools:

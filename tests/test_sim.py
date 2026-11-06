@@ -9436,7 +9436,7 @@ def test_synthetic_c1_recorder_rechecks_current_owned_request(
         expected = "source_frame_binding_mismatch"
     elif case == 4:
         owner._epoch = owner._latest["clock_epoch"] = "a" * 32
-        expected = "request_content_mismatch"
+        expected = "unsupported_owned_capture_chronology"
     elif case == 5:
         monkeypatch.setattr(owner, "_source_files", dict)
         expected = "owned_source_files_changed"
@@ -9543,6 +9543,117 @@ def test_synthetic_c1_recorder_rechecks_current_owned_request(
         assert result["reason"] == expected
     assert "prepared_request" not in result and "capture_record" not in result
     assert original_retained == held_request
+
+
+@pytest.fixture(scope="module")
+def c1_owned_delivery_ledger(request):
+    ledger = dict.fromkeys(("owned", "prepare", "capture", "digest", "forbidden"), 0)
+    yield ledger
+    assert ledger["owned"] == 16
+    assert ledger["prepare"] <= 16 and ledger["capture"] <= 16
+    assert ledger["digest"] <= 160 and ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 owned delivery ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 owned delivery ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_recorder_rejects_inconsistent_delivery(
+    c1_owned_request_recheck_fixture, c1_owned_delivery_ledger, monkeypatch, case
+):
+    from sim import diagnostics
+
+    original_owner, retained, errors, _ = c1_owned_request_recheck_fixture
+    owner = deepcopy(original_owner)
+    event = owner._latest
+    if case in (1, 2):
+        event["delivery_tick"] = {1: 21, 2: 19}[case]
+    elif case == 3:
+        event["capture_id"] = owner._epoch + ":19"
+    elif case == 4:
+        event["clock_epoch"] = "a" * 32
+    elif case in (5, 6, 12, 15):
+        event["capture"]["capture_ticks"][:] = {5: 21, 6: 23, 12: 24, 15: 19}[case]
+    elif case == 7:
+        event["delivery_tick"] = True
+    elif case == 8:
+        event["capture_id"] = 20
+    elif case == 9:
+        del event["capture_id"]
+    elif case == 10:
+        event["snapshot_tick"] = 22
+    elif case == 11:
+        event["delivery_tick"] = 23
+    elif case == 13:
+        event["capture_id"] = owner._epoch + ":020"
+    elif case == 14:
+        event["capture_id"] = ""
+    held = deepcopy(owner._latest)
+    ledger = c1_owned_delivery_ledger
+    for key, name in (
+        ("prepare", "_prepare_synthetic_c1_normal_request"),
+        ("capture", "_check_synthetic_c1_request_capture_content"),
+        ("digest", "_c1_source_binding_digest"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _original=original, _key=key, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (160 if _key == "digest" else 16)
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        pytest.fail("delivery integrity cannot recapture, query or execute")
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "probe_synthetic_c1_questions",
+        "probe_synthetic_c1_relative_questions",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    ledger["owned"] += 1
+    result = owner.prepare_normal_request(
+        bytes.fromhex(retained["request"]["decision_frame_hex"]),
+        request_id=retained["request"]["request_id"],
+        error_evidence=errors,
+        synthetic_test_only=True,
+    )
+    assert result["fixture_owned_request_prepared"] is (case == 0)
+    assert result["fixture_permission_granted"] is False
+    assert result["guard_status"] == "UNKNOWN"
+    assert all(
+        result[flag] is False
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+    if case:
+        assert "prepared_request" not in result
+        assert result["work"]["request_entries"] == 0
+    assert set(owner._latest) == set(held)
+    for key in ("clock_epoch", "capture_id", "delivery_tick", "snapshot_tick"):
+        if key in held:
+            assert owner._latest[key] == held[key]
+    assert np.array_equal(
+        owner._latest["capture"]["capture_ticks"], held["capture"]["capture_ticks"]
+    )
 
 
 def test_synthetic_c1_source_recorder_owns_capture():

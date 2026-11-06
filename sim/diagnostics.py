@@ -3907,6 +3907,7 @@ def _probe_synthetic_c1_discrete_path_enclosure(
     max_depth=10,
     radius_bands=8,
     config=None,
+    point_error_evidence=None,
     synthetic_test_only=False,
 ):
     """Check C1 fixture prefixes against a complete supplied discrete path tube."""
@@ -4023,6 +4024,25 @@ def _probe_synthetic_c1_discrete_path_enclosure(
     ) != (0.18, 1, 0.6, 1.5, 4, 1):
         result["reason"] = "unsupported_dynamics_or_wall_profile"
         return result
+    if point_error_evidence is not None:
+        if (
+            type(point_error_evidence) is not dict
+            or set(point_error_evidence)
+            != {
+                "source_states",
+                "state_frames",
+                "history_assumptions",
+                "prefix_history_binding_exact",
+                "remaining_point_error_m",
+                "point_radius_m",
+            }
+            or point_error_evidence["prefix_history_binding_exact"] is not True
+        ):
+            result["reason"] = "unsupported_point_error_evidence"
+            return result
+        if point_error_evidence["remaining_point_error_m"] is None:
+            result["reason"] = "remaining_point_error_missing"
+            return result
     work["inspection_entries"] = 1
     inspection = inspect_synthetic_c1_history(
         history,
@@ -4067,11 +4087,81 @@ def _probe_synthetic_c1_discrete_path_enclosure(
     if not len(segments):
         result["reason"] = "no_low_height_free_segments"
         return result
+    path_guard = guard
+    if point_error_evidence is not None:
+        arithmetic = _C1CommandArithmetic(0, 16384, {})
+        try:
+            radius = arithmetic.value(point_error_evidence["point_radius_m"])
+            remaining = arithmetic.value(
+                point_error_evidence["remaining_point_error_m"]
+            )
+            zero = arithmetic.value(0)
+            if (
+                arithmetic.binary(radius, zero, "less")
+                or arithmetic.binary(arithmetic.value(config.max_range), radius, "less")
+                or arithmetic.binary(remaining, zero, "less")
+            ):
+                result["reason"] = "unsupported_point_error_domain"
+                return result
+            cosine, sine = math.cos(reference[2]), math.sin(reference[2])
+            origin = (pose[:2] - reference[:2]) @ np.array(
+                [[cosine, -sine], [sine, cosine]]
+            )
+            selected = []
+            for segment in segments:
+                enclosed = True
+                for point in segment[:, :2]:
+                    norm = zero
+                    for coordinate, anchor in zip(point, origin, strict=True):
+                        displacement = arithmetic.binary(
+                            arithmetic.value(float(coordinate)),
+                            arithmetic.value(float(anchor)),
+                            "sub",
+                        )
+                        norm = arithmetic.binary(norm, abs(displacement), "add")
+                    if arithmetic.binary(radius, norm, "less"):
+                        enclosed = False
+                if enclosed:
+                    selected.append(segment)
+            if not selected:
+                result["reason"] = "no_point_radius_supported_prefixes"
+                return result
+            segments = np.asarray(selected)
+            registration = _bound_synthetic_c1_history_registration(
+                point_error_evidence["source_states"],
+                point_error_evidence["state_frames"],
+                acquisition_tick=int(record["capture_ticks"][0]),
+                reference_tick=reference_tick,
+                point_radius_m=point_error_evidence["point_radius_m"],
+                assumptions=deepcopy(point_error_evidence["history_assumptions"]),
+                synthetic_test_only=True,
+            )
+            if registration["fixture_registration_bound"] is not True:
+                result["reason"] = registration["reason"]
+                result["registration_work"] = deepcopy(registration["work"])
+                return result
+            combined = arithmetic.binary(
+                arithmetic.binary(arithmetic.value(guard), remaining, "add"),
+                arithmetic.value(registration["upper_bounds"]["registered_point_m"]),
+                "add",
+            )
+            guard = arithmetic.outward(combined, True)
+        except ArithmeticError as error:
+            result["reason"] = str(error)
+            return result
+        except (TypeError, ValueError, OverflowError):
+            result["reason"] = "unsupported_point_error_input"
+            return result
+        result.update(
+            point_error_guard_m=guard,
+            registration_bound=deepcopy(registration),
+        )
     points = boxes[..., 0] + (boxes[..., 1] - boxes[..., 0]) / 2
     widths = np.maximum(points - boxes[..., 0], boxes[..., 1] - points)
     errors = np.sum(widths, axis=1)
     tube_radius = (
-        float(np.max(np.asarray(radii) + np.maximum(errors[:-1], errors[1:]))) + guard
+        float(np.max(np.asarray(radii) + np.maximum(errors[:-1], errors[1:])))
+        + path_guard
     )
     if not math.isfinite(tube_radius) or not np.all(np.isfinite(points)):
         result["reason"] = "unsupported_path_bound"

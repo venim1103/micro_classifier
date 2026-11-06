@@ -2376,13 +2376,41 @@ complete conversion allowances, clear-to-unknown 0.05 m error control, ownership
 and retained style/probe evidence. Passing conditional cylinder geometry is not
 wall support, source qualification or an admitted command.
 
-Next connect the same complete point error to the discrete-path adapter's
-relative-prefix/wall checks with explicit motion and prefix-history/error
-premises. Keep wall and cylinder support separate; the supplied path must still
-enclose the actual requested command/braking, with native/source/timing gates
-unclosed. No normal runtime/decision/permit or new study follows this consumer.
+The separate discrete-path consumer below now applies the same point margins
+to relative-prefix and wall support. Keep wall and cylinder support separate;
+the supplied path must still enclose actual requested command/braking, with
+native/source/timing gates unclosed. No runtime/permit or study is admitted.
 
 [registered-prefix-review]: REVIEW.md
+
+##### Conditional Discrete-Path Point Margins (2026-11-06)
+
+The existing private `_probe_synthetic_c1_discrete_path_enclosure` optionally
+accepts complete `point_error_evidence`. Omission preserves its default result
+shape and geometry. Supplied evidence requires decoded-prefix/history binding,
+complete actual source/frame history, its explicit assumptions and nonnegative
+remaining point error. Missing evidence rejects; no word-only allowance is
+silently treated as total registration/range/pose/native/clock error.
+
+Only low prefixes with both endpoints inside the declared capture-point radius
+under exact conservative L1 distance contribute. Unsupported prefixes are
+discarded, never extrapolated or assigned a larger radius. Complete history-word
+error, remaining point error and the existing numerical prefix guard are summed
+rationally and rounded outward into strict wall support and unchanged cylinder
+cells. The supplied motion tube remains unchanged by point error. Contact and
+missing/unsupported/exhausted evidence stay unknown; all qualification/admission/
+training flags remain false and every existing hard ceiling stays unchanged.
+
+[Review §160][path-point-error-review] records sixteen controls and both retained
+failed hypotheses: 1 m error loses cylinder exclusion but not wall support, and
+zero-age capture is unavailable under two-tick latency. Valid delivered zero-word
+discrepancy excludes; the original unavailable capture rejects before prefixes.
+Next compose actual-frame motion and the optional margins around one current
+source/frame-history binding and explicit motion/error/profile premises. An
+arbitrary supplied path is not actual-command qualification, source authority,
+accepted native/physical evidence or a usable guard/permit.
+
+[path-point-error-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -10934,11 +10962,12 @@ qualification. The additive path-cell kernel and twelve fixed controls are
 complete (§155). The discrete-path/wall adapter and exact actual-wire/source-
 word interval boundary now pass 24 and 16 fixed controls respectively (§156).
 The actual-frame motion bridge (§157), complete-history registration bound
-(§158) and registered-prefix cylinder consumer (§159) each pass sixteen controls;
-the required new-source root gate passes 2,385 tests plus the known xfail/71
-warnings. Prior spent standalone scopes remain spent. Next: propagate complete
-point-error evidence through discrete-path relative prefixes and wall support,
-retaining actual source/native/pose/range/clock and command-matching gates.
+(§158), registered-prefix cylinder consumer (§159) and optional discrete-path
+point margins (§160) each pass sixteen controls; the required new-source root
+gate passes 2,401 tests plus the known xfail/71 warnings. Prior spent standalone
+scopes remain spent. Next: compose actual-frame motion and complete point margins
+around one current source/frame-history binding, retaining explicit motion/error/
+profile and actual source/native/pose/range/clock qualification gates.
 These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.
 

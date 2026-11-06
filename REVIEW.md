@@ -12109,6 +12109,124 @@ audit deferral and protected evidence/resource gates remain unchanged.
 [registered-prefix-source]: sim/diagnostics.py
 [registered-prefix-controls]: tests/test_sim.py
 
+## 160. Discrete-Path Point Errors at Prefix and Wall Checks (2026-11-06)
+
+Checkpoint §159 was committed/pushed as `36ecedd6005d711479115b6253ffdb8e82a3384f`;
+main was clean and synchronized. Continued its named relative-prefix/wall
+prerequisite under standing authority, not a new standalone old experiment.
+
+**Pre-execution hypothesis and finite scope.** The existing path adapter already
+computes full motion endpoint/body bounds, relative prefixes and separate wall
+support. An optional complete point-error record can preserve absent-record
+behavior while applying an outward word-history-plus-remaining-error margin
+to both cylinder-cell and wall support. Point errors do not change the supplied
+motion path; missing actual-command matching/native/source evidence remains
+separate. Prefixes unsupported by the existing declared point-radius/L1 bound
+are conservatively discarded, never extrapolated or given a larger radius.
+Complete decoded-history/prefix binding and remaining errors are explicit
+fixture premises, not source/return/pose/native/clock qualification.
+
+Before execution: sixteen fixed controls, four verification positions including
+focused probes, failed/aborted checks, repairs and required new-source root;
+at most 32 adapter/inspection/prefix/history/cell and 128 binder entries per
+matrix. Reuse the existing two-capture/three-motion module fixture as bounded
+control preparation per position, with at most those two reused scenes and no
+new family/episode/owner/runtime/model/data/native/hardware action. Keep three
+intervals/four frames, 512 prefixes/1,024 endpoints, one-command/16-braking/
+128-chord/16-term, 4,096/16,384-bit and cell/depth/band limits unchanged.
+First check: straight decoded-history-consistent reference pose, earlier `0.2`
+rounding/current exact `0.5`; absent record and small complete error exclude,
+whereas a 1 m artificial remaining error loses wall support before cells.
+Other controls cover both discrepancy signs, current-word exactness, missing/
+changed/stale history/error/binding, prefix-radius loss, malformed metadata,
+body/domain/budget controls and ownership. CPU-only in-memory fixtures; retain
+failed checks, stop unsupported evidence before admission, no cleanup needed.
+
+The initial probe failed its asserted rejection stage: a 1 m error retained
+wall support but lost cylinder-cell exclusion. Preserve that result, not a
+weaker success assertion. The nearby wall-extrema check distinguishes the
+remaining margin; repair the control with the original 1 m cell rejection
+plus a 2 m wall rejection, independently verifying the full unfiltered
+prefix-to-path wall margin lies strictly between 1 and 2 m. The filtered set
+cannot enlarge that support. This is a test-hypothesis correction, not a
+changed threshold/radius, source tolerance or permit. Failed position counts;
+the finite ceilings and original unknown outcome remain unchanged.
+
+The expanded sixteen-case position also retained one failed success assertion:
+the zero-age fixture requested capture tick 20 at reference tick 20, before
+the unchanged two-tick delivery guard. Nearby inspection requires acquisition
+no later than snapshot minus configured latency. Repair that same control to
+zero word discrepancy in complete delivered history at tick 22; retain the
+original zero-age request as an explicit rejection before prefix/history/cells.
+Do not change latency/configuration, weaken supported success, or call missing
+delivery clock evidence exact. Fifteen other controls passed. The final root
+is the fourth and last verification position; no extra standalone probe follows.
+
+**Implemented and verified.** The existing private path adapter accepts an
+optional complete point-error record. Omission preserves its old result shape,
+motion points and tube radius; the existing default controls remain unchanged.
+Explicit decoded-prefix/history binding, complete source states/actual bytes,
+history assumptions and remaining error are required. Unsupported L1 point-radius
+prefixes are discarded rather than extrapolated. Complete history-word error,
+remaining point error and numerical prefix guard are added rationally and rounded
+outward into both strict wall support and unchanged cylinder cells. Motion bounds
+do not grow with point error; actual requested-motion matching stays separate.
+Unknown history publishes work only, not partial registration geometry.
+
+Sixteen controls cover both earlier discrepancy signs with exact current words,
+valid-age zero word discrepancy and unavailable zero-age rejection, 1 m cylinder
+and 2 m wall failures, missing/negative error, absent binding/history assumptions/
+middle frames, changed/stale actual frames, lost point-radius support, invalid cell
+budget/path metadata, missing opt-in and owned repeats. These are bounded synthetic
+fixtures, not range, return, source, clock, native or task-quality qualification.
+
+| Position | Check/result | Adapter / inspection / prefix / history / binder / cell |
+| --- | --- | --- |
+| 1 | Initial probe: one failed rejection-stage assertion, 1,462 deselected, 0.53 s; retained 1 m cylinder rejection, not asserted wall rejection. | 3 / 3 / 3 / 2 / 6 / 3 |
+| 2 | Same corrected control plus independent full wall-margin check and 2 m wall failure: one pass, 1,462 deselected, 1.17 s. | 4 / 4 / 4 / 3 / 9 / 3 |
+| 3 | Expanded sixteen controls: 15 pass/one invalid zero-age success assertion, 1,462 deselected, 1.52 s. | 18 / 14 / 13 / 10 / 22 / 6 |
+| 4 | Required root `python -m pytest -q && ruff check . && git diff --check`: 2,401 pass, known QDQ xfail/71 existing warnings/no skips, 51.13 s; lint/changed-file format/whitespace pass. | 19 / 15 / 14 / 11 / 25 / 7 |
+
+All four positions are spent; totals **44 / 36 / 34 / 26 / 62 / 19** including
+failures, zero forbidden calls after fixture preparation. The two reused C1
+captures/three motion producers per position total eight/twelve preparation
+entries, not new scenes, episodes or source qualification. Before final repair,
+formatting only changed Python files preserved both complete ASTs; local lint/
+format/editor and six then-resolved calls passed. Immediate root after the
+fixture repair then validated all sixteen controls and the explicit unavailable
+capture. No fifth invocation, assertion/tolerance/cap change or old scope refund.
+Required root reused unchanged path 24/11/7/6/two captures/three motions, registered
+cells 18/10/22/8/16, history 19/29/14, state-motion 16/14/6/8, wire 48/32/10/two
+scenes, motion 18/12 and composition/target/join controls as compatibility only.
+
+Pylance file syntax/editor checks and all seven final call sites pass. Of 73 prior
+diagnostics AST nodes, only the owning adapter changes; the other 72 remain exact
+and ordered. All 293 prior test nodes remain exact/in order; two fixture/test nodes
+are added. Tested SHA256: diagnostics
+`9349d653851881667f2ba4dd419d62686056c37a4b1bd15ef413b01a0b1f3a14`;
+tests `ee9767a94e8eca7e32a805672dd1f4085c407a31d59194d50856f006cca12be9`.
+Scoped documentation/history/reference/target/whitespace/staged-byte checks apply
+before commit. The initial documentation validator wrongly required a section
+self-citation despite the existing numbered heading; correct that selector, not
+the record or its preservation assertions. The same scoped checks then passed:
+ordered sections 1-160, exact earlier review/Sources/stable workflow/task history,
+tested hashes/ledger/five-file scope, 676 prose references/25 inline links/70
+local targets/anchors and whitespace. The successful code suite is not rerun
+for documentation. No normal
+API/C/runtime/actuation, report/log/task-data/collection/model, dependency/download/
+environment, ST/hardware or extra opt-in sanitizer/Arm work changed. No job/cleanup.
+
+**Next.** Compose the actual-frame motion bridge and this optional point-error
+adapter around one current source/frame and complete history binding, preserving
+explicit motion/profile/remaining-error premises and unknown on unsupported
+commands or frame mismatch. Do not accept an arbitrary supplied path as the
+actual requested command/braking. All seven qualification/admission/training
+flags, S1-S5, Tasks 6/9/D4, fifteen undecided verdicts/five old false flags,
+deferred general audits and protected evidence/resource gates remain unchanged.
+
+[path-point-error-source]: sim/diagnostics.py
+[path-point-error-controls]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

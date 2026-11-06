@@ -1208,6 +1208,259 @@ def test_synthetic_c1_discrete_path_enclosure_clear_fixture(
     assert motion == saved_motion
 
 
+@pytest.fixture(scope="module")
+def c1_path_point_error_ledger(request):
+    ledger = dict.fromkeys(
+        ("adapter", "inspection", "prefix", "history", "binding", "cell", "forbidden"),
+        0,
+    )
+    yield ledger
+    assert all(
+        ledger[key] <= (128 if key == "binding" else 32)
+        for key in ("adapter", "inspection", "prefix", "history", "binding", "cell")
+    )
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 path-point-error ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 path-point-error ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_discrete_path_point_error_reaches_walls(
+    c1_discrete_path_fixtures, c1_path_point_error_ledger, monkeypatch, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from interface.protocol import State, decode_state, encode_state
+    from sim import diagnostics
+
+    ledger = c1_path_point_error_ledger
+    observed_prefixes = []
+    for key, name in (
+        ("inspection", "inspect_synthetic_c1_history"),
+        ("prefix", "_c1_low_free_segments"),
+        ("history", "_bound_synthetic_c1_history_registration"),
+        ("binding", "_bind_synthetic_c1_state_intervals"),
+        ("cell", "_c1_exclude_path_cells"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (128 if _key == "binding" else 32)
+            output = _original(*args, **kwargs)
+            if _key == "prefix":
+                observed_prefixes.append(output[0].copy())
+            return output
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "path point errors must not collect fixtures or run a rover"
+        )
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "_probe_synthetic_c1_discrete_motion",
+        "_probe_synthetic_c1_state_motion",
+        "_c1_curved_centerline",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "probe_synthetic_c1_questions",
+        "_probe_synthetic_c1_wire_rejection",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    record = deepcopy(c1_discrete_path_fixtures["records"][0])
+    motion = deepcopy(c1_discrete_path_fixtures["motions"][0])
+    early_speed = 0.5 if case == 2 else 0.35 if case == 1 else 0.2
+    reference_tick = 22
+    states = [
+        State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(early_speed if tick < reference_tick else 0.5, 0.0, 0.0),
+        )
+        for tick in range(20, reference_tick + 1)
+    ]
+    frames = [encode_state(state) for state in states]
+    distance = sum(
+        Fraction(decode_state(frame).velocity_m_s[0]) for frame in frames[1:]
+    ) * Fraction(0.05)
+    reference = [float(Fraction(2) + distance), 2.0, 0.0]
+    assert abs(Fraction(reference[0]) - (Fraction(2) + distance)) < Fraction(1e-8)
+    evidence = {
+        "source_states": states,
+        "state_frames": frames,
+        "history_assumptions": dict.fromkeys(
+            (
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            ),
+            True,
+        ),
+        "prefix_history_binding_exact": True,
+        "remaining_point_error_m": 1e-8,
+        "point_radius_m": 4.0,
+    }
+    if case == 3:
+        evidence["remaining_point_error_m"] = 1.0
+    elif case == 4:
+        evidence["remaining_point_error_m"] = 2.0
+    elif case == 5:
+        evidence["remaining_point_error_m"] = None
+    elif case == 6:
+        evidence["prefix_history_binding_exact"] = False
+    elif case == 7:
+        evidence["history_assumptions"] = None
+    elif case == 8:
+        states.pop(1)
+        frames.pop(1)
+    elif case == 9:
+        frames[1] = encode_state(replace(states[1], sequence=99))
+    elif case == 10:
+        states[1] = replace(states[1], ages_us=(1, *states[1].ages_us[1:]))
+        frames[1] = encode_state(states[1])
+    elif case == 11:
+        evidence["point_radius_m"] = 0.0
+    elif case == 12:
+        evidence["remaining_point_error_m"] = -0.01
+    elif case == 14:
+        motion["chords"][0]["radius_upper_m"] = 0.01
+    settings = {
+        "reference_tick": reference_tick,
+        "reference_pose_m_rad": reference,
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "max_cells": 0 if case == 13 else 32768,
+        "synthetic_test_only": case != 15,
+    }
+    saved_record, saved_motion, saved_evidence = (
+        deepcopy(record),
+        deepcopy(motion),
+        deepcopy(evidence),
+    )
+    before = dict(ledger)
+    ledger["adapter"] += 1
+    if case == 15:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._probe_synthetic_c1_discrete_path_enclosure(
+                [record], motion, point_error_evidence=evidence, **settings
+            )
+        assert ledger["inspection"] == before["inspection"]
+        assert ledger["history"] == before["history"]
+        return
+    result = diagnostics._probe_synthetic_c1_discrete_path_enclosure(
+        [record], motion, point_error_evidence=evidence, **settings
+    )
+    assert result["fixture_enclosure_excluded"] is (case in (0, 1, 2))
+    expected_inspection = int(case not in (5, 6, 14))
+    expected_history = int(case in (0, 1, 2, 3, 4, 7, 8, 9, 10, 13))
+    expected_cell = int(case in (0, 1, 2, 3, 13))
+    assert ledger["inspection"] - before["inspection"] == expected_inspection
+    assert ledger["prefix"] - before["prefix"] == expected_inspection
+    assert ledger["history"] - before["history"] == expected_history
+    assert ledger["cell"] - before["cell"] == expected_cell
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    if case in (0, 1, 2, 3, 4, 13):
+        word_error = result["registration_bound"]["upper_bounds"]["registered_point_m"]
+        assert (word_error > 0) is (case != 2)
+        assert Fraction(result["point_error_guard_m"]) >= (
+            Fraction(word_error) + Fraction(evidence["remaining_point_error_m"])
+        )
+        if case in (0, 1, 2, 3, 13):
+            assert result["free_segment_count"] > 0
+    if case == 0:
+        ledger["adapter"] += 1
+        legacy = diagnostics._probe_synthetic_c1_discrete_path_enclosure(
+            [record], motion, **settings
+        )
+        assert legacy["fixture_enclosure_excluded"] is True
+        assert result["path_tube_radius_m"] == legacy["path_tube_radius_m"]
+        assert result["path_points_body_m"] == legacy["path_points_body_m"]
+        assert result["free_segment_count"] <= legacy["free_segment_count"]
+        assert (
+            "point_error_guard_m" not in legacy and "registration_bound" not in legacy
+        )
+        prefixes = observed_prefixes[0][..., :2].reshape(-1, 2)
+        path = np.asarray(legacy["path_points_body_m"])
+        wall_margin = min(
+            *(path.min(axis=0) - legacy["path_tube_radius_m"] - prefixes.min(axis=0)),
+            *(prefixes.max(axis=0) - path.max(axis=0) - legacy["path_tube_radius_m"]),
+        )
+        assert 1.0 < wall_margin < 2.0
+        result["registration_bound"]["source_bindings"].clear()
+        result["path_points_body_m"][0][0] = 123.0
+        ledger["adapter"] += 1
+        repeated = diagnostics._probe_synthetic_c1_discrete_path_enclosure(
+            [record], motion, point_error_evidence=evidence, **settings
+        )
+        assert repeated["fixture_enclosure_excluded"] is True
+        assert repeated["path_points_body_m"][0][0] == 0.0
+        assert repeated["registration_bound"]["source_bindings"]
+    elif case == 2:
+        assert record["config"]["latency_ticks"] == 2
+        ledger["adapter"] += 1
+        unavailable = diagnostics._probe_synthetic_c1_discrete_path_enclosure(
+            [record],
+            motion,
+            point_error_evidence={
+                **evidence,
+                "source_states": states[:1],
+                "state_frames": frames[:1],
+            },
+            **{**settings, "reference_tick": 20, "reference_pose_m_rad": [2, 2, 0]},
+        )
+        assert unavailable["fixture_enclosure_excluded"] is False
+        assert unavailable["reason"] == "unsupported_history"
+        assert unavailable["work"] == {
+            "inspection_entries": 1,
+            "prefix_entries": 0,
+            "cell_entries": 0,
+        }
+        assert "registration_bound" not in unavailable
+    elif case not in (1, 2):
+        reasons = {
+            3: "unexcluded_center_cell",
+            4: "axis_aligned_wall_support_incomplete",
+            5: "remaining_point_error_missing",
+            6: "unsupported_point_error_evidence",
+            7: "unsupported_history_assumptions",
+            8: "incomplete_frame_history",
+            9: "source_frame_binding_mismatch",
+            10: "stale_host_state",
+            11: "no_point_radius_supported_prefixes",
+            12: "unsupported_point_error_domain",
+            13: "cell_budget_exhausted",
+            14: "unsupported_motion_fixture",
+        }
+        assert result["reason"] == reasons[case] and result["status"] == "unknown"
+        if case == 4:
+            assert result["work"]["cell_entries"] == 0
+    assert json.dumps(record, default=json_value, sort_keys=True) == json.dumps(
+        saved_record, default=json_value, sort_keys=True
+    )
+    assert motion == saved_motion and evidence == saved_evidence
+
+
 def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
     from fractions import Fraction
 

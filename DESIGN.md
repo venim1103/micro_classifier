@@ -2521,13 +2521,34 @@ frame bounds are local content checks, not measured clock/freshness guarantees.
 [Review §165][normal-command-map-review] records 24 controls and the retained
 import-order-only style failure. No Scene, C1 or geometry query chooses a command.
 
-Next bind this exact decoded-frame candidate to original-State/actual-frame
-discrepancy intervals and bounded command/braking motion, without accepting
-caller-supplied commands or interpreting a fallback as qualified braking. Source,
-complete path margins, exact request/receipt/expiry/executor, S1-S5 and task quality
-stay separate; no normal controller, usable `OK`, actuation or trial is admitted.
-
 [normal-command-map-review]: REVIEW.md
+
+##### Conditional Mapped-Command Motion (2026-11-06)
+
+The private `_probe_synthetic_c1_normal_state_motion` derives its only command
+through the exact-frame normal mapper and feeds it to the unchanged State/word
+motion bridge. Its Config must match the existing five-field discrete motion
+profile; target/yaw/profile cannot be supplied independently. Both original and
+decoded speed endpoints enter the full one-command-tick/repeated-braking enclosure.
+The result owns mapped frame content, source intervals, conditional motion and
+the exact finite binary64 command words, without a permit or native-error claim.
+
+Existing zero-age, planar-source, complete word interval, error/profile and work
+guards remain unchanged. A decoded 0.6 overshoot still rejects, not clips. An
+unusable/braking selection or failed source/motion check stays unknown with no
+partial mapped/source/motion content; fallback is not qualified braking or an
+executed stop. All seven flags remain false. [Review §166][normal-motion-review]
+records 24 fixed frame controls, two genuine speed discrepancies and unchanged
+independent rational endpoint references. No new Scene/C1/history/geometry query,
+normal controller, wire or data/physical behavior change is introduced.
+
+Next prepare exact conditional request content/identity from these bound command
+words and frame/profile/reference context, never a caller-supplied motion or a
+permission shortcut. Complete path margins, source authority/error, request
+receipt/expiry/one-use executor, S1-S5 and task quality remain separate gates;
+no usable normal `OK`, actuation or trial is admitted.
+
+[normal-motion-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11090,9 +11111,10 @@ content is now implemented (§163), sixteen controls/root 2,437 plus known
 xfail/71 warnings, all earlier nodes exact. Conditional initial-rest startup
 composition (§164) now passes sixteen controls/root 2,453 plus the same xfail/71
 warnings, all earlier nodes exact. Isolated normal-command mapping (§165) passes
-24 controls/root 2,477 plus the same xfail/71 warnings; old rules nodes and all
-C1 diagnostics are unchanged. Next bind the mapped decoded-frame command to
-original-State discrepancy and bounded braking motion, not the old loop or permit;
+24 controls/root 2,477 plus the same xfail/71 warnings. The derived-command/source-
+motion join (§166) passes 24 controls/root 2,501 plus the same xfail/71 warnings;
+all prior nodes and mapper bytes unchanged. Next exact conditional request content/
+identity from the bound words/frames/profile, not the old loop or a permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

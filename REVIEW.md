@@ -12725,6 +12725,95 @@ with exit 129 (`unknown switch`). Verified HEAD still `a918b99` and exactly the
 five intended files staged with clean whitespace. Repair commit-message arguments
 only by prefixing every paragraph with its own `-m`; no source or gate rerun.
 
+## 166. Derived Normal-Command Source/Motion Join (2026-11-06)
+
+Checkpoint §165 was committed and normally pushed as
+`86a4af90a721c9ee9b09b4735d1e498c9da797ca`; main clean/upstream 0/0. Continue
+the selected conditional normal-command/source/motion prerequisite, not online
+geometry selection, a full path guard, permission or execution.
+
+**Pre-execution hypothesis/check.** A mapped active selection alone cannot cover
+original-State/decoded-frame discrepancies. The existing state-motion bridge
+already rejects nonzero acquisition age, nonplanar complete intervals and decoded
+0.6 overshoot rather than clamping. A private join must derive its only command
+from exact frames through §165, require the unchanged five-field discrete motion
+profile from Config, then call that existing bridge without arbitrary command/
+profile arguments. A mapped 0.6-source control must still reject; all nine normal
+sector/tier controls and both original/received endpoints must fit the existing
+independent rational command/braking reference. Fallback stays unknown with no
+partial mapped/source/motion content, not qualified braking or an executed stop.
+
+Finite scope: 24 fixed frame-only controls, all nine sector/nonzero-tier commands,
+two genuine speed discrepancies, source/frame mismatch, nonplanarity, age, missing
+error, braking work exhaustion, corrupt/blocked/partial/mismatched decision,
+different motion profile, boolean tick, mutable frame, supplied command, no opt-in
+and owned repeat. At most four verification positions including failures/aborts,
+local repair/style preparation and necessary new-source root. Per complete
+position: max32 wrapper/mapper/State decode/Decision decode/state-motion/binder/
+motion entries, max24 unchanged independent-reference entries, zero forbidden;
+failed entries and owned repeat count. No Scene/C1/history/coverage/source-owner/
+auditor/rover/runtime/data query, capture, episode, model/dependency/download or
+hardware action. Serial CPU/in-memory; existing 4096/16384-bit, one command tick,
+16 brake ticks, 128 chords/16 trig terms and all tolerances stay unchanged.
+All old nodes/bytes/APIs/flags/ledgers remain; required-root old fixtures are
+unchanged compatibility only, never standalone old scope renewal. No resource/
+physical/native/source/work qualification follows from command words or counters.
+
+**Implementation/verification complete.** The private join derives both command
+targets from §165 and calls the unchanged State-motion bridge. It owns the complete
+mapped frame record, source/decoded intervals, conditional motion and exact finite
+binary64 command words on success; rejection publishes work/reason only, not
+partial mapped/source/motion content. All seven flags remain false. No arbitrary
+target/yaw/profile, normal controller/permit/path integration or usable C1 `OK`.
+
+Position one: `24 passed, 1554 deselected` in 1.73 s. AST-preserving formatting and
+narrow lint/format/whitespace pass as zero-query position two. Position three:
+`/opt/venv/bin/python -m pytest -q && ruff check . && ruff format --check
+sim/diagnostics.py tests/test_sim.py && git diff --check` passes **2,501 tests**,
+one known transformer QDQ xfail, 71 existing warnings, no skips, 64.92 s. Three
+of four positions used; unused fourth is not follow-on scope. No failure in this
+slice; earlier §165 style/commit failures and all older ledgers remain historical.
+
+Each focused/root matrix: 25 wrapper/22 mapper/20 State decode/20 Decision decode/
+16 State-motion/16 binder/12 motion/18 independent reference/zero forbidden entries.
+New-family totals 50/44/40/40/32/32/24/36/zero, including zero-query style work.
+All nine selected commands and both source/received endpoints fit the unchanged
+rational reference; the .2/.35 inputs preserve nonzero command-speed interval
+widths. Decoded .6 overshoot, source/actual-frame mismatch, nonplanarity, age1,
+missing error, zero braking budget, unusable decision/profile/type/supplied-command
+controls reject at their unchanged guards. Owned-repeat and input preservation
+pass. No new-family Scene/C1/history/source-owner/auditor/rover/runtime/data query,
+capture or episode; old root controls are compatibility only, not standalone
+renewal or proof/qualification. One command/16 brake/128 chord/16 term and all
+source/motion bit caps/tolerances are unchanged.
+
+Complete ASTs preserved by formatter; all 76 prior diagnostics/304 prior test
+nodes remain exact/in order, one source/two test additions. Entire mapper source
+is unchanged. Syntax/editor/lint/format/whitespace pass; language-server usages
+are only this helper's definition and one test call, not runtime integration.
+Root-tested SHA-256:
+
+| File | SHA-256 |
+| --- | --- |
+| `sim/diagnostics.py` | `e4397d17fade6f583b8aa8c2adfe6aec7e3c811554ba7ce351d79e4d69d87b70` |
+| `tests/test_sim.py` | `83ad57e7e161246d30d5f95569786bde9a0f48065e46d2417e4db7ce58d9d15c` |
+
+No accepted default/profile/threshold/target/wire/C/native change, dependency/
+download/environment/model/hardware action or new study/task data. No additional
+opt-in sanitizer/Arm gate was required or run. Host checks/words are not native/
+source/numerical/physical/task-quality qualification or linked firmware. General
+SC18 audits/D4/study/board and all protected gates stay closed.
+
+Next useful isolated prerequisite: exact conditional request content/identity
+from bound command words and frame/profile/reference context, not arbitrary motion
+or a permission shortcut. Full source/path/request receipt/expiry/one-use executor/
+S1-S5/quality remain separate. Scoped checks pass for exact prior REVIEW §§1-165/
+Sources, stable workflow/older task results, prior design/roadmap, 682 prose
+references/25 inline links/70 local targets+anchors, five-file scope, root-tested
+bytes/unchanged mapper/diff/whitespace. Only those files enter the verified local
+checkpoint and normal configured-upstream push; no unchanged root rerun for docs.
+No job, artifact or cleanup pending.
+
 ## Sources
 
 Hardware and tools:

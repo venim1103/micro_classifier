@@ -3895,6 +3895,114 @@ def _probe_synthetic_c1_state_motion(
     return result
 
 
+def _probe_synthetic_c1_normal_state_motion(
+    source_state,
+    state_frame,
+    decision_frame,
+    *,
+    reference_tick,
+    config=None,
+    settings=None,
+    error_evidence=None,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    source_max_integer_bits=4096,
+    motion_max_integer_bits=16384,
+    synthetic_test_only=False,
+):
+    """Bind a derived active-frame command to conditional source-word motion."""
+    import struct
+
+    from sim import rules
+
+    if synthetic_test_only is not True:
+        raise ValueError("normal state motion requires synthetic_test_only=True")
+    work = {"mapping_entries": 0, "state_motion_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-normal-state-motion/1",
+        "allowed_use": "conditional_mapped_source_word_motion_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_normal_motion_profile",
+        "fixture_normal_motion_enclosed": False,
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    config = Config() if config is None else config
+    if type(config) is not Config:
+        return result
+    expected_profile = {
+        "dt": 0.05,
+        "acceleration": 1.0,
+        "max_speed": 0.6,
+        "max_turn_rate": 1.5,
+        "radius": 0.18,
+    }
+    profile = {key: getattr(config, key) for key in expected_profile}
+    if (
+        any(type(value) is not float for value in profile.values())
+        or profile != expected_profile
+    ):
+        return result
+    work["mapping_entries"] = 1
+    mapped = rules._map_synthetic_c1_normal_command(
+        state_frame,
+        decision_frame,
+        reference_tick=reference_tick,
+        config=config,
+        settings=settings,
+        synthetic_test_only=True,
+    )
+    result["mapping_work"] = deepcopy(mapped["work"])
+    if mapped["fixture_command_mapped"] is not True:
+        result["reason"] = mapped["reason"]
+        return result
+    command = mapped["requested_command"]
+    work["state_motion_entries"] = 1
+    motion = _probe_synthetic_c1_state_motion(
+        source_state,
+        state_frame,
+        reference_tick=reference_tick,
+        target_speed=command["target_speed_m_s"],
+        turn_rate=command["turn_rate_rad_s"],
+        error_evidence=error_evidence,
+        profile=profile,
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        source_max_integer_bits=source_max_integer_bits,
+        motion_max_integer_bits=motion_max_integer_bits,
+        synthetic_test_only=True,
+    )
+    result["state_motion_work"] = deepcopy(motion["work"])
+    if motion["fixture_motion_enclosed"] is not True:
+        result["reason"] = motion["reason"]
+        return result
+    result.update(
+        status="enclosed_from_mapped_active_frame_fixture",
+        reason="derived_command_propagated_from_bound_source_intervals",
+        fixture_normal_motion_enclosed=True,
+        mapped_command=deepcopy(mapped),
+        state_motion=deepcopy(motion),
+        requested_command_words={
+            key: int.from_bytes(struct.pack(">d", value), "big")
+            for key, value in command.items()
+        },
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

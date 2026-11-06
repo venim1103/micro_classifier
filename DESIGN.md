@@ -2626,13 +2626,34 @@ permission false/all seven qualification/admission/training flags false.
 [Review §170][normal-request-path-review] records sixteen controls on two reused
 C1 scenes, all eighty earlier source/312 test nodes exact and unchanged mapper.
 
-Next bind actual C1 record content/configuration to the declared request context,
-not just matching ticks. Content identity cannot establish source/clock/ray/pose/
-body/error authority or one-use execution. Full source/path/guard/S1-S5/task-quality
-gates remain separate; no usable `OK`, actuation, normal controller or trial is
-admitted. General arithmetic/identity audits and protected studies stay deferred.
-
 [normal-request-path-review]: REVIEW.md
+
+##### Conditional Request/C1 Capture Content (2026-11-06)
+
+The private `_check_synthetic_c1_request_capture_content` first matches the typed
+request/current tick, then checks the actual ten-key C1 capture record, literal
+false flags, exact typed request/capture Config values and four bounded arrays.
+An owned full-record fingerprint must match the declared `c1_reference_identity`.
+For this private fixture adapter only, that identity denotes the complete latest
+capture record, not an accepted product format or qualified registered reference.
+Array dtype/shape/bytes are preserved; no normalization or noise stripping occurs.
+
+Changed returns/masks/poses, a single view tick, Config type aliases, unsupported
+array types/shapes, nonfinite values, true flags and changed/expired requests
+reject without partial capture binding. Matching occupied-fixture content is
+still only content correspondence: every output retains `UNKNOWN`, no permission
+and all seven qualification/admission/training flags false. The checker performs
+no geometric/path query and does not establish actual producer/source authority.
+[Review §171][request-capture-review] records sixteen controls on two reused
+scenes, prior nodes/mapper exact, and owned repeat.
+
+Next connect the owned matched capture to the existing current-request/path
+consumer without capture re-selection. Source/clock/ray/pose/body/error/native/
+registration/ID/one-use/S1-S5/task-quality evidence remains separate; no usable
+`OK`, actuation, normal controller or trial is admitted. General arithmetic/
+identity audits and protected studies stay deferred.
+
+[request-capture-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11205,7 +11226,9 @@ the same xfail/71 warnings, all earlier nodes/mapper unchanged. Current source/
 frame/motion request recheck (§169) passes sixteen/root 2,549 plus the same xfail/
 71 warnings. Current matched request/path-margin composition (§170) passes
 sixteen/root 2,565 plus the same xfail/71 warnings, all earlier nodes/mapper exact;
-next actual C1 content/context recheck, not the old loop or a matching-hash permit;
+declared request/C1 capture-content check (§171) passes sixteen/root 2,581 plus
+the same xfail/71 warnings, prior nodes/mapper exact. Next owned-capture/current-
+request path composition, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

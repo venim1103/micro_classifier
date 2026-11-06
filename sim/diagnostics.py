@@ -4705,6 +4705,147 @@ def _probe_synthetic_c1_current_request_path(
     return result
 
 
+def _check_synthetic_c1_request_capture_content(
+    retained_request,
+    received_request,
+    capture_record,
+    *,
+    current_tick,
+    synthetic_test_only=False,
+):
+    """Check a declared fixture capture fingerprint, never source authority."""
+    if synthetic_test_only is not True:
+        raise ValueError("C1 request capture check requires synthetic_test_only=True")
+    work = {"request_binding_entries": 0, "capture_digest_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-request-capture-content/1",
+        "allowed_use": "declared_request_capture_content_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_c1_capture_record",
+        "fixture_capture_content_matched": False,
+        "fixture_permission_granted": False,
+        "guard_status": "UNKNOWN",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    work["request_binding_entries"] = 1
+    matched = _check_synthetic_c1_normal_request_binding(
+        retained_request,
+        received_request,
+        current_tick=current_tick,
+        synthetic_test_only=True,
+    )
+    result["request_binding_work"] = deepcopy(matched["work"])
+    if matched["fixture_request_matched"] is not True:
+        result["reason"] = matched["reason"]
+        return result
+    keys = {
+        "schema",
+        "allowed_use",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "config",
+        "capture_ticks",
+        "capture_poses_m_rad",
+        "tof_m",
+        "tof_valid",
+    }
+    if (
+        type(capture_record) is not dict
+        or len(capture_record) != len(keys)
+        or any(type(key) is not str for key in capture_record)
+        or set(capture_record) != keys
+    ):
+        return result
+    if (
+        type(capture_record["schema"]) is not str
+        or capture_record["schema"] != C1_SCHEMA
+        or type(capture_record["allowed_use"]) is not str
+        or capture_record["allowed_use"] != "synthetic_visibility_fixtures_only"
+        or any(
+            capture_record[flag] is not False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+            )
+        )
+    ):
+        return result
+    config_record = capture_record["config"]
+    request_config = received_request["config_record"]
+    if (
+        type(config_record) is not dict
+        or len(config_record) != len(request_config)
+        or any(type(key) is not str for key in config_record)
+        or set(config_record) != set(request_config)
+    ):
+        result["reason"] = "c1_config_request_mismatch"
+        return result
+    if any(
+        type(config_record[key]) is not type(expected) or config_record[key] != expected
+        for key, expected in request_config.items()
+    ):
+        result["reason"] = "c1_config_request_mismatch"
+        return result
+    for key, shape, dtype in (
+        ("capture_ticks", (8,), np.uint32),
+        ("capture_poses_m_rad", (8, 3), np.float64),
+        ("tof_m", (8, 8, 8), np.float32),
+        ("tof_valid", (8, 8, 8), np.bool_),
+    ):
+        value = capture_record[key]
+        if (
+            type(value) is not np.ndarray
+            or value.shape != shape
+            or value.dtype != np.dtype(dtype)
+            or not np.all(np.isfinite(value))
+        ):
+            return result
+    ticks, poses, ranges, valid = (
+        capture_record[key]
+        for key in ("capture_ticks", "capture_poses_m_rad", "tof_m", "tof_valid")
+    )
+    capture_tick = received_request["source_context"]["capture_tick"]
+    if not np.all(ticks == capture_tick):
+        result["reason"] = "request_c1_capture_context_mismatch"
+        return result
+    if (
+        (capture_tick and capture_tick * 3 // 4 == (capture_tick - 1) * 3 // 4)
+        or not np.all(poses == poses[0])
+        or np.any(valid & ((ranges <= 0) | (ranges >= request_config["max_range"])))
+        or np.any(~valid & (ranges != 0))
+    ):
+        return result
+    owned = deepcopy(capture_record)
+    work["capture_digest_entries"] = 1
+    fingerprint = _c1_source_binding_digest(owned)
+    if fingerprint != received_request["source_context"]["c1_reference_identity"]:
+        result["reason"] = "c1_capture_content_mismatch"
+        return result
+    result.update(
+        status="matched_declared_c1_capture_content_fixture",
+        reason="capture_content_matches_declared_context_source_unqualified",
+        fixture_capture_content_matched=True,
+        request_sha256=matched["request_sha256"],
+        c1_capture_sha256=fingerprint,
+        capture_record=owned,
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

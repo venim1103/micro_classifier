@@ -13185,6 +13185,97 @@ The documentation tool reported a repeated DESIGN file header and automatically
 regrouped it; all three documentation files applied and were validated afterward.
 No fixture/root rerun, data regeneration or security/environment change follows.
 
+## 171. Declared Request/C1 Capture-Content Check (2026-11-06)
+
+Checkpoint §170 committed/normally pushed as
+`ff4f2f5812b65b13dfc9291b27090ef327112a1b`; clean main/upstream 0/0. Stale
+gh/container credential-helper warnings retained; no credentials/config/security
+change or push retry. The earlier interrupted patch was verified absent at pause
+and continuation; no fixture execution occurred before this resumed increment.
+Continue the named C1 content/context prerequisite, not general identity audits,
+source qualification, full guard, actuation or study.
+
+**Pre-execution hypothesis/check.** §170 compares actual capture ticks but never
+compares the supplied C1 return/mask/pose/config content to declared C1 identity.
+The existing private typed fingerprint preserves array dtype/shape/bytes. A
+separate bounded fixture-only content checker first matches the typed request/
+nominal current tick, validates the exact ten-key producer record and its four
+fixed arrays plus literal false flags, then compares an owned record fingerprint
+to `c1_reference_identity`. For this private adapter only that declared identity
+means the complete latest capture record, not a new accepted product/source
+format or a qualified registered reference. Require exact typed capture/request
+Config values; never strip normal noise or modify the old C1 inspector. A
+one-ulp valid range change or mask+zero change must reject despite matching ticks
+and request bytes. Complete occupied-fixture content can match but always stays
+`UNKNOWN`, no permission/all seven flags false. IDs/source/clock/body/ray/error/
+native/registration/one-use/S1-S5 and task-quality evidence remain unqualified.
+
+Finite sixteen-control CPU/in-memory scope, at most four focused/failed/aborted/
+repair/style/root positions; final position reserved for required root. Reuse the
+same two static C1 records/module fixture, exactly two captures/three preparation
+motions per constructed fixture, tracked separately and shared with old root
+controls. No new Scene/study episode/source-owner/auditor/geometry/path/reference/
+rover/runtime/data/model/dependency/download/hardware. After fixture setup capture,
+inspection/path queries, source audits and controller/reset/step are forbidden.
+Per complete position max32 new checker/matcher/preparer/normal/mapper/State decode/
+Decision decode/bridge/binder/motion, max128 digest including initial capture/request
+preparation, receipt checks, owned capture digest and repeat; zero forbidden. This
+is a new local content-check ledger, not a change/renewal of any old work cap or
+unused position. Preserve source4096/motion16384/1-command/16-brake/128-chord/16-term/
+spatial ceilings, tolerances and known QDQ xfail. Bounded exact builtin shapes
+before traversal/copy/hash, unchanged typed digest and no partial capture binding
+on rejection. Matching content proves neither source authority nor permission.
+No saved logs/reports regenerated or new data persisted; unexpected failures
+retain diagnostics and do not publish success. Next sixteen focused controls.
+
+**Implementation and verification.** Added only the private capture-content
+checker and two test module nodes; all 81 prior diagnostics/314 prior test nodes
+are AST-exact/in order and entire mapper bytes unchanged. Checker does not query
+geometry or paths; occupied-fixture content can match without clearance/permission.
+
+1. Sixteen focused controls pass, 1,642 deselected, 1.51 s. Actual ledger:
+  17 wrapper/15 matcher/16 preparer/16 normal/16 mapper/16 State decode/16 Decision
+  decode/16 bridge/16 binder/16 motion/101 digest/zero forbidden. Reused fixture
+  preparation exactly two captures/three motion controls. Owned repeat counted;
+  changed/expired receipt stops before capture hashing, no opt-in/unsupported
+  target stops before matching. Valid one-ulp return/mask+zero/pose changes reject
+  solely by complete content mismatch; malformed/type/flag controls reject earlier.
+2. Zero-query import ordering/AST-preserving formatting/lint/format/whitespace
+  pass. One new import order fixed, prior nodes/mapper exact. AST syntax/editor
+  diagnostics pass, language-server definition+one test-only caller.
+3. Required root `python -m pytest -q && ruff check . && ruff format --check
+  sim/diagnostics.py tests/test_sim.py && git diff --check` passes **2,581 plus
+  known transformer QDQ xfail/71 warnings**, no skips, 60.99 s. New ledger identical
+  to focused matrix; old root controls are necessary compatibility, not standalone
+  experiment/audit renewal. No extra opt-in native/sanitizer/Arm/board/model gate.
+
+Three of four positions used; unused fourth not follow-on scope. No new failure.
+Actual cumulative **34 wrapper/30 matcher/32 preparer/32 normal/32 mapper/32 State
+decode/32 Decision decode/32 bridge/32 binder/32 motion/202 digest/zero forbidden**;
+separately four captures/six preparation motions on the same two scenes, not new
+studies or independent cohorts. Source SHA256
+`89ac27560633bb2c89905a0e54880bb2cfa9b68a24e2affe93f574ddad585dbd`;
+test SHA256 `3fc2e819bf4897f07c550a4d02abf250cb4e9c307f2183bad709d62fca38d8f7`.
+No source/test edit after root. Source/producer/clock/body/ray/error/native/
+registration/ID/one-use/S1-S5/task-quality authority remains unqualified; all seven
+flags false/UNKNOWN/no permission. No normal runtime, usable `OK`, actuation,
+study/data/model/dependency/download/hardware or generated report/cleanup.
+
+Checkpoint reassessment: capture content can now be conditionally bound to the
+declared request. Next connect its owned matched record to the existing current-
+request/path consumer without capture re-selection, retaining source/frame/motion/
+complete-history/error/profile/body gates and UNKNOWN/no permission. This remains
+a local prerequisite, not source/full-guard qualification or general audit work.
+Scoped history/references/bytes/whitespace and checkpoint commit/normal upstream
+synchronization follow, without rerunning the unchanged successful root.
+
+Scoped checks pass: exact prior REVIEW §§1-170/Sources, stable workflow and older
+task results, prior design contracts/roadmap, 687 prose references/25 inline links/
+70 local targets+anchors, editor diagnostics and root-tested source/test bytes/
+prior ASTs/unchanged mapper/five-file scope. No documentation failure or extra
+fixture/root invocation; stage only this checkpoint and normally push through the
+existing configured upstream. No job, generated artifact or cleanup pending.
+
 ## Sources
 
 Hardware and tools:

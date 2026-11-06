@@ -1782,6 +1782,253 @@ def test_synthetic_c1_current_request_path_binds_request_motion(
 
 
 @pytest.fixture(scope="module")
+def c1_request_capture_ledger(request):
+    ledger = dict.fromkeys(
+        (
+            "wrapper",
+            "matcher",
+            "prepare",
+            "normal",
+            "mapper",
+            "state_decode",
+            "decision_decode",
+            "bridge",
+            "binding",
+            "motion",
+            "digest",
+            "forbidden",
+        ),
+        0,
+    )
+    yield ledger
+    assert all(
+        value <= (128 if key == "digest" else 32) for key, value in ledger.items()
+    )
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 request-capture ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 request-capture ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_request_capture_content_rejects_substitution(
+    c1_discrete_path_fixtures, c1_request_capture_ledger, monkeypatch, case
+):
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        State,
+        Status,
+        encode_decision,
+        encode_state,
+    )
+    from sim import diagnostics, rules
+
+    ledger = c1_request_capture_ledger
+    for key, module, name in (
+        ("matcher", diagnostics, "_check_synthetic_c1_normal_request_binding"),
+        ("prepare", diagnostics, "_prepare_synthetic_c1_normal_request"),
+        ("normal", diagnostics, "_probe_synthetic_c1_normal_state_motion"),
+        ("mapper", rules, "_map_synthetic_c1_normal_command"),
+        ("state_decode", rules, "decode_state"),
+        ("decision_decode", rules, "decode_decision"),
+        ("bridge", diagnostics, "_probe_synthetic_c1_state_motion"),
+        ("binding", diagnostics, "_bind_synthetic_c1_state_intervals"),
+        ("motion", diagnostics, "_probe_synthetic_c1_discrete_motion"),
+        ("digest", diagnostics, "_c1_source_binding_digest"),
+    ):
+        original = getattr(module, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (128 if _key == "digest" else 32)
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(module, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "capture-content check must not query paths, choose geometry steering, collect or actuate"
+        )
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "inspect_synthetic_c1_history",
+        "_probe_synthetic_c1_current_request_path",
+        "_probe_synthetic_c1_command_path_enclosure",
+        "probe_synthetic_c1_questions",
+        "_audit_synthetic_c1_source_binding",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("host_action", "wire_step", "decide", "run_diagnostics"):
+        monkeypatch.setattr(rules, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    record = deepcopy(c1_discrete_path_fixtures["records"][int(case == 13)])
+    original_fingerprint = diagnostics._c1_source_binding_digest(record)
+    config = Config.from_record(record["config"])
+    state = State(
+        sequence=22,
+        timestamp_us=1100000,
+        velocity_m_s=(0.5, 0.0, 0.0),
+        goal_m=(3.0, 1.0, 0.0),
+    )
+    state_frame = encode_state(state)
+    choices = (0, 0, 1)
+    answers = tuple(
+        Answer(
+            question,
+            tuple(float(index == choice) for index in range(len(options))),
+            choice,
+        )
+        for (question, (_, options)), choice in zip(
+            RULES_QUESTIONS.items(), choices, strict=True
+        )
+    )
+    decision_frame = encode_decision(
+        Decision(sequence=22, timestamp_us=1100000, status=Status.OK, answers=answers)
+    )
+    retained = diagnostics._prepare_synthetic_c1_normal_request(
+        state,
+        state_frame,
+        decision_frame,
+        request_id="d" * 32,
+        source_context={
+            "epoch": "a" * 32,
+            "source_identity": "b" * 64,
+            "c1_reference_identity": original_fingerprint,
+            "capture_tick": 20,
+            "reference_tick": 22,
+        },
+        reference_tick=22,
+        config=config,
+        error_evidence={
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        synthetic_test_only=True,
+    )
+    assert retained["fixture_request_prepared"] is True
+    received = deepcopy(retained["request"])
+    options = {
+        "current_tick": 23 if case == 11 else 22,
+        "synthetic_test_only": case != 14,
+    }
+    visible = int(np.flatnonzero(record["tof_valid"])[0])
+    if case == 1:
+        record["tof_m"].flat[visible] = np.nextafter(
+            record["tof_m"].flat[visible], np.float32(0)
+        )
+    elif case == 2:
+        record["tof_valid"].flat[visible] = False
+        record["tof_m"].flat[visible] = 0
+    elif case == 3:
+        record["capture_poses_m_rad"][:, 0] += 0.01
+    elif case == 4:
+        record["capture_ticks"][0] = 21
+    elif case == 5:
+        record["tof_m"] = record["tof_m"].astype(np.float64)
+    elif case == 6:
+        record["free_space_qualified"] = True
+    elif case == 7:
+        del record["tof_valid"]
+    elif case == 8:
+        record["config"]["history_ticks"] = 8.0
+    elif case == 9:
+        record["capture_poses_m_rad"][0, 0] = float("nan")
+    elif case == 10:
+        received["command_words"]["target_speed_m_s"] ^= 1
+    elif case == 12:
+        record["tof_valid"] = record["tof_valid"][:, :, :-1]
+    elif case == 15:
+        options["target_speed"] = 0.4
+    saved = deepcopy((retained, received, record, options))
+
+    def probe():
+        ledger["wrapper"] += 1
+        assert ledger["wrapper"] <= 32
+        return diagnostics._check_synthetic_c1_request_capture_content(
+            retained, received, record, **options
+        )
+
+    before = dict(ledger)
+    if case in (14, 15):
+        with pytest.raises(
+            ValueError if case == 14 else TypeError,
+            match="synthetic_test_only" if case == 14 else "target_speed",
+        ):
+            probe()
+        assert (
+            ledger["matcher"] == before["matcher"]
+            and ledger["digest"] == before["digest"]
+        )
+    else:
+        result = probe()
+        assert result["fixture_capture_content_matched"] is (case in (0, 13))
+        assert (
+            result["guard_status"] == "UNKNOWN"
+            and result["fixture_permission_granted"] is False
+        )
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case in (0, 13):
+            assert result["status"] == "matched_declared_c1_capture_content_fixture"
+            assert result["request_sha256"] == retained["request_sha256"]
+            assert result["c1_capture_sha256"] == original_fingerprint
+            assert json.dumps(
+                result["capture_record"], default=json_value, sort_keys=True
+            ) == json.dumps(record, default=json_value, sort_keys=True)
+            assert result["work"] == {
+                "request_binding_entries": 1,
+                "capture_digest_entries": 1,
+            }
+            if case == 0:
+                original = deepcopy(result)
+                result["capture_record"]["tof_valid"].fill(False)
+                assert json.dumps(
+                    probe(), default=json_value, sort_keys=True
+                ) == json.dumps(original, default=json_value, sort_keys=True)
+        else:
+            assert (
+                result["status"] == "unknown"
+                and "c1_capture_sha256" not in result
+                and "capture_record" not in result
+            )
+            assert result["reason"] == (
+                "c1_capture_content_mismatch"
+                if case in (1, 2, 3)
+                else "request_c1_capture_context_mismatch"
+                if case == 4
+                else "c1_config_request_mismatch"
+                if case == 8
+                else "request_content_mismatch"
+                if case == 10
+                else "request_expired"
+                if case == 11
+                else "unsupported_c1_capture_record"
+            )
+            assert result["work"]["capture_digest_entries"] == int(case in (1, 2, 3))
+    assert (retained, received, options) == (saved[0], saved[1], saved[3])
+    assert json.dumps(record, default=json_value, sort_keys=True) == json.dumps(
+        saved[2], default=json_value, sort_keys=True
+    )
+
+
+@pytest.fixture(scope="module")
 def c1_history_registration_ledger(request):
     ledger = dict.fromkeys(("bound", "binding", "reference", "forbidden"), 0)
     yield ledger

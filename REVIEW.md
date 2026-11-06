@@ -13556,6 +13556,61 @@ unchanged mapper and five-file scope. No documentation failure or extra fixture/
 root invocation. Stage only this verified checkpoint and normally synchronize
 configured upstream without force/security/configuration changes.
 
+## 175. Persistent Continuation and Final-Answer Gate (2026-11-06)
+
+The user identified an unsolicited final handoff after checkpoint `893c4c2`,
+despite active autonomous continuation, and requested stronger instructions:
+keep working across checkpoints until an actual stop/pause/finish instruction.
+This is a workflow correction, not renewed evidence or protected-run authority.
+
+**Cause and limits.** The existing workflow already said checkpoints, commits
+and progress reports were not final-answer triggers; the response failed to
+apply that rule. The visible resumed context also contained a generated recap
+describing an earlier summary-only/no-tools request, which the assistant treated
+as current stopping intent. A recap is not a new user instruction. The old
+bounded-request paragraph and handoff paragraph did not explicitly distinguish
+a standalone request from a side request during active continuation. These are
+concrete instruction ambiguities to remove, not proof that Markdown alone can
+guarantee compliance or keep a platform turn active indefinitely.
+
+[The project workflow][continuation-workflow] now puts active continuation near
+the top and requires a final-answer gate. Continuation survives checkpoints,
+commits/pushes, progress reports, notifications, reloads and compaction. Determine
+intent from actual user instructions, recover missing current intent from
+available history rather than invent it, and do not interpret quoted stop words
+or "stop interrupting" as a pause. Side requests stay within their own scope
+without ending the existing authorized queue; explicit documentation-only,
+review-only, replacement and protected-action limits remain binding. Checkpoint
+and side-request results use commentary followed by the next concrete action.
+
+A final handoff requires an actual current user stop/end, completion of a
+standalone or explicitly replacing bounded request, genuine exhaustion of all
+useful authorized paths, or an actual higher-priority safety/platform/tool
+constraint. An isolated blocker, spent old experiment or agent-owned planning
+gap is insufficient. Do not invent work, background monitoring, idle jobs,
+scope expansion or permission merely to avoid stopping. Instructions guide
+behavior; this change does not implement a runtime enforcement hook.
+
+**Verification scope.** Instruction/document changes only; at most three scoped
+static validation attempts, including repairs. No project import, Python test
+suite, fixture query, study, compiler, model, dependency, download, hardware or
+actuation. First validation passed eleven clause-coverage checks, exact older
+task/history preservation, four existing workflow reference targets, scoped diff
+and whitespace; editor diagnostics were clear. These are static policy checks,
+not measured future agent compliance. Second scoped validation passed exact
+REVIEW §§1-174/Sources preservation, ordered §§1-175 headings, the new local
+workflow anchor, unchanged task/history and source/test bytes, two-document
+scope and whitespace; both documents had clear editor diagnostics. No validation
+failure. The successful §174 source gate was not rerun. No source/test file was
+edited, no generated artifact or job exists,
+and prior failures, budgets, evidence flags and protected boundaries remain.
+
+The original next project action remains the adopted S1/current-body/executor
+evidence-gap mapping. Complete this workflow side request and resume that queue
+without an end-of-checkpoint final answer or another continue vote.
+
+[continuation-workflow]: AGENTS.md#continuation-and-stopping
+
 ## Sources
 
 Hardware and tools:

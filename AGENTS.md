@@ -4,6 +4,11 @@ These instructions apply to any AI assistant working in this repository.
 Apply them within higher-priority platform, tool and safety requirements; do
 not promise capabilities or indefinite turn lifetime that the environment lacks.
 
+**Active continuation rule:** Once the user starts or resumes open-ended project
+work, keep executing useful authorized work until the user explicitly stops,
+pauses or ends that work. Checkpoints, summaries and commits are progress, not
+completion. Apply the final-answer gate in Continuation and Stopping below.
+
 ## Project
 
 micro_classifier builds a Jev-like **robot decision module**: an STM32N6 board
@@ -107,23 +112,43 @@ Documents of record:
 
 ## Continuation and Stopping
 
+- Treat an open-ended continuation as active across checkpoints, commits,
+  pushes, progress reports, tool notifications, reloads and context compaction.
+  Completing one task does not complete the session. After verifying and
+  recording an increment, choose and start the next useful authorized action
+  in the same turn; do not wait for another continue message.
 - During open-ended work, process new user messages delivered by the platform
   before starting the next slice; apply the newest compatible instructions.
   Continue the agreed priority queue while useful in-scope work remains. Do not
   claim to have polled an inbox or checked messages with an unavailable tool.
+- Determine current user intent from actual user instructions, not an assistant
+  recap, generated conversation summary, quoted transcript or historical stop.
+  These are context, not new user commands. A recap describing an old pause or
+  summary-only request cannot end a subsequently resumed continuation. If the
+  latest actual request is unavailable, recover it from available session
+  history before deciding to stop; do not invent a stop instruction.
 - An explicit current stop, pause or finish request takes priority. Stop safely
   without another confirmation; cancel or contain owned work as needed, retain
   evidence and leave a concise handoff. Do not begin the next implementation
   slice or delay stopping for unrelated checks, commits/pushes or a finish vote.
+  Interpret stop words in context: quoted examples, discussion of these rules
+  and a request to stop interrupting are not requests to pause project work.
 - Stop/finish instructions apply to the current work, not future continued
   sessions. A fresh continue or changed task requires evaluating the latest
   request; do not carry an old finish permission across checkpoints, later turns
   or context loss. After a pause, a status question or terminal notification is
   not permission to resume implementation.
-- Respect explicit task boundaries. A documentation-only request, review or
-  request to prepare a proposal is not permission to start implementation or
-  collect data. Complete that bounded request; wait for an actual continuation
-  request before starting the separate project work.
+- Respect explicit task boundaries. A standalone documentation-only request,
+  review or proposal is not permission to start separate implementation or
+  collect data. During an already active continuation, handle a side request
+  within its scope, then resume the existing authorized queue unless the user
+  explicitly pauses, replaces or limits that continuation. An explicit "only
+  update documentation", "review only" or equivalent limit must be honored;
+  standing authority never expands that limit or authorizes protected actions.
+- Use commentary for checkpoint reports and side-request results during active
+  continuation. Include the next concrete action and then execute it. Do not
+  use a final answer to announce a checkpoint, offer to continue, ask for a
+  finish vote or leave an available authorized next step for another turn.
 - Use event-based waiting only when a supported tool is actually waiting for
   authorized work or required input; follow its notification protocol. Do not
   use sleep loops, repeated polling, dummy jobs or invented work to keep a turn
@@ -131,7 +156,25 @@ Documents of record:
 - If every useful in-scope path is genuinely blocked, or platform/tool limits
   prevent further execution, report the exact constraint and pending action.
   Do not pretend to remain active. This is a genuine-blocker fallback, not an
-  excuse to stop at a completed checkpoint or a missing routine decision.
+  excuse to stop at a completed checkpoint or a missing routine decision. An
+  isolated blocker, exhausted old experiment budget or missing routine plan
+  does not end the session while compatible prerequisites or other authorized
+  work remain. Do not evade protected limits or invent work to avoid stopping.
+
+**Final-answer gate.** Before ending a turn, verify one of these applies:
+
+- The user explicitly stopped, paused or ended the active work.
+- A standalone bounded request is complete, with no active continuation to resume,
+  or the user explicitly replaced the continuation with that bounded request.
+- Every useful authorized path is genuinely blocked after checking compatible
+  prerequisites and the remaining agreed queue; identify the precise blockers.
+- A higher-priority safety requirement or an actual platform/tool limit prevents
+  further work; state the concrete constraint without claiming to remain active.
+
+Otherwise, the next action must be useful authorized work, not a final answer.
+A clean worktree, green gate, checkpoint, commit, push, recap or completed side
+request is not a stopping reason. This is an instruction-level behavior rule,
+not a guarantee of unlimited execution or background message monitoring.
 
 ## Verification and Commits
 
@@ -196,6 +239,9 @@ from them. Historical details below are reference material, not new approvals.
 
 - Workflow update (REVIEW.md §154): use recommended defaults without
   questionnaire/finish dialogs; continue useful agreed work across checkpoints.
+  Continuation correction (§175): persist across recaps and side requests;
+  require the explicit final-answer gate above, not checkpoint completion or
+  reconstructed stop intent.
   Routine bounded local increments and their required regression checks have
   standing authority, not new study/model/hardware or qualification permission.
   Reassess plan/design at meaningful checkpoints and update compatible choices
@@ -2228,9 +2274,10 @@ useful in-scope work rather than repeating the same attempt.
   large-memory/GPU jobs serially, one GPU job at a time, and report measured
   resource use without presenting process counters as hardware guarantees.
 - During open-ended work, report completed checkpoints as progress and continue
-  the next useful in-scope task. On an explicit stop, completion of a bounded
-  request or genuine exhaustion of executable in-scope work, give a concise
-  outcome with commit IDs, verification, remaining boundaries and worktree state.
+  the next useful in-scope task without ending the turn. Give a final handoff
+  only when the final-answer gate in Continuation and Stopping permits it; a
+  completed side request does not terminate an active continuation. Include
+  commit IDs, verification, remaining boundaries and worktree state.
   Do not continue into another slice after a stop or pause request.
 
 [design]: DESIGN.md

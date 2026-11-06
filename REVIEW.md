@@ -12814,6 +12814,107 @@ bytes/unchanged mapper/diff/whitespace. Only those files enter the verified loca
 checkpoint and normal configured-upstream push; no unchanged root rerun for docs.
 No job, artifact or cleanup pending.
 
+## 167. Conditional Normal-Request Content Preparation (2026-11-06)
+
+Checkpoint §166 was committed and normally pushed as
+`5a8f7bfeef5dbca2b7c2359e1078f9f2c376fad6`; main clean/upstream 0/0. Continue
+the exact conditional request-content prerequisite, not a guard/permit/executor
+or hardware/runtime boundary.
+
+**Pre-execution hypothesis/check.** The adopted boundary freezes decoded host
+commands with module-owned source/reference context; the host never chooses a
+capture. A private fixture preparer can derive source/motion internally, freeze
+actual host/decision frame content, exact command/fallback words, Config/source/
+motion digests, nominal application tick/one-tick hold and a separately declared
+module-context record. Existing typed digest fingerprints content only; it cannot
+attest supplied epochs/source/C1 identities, current authority or request-ID
+uniqueness. Keep those explicit unqualified statuses and all seven flags false.
+This is not the host source chooser, a unique-ID registry, full request-source
+admission or a usable response. A changed command bit must change the independently
+reconstructed typed request digest; malformed context/ticks or failed mapping/
+source motion must return unknown without partial request/digest.
+
+Finite CPU/in-memory scope: sixteen fixed controls, left/centre/right command
+requests with genuine .2/.35 source-word discrepancies, blocked/source mismatch,
+request-ID type/length, epoch/source-ID/missing-C1 context, boolean/future/stale
+capture, reference mismatch, supplied command/no opt-in and owned repeat. Local
+32/64-lowercase-hex identifier shapes and nominal tick0-85899/capture-age<=3 reuse
+existing fixture conventions, not adopted product formats, real timing or source
+qualification. Module context is supplied to this isolated fixture only, never
+selected by the normal host/runtime. At most four verification positions including
+failed/aborted entries, repair/style preparation and necessary new-source root.
+Per complete position max32 request/normal-motion/mapper/State-decode/Decision-
+decode/State-motion/binder/motion/digest entries including repeats, zero forbidden.
+No new-family independent-reference/C1/Scene/history/source-owner/auditor/rover/
+runtime/data query, capture/episode/model/dependency/download/hardware action.
+Existing arithmetic/profile/tolerance/bit/tick/chord/term and old family caps stay
+unchanged; required-root old controls are compatibility, not standalone renewal.
+
+Implemented private fixture content preparation only. No raw
+C1/private geometry/actual capture selection or permission/actuation is introduced.
+
+Position one retained: `3 failed, 13 passed, 1578 deselected` in 1.41 s. Three
+prepared-content cases reached the unchanged mapper/motion correctly, then raised
+`AttributeError`: Config has no `to_record` method. The existing frozen dataclass
+uses `asdict`/`from_record`; repair only the config snapshot/hash and test's expected
+record to `asdict`, not numerical/status/identifier/guard or work limits. Failed
+position counts: 16 request/5 normal/5 mapper/5 State/5 Decision/4 bridge/4 binder/
+3 motion/zero digest/zero forbidden. Rerun the same sixteen controls as position
+two; no refund, extra fixture or old-scope renewal.
+
+Position two: same `16 passed, 1578 deselected` in 0.34 s; 17 request/6 normal/
+6 mapper/6 State/6 Decision/5 bridge/5 binder/4 motion/16 digest/zero forbidden.
+Independent request digest/changed-command-bit and owned-repeat checks pass.
+Add only an explicit five-key length guard before context-key inspection/set
+construction, bounding rejected oversized shapes at the first check; the existing
+missing-context control discriminates this unchanged unknown path. Position three
+reruns the same controls after this local raw-shape guard, then zero-query style
+preparation; position four is the required root. No extra fixture/cap or threshold.
+
+**Completed verification.** Position three passed the same sixteen controls in
+0.30 s, with the same 17/6/6/6/6/5/5/4/16/zero entries. Its zero-query formatter/
+narrow lint/format/whitespace preparation passes with complete AST preservation.
+Position four: `/opt/venv/bin/python -m pytest -q && ruff check . && ruff format
+--check sim/diagnostics.py tests/test_sim.py && git diff --check` passes **2,517**
+tests, one known transformer QDQ xfail, 71 existing warnings, no skips, 58.69 s.
+All four positions spent; no fifth or refunded failures/old-family scope.
+
+Root request matrix has 17 request/6 normal/6 mapper/6 State/6 Decision/5 bridge/
+5 binder/4 motion/16 digest/zero forbidden entries. New-family totals including
+the failed first position: **67 request/23 normal/23 mapper/23 State/23 Decision/
+19 bridge/19 binder/15 motion/48 digest/zero forbidden**. No new-family reference/
+C1/Scene/history/source-owner/auditor/rover/runtime/data query, capture or episode.
+Required-root old fixtures are unchanged compatibility controls, not standalone
+renewal or qualification. All limits/tolerances and earlier failures remain.
+
+All 77 prior diagnostics/306 prior test AST nodes remain exact/in order, one
+source/two test additions; entire mapper source unchanged. Syntax/editor/lint/
+format/whitespace and one test-only language-server reference pass. Independent
+typed request digest/changed-word bit, owned-repeat and input preservation pass;
+Config record/hash share one fresh `asdict` snapshot. Root-tested SHA-256:
+
+| File | SHA-256 |
+| --- | --- |
+| `sim/diagnostics.py` | `695591ad21129f4a944e6fe93e3a568deb336c782c0b42bfb80204548ad6e714` |
+| `tests/test_sim.py` | `58071b918a2e7b557328cb4a5546d0f13b7417b992100a4f2fc2b65aa886d0a1` |
+
+Declared module context and request-ID uniqueness remain unqualified, all seven
+flags false; no source admission, guard response, full path/expiry/one-use executor,
+usable C1 `OK`, registry, permit or actuation. No accepted default/profile/threshold/
+target/wire/C/native change, dependency/download/environment/model/hardware action
+or new study/task data. No additional opt-in sanitizer/Arm gate required or run.
+Host fixtures/digests are not source/numerical/physical/task-quality qualification
+or linked firmware. SC18/general audits/D4/study/board and all protected gates stay.
+
+Next exact prepared/received request matching and nominal-expiry rejection only,
+with unknown for unqualified source/full-guard evidence, never execution from a
+matching digest. Scoped checks pass for exact prior REVIEW §§1-166/Sources,
+stable workflow/older task results, prior design/roadmap, 683 prose references/
+25 inline links/70 local targets+anchors, five-file scope, root-tested bytes/
+unchanged mapper/diff/whitespace. Stage only these checkpoint files and normally
+push through the configured upstream; no unchanged root rerun for docs.
+No job, artifact or cleanup pending.
+
 ## Sources
 
 Hardware and tools:

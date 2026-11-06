@@ -4003,6 +4003,158 @@ def _probe_synthetic_c1_normal_state_motion(
     return result
 
 
+def _prepare_synthetic_c1_normal_request(
+    source_state,
+    state_frame,
+    decision_frame,
+    *,
+    request_id,
+    source_context,
+    reference_tick,
+    config=None,
+    settings=None,
+    error_evidence=None,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    source_max_integer_bits=4096,
+    motion_max_integer_bits=16384,
+    synthetic_test_only=False,
+):
+    """Prepare declared module-context request content, never a usable permit."""
+    from dataclasses import asdict
+
+    if synthetic_test_only is not True:
+        raise ValueError("normal request requires synthetic_test_only=True")
+    work = {"normal_motion_entries": 0, "digest_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-normal-request/1",
+        "allowed_use": "conditional_declared_request_content_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_request_identity",
+        "fixture_request_prepared": False,
+        "source_context_status": "declared_module_fixture_only",
+        "request_id_uniqueness_qualified": False,
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    if (
+        type(request_id) is not str
+        or len(request_id) != 32
+        or any(character not in "0123456789abcdef" for character in request_id)
+    ):
+        return result
+    context_keys = {
+        "epoch",
+        "source_identity",
+        "c1_reference_identity",
+        "capture_tick",
+        "reference_tick",
+    }
+    if (
+        type(source_context) is not dict
+        or len(source_context) != len(context_keys)
+        or any(type(key) is not str for key in source_context)
+        or set(source_context) != context_keys
+    ):
+        result["reason"] = "unsupported_declared_source_context"
+        return result
+    for key, length in (
+        ("epoch", 32),
+        ("source_identity", 64),
+        ("c1_reference_identity", 64),
+    ):
+        value = source_context[key]
+        if (
+            type(value) is not str
+            or len(value) != length
+            or any(character not in "0123456789abcdef" for character in value)
+        ):
+            result["reason"] = "unsupported_declared_source_context"
+            return result
+    if (
+        type(reference_tick) is not int
+        or not 0 <= reference_tick <= 85899
+        or type(source_context["reference_tick"]) is not int
+        or source_context["reference_tick"] != reference_tick
+    ):
+        result["reason"] = "request_reference_binding_mismatch"
+        return result
+    capture_tick = source_context["capture_tick"]
+    if (
+        type(capture_tick) is not int
+        or not 0 <= capture_tick <= reference_tick
+        or reference_tick - capture_tick > 3
+    ):
+        result["reason"] = "unsupported_declared_capture_tick"
+        return result
+    config = Config() if config is None else config
+    work["normal_motion_entries"] = 1
+    normal_motion = _probe_synthetic_c1_normal_state_motion(
+        source_state,
+        state_frame,
+        decision_frame,
+        reference_tick=reference_tick,
+        config=config,
+        settings=settings,
+        error_evidence=error_evidence,
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        source_max_integer_bits=source_max_integer_bits,
+        motion_max_integer_bits=motion_max_integer_bits,
+        synthetic_test_only=True,
+    )
+    result["normal_motion_work"] = deepcopy(normal_motion["work"])
+    if normal_motion["fixture_normal_motion_enclosed"] is not True:
+        result["reason"] = normal_motion["reason"]
+        return result
+
+    def digest(value):
+        work["digest_entries"] += 1
+        return _c1_source_binding_digest(value)
+
+    config_record = asdict(config)
+    record = {
+        "request_id": request_id,
+        "phase": "NORMAL",
+        "application_tick": reference_tick,
+        "hold_ticks": 1,
+        "command_words": deepcopy(normal_motion["requested_command_words"]),
+        "fallback": {
+            "target_speed_word": 0,
+            "turn_rate_word": 0,
+            "braking_tick_limit": max_braking_ticks,
+        },
+        "state_frame_hex": normal_motion["mapped_command"]["state_frame_hex"],
+        "decision_frame_hex": normal_motion["mapped_command"]["decision_frame_hex"],
+        "source_context": deepcopy(source_context),
+        "config_record": config_record,
+        "config_sha256": digest(config_record),
+        "source_state_sha256": digest(asdict(source_state)),
+        "motion_sha256": digest(normal_motion["state_motion"]["motion"]),
+    }
+    result.update(
+        status="prepared_declared_normal_request_fixture",
+        reason="bound_command_content_with_unqualified_module_context",
+        fixture_request_prepared=True,
+        request=record,
+        request_sha256=digest(record),
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

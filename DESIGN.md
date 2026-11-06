@@ -2542,13 +2542,35 @@ records 24 fixed frame controls, two genuine speed discrepancies and unchanged
 independent rational endpoint references. No new Scene/C1/history/geometry query,
 normal controller, wire or data/physical behavior change is introduced.
 
-Next prepare exact conditional request content/identity from these bound command
-words and frame/profile/reference context, never a caller-supplied motion or a
-permission shortcut. Complete path margins, source authority/error, request
-receipt/expiry/one-use executor, S1-S5 and task quality remain separate gates;
-no usable normal `OK`, actuation or trial is admitted.
-
 [normal-motion-review]: REVIEW.md
+
+##### Conditional Normal-Request Content (2026-11-06)
+
+The private `_prepare_synthetic_c1_normal_request` derives bound normal motion
+internally and owns exact command/fallback words, original-State and motion
+fingerprints, actual host/decision frame content, a frozen dataclass Config record,
+nominal application tick and one-tick hold. Separate bounded module-context fixture
+identifiers/ticks are frozen as declarations, not chosen by a normal host loop or
+attested by their hashes. Local identifier/tick/age shapes reuse fixture
+conventions, not adopted product formats, real clocks or sensor/source evidence.
+
+Malformed identity/context, reference mismatch or failed mapping/source/motion
+returns unknown without partial request/digest. The existing typed fingerprint
+preserves content types, not source truth/authority or uniqueness. Every request
+reports `declared_module_fixture_only`, request-ID uniqueness unqualified and all
+seven qualification/admission/training flags false. No guard response, registry,
+executor, raw C1 access, capture selection, wire/runtime integration or physical
+behavior is provided. [Review §167][normal-request-review] records sixteen controls,
+independent typed-digest/changed-command-bit checks, owned repeat and the retained
+Config serialization failure/repaired dataclass snapshot.
+
+Next isolate exact prepared/received request-content matching and nominal-expiry
+rejection, retaining unknown for unqualified source/full-guard evidence and never
+admitting execution from a matching digest. Complete path margins, source error/
+authority, one-use executor, S1-S5 and task quality stay separate; no usable `OK`,
+actuation or trial is admitted.
+
+[normal-request-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11113,8 +11135,10 @@ composition (§164) now passes sixteen controls/root 2,453 plus the same xfail/7
 warnings, all earlier nodes exact. Isolated normal-command mapping (§165) passes
 24 controls/root 2,477 plus the same xfail/71 warnings. The derived-command/source-
 motion join (§166) passes 24 controls/root 2,501 plus the same xfail/71 warnings;
-all prior nodes and mapper bytes unchanged. Next exact conditional request content/
-identity from the bound words/frames/profile, not the old loop or a permit;
+all prior nodes and mapper bytes unchanged. Conditional normal-request content
+(§167) passes sixteen controls/root 2,517 plus the same xfail/71 warnings; all prior
+nodes exact, identifiers/source/uniqueness still unqualified. Next exact request
+matching/nominal-expiry rejection, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

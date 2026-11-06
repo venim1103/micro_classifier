@@ -1,6 +1,8 @@
 # Project Agent Workflow
 
 These instructions apply to any AI assistant working in this repository.
+Apply them within higher-priority platform, tool and safety requirements; do
+not promise capabilities or indefinite turn lifetime that the environment lacks.
 
 ## Project
 
@@ -34,6 +36,8 @@ Documents of record:
   existing caches and environments; do not duplicate downloads or checkouts.
 - Distinguish proposed, approved, implemented, tested, integrated and measured
   work. A historical approval or completed bounded run is not renewed permission.
+  Apply the current standing authority to new routine local work; do not treat
+  older per-checkpoint approval wording as a reason to ask again or stop.
 
 ## Documentation Audience
 
@@ -53,37 +57,99 @@ Documents of record:
 
 ## Work Independently
 
-- The user prefers autonomous implementation within the agreed scope. Make
-  routine implementation, regression-test, formatting and local verification
-  decisions without asking for permission at every step.
+- The user delegates decisions within the agreed project scope. Choose the
+  recommended default you would otherwise offer, record material assumptions
+  and rationale, and proceed without asking for a decision. Prefer the smallest
+  reversible option consistent with accepted requirements, evidence and safety.
+- Do not invoke `vscode_askQuestions` or equivalent agent-controlled
+  questionnaire/choice dialogs. Do not ask for routine approval, a next-task
+  choice or a finish/continue vote. Missing routine test approval is not a
+  blocker under the standing authority below.
+- Own the planning as well as the execution: investigate the controlling code
+  and evidence, choose the most suitable in-scope approach, record a finite
+  scope and test/resource budget, then implement, verify, checkpoint and take
+  the next useful step. A missing routine plan, prototype scope or test budget
+  is work to complete independently, not a user-approval blocker. Do not end at
+  an approval proposal when the implementation itself is already delegated.
+- Use your best engineering judgment, current verified evidence and the agreed
+  goals to keep moving. At material checkpoints, new evidence or stale blockers,
+  briefly reassess the plan, design and priority queue; update compatible choices
+  and rationale independently. Reviews are part of implementation, not new
+  permission gates, final-answer triggers or a reason to replace progress with
+  repeated audits. Record design rationale in [DESIGN.md][design] and changing
+  evidence/status in [REVIEW.md][review]. Keep deferred general audits deferred
+  unless the user changes that priority.
+- The user will test the autonomous workflow and course-correct periodically.
+  Until new direction arrives, continue useful agreed work using that judgment;
+  do not wait for a review appointment, routine approval or another continue
+  message after each checkpoint. Apply a delivered course correction promptly
+  while retaining compatible requirements and safety/evidence constraints.
 - Work through the first unblocked task, finish its exit condition, verify it,
-  record a useful checkpoint, commit locally and continue with the next approved
-  task. A progress report or completed commit is not itself a reason to stop.
-- If implementation needs a product decision, finish the already-authorized
-  prerequisites first. Within an approved design-only scope, prepare a concrete
-  candidate, tradeoffs, assumptions, proposed default and acceptance checks for
-  review. Do not stop at a generic "design review needed" when that proposal is
-  still authorized work. Preparing a proposal does not authorize adopting it,
-  changing the runtime or collecting data.
+  record a useful checkpoint, commit locally and continue with the next useful
+  in-scope task. A checkpoint, commit or progress report is not itself a reason
+  to issue a final answer during an open-ended implementation session.
+- Resolve ordinary implementation and compatible design choices independently.
+  If a choice would cross a protected boundary below, retain the accepted state,
+  prepare the concrete candidate, tradeoffs, recommended default and acceptance
+  checks, and continue authorized prerequisites or another useful task. Do not
+  turn a missing fact into an assumption of qualification or safety.
 - Keep edits small and local. Form a concrete, falsifiable hypothesis from the
   owning code and a nearby test; make the smallest useful edit and immediately
   run a focused check before expanding scope. Reuse existing tests/helpers and
   avoid unrelated cleanup, peripheral tooling or repeated audits merely to fill
   time while the critical path is blocked.
-- Mark a blocked task with the precise missing decision/tool/input, then continue
-  with other genuinely unblocked work. When only approval-blocked work remains,
-  ask a small, batched question with a recommendation instead of inventing scope.
+- Mark an isolated blocker with the precise missing evidence, authorization,
+  tool or input and the conservative default, then continue other genuinely
+  unblocked work. Diagnose tool failures and use available supported alternatives;
+  neither a tool-selection problem nor one blocked task ends the whole session.
 - Give concise progress updates: what changed, what was verified and what
   remains. Do not spawn subagents unless the user explicitly requests delegation.
-- Respect requests to pause, stop or finish for the day. A terminal notification,
-  status question or documentation-only request does not authorize resuming
-  paused implementation or starting a different pilot task.
+
+## Continuation and Stopping
+
+- During open-ended work, process new user messages delivered by the platform
+  before starting the next slice; apply the newest compatible instructions.
+  Continue the agreed priority queue while useful in-scope work remains. Do not
+  claim to have polled an inbox or checked messages with an unavailable tool.
+- An explicit current stop, pause or finish request takes priority. Stop safely
+  without another confirmation; cancel or contain owned work as needed, retain
+  evidence and leave a concise handoff. Do not begin the next implementation
+  slice or delay stopping for unrelated checks, commits/pushes or a finish vote.
+- Stop/finish instructions apply to the current work, not future continued
+  sessions. A fresh continue or changed task requires evaluating the latest
+  request; do not carry an old finish permission across checkpoints, later turns
+  or context loss. After a pause, a status question or terminal notification is
+  not permission to resume implementation.
+- Respect explicit task boundaries. A documentation-only request, review or
+  request to prepare a proposal is not permission to start implementation or
+  collect data. Complete that bounded request; wait for an actual continuation
+  request before starting the separate project work.
+- Use event-based waiting only when a supported tool is actually waiting for
+  authorized work or required input; follow its notification protocol. Do not
+  use sleep loops, repeated polling, dummy jobs or invented work to keep a turn
+  alive. Instructions alone cannot provide background message monitoring.
+- If every useful in-scope path is genuinely blocked, or platform/tool limits
+  prevent further execution, report the exact constraint and pending action.
+  Do not pretend to remain active. This is a genuine-blocker fallback, not an
+  excuse to stop at a completed checkpoint or a missing routine decision.
 
 ## Verification and Commits
 
 - Prefer bounded synthetic fixtures for routine arithmetic, codec and integration
   checks. Default tests must need neither downloads nor a GPU and must not
   implicitly start model inference, task-data collection or training.
+- Required focused checks and regression gates for a meaningful new in-scope
+  source change have standing authorization; no per-checkpoint approval dialog
+  or separate routine regression renewal is needed. Before execution, record a
+  finite scope, fixture/query counts, attempt/resource caps and failure/cleanup
+  plan proportionate to the change. Count failed and aborted attempts as well.
+  Keep existing tolerances, hard work limits and per-family controls unchanged.
+- Old spent experiment ledgers remain historical and are not refunded. Existing
+  fixtures may run as unchanged controls in the required regression gate for a
+  new source change; this does not authorize standalone old experiments, extra
+  study runs or deferred audits. A substantive repair permits another necessary
+  check within the recorded scope. A hard-cap increase or protected experiment
+  still needs explicit authority; do not manufacture a new scope to evade it.
 - After a substantive edit, run the cheapest behavior-scoped check first. Before
   each source checkpoint commit, run focused checks for the changed behavior and
   the default gate from the repository root:
@@ -106,18 +172,39 @@ python -m pytest -q && ruff check . && git diff --check
 - Do not rerun an unchanged successful gate merely for reassurance. For
   documentation/instruction-only changes, validate scoped content, references,
   local targets and whitespace; state that the code suite was not rerun.
-- Scoped local checkpoint commits are authorized. Commit meaningful tested
-  increments periodically, not every probe and not only at the end of a large
-  task. Review the diff and stage only files belonging to that checkpoint.
+- Scoped checkpoint commits and periodic normal pushes are authorized. Commit
+  meaningful verified increments, not every probe and not only at the end of a
+  large task. Review the diff and stage only files belonging to that checkpoint;
+  never include or discard unrelated user work.
+- Keep the remote reasonably synchronized by pushing verified checkpoints
+  periodically through the current branch's configured upstream, without an
+  approval prompt. Check the worktree, branch and tracking state first. If the
+  remote advanced, fetch and reconcile conservatively without discarding either
+  history; validate affected work before a normal push. Do not force-push,
+  silently change remotes or alter credentials/security settings to make it work.
+- If synchronization is blocked, retain the local commits, record the precise
+  cause/pending action and continue other useful work. Diagnose before retrying;
+  do not invent credentials or repeatedly retry an unchanged failed push.
 - Use Conventional Commit subjects (`type(scope): imperative summary`, with scope
-  optional) and a real bullet body. Do not push, create branches or rewrite
-  history unless explicitly requested. Never revert another person's changes.
+  optional) and a real bullet body. Branch creation, force-pushes and history
+  rewriting still need explicit direction. Never revert another person's changes.
 
 ## Current State (2026-11-06)
 
 Keep this section and the Task List concise and current; a new session resumes
 from them. Historical details below are reference material, not new approvals.
 
+- Workflow update (REVIEW.md §154): use recommended defaults without
+  questionnaire/finish dialogs; continue useful agreed work across checkpoints.
+  Routine bounded local increments and their required regression checks have
+  standing authority, not new study/model/hardware or qualification permission.
+  Reassess plan/design at meaningful checkpoints and update compatible choices
+  independently; later user tests provide course corrections, not routine gates.
+  Periodic verified checkpoint commits and normal upstream pushes are delegated
+  as well; retain local progress and diagnose failures without a force-push.
+  Current request updates documentation only; project execution resumes on a
+  later continuation request. Source evidence and completed-run ledgers below
+  remain unchanged.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
   Private fixture adapter rejects changed decoded source values and emits only
@@ -143,9 +230,10 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-153 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-154 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
-  autonomous implementation and focused local commits, not pushing.
+  autonomous implementation, required local verification and periodic verified
+  checkpoint commits/normal pushes, with protected evidence/resource limits intact.
 - Architectural review assessed (REVIEW.md §148 / DESIGN.md §12): supported
   queue prioritizes sensor response/coverage, gated
   caller scratch/target optimization and deferred exact prompt improvements.
@@ -155,7 +243,8 @@ from them. Historical details below are reference material, not new approvals.
   Existing row dedup and native double/hard-float support are recorded; blanket
   lossless-mm, 70%-saving, guaranteed cone detection, fp32-only and <128-byte
   results are not adopted.
-  No source/run budget or qualification is renewed by this documentation work.
+  No study/model/hardware run budget or qualification is renewed by this
+  documentation work.
 - The active pilot is rules-first: `path_blocked`, `clear_sector`, `speed_tier`.
   `mode` is absent from the active catalogue and stays unlabeled. Learned
   prediction/camera questions and distillation are deferred.
@@ -1212,8 +1301,9 @@ from them. Historical details below are reference material, not new approvals.
 ## Task List
 
 Work top to bottom. When a task meets its exit condition, mark it `[x]` and add
-a one-line result. Mark a task `[blocked: reason]` while it waits on the user or
-on missing tools, and continue with the next unblocked task.
+a one-line result. Mark a task `[blocked: reason]` for missing actual evidence,
+protected authority, tools or inputs, not routine agent-owned planning/testing.
+Continue compatible local prerequisites or the next unblocked task independently.
 
 Current checkpoint: [DESIGN.md][design] §7/12 / [REVIEW.md][review] §146 rejection
 increment complete; §152 requirements-only source/startup/command adoption.
@@ -1227,14 +1317,17 @@ remain separate gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
 The approved 24-case/eight-scene/48-coordinator/four-position verification scope
 is spent (actual two reused scenes; 48 adapter/32 relative/10 coordinator per full
-matrix). No fifth invocation or separate command-guard budget follows. D4's
+matrix). No fifth old invocation or borrowed command-guard budget follows. D4's
 32-episode prospective cohort/criteria/resource scope remains separate/unapproved.
 No source qualification, normal runtime/profile or target change follows.
 Validated improvement queue: [DESIGN.md][design] §12 / [REVIEW.md][review] §148;
 I2 public-doc clarity complete (§150). Prioritize sensor/coverage admission. Scratch/
 target optimization follows actual deployment gates, prompt work a justified
-teacher question and approved assets/use. Queue acceptance is not execution
-approval and does not qualify the source or authorize follow-on guard work.
+teacher question and approved assets/use. The standing workflow delegates
+compatible new local prerequisites and their necessary tests; independently
+record their finite scope and proceed, without another approval exchange.
+Neither queue acceptance nor agent defaults qualify the source, satisfy S1-S5,
+authorize protected experiments or admit a usable command guard.
 ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
@@ -1839,13 +1932,25 @@ No job/cleanup pending; original numbered task results below remain historical.
 
 ## Autonomy and Escalation
 
-The autonomous workflow above does not waive these approval boundaries. Ask
-first, batching related decisions and proposing a default, for:
+**Standing authority.** During project continuation, independently scope and
+complete reversible local implementation, compatible design choices, bounded
+synthetic unit fixtures, required focused/regression tests, documentation and
+checkpoint commits/periodic normal upstream pushes that advance the agreed plan.
+Record the chosen default and evidence. This supersedes older requirements for
+repeated routine prototype/test-budget approval, not the historical results or
+protected limits.
+Do not request approval to exercise this authority. Investigate uncertainty and
+make the most suitable compatible decision yourself; a checkpoint's "next scope
+needs approval" wording does not create a new gate for routine delegated work.
 
-- Product decisions: requirements, M0 items, metric thresholds, safety
-  behaviour, and changes to accepted decisions in DESIGN.md or to a frozen
-  interface contract. Draft alternatives and acceptance checks first when that
-  preparation is already within scope; do not silently adopt the proposal.
+**Protected boundaries.** Where fresh explicit authorization is absent, choose
+not to take the protected action; record the reason and recommended next action
+without an approval questionnaire, and continue other useful in-scope work:
+
+- Changes to accepted product requirements, question meanings, metric or
+  safety thresholds, frozen interface contracts or physical safety behavior.
+  A compatible implementation choice is delegated; a new product/safety
+  requirement is not silently adopted by choosing a convenient default.
 - New study episodes, task labels/imports, dataset/cohort/split acceptance,
   teacher labeling, training, outcome-driven tuning, or uncertainty/risk-policy
   adoption not covered by a current explicit authorization. Exhausted bounded
@@ -1855,17 +1960,23 @@ first, batching related decisions and proposing a default, for:
   or upgraded dependencies; changes to `.devcontainer`.
 - Downloads other than approved model revisions, and any download that would
   leave less than about 20 GB of free disk space.
-- Deleting files or data you did not create, pushing or rewriting git history,
-  and anything involving accounts, licences, payments, or contacting people.
+- Deleting files or data you did not create, force-pushing/rewriting git history,
+  creating branches/changing remotes, and external account setup, licences,
+  payments or contacting people. Normal checkpoint pushes using the existing
+  configured upstream are covered by the standing authority above.
 - Hardware access/integration or privileged/host-level changes outside the
   agreed scope. Do not alter clocks, networking, TLS/security or privilege
   settings as a testing workaround.
 
-Prepare authorized prerequisites before asking. Explain the precise action,
-expected evidence, resource budget and cleanup plan where relevant; never ask
-for passwords, tokens or other secrets. Do not re-ask settled decisions without
-new evidence or a new claim/domain. After three failed approaches to the same
-problem, record what was tried and the blocker, then move to other approved work.
+Never convert autonomy into evidence: source qualification, numerical proof,
+task quality and physical clearance still require their actual acceptance
+evidence; hashes, passing fixtures and agent defaults are not substitutes.
+Prepare authorized prerequisites and record the precise protected action,
+expected evidence, resource budget and cleanup plan for a future user directive.
+Never request passwords, tokens or other secrets. Do not reopen settled choices
+without new evidence or a changed claim/domain. After three failed approaches
+to the same problem, retain the failures, mark the blocker and switch to other
+useful in-scope work rather than repeating the same attempt.
 
 ## Hardware
 
@@ -1922,8 +2033,9 @@ problem, record what was tried and the blocker, then move to other approved work
 - Third-party model code: pin the full revision and read the code before running
   it. Running a release needs the user's approval for that exact revision;
   record approvals in Current State.
-- Dependencies: ask first, add them to `.devcontainer/requirements.in`, and
-  regenerate both hash locks with the commands in
+- Dependencies: without explicit authorization, keep the current environment
+  and use installed tools. For an authorized dependency change, update
+  `.devcontainer/requirements.in` and regenerate both hash locks with the commands in
   [.devcontainer/README.md](.devcontainer/README.md). Never disable TLS
   verification or `--require-hashes`.
 - Keep weights, datasets, caches, and ST tools out of git; add ignore rules when
@@ -1963,10 +2075,11 @@ problem, record what was tried and the blocker, then move to other approved work
 - Keep raw logs for long-running authorized jobs in ignored directories. Run
   large-memory/GPU jobs serially, one GPU job at a time, and report measured
   resource use without presenting process counters as hardware guarantees.
-- When done or genuinely blocked, report the outcome, commit IDs, verification,
-  remaining boundaries and worktree state. Do not end an otherwise unblocked
-  implementation task merely by proposing its next routine step, and do not
-  continue into the next implementation slice after a stop or pause request.
+- During open-ended work, report completed checkpoints as progress and continue
+  the next useful in-scope task. On an explicit stop, completion of a bounded
+  request or genuine exhaustion of executable in-scope work, give a concise
+  outcome with commit IDs, verification, remaining boundaries and worktree state.
+  Do not continue into another slice after a stop or pause request.
 
 [design]: DESIGN.md
 [review]: REVIEW.md

@@ -11500,6 +11500,119 @@ budgets remain spent. ST/tool/board readiness remains parallel user-side work.
 [discrete-motion-source]: sim/diagnostics.py
 [discrete-motion-tests]: tests/test_sim.py
 
+## 154. Default-Driven Autonomy Workflow (2026-11-06)
+
+The user requested adapting another project's agent workflow: choose the
+recommended default instead of decision dialogs, continue independently across
+checkpoints until told to stop/pause, handle incoming instructions, and provide
+a concise final handoff when stopping. This request is **documentation-only**;
+the user will test the behavior later. It does not resume a pilot, spend a
+fixture position or start a source/model/data/hardware run. The worktree was
+clean and synchronized at `72fae4f` after the user's push.
+
+The user clarified during this update that interruptions must stop and no
+routine approval is needed: analyze the available evidence in detail, choose
+the most suitable approach independently, and execute it. Defining the next
+routine prototype scope, plan or test budget is agent-owned work, not a reason
+to present another decision dialog or finish at an approval proposal.
+
+The user further clarified that plan/design reviews happen periodically within
+autonomous work, with occasional user tests and course corrections. Use the
+best available engineering knowledge and verified evidence to keep useful
+agreed work moving until new direction arrives. Reassess priorities/compatible
+design choices at material checkpoints or new evidence, record the rationale
+and act; do not wait for a review meeting, another continue vote or routine
+approval. This is not reactivation of deferred general audits or replacement
+of evidence with confidence in an agent's judgment.
+
+The user additionally requested periodic commits **and pushes** to keep the
+repository synchronized. Verified checkpoint commits and normal pushes through
+the existing configured upstream now have standing authority; this explicitly
+supersedes the former active "do not push" rule. Preserve unrelated work and
+both histories when reconciling remote changes. No force-push, branch/remote
+reconfiguration, history rewrite or credential/security workaround is implied.
+If a push is blocked, retain local commits, diagnose and record the cause, then
+continue other useful work instead of requesting another routine approval.
+
+**Adopted workflow.** [The repository instructions][autonomy-workflow] now
+delegate compatible local implementation/design choices and ordinary bounded
+synthetic fixtures, required regression checks, documentation, checkpoint commits
+and periodic normal upstream pushes.
+Choose and record the recommended conservative default without
+`vscode_askQuestions`, equivalent questionnaire dialogs, routine approval
+requests or finish/continue votes. A completed checkpoint/commit, isolated
+blocker, missing routine test approval or recoverable tool-selection failure
+is not an open-ended session's finish condition; continue useful agreed work.
+
+Required regression gates for meaningful new source changes have standing
+authorization. Record finite fixture/query/attempt/resource limits and failure/
+cleanup handling before execution; retain failures and hard caps. Old spent
+ledgers remain historical. Unchanged old fixtures may run as compatibility
+controls in a necessary new-source gate, not as renewed standalone experiments,
+new study episodes or reactivated deferred audits. A substantive repair can
+receive its necessary checks within the recorded scope without another routine
+approval exchange. No successful unchanged gate should be rerun for reassurance.
+The active task handoff now applies this standing authority explicitly; old
+"next scope needs approval" language cannot reinstate routine approval gates.
+Blocked admission/source evidence does not prohibit compatible local prerequisites.
+
+**Conservative exceptions.** No new accepted product/safety/threshold/frozen
+contract changes, source or numerical qualification claims, task-data/cohort/
+split acceptance, model experiments, dependency/download, external account/
+licence/payment/contact, destructive operation, force-push/history rewrite or
+hardware/privileged action is inferred from this workflow. With no explicit
+authority/evidence, retain the existing safe state and document the precise
+missing prerequisite/recommended action without a questionnaire. Continue
+other useful in-scope work. Real evidence gates are not agent preference votes.
+
+**Stopping and platform limits.** Process new messages when delivered by the
+platform before the next slice; do not claim an unavailable inbox poll. Current
+stop/pause/finish requests take priority without a confirmation step, and
+stale finish permission cannot be carried into later continued work. A bounded
+documentation/review/proposal request remains bounded; it is not permission to
+start implementation. Use supported event notifications only for actual
+authorized work/input waits. Do not create sleep/poll loops, dummy jobs or
+unrelated work to keep the turn open. Instruction text cannot guarantee an
+indefinite turn or background message monitoring; if every useful authorized
+path is genuinely blocked or execution is unavailable, state that fact and
+the pending action instead of pretending to remain active. Higher-priority
+platform/tool/safety requirements still apply.
+
+**Verification and retained evidence.** The first focused policy check passed:
+delegated defaults/no questionnaires, useful continuation, immediate stop,
+platform-limit handling, standing routine test authority, protected actions and
+hard/evidence limits. Exact two-file scope, ordered sections 1-154, unchanged
+prior REVIEW/Sources, historical agent/task records, hardware/teacher rules,
+default gate and whitespace checks passed; both documents had clean editor
+diagnostics. An interrupted cleanup patch had no recorded outcome; the actual
+text/worktree was checked before applying the cleanup and clarified handoff.
+The clarified independent-planning/active-handoff and periodic-review/course-
+adjustment checks pass, with no routine approval/continue/review-meeting gate.
+The later validation/diff batch also had no recorded outcome; the worktree was
+verified before continuing, and the updated policy checks were executed.
+Periodic verified commits/normal pushes, existing-upstream synchronization,
+history/credential/unrelated-work safeguards and stop priority pass; obsolete
+active no-push clauses are removed. The final link check passed 402 prose
+references, eight inline links and 64 local targets/Markdown anchors. Scoped
+diffs were reviewed; staged bytes/whitespace are checked before the commit.
+The code suite is not rerun. The user's source/test files, DESIGN/README,
+historical ledgers, fifteen undecided verdicts/five false flags and the §153
+result (2,285 passes, known QDQ xfail/71 warnings) remain unchanged. No project import,
+fixture, model, collection, training, dependency, download, environment or
+hardware operation is part of this update. A normal documentation checkpoint
+commit/push is authorized by the user's added instruction; verify and report
+the actual synchronization outcome rather than assuming success.
+
+**Next session.** On a later project-continuation request, use the new standing
+workflow to select the next bounded local step toward source-error/path-aware
+coverage for the actual-command guard. Preserve the plan's priority and all
+actual evidence/protected-resource limits; do not return to a general audit or
+ask for routine prototype/regression/finish choices.
+Keep verified local/remote progress synchronized with periodic normal pushes;
+a checkpoint/commit/push is progress, not an open-ended session's finish gate.
+
+[autonomy-workflow]: AGENTS.md
+
 ## Sources
 
 Hardware and tools:

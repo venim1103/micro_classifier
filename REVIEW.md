@@ -12227,6 +12227,114 @@ deferred general audits and protected evidence/resource gates remain unchanged.
 [path-point-error-source]: sim/diagnostics.py
 [path-point-error-controls]: tests/test_sim.py
 
+## 161. Current-Frame Command and Point-Margin Composition (2026-11-06)
+
+Checkpoint §160 was committed and normally pushed as
+`56117e333bbee2cd8bb1d7e37b3a8a8d34094b69`; main was clean/synchronized.
+Continue its named actual-frame composition under standing authority.
+
+**Pre-execution hypothesis and finite scope.** Both consumers retain complete
+word bindings. One private composition can select current state/frame only from
+the final entry of its owned complete history, generate the requested command/
+braking internally through the unchanged motion bridge, then pass that generated
+path and the same point evidence to the unchanged wall/cell adapter. The final
+registered binding must equal the current motion binding. No arbitrary motion
+input, admitted permit, source/clock/native/error-policy qualification or normal
+runtime change. Explicit fixture motion/profile/remaining-error, prefix/history,
+body/domain and nominal stored-tick premises remain required; all flags false.
+
+Before execution: sixteen fixed synthetic controls, four verification positions
+including probes, failed/aborted attempts, repairs and the required new-source
+root. Per full matrix at most 32 wrapper/bridge/motion/path/inspection/prefix/
+history/cell/reference and 128 binder entries; reuse only the existing two C1
+captures/three control motions per position and two existing scenes as bounded
+preparation. Every underlying three-interval/four-frame, 512-prefix/1,024-endpoint,
+one-command/16-braking/128-chord/16-term, source 4,096/arithmetic 16,384-bit and
+cell/depth/band ceiling remains unchanged. No adaptive retry or increased cap.
+First cheap check: nominal exact-current/earlier-rounded history excludes; a
+changed current encoded frame rejects before motion/path, missing remaining
+error before either consumer. Full controls cover centre/mirrored commands,
+current-word interval/overshoot, frame/history/error/body/domain/work failures,
+post-consumer current-binding mismatch and ownership. Independent references
+reuse the unchanged bounded rational motion helper, never producer coefficients.
+CPU-only in-memory fixtures, zero new scenes/episodes/owners/rover/runtime/model/
+data/export/native/hardware actions after preparation. Retain failures, drop
+partial composition, stop on the fourth position and checkpoint; no cleanup.
+
+**Implemented and verified.** The new private composition bounds the submitted
+state/frame sequence to four immutable actual-frame entries, owns that evidence,
+and derives current motion only from its final state/frame. The unchanged bridge
+encloses the full source/decoded speed interval for the requested command and
+discrete braking. The unchanged path adapter then applies complete history-word/
+remaining point margins to the generated path's wall/cylinder support. Its final
+registered current binding must equal the bridge binding before publication.
+There is no caller-supplied motion argument. Missing/unsupported evidence or a
+binding mismatch returns unknown with work only, not partial composition.
+
+Body/envelope premises, explicit motion errors/profile and nominal stored-tick
+binding remain artificial assumptions. The composition checks the fixture's
+0.05 stored tick without asserting measured clock equality or real 1/20 duration.
+All seven qualification/admission/training flags remain false, even for complete
+conditional exclusion. This is not native/source/range/pose/clock qualification,
+an executor, usable permit, accepted task data or representative task quality.
+
+Sixteen controls cover centre/left/right commands, rounded current speed with
+complete independent source/decoded endpoint enclosures, unchanged current 0.6
+overshoot rejection, incomplete history, reference/frame mismatch, missing
+remaining error/prefix binding/motion errors/profile premise, lost wall support,
+missing body premise, zero braking budget, changed final binding and absent
+opt-in. The nominal control retains altered-frame/missing-error early rejection
+and owned-output repetition. Each successful motion reaches the adapter exactly
+as generated and matches the final registered current binding; caller inputs
+and older functions/controls remain unchanged.
+
+| Position | Check/result | Wrapper / bridge / binder / motion / path / history / cell / reference |
+| --- | --- | --- |
+| 1 | Initial nominal/changed-frame/missing-error probe: 1 pass, 1,478 deselected, 1.23 s. | 3 / 2 / 5 / 1 / 1 / 1 / 1 / 0 |
+| 2 | Fixed sixteen controls, independent rational motion endpoints and owned repeats: 16 pass, 1,478 deselected, 1.48 s. | 19 / 14 / 35 / 11 / 8 / 8 / 6 / 8 |
+| 3 | Required root `python -m pytest -q && ruff check . && git diff --check`: 2,417 pass, known QDQ xfail/71 existing warnings/no skips, 56.53 s; lint/changed-file format/whitespace pass. | 19 / 14 / 35 / 11 / 8 / 8 / 6 / 8 |
+
+Three of four positions used; totals **41 / 30 / 75 / 23 / 17 / 17 / 13 / 16**,
+with inspection/prefix totals also seventeen and zero forbidden calls after
+preparation. Six capture/nine control-motion preparation entries reuse the same
+two scenes; no new collection or cohort. The unused fourth is not follow-on scope
+or a reassurance run. No behavior check failed, no assertions/caps/tolerances
+changed. Local formatting preserved complete source/test ASTs and narrow lint/
+format/editor checks passed before the root. Required root reused unchanged
+point-margin 19/15/14/11/25/7, old path 24/11/7/6/two captures/three motions,
+registered cells 18/10/22/8/16, history 19/29/14, state-motion 16/14/6/8, wire
+48/32/10/two scenes, motion 18/12 and composition/target/join as compatibility
+only, not a standalone old scope renewal or general audit reactivation.
+
+Pylance file syntax checks pass; all five new composition, three motion-bridge
+and eight path-adapter call sites are signature-compatible. All **73 prior
+diagnostics and 295 prior test AST nodes** remain exact/in order; one source and
+two fixture/test nodes are additive. Tested SHA256: diagnostics
+`7db3cf670f722887eaf62f48cb3fd8e15ce969374567db348695e3b530206d43`;
+tests `e1e23fa6cad658ed6fb63abd9115484784ec40a93ab22ce20c1d9600b5487215`.
+The initial checkpoint patch failed on an escaped section marker; targeted
+search confirmed no checkpoint hunk landed. Retry with the literal marker
+succeeded. Scoped checks passed: ordered sections 1-161, exact earlier review/
+Sources/design/milestones/stable workflow/task history, tested hashes/ledger/
+five-file scope, 677 prose references/25 inline links/70 local targets/anchors
+and whitespace. Diff/staged-byte checks apply before commit;
+no successful source gate is rerun for documentation. No normal API/C/runtime/
+actuation, reports/logs/data/labels/collection/model, dependency/download/
+environment, ST/hardware or extra opt-in sanitizer/Arm work. No job or cleanup
+remains; historical failed checks/budgets stay preserved.
+
+**Next.** Cover the adopted at-rest startup request (target 0.125 m/s, zero turn,
+one acceleration-limited command tick then discrete braking) and unsupported
+command domains in this same conditional composition. Independently record a
+finite synthetic scope; do not reuse the unused fourth position or require an
+at-rest sector answer to prepare the startup fixture. This is not setup/source
+qualification, one-use execution/expiry admission or a new study/trial. S1-S5,
+Tasks 6/9/D4, fifteen undecided verdicts/five old false flags, general audit
+deferral and protected evidence/resource gates remain unchanged.
+
+[command-path-source]: sim/diagnostics.py
+[command-path-controls]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

@@ -4205,6 +4205,166 @@ def _probe_synthetic_c1_discrete_path_enclosure(
     return result
 
 
+def _probe_synthetic_c1_command_path_enclosure(
+    history,
+    point_error_evidence,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    target_speed,
+    turn_rate,
+    error_evidence=None,
+    profile=None,
+    current_body_clear=False,
+    controlled_envelope=False,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    config=None,
+    synthetic_test_only=False,
+):
+    """Compose one owned current-frame motion with conditional point margins."""
+    from interface.protocol import State
+
+    if synthetic_test_only is not True:
+        raise ValueError("command path enclosure requires synthetic_test_only=True")
+    for value, lower, upper in (
+        (max_braking_ticks, 0, 16),
+        (max_chords, 1, 128),
+        (max_terms, 0, 16),
+        (max_cells, 0, 65536),
+        (max_depth, 0, 12),
+        (radius_bands, 1, 16),
+    ):
+        if type(value) is not int or not lower <= value <= upper:
+            raise ValueError("command path work limits require bounded integers")
+    work = {"state_motion_entries": 0, "path_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-command-path-enclosure/1",
+        "allowed_use": "conditional_source_command_path_fixture_only",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "fixture_command_path_excluded": False,
+        "status": "unknown",
+        "reason": "unsupported_point_error_evidence",
+        "work": work,
+    }
+    if (
+        type(point_error_evidence) is not dict
+        or any(type(key) is not str for key in point_error_evidence)
+        or set(point_error_evidence)
+        != {
+            "source_states",
+            "state_frames",
+            "history_assumptions",
+            "prefix_history_binding_exact",
+            "remaining_point_error_m",
+            "point_radius_m",
+        }
+        or point_error_evidence["prefix_history_binding_exact"] is not True
+    ):
+        return result
+    if point_error_evidence["remaining_point_error_m"] is None:
+        result["reason"] = "remaining_point_error_missing"
+        return result
+    states = point_error_evidence["source_states"]
+    frames = point_error_evidence["state_frames"]
+    if (
+        type(states) not in (list, tuple)
+        or type(frames) not in (list, tuple)
+        or not 1 <= len(states) == len(frames) <= 4
+        or any(type(state) is not State for state in states)
+        or any(
+            type(frame) is not bytes or not 1 <= len(frame) <= 128 for frame in frames
+        )
+    ):
+        result["reason"] = "unsupported_frame_history"
+        return result
+    if current_body_clear is not True:
+        result["reason"] = "current_body_clear_not_established"
+        return result
+    if controlled_envelope is not True:
+        result["reason"] = "controlled_envelope_not_established"
+        return result
+    config = _c1_config(config)
+    if config.dt != 0.05:
+        result["reason"] = "unsupported_command_tick_profile"
+        return result
+    owned = deepcopy(point_error_evidence)
+    work["state_motion_entries"] = 1
+    state_motion = _probe_synthetic_c1_state_motion(
+        owned["source_states"][-1],
+        owned["state_frames"][-1],
+        reference_tick=reference_tick,
+        target_speed=target_speed,
+        turn_rate=turn_rate,
+        error_evidence=deepcopy(error_evidence),
+        profile=deepcopy(profile),
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        synthetic_test_only=True,
+    )
+    result["state_motion_work"] = deepcopy(state_motion["work"])
+    if state_motion["fixture_motion_enclosed"] is not True:
+        result["reason"] = state_motion["reason"]
+        if "motion_work" in state_motion:
+            result["motion_work"] = deepcopy(state_motion["motion_work"])
+        return result
+    work["path_entries"] = 1
+    enclosure = _probe_synthetic_c1_discrete_path_enclosure(
+        history,
+        state_motion["motion"],
+        reference_tick=reference_tick,
+        reference_pose_m_rad=reference_pose_m_rad,
+        current_body_clear=True,
+        controlled_envelope=True,
+        max_cells=max_cells,
+        max_depth=max_depth,
+        radius_bands=radius_bands,
+        config=config,
+        point_error_evidence=owned,
+        synthetic_test_only=True,
+    )
+    result["path_work"] = deepcopy(enclosure["work"])
+    if enclosure["fixture_enclosure_excluded"] is not True:
+        result["reason"] = enclosure["reason"]
+        return result
+    if (
+        enclosure["registration_bound"]["source_bindings"][-1]
+        != state_motion["source_intervals"]
+    ):
+        result["reason"] = "current_frame_history_binding_mismatch"
+        return result
+    result.update(
+        status="excluded_from_bound_command_fixture",
+        reason="generated_command_path_and_complete_point_errors_excluded",
+        fixture_command_path_excluded=True,
+        current_state_frame_hex=owned["state_frames"][-1].hex(),
+        reference_tick=reference_tick,
+        requested_command={
+            "target_speed_m_s": target_speed,
+            "turn_rate_rad_s": turn_rate,
+        },
+        state_motion=deepcopy(state_motion),
+        path_enclosure=deepcopy(enclosure),
+    )
+    return result
+
+
 def _c1_exclude_registered_path_cells(
     free_segments,
     path_points,

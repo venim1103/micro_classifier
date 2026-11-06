@@ -1461,6 +1461,292 @@ def test_synthetic_c1_discrete_path_point_error_reaches_walls(
     assert motion == saved_motion and evidence == saved_evidence
 
 
+@pytest.fixture(scope="module")
+def c1_command_path_ledger(request):
+    ledger = dict.fromkeys(
+        (
+            "wrapper",
+            "bridge",
+            "binding",
+            "motion",
+            "path",
+            "inspection",
+            "prefix",
+            "history",
+            "cell",
+            "reference",
+            "forbidden",
+        ),
+        0,
+    )
+    yield ledger
+    assert all(
+        ledger[key] <= (128 if key == "binding" else 32)
+        for key in ledger
+        if key != "forbidden"
+    )
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 command-path ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 command-path ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_command_path_uses_owned_history(
+    c1_discrete_path_fixtures, c1_command_path_ledger, monkeypatch, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from interface.protocol import State, decode_state, encode_state
+    from sim import diagnostics
+
+    ledger = c1_command_path_ledger
+    generated = []
+    for key, name in (
+        ("bridge", "_probe_synthetic_c1_state_motion"),
+        ("binding", "_bind_synthetic_c1_state_intervals"),
+        ("motion", "_probe_synthetic_c1_discrete_motion"),
+        ("path", "_probe_synthetic_c1_discrete_path_enclosure"),
+        ("inspection", "inspect_synthetic_c1_history"),
+        ("prefix", "_c1_low_free_segments"),
+        ("history", "_bound_synthetic_c1_history_registration"),
+        ("cell", "_c1_exclude_path_cells"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (128 if _key == "binding" else 32)
+            output = _original(*args, **kwargs)
+            if _key == "path":
+                generated.append(deepcopy(args[1]))
+                if case == 14:
+                    output["registration_bound"]["source_bindings"][-1]["schema"] = (
+                        "foreign"
+                    )
+            return output
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("command-path composition must not collect or actuate")
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "_c1_curved_centerline",
+        "probe_synthetic_c1_enclosure",
+        "probe_synthetic_c1_occupied_witness",
+        "probe_synthetic_c1_questions",
+        "_probe_synthetic_c1_wire_rejection",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    record = deepcopy(c1_discrete_path_fixtures["records"][0])
+    current_speed = 0.2 if case == 3 else 0.6 if case == 4 else 0.5
+    states = [
+        State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(0.2 if tick < 22 else current_speed, 0.0, 0.0),
+        )
+        for tick in range(20, 23)
+    ]
+    frames = [encode_state(state) for state in states]
+    distance = sum(
+        Fraction(decode_state(frame).velocity_m_s[0]) for frame in frames[1:]
+    ) * Fraction(0.05)
+    evidence = {
+        "source_states": states,
+        "state_frames": frames,
+        "history_assumptions": dict.fromkeys(
+            (
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            ),
+            True,
+        ),
+        "prefix_history_binding_exact": True,
+        "remaining_point_error_m": 1e-8,
+        "point_radius_m": 4.0,
+    }
+    settings = {
+        "reference_tick": 22,
+        "reference_pose_m_rad": [float(Fraction(2) + distance), 2.0, 0.0],
+        "target_speed": 0.5,
+        "turn_rate": 1.5 if case == 1 else -1.5 if case == 2 else 0.0,
+        "error_evidence": {
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        "current_body_clear": True,
+        "controlled_envelope": True,
+        "synthetic_test_only": True,
+    }
+    if case == 5:
+        states.pop(1)
+        frames.pop(1)
+    elif case == 6:
+        settings["reference_tick"] = 21
+    elif case == 7:
+        evidence["remaining_point_error_m"] = None
+    elif case == 8:
+        evidence["prefix_history_binding_exact"] = False
+    elif case == 9:
+        settings["error_evidence"] = None
+    elif case == 10:
+        settings["error_evidence"]["profile_exact"] = False
+    elif case == 11:
+        evidence["remaining_point_error_m"] = 2.0
+    elif case == 12:
+        settings["current_body_clear"] = False
+    elif case == 13:
+        settings["max_braking_ticks"] = 0
+    elif case == 15:
+        settings["synthetic_test_only"] = False
+    saved_record, saved_evidence = deepcopy(record), deepcopy(evidence)
+    before = dict(ledger)
+    ledger["wrapper"] += 1
+    if case == 15:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._probe_synthetic_c1_command_path_enclosure(
+                [record], evidence, **settings
+            )
+        assert ledger["bridge"] == before["bridge"] and ledger["path"] == before["path"]
+        return
+    good = diagnostics._probe_synthetic_c1_command_path_enclosure(
+        [record], evidence, **settings
+    )
+    supported = case in (0, 1, 2, 3)
+    assert good["fixture_command_path_excluded"] is supported
+    expected_bridge = int(case not in (7, 8, 12))
+    expected_motion = int(case not in (4, 6, 7, 8, 12))
+    expected_path = int(case in (0, 1, 2, 3, 5, 11, 14))
+    assert ledger["bridge"] - before["bridge"] == expected_bridge
+    assert ledger["motion"] - before["motion"] == expected_motion
+    assert ledger["path"] - before["path"] == expected_path
+    assert ledger["history"] - before["history"] == expected_path
+    assert ledger["cell"] - before["cell"] == int(case in (0, 1, 2, 3, 14))
+    assert good["work"] == {
+        "state_motion_entries": expected_bridge,
+        "path_entries": expected_path,
+    }
+    results = [good]
+    if supported:
+        assert good["current_state_frame_hex"] == frames[-1].hex()
+        assert (
+            good["state_motion"]["source_intervals"]
+            == good["path_enclosure"]["registration_bound"]["source_bindings"][-1]
+        )
+        assert (
+            good["path_enclosure"]["registration_bound"]["upper_bounds"][
+                "registered_point_m"
+            ]
+            > 0
+        )
+        assert generated[0] == good["state_motion"]["motion"]
+        assert good["requested_command"] == {
+            "target_speed_m_s": settings["target_speed"],
+            "turn_rate_rad_s": settings["turn_rate"],
+        }
+        interval = good["state_motion"]["initial_speed_interval_m_s"]
+        assert interval == (
+            min(current_speed, decode_state(frames[-1]).velocity_m_s[0]),
+            max(current_speed, decode_state(frames[-1]).velocity_m_s[0]),
+        )
+        assert (interval[0] < interval[1]) is (case == 3)
+        for value in interval:
+            ledger["reference"] += 1
+            assert ledger["reference"] <= 32
+            reference = _c1_discrete_motion_reference(
+                {
+                    "initial_speed": value,
+                    "target_speed": settings["target_speed"],
+                    "turn_rate": settings["turn_rate"],
+                }
+            )
+            for index, box in enumerate(generated[0]["centerline_boxes_m"]):
+                point = reference["vertices"][
+                    min(index, len(reference["vertices"]) - 1)
+                ]
+                for coordinate, (lower, upper) in zip(point, box, strict=True):
+                    assert (
+                        Fraction(lower)
+                        <= coordinate[0]
+                        <= coordinate[1]
+                        <= Fraction(upper)
+                    )
+    else:
+        reasons = {
+            4: "source_interval_outside_motion_domain",
+            5: "incomplete_frame_history",
+            6: "frame_tick_binding_mismatch",
+            7: "remaining_point_error_missing",
+            8: "unsupported_point_error_evidence",
+            10: "unsupported_error_evidence",
+            11: "axis_aligned_wall_support_incomplete",
+            12: "current_body_clear_not_established",
+            13: "braking_budget_exhausted",
+            14: "current_frame_history_binding_mismatch",
+        }
+        assert good["status"] == "unknown" and good["reason"]
+        if case != 9:
+            assert good["reason"] == reasons[case]
+        assert "state_motion" not in good and "path_enclosure" not in good
+    if case == 0:
+        before = dict(ledger)
+        changed = deepcopy(evidence)
+        changed["state_frames"][-1] = encode_state(replace(states[-1], sequence=99))
+        ledger["wrapper"] += 1
+        bad = diagnostics._probe_synthetic_c1_command_path_enclosure(
+            [record], changed, **settings
+        )
+        assert bad["fixture_command_path_excluded"] is False
+        assert bad["reason"] == "source_frame_binding_mismatch"
+        assert ledger["motion"] == before["motion"] and ledger["path"] == before["path"]
+        missing = {**evidence, "remaining_point_error_m": None}
+        ledger["wrapper"] += 1
+        absent = diagnostics._probe_synthetic_c1_command_path_enclosure(
+            [record], missing, **settings
+        )
+        assert absent["reason"] == "remaining_point_error_missing"
+        assert absent["work"] == {"state_motion_entries": 0, "path_entries": 0}
+        assert "state_motion" not in bad and "path_enclosure" not in bad
+        good["state_motion"]["motion"]["centerline_boxes_m"][0][0][0] = 123.0
+        good["path_enclosure"]["registration_bound"]["source_bindings"].clear()
+        ledger["wrapper"] += 1
+        repeated = diagnostics._probe_synthetic_c1_command_path_enclosure(
+            [record], evidence, **settings
+        )
+        assert repeated["fixture_command_path_excluded"] is True
+        assert repeated["state_motion"]["motion"]["centerline_boxes_m"][0][0][0] == 0.0
+        assert repeated["path_enclosure"]["registration_bound"]["source_bindings"]
+        results.extend((bad, absent, repeated))
+    for result in results:
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert evidence == saved_evidence
+    assert json.dumps(record, default=json_value, sort_keys=True) == json.dumps(
+        saved_record, default=json_value, sort_keys=True
+    )
+
+
 def _c1_discrete_motion_reference(settings, *, max_terms=16, max_bits=16384):
     from fractions import Fraction
 

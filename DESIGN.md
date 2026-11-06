@@ -2405,12 +2405,39 @@ training flags remain false and every existing hard ceiling stays unchanged.
 failed hypotheses: 1 m error loses cylinder exclusion but not wall support, and
 zero-age capture is unavailable under two-tick latency. Valid delivered zero-word
 discrepancy excludes; the original unavailable capture rejects before prefixes.
-Next compose actual-frame motion and the optional margins around one current
+The separate composition below now generates motion from the same current
 source/frame-history binding and explicit motion/error/profile premises. An
 arbitrary supplied path is not actual-command qualification, source authority,
 accepted native/physical evidence or a usable guard/permit.
 
 [path-point-error-review]: REVIEW.md
+
+##### Conditional Current-Frame Command Composition (2026-11-06)
+
+The private `_probe_synthetic_c1_command_path_enclosure` owns one bounded complete
+point-error history and derives the current source state/actual immutable frame
+from its final entry. It generates the requested acceleration-limited command
+and discrete braking through the unchanged motion bridge; callers supply no
+arbitrary path. The generated motion and same point evidence enter the unchanged
+wall/cylinder adapter. Its final registered binding must equal the current motion
+binding before the complete conditional result is published.
+
+Missing body/envelope/prefix/history/remaining-error/motion-profile premises,
+unsupported command/word/frame/profile domains, work exhaustion or final binding
+mismatch stay unknown without partial composition. Complete source/decoded speed
+intervals remain enclosed; 0.6 wire overshoot is not clamped. Existing hard limits
+remain unchanged. The 0.05 stored fixture tick is not measured clock equality or
+an exact real 1/20 assertion. Conditional exclusion retains all seven false
+qualification/admission/training flags and supplies no executor or usable permit.
+
+[Review §161][command-path-review] records sixteen controls, independent rational
+source/decoded motion endpoints, centre/mirrored commands, rejection stages and
+owned repeats. Next cover the adopted at-rest 0.125 m/s zero-turn startup request
+and unsupported command domains with finite synthetic controls. Source/setup,
+native/range/pose/clock error, one-use execution/expiry and representative task
+quality remain separate; no normal runtime, actuation or study is admitted.
+
+[command-path-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -10963,11 +10990,12 @@ complete (§155). The discrete-path/wall adapter and exact actual-wire/source-
 word interval boundary now pass 24 and 16 fixed controls respectively (§156).
 The actual-frame motion bridge (§157), complete-history registration bound
 (§158), registered-prefix cylinder consumer (§159) and optional discrete-path
-point margins (§160) each pass sixteen controls; the required new-source root
-gate passes 2,401 tests plus the known xfail/71 warnings. Prior spent standalone
-scopes remain spent. Next: compose actual-frame motion and complete point margins
-around one current source/frame-history binding, retaining explicit motion/error/
-profile and actual source/native/pose/range/clock qualification gates.
+point margins (§160) each pass sixteen controls. Their current-frame command/
+point-margin composition (§161) now passes sixteen controls; the required
+new-source root gate passes 2,417 tests plus the known xfail/71 warnings. Prior
+spent standalone scopes remain spent. Next: finite at-rest startup/unsupported
+command controls in the same conditional composition, retaining explicit motion/
+error/profile and actual source/native/pose/range/clock/expiry qualification gates.
 These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.
 

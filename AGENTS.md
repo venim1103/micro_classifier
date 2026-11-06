@@ -204,7 +204,8 @@ from them. Historical details below are reference material, not new approvals.
   as well; retain local progress and diagnose failures without a force-push.
   Project continuation resumed after reload (§155). Path-cell kernel plus
   discrete-path/wall adapter, source-word binder (§156) and actual-frame motion
-  bridge (§157) are complete; continue bounded complete-history registration,
+  bridge (§157) and complete-history registration bound (§158) are complete;
+  continue bounded registration-to-relative-prefix propagation,
   retaining all evidence and protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
@@ -220,8 +221,9 @@ from them. Historical details below are reference material, not new approvals.
   controls and its required new-source gate, 2,297 plus known xfail/71 warnings.
   The discrete-path/wall adapter and exact source-word binder (§156) pass 24/16
   controls. The actual-frame motion bridge (§157) passes sixteen controls;
-  required root 2,353 plus known xfail/71 warnings. Next: full-history registration
-  discrepancy, without general audit work or current-error-times-age shortcuts.
+  complete-history registration bound (§158) passes sixteen controls; required
+  root 2,369 plus known xfail/71 warnings. Next: registration-to-relative-prefix
+  propagation, without general audit work or current-error-times-age shortcuts.
   Four adapter positions and four source-word positions are spent; required
   new-source roots reused unchanged adapter controls, not standalone renewal.
   No source/native/registration claim is qualified. D4 remains
@@ -238,7 +240,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-157 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-158 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation, required local verification and periodic verified
   checkpoint commits/normal pushes, with protected evidence/resource limits intact.
@@ -261,13 +263,14 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-06, §157): 2,353 passes plus known xfail/71 existing
-  warnings; sixteen state-motion controls, all 70 prior source/286 test AST nodes
-  unchanged. Lint/changed-file format/Pylance syntax/editor and both resolved call
-  sites pass. Fault-fixture validity/age failure and repair retained; four
-  positions spent, 49 bridge/43 binder/20 motion/28 reference entries and zero
-  new C1/scene/owner/runtime calls. Whole speed intervals, source planarity and
-  frame/tick checks remain conditional, never native/clock/source qualification.
+- Last source-test gate (2026-11-06, §158): 2,369 passes plus known xfail/71 existing
+  warnings; sixteen complete-history controls, all 71 prior source/288 test AST
+  nodes unchanged. Lint/changed-file format/Pylance syntax/editor and five call
+  sites pass. Guarded-comparison repair and first format failure retained; four
+  positions spent, 58 bound/92 binder/44 reference entries, zero forbidden C1/
+  scene/owner/runtime calls. Complete history and point/travel rotation lever arms
+  remain conditional stored-word evidence, never pose/range/native/clock/source
+  qualification. Prior §157 fault repair/four positions/49-43-20-28 remain evidence.
   Old §156's four adapter/four binder positions, 98/60 entries and failures,
   §155 kernel/§153 motion/§146 wire/§138 evidence stay historical; required root
   reused unchanged controls only for this meaningful new source increment. No
@@ -1324,11 +1327,11 @@ zero new-family C1/source/runtime queries; that old root renewal stays spent.
 The additive path-cell kernel (§155) and twelve spatial controls are complete;
 25 new kernel entries, zero new-family scene/source/runtime calls. The separate
 discrete-path/wall adapter and actual-wire source-word binder (§156) pass 24/16
-controls; state-to-motion bridge (§157) passes sixteen, all qualification flags
-false. Next: complete-history registration discrepancy for the actual-command
-guard, not current-frame delta times age or general arithmetic/identity audits.
-Four adapter/four binder/four bridge positions are spent; necessary new-source
-roots are compatibility gates only.
+controls; state-to-motion (§157) and complete-history registration (§158) each
+pass sixteen, all qualification flags false. Next: registration-to-relative-
+prefix propagation for the actual-command guard, not current delta times age or
+general arithmetic/identity audits. Four adapter/four binder/four bridge/four
+history positions are spent; necessary new-source roots are compatibility only.
 S1-S5 satisfaction/full guard/usable trial
 remain separate gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
@@ -1349,7 +1352,7 @@ ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
 priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
-source gate now 2,353 plus known xfail/71 warnings for §157's new-source increment;
+source gate now 2,369 plus known xfail/71 warnings for §158's new-source increment;
 §153's old root renewal stays spent, §146 all four spent, §138 four of five/fifth
 unused, old §129/§132
 exhausted, §135 fifth not
@@ -1390,11 +1393,11 @@ No job/cleanup pending; original numbered task results below remain historical.
   Bounded result (2026-11-05, REVIEW.md §146): private decoded-input-to-wire
   rejection tooling and 24 cases complete, no usable `OK` or actuation; source
   qualifications/flags stay false. All four verification positions spent.
-  Current follow-up (2026-11-06, REVIEW.md §157): actual-frame motion bridge
-  passes sixteen controls; required root 2,353 plus known xfail/71 warnings.
+  Current follow-up (2026-11-06, REVIEW.md §158): complete-history registration
+  passes sixteen controls; required root 2,369 plus known xfail/71 warnings.
   Source/command qualification remains blocked. Next: independently scope
-  complete-history registration discrepancy, not current error times age;
-  four adapter/four binder/four bridge positions spent, no standalone renewal.
+  registration-to-relative-prefix propagation, preserving missing total-error
+  premises; four adapter/binder/bridge/history positions spent, no renewal.
   Dated results below remain historical; no usable trial or actuation is admitted.
   Current result (2026-10-20, REVIEW.md §72): active rules catalogue 1 excludes
   mode; the complete three-answer Python/C contract passes 123 new tests. Legacy

@@ -3568,6 +3568,208 @@ def _bind_synthetic_c1_state_intervals(
     return result
 
 
+def _bound_synthetic_c1_history_registration(
+    source_states,
+    state_frames,
+    *,
+    acquisition_tick,
+    reference_tick,
+    point_radius_m,
+    assumptions=None,
+    max_history_ticks=3,
+    source_max_integer_bits=4096,
+    max_integer_bits=16384,
+    synthetic_test_only=False,
+):
+    """Bound paired stored-word history transforms, never measured registration."""
+    from interface.protocol import decode_state
+
+    if synthetic_test_only is not True:
+        raise ValueError("history registration requires synthetic_test_only=True")
+    for limit, lower, upper in (
+        (max_history_ticks, 0, 3),
+        (source_max_integer_bits, 1, 4096),
+        (max_integer_bits, 1, 16384),
+    ):
+        if type(limit) is not int or not lower <= limit <= upper:
+            raise ValueError("history registration limits must be bounded integers")
+    work = {"binding_entries": 0, "intervals": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-history-registration/1",
+        "allowed_use": "conditional_source_word_registration_fixture_only",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "fixture_registration_bound": False,
+        "status": "unknown",
+        "reason": "unsupported_history_assumptions",
+        "work": work,
+    }
+    required = {
+        "starting_pose_exact",
+        "nominal_tick_binding_exact",
+        "stored_word_dt_exact",
+        "interval_ending_twist_exact",
+    }
+    if (
+        type(assumptions) is not dict
+        or set(assumptions) != required
+        or any(assumptions[key] is not True for key in required)
+    ):
+        return result
+    if (
+        type(acquisition_tick) is not int
+        or type(reference_tick) is not int
+        or not 0 <= acquisition_tick <= reference_tick <= 85899
+    ):
+        result["reason"] = "unsupported_history_ticks"
+        return result
+    count = reference_tick - acquisition_tick + 1
+    if count - 1 > max_history_ticks:
+        result["reason"] = "history_budget_exhausted"
+        return result
+    if (
+        type(source_states) not in (tuple, list)
+        or type(state_frames) not in (tuple, list)
+        or len(source_states) != count
+        or len(state_frames) != count
+    ):
+        result["reason"] = "incomplete_frame_history"
+        return result
+    arithmetic = _C1CommandArithmetic(0, max_integer_bits, work)
+    bindings = []
+    previous_sequence = None
+    try:
+        radius = arithmetic.value(point_radius_m)
+        zero, seconds = arithmetic.value(0), arithmetic.value(0.05)
+        if arithmetic.binary(radius, zero, "less") or arithmetic.binary(
+            arithmetic.value(4), radius, "less"
+        ):
+            result["reason"] = "unsupported_point_radius"
+            return result
+        translation = heading = travel = zero
+        for index, (source, frame) in enumerate(
+            zip(source_states, state_frames, strict=True)
+        ):
+            work["binding_entries"] += 1
+            binding = _bind_synthetic_c1_state_intervals(
+                source,
+                frame,
+                max_integer_bits=source_max_integer_bits,
+                synthetic_test_only=True,
+            )
+            if binding["fixture_words_bound"] is not True:
+                result["reason"] = binding["reason"]
+                return result
+            decoded = decode_state(frame)
+            if (
+                decoded.timestamp_us != (acquisition_tick + index) * 50000
+                or previous_sequence is not None
+                and decoded.sequence != previous_sequence + 1
+            ):
+                result["reason"] = "frame_history_binding_mismatch"
+                return result
+            previous_sequence = decoded.sequence
+            if decoded.task_id != 1 or decoded.faults != 0:
+                result["reason"] = "unsupported_host_task_or_faults"
+                return result
+            fields = binding["fields"]
+            for field, indices in (
+                ("velocity_m_s", (1, 2)),
+                ("angular_velocity_rad_s", (0, 1)),
+                ("goal_m", (2,)),
+            ):
+                if any(
+                    Fraction(*pair) != 0
+                    for coordinate in indices
+                    for pair in fields[field][coordinate]["interval"]
+                ):
+                    result["reason"] = "unsupported_planar_source_intervals"
+                    return result
+            speeds = tuple(
+                Fraction(*pair) for pair in fields["velocity_m_s"][0]["interval"]
+            )
+            turns = tuple(
+                Fraction(*pair)
+                for pair in fields["angular_velocity_rad_s"][2]["interval"]
+            )
+            if (
+                arithmetic.binary(speeds[0], zero, "less")
+                or arithmetic.binary(arithmetic.value(0.6), speeds[1], "less")
+                or arithmetic.binary(turns[0], arithmetic.value(-1.5), "less")
+                or arithmetic.binary(arithmetic.value(1.5), turns[1], "less")
+            ):
+                result["reason"] = "source_interval_outside_motion_domain"
+                return result
+            bindings.append(binding)
+            if index == 0:
+                continue
+            work["intervals"] += 1
+            speed_delta = arithmetic.binary(speeds[1], speeds[0], "sub")
+            turn_delta = arithmetic.binary(turns[1], turns[0], "sub")
+            heading_step = arithmetic.binary(turn_delta, seconds, "mul")
+            mean_heading = arithmetic.binary(
+                heading,
+                arithmetic.binary(heading_step, arithmetic.value(2), "div"),
+                "add",
+            )
+            velocity_error = arithmetic.binary(
+                speed_delta,
+                arithmetic.binary(speeds[1], mean_heading, "mul"),
+                "add",
+            )
+            translation = arithmetic.binary(
+                translation,
+                arithmetic.binary(velocity_error, seconds, "mul"),
+                "add",
+            )
+            heading = arithmetic.binary(heading, heading_step, "add")
+            travel = arithmetic.binary(
+                travel, arithmetic.binary(speeds[1], seconds, "mul"), "add"
+            )
+        point_error = arithmetic.binary(
+            translation,
+            arithmetic.binary(arithmetic.binary(radius, travel, "add"), heading, "mul"),
+            "add",
+        )
+        bounds = {
+            "translation_m": translation,
+            "heading_rad": heading,
+            "registered_point_m": point_error,
+        }
+        upper = {key: arithmetic.outward(value, True) for key, value in bounds.items()}
+    except ArithmeticError as error:
+        result["reason"] = str(error)
+        return result
+    except ValueError:
+        result["reason"] = "unsupported_registration_input"
+        return result
+    result.update(
+        status="bounded_from_complete_word_history",
+        reason="complete_interval_ending_discrepancy_propagated",
+        fixture_registration_bound=True,
+        acquisition_tick=acquisition_tick,
+        reference_tick=reference_tick,
+        point_radius_m=float(radius),
+        upper_bounds=upper,
+        rational_bounds={
+            key: (value.numerator, value.denominator) for key, value in bounds.items()
+        },
+        source_bindings=deepcopy(bindings),
+        assumptions=deepcopy(assumptions),
+    )
+    return result
+
+
 def _probe_synthetic_c1_state_motion(
     source_state,
     state_frame,

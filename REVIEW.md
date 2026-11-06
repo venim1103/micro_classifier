@@ -11906,6 +11906,108 @@ verdicts/five old false flags and hardware/teacher-asset gates remain unchanged.
 [state-motion-source]: sim/diagnostics.py
 [state-motion-controls]: tests/test_sim.py
 
+## 158. Complete-History Registration Prerequisite (2026-11-06)
+
+Checkpoint §157 was committed and normally pushed as
+`2f5b31a3e6d41ea1d369bc36bca74cb4859d0238`; main was clean and synchronized.
+Continued the named S4 acquisition-to-reference prerequisite under standing
+authority, not a general audit, source qualification or study run.
+
+**Pre-execution hypothesis and scope.** The exact-pose relative adapter cannot
+infer a history error from current words. An earlier rounded speed followed
+by an exactly encoded current speed must retain a nonzero translation bound.
+For each constant-twist interval-ending pair, integrate the complete speed
+width plus maximum speed times accumulated heading-width; inverse point
+registration also needs the complete point/travel rotation lever arm.
+Explicit common starting-pose, nominal tick binding, stored-word `dt` and
+interval-ending-twist assumptions are fixture premises, not measured evidence.
+Nominal wire increments of 50,000 microseconds are bound to declared ticks;
+the mathematical interval uses the existing binary64 `0.05` word, not an
+assertion that it equals exact real 1/20 or a measured clock interval.
+
+Recorded finite new slice before execution: sixteen fixed controls covering
+both earlier speed-discrepancy signs, earlier mirrored yaw, zero age, full
+three-interval history, missing/changed/stale/nonplanar/domain evidence,
+missing assumptions, malformed ticks, reduced history/arithmetic limits and
+omitted opt-in. At most 32 bound/32 independent-reference/64 source-binder
+entries per complete matrix; four verification positions including failed/
+aborted focused probes, repairs and the required new-source root. At most
+three past intervals/four complete frames per entry, existing 4,096/16,384-bit
+ceilings, no adaptive retries/cap increase. Point-radius input is a declared
+planar fixture bound within the existing 4 m domain, not a return/range claim.
+First cheap check: two straight discrepancy-sign controls against exact
+independent `struct` binary32 conversion and Fraction displacement arithmetic.
+CPU-only in-memory states/frames; zero new C1/scene/owner/rover/runtime/model,
+collection/data/log/export/native/hardware entries. Missing support and work
+failure remain unknown without partial geometry/history publication. Retain
+failures and complete the scoped checks before checkpoint; no cleanup needed.
+
+**Implemented and checked.** The additive private history bound binds every
+actual source/frame pair before using an interval-ending speed/yaw width.
+Nominal timestamp and consecutive-sequence checks do not qualify event/clock
+authority. Complete source intervals must remain fresh/planar/in-domain.
+The initial pose equality and stored-word duration are explicit assumptions;
+no native or physical zero-error claim follows. Translation accumulates speed
+width plus maximum speed times mean accumulated heading width. Final inverse
+point registration expands by the full declared point norm plus maximum travel
+lever arm. Exact rational bounds and outward upper words are independently
+owned, with all seven qualification/admission/training flags false.
+
+The fixed sixteen controls cover both early speed-discrepancy signs, mirrored
+early yaw, zero age and complete three-interval history; current speed/yaw
+words are exact in supported moving controls. Missing middle frames, changed
+sequence/timestamp, stale earlier fields, subnormal nonplanarity, decoded `0.6`
+overshoot, missing assumptions, noninteger ticks, reduced history/integer caps
+and omitted opt-in reject. Ownership repeats retain independent evidence.
+Six supported cases compare source and decoded inverse point transforms using
+independent rational series: at most three intervals/48 series terms per
+trajectory (16 per endpoint trigonometric evaluation), with 16,384-bit guarded
+arithmetic. Whole reference-coordinate differences fit the squared point-error
+bound; these are conditional fixtures, not representative task data or proof.
+
+| Position | Check/result | Bound / binder / reference |
+| --- | --- | --- |
+| 1 | Two straight sign controls: 2 pass, 1,430 deselected, 0.25 s. | 2 / 6 / 2 |
+| 2 | Fixed sixteen controls and independent point references: 16 pass, 1,430 deselected, 0.23 s. | 18 / 28 / 14 |
+| 3 | Same matrix after guarded-comparison repair, including 64-bit rejection before integration: 16 pass, 1,430 deselected, 1.08 s. | 19 / 29 / 14 |
+| 4 | Required root `python -m pytest -q && ruff check . && git diff --check`: 2,369 pass, known QDQ xfail/71 existing warnings/no skips, 53.94 s; lint/whitespace pass. | 19 / 29 / 14 |
+
+All four positions are **spent**. Totals **58 / 92 / 44**, zero forbidden calls.
+No behavior test failed. Local review found direct Fraction domain comparisons
+without the new consumer's pre-growth guard; routing them through the unchanged
+arithmetic helper repaired that slice. Existing one-bit input exhaustion remains;
+the additional 64-bit control rejects after one bound frame and before any
+history integration. No tolerance, assertion or ceiling was relaxed. First
+Ruff format check failed new layouts only; formatting the two changed Python
+files preserved their complete ASTs and the same lint/format checks then passed.
+Root reused unchanged state-motion 16/14/6/8, path 24/11/7/6/two captures/three
+motions, old wire 48/32/10/two scenes, discrete motion 18/12 and composition/
+target/join controls as compatibility gates only; no old standalone scope is
+refunded. Initial shell `rg` was absent; workspace search resolved the local
+anchor without a repeated command or environment/dependency change.
+
+Pylance file syntax/editor checks pass; all five resolved call sites are
+signature-compatible. All **71 prior diagnostics AST nodes and 288 prior
+test nodes** remain unchanged in order; one source and three test/fixture/
+reference nodes were added. Tested SHA256: diagnostics
+`29bff0b629cac2a6f801a31a772473218a1a9c5bd6eeadf9491cb512f9383322`;
+tests `28ac1494d42ded47308c32b45a89235e5641fb5c747a2db896a07246e9b70808`.
+Scoped documentation/history/references/targets/whitespace/diff/staged-byte
+checks apply before commit; the successful code gate is not rerun for docs.
+No normal API/C/runtime/actuation, report/log/task data, collection/model/
+dependency/download/environment, ST/hardware or additional opt-in sanitizer/
+Arm work changed. No job, generated artifact or cleanup remains.
+
+**Next.** Independently scope the registration-to-relative-prefix consumer,
+preserving complete source history, return/pose/native/clock premises and
+unknown on missing evidence. A word-only bound is not total registration error
+and cannot promote a source, permit or full guard. Current-error-times-age
+shortcuts remain unsupported. S1-S5, Tasks 6/9/D4, all fifteen undecided
+verdicts/five old false flags, general-audit deferral and protected gates remain.
+
+[history-registration-source]: sim/diagnostics.py
+[history-registration-controls]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

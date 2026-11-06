@@ -437,6 +437,328 @@ def test_synthetic_c1_state_motion_propagates_actual_frame(
 
 
 @pytest.fixture(scope="module")
+def c1_history_registration_ledger(request):
+    ledger = dict.fromkeys(("bound", "binding", "reference", "forbidden"), 0)
+    yield ledger
+    assert ledger["bound"] <= 32 and ledger["binding"] <= 64
+    assert ledger["reference"] <= 32 and ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 history-registration ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 history-registration ledger:", json.dumps(ledger, sort_keys=True))
+
+
+def _c1_history_registration_reference(states, point):
+    import operator
+    from fractions import Fraction
+
+    assert 1 <= len(states) <= 4
+    operations = {
+        "add": operator.add,
+        "sub": operator.sub,
+        "mul": operator.mul,
+        "div": operator.truediv,
+    }
+    terms = 0
+
+    def binary(left, right, operation):
+        bits = sum(
+            abs(value.numerator).bit_length() + value.denominator.bit_length()
+            for value in (left, right)
+        )
+        assert bits + 1 <= 16384
+        if operation == "div":
+            assert right != 0
+        return operations[operation](left, right)
+
+    def power(number, exponent):
+        result = Fraction(1)
+        for _ in range(exponent):
+            result = binary(result, number, "mul")
+        return result
+
+    def product(left, right):
+        values = [binary(first, second, "mul") for first in left for second in right]
+        return min(values), max(values)
+
+    def plus(left, right):
+        return tuple(binary(first, second, "add") for first, second in zip(left, right))
+
+    def minus(left, right):
+        return binary(left[0], right[1], "sub"), binary(left[1], right[0], "sub")
+
+    def trig(angle):
+        nonlocal terms
+        assert abs(angle) < 1
+        intervals = []
+        for offset in (0, 1):
+            total = Fraction(0)
+            for index in range(8):
+                assert terms < 48
+                terms += 1
+                exponent = 2 * index + offset
+                term = binary(
+                    power(angle, exponent), Fraction(math.factorial(exponent)), "div"
+                )
+                total = binary(total, term if index % 2 == 0 else -term, "add")
+            exponent = 16 + offset
+            tail = abs(
+                binary(
+                    power(angle, exponent), Fraction(math.factorial(exponent)), "div"
+                )
+            )
+            intervals.append((binary(total, tail, "sub"), binary(total, tail, "add")))
+        return intervals
+
+    zero, one, seconds = Fraction(0), Fraction(1), Fraction(0.05)
+    position = [(zero, zero), (zero, zero)]
+    heading = zero
+    cosine, sine = (one, one), (zero, zero)
+    for state in states[1:]:
+        speed = Fraction(state.velocity_m_s[0])
+        turn = Fraction(state.angular_velocity_rad_s[2])
+        if turn:
+            next_heading = binary(heading, binary(turn, seconds, "mul"), "add")
+            next_cosine, next_sine = trig(next_heading)
+            scale = binary(speed, turn, "div")
+            delta = (
+                product((scale, scale), minus(next_sine, sine)),
+                product((scale, scale), minus(cosine, next_cosine)),
+            )
+            heading, cosine, sine = next_heading, next_cosine, next_sine
+        else:
+            distance = binary(speed, seconds, "mul")
+            delta = (
+                product((distance, distance), cosine),
+                product((distance, distance), sine),
+            )
+        position = [plus(first, second) for first, second in zip(position, delta)]
+    relative = [
+        minus((Fraction(value), Fraction(value)), coordinate)
+        for value, coordinate in zip(point, position)
+    ]
+    return (
+        plus(product(cosine, relative[0]), product(sine, relative[1])),
+        minus(product(cosine, relative[1]), product(sine, relative[0])),
+    )
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_history_registration_complete_frames(
+    c1_history_registration_ledger, monkeypatch, case
+):
+    import struct
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from interface.protocol import State, decode_state, encode_state
+    from sim import diagnostics
+
+    ledger = c1_history_registration_ledger
+    original = diagnostics._bind_synthetic_c1_state_intervals
+
+    def counted(*args, **kwargs):
+        ledger["binding"] += 1
+        assert ledger["binding"] <= 64
+        return original(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("history bound must not query geometry or execute a rover")
+
+    monkeypatch.setattr(diagnostics, "_bind_synthetic_c1_state_intervals", counted)
+    for name in (
+        "inspect_synthetic_c1_history",
+        "capture_synthetic_c1_views",
+        "_probe_synthetic_c1_state_motion",
+        "_probe_synthetic_c1_discrete_motion",
+        "_probe_synthetic_c1_discrete_path_enclosure",
+        "prepare_synthetic_c1_relative_input",
+        "_probe_synthetic_c1_wire_rejection",
+        "_c1_curved_centerline",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    early_speed, current_speed = (0.35, 0.375) if case == 1 else (0.2, 0.25)
+    early_turn = 0.1 if case in (2, 5) else -0.1 if case == 3 else 0.0
+    reference_tick = 20 if case == 4 else 23 if case == 5 else 22
+    states = [
+        State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(
+                early_speed if tick < reference_tick else current_speed,
+                0.0,
+                0.0,
+            ),
+            angular_velocity_rad_s=(
+                0.0,
+                0.0,
+                early_turn if tick < reference_tick else 0.0,
+            ),
+        )
+        for tick in range(20, reference_tick + 1)
+    ]
+    if case == 7:
+        states[1] = replace(states[1], sequence=99)
+    elif case == 8:
+        states[1] = replace(states[1], timestamp_us=states[1].timestamp_us + 1)
+    elif case == 9:
+        states[1] = replace(states[1], ages_us=(1, *states[1].ages_us[1:]))
+    elif case == 10:
+        states[1] = replace(states[1], velocity_m_s=(early_speed, math.ulp(0.0), 0.0))
+    elif case == 11:
+        states[1] = replace(states[1], velocity_m_s=(0.6, 0.0, 0.0))
+    frames = [encode_state(state) for state in states]
+    if case == 6:
+        states.pop(1)
+        frames.pop(1)
+    assumptions = dict.fromkeys(
+        (
+            "starting_pose_exact",
+            "nominal_tick_binding_exact",
+            "stored_word_dt_exact",
+            "interval_ending_twist_exact",
+        ),
+        True,
+    )
+    if case == 12:
+        assumptions = None
+    settings = {
+        "acquisition_tick": 20,
+        "reference_tick": 22.0 if case == 13 else reference_tick,
+        "point_radius_m": 4.0,
+        "assumptions": assumptions,
+        "max_history_ticks": 0 if case == 14 else 3,
+        "synthetic_test_only": case != 15,
+    }
+    saved_states, saved_frames, saved_assumptions = (
+        deepcopy(states),
+        list(frames),
+        deepcopy(assumptions),
+    )
+    before = dict(ledger)
+    ledger["bound"] += 1
+    if case == 15:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._bound_synthetic_c1_history_registration(
+                states, frames, **settings
+            )
+        assert ledger["binding"] == before["binding"]
+        return
+    result = diagnostics._bound_synthetic_c1_history_registration(
+        states, frames, **settings
+    )
+    assert result["fixture_registration_bound"] is (case < 6)
+    for key in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[key] is False
+    if case < 6:
+        assert result["status"] == "bounded_from_complete_word_history"
+        assert result["work"] == {
+            "binding_entries": reference_tick - 19,
+            "intervals": reference_tick - 20,
+        }
+        assert [
+            binding["state_frame"] for binding in result["source_bindings"]
+        ] == frames
+        bounds = {
+            key: Fraction(*pair) for key, pair in result["rational_bounds"].items()
+        }
+        for key, value in bounds.items():
+            assert value >= 0 and Fraction(result["upper_bounds"][key]) >= value
+        if case in (0, 1):
+            ledger["reference"] += 1
+            received = struct.unpack("<f", struct.pack("<f", early_speed))[0]
+            expected = abs(Fraction(received) - Fraction(early_speed)) * Fraction(0.05)
+            assert expected > 0
+            assert bounds["translation_m"] == bounds["registered_point_m"] == expected
+            assert bounds["heading_rad"] == 0
+        elif case in (2, 3, 5):
+            assert bounds["heading_rad"] > 0
+            assert bounds["registered_point_m"] > bounds["translation_m"] > 0
+        elif case == 4:
+            assert all(value == 0 for value in bounds.values())
+        for coordinate in ("velocity_m_s", "angular_velocity_rad_s"):
+            for field in result["source_bindings"][-1]["fields"][coordinate]:
+                assert field["decoded_minus_source"] == (0, 1)
+        ledger["reference"] += 2
+        source_point = _c1_history_registration_reference(states, (4.0, 0.0))
+        decoded_point = _c1_history_registration_reference(
+            [decode_state(frame) for frame in frames], (4.0, 0.0)
+        )
+        coordinate_errors = [
+            max(abs(first[0] - second[1]), abs(first[1] - second[0]))
+            for first, second in zip(source_point, decoded_point)
+        ]
+        assert sum(value * value for value in coordinate_errors) <= (
+            bounds["registered_point_m"] * bounds["registered_point_m"]
+        )
+        result["source_bindings"][0]["fields"].clear()
+        result["assumptions"].clear()
+        result["upper_bounds"]["registered_point_m"] = 123.0
+        if case == 4:
+            ledger["bound"] += 1
+            repeated = diagnostics._bound_synthetic_c1_history_registration(
+                states, frames, **settings
+            )
+            assert repeated["upper_bounds"]["registered_point_m"] == 0.0
+            assert repeated["source_bindings"][0]["fields"]
+    else:
+        reasons = {
+            6: "incomplete_frame_history",
+            7: "frame_history_binding_mismatch",
+            8: "frame_history_binding_mismatch",
+            9: "stale_host_state",
+            10: "unsupported_planar_source_intervals",
+            11: "source_interval_outside_motion_domain",
+            12: "unsupported_history_assumptions",
+            13: "unsupported_history_ticks",
+            14: "history_budget_exhausted",
+        }
+        assert result["reason"] == reasons[case]
+        assert result["status"] == "unknown"
+        assert "source_bindings" not in result and "upper_bounds" not in result
+        if case == 14:
+            ledger["bound"] += 1
+            exhausted = diagnostics._bound_synthetic_c1_history_registration(
+                states,
+                frames,
+                **{**settings, "max_history_ticks": 3, "max_integer_bits": 1},
+            )
+            assert exhausted["reason"] == "integer_budget_exhausted"
+            assert exhausted["work"] == {"binding_entries": 0, "intervals": 0}
+            assert (
+                "upper_bounds" not in exhausted and "source_bindings" not in exhausted
+            )
+            ledger["bound"] += 1
+            comparison_exhausted = diagnostics._bound_synthetic_c1_history_registration(
+                states,
+                frames,
+                **{**settings, "max_history_ticks": 3, "max_integer_bits": 64},
+            )
+            assert comparison_exhausted["reason"] == "integer_budget_exhausted"
+            assert comparison_exhausted["work"] == {
+                "binding_entries": 1,
+                "intervals": 0,
+            }
+            assert "upper_bounds" not in comparison_exhausted
+            assert "source_bindings" not in comparison_exhausted
+    assert states == saved_states and frames == saved_frames
+    assert assumptions == saved_assumptions
+
+
+@pytest.fixture(scope="module")
 def c1_discrete_path_fixtures(request):
     from sim import diagnostics
 

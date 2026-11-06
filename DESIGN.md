@@ -2290,14 +2290,63 @@ records sixteen controls, both scalar endpoint references and retained failure.
 
 Frame/tick correspondence is not source/event authority, measured clock
 synchronization, native execution or a permit. The bridge exposes no runtime
-action/wire decision and admits no startup/full guard. Next independently
-bound registration from complete acquisition-to-reference interval-ending
-source/decoded frame history and explicit timing/profile assumptions. Do not
-multiply the current frame's discrepancy by capture age: earlier intervals can
-differ when the current fields are exact. Keep pose, return/range, native and
-clock evidence distinct; passing this bridge satisfies none of S1-S5.
+action/wire decision and admits no startup/full guard. The separate history
+bound below retains acquisition-to-reference interval-ending source/decoded
+frames and explicit timing/profile assumptions. Do not multiply the current
+frame's discrepancy by capture age: earlier intervals can differ when current
+fields are exact. Passing either prerequisite satisfies none of S1-S5.
 
 [state-motion-review]: REVIEW.md
+
+##### Conditional Complete-History Registration (2026-11-06)
+
+The private `_bound_synthetic_c1_history_registration` supplies a separate
+paired source/decoded-word transform discrepancy. It requires all frames from
+the declared acquisition tick through the reference tick, including the
+starting anchor; nominal timestamps and consecutive sequences must agree.
+At most three past intervals/four complete frames are supported, with existing
+4,096-bit source and 16,384-bit arithmetic ceilings. All source words must
+remain fresh, planar and within the unchanged motion domain. Missing history,
+changed/stale words, unsupported domains or work exhaustion stay unknown
+without a partial transform or history publication.
+
+The explicit common-starting-pose, nominal-tick-binding, stored-word-`dt` and
+interval-ending-constant-twist declarations are artificial assumptions.
+The nominal wire period is 50,000 microseconds; the mathematical interval uses
+the existing binary64 `0.05` word. Corresponding ticks do not establish exact
+real 1/20-second intervals, clock synchronization or native operation error.
+No actual source pose, command dynamics or sensor return is qualified.
+
+For speed/yaw-rate interval widths $\Delta v_j,\Delta\omega_j$, maximum speed
+$V_j$ and stored-word interval $d$, begin with $e_0=h_0=s_0=0$ under the explicit
+common-start premise and propagate:
+
+$$
+\begin{aligned}
+h_{j+1} &= h_j+d\Delta\omega_j,\\
+e_{j+1} &= e_j+d\left(\Delta v_j+V_jh_j+\tfrac12V_jd\Delta\omega_j\right),\\
+s_{j+1} &= s_j+dV_j,\\
+E_{\mathrm{point}} &= e_n+(R+s_n)h_n.
+\end{aligned}
+$$
+
+The rotation inequality $\|u(a)-u(b)\|\leq |a-b|$ bounds the paired translation
+and inverse-registration rotation. The complete point/travel lever arm is
+necessary: heading discrepancy affects a distant capture point even when
+current yaw words are exact. $R$ is an explicitly declared planar point norm
+within the existing 4 m fixture domain, not measured range or occupancy.
+Exact rational content and outward binary64 upper bounds are owned evidence;
+all qualification/admission/training flags remain false. This is conditional
+algebra/fixture evidence, not accepted proof or native/physical certification.
+
+[Review §158][history-registration-review] records sixteen controls, earlier
+speed/yaw discrepancies with exact current words, independent rational point
+references, zero-age/three-interval limits and four spent verification positions.
+Next propagate the complete bound into the named relative-input/prefix geometry
+without substituting it for missing native/pose/range/clock/source evidence or
+admitting a command. Old exact-pose, question, wire and normal APIs stay unchanged.
+
+[history-registration-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -10848,10 +10897,11 @@ ideal motion enclosures only, not native arithmetic/registration or S1-S5
 qualification. The additive path-cell kernel and twelve fixed controls are
 complete (§155). The discrete-path/wall adapter and exact actual-wire/source-
 word interval boundary now pass 24 and 16 fixed controls respectively (§156).
-The actual-frame motion bridge passes sixteen controls (§157); the required
-new-source root gate passes 2,353 tests plus the known xfail/71 warnings. Prior
-spent standalone scopes remain spent. Next: complete-history registration
-discrepancy propagation, then actual source/native/clock evidence gates.
+The actual-frame motion bridge (§157) and complete-history registration bound
+(§158) each pass sixteen controls; the required new-source root gate passes
+2,369 tests plus the known xfail/71 warnings. Prior spent standalone scopes
+remain spent. Next: propagate registration into relative-prefix geometry while
+retaining actual source/native/pose/range/clock evidence gates.
 These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.
 

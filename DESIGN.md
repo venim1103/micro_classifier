@@ -2583,12 +2583,33 @@ or a one-use registry. Complete fabricated matching content cannot authorize
 execution. [Review §168][normal-request-binding-review] records sixteen controls,
 changed-word/frame/epoch/source/Config/ID checks and early/late tick rejection.
 
-Next recheck matched requests against current source-frame/motion inputs before
-the path consumer; content identity must not replace current source binding.
-Full path margins, source/native/error/clock authority, one-use executor, S1-S5
-and task quality remain separate. No usable `OK`, actuation or trial is admitted.
-
 [normal-request-binding-review]: REVIEW.md
+
+##### Conditional Current Request Source Recheck (2026-11-06)
+
+The private `_recheck_synthetic_c1_normal_request_source` first applies the
+bounded typed request/currentness matcher, then prepares fresh content from the
+current supplied original State/actual State and Decision frames, Config and
+motion error assumptions through the existing internally derived-command path.
+Fresh content must match the received request. Caller targets, retained hashes
+or changed frames cannot substitute for this source/motion recheck.
+
+Receipt/type/expiry rejection stops before preparation. Changed source/frame/
+Config/error or work failure stays unknown without partial request/source/motion
+binding. Exact fixture correspondence owns only current content fingerprints
+and diagnostics; all outcomes retain `UNKNOWN`, permission false/all seven flags
+false. Declared context, clock/source authority, ID uniqueness, native error and
+full guard/executor qualification remain unresolved.
+[Review §169][normal-request-source-review] records sixteen controls, three
+mapped sector/tier/speed combinations, substitution/error/budget rejection and
+owned repeat. No geometry selects the command and no normal controller is wired.
+
+Next compose this matched current request with the existing command/path-margin
+consumer under unchanged module-fixture source/body/error assumptions. Full
+source/path/one-use/S1-S5/task-quality gates remain separate; no usable `OK`,
+actuation or trial is admitted.
+
+[normal-request-source-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11157,8 +11178,10 @@ all prior nodes and mapper bytes unchanged. Conditional normal-request content
 (§167) passes sixteen controls/root 2,517 plus the same xfail/71 warnings; all prior
 nodes exact, identifiers/source/uniqueness still unqualified. Conditional exact
 request matching/nominal-expiry rejection (§168) passes sixteen/root 2,533 plus
-the same xfail/71 warnings, all earlier nodes/mapper unchanged. Next current
-source-frame/motion request recheck, not the old loop or a matching-hash permit;
+the same xfail/71 warnings, all earlier nodes/mapper unchanged. Current source/
+frame/motion request recheck (§169) passes sixteen/root 2,549 plus the same xfail/
+71 warnings, all earlier nodes/mapper exact; next current-request/path-margin
+composition, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

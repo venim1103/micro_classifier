@@ -212,9 +212,9 @@ from them. Historical details below are reference material, not new approvals.
   conditional exact-rest startup join (§164), isolated active-`OK` normal map/
   braking rejection (§165), derived-command/source-motion join (§166) and
   conditional request content (§167) and exact matching/nominal-expiry rejection
-  (§168) are implemented/verified. No supplied true flags, online geometry
-  selection or normal controller wiring. Next current source-frame/motion
-  request recheck, never a matching-hash permit;
+  (§168) and current source-frame/motion request recheck (§169) are implemented/
+  verified. No supplied true flags, online geometry selection or normal controller
+  wiring. Next current-request/path-margin composition, never a matching-hash permit;
   retain source/request/expiry/executor and protected-action limits.
 - Conditional C1 input/wire/rejection increment complete (DESIGN.md §7/12 /
   REVIEW.md §146), following §145's admission brief and coverage-first priority.
@@ -244,8 +244,9 @@ from them. Historical details below are reference material, not new approvals.
   source-motion (§166) passes 24/root 2,501 plus the same xfail/71 warnings.
   Conditional request content (§167) passes sixteen/root 2,517 plus the same
   xfail/71 warnings. Request matching/nominal-expiry rejection (§168) passes
-  sixteen/root 2,533 plus the same xfail/71 warnings. Next current source-frame/
-  motion request recheck; retain motion/error/profile and
+  sixteen/root 2,533 plus the same xfail/71 warnings. Current source-frame/motion
+  request recheck (§169) passes sixteen/root 2,549 plus the same xfail/71 warnings.
+  Next current-request/path-margin composition; retain motion/error/profile and
   source/request/expiry/executor/quality gates, not old controller or general
   audits/current truth.
   Four adapter positions and four source-word positions are spent; required
@@ -264,7 +265,7 @@ from them. Historical details below are reference material, not new approvals.
   gate, with any scope change separately approved. Preserve §§138-143 evidence,
   failed attempts, old budgets and all fifteen undecided verdicts/five false flags.
   No proof/allowance/native/source/work/consumer claim is adopted; no job is running.
-- Latest decisions and results: REVIEW.md §§72-168 supersede conflicting historical
+- Latest decisions and results: REVIEW.md §§72-169 supersede conflicting historical
   pilot descriptions below. The user confirmed the decision brief and approved
   autonomous implementation, required local verification and periodic verified
   checkpoint commits/normal pushes, with protected evidence/resource limits intact.
@@ -287,13 +288,15 @@ from them. Historical details below are reference material, not new approvals.
   frames. Python/C enforce all three answers for OK and reject mode/model claims.
   Legacy catalogue 0, four-head synthetic references and old golden/report bytes
   remain supported and unchanged in meaning; they are not the active pilot.
-- Last source-test gate (2026-11-06, §168): 2,533 passes plus known xfail/71
-  warnings, no skips; sixteen conditional request-matching/expiry controls. All
-  78 prior diagnostics/308 test nodes exact, one source/two test nodes added;
-  mapper bytes unchanged. Bounded typed content/retained digest/nominal ticks
-  checked; matches stay UNKNOWN/no permission/all flags false. All four positions
-  spent, no new behavioral failure. Totals 51 checker/48 preparer/48 normal/48 mapper/
-  48 State/48 Decision/48 bridge/48 binder/48 motion/225 digest/zero forbidden.
+- Last source-test gate (2026-11-06, §169): 2,549 passes plus known xfail/71
+  warnings, no skips; sixteen current-source request controls. All 79 prior
+  diagnostics/310 test nodes exact, one source/two test nodes added; mapper bytes
+  unchanged. Current actual source/frame/config/motion content rechecked; UNKNOWN/
+  no permission/all flags false. Three of four positions used, unused fourth not
+  follow-on scope; no new failure. Totals 34 recheck/44 matcher/56 preparer/56 normal/
+  54 mapper/54 State/54 Decision/54 bridge/54 binder/50 motion/226 digest/zero forbidden.
+  Earlier §168 all four spent/51 matcher/48 each preparation path/225 digest and
+  duplicate-path documentation failure stay historical.
   Earlier §167 67 request/23 normal/23 mapper/23 State/23 Decision/19 bridge/19 binder/
   15 motion/48 digest/all four positions and Config.to_record/asdict failures stay retained.
   No new-family C1/Scene/reference/history/
@@ -308,7 +311,7 @@ from them. Historical details below are reference material, not new approvals.
   §160 both failures and all old caps/ledgers stay historical, not standalone
   renewal. No normal runtime/C/native change or extra opt-in sanitizer/Arm gate;
   host checks are not source/numerical/physical/task-quality qualification or
-  linked firmware. Next current source-frame/motion request recheck only;
+  linked firmware. Next current-request/path-margin composition only;
   S1-S5, source/request/expiry/executor/quality and study/board gates stay closed.
 - Privileged simulator truth is now permitted in principle for geometric and
   predictive targets, never as student input. Observation-only human review
@@ -1375,7 +1378,9 @@ false. Conditional request content (§167) adds sixteen/root 2,517 plus the same
 xfail/71 warnings, source/context/ID uniqueness unqualified/all flags false.
 Request matching/nominal-expiry rejection (§168) adds sixteen/root 2,533 plus the
 same xfail/71 warnings; exact matches stay UNKNOWN/no permission/all flags false.
-Next current source-frame/motion request recheck only, not old steering,
+Current source/frame/motion request recheck (§169) adds sixteen/root 2,549 plus
+the same xfail/71 warnings; earlier nodes/mapper exact, all flags false/no permission.
+Next current-request/path-margin composition only, not old steering,
 current geometry selection or a permit; retain source/motion/error/profile and
 request/expiry/executor/quality gates, not current delta times age or
 general arithmetic/identity audits. Four adapter/four binder/four bridge/four
@@ -1394,6 +1399,9 @@ All four request-content positions spent; 67 request/23 normal/23 mapper/23 Stat
 23 Decision/19 bridge/19 binder/15 motion/48 digest/zero forbidden, failures retained.
 All four request-binding positions spent; 51 checker/48 preparer/48 normal/48 mapper/
 48 State/48 Decision/48 bridge/48 binder/48 motion/225 digest/zero forbidden.
+Three current-source positions used; 34 recheck/44 matcher/56 preparer/56 normal/
+54 mapper/54 State/54 Decision/54 bridge/54 binder/50 motion/226 digest/zero forbidden.
+Unused fourth is not follow-on scope.
 S1-S5 satisfaction/full guard/usable trial
 remain separate gates. No usable C1 `OK`
 or host actuation is admitted; this fixture-only wire path always rejects.
@@ -1414,8 +1422,8 @@ ST/toolchain/board readiness proceeds in parallel through user-side actions;
 native integration and learned work follow their gates. Do not resume general audits.
 SC18-v0's earlier approved process remains unstarted/unspent but deferred; explicit
 priority reactivation is needed. Historical evidence/budgets remain in §§138-143:
-source gate now 2,533 plus known xfail/71 warnings for §168's request binding;
-prior §167 2,517/§166 2,501/§165 2,477/§164 2,453/§163 2,437/§161 2,417/§162 2,421 historical;
+source gate now 2,549 plus known xfail/71 warnings for §169's source request recheck;
+prior §168 2,533/§167 2,517/§166 2,501/§165 2,477/§164 2,453/§163 2,437/§161 2,417/§162 2,421 historical;
 §153's old root renewal stays spent, §146 all four spent, §138 four of five/fifth
 unused, old §129/§132
 exhausted, §135 fifth not
@@ -1456,11 +1464,12 @@ No job/cleanup pending; original numbered task results below remain historical.
   Bounded result (2026-11-05, REVIEW.md §146): private decoded-input-to-wire
   rejection tooling and 24 cases complete, no usable `OK` or actuation; source
   qualifications/flags stay false. All four verification positions spent.
-  Current follow-up (2026-11-06, REVIEW.md §168): sixteen conditional request-
-  matching/expiry controls pass/root 2,533 plus known xfail/71 warnings; old nodes/
-  mapper unchanged/all flags false/four positions spent/no permission. Earlier
+  Current follow-up (2026-11-06, REVIEW.md §169): sixteen current-source request
+  controls pass/root 2,549 plus known xfail/71 warnings; old nodes/mapper unchanged/
+  all flags false/three positions used/fourth not follow-on scope/no permission.
+  Earlier §168 all four spent/duplicate-path failure and
   §167 asdict repair failures retained; source/context/ID uniqueness and command
-  qualification remain blocked. Next current source-frame/motion request recheck,
+  qualification remain blocked. Next current-request/path-margin composition,
   not a permit; S1-S5, source,
   request/expiry/executor/quality, task-data/run and hardware gates remain closed.
   Dated results below remain historical; no usable trial or actuation is admitted.

@@ -4392,6 +4392,108 @@ def _check_synthetic_c1_normal_request_binding(
     return result
 
 
+def _recheck_synthetic_c1_normal_request_source(
+    retained_request,
+    received_request,
+    source_state,
+    state_frame,
+    decision_frame,
+    *,
+    current_tick,
+    config=None,
+    settings=None,
+    error_evidence=None,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    source_max_integer_bits=4096,
+    motion_max_integer_bits=16384,
+    synthetic_test_only=False,
+):
+    """Reprepare matched declared request from current supplied source inputs."""
+    if synthetic_test_only is not True:
+        raise ValueError("request source recheck requires synthetic_test_only=True")
+    work = {"binding_entries": 0, "preparation_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-normal-request-source/1",
+        "allowed_use": "conditional_current_request_source_recheck_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_current_request",
+        "fixture_request_source_rechecked": False,
+        "fixture_permission_granted": False,
+        "guard_status": "UNKNOWN",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    work["binding_entries"] = 1
+    initial = _check_synthetic_c1_normal_request_binding(
+        retained_request,
+        received_request,
+        current_tick=current_tick,
+        synthetic_test_only=True,
+    )
+    result["initial_binding_work"] = deepcopy(initial["work"])
+    if initial["fixture_request_matched"] is not True:
+        result["reason"] = initial["reason"]
+        return result
+    work["preparation_entries"] = 1
+    current = _prepare_synthetic_c1_normal_request(
+        source_state,
+        state_frame,
+        decision_frame,
+        request_id=received_request["request_id"],
+        source_context=deepcopy(received_request["source_context"]),
+        reference_tick=current_tick,
+        config=config,
+        settings=settings,
+        error_evidence=error_evidence,
+        max_braking_ticks=max_braking_ticks,
+        max_chords=max_chords,
+        max_terms=max_terms,
+        source_max_integer_bits=source_max_integer_bits,
+        motion_max_integer_bits=motion_max_integer_bits,
+        synthetic_test_only=True,
+    )
+    result["current_preparation_work"] = deepcopy(current["work"])
+    if current["fixture_request_prepared"] is not True:
+        result["reason"] = current["reason"]
+        return result
+    work["binding_entries"] = 2
+    binding = _check_synthetic_c1_normal_request_binding(
+        current,
+        received_request,
+        current_tick=current_tick,
+        synthetic_test_only=True,
+    )
+    result["current_binding_work"] = deepcopy(binding["work"])
+    if binding["fixture_request_matched"] is not True:
+        result["reason"] = binding["reason"]
+        return result
+    result.update(
+        status="rechecked_declared_current_request_source_fixture",
+        reason="current_content_rechecked_source_and_full_guard_unqualified",
+        fixture_request_source_rechecked=True,
+        request_sha256=binding["request_sha256"],
+        current_tick=current_tick,
+        **{
+            key: current["request"][key]
+            for key in ("config_sha256", "source_state_sha256", "motion_sha256")
+        },
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

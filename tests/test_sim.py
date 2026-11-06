@@ -1174,6 +1174,259 @@ def test_synthetic_c1_request_binding_rejects_changed_or_expired_content(
 
 
 @pytest.fixture(scope="module")
+def c1_request_source_ledger(request):
+    ledger = dict.fromkeys(
+        (
+            "recheck",
+            "checker",
+            "prepare",
+            "normal",
+            "mapper",
+            "state_decode",
+            "decision_decode",
+            "bridge",
+            "binding",
+            "motion",
+            "digest",
+            "forbidden",
+        ),
+        0,
+    )
+    yield ledger
+    assert ledger["recheck"] <= 32 and ledger["digest"] <= 128
+    assert all(
+        ledger[key] <= 48
+        for key in ledger
+        if key not in ("recheck", "digest", "forbidden")
+    )
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 request-source ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 request-source ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_request_source_rechecks_actual_inputs(
+    c1_request_source_ledger, monkeypatch, case
+):
+    from dataclasses import replace
+
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        State,
+        Status,
+        encode_decision,
+        encode_state,
+    )
+    from sim import diagnostics, rules
+
+    ledger = c1_request_source_ledger
+    for key, module, name in (
+        ("checker", diagnostics, "_check_synthetic_c1_normal_request_binding"),
+        ("prepare", diagnostics, "_prepare_synthetic_c1_normal_request"),
+        ("normal", diagnostics, "_probe_synthetic_c1_normal_state_motion"),
+        ("mapper", rules, "_map_synthetic_c1_normal_command"),
+        ("state_decode", rules, "decode_state"),
+        ("decision_decode", rules, "decode_decision"),
+        ("bridge", diagnostics, "_probe_synthetic_c1_state_motion"),
+        ("binding", diagnostics, "_bind_synthetic_c1_state_intervals"),
+        ("motion", diagnostics, "_probe_synthetic_c1_discrete_motion"),
+        ("digest", diagnostics, "_c1_source_binding_digest"),
+    ):
+        original = getattr(module, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (128 if _key == "digest" else 48)
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(module, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "request source recheck must not query C1 or execute a rover"
+        )
+
+    for name in (
+        "inspect_synthetic_c1_history",
+        "capture_synthetic_c1_views",
+        "_probe_synthetic_c1_discrete_path_enclosure",
+        "_probe_synthetic_c1_wire_rejection",
+        "_audit_synthetic_c1_source_binding",
+        "_c1_curved_centerline",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("host_action", "wire_step", "decide", "run_diagnostics"):
+        monkeypatch.setattr(rules, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    sector = case if case < 3 else 0
+    choices = (0, sector, sector + 1)
+    answers = tuple(
+        Answer(
+            question,
+            tuple(float(index == choice) for index in range(len(options))),
+            choice,
+        )
+        for (question, (_, options)), choice in zip(
+            RULES_QUESTIONS.items(), choices, strict=True
+        )
+    )
+    source = State(
+        sequence=22,
+        timestamp_us=1100000,
+        velocity_m_s=((0.5, 0.2, 0.35)[case] if case < 3 else 0.5, 0.0, 0.0),
+        goal_m=(3.0, 1.0, 0.0),
+    )
+    state_frame = encode_state(source)
+    decision = Decision(
+        sequence=22, timestamp_us=1100000, status=Status.OK, answers=answers
+    )
+    decision_frame = encode_decision(decision)
+    error = {"position_error_m": 0.0, "heading_error_rad": 0.0, "profile_exact": True}
+    retained = diagnostics._prepare_synthetic_c1_normal_request(
+        source,
+        state_frame,
+        decision_frame,
+        request_id="d" * 32,
+        source_context={
+            "epoch": "a" * 32,
+            "source_identity": "b" * 64,
+            "c1_reference_identity": "c" * 64,
+            "capture_tick": 20,
+            "reference_tick": 22,
+        },
+        reference_tick=22,
+        error_evidence=error,
+        synthetic_test_only=True,
+    )
+    assert retained["fixture_request_prepared"] is True
+    received = deepcopy(retained["request"])
+    config = Config()
+    if case == 3:
+        source = replace(source, sequence=99)
+    elif case == 4:
+        source = replace(source, goal_m=(2.0, 1.0, 0.0))
+        state_frame = encode_state(source)
+    elif case == 5:
+        changed = replace(
+            decision, answers=(answers[0], replace(answers[1], selected=2), answers[2])
+        )
+        decision_frame = encode_decision(changed)
+    elif case == 6:
+        config = replace(config, acceleration=0.5)
+    elif case == 7:
+        error = {**error, "position_error_m": 0.01}
+    elif case == 8:
+        error = None
+    elif case == 10:
+        received["command_words"]["target_speed_m_s"] ^= 1
+    elif case == 11:
+        retained["source_qualified"] = True
+    options = {
+        "current_tick": 23 if case == 9 else 22,
+        "config": config,
+        "error_evidence": error,
+        "max_braking_ticks": 0 if case == 12 else 16,
+        "source_max_integer_bits": 1 if case == 13 else 4096,
+        "synthetic_test_only": case != 15,
+    }
+    if case == 14:
+        options["target_speed"] = 0.4
+    saved = deepcopy((retained, received, source, state_frame, decision_frame, options))
+
+    def recheck():
+        ledger["recheck"] += 1
+        assert ledger["recheck"] <= 32
+        return diagnostics._recheck_synthetic_c1_normal_request_source(
+            retained, received, source, state_frame, decision_frame, **options
+        )
+
+    before = dict(ledger)
+    if case in (14, 15):
+        with pytest.raises(
+            TypeError if case == 14 else ValueError,
+            match="target_speed" if case == 14 else "synthetic_test_only",
+        ):
+            recheck()
+        assert (
+            ledger["checker"] == before["checker"]
+            and ledger["prepare"] == before["prepare"]
+        )
+    else:
+        result = recheck()
+        assert result["fixture_request_source_rechecked"] is (case < 3)
+        assert (
+            result["fixture_permission_granted"] is False
+            and result["guard_status"] == "UNKNOWN"
+        )
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case < 3:
+            assert (
+                result["status"] == "rechecked_declared_current_request_source_fixture"
+            )
+            assert result["work"] == {"binding_entries": 2, "preparation_entries": 1}
+            for key in (
+                "request_sha256",
+                "config_sha256",
+                "source_state_sha256",
+                "motion_sha256",
+            ):
+                assert result[key] == (
+                    retained[key]
+                    if key == "request_sha256"
+                    else retained["request"][key]
+                )
+            if case == 0:
+                original = deepcopy(result)
+                result["motion_sha256"] = "0" * 64
+                assert recheck() == original
+        else:
+            assert (
+                result["status"] == "unknown"
+                and "request_sha256" not in result
+                and "motion_sha256" not in result
+            )
+            if case in (4, 5, 7, 10):
+                assert result["reason"] == "request_content_mismatch"
+            elif case == 3:
+                assert result["reason"] == "source_frame_binding_mismatch"
+            elif case == 6:
+                assert result["reason"] == "unsupported_normal_motion_profile"
+            elif case == 8:
+                assert result["reason"] == "error_evidence_missing"
+            elif case == 9:
+                assert result["reason"] == "request_expired"
+            elif case == 11:
+                assert result["reason"] == "unsupported_retained_request"
+            elif case == 12:
+                assert result["reason"] == "braking_budget_exhausted"
+            elif case == 13:
+                assert "budget_exhausted" in result["reason"]
+            if case in (9, 10, 11):
+                assert (
+                    ledger["prepare"] == before["prepare"]
+                    and result["work"]["preparation_entries"] == 0
+                )
+    assert (retained, received, source, state_frame, decision_frame, options) == saved
+
+
+@pytest.fixture(scope="module")
 def c1_history_registration_ledger(request):
     ledger = dict.fromkeys(("bound", "binding", "reference", "forbidden"), 0)
     yield ledger

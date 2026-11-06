@@ -12995,6 +12995,82 @@ diff/whitespace. Stage only these files and normally push via the configured
 upstream; no unchanged successful root rerun for docs. No job, generated artifact
 or cleanup pending.
 
+## 169. Current Source-Frame/Motion Request Recheck (2026-11-06)
+
+Checkpoint §168 normally committed/pushed as
+`e0c8fedcbcdb896080d1d6fd37ef73cae0984452`; main clean/upstream 0/0. Continue
+current supplied source/frame/motion correspondence, not source qualification,
+guard admission, request registry, executor or host-controller adoption.
+
+**Pre-execution hypothesis/check.** The matcher has no current source/frame
+arguments: retained and received content can remain identical while those supplied
+inputs change. A private recheck first uses the bounded typed receipt/currentness
+matcher, then prepares a fresh request from the actual original State/State frame/
+Decision frame and unchanged derived-command/motion path, finally matches that
+fresh content to receipt. No caller target or selected C1 capture. Changed source,
+frames, Config or motion error assumptions must reject even when the retained
+receipt itself matches. Exact fixture correspondence still reports `UNKNOWN`,
+permission false/all seven flags false. Declared context/clock/source/ID uniqueness
+and full path/body/native/error/executor evidence are not qualified by this join.
+
+Finite sixteen-control CPU/in-memory scope, no new Scene/C1/history/reference/
+source-owner/auditor/rover/runtime/data/capture/episode. Controls use unchanged
+actual-frame fixture conventions, three mapped sector/tier/speed combinations,
+changed original State, regenerated State/Decision frame, Config/error change,
+missing error, expired/substituted receipt, injected true flag, source/braking cap,
+unsupported caller target/no opt-in and owned repeat. Up to four positions including
+failed/aborted/focused/repair/style and required new-source root; per complete
+position max32 recheck, max48 matcher/preparer/normal/mapper/State decode/Decision
+decode/bridge/binder/motion each, max128 digest including initial fixture preparation
+and both matchers. New parent accounting does not alter any old family cap; old
+root fixtures remain necessary compatibility only, never a standalone renewal.
+Existing limits/tolerances/profile/source4096/motion16384/one command tick/16 brake/
+128 chord/16 term remain unchanged. Rejections omit partial bindings; no automatic
+fallback execution or extra inference/study/dependency/download/hardware action.
+
+**Implementation and verification.** Added only the private current-source
+request recheck and two test module nodes; all 79 prior diagnostics and 310 prior
+test nodes are AST-exact/in order. Entire mapper bytes unchanged. The result owns
+only matched current request/config/source/motion fingerprints and work; no partial
+request/motion is published on failure, no source/admission flag becomes true.
+
+1. Focused sixteen controls pass, 1,610 deselected, 3.44 s. Actual parent ledger:
+  17 recheck/22 matcher/28 preparer/28 normal/27 mapper/27 State decode/27 Decision
+  decode/27 bridge/27 binder/25 motion/113 digest/zero forbidden. Three early
+  receipt/type/expiry failures never prepare a current source; unsupported target/
+  opt-in controls never enter matcher/preparer. Owned repeat is counted.
+2. Zero-query AST-preserving formatting/narrow lint/format/whitespace pass. Only
+  the new test layout changed; old nodes/mapper exact. Editor and Pylance syntax
+  pass; one resolved test call is signature-compatible, definition+test only.
+3. Required root `/opt/venv/bin/python -m pytest -q && ruff check . &&
+  ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`
+  passes **2,549 plus known transformer QDQ xfail/71 warnings**, no skips,
+  76.02 s; actual new ledger identical. Unchanged old root families remain
+  required compatibility only, not new standalone experiments/audits.
+
+Three of four positions used; unused fourth is not follow-on scope. Totals
+**34 recheck/44 matcher/56 preparer/56 normal/54 mapper/54 State decode/54 Decision
+decode/54 bridge/54 binder/50 motion/226 digest/zero forbidden**. No new failure.
+Source SHA256 `004657e415450b59c90742b58bf77dbf34ca7a8bbd8f4d8216582641226c74be`;
+test SHA256 `e17980fbbe603a98efca4a3d708b712c43ecfb7f9b4212844d473735c5462cb3`.
+No source/test edit after the root. The §168 normal push succeeded with stale
+gh/container-helper warnings retained, no config/security/credential change or
+retry. Earlier §168 duplicate-path failure/51 matcher/48 each preparation path/
+225 digest and §167 serialization failures/all older caps/ledgers stay historical.
+
+Next local prerequisite: compose the matched current request with the existing
+command/path-margin consumer under unchanged module-fixture source/body/error
+assumptions, never caller geometry-selected steering. Source/context/clock/ID
+uniqueness/native/error/full-path/guard/one-use executor/S1-S5 and task quality
+remain unqualified; keep all flags false/no permission/no usable `OK` or actuation.
+No general arithmetic/identity audit, normal controller or protected study follows.
+Scoped checks pass for exact prior REVIEW §§1-168/Sources, stable workflow/older
+task results, prior design/roadmap, 685 prose references/25 inline links/70 local
+targets+anchors, all prior ASTs/root-tested bytes/unchanged mapper and five-file
+diff/whitespace. Stage only these files and normally push via the configured
+upstream; no unchanged root rerun for docs. No job, generated artifact or cleanup
+pending.
+
 ## Sources
 
 Hardware and tools:

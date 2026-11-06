@@ -3770,6 +3770,128 @@ def _bound_synthetic_c1_history_registration(
     return result
 
 
+def _check_synthetic_c1_straight_capture_reference_pose(
+    capture_ticks,
+    capture_poses_m_rad,
+    source_states,
+    state_frames,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    assumptions=None,
+    synthetic_test_only=False,
+):
+    """Check declared straight stored-word pose correspondence, not registration."""
+    from interface.protocol import decode_state
+
+    if synthetic_test_only is not True:
+        raise ValueError("capture reference pose requires synthetic_test_only=True")
+    work = {"history_entries": 0, "decode_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-straight-capture-reference-pose/1",
+        "allowed_use": "conditional_straight_capture_reference_pose_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_capture_pose_metadata",
+        "fixture_reference_pose_matched": False,
+        "fixture_permission_granted": False,
+        "guard_status": "UNKNOWN",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": work,
+    }
+    if (
+        type(capture_ticks) is not np.ndarray
+        or capture_ticks.shape != (8,)
+        or capture_ticks.dtype != np.dtype(np.uint32)
+        or type(capture_poses_m_rad) is not np.ndarray
+        or capture_poses_m_rad.shape != (8, 3)
+        or capture_poses_m_rad.dtype != np.dtype(np.float64)
+        or not np.all(np.isfinite(capture_poses_m_rad))
+        or not np.all(capture_ticks == capture_ticks[0])
+        or not np.all(capture_poses_m_rad == capture_poses_m_rad[0])
+    ):
+        return result
+    if (
+        type(reference_pose_m_rad) not in (list, tuple)
+        or len(reference_pose_m_rad) != 3
+        or any(type(value) not in (int, float) for value in reference_pose_m_rad)
+    ):
+        result["reason"] = "unsupported_reference_pose"
+        return result
+    if capture_poses_m_rad[0, 2] != 0:
+        result["reason"] = "unsupported_nonzero_capture_heading"
+        return result
+    owned_ticks, owned_poses = deepcopy((capture_ticks, capture_poses_m_rad))
+    reference = deepcopy(reference_pose_m_rad)
+    work["history_entries"] = 1
+    history = _bound_synthetic_c1_history_registration(
+        source_states,
+        state_frames,
+        acquisition_tick=int(owned_ticks[0]),
+        reference_tick=reference_tick,
+        point_radius_m=0.0,
+        assumptions=assumptions,
+        synthetic_test_only=True,
+    )
+    result["history_work"] = deepcopy(history["work"])
+    if history["fixture_registration_bound"] is not True:
+        result["reason"] = history["reason"]
+        return result
+    for binding in history["source_bindings"]:
+        if any(
+            Fraction(*pair) != 0
+            for pair in binding["fields"]["angular_velocity_rad_s"][2]["interval"]
+        ):
+            result["reason"] = "unsupported_nonzero_history_turn"
+            return result
+    arithmetic = _C1CommandArithmetic(0, 16384, work)
+    try:
+        expected = [arithmetic.value(float(value)) for value in owned_poses[0]]
+        seconds = arithmetic.value(0.05)
+        for binding in history["source_bindings"][1:]:
+            work["decode_entries"] += 1
+            decoded = decode_state(binding["state_frame"])
+            step = arithmetic.binary(
+                arithmetic.value(decoded.velocity_m_s[0]), seconds, "mul"
+            )
+            expected[0] = arithmetic.binary(expected[0], step, "add")
+        bounds = tuple(
+            (arithmetic.outward(value, False), arithmetic.outward(value, True))
+            for value in expected
+        )
+        supplied = tuple(arithmetic.value(value) for value in reference)
+        if any(
+            not arithmetic.value(lower) <= value <= arithmetic.value(upper)
+            for value, (lower, upper) in zip(supplied, bounds, strict=True)
+        ):
+            result["reason"] = "capture_history_reference_pose_mismatch"
+            return result
+    except (ArithmeticError, ValueError) as error:
+        result["reason"] = str(error)
+        return result
+    result.update(
+        status="matched_straight_capture_reference_pose_fixture",
+        reason="stored_word_pose_correspondence_source_unqualified",
+        fixture_reference_pose_matched=True,
+        acquisition_tick=int(owned_ticks[0]),
+        reference_tick=reference_tick,
+        reference_pose_m_rad=reference,
+        nominal_pose_bounds_m_rad=bounds,
+        history_bound=deepcopy(history),
+    )
+    return result
+
+
 def _probe_synthetic_c1_state_motion(
     source_state,
     state_frame,

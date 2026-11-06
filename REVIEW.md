@@ -13368,6 +13368,93 @@ prior ASTs/unchanged mapper and five-file scope. No documentation failure or
 extra fixture/root invocation. Stage only verified checkpoint files; synchronize
 through the configured upstream without force/security/configuration changes.
 
+## 173. Straight Capture/Reference-Pose Correspondence (2026-11-06)
+
+§172 committed/normally pushed as `923ef10b496251088d666aa3b91f9d96318cd0c0`,
+clean main/upstream 0/0; stale helper warnings retained without configuration/
+security changes. Continue the named capture/history/reference-pose prerequisite.
+
+**Pre-execution hypothesis/check.** Complete-history registration bounds only
+source/decoded discrepancy, not the nominal capture-to-current pose. An isolated
+checker can reject a declared pose shifted by 0.01 m/rad despite matching history.
+Use existing complete-history binding and stored-word dt, a straight zero-heading
+subset only, and exact rational accumulation of decoded interval-ending speeds.
+Existing outward conversion supplies adjacent enclosing binary64 endpoints; no
+new arbitrary tolerance/error allowance or claim of certified arithmetic. Curved
+past motion/nonzero capture heading remain unknown. This private subset is not
+a change to product/command semantics. Metadata arrays are owned, fixed dtype/
+shape/equal-view/finite; no path or source-authority claim. Not yet connected to
+the owned request/path wrapper; capture content/request/current-source joins stay
+separate. Always UNKNOWN/no permission/all seven flags false.
+
+Finite sixteen-control CPU/in-memory scope, at most four focused/failed/aborted/
+repair/style/root positions, final position reserved for required root. Reuse
+existing two-scene module fixture, exactly two captures/three preparation motions
+per constructed fixture, separately accounted/shared in required root; no new
+study/Scene/source-owner/auditor/reference/path/rover/runtime/data/model/
+dependency/download/hardware. Metadata-only tick/pose variants are unit controls,
+not captures, events or collection. Per matrix max32 checker/history, max64 binder,
+max256 State decoder including control preparation; zero forbidden. Fixed source
+4096/history3/arithmetic16384 ceilings, prior assertions/tolerances/known xfail
+unchanged. Arithmetic failure rejects without partial pose/history publication;
+no logs/reports/new persisted data/job/cleanup. Old scopes/unused positions not
+borrowed; new-source root is compatibility only. Next sixteen focused controls.
+Actual clock/ray/pose/body/error/source/native/registration/ID/one-use/S1-S5/
+physical/task-quality and protected study/data/hardware gates remain closed.
+
+**Implementation and verification.** One isolated private checker plus two test
+nodes, all 83 prior diagnostics/318 prior tests AST-exact/in order, mapper bytes
+unchanged. Nominal decoded straight motion uses only interval-ending samples
+after acquisition and the stored-word 0.05 s dt. Both acquisition-equals-reference
+and varying speed controls match; shifted x/y/heading, incomplete history,
+changed view metadata/type/nonfinite/false assumptions reject. Nonzero past turn
+or capture heading stays unknown; no curved trajectory or qualified source pose
+is inferred. Metadata-only correspondence is not full capture/request binding.
+
+1. Sixteen focused controls pass, 1,674 deselected, 1.49 s. Actual ledger:
+  17 checker/10 history/22 binder/86 State decoder including setup/zero forbidden;
+  two reused captures/three preparation motions separately. Owned output/history
+  repeat counted; invalid metadata and no opt-in/unsupported target stop before
+  history. No path/geometry/collection/controller/auditor/reference query.
+2. Zero-query style/AST-preserving formatting/lint/format/whitespace pass; no
+  import-order failure. All prior nodes/mapper exact. AST syntax/editor diagnostics
+  pass and language-server definition+one test-only caller.
+3. Required root `python -m pytest -q && ruff check . && ruff format --check
+  sim/diagnostics.py tests/test_sim.py && git diff --check` passes **2,613 plus
+  known transformer QDQ xfail/71 warnings**, no skips, 55.08 s. New ledger matches
+  focused controls exactly; old controls are required compatibility only, not
+  standalone renewal. No extra opt-in native/sanitizer/Arm/board/model gate.
+
+Three of four positions used; unused fourth not follow-on scope, no new failure.
+Cumulative **34 checker/20 history/44 binder/172 State decoder/zero forbidden**;
+separate setup four captures/six motions/same two scenes, no new study or cohort.
+Root-tested source SHA256
+`919f1a4a55cbc2158450baa788167a8c76cab11da0fd98f616dd5ed7abfbead8`;
+test SHA256 `036fc6e27f752317ee5b407d85380dc4693236461316fa6a48c92f42a610fb66`.
+No source/test edits after root. All seven flags false/UNKNOWN/no permission; no
+normal runtime, usable `OK`, actuation, source/native/numerical/physical/task-
+quality qualification, new study/data/model/dependency/download/hardware or
+generated report/job/cleanup. Old failures/budgets remain historical.
+
+Checkpoint reassessment: isolated straight metadata/history/reference-pose
+correspondence is implemented, not integrated. Next connect it to the owned
+capture/current-request path using that owned record, retain full source/point
+registration bounds and explicitly account for reference rounding rather than
+silently replacing or double-spending remaining/source error. Unsupported past
+turns retain abstention; command meanings/defaults stay unchanged. Actual source/
+clock/ray/body/error/native/registration/ID/one-use/S1-S5/physical/task-quality
+and protected study/data/hardware gates remain closed. Scoped documentation/
+history/links/root-tested-byte checks and checkpoint commit/normal upstream
+synchronization follow; no unchanged successful root rerun.
+
+Scoped documentation checks pass: exact prior REVIEW §§1-172/Sources, stable
+workflow/older task history/design contracts/roadmap, 689 prose references
+(including wrapped labels)/25 inline links/70 local targets+anchors, editor
+diagnostics, root-tested source/test bytes/prior ASTs/unchanged mapper and five-
+file scope. No documentation failure or extra fixture/root invocation. Stage
+only this verified checkpoint and normally synchronize configured upstream;
+no force/security/configuration changes.
+
 ## Sources
 
 Hardware and tools:

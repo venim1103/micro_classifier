@@ -2667,13 +2667,33 @@ Outputs own their path enclosure and always remain UNKNOWN/no permission/all
 seven flags false. [Review §172][owned-capture-path-review] records sixteen reused
 controls, prior nodes/mapper exact, no source/runtime/qualification claim.
 
-Next check correspondence between owned capture, complete frame history and the
-declared current reference pose. Source/clock/ray/pose/body/error/native/
-registration/ID/one-use/S1-S5/task-quality evidence remains separate; no usable
-`OK`, actuation, normal controller or trial is admitted. General arithmetic/
-identity audits and protected studies stay deferred.
-
 [owned-capture-path-review]: REVIEW.md
+
+##### Conditional Straight Capture/Reference Pose (2026-11-06)
+
+The isolated `_check_synthetic_c1_straight_capture_reference_pose` compares
+declared current pose against exact rational accumulation of decoded interval-
+ending speeds from complete bound State/frame history and stored-word dt. Only
+zero capture heading and zero source/decoded historical turns are supported;
+other past motion abstains. This is a private conservative subset, not a product
+restriction, changed command meaning or curved-motion implementation.
+
+Owned finite/equal-view metadata has fixed uint32 tick and float64 pose shapes.
+Existing outward conversion supplies binary64 endpoints enclosing nominal straight
+pose, without a new arbitrary tolerance or certified numerical allowance. Shifted
+pose, incomplete history, malformed metadata and unsupported assumptions reject.
+Outputs own pose/history content and retain UNKNOWN/no permission/all seven flags
+false. Metadata correspondence does not bind full capture content, a current
+request/source or actual producer/clock/registration authority. [Review §173]
+[capture-reference-pose-review] records sixteen controls, prior nodes/mapper exact.
+
+Next join this checker to the owned capture/current-request path, preserving full
+source/point error and accounting for reference rounding separately. Source/clock/
+ray/pose/body/error/native/registration/ID/one-use/S1-S5/task-quality evidence remains
+separate; no usable `OK`, actuation, normal controller or trial is admitted. General
+arithmetic/identity audits and protected studies stay deferred.
+
+[capture-reference-pose-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11249,8 +11269,10 @@ sixteen/root 2,565 plus the same xfail/71 warnings, all earlier nodes/mapper exa
 declared request/C1 capture-content check (§171) passes sixteen/root 2,581 plus
 the same xfail/71 warnings, prior nodes/mapper exact. Owned capture/current-request
 path composition (§172) passes sixteen/root 2,597 plus the same xfail/71 warnings,
-prior nodes/mapper exact. Next owned capture/frame-history/current-reference-pose
-correspondence, not the old loop or a matching-hash permit;
+prior nodes/mapper exact. Isolated straight capture/reference-pose correspondence
+(§173) passes sixteen/root 2,613 plus the same xfail/71 warnings, prior nodes/mapper
+exact. Next owned capture/current-request/straight-pose join with explicit rounding
+margin, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

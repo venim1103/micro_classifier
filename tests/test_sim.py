@@ -2381,6 +2381,192 @@ def test_synthetic_c1_owned_capture_request_path_rejects_substitution(
 
 
 @pytest.fixture(scope="module")
+def c1_capture_reference_pose_ledger(request):
+    ledger = dict.fromkeys(("checker", "history", "binding", "decode", "forbidden"), 0)
+    yield ledger
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 capture-reference pose ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print(
+                "C1 capture-reference pose ledger:", json.dumps(ledger, sort_keys=True)
+            )
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_straight_capture_reference_pose_matches_complete_history(
+    c1_discrete_path_fixtures, c1_capture_reference_pose_ledger, monkeypatch, case
+):
+    from fractions import Fraction
+
+    from interface import protocol
+    from interface.protocol import State, encode_state
+    from sim import diagnostics, rules
+
+    ledger = c1_capture_reference_pose_ledger
+    for key, module, name in (
+        ("history", diagnostics, "_bound_synthetic_c1_history_registration"),
+        ("binding", diagnostics, "_bind_synthetic_c1_state_intervals"),
+        ("decode", protocol, "decode_state"),
+    ):
+        original = getattr(module, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (
+                256 if _key == "decode" else 64 if _key == "binding" else 32
+            )
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(module, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "pose check must not query paths, select, collect or actuate"
+        )
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "inspect_synthetic_c1_history",
+        "_probe_synthetic_c1_owned_capture_request_path",
+        "_probe_synthetic_c1_command_path_enclosure",
+        "probe_synthetic_c1_questions",
+        "_audit_synthetic_c1_source_binding",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("host_action", "wire_step", "decide", "run_diagnostics"):
+        monkeypatch.setattr(rules, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    record = c1_discrete_path_fixtures["records"][0]
+    ticks, poses = deepcopy((record["capture_ticks"], record["capture_poses_m_rad"]))
+    acquisition = 22 if case == 2 else 20
+    if case == 2:
+        ticks.fill(22)
+    speeds = (0.3, 0.1, 0.4) if case == 1 else (0.2, 0.2, 0.5)
+    states = [
+        State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(speeds[tick - 20], 0.0, 0.0),
+            angular_velocity_rad_s=(0.0, 0.0, 0.1 if case == 6 else 0.0),
+            goal_m=(3.0, 1.0, 0.0),
+        )
+        for tick in range(acquisition, 23)
+    ]
+    frames = [encode_state(state) for state in states]
+    distance = sum(
+        Fraction(protocol.decode_state(frame).velocity_m_s[0]) for frame in frames[1:]
+    ) * Fraction(0.05)
+    reference = [
+        float(Fraction(float(poses[0, 0])) + distance),
+        float(poses[0, 1]),
+        0.0,
+    ]
+    assumptions = dict.fromkeys(
+        (
+            "starting_pose_exact",
+            "nominal_tick_binding_exact",
+            "stored_word_dt_exact",
+            "interval_ending_twist_exact",
+        ),
+        True,
+    )
+    options = {
+        "reference_tick": 22,
+        "reference_pose_m_rad": reference,
+        "assumptions": assumptions,
+        "synthetic_test_only": case != 14,
+    }
+    if case in (3, 4, 5):
+        reference[case - 3] += 0.01
+    elif case == 7:
+        poses[:, 2] = 0.1
+    elif case == 8:
+        states.pop(1)
+        frames.pop(1)
+    elif case == 9:
+        ticks[0] = 21
+    elif case == 10:
+        poses[0, 0] += 0.01
+    elif case == 11:
+        poses[0, 0] = float("nan")
+    elif case == 12:
+        poses = poses.astype(np.float32)
+    elif case == 13:
+        assumptions["starting_pose_exact"] = False
+    elif case == 15:
+        options["target_speed"] = 0.4
+    saved = deepcopy((ticks, poses, states, frames, options))
+
+    def probe():
+        ledger["checker"] += 1
+        assert ledger["checker"] <= 32
+        return diagnostics._check_synthetic_c1_straight_capture_reference_pose(
+            ticks, poses, states, frames, **options
+        )
+
+    before = dict(ledger)
+    if case in (14, 15):
+        with pytest.raises(
+            ValueError if case == 14 else TypeError,
+            match="synthetic_test_only" if case == 14 else "target_speed",
+        ):
+            probe()
+        assert ledger["history"] == before["history"]
+    else:
+        output = probe()
+        assert output["fixture_reference_pose_matched"] is (case < 3)
+        assert (
+            output["guard_status"] == "UNKNOWN"
+            and output["fixture_permission_granted"] is False
+        )
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert output[flag] is False
+        if case < 3:
+            assert output["status"] == "matched_straight_capture_reference_pose_fixture"
+            assert output["reference_pose_m_rad"] == reference
+            assert (
+                output["history_bound"]["source_bindings"][-1]["state_frame"]
+                == frames[-1]
+            )
+            if case == 0:
+                original_output = deepcopy(output)
+                output["reference_pose_m_rad"][0] += 1
+                output["history_bound"]["source_bindings"].clear()
+                assert probe() == original_output
+        else:
+            assert output["status"] == "unknown" and "history_bound" not in output
+            assert output["reason"] == (
+                "capture_history_reference_pose_mismatch"
+                if case in (3, 4, 5)
+                else "unsupported_nonzero_history_turn"
+                if case == 6
+                else "unsupported_nonzero_capture_heading"
+                if case == 7
+                else "incomplete_frame_history"
+                if case == 8
+                else "unsupported_history_assumptions"
+                if case == 13
+                else "unsupported_capture_pose_metadata"
+            )
+    assert (states, frames, options) == (saved[2], saved[3], saved[4])
+    assert ticks.dtype == saved[0].dtype and ticks.tobytes() == saved[0].tobytes()
+    assert poses.dtype == saved[1].dtype and poses.tobytes() == saved[1].tobytes()
+
+
+@pytest.fixture(scope="module")
 def c1_history_registration_ledger(request):
     ledger = dict.fromkeys(("bound", "binding", "reference", "forbidden"), 0)
     yield ledger

@@ -759,6 +759,240 @@ def test_synthetic_c1_history_registration_complete_frames(
 
 
 @pytest.fixture(scope="module")
+def c1_registered_cells_ledger(request):
+    ledger = dict.fromkeys(
+        ("wrapper", "history", "binding", "cells", "reference", "forbidden"), 0
+    )
+    yield ledger
+    assert all(
+        ledger[key] <= 32 for key in ("wrapper", "history", "cells", "reference")
+    )
+    assert ledger["binding"] <= 128 and ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 registered-cell ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 registered-cell ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_registered_cells_declared_inputs(
+    c1_registered_cells_ledger, monkeypatch, case
+):
+    from fractions import Fraction
+
+    from interface.protocol import State, decode_state, encode_state
+    from sim import diagnostics
+
+    ledger = c1_registered_cells_ledger
+    for key, name in (
+        ("history", "_bound_synthetic_c1_history_registration"),
+        ("binding", "_bind_synthetic_c1_state_intervals"),
+        ("cells", "_c1_exclude_path_cells"),
+    ):
+        original = getattr(diagnostics, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (128 if _key == "binding" else 32)
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(diagnostics, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("registered cells must not query C1 or execute a rover")
+
+    for name in (
+        "capture_synthetic_c1_views",
+        "inspect_synthetic_c1_history",
+        "prepare_synthetic_c1_relative_input",
+        "_probe_synthetic_c1_state_motion",
+        "_probe_synthetic_c1_discrete_motion",
+        "_probe_synthetic_c1_discrete_path_enclosure",
+        "_probe_synthetic_c1_wire_rejection",
+        "_c1_curved_centerline",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    segments = np.array(
+        [
+            [[float(value), -0.6], [float(value), 0.6]]
+            for value in np.linspace(-0.6, 1, 81)
+        ]
+    )
+    path = np.array([[0.0, 0.0], [0.25, 0.0]])
+    early_speed, current_speed = (0.35, 0.375) if case == 1 else (0.2, 0.25)
+    early_turn = 0.1 if case == 2 else -0.1 if case == 3 else 0.0
+    reference_tick = 20 if case == 4 else 22
+    states = [
+        State(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            velocity_m_s=(
+                early_speed if tick < reference_tick else current_speed,
+                0.0,
+                0.0,
+            ),
+            angular_velocity_rad_s=(
+                0.0,
+                0.0,
+                early_turn if tick < reference_tick else 0.0,
+            ),
+        )
+        for tick in range(20, reference_tick + 1)
+    ]
+    frames = [encode_state(state) for state in states]
+    ledger["reference"] += 1
+    origin_reference = _c1_history_registration_reference(
+        [decode_state(frame) for frame in frames], (0.0, 0.0)
+    )
+    origin = tuple(float((lower + upper) / 2) for lower, upper in origin_reference)
+    origin_error = sum(
+        max(abs(Fraction(value) - lower), abs(Fraction(value) - upper))
+        for value, (lower, upper) in zip(origin, origin_reference)
+    )
+    numerical_guard = max(1e-12, math.nextafter(float(2 * origin_error), math.inf))
+    assert Fraction(numerical_guard) >= 2 * origin_error
+    settings = {
+        "acquisition_tick": 20,
+        "reference_tick": reference_tick,
+        "capture_origin_body_m": origin,
+        "point_radius_m": 0.25 if case == 10 else 4.0,
+        "prefix_history_binding_exact": case != 7,
+        "other_point_error_m": 0.05
+        if case == 5
+        else None
+        if case == 6
+        else -0.01
+        if case == 11
+        else 0.0,
+        "assumptions": dict.fromkeys(
+            (
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            ),
+            True,
+        ),
+        "current_body_clear": case != 12,
+        "controlled_envelope": True,
+        "guard": numerical_guard,
+        "max_cells": 0 if case == 13 else 32768,
+        "max_integer_bits": 1 if case == 14 else 16384,
+        "synthetic_test_only": case != 15,
+    }
+    if case == 8:
+        settings["assumptions"] = None
+    elif case == 9:
+        states.pop(1)
+        frames.pop(1)
+    saved_segments, saved_path = segments.copy(), path.copy()
+    saved_states, saved_frames, saved_settings = (
+        deepcopy(states),
+        list(frames),
+        deepcopy(settings),
+    )
+    before = dict(ledger)
+    ledger["wrapper"] += 1
+    if case == 15:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            diagnostics._c1_exclude_registered_path_cells(
+                segments, path, 0.18, states, frames, **settings
+            )
+        assert ledger["history"] == before["history"]
+        assert ledger["cells"] == before["cells"]
+        return
+    result = diagnostics._c1_exclude_registered_path_cells(
+        segments, path, 0.18, states, frames, **settings
+    )
+    assert result["fixture_enclosure_excluded"] is (case < 5)
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    expected_history = int(case in (0, 1, 2, 3, 4, 5, 8, 9, 13))
+    expected_cells = int(case in (0, 1, 2, 3, 4, 5, 13))
+    assert ledger["history"] - before["history"] == expected_history
+    assert ledger["cells"] - before["cells"] == expected_cells
+    assert result["work"]["registration_entries"] == expected_history
+    assert result["work"]["cell_entries"] == expected_cells
+    if expected_cells:
+        word_error = result["registration_bound"]["upper_bounds"]["registered_point_m"]
+        expected_guard = (
+            Fraction(numerical_guard)
+            + Fraction(settings["other_point_error_m"])
+            + Fraction(word_error)
+        )
+        assert Fraction(result["combined_guard_m"]) >= expected_guard
+        assert result["work"]["prefix_points_checked"] == 162
+        if case != 4:
+            assert word_error > 0
+        else:
+            assert word_error == 0
+        if case == 13:
+            assert (
+                result["reason"] == "cell_budget_exhausted"
+                and result["cells_checked"] == 0
+            )
+        elif case == 5:
+            assert result["status"] == "unknown"
+        else:
+            assert (
+                result["status"] == "excluded_under_declared_registration_assumptions"
+            )
+        result["registration_bound"]["assumptions"].clear()
+        result["combined_guard_m"] = 123.0
+        if case == 0:
+            ledger["wrapper"] += 1
+            repeated = diagnostics._c1_exclude_registered_path_cells(
+                segments, path, 0.18, states, frames, **settings
+            )
+            assert repeated["fixture_enclosure_excluded"] is True
+            assert repeated["combined_guard_m"] != 123.0
+            assert repeated["registration_bound"]["assumptions"]
+    else:
+        reasons = {
+            6: "remaining_point_error_missing",
+            7: "prefix_history_binding_not_established",
+            8: "unsupported_history_assumptions",
+            9: "incomplete_frame_history",
+            10: "prefix_point_radius_not_enclosed",
+            11: "unsupported_point_error",
+            12: "body_or_envelope_not_established",
+            14: "integer_budget_exhausted",
+        }
+        assert result["reason"] == reasons[case] and result["status"] == "unknown"
+        assert "combined_guard_m" not in result and "registration_bound" not in result
+        if case == 14:
+            ledger["wrapper"] += 1
+            with pytest.raises(ValueError, match="bounded integers"):
+                diagnostics._c1_exclude_registered_path_cells(
+                    segments,
+                    path,
+                    0.18,
+                    states,
+                    frames,
+                    **{**settings, "max_integer_bits": 16385},
+                )
+            assert ledger["history"] == before["history"]
+            assert ledger["cells"] == before["cells"]
+    assert np.array_equal(segments, saved_segments) and np.array_equal(path, saved_path)
+    assert (
+        states == saved_states and frames == saved_frames and settings == saved_settings
+    )
+
+
+@pytest.fixture(scope="module")
 def c1_discrete_path_fixtures(request):
     from sim import diagnostics
 

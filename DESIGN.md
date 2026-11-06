@@ -2342,11 +2342,47 @@ algebra/fixture evidence, not accepted proof or native/physical certification.
 [Review §158][history-registration-review] records sixteen controls, earlier
 speed/yaw discrepancies with exact current words, independent rational point
 references, zero-age/three-interval limits and four spent verification positions.
-Next propagate the complete bound into the named relative-input/prefix geometry
-without substituting it for missing native/pose/range/clock/source evidence or
-admitting a command. Old exact-pose, question, wire and normal APIs stay unchanged.
+The separate relative-prefix consumer below now propagates the bound into
+cylinder-cell geometry without substituting it for missing native/pose/range/
+clock/source evidence or admitting a command. Old exact-pose, question, wire
+and normal APIs stay unchanged.
 
 [history-registration-review]: REVIEW.md
+
+##### Conditional Registered Relative-Prefix Cells (2026-11-06)
+
+The private `_c1_exclude_registered_path_cells` composes the complete history-
+word point bound with an explicitly supplied remaining point-error allowance
+and the existing numerical guard. Missing remaining-error or decoded-history/
+prefix-binding declarations reject; a word-only bound is not total transform
+error. The declarations and remaining allowance are fixture assumptions, not
+measurement, source authority, native proof or accepted clock/range bounds.
+All seven qualification/admission/training flags remain false.
+
+The supplied planar prefixes must have all endpoints inside their declared
+capture-point radius relative to their explicitly supplied decoded origin;
+the consumer checks this with conservative exact L1 distances. The convex
+prefix between endpoints then stays inside the same Euclidean point ball.
+Existing 512-prefix/1,024-endpoint, three-interval/four-frame, source/arithmetic
+and cell/depth/band hard ceilings remain unchanged. Unsupported limits, missing
+body/domain/history/error evidence or exhausted arithmetic/cells stay unknown.
+
+The combined margin is rounded outward before entering the unchanged kernel.
+It erodes strict whole-cell free-prefix containment, widens path-relevant cells
+and retains contact abstention. A small positive history error is not replaced
+by zero or current-frame delta times age. [Review §159][registered-prefix-review]
+records the sixteen controls, independently derived decoded fixture origins,
+complete conversion allowances, clear-to-unknown 0.05 m error control, ownership
+and retained style/probe evidence. Passing conditional cylinder geometry is not
+wall support, source qualification or an admitted command.
+
+Next connect the same complete point error to the discrete-path adapter's
+relative-prefix/wall checks with explicit motion and prefix-history/error
+premises. Keep wall and cylinder support separate; the supplied path must still
+enclose the actual requested command/braking, with native/source/timing gates
+unclosed. No normal runtime/decision/permit or new study follows this consumer.
+
+[registered-prefix-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -10897,11 +10933,12 @@ ideal motion enclosures only, not native arithmetic/registration or S1-S5
 qualification. The additive path-cell kernel and twelve fixed controls are
 complete (§155). The discrete-path/wall adapter and exact actual-wire/source-
 word interval boundary now pass 24 and 16 fixed controls respectively (§156).
-The actual-frame motion bridge (§157) and complete-history registration bound
-(§158) each pass sixteen controls; the required new-source root gate passes
-2,369 tests plus the known xfail/71 warnings. Prior spent standalone scopes
-remain spent. Next: propagate registration into relative-prefix geometry while
-retaining actual source/native/pose/range/clock evidence gates.
+The actual-frame motion bridge (§157), complete-history registration bound
+(§158) and registered-prefix cylinder consumer (§159) each pass sixteen controls;
+the required new-source root gate passes 2,385 tests plus the known xfail/71
+warnings. Prior spent standalone scopes remain spent. Next: propagate complete
+point-error evidence through discrete-path relative prefixes and wall support,
+retaining actual source/native/pose/range/clock and command-matching gates.
 These conditional prerequisites
 admit no full guard, normal profile, usable trial or new study episodes.
 

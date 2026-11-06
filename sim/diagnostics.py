@@ -4115,6 +4115,162 @@ def _probe_synthetic_c1_discrete_path_enclosure(
     return result
 
 
+def _c1_exclude_registered_path_cells(
+    free_segments,
+    path_points,
+    tube_radius,
+    source_states,
+    state_frames,
+    *,
+    acquisition_tick,
+    reference_tick,
+    capture_origin_body_m,
+    point_radius_m,
+    prefix_history_binding_exact=False,
+    other_point_error_m=None,
+    assumptions=None,
+    current_body_clear=False,
+    controlled_envelope=False,
+    guard=0.0,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    max_history_ticks=3,
+    source_max_integer_bits=4096,
+    max_integer_bits=16384,
+    synthetic_test_only=False,
+):
+    """Erode conditional relative prefixes by complete declared point errors."""
+    if synthetic_test_only is not True:
+        raise ValueError("registered path cells require synthetic_test_only=True")
+    for limit, lower, upper in (
+        (max_cells, 0, 65536),
+        (max_depth, 0, 12),
+        (radius_bands, 1, 16),
+        (max_history_ticks, 0, 3),
+        (source_max_integer_bits, 1, 4096),
+        (max_integer_bits, 1, 16384),
+    ):
+        if type(limit) is not int or not lower <= limit <= upper:
+            raise ValueError("registered cell limits must be bounded integers")
+    work = {"registration_entries": 0, "prefix_points_checked": 0, "cell_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-registered-path-cells/1",
+        "allowed_use": "conditional_source_word_prefix_fixture_only",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "fixture_enclosure_excluded": False,
+        "status": "unknown",
+        "reason": "prefix_history_binding_not_established",
+        "work": work,
+        "cells_checked": 0,
+    }
+    if prefix_history_binding_exact is not True:
+        return result
+    if other_point_error_m is None:
+        result["reason"] = "remaining_point_error_missing"
+        return result
+    if current_body_clear is not True or controlled_envelope is not True:
+        result["reason"] = "body_or_envelope_not_established"
+        return result
+    if (
+        type(free_segments) is not np.ndarray
+        or free_segments.ndim != 3
+        or free_segments.shape[1:] != (2, 2)
+        or not 1 <= len(free_segments) <= 512
+    ):
+        result["reason"] = "unsupported_relative_prefixes"
+        return result
+    arithmetic = _C1CommandArithmetic(0, max_integer_bits, work)
+    try:
+        segments = _c1_array(free_segments, free_segments.shape).astype(float)
+        origin = _c1_array(capture_origin_body_m, (2,)).astype(float)
+        origin = tuple(arithmetic.value(float(value)) for value in origin)
+        radius = arithmetic.value(point_radius_m)
+        remaining = arithmetic.value(other_point_error_m)
+        numerical_guard = arithmetic.value(guard)
+        zero = arithmetic.value(0)
+        if any(
+            arithmetic.binary(value, zero, "less")
+            for value in (radius, remaining, numerical_guard)
+        ):
+            result["reason"] = "unsupported_point_error"
+            return result
+        for point in segments.reshape(-1, 2):
+            work["prefix_points_checked"] += 1
+            norm = zero
+            for coordinate, anchor in zip(point, origin, strict=True):
+                displacement = arithmetic.binary(
+                    arithmetic.value(float(coordinate)), anchor, "sub"
+                )
+                norm = arithmetic.binary(norm, abs(displacement), "add")
+            if arithmetic.binary(radius, norm, "less"):
+                result["reason"] = "prefix_point_radius_not_enclosed"
+                return result
+        work["registration_entries"] = 1
+        registration = _bound_synthetic_c1_history_registration(
+            source_states,
+            state_frames,
+            acquisition_tick=acquisition_tick,
+            reference_tick=reference_tick,
+            point_radius_m=point_radius_m,
+            assumptions=deepcopy(assumptions),
+            max_history_ticks=max_history_ticks,
+            source_max_integer_bits=source_max_integer_bits,
+            max_integer_bits=max_integer_bits,
+            synthetic_test_only=True,
+        )
+        if registration["fixture_registration_bound"] is not True:
+            result["reason"] = registration["reason"]
+            result["registration_work"] = deepcopy(registration["work"])
+            return result
+        total = arithmetic.binary(
+            arithmetic.binary(numerical_guard, remaining, "add"),
+            arithmetic.value(registration["upper_bounds"]["registered_point_m"]),
+            "add",
+        )
+        combined_guard = arithmetic.outward(total, True)
+        work["cell_entries"] = 1
+        cells = _c1_exclude_path_cells(
+            segments,
+            path_points,
+            tube_radius,
+            current_body_clear=True,
+            guard=combined_guard,
+            max_cells=max_cells,
+            max_depth=max_depth,
+            radius_bands=radius_bands,
+        )
+    except ArithmeticError as error:
+        result["reason"] = str(error)
+        return result
+    except (TypeError, ValueError, OverflowError):
+        result["reason"] = "unsupported_registered_prefix_input"
+        return result
+    result.update(cells)
+    result.update(
+        combined_guard_m=combined_guard,
+        registration_bound=deepcopy(registration),
+        remaining_point_error_m=float(remaining),
+    )
+    if cells["fixture_enclosure_excluded"] is True:
+        result.update(
+            status="excluded_under_declared_registration_assumptions",
+            reason="complete_point_error_eroded_prefix_cells_excluded",
+        )
+    return result
+
+
 def _c1_exclude_path_cells(
     free_segments,
     path_points,

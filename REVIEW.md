@@ -12008,6 +12008,107 @@ verdicts/five old false flags, general-audit deferral and protected gates remain
 [history-registration-source]: sim/diagnostics.py
 [history-registration-controls]: tests/test_sim.py
 
+## 159. Registration-to-Relative-Prefix Cell Consumer (2026-11-06)
+
+Checkpoint §158 was committed and normally pushed as
+`58c33c46bbf476f77d6ab390374ad1dd8b4e30c1`; main was clean and synchronized.
+Continued the named S4 prefix-geometry consumer under standing authority.
+
+**Pre-execution hypothesis and finite scope.** The existing cell kernel's guard
+erodes free-prefix whole-cell containment and widens path-relevant cells. A
+private additive consumer can compose complete history-word registration,
+explicit remaining point error and existing numerical guard with outward
+rounding, without changing the kernel or claiming total source qualification.
+Nominal relative prefixes/anchor must be explicitly declared to belong to the
+decoded history, with all endpoints inside the declared capture-point radius
+(conservative exact L1 check). This declaration is a fixture premise, never
+an attested source/return binding. Missing history/remaining error/binding/body/
+domain premises stay unknown before cell queries. Cylinder cells only; walls,
+full motion/source/native/range/clock evidence and admission stay separate.
+
+Recorded before execution: sixteen fixed controls, at most 32 wrapper/history/
+cell entries and 128 binder entries per complete matrix; four verification
+positions including focused probes, failed/aborted checks, repairs and final
+required new-source root. Each entry retains existing three-interval/four-frame,
+512-prefix/1,024-endpoint/129-path-point, 4,096/16,384-bit and cell/depth/band
+hard ceilings. No cap/tolerance/default change or adaptive retry. First check:
+one nominally clear grid of declared prefixes with earlier `0.2` rounding and
+exact current `0.25` words must retain nonzero history error; adding `0.05` m
+point error loses exclusion, and missing remaining error queries no geometry.
+Remaining controls cover earlier mirrored yaw, zero age, history/prefix domain,
+missing/bad error and binding/body premises, exhausted work and ownership.
+CPU-only in-memory planar fixtures/actual state bytes, zero C1 captures/scenes/
+owners/rover/model/collection/data/export/native/hardware entries. Retain failed
+checks, reject partial evidence and checkpoint before proceeding; no cleanup.
+
+Before expanding the fixed matrix, also bound independent decoded-origin
+reference entries at 32 per matrix, reusing §158's unchanged rational helper
+(three intervals/48 terms/16,384-bit guarded arithmetic per reference).
+The initial probe's arbitrary declared origin establishes margin plumbing,
+not history-to-geometry correspondence. Expanded controls derive the origin
+from actual decoded frames and include its complete rational conversion error
+in a separately supplied numerical fixture guard. Upfront limit validation
+prevents unsupported ceilings from reaching prefix arithmetic; no cap rises.
+
+**Implemented and checked.** The additive consumer validates bounded limits,
+all declared prefix endpoints against their point radius, complete word-history
+registration and explicit remaining point error before cell work. Exact rational
+addition and outward conversion form the combined guard. The unchanged kernel
+erodes strict prefix containment and widens path-relevant cells. All seven
+qualification/admission/training flags remain false; no wall or command claim.
+The history/prefix correspondence and other errors remain fixture declarations,
+not independent source, native, return/range or clock evidence.
+
+The sixteen controls cover both earlier speed signs, mirrored yaw, zero age,
+lost clearance after a 0.05 m remaining point allowance, missing remaining error,
+missing prefix binding/history assumptions/middle frames, unsupported prefix
+radius, negative allowance, missing body premise, zero cell budget, one-bit
+arithmetic exhaustion, rejected ceiling increase, omitted opt-in and independent
+ownership repeats. Expanded supported inputs derive their nominal origin from
+actual decoded frames with §158's independent guarded rational reference and
+include its complete conversion interval allowance. These synthetic prefixes
+are assumed free geometry, not actual C1/range/source qualification.
+
+| Position | Check/result | Wrapper / history / binder / cell / reference |
+| --- | --- | --- |
+| 1 | Initial clear/error/missing-error probe: 1 pass, 1,446 deselected, 0.29 s. Arbitrary origin is margin-plumbing evidence only. | 3 / 2 / 6 / 2 / 0 |
+| 2 | Fixed sixteen controls with independent decoded origins and upfront limits: 16 pass, 1,446 deselected, 1.37 s. | 18 / 10 / 22 / 8 / 16 |
+| 3 | Required root `python -m pytest -q && ruff check . && git diff --check`: 2,385 pass, known QDQ xfail/71 existing warnings/no skips, 65.66 s; lint/whitespace pass. | 18 / 10 / 22 / 8 / 16 |
+
+Three of four positions were used; totals **39 / 22 / 50 / 18 / 32**, zero
+forbidden calls. The unused fourth is not follow-on scope or a reassurance run.
+No behavior test failed. Upfront unchanged ceiling validation was added before
+the full matrix; its cap-increase control rejects before history/cells. Ruff
+first found one unused local import; removing it cleared lint, then new test
+layout failed formatting. Formatting only changed Python files preserved their
+complete ASTs; the same lint/format checks passed. Neither tolerances nor old
+controls were relaxed. Required root reused unchanged history 19/29/14,
+state-motion 16/14/6/8, path 24/11/7/6/two captures/three motions, wire
+48/32/10/two scenes, discrete motion 18/12 and composition/target/join controls
+as compatibility only, not old standalone scope renewal.
+
+Pylance file syntax/editor checks pass; all four resolved consumer calls are
+signature-compatible. All **72 prior diagnostics AST nodes and 291 prior test
+nodes** stay unchanged in order; one source and two test/fixture nodes were
+added. Tested SHA256: diagnostics
+`b8331812a82541b3bafa88984acde4a6005db2a18d07c2bbb923321cecb547b0`;
+tests `ccfc6ed429567142a1a3df30a9709b354bebc72e24646ee2dd93e16fe3d53b44`.
+Scoped documentation/history/references/targets/whitespace/diff/staged-byte
+checks apply before commit; the successful source gate is not rerun for docs.
+No normal API/C/runtime/actuation, new C1/scenario/owner/rover capture, report/
+log/task data, collection/model/dependency/download/environment, ST/hardware or
+additional opt-in sanitizer/Arm work changed. No job or cleanup remains.
+
+**Next.** Independently scope the complete point-error consumer in the discrete-
+path adapter's relative-prefix and wall support, preserving supplied-motion
+matching and all missing source/native/pose/range/clock premises. Guarded
+cylinder cells alone do not establish wall clearance or full command admission.
+S1-S5, Tasks 6/9/D4, all fifteen undecided verdicts/five old false flags, general
+audit deferral and protected evidence/resource gates remain unchanged.
+
+[registered-prefix-source]: sim/diagnostics.py
+[registered-prefix-controls]: tests/test_sim.py
+
 ## Sources
 
 Hardware and tools:

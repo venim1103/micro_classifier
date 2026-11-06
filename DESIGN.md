@@ -2564,13 +2564,31 @@ behavior is provided. [Review §167][normal-request-review] records sixteen cont
 independent typed-digest/changed-command-bit checks, owned repeat and the retained
 Config serialization failure/repaired dataclass snapshot.
 
-Next isolate exact prepared/received request-content matching and nominal-expiry
-rejection, retaining unknown for unqualified source/full-guard evidence and never
-admitting execution from a matching digest. Complete path margins, source error/
-authority, one-use executor, S1-S5 and task quality stay separate; no usable `OK`,
-actuation or trial is admitted.
-
 [normal-request-review]: REVIEW.md
+
+##### Conditional Request Matching and Expiry (2026-11-06)
+
+The private `_check_synthetic_c1_normal_request_binding` checks bounded exact
+built-in prepared/received record, context, Config, word and metadata shapes
+before comparison. It rechecks the retained request fingerprint and compares
+complete closed-schema canonical JSON, not a submitted matching hash. Boolean/
+integer and integer/float aliases are distinct content. Exact matches at their
+nominal application tick report conditional matched content; future/expired or
+changed/unsupported requests reject with no partial request binding.
+
+All outcomes retain `guard_status="UNKNOWN"`, permission false and all seven
+qualification/admission/training flags false. A caller-retained record is not
+source authority, stable-owner evidence, clock qualification, request uniqueness
+or a one-use registry. Complete fabricated matching content cannot authorize
+execution. [Review §168][normal-request-binding-review] records sixteen controls,
+changed-word/frame/epoch/source/Config/ID checks and early/late tick rejection.
+
+Next recheck matched requests against current source-frame/motion inputs before
+the path consumer; content identity must not replace current source binding.
+Full path margins, source/native/error/clock authority, one-use executor, S1-S5
+and task quality remain separate. No usable `OK`, actuation or trial is admitted.
+
+[normal-request-binding-review]: REVIEW.md
 
 ### Dataset Construction
 
@@ -11137,8 +11155,10 @@ warnings, all earlier nodes exact. Isolated normal-command mapping (§165) passe
 motion join (§166) passes 24 controls/root 2,501 plus the same xfail/71 warnings;
 all prior nodes and mapper bytes unchanged. Conditional normal-request content
 (§167) passes sixteen controls/root 2,517 plus the same xfail/71 warnings; all prior
-nodes exact, identifiers/source/uniqueness still unqualified. Next exact request
-matching/nominal-expiry rejection, not the old loop or a matching-hash permit;
+nodes exact, identifiers/source/uniqueness still unqualified. Conditional exact
+request matching/nominal-expiry rejection (§168) passes sixteen/root 2,533 plus
+the same xfail/71 warnings, all earlier nodes/mapper unchanged. Next current
+source-frame/motion request recheck, not the old loop or a matching-hash permit;
 retain complete motion/error/profile and actual source/native/pose/range/clock/
 request/expiry/executor/task-quality qualification gates.
 Geometry stays offline, never command selection.

@@ -12915,6 +12915,86 @@ unchanged mapper/diff/whitespace. Stage only these checkpoint files and normally
 push through the configured upstream; no unchanged root rerun for docs.
 No job, artifact or cleanup pending.
 
+## 168. Conditional Request Matching and Expiry Rejection (2026-11-06)
+
+Checkpoint §167 was committed/normally pushed as
+`961ca54183a393cf846bd3c7b8d9c94d4652e41d`; main clean/upstream 0/0. Continue
+exact request-content/currentness rejection, not source/full-guard qualification,
+request-ID registry or a one-use executor.
+
+**Pre-execution hypothesis/check.** Python numeric equality can alias true/1 or
+float/int metadata. Bound exact built-in root/record/config/context/word shapes
+before traversal, recheck retained content fingerprint, then compare complete
+canonical closed-schema JSON rather than only a submitted hash. At the nominal
+application tick, exact content can match conditionally but guard status remains
+`UNKNOWN`, permission false and all seven flags false. Future/expired tick or
+changed/unsupported content rejects without partial binding. Retained input is
+the caller's previously owned fixture record, not newly asserted source authority.
+No current-clock, stable-owner or uniqueness qualification follows. Discriminating
+controls: hold true versus1, acceleration int versusfloat, a changed command bit,
+altered frame/epoch/source/config hash/ID, tick alias/currentness and injected true
+source flag. Complete fabricated content still cannot authorize execution.
+
+Finite sixteen-control CPU/in-memory scope with unchanged actual-frame prepared
+fixtures; max four verification positions including failures/aborts, local repair/
+style and required new-source root. Per complete position max32 checker/preparer/
+normal-motion/mapper/State decode/Decision decode/State-motion/binder/motion entries,
+max128 digest entries including all fixture preparation and checker calls, zero
+forbidden. This is a new parent ledger, never a change to old family caps or old
+standalone renewal; necessary-root old controls remain compatibility only. Local
+closed record/Config shapes, max64-bit integer metadata, finite floats and existing
+hex/tick/frame/age shapes bound checking, not adopted product limits or measured
+runtime resources. Existing source/motion/tolerance/profile/work caps unchanged.
+No new-family C1/Scene/reference/history/source-owner/auditor/rover/runtime/data
+query, capture/episode/model/dependency/download/hardware action. No `ADMIT`,
+executed fallback, permit/registry/executor or usable normal `OK` integration.
+
+**Implementation and verification.** Added only the private request-binding
+checker and two test module nodes. All 78 prior diagnostics and 308 prior test
+module nodes remain AST-exact/in order; entire mapper bytes unchanged. No caller
+target or source-qualification shortcut. Result owns only immutable matched
+digest/ticks, never a usable request/permit or partial rejection binding.
+
+1. First focused sixteen controls pass, 1,594 deselected, 0.35 s. Actual ledger:
+  17 checker, 16 preparer/normal/mapper/State decode/Decision decode/bridge/binder/
+  motion each, 75 digest, zero forbidden.
+2. Direct verified imported State construction replaces redundant dynamic import;
+  same sixteen pass, 1,594 deselected, 1.48 s; identical actual ledger. No behavioral
+  failure or relaxed assertion.
+3. Zero-query style position: AST-preserving Ruff format, narrow lint/format and
+  whitespace pass; prior nodes and mapper unchanged. Editor/Pylance syntax pass,
+  one compatible resolved test call; usages are definition plus that test only.
+4. Required root `/opt/venv/bin/python -m pytest -q && ruff check . &&
+  ruff format --check sim/diagnostics.py tests/test_sim.py && git diff --check`
+  passes **2,533 plus known transformer QDQ xfail/71 warnings**, no skips,
+  63.09 s. New parent ledger identical; unchanged old families remain their own
+  required compatibility controls, not extra standalone studies/audits.
+
+All four positions spent. Totals **51 checker, 48 preparer/normal/mapper/State
+decode/Decision decode/bridge/binder/motion each, 225 digest, zero forbidden**.
+Source SHA256 `aaa98d9bdaba3461ade985f7e77c43e74668145d1f8b509f46e887983686cd2d`;
+test SHA256 `7e38e64afad75130bbf17d7a8a061f5c6416cc58fb9dc691d86d23091558c756`.
+No source/test edit after the root. No new behavioral failure; §167 serialization
+failures/67 request/23 normal/23 mapper/23 State/23 Decision/19 bridge/19 binder/
+15 motion/48 digest and all older caps/ledgers remain historical. One documentation
+patch rejected a duplicate DESIGN path; targeted markers confirmed no hunks
+applied, then grouped hunks under one file entry. No extra fixture/root query.
+The successful §167 normal push retained its stale missing gh/container-helper
+warnings; no remote, credential or security setting was changed or retry needed.
+
+Next local prerequisite: recheck the matched request against current original/
+decoded State/actual frames and internally derived normal motion before the path
+consumer. Retained matching content alone does not establish current source
+binding. Keep source/context/ID uniqueness/clock/native/error/full guard/executor
+and task-quality gates closed, all flags false and no usable `OK`/actuation. No
+general arithmetic/identity audit, old controller or protected study scope follows.
+Scoped checks pass for exact prior REVIEW §§1-167/Sources, stable workflow/older
+task results, prior design/roadmap, 684 prose references/25 inline links/70 local
+targets+anchors, all prior ASTs/root-tested bytes/unchanged mapper and five-file
+diff/whitespace. Stage only these files and normally push via the configured
+upstream; no unchanged successful root rerun for docs. No job, generated artifact
+or cleanup pending.
+
 ## Sources
 
 Hardware and tools:

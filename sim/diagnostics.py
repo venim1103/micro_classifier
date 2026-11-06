@@ -4155,6 +4155,243 @@ def _prepare_synthetic_c1_normal_request(
     return result
 
 
+def _check_synthetic_c1_normal_request_binding(
+    retained_request,
+    received_request,
+    *,
+    current_tick,
+    synthetic_test_only=False,
+):
+    """Check declared request content/currentness, never grant execution."""
+    from dataclasses import asdict
+
+    if synthetic_test_only is not True:
+        raise ValueError("request binding requires synthetic_test_only=True")
+    flags = (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+    work = {"request_checks": 0, "digest_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-normal-request-binding/1",
+        "allowed_use": "conditional_request_matching_rejection_fixture_only",
+        "status": "unknown",
+        "reason": "unsupported_current_tick",
+        "fixture_request_matched": False,
+        "fixture_permission_granted": False,
+        "guard_status": "UNKNOWN",
+        **{flag: False for flag in flags},
+        "work": work,
+    }
+    if type(current_tick) is not int or not 0 <= current_tick <= 85899:
+        return result
+    retained_keys = {
+        "schema",
+        "allowed_use",
+        "status",
+        "reason",
+        "fixture_request_prepared",
+        "source_context_status",
+        "request_id_uniqueness_qualified",
+        "work",
+        "normal_motion_work",
+        "request",
+        "request_sha256",
+        *flags,
+    }
+    metadata = {
+        "schema": "micro-classifier/synthetic-c1-normal-request/1",
+        "allowed_use": "conditional_declared_request_content_fixture_only",
+        "status": "prepared_declared_normal_request_fixture",
+        "reason": "bound_command_content_with_unqualified_module_context",
+        "fixture_request_prepared": True,
+        "source_context_status": "declared_module_fixture_only",
+        "request_id_uniqueness_qualified": False,
+        **{flag: False for flag in flags},
+    }
+
+    def shape(value, keys):
+        return (
+            type(value) is dict
+            and len(value) == len(keys)
+            and all(type(key) is str for key in value)
+            and set(value) == set(keys)
+        )
+
+    def hexadecimal(value, length):
+        return (
+            type(value) is str
+            and len(value) == length
+            and all(character in "0123456789abcdef" for character in value)
+        )
+
+    if not shape(retained_request, retained_keys) or any(
+        type(retained_request[key]) is not type(value) or retained_request[key] != value
+        for key, value in metadata.items()
+    ):
+        result["reason"] = "unsupported_retained_request"
+        return result
+    if not hexadecimal(retained_request["request_sha256"], 64):
+        result["reason"] = "unsupported_retained_request"
+        return result
+    for key, expected in (
+        ("work", {"normal_motion_entries": 1, "digest_entries": 4}),
+        ("normal_motion_work", {"mapping_entries": 1, "state_motion_entries": 1}),
+    ):
+        value = retained_request[key]
+        if not shape(value, expected) or any(
+            type(value[field]) is not int or value[field] != count
+            for field, count in expected.items()
+        ):
+            result["reason"] = "unsupported_retained_request"
+            return result
+    record_keys = {
+        "request_id",
+        "phase",
+        "application_tick",
+        "hold_ticks",
+        "command_words",
+        "fallback",
+        "state_frame_hex",
+        "decision_frame_hex",
+        "source_context",
+        "config_record",
+        "config_sha256",
+        "source_state_sha256",
+        "motion_sha256",
+    }
+    config_keys = tuple(asdict(Config()))
+
+    def supported(record):
+        if (
+            not shape(record, record_keys)
+            or not hexadecimal(record["request_id"], 32)
+            or type(record["phase"]) is not str
+            or record["phase"] != "NORMAL"
+        ):
+            return False
+        tick = record["application_tick"]
+        if (
+            type(tick) is not int
+            or not 0 <= tick <= 85899
+            or type(record["hold_ticks"]) is not int
+            or record["hold_ticks"] != 1
+        ):
+            return False
+        command = record["command_words"]
+        if not shape(command, ("target_speed_m_s", "turn_rate_rad_s")) or any(
+            type(word) is not int
+            or not 0 <= word < 1 << 64
+            or (word >> 52) & 0x7FF == 0x7FF
+            for word in command.values()
+        ):
+            return False
+        fallback = record["fallback"]
+        if (
+            not shape(
+                fallback, ("target_speed_word", "turn_rate_word", "braking_tick_limit")
+            )
+            or any(type(value) is not int for value in fallback.values())
+            or fallback["target_speed_word"] != 0
+            or fallback["turn_rate_word"] != 0
+            or not 0 <= fallback["braking_tick_limit"] <= 16
+        ):
+            return False
+        for key in ("state_frame_hex", "decision_frame_hex"):
+            value = record[key]
+            if (
+                type(value) is not str
+                or not 2 <= len(value) <= 256
+                or len(value) % 2
+                or not hexadecimal(value, len(value))
+            ):
+                return False
+        context = record["source_context"]
+        if not shape(
+            context,
+            (
+                "epoch",
+                "source_identity",
+                "c1_reference_identity",
+                "capture_tick",
+                "reference_tick",
+            ),
+        ):
+            return False
+        if any(
+            not hexadecimal(context[key], length)
+            for key, length in (
+                ("epoch", 32),
+                ("source_identity", 64),
+                ("c1_reference_identity", 64),
+            )
+        ):
+            return False
+        capture = context["capture_tick"]
+        if (
+            type(context["reference_tick"]) is not int
+            or context["reference_tick"] != tick
+            or type(capture) is not int
+            or not 0 <= capture <= tick
+            or tick - capture > 3
+        ):
+            return False
+        config_record = record["config_record"]
+        if not shape(config_record, config_keys) or any(
+            value is not None
+            and (
+                type(value) not in (int, float)
+                or (type(value) is int and value.bit_length() > 64)
+                or (type(value) is float and not math.isfinite(value))
+            )
+            for value in config_record.values()
+        ):
+            return False
+        return all(
+            hexadecimal(record[key], 64)
+            for key in ("config_sha256", "source_state_sha256", "motion_sha256")
+        )
+
+    work["request_checks"] = 1
+    expected = retained_request["request"]
+    if not supported(expected):
+        result["reason"] = "unsupported_retained_request"
+        return result
+    work["request_checks"] = 2
+    if not supported(received_request):
+        result["reason"] = "unsupported_received_request"
+        return result
+    work["digest_entries"] = 1
+    if _c1_source_binding_digest(expected) != retained_request["request_sha256"]:
+        result["reason"] = "retained_request_digest_mismatch"
+        return result
+    if json.dumps(expected, sort_keys=True, allow_nan=False) != json.dumps(
+        received_request, sort_keys=True, allow_nan=False
+    ):
+        result["reason"] = "request_content_mismatch"
+        return result
+    tick = expected["application_tick"]
+    if current_tick != tick:
+        result["reason"] = (
+            "request_expired" if current_tick > tick else "request_not_application_tick"
+        )
+        return result
+    result.update(
+        status="matched_declared_normal_request_content",
+        reason="source_and_full_guard_unqualified",
+        fixture_request_matched=True,
+        request_sha256=retained_request["request_sha256"],
+        application_tick=tick,
+        expires_at_tick=tick,
+    )
+    return result
+
+
 def _probe_synthetic_c1_discrete_path_enclosure(
     history,
     motion,

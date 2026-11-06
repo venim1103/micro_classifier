@@ -952,6 +952,228 @@ def test_synthetic_c1_normal_request_freezes_declared_content(
 
 
 @pytest.fixture(scope="module")
+def c1_request_binding_ledger(request):
+    ledger = dict.fromkeys(
+        (
+            "checker",
+            "prepare",
+            "normal",
+            "mapper",
+            "state_decode",
+            "decision_decode",
+            "bridge",
+            "binding",
+            "motion",
+            "digest",
+            "forbidden",
+        ),
+        0,
+    )
+    yield ledger
+    assert all(
+        ledger[key] <= (128 if key == "digest" else 32)
+        for key in ledger
+        if key != "forbidden"
+    )
+    assert ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 request-binding ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 request-binding ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(16))
+def test_synthetic_c1_request_binding_rejects_changed_or_expired_content(
+    c1_request_binding_ledger, monkeypatch, case
+):
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        State,
+        Status,
+        encode_decision,
+        encode_state,
+    )
+    from sim import diagnostics, rules
+
+    ledger = c1_request_binding_ledger
+    for key, module, name in (
+        ("prepare", diagnostics, "_prepare_synthetic_c1_normal_request"),
+        ("normal", diagnostics, "_probe_synthetic_c1_normal_state_motion"),
+        ("mapper", rules, "_map_synthetic_c1_normal_command"),
+        ("state_decode", rules, "decode_state"),
+        ("decision_decode", rules, "decode_decision"),
+        ("bridge", diagnostics, "_probe_synthetic_c1_state_motion"),
+        ("binding", diagnostics, "_bind_synthetic_c1_state_intervals"),
+        ("motion", diagnostics, "_probe_synthetic_c1_discrete_motion"),
+        ("digest", diagnostics, "_c1_source_binding_digest"),
+    ):
+        original = getattr(module, name)
+
+        def counted(*args, _key=key, _original=original, **kwargs):
+            ledger[_key] += 1
+            assert ledger[_key] <= (128 if _key == "digest" else 32)
+            return _original(*args, **kwargs)
+
+        monkeypatch.setattr(module, name, counted)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "request matching must not query C1, grant a permit or execute a rover"
+        )
+
+    for name in (
+        "inspect_synthetic_c1_history",
+        "capture_synthetic_c1_views",
+        "_probe_synthetic_c1_discrete_path_enclosure",
+        "_probe_synthetic_c1_wire_rejection",
+        "_audit_synthetic_c1_source_binding",
+        "_c1_curved_centerline",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("host_action", "wire_step", "decide", "run_diagnostics"):
+        monkeypatch.setattr(rules, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    choices = (0, 1, 2)
+    answers = tuple(
+        Answer(
+            question,
+            tuple(float(index == choice) for index in range(len(options))),
+            choice,
+        )
+        for (question, (_, options)), choice in zip(
+            RULES_QUESTIONS.items(), choices, strict=True
+        )
+    )
+    source = State(
+        sequence=22,
+        timestamp_us=1100000,
+        velocity_m_s=(0.5, 0.0, 0.0),
+        goal_m=(3.0, 1.0, 0.0),
+    )
+    retained = diagnostics._prepare_synthetic_c1_normal_request(
+        source,
+        encode_state(source),
+        encode_decision(
+            Decision(
+                sequence=22, timestamp_us=1100000, status=Status.OK, answers=answers
+            )
+        ),
+        request_id="d" * 32,
+        source_context={
+            "epoch": "a" * 32,
+            "source_identity": "b" * 64,
+            "c1_reference_identity": "c" * 64,
+            "capture_tick": 20,
+            "reference_tick": 22,
+        },
+        reference_tick=22,
+        error_evidence={
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        synthetic_test_only=True,
+    )
+    assert retained["fixture_request_prepared"] is True
+    received = deepcopy(retained["request"])
+    if case == 1:
+        received["hold_ticks"] = True
+    elif case == 2:
+        received["command_words"]["target_speed_m_s"] ^= 1
+    elif case == 3:
+        received["decision_frame_hex"] = received["decision_frame_hex"][:-2] + "00"
+    elif case == 4:
+        received["source_context"]["epoch"] = "0" * 32
+    elif case == 5:
+        received["source_context"]["source_identity"] = "0" * 64
+    elif case == 6:
+        received["config_record"]["acceleration"] = 1
+    elif case == 7:
+        received["config_sha256"] = "0" * 64
+    elif case == 8:
+        received["request_id"] = "0" * 32
+    elif case == 9:
+        received["application_tick"] = 22.0
+    elif case == 12:
+        retained["source_qualified"] = True
+    elif case == 13:
+        received["extra"] = True
+    elif case == 14:
+        received = None
+    options = {
+        "current_tick": 23 if case == 10 else 21 if case == 11 else 22,
+        "synthetic_test_only": case != 15,
+    }
+    saved = deepcopy((retained, received, options))
+
+    def check():
+        ledger["checker"] += 1
+        assert ledger["checker"] <= 32
+        return diagnostics._check_synthetic_c1_normal_request_binding(
+            retained, received, **options
+        )
+
+    before = dict(ledger)
+    if case == 15:
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            check()
+        assert ledger["digest"] == before["digest"]
+    else:
+        result = check()
+        assert result["fixture_request_matched"] is (case == 0)
+        assert (
+            result["guard_status"] == "UNKNOWN"
+            and result["fixture_permission_granted"] is False
+        )
+        for flag in (
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == 0:
+            assert result["status"] == "matched_declared_normal_request_content"
+            assert result["reason"] == "source_and_full_guard_unqualified"
+            assert result["request_sha256"] == retained["request_sha256"]
+            assert result["application_tick"] == result["expires_at_tick"] == 22
+            saved_result = deepcopy(result)
+            result["request_sha256"] = "0" * 64
+            assert check() == saved_result
+        else:
+            assert result["status"] == "unknown" and "request_sha256" not in result
+            assert (
+                result["reason"]
+                == {
+                    1: "unsupported_received_request",
+                    2: "request_content_mismatch",
+                    3: "request_content_mismatch",
+                    4: "request_content_mismatch",
+                    5: "request_content_mismatch",
+                    6: "request_content_mismatch",
+                    7: "request_content_mismatch",
+                    8: "request_content_mismatch",
+                    9: "unsupported_received_request",
+                    10: "request_expired",
+                    11: "request_not_application_tick",
+                    12: "unsupported_retained_request",
+                    13: "unsupported_received_request",
+                    14: "unsupported_received_request",
+                }[case]
+            )
+    assert (retained, received, options) == saved
+
+
+@pytest.fixture(scope="module")
 def c1_history_registration_ledger(request):
     ledger = dict.fromkeys(("bound", "binding", "reference", "forbidden"), 0)
     yield ledger

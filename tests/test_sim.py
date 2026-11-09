@@ -10642,7 +10642,11 @@ def test_native_tof_pending_snapshot(
     owner.record_environment_tick(environment, synthetic_test_only=True)
     for _ in range(4):
         environment.step([0.125, 0.3], capture_native_tof_source=True)
-        owner.record_environment_tick(environment, synthetic_test_only=True)
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
         if environment._native_tof_source is not None:
             owner.record_native_tof_source(environment, synthetic_test_only=True)
     assert environment.sensor_tick == 4
@@ -10769,6 +10773,190 @@ def test_native_tof_pending_snapshot(
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry_rng
     assert work["match"] <= 2 and work["frame"] <= 2 and work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "record",
+        "default",
+        "flag",
+        "missing",
+        "clear",
+        "identity",
+        "words",
+        "metadata",
+        "record_queue",
+        "record_copy",
+        "record_owner",
+        "budget",
+    ),
+)
+def test_native_tof_pending_original_read(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from collections import deque
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    for _ in range(3):
+        environment.step([0.125, 0.3], capture_native_tof_source=True)
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+    before_current, before_dynamics = owner._current, owner._dynamics_sample
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    if case == "budget":
+        environment.pending = deque([environment.pending[0]] * 9)
+    original_copy = diagnostics._copy_native_tof_pending_queue
+    original_binding = diagnostics._c1_source_binding_digest
+    original_capture = diagnostics.capture_synthetic_c1_views
+    original_directions = rover.tof_directions
+    work = {"copy": 0, "binding": 0, "capture": 0, "c1_directions": 0, "forbidden": 0}
+    recording = {"active": True}
+    staging = {"active": False}
+
+    def copied(*args, **kwargs):
+        work["copy"] += 1
+        assert work["copy"] <= 6
+        actual = original_copy(*args, **kwargs)
+        if recording["active"]:
+            if work["copy"] == 1 and case == "record_copy":
+                entry = actual[0]
+                return (
+                    (entry[0], entry[1], (entry[2][0] ^ 1, *entry[2][1:]), entry[3]),
+                    *actual[1:],
+                )
+            if work["copy"] == 2:
+                if case == "record_queue":
+                    environment.pending = deque(environment.pending)
+                elif case == "record_owner":
+                    owner._simulator_pending = None
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 128
+        if case == "words" and not recording["active"]:
+            record = args[0]
+            assert record is not owner._dynamics_sample
+            assert (
+                type(record) is not dict
+                or record.get("dynamics_sample") is not owner._dynamics_sample
+            )
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "pending original read must not step/reset/native replay/clock"
+        )
+
+    def captured(*args, **kwargs):
+        assert recording["active"] is True
+        work["capture"] += 1
+        assert work["capture"] <= 1
+        staging["active"] = True
+        try:
+            return original_capture(*args, **kwargs)
+        finally:
+            staging["active"] = False
+
+    def directions(*args, **kwargs):
+        if staging["active"]:
+            work["c1_directions"] += 1
+            assert work["c1_directions"] <= 8
+            return original_directions(*args, **kwargs)
+        return forbidden(*args, **kwargs)
+
+    monkeypatch.setattr(diagnostics, "_copy_native_tof_pending_queue", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", captured)
+    monkeypatch.setattr(rover, "tof_directions", directions)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    option = 1 if case == "flag" else case not in ("default", "clear")
+    if case in ("flag", "record_queue", "record_copy", "record_owner", "budget"):
+        with pytest.raises(ValueError):
+            owner.record_environment_tick(
+                environment,
+                synthetic_test_only=True,
+                capture_native_tof_pending_source=option,
+            )
+        assert (
+            owner._current is before_current
+            and owner._dynamics_sample is before_dynamics
+        )
+    else:
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=option,
+        )
+        recording["active"] = False
+        if case in ("default", "clear"):
+            assert "native_tof_pending_queue" not in owner._dynamics_sample
+            assert owner._simulator_pending is None
+            assert work["copy"] == 0
+        elif case == "missing":
+            owner._dynamics_sample.pop("native_tof_pending_queue")
+        elif case == "identity":
+            environment.pending = deque(environment.pending)
+        elif case in ("words", "metadata"):
+            queue = owner._dynamics_sample["native_tof_pending_queue"]
+            entry = queue[0]
+            owner._dynamics_sample["native_tof_pending_queue"] = (
+                (
+                    entry[0] + int(case == "metadata"),
+                    entry[1],
+                    (1 << 4096, *entry[2][1:]) if case == "words" else entry[2],
+                    entry[3],
+                ),
+                *queue[1:],
+            )
+        if case == "record":
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+        for name in ("record_environment_tick", "record_native_tof_source"):
+            monkeypatch.setattr(type(owner), name, forbidden)
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True, include_pending_sources=case != "default"
+        )
+        assert (
+            result["source_qualified"] is False
+            and result["command_admission_qualified"] is False
+        )
+        if case in ("record", "default"):
+            assert result["snapshot_available"] is True, result["reason"]
+            if case == "record":
+                assert [entry["tick"] for entry in result["pending_sources"]] == [6, 7]
+                original_words = owner._dynamics_sample["native_tof_pending_queue"][0][
+                    2
+                ]
+                environment.pending[0][2].view(np.uint32)[0, 0] ^= 1
+                assert (
+                    owner._dynamics_sample["native_tof_pending_queue"][0][2]
+                    == original_words
+                )
+            else:
+                assert "pending_sources" not in result and work["copy"] == 0
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert (
+                "source" not in result
+                and "frame" not in result
+                and "pending_sources" not in result
+            )
+    assert work["forbidden"] == 0
 
 
 @pytest.fixture(scope="module")

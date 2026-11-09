@@ -2872,6 +2872,29 @@ one-use/permission/admission. All flags remain false/no usable command.
 
 [native-tof-pending-snapshot-review]: REVIEW.md#211-opt-in-current-recorder-native-tof-pending-snapshot-2026-11-09
 
+##### Original Recorder-Read Native ToF Pending Correspondence (2026-11-09)
+
+The private recorder read accepts literal `capture_native_tof_pending_source=True`.
+It copies actual bounded pending words/masks into both producer samples, retains
+the original deque identity, and publishes only under existing sample/content/
+owner/producer/frame/RNG/source-file rechecks. Default reads clear this optional
+evidence. The existing opt-in pending snapshot now requires exact correspondence
+to that original read plus the retained queue identity, and preflights its new
+primitive evidence before ownership hashing. A resnapshot or matching hash is
+not substituted for a missing original read.
+
+The [original-read checkpoint][native-tof-pending-original-read-review] records
+detached data, defaults/clearing, missing/tampered evidence, changed identities,
+bounded pre-hash rejection and failed-read nonpublication. Ordinary reads still
+perform their existing bounded synthetic C1 staging; native pending capture adds
+no geometry reconstruction. Snapshot publication remains read/retain/replay/
+step/reset/clock/RNG-free. This checks local original-read correspondence only,
+not atomicity/perpetual freshness, complete acquisition/retention/history/scan
+coverage, physical/native/range/clock/error/source qualification or one-use/
+permission/admission. All flags remain false/no usable command.
+
+[native-tof-pending-original-read-review]: REVIEW.md#212-original-recorder-read-native-tof-pending-correspondence-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

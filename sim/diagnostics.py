@@ -10303,6 +10303,7 @@ class _SyntheticC1SourceRecorder:
         self._simulator = None
         self._simulator_rng = None
         self._simulator_odometry_rng = None
+        self._simulator_pending = None
         self._dynamics_sample = None
         self._integration_sample = None
         self._tof_sample = None
@@ -10371,6 +10372,7 @@ class _SyntheticC1SourceRecorder:
         synthetic_test_only=False,
         capture_motion_receipt_source=False,
         capture_native_integration_source=False,
+        capture_native_tof_pending_source=False,
     ):
         """Read one actual simulator snapshot, without stepping or qualifying it."""
         from copy import copy
@@ -10384,6 +10386,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("capture_motion_receipt_source must be a literal bool")
         if type(capture_native_integration_source) is not bool:
             raise ValueError("capture_native_integration_source must be a literal bool")
+        if type(capture_native_tof_pending_source) is not bool:
+            raise ValueError("capture_native_tof_pending_source must be a literal bool")
         if capture_native_integration_source and not capture_motion_receipt_source:
             raise ValueError(
                 "native integration source requires motion receipt capture"
@@ -10443,6 +10447,9 @@ class _SyntheticC1SourceRecorder:
             if capture_native_integration_source
             else None
         )
+        pending_source_before = (
+            environment.pending if capture_native_tof_pending_source else None
+        )
 
         def sample():
             snapshot = {
@@ -10462,6 +10469,10 @@ class _SyntheticC1SourceRecorder:
                 "config": asdict(environment.config),
                 "scenario": asdict(environment.scenario),
             }
+            if capture_native_tof_pending_source:
+                snapshot["native_tof_pending_queue"] = _copy_native_tof_pending_queue(
+                    environment
+                )
             if capture_motion_receipt_source:
                 source = environment._motion_receipt_source
                 if (
@@ -10573,6 +10584,7 @@ class _SyntheticC1SourceRecorder:
         rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
         recorder_rng_before = self._simulator_rng
         recorder_odometry_rng_before = self._simulator_odometry_rng
+        recorder_pending_before = self._simulator_pending
         binding_before = self._binding
         state = state_from_observation(snapshot["observation"])
         emitted_frame = encode_state(state)
@@ -10654,8 +10666,13 @@ class _SyntheticC1SourceRecorder:
                 capture_native_integration_source
                 and environment._integration_source is not integration_source_before
             )
+            or (
+                capture_native_tof_pending_source
+                and environment.pending is not pending_source_before
+            )
             or self._simulator_rng is not recorder_rng_before
             or self._simulator_odometry_rng is not recorder_odometry_rng_before
+            or self._simulator_pending is not recorder_pending_before
             or self._binding is not binding_before
             or self._source_files() != self._identities
         ):
@@ -10671,6 +10688,7 @@ class _SyntheticC1SourceRecorder:
         self._simulator = environment
         self._simulator_rng = rng_before
         self._simulator_odometry_rng = odometry_rng_before
+        self._simulator_pending = pending_source_before
         self._integration_sample = snapshot.pop("native_integration_source", None)
         self._tof_sample = None
         self._dynamics_sample = snapshot
@@ -10988,6 +11006,19 @@ class _SyntheticC1SourceRecorder:
                 for word in entry["sample_words"]
             ):
                 raise ValueError("native ToF delivery sample word budget exhausted")
+            if include_pending_sources:
+                recorded_pending = dynamics_before.get("native_tof_pending_queue")
+                if type(recorded_pending) is not tuple or len(recorded_pending) > 8:
+                    raise ValueError("native ToF pending original-read layout missing")
+                pending_template = ((0, 0, (0,) * 64, (False,) * 64),) * len(
+                    recorded_pending
+                )
+                if not _native_tof_word_copy_matches(
+                    recorded_pending, pending_template, shape_only=True
+                ):
+                    raise ValueError(
+                        "native ToF pending original-read word budget exhausted"
+                    )
             if (
                 self._simulator_rng is not environment.rng
                 or self._simulator_odometry_rng is not environment.odometry_rng
@@ -11002,9 +11033,17 @@ class _SyntheticC1SourceRecorder:
             history_binding = _c1_source_binding_digest(history_before)
             if include_pending_sources:
                 pending_before = environment.pending
-                pending_binding = _c1_source_binding_digest(
-                    _copy_native_tof_pending_queue(environment)
-                )
+                pending_copy = _copy_native_tof_pending_queue(environment)
+                if (
+                    self._simulator_pending is not pending_before
+                    or not _native_tof_word_copy_matches(
+                        dynamics_before.get("native_tof_pending_queue"), pending_copy
+                    )
+                ):
+                    raise ValueError(
+                        "native ToF pending original recorder-read evidence missing or changed"
+                    )
+                pending_binding = _c1_source_binding_digest(pending_copy)
                 pending_sources = _match_native_tof_pending_sources(
                     environment, history_before, self._epoch
                 )
@@ -11034,6 +11073,7 @@ class _SyntheticC1SourceRecorder:
                 )
                 if (
                     environment.pending is not pending_before
+                    or self._simulator_pending is not pending_before
                     or not _native_tof_word_copy_matches(pending_sources, pending_after)
                     or _c1_source_binding_digest(pending_sources)
                     != pending_sources_binding

@@ -17577,6 +17577,67 @@ Scoped history/Sources/prior-design/stable-workflow preservation, new pending
 snapshot reference/local target, final five-file source/test diff and whitespace
 passed. Public introduction unchanged; no source gate rerun for documentation.
 
+## 212. Original Recorder-Read Native ToF Pending Correspondence (2026-11-09)
+
+Pending snapshotf6bbb7b normally pushed/clean. Local hypothesis: an explicit
+literal capture_native_tof_pending_source flag can retain bounded primitive
+pending words/masks in both samples of the original recorder read and bind its
+original deque identity. Default reads clear this optional evidence; opt-in
+pending publication requires it rather than silently treating a new snapshot as
+original read provenance. Existing producer/State/frame/archive/owner checks and
+false qualification flags remain; no source/coverage/clock/native/physical/
+permission/admission adoption or usable command.
+
+Finite scope: twelve cloned existing receipt fixtures, four steps/five ordinary
+reads/<=three retentions (six intakes); one final original read (<=two copies)
+plus <=one snapshot (<=four copies), <=128 bindings in the instrumented combined
+slice, forbidden native replay/step/reset/clock zero. Existing C1 staging may
+regenerate its old views (<=40 per case), not actual ToF source/coverage/episodes.
+Adapt existing sixteen optional pending snapshot controls to capture original
+pending evidence in their existing reads, without adding cases/steps/reads or
+relaxing their snapshot caps. Same source/pending/history/profile/word caps.
+Three positions including failures/aborts: first new12+adapted16, required
+root/style, repair reserve. No standalone adjacent rerun needed; root contains
+all controls. No data/study/model/GPU/dependency/download/hardware/firmware/
+Arm/sanitizer/board/threshold/frozen-contract changes, artifacts or cleanup.
+Results follow the focused check.
+
+First28:18PASS/10FAIL14.08s. New recorder-read guards blocked the already documented
+ordinary read -> record_tick -> capture_synthetic_c1_views -> tof_directions path;
+existing sixteen pending snapshot controls passed. Repair scopes directions to
+the existing C1 staging call only (<=one final capture/eight directions, within
+the original forty-view setup cap), retaining zero native acquisition/step/reset/
+clock and zero geometry during snapshot. No production source/tolerance change,
+new geometry family or claim that ordinary reads are replay-free. Same28 consume
+repair reserve as position two; failures retained, final root/style position three.
+Same28PASS5.81s, original capped staging/copy/binding/forbidden and old fixture
+ledgers held. Review found newly retained original-read words entered ownership
+hashing before a bounded-layout preflight. Preflight exact tuple8/entry4/word64/
+mask64/32-bit primitive layout before hashing and strengthen existing words
+control with a 4,097-bit integer plus pre-hash guards. Final third position is
+that changed control and required root/style (including all adjacent controls);
+no fourth, extra case or standalone unchanged regression run.
+Final oversized words1PASS3.15s before root, pre-hash guards held. Required root
+**3,012 passed**, known QDQ xfail/71 warnings/no reported skips,106.45s; Ruff/
+format/whitespace/editor clear, all original capped source/history/receipt and
+other-family controls held. Recorder four resolved calls compatible. All three
+positions spent; initial ten failed checks retained/no abort/no fourth. No
+unchanged root or standalone adjacent rerun for documentation/reassurance.
+
+Original optional pending-read evidence and queue identity are checked against
+live content and current retained acquisitions; defaults clear rather than
+carry old evidence. Failed reads do not publish staged current/dynamics changes.
+This is not atomic/perpetually fresh or complete acquisition/retention/history/
+coverage evidence, a qualified epoch/clock/error/source or usable permit. All
+eight flags false/no command. No extra firmware/Arm/sanitizer/board/model/study/
+data/dependency/download/hardware action, artifacts or cleanup. Next reassess
+remaining independently supported native acquisition timing/error/coverage
+prerequisites; no numerical/physical bounds, source verdict or clock/permission
+claim follows from nominal tick correspondence or preserved hashes.
+Scoped history/Sources/prior-design/stable-workflow preservation, original-read
+reference/local target, final five-file source/test diff and whitespace passed.
+Public introduction unchanged; no source gate rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

@@ -2,6 +2,7 @@ import hashlib
 import json
 import math
 from copy import deepcopy
+from itertools import pairwise
 from pathlib import Path
 
 import numpy as np
@@ -9463,6 +9464,141 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
     else:
         with capture.global_and_fixture_disabled():
             print("C1 receipt source ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.fixture(scope="module")
+def c1_receipt_history_fixture(c1_motion_receipt_source_fixture, request):
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    for _ in range(8):
+        owner.record_environment_tick(
+            environment, synthetic_test_only=True, capture_motion_receipt_source=True
+        )
+        environment.step([0.125, 0.3], capture_motion_receipt=True)
+    assert len(owner._receipt_history) == 8
+    ledger = dict.fromkeys(("reads", "capture", "digest", "forbidden"), 0)
+    yield environment, owner, ledger
+    assert ledger["reads"] <= 12 and ledger["capture"] <= 8
+    assert ledger["digest"] <= 128 and ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 receipt history ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 receipt history ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "trim",
+        "default_gap",
+        "owned",
+        "preflight",
+        "discontinuous_anchor",
+        "capture_mutation",
+    ),
+)
+def test_synthetic_c1_owned_receipt_history(
+    c1_receipt_history_fixture, monkeypatch, case
+):
+    from dataclasses import asdict
+
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_receipt_history_fixture[:2])
+    ledger = c1_receipt_history_fixture[2]
+    held_history = deepcopy(owner._receipt_history)
+    held_current = deepcopy(owner._current)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    original_capture = diagnostics.capture_synthetic_c1_views
+    original_digest = diagnostics._c1_source_binding_digest
+    expected = None
+    if case == "preflight":
+        environment._motion_receipt_source = None
+        expected = "missing producer motion receipt"
+    elif case == "discontinuous_anchor":
+        owner._receipt_history[-1]["final_frame"] = b"different source"
+        held_history = deepcopy(owner._receipt_history)
+        expected = "history anchor mismatch"
+    elif case == "capture_mutation":
+        expected = "changed during source capture"
+
+    def capture(*args, **kwargs):
+        ledger["capture"] += 1
+        assert ledger["capture"] <= 8
+        result = original_capture(*args, **kwargs)
+        if case == "capture_mutation":
+            owner._receipt_history[-1]["motion_receipt"]["submitted_action"] = (
+                0.25,
+                0.3,
+            )
+        return result
+
+    def digest(*args, **kwargs):
+        ledger["digest"] += 1
+        assert ledger["digest"] <= 128
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("history controls must not step/reset/query guards")
+
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", capture)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(diagnostics, "_probe_synthetic_c1_state_motion", forbidden)
+    ledger["reads"] += 1
+    options = {
+        "synthetic_test_only": True,
+        "capture_motion_receipt_source": case != "default_gap",
+    }
+    if expected is not None:
+        with pytest.raises(ValueError, match=expected):
+            owner.record_environment_tick(environment, **options)
+        assert owner._current[0] == held_current[0]
+        np.testing.assert_array_equal(owner._current[1], held_current[1])
+        assert owner._current[2:] == held_current[2:]
+        if case != "capture_mutation":
+            assert owner._receipt_history == held_history
+        else:
+            assert len(owner._receipt_history) == 8
+            assert owner._receipt_history[-1]["motion_receipt"]["tick_after"] == 10
+    else:
+        owner.record_environment_tick(environment, **options)
+        if case == "default_gap":
+            assert owner._receipt_history == []
+            assert "motion_receipt" not in owner._dynamics_sample
+        else:
+            history = owner._receipt_history
+            assert [entry["motion_receipt"]["tick_after"] for entry in history] == list(
+                range(4, 12)
+            )
+            assert history[-1]["initial_state"] == asdict(held_current[2])
+            assert history[-1]["initial_frame"] == held_current[3]
+            assert history[-1]["final_state"] == asdict(owner._current[2])
+            assert history[-1]["final_frame"] == owner._current[3]
+            assert all(entry["source_epoch"] == owner._epoch for entry in history)
+            for previous, current in pairwise(history):
+                assert previous["final_frame"] == current["initial_frame"]
+                assert previous["final_state"] == current["initial_state"]
+                assert (
+                    previous["motion_receipt"]["final_pose_m_rad"]
+                    == current["motion_receipt"]["initial_pose_m_rad"]
+                )
+            assert history[-1]["motion_receipt"]["fixture_permission_granted"] is False
+            if case == "owned":
+                owner._dynamics_sample["motion_receipt"]["segments"][0]["committed"] = (
+                    False
+                )
+                environment._motion_receipt_source["receipt"]["clock"]["qualified"] = (
+                    True
+                )
+                assert history[-1]["motion_receipt"]["segments"][0]["committed"] is True
+                assert history[-1]["motion_receipt"]["clock"]["qualified"] is False
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
 @pytest.mark.parametrize(

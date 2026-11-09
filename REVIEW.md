@@ -16480,6 +16480,55 @@ clock/numerical/coverage/setup/error evidence and retained uncertainty rather
 than treating matching receipts as permission. No artifact/task data/model/
 native/board/study/cleanup action was created.
 
+## 190. Bounded Source-Linked Receipt History (2026-11-09)
+
+Chain checkpoint 1060629 normally pushed. Hypothesis: at most eight consecutive
+opt-in source transitions, each pairing original State words/emitted frames and
+an independent retained receipt copy, provides offline retention without
+silently bridging default-read gaps. New entries must anchor to the current
+source's actual previous State/frame/epoch; bind history into pre/post capture
+owner fingerprints and publish only with successful source publication. Default
+source reads clear the window; preflight/staged failures retain the existing
+window, including externally introduced mutations rather than rolling them back.
+
+Finite routine scope: six controls on a clone of the existing empty ideal
+fixture; eight setup source reads/eight receipt-enabled steps at ticks3..11
+(16 diagnostic clock reads), no new scenario/episode/label/study/timing sample
+acceptance. Controls have no construction/step/reset/guard/episode write, at
+most12reads/eightcaptures/128digests per matrix. First six controls, adjacent/
+style, required root, one repair reserve: at mostfour positions incl failures/
+aborts. Existing fixture caps unchanged; no new dependencies/download/models/
+GPU/native/board/physical action or artifact. Eight-entry/128-segment limits are
+retention work limits, not RAM/stack/clock/native qualification. No admitted
+predecessor, uncertainty reset, one-use or command permission follows.
+Actual results and remaining consumer-validation limits follow verification.
+
+First six history controls passed, 1.90 s; ledger six reads/four captures/44
+digests/zero forbidden. Position two formatted new source/test layout, then Ruff
+RUF007 rejected neighboring zip pairs; the shell stopped before adjacent tests.
+Repair uses installed standard-library itertools.pairwise with identical
+neighbor assertions, no unsafe autofix/dependency or source/fixture/cap change.
+Failed style position is spent; position three reruns the focused history and
+same adjacent controls/style before the final root.
+
+Position three **65 passed** (six history +59 adjacent), 0.60 s; history ledger
+six reads/four captures/44 digests/zero forbidden, receipt source10/3/35/0,
+simulator source21/8/71/0. Scoped lint/format/whitespace/editor diagnostics passed.
+Position four root `python -m pytest -q && ruff check . && git diff --check`
+**2,734 passed**, one known transformer QDQ xfail, 71 warnings, no reported
+skips, 64.43 s; changed-file format checks passed. All four positions spent,
+including stopped Ruff position; no fifth unchanged run or protected study.
+First/repaired/root reuse the same eight setup transitions, not independent
+cohort/task-quality/timing evidence. Documentation-only checks do not rerun code.
+
+History cap/copies/gaps/anchor checks do not validate every old entry against
+the actual current producer for a later consumer. No source/numerical/clock/
+setup/coverage/error/one-use qualification, admitted predecessor or usable
+command exists; all flags remain false. Next add that full retained-history/
+actual-current-source consistency prerequisite before offline publication,
+without inferring actuation permission or resetting uncertainty at trim/gap.
+No native/board/model/dependency/download/data/artifact/cleanup action occurred.
+
 ## Sources
 
 Hardware and tools:

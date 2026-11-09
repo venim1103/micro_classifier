@@ -9119,6 +9119,7 @@ class _SyntheticC1SourceRecorder:
         self._simulator_rng = None
         self._simulator_odometry_rng = None
         self._dynamics_sample = None
+        self._receipt_history = []
 
     @staticmethod
     def _source_files():
@@ -9232,6 +9233,11 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("simulator source profile or scenario mismatch")
         if self._source_files() != self._identities:
             raise ValueError("simulator source files changed")
+        if (
+            type(self._receipt_history) is not list
+            or len(self._receipt_history) > self._config.history_ticks
+        ):
+            raise ValueError("simulator receipt history budget exhausted")
         receipt_source_before = (
             environment._motion_receipt_source
             if capture_motion_receipt_source
@@ -9301,6 +9307,7 @@ class _SyntheticC1SourceRecorder:
                     if current is None
                     else (current[0], current[1], asdict(current[2]), current[3]),
                     "dynamics_sample": self._dynamics_sample,
+                    "receipt_history": self._receipt_history,
                 }
             )
 
@@ -9389,6 +9396,31 @@ class _SyntheticC1SourceRecorder:
         )
         if encode_state(state) != emitted_frame:
             raise ValueError("native simulator words and emitted observation disagree")
+        receipt_history = []
+        if capture_motion_receipt_source:
+            if self._receipt_history:
+                last = self._receipt_history[-1]
+                if (
+                    type(last) is not dict
+                    or last.get("source_epoch") != self._epoch
+                    or type(last.get("final_frame")) is not bytes
+                    or last["final_frame"] != self._current[3]
+                    or _c1_source_binding_digest(last.get("final_state"))
+                    != _c1_source_binding_digest(asdict(self._current[2]))
+                ):
+                    raise ValueError("simulator receipt history anchor mismatch")
+            receipt_history = deepcopy(self._receipt_history)
+            receipt_history.append(
+                {
+                    "source_epoch": self._epoch,
+                    "initial_state": asdict(self._current[2]),
+                    "initial_frame": self._current[3],
+                    "final_state": asdict(state),
+                    "final_frame": emitted_frame,
+                    "motion_receipt": deepcopy(snapshot["motion_receipt"]),
+                }
+            )
+            receipt_history = receipt_history[-self._config.history_ticks :]
         staged = copy(self)
         staged._simulator = None
         staged.record_tick(
@@ -9422,6 +9454,7 @@ class _SyntheticC1SourceRecorder:
         self._simulator_rng = rng_before
         self._simulator_odometry_rng = odometry_rng_before
         self._dynamics_sample = snapshot
+        self._receipt_history = receipt_history
 
     def prepare_normal_request(
         self,

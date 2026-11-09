@@ -2374,6 +2374,29 @@ producer controls, failures and gates, not source/numerical/clock acceptance.
 
 [receipt-chain-review]: REVIEW.md#189-retained-receipt-segment-chain-consistency-2026-11-09
 
+##### Bounded Source-Linked Receipt History (2026-11-09)
+
+The actual-source recorder retains at most eight consecutive opted-in transition
+entries. Each owns copied receipt content, original initial/final State words,
+the emitted initial/final frames and recorder source epoch. A new entry must
+anchor to the recorder's current original State/frame/epoch; the oldest entry
+is trimmed at the existing eight-tick history cap. A default source read clears
+the receipt window instead of bridging an unrecorded transition. Producer and
+latest source-snapshot receipt dictionaries are not aliases of history entries.
+
+History joins the pre/post capture owner binding and is published only with
+successful staged source publication. Rejection preserves the existing window,
+including externally introduced changes rather than undoing caller mutations.
+This is not atomic/adversarial ownership, a setup/body-clear origin, native or
+clock qualification, an uncertainty reset, one-use execution or an admitted
+predecessor chain. Consumers still need full history and actual-current-source
+validation before using retention; trimming does not erase accumulated error
+obligations. All qualification/admission flags remain false. The [history
+checkpoint][receipt-history-review] records finite retention/gap/copy controls
+and preserved style failure, not board/RAM/latency/task-quality evidence.
+
+[receipt-history-review]: REVIEW.md#190-bounded-source-linked-receipt-history-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

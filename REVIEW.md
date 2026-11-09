@@ -17829,6 +17829,60 @@ Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
 local target, final five-file diff and whitespace passed. Code gate not rerun
 for documentation; no unrelated files modified or staged by this checkpoint.
 
+## 217. Bounded Native ToF Floor Division Residuals (2026-11-09)
+
+Timing correspondence74391d4 normally pushed/clean. Reassessed actual
+`tof_ranges`: native floor candidates are the conditional `-height / ray_z`
+division before wall/cylinder minima; existing actual-source intake retains
+both binary64 operands/results as canonical words. Local hypothesis: bounded
+offline exact rational residuals for these words can expose this named operation's
+rounding without geometry replay or adopting a range/error allowance. This is
+not a general audit/SC18, ideal-ray, continuous coverage or physical proof.
+
+Private synthetic-only helper accepts positive finite native height, exactly192
+finite canonical ray words and64 canonical finite/positive-infinite candidates,
+each<=32 characters. Standard Fraction computes exact native-word quotient and
+signed observed-minus-quotient residual under existing4096-bit source budget.
+No-downward branches require missing positive-infinite candidates; downward
+nonfinite candidates stay unknown. Nonzero residual is reported, not accepted
+against an invented tolerance. No source/clock/physical/numerical/admission
+qualification follows; all eight flags false, no command or adopted allowance.
+
+Finite sixteen cloned actual-intake controls, one setup step/intake per case,
+zero extra reads/retentions/geometry/clocks/hashes in residual computation.
+Each<=256 decoded words/64 rays/129 float-to-rational conversions/128 rational
+division/subtraction operations, pair widths<=4096 bits; existing source caps
+unchanged. Three positions including failures/aborts: first16, required root/
+style (unchanged adjacent controls), repair reserve; no standalone old run,
+dependency/download/model/GPU/study/data/firmware/Arm/sanitizer/board/hardware/
+threshold/frozen-contract action, generated artifact or cleanup. Results follow.
+First16PASS3.67s. Second position stopped after formatting at Ruff C408 in the
+fixture's `dict(...)` arguments; root did not run. Replace with the required
+dictionary literal; final third position reruns lint before required root/style.
+No numerical/source behavior or assertions changed for this style repair.
+Third position focused Ruff/format checks passed, then root3089PASS/known
+transformer QDQ1xfail/71warnings94.60s plus root Ruff/diff passed; changed-file
+editor diagnostics clear. All three positions spent; no fourth, standalone
+adjacent rerun or abort. No extra opt-in C/Arm/sanitizer/board controls, linked
+firmware/fit/board/task-quality/physical/numerical qualification claim.
+
+Controls cover actual retained acquisition words, exact/rounded/next-word
+residuals, no-downward/signed-zero/missing branches, finite extrema/subnormal,
+strict opt-in/height/shape/canonical/finite words and branch consistency. The
+actual-word helper is pure offline math: no identity/provenance/currentness,
+ideal-ray/normalization/trig, wall/cylinder minima/occlusion, final binary32
+sampling or complete coverage/error bound follows from computed residuals.
+All eight flags false, no adopted allowance, numerical/source/clock/physical/
+permission/native-execution/admission qualification or usable command. No
+artifact/cleanup; accepted limits and public introduction unchanged; source/test
+diff reviewed. Next: compose this bounded diagnostic with original current
+delivered/pending source snapshots, checking source/owner/output correspondence
+and retaining unknowns, rather than treating supplied word arithmetic as source
+qualification.
+Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
+local target, final five-file diff and whitespace passed. Code gate not rerun
+for documentation; no unrelated files modified or staged by this checkpoint.
+
 ## Sources
 
 Hardware and tools:

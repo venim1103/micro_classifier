@@ -11543,6 +11543,147 @@ def test_native_tof_timing_snapshot(
     assert environment.rng.bit_generator.state == before_rng and work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
+        "rounded",
+        "changed_word",
+        "upward",
+        "signed_zero",
+        "infinite_floor",
+        "large_finite",
+        "subnormal",
+        "flag",
+        "height",
+        "ray_count",
+        "floor_count",
+        "noncanonical",
+        "nonfinite_ray",
+        "branch",
+    ),
+)
+def test_native_tof_floor_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    native = diagnostics._sample_simulator_native_tof_source(environment, owner._epoch)[
+        "native_source"
+    ]
+    height = native["inputs"]["config"]["tof_mount_height"]
+    rays, floors = (
+        list(native["world_frame_unit_rays"]),
+        list(native["floor_candidate_ranges_m"]),
+    )
+    if case != "actual":
+        rays = [(0.0).hex(), (0.0).hex(), (-3.0).hex()] * 64
+        floors = [(1.0 / 3).hex()] * 64
+        height = 1.0
+    if case == "exact":
+        rays[2], floors[0] = (-2.0).hex(), (0.5).hex()
+    elif case == "changed_word":
+        floors[0] = math.nextafter(1.0 / 3, math.inf).hex()
+    elif case in ("upward", "signed_zero"):
+        rays[2], floors[0] = (1.0 if case == "upward" else -0.0).hex(), "inf"
+    elif case == "infinite_floor":
+        floors[0] = "inf"
+    elif case == "large_finite":
+        height, rays[2], floors[0] = (
+            float.fromhex("0x1.fffffffffffffp+1023"),
+            (-1.0).hex(),
+            float.fromhex("0x1.fffffffffffffp+1023").hex(),
+        )
+    elif case == "subnormal":
+        height, rays[2], floors[0] = math.ulp(0.0), (-1.0).hex(), math.ulp(0.0).hex()
+    elif case == "height":
+        height = True
+    elif case == "ray_count":
+        rays.append((0.0).hex())
+    elif case == "floor_count":
+        floors.pop()
+    elif case == "noncanonical":
+        floors[0] = "0.5"
+    elif case == "nonfinite_ray":
+        rays[0] = "inf"
+    elif case == "branch":
+        rays[2] = (0.0).hex()
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("floor residuals must use only supplied words")
+
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("_sample_simulator_native_tof_source", "_c1_source_binding_digest"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    arguments = {
+        "mount_height_m": height,
+        "world_frame_unit_rays": tuple(rays),
+        "floor_candidate_ranges_m": tuple(floors),
+        "synthetic_test_only": case != "flag",
+    }
+    if case in (
+        "flag",
+        "height",
+        "ray_count",
+        "floor_count",
+        "noncanonical",
+        "nonfinite_ray",
+        "branch",
+    ):
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_floor_division_residuals(**arguments)
+    else:
+        actual = diagnostics._native_tof_floor_division_residuals(**arguments)
+        assert (
+            actual["numerically_certified"] is False
+            and actual["source_qualified"] is False
+        )
+        assert actual["command_admission_qualified"] is False
+        assert len(actual["entries"]) == 64
+        first = actual["entries"][0]
+        if case in ("upward", "signed_zero", "infinite_floor"):
+            assert first["signed_residual_ratio"] is None
+            assert first["exact_quotient_ratio"] is None
+            assert first["status"] == (
+                "unknown_nonfinite_floor_candidate"
+                if case == "infinite_floor"
+                else "no_downward_floor_candidate"
+            )
+        else:
+            for entry in actual["entries"]:
+                if entry["signed_residual_ratio"] is not None:
+                    up = float.fromhex(entry["direction_z_hex"])
+                    quotient = -Fraction.from_float(height) / Fraction.from_float(up)
+                    observed = Fraction.from_float(
+                        float.fromhex(entry["floor_candidate_hex"])
+                    )
+                    assert Fraction(*entry["exact_quotient_ratio"]) == quotient
+                    assert (
+                        Fraction(*entry["signed_residual_ratio"]) == observed - quotient
+                    )
+            if case in ("exact", "large_finite", "subnormal"):
+                assert first["signed_residual_ratio"] == (0, 1)
+            elif case == "rounded":
+                assert Fraction(*first["signed_residual_ratio"]) == Fraction(
+                    -1, 54043195528445952
+                )
+            elif case == "changed_word":
+                assert Fraction(*first["signed_residual_ratio"]) > 0
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

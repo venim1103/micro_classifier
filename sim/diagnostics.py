@@ -9674,6 +9674,102 @@ def _sample_simulator_native_tof_source(environment, source_epoch):
     }
 
 
+def _native_tof_floor_division_residuals(
+    *,
+    mount_height_m,
+    world_frame_unit_rays,
+    floor_candidate_ranges_m,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native floor residuals require synthetic_test_only=True")
+    if (
+        type(mount_height_m) is not float
+        or not math.isfinite(mount_height_m)
+        or mount_height_m <= 0
+    ):
+        raise ValueError("native floor residuals require a positive finite height word")
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native floor residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native floor residual word budget exhausted")
+            value = float.fromhex(word)
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or value == -math.inf
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native floor residual words must be canonical")
+            values.append(value)
+        return values
+
+    def ratio(value):
+        numerator, denominator = value.as_integer_ratio()
+        if (
+            max(abs(numerator).bit_length(), denominator.bit_length())
+            > _SYNTHETIC_ARITHMETIC_BITS
+        ):
+            raise ValueError("native floor residual rational budget exhausted")
+        return numerator, denominator
+
+    rays = decoded(world_frame_unit_rays, 192, True)
+    floors = decoded(floor_candidate_ranges_m, 64, False)
+    height = Fraction.from_float(mount_height_m)
+    ratio(height)
+    entries = []
+    for index, floor in enumerate(floors):
+        up = rays[index * 3 + 2]
+        entry = {
+            "ray_index": index,
+            "direction_z_hex": up.hex(),
+            "floor_candidate_hex": floor.hex(),
+            "exact_quotient_ratio": None,
+            "signed_residual_ratio": None,
+        }
+        if up >= 0:
+            if floor != math.inf:
+                raise ValueError("native floor residual branch correspondence mismatch")
+            entry["status"] = "no_downward_floor_candidate"
+        elif floor == math.inf:
+            entry["status"] = "unknown_nonfinite_floor_candidate"
+        else:
+            direction, observed = Fraction.from_float(up), Fraction.from_float(floor)
+            ratio(direction)
+            ratio(observed)
+            quotient = -height / direction
+            entry.update(
+                status="computed_exact_native_floor_residual",
+                exact_quotient_ratio=ratio(quotient),
+                signed_residual_ratio=ratio(observed - quotient),
+            )
+        entries.append(entry)
+    return {
+        "schema": "micro-classifier/native-tof-floor-residuals/1",
+        "allowed_use": "offline_native_floor_division_diagnostics_only",
+        "status": "reported_native_floor_division_residuals",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "mount_height_hex": mount_height_m.hex(),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_word_copy_matches(copied, expected, *, shape_only=False):
     if type(copied) is not type(expected):
         return False

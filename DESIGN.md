@@ -2987,6 +2987,30 @@ See [timing delivery controls and limits][native-tof-timing-delivery-review].
 
 [native-tof-timing-delivery-review]: REVIEW.md#216-retained-tof-timing-delivery-correspondence-2026-11-09
 
+##### Bounded Native ToF Floor Division Residuals (2026-11-09)
+
+Private synthetic-only `_native_tof_floor_division_residuals` reports exact
+rational differences between recorded native floor candidates and the exact
+quotient of recorded binary64 height/vertical direction, not ideal geometric
+operands. Inputs are a positive finite builtin height, 192 finite canonical ray
+words and 64 canonical finite/positive-infinite candidate words, bounded to 32
+characters each. Standard `Fraction` preserves exact values under the existing
+4096-bit source budget; output pairs are normalized numerator/denominator tuples.
+Each ray retains its index, original vertical/candidate hex words, exact quotient
+and signed observed-minus-quotient residual where finite/downward. Missing
+downward candidates remain unknown; non-downward rays require positive infinity
+and have no quotient/residual. Unsupported shape/words/branches reject.
+
+This consumes supplied words only, with no geometry, source/recorder read,
+retention, step/reset, clock or hash. Nonzero residuals are reported, not accepted
+against a new tolerance. It neither binds these words to a current producer nor
+qualifies direction/trigonometry/normalization, minima/occlusion, binary32 range,
+full numerical/physical/coverage/error/clock/permission/admission or usable
+commands. All eight flags remain false; no uniform or adopted error allowance.
+See [native floor residual controls and limits][native-tof-floor-residual-review].
+
+[native-tof-floor-residual-review]: REVIEW.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -45,9 +45,22 @@
   clock qualification, studies, dependency changes or hardware work are authorized
   by matching records or this handoff. This note does not resume implementation.
 
+## Restart Verification (2026-11-09)
+
+[Review §226][restart] records the resumed read-only inspection. The worktree and
+complete source/test tails match the emergency WIP; no live test/compiler job was
+found. Sixteen fixture cases and their per-case work caps are recoverable from
+source, but the original attempt-position ceiling and full spent-attempt ledger
+are absent from the available recovery records. Count at least one interruption
+as spent/unknown. Neither focused tests nor a root gate that includes them were
+run; `c226192` / §225 remains the last verified source checkpoint. Recover the
+original ledger or obtain explicit bounded authority accounting for unknown
+attempts before execution. No new source checkpoint or crash diagnosis follows.
+
 [agents]: ../AGENTS.md
 [design]: ../DESIGN.md
 [review]: ../REVIEW.md
 [source]: ../sim/diagnostics.py
 [tests]: ../tests/test_sim.py
 [gate]: ../REVIEW.md#225-bounded-native-tof-selection-intake-2026-11-09
+[restart]: ../REVIEW.md#226-selection-retention-recovery-budget-blocker-2026-11-09

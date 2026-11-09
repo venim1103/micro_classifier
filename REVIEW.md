@@ -358,6 +358,58 @@ reference, final source/test diff and whitespace passed; docs editor clear.
 No unchanged green source gate rerun for documentation; only five checkpoint
 files staged for normal upstream synchronization.
 
+## 226. Selection-Retention Recovery Budget Blocker (2026-11-09)
+
+Resumed from `efd5619`; emergency WIP `5465393` remains unverified, and
+`c226192` / §225 remains the last verified source checkpoint. Restart checks
+found a clean `main` tracking `origin/main`, no live pytest/compiler job, and
+complete source/test tails. Working-file Git blobs match the index: diagnostics
+14,153 lines / 555,853 bytes; tests 22,683 lines / 854,570 bytes. No repair,
+buffer overwrite, cache purge or crash-cause attribution was performed. Existing
+damaged snapshots remain in `.git/recovery-20261109-PmbQpU/` and the previously
+recorded `/tmp/micro-classifier-recovery-20261109-c4Lvtu/` directory.
+
+Terminal Python is 3.12.3 at `/opt/venv/bin/python`; Pylance independently selects
+the same interpreter. Ruff, host C and Arm compilers are present; disk reports
+328 GiB free. No compiler, model, hardware or dependency action was taken.
+`rg` is unavailable; bounded available-tool searches were used instead.
+
+Inspected the WIP's `record_native_tof_source(include_selection=...)`, retained
+selection validator and `test_native_tof_selection_retention`. The test defines
+sixteen cases with per-case ceilings of 13 geometry calls, 14 recorder reads,
+10 retention attempts, 20 selection intakes, 40 native intakes and 256 binding
+calls; only the timed case permits two controlled clock reads. Retained native
+and selection histories remain capped at eight entries; 64-ray / 32-obstacle /
+101-candidate limits are unchanged. These are source assertions, not measured
+work or passing test results. Pylance found no resolved retention call sites;
+no static caller-compatibility result is claimed.
+
+**Execution blocker:** the available recovery notes, preserved review copies,
+local recovery log inventories and emergency commit message contain no original
+WIP attempt-position ceiling or completed retention-test result. At least one
+interrupted attempt is charged as spent/unknown, not success; its exact fixture
+progress and whether there were additional attempts are unknown. §225's separate
+three-position ledger is exhausted. Do not invent a WIP position limit, treat an
+unknown count as zero, or run the root suite to bypass this blocker: it includes
+the same retention fixture. No focused/root/style gate was run on restart.
+
+Documentation-only checks passed: exact prior-review/Sources, stable workflow
+and recovery-note preservation, local reference targets, source/test Git-byte
+identity, AST syntax and all sixteen case/seven work-cap declarations. The first
+validator stopped before AST checks because its suffix matcher assumed a final
+newline absent from the preserved note; correcting only that matcher made the
+same check pass. Document editor diagnostics are clear. No project import or
+fixture ran; syntax and static caps do not validate retention behavior.
+Source/tests remain byte-identical to the emergency WIP. Next recover the original
+position ledger outside the
+prohibited chat transcript, or obtain fresh explicit bounded execution authority
+that accounts for the interrupted/unknown attempts. Source checkpoints requiring
+the root regression gate are blocked meanwhile, including downstream selection
+publication; preparation does not establish source/clock/coverage/error/setup
+evidence. ST tools/licence and board readiness remain user-side; studies, learned
+work and general audits stay deferred. No qualification/admission flag, accepted
+bound, public contract or usable command changes.
+
 ## Sources
 
 Hardware and tools:

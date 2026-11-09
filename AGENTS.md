@@ -30,7 +30,10 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 ## Current Work
 
 Read [REVIEW.md][review] §225 for bounded native ToF selection intake
-and the latest source gate; §§181-191 record workflow, clocks and source ownership. The Q0-Q5
+and the latest verified source gate; §226 records the unverified selection-retention
+WIP's missing attempt ledger. Recover it or obtain explicit bounded execution
+authority before focused/root runs; count interrupted/unknown attempts as spent.
+§§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.
 

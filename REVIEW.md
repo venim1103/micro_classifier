@@ -17975,6 +17975,104 @@ Scoped history/Sources/prior-design/stable-workflow preservation, both new
 references/local targets, final five-file diff and whitespace passed. Code gate
 not rerun for documentation; only these checkpoint files are staged.
 
+## 220. Current-Source Ideal ToF Sampling Composition (2026-11-09)
+
+Floor/sampling prerequisites7f86c6f normally pushed/clean. Local hypothesis:
+separate literal `include_sampling_residuals=False` can compose ideal sampling
+diagnostics with actual current delivered/pending native sources and their
+epoch/acquisition/delivery IDs, preserving defaults. All closing timing/floor/
+sampling callees must finish before any derived outgoing group is compared;
+otherwise a later sampling probe could mutate an earlier floor/timing payload.
+Recheck timing/source layouts immediately before retained-clock hashing after
+new probes; residual output itself never enters hashes. Unknown/malformed/
+changed evidence yields no partial source/frame/diagnostic/clock payload.
+
+Finite sixteen cloned controls, <=five setup steps/six ordinary reads/three
+retentions; timed cases <=six timing intakes/eight controlled setup counter
+reads. Setup C1 views<=48. Snapshot <=six floor/six sampling probes/six timing
+matches/two frame checks/64 bindings; source caps64/8/4096 unchanged. At most
+1542 exact float conversions/1152 rational operations across both diagnostic
+kinds, no source/recorder read, retention, step/reset, geometry/RNG/new-clock.
+Four positions including failures/aborts: first16, required root/style (existing
+controls) and at most two repairs for the combined cross-output boundary;
+no standalone old run/ledger renewal. No general audit/SC18, dependency/download/
+model/GPU/study/data/firmware/Arm/sanitizer/board/hardware/threshold/frozen-contract
+action, artifact or cleanup. All eight flags false, no adopted allowance,
+numerical/range/error/coverage/physical/clock/permission/admission or usable command.
+
+Recovery after user-reported OOM/interruption: four worktree files were exact
+truncated prefixes of HEAD, not surviving intentional edits. Byte-for-byte
+damaged copies retained at /tmp/micro-classifier-recovery-20261109-c4Lvtu;
+committed tails mechanically restored, then this original patch recovered from
+the pre-restart session transcript. Current container memory.events counters
+report zero OOM/OOM-kill events; this does not diagnose the earlier host failure.
+No pytest remained running. Historical first16 success was reported before the
+interruption but no durable subsequent gate result was recovered; conservatively
+count first position spent and second gate interrupted/aborted, not green.
+Third position is the same recovered16; fourth is required root/style with raw
+log retained outside git. No extra standalone old run or refunded budget.
+Recovery position three same16PASS6.13s, original counters held. Final fourth
+position formatted then stopped at Ruff SIM102 in the newly moved floor-output
+comparison; pytest/root did not run. Mechanical repair combines the equivalent
+conditions without altering assertions or source semantics. All four positions
+spent; no fifth standalone220 run, success claim or renewed budget. Checkpoint
+remains uncommitted pending a permitted required gate for independently useful
+source work. Damaged backups/focused log are retained, not qualification evidence.
+
+## 221. Native ToF Direction Squared-Norm Residuals (2026-11-09)
+
+Independent named native-ray prerequisite: floor and final-sampling residuals
+do not report the squared-norm discrepancy of the actual retained binary64 ray
+components. Local hypothesis: an offline exact diagnostic can report x*x+y*y+
+z*z minus one per recorded ray, without replay or adopting a unit-length/error
+tolerance. Canonical finite words only,192 words<=32chars/64 triples; positive
+and negative zero remain distinct in source words. Squared terms and sums use
+exact Fraction arithmetic with conservative dyadic common-denominator work
+preflight and4096-bit pair caps. Huge mixed-exponent combinations reject before
+sum construction; zero/nonunit vectors report discrepancies, not acceptance.
+
+Finite sixteen cloned actual-intake controls, <=one setup step/intake each;
+helper<=192 rational conversions/384 operations, independent test oracle<=192
+conversions/448 operations. No geometry/source/recorder read, retention, step,
+reset, RNG/clock/hash inside the helper. Three positions counting failures/
+aborts: first16, required root/style with unchanged old controls including220,
+repair reserve. This new arithmetic prerequisite does not renew220's exhausted
+standalone budget. No model/GPU/study/data/dependency/download/firmware/Arm/
+sanitizer/board/hardware/threshold/frozen-contract action. No ideal-direction/
+trig/normalization/range/coverage/physical/source/clock/permission/admission
+qualification or usable command; all eight flags false. Results follow.
+First16PASS0.81s; actual words, axis/rounded/next-word/nonunit/zero/signed-zero,
+subnormal/largest finite, mixed-exponent preflight and malformed/strict-opt-in
+controls passed, old fixture counters zero. Second position changed-file Ruff
+format/lint, required root3153PASS/known transformer QDQ1xfail/71warnings127.76s,
+root Ruff/diff and changed-file format check passed; editor diagnostics clear.
+No reported skips or new dependencies. Existing220 controls ran only within
+this independent source change's required root gate; no fifth standalone220
+attempt or ledger refund. Two of221's three positions used, reserve not follow-on
+scope; no failure/abort in221, while220's interruption and SIM102 are preserved.
+The mechanically repaired220 fixtures/source passed in this required gate;
+no checkpoint preceded it. Runtime controls verify the new private callers;
+no additional static signature compatibility result is claimed after restart.
+
+Recovery logs and all four damaged prefixes retained outside git under the
+recorded /tmp directory. Post-gate current-container memory.events low/high/
+max/oom/oom_kill/oom_group_kill all zero; memory.peak5471416320 bytes, available
+memory16GiB. These are container counters, not job peak RSS, an explanation of
+the earlier host failure, hardware fit, or a new memory guarantee. No pytest
+process is left owned by this checkpoint. No hardware/model/study/task-data
+action, generated task artifact or cleanup; no original input was discarded.
+
+Source-bound sampling and independent norm residuals report exact relationships
+only; no adopted tolerance, ideal-ray/trig/minimum/occlusion/range/coverage/
+physical/source/clock/permission/native-execution/admission qualification or
+usable command follows. Public introduction and accepted limits unchanged.
+Next independent supported evidence: relate native ray-word arithmetic to the
+owned delivered/pending source boundary without adopting a normalization bound,
+or retain actual selected-hit calculation lineage as evidence permits.
+Scoped prior-review/Sources/design/stable-instruction preservation, both new
+references/local targets, final source/test diff and whitespace checks passed.
+Code gate not rerun for documentation; only the five checkpoint files staged.
+
 ## Sources
 
 Hardware and tools:

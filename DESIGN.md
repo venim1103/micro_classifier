@@ -3053,6 +3053,46 @@ All eight flags remain false. See [sampling residual controls and limits][native
 
 [native-tof-sampling-review]: REVIEW.md#219-ideal-native-tof-sampling-residuals-2026-11-09
 
+##### Current-Source Ideal ToF Sampling Composition (2026-11-09)
+
+Private `snapshot_native_tof_delivery(..., include_sampling_residuals=True)`
+separately opts into the ideal sampling diagnostic for the already matched
+delivered source and requested pending sources. It preserves acquisition/epoch/
+delivery IDs and pending order; defaults omit these fields and skip probes.
+Only the existing mounted, zero-noise/dropout diagnostic domain is supported.
+All closing timing, floor and sampling callees finish before outgoing derived
+groups are compared. Retained timing layout is preflighted again before hashing;
+residual output is bounded and compared without entering a hash. Malformed,
+missing or changed evidence yields unknown without partial source/frame data.
+
+This composes current source correspondence with supplied-word arithmetic, not
+an accepted error bound, independently correct rounding, ideal geometry, full
+coverage, physical clearance, clock/deadline/one-use or admission qualification.
+All eight flags stay false; no atomic or perpetual freshness promise. Recovery,
+finite ledgers and controls are in [sampling composition][native-tof-owned-sampling-review].
+
+[native-tof-owned-sampling-review]: REVIEW.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
+
+##### Native ToF Direction Squared-Norm Residuals (2026-11-09)
+
+Private synthetic-only `_native_tof_direction_norm_residuals` independently
+consumes 192 finite canonical binary64 direction words, at most 32 characters
+each. For each of 64 triples it reports the exact squared norm and signed
+squared-norm-minus-one ratio, retaining the original words and ray index.
+It uses exact `Fraction` arithmetic with conservative dyadic sum preflight
+and the existing 4096-bit pair cap. Unsupported shapes/words or excessive
+mixed-exponent work reject; signed zero remains distinct in source words.
+Zero and nonunit vectors report discrepancies rather than passing or failing
+a new normalization tolerance.
+
+There is no geometry replay, source read, retention, step/reset, clock/RNG or
+hash in this helper. It does not bind supplied words to a current recorder,
+prove ideal directions/trigonometry/rotations, or adopt numerical, physical,
+range, coverage, source, clock, permission or admission qualification. All eight
+flags remain false. See [ray-norm controls and limits][native-tof-ray-norm-review].
+
+[native-tof-ray-norm-review]: REVIEW.md#221-native-tof-direction-squared-norm-residuals-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -12019,6 +12019,357 @@ def test_native_tof_sampling_residuals(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default",
+        "flag",
+        "held",
+        "delivered_only",
+        "combined",
+        "bad_profile",
+        "missing_source",
+        "bad_mask",
+        "early_owner",
+        "late_source",
+        "outgoing_ratio",
+        "outgoing_budget",
+        "cross_floor",
+        "cross_timing",
+        "closing_source",
+    ),
+)
+def test_native_tof_owned_sampling_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    counters = iter(range(100, 1000, 10))
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", lambda: next(counters))
+    timed = case in ("combined", "cross_timing")
+    floored = case in ("combined", "cross_floor")
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    for _ in range(5 if case == "held" else 4):
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_timing=timed,
+        )
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(
+                environment, synthetic_test_only=True, include_timing=timed
+            )
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    if case == "bad_profile":
+        owner._tof_history[0]["native_source"]["inputs"]["config"]["noise_std"] = 0.01
+    elif case == "missing_source":
+        owner._tof_history.pop(0)
+    elif case == "bad_mask":
+        mask = owner._tof_history[0]["valid_mask"]
+        owner._tof_history[0]["valid_mask"] = (not mask[0], *mask[1:])
+    original_probe = diagnostics._native_tof_sampling_residuals
+    original_floor = diagnostics._native_tof_floor_division_residuals
+    original_timing = diagnostics._match_native_tof_retained_timing
+    original_frame = diagnostics._check_native_tof_delivery_frame
+    original_binding = diagnostics._c1_source_binding_digest
+    work = {
+        "sampling": 0,
+        "floor": 0,
+        "timing": 0,
+        "frame": 0,
+        "binding": 0,
+        "forbidden": 0,
+    }
+    outgoing = {}
+
+    def probed(*args, **kwargs):
+        work["sampling"] += 1
+        assert work["sampling"] <= 6
+        actual = original_probe(*args, **kwargs)
+        outgoing.setdefault("sampling", actual)
+        if work["sampling"] == 1 and case == "early_owner":
+            owner._binding = {"changed": True}
+        if work["sampling"] == 6:
+            if case in ("outgoing_ratio", "cross_floor"):
+                diagnostic = outgoing["floor" if case == "cross_floor" else "sampling"]
+                entry = next(
+                    entry
+                    for entry in diagnostic["entries"]
+                    if entry["signed_residual_ratio"] is not None
+                )
+                numerator, denominator = entry["signed_residual_ratio"]
+                entry["signed_residual_ratio"] = numerator + 1, denominator
+            elif case == "cross_timing":
+                outgoing["timing"]["clock"]["begin_ns"] += 1
+                outgoing["timing"]["clock"]["end_ns"] += 1
+            elif case == "closing_source":
+                entry = owner._tof_history[0]
+                entry["sample_words"] = (
+                    entry["sample_words"][0] ^ 1,
+                    *entry["sample_words"][1:],
+                )
+        return actual
+
+    def floored_probe(*args, **kwargs):
+        work["floor"] += 1
+        assert work["floor"] <= 6
+        actual = original_floor(*args, **kwargs)
+        outgoing.setdefault("floor", actual)
+        return actual
+
+    def timed_match(*args, **kwargs):
+        work["timing"] += 1
+        assert work["timing"] <= 6
+        actual = original_timing(*args, **kwargs)
+        outgoing.setdefault("timing", actual)
+        return actual
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        assert work["frame"] <= 2
+        actual = original_frame(*args, **kwargs)
+        if work["frame"] == 2:
+            if case == "late_source":
+                native = owner._tof_history[0]["native_source"]
+                native["pre_noise_ranges_m"] = (
+                    (0.75).hex(),
+                    *native["pre_noise_ranges_m"][1:],
+                )
+            elif case == "outgoing_budget":
+                entry = next(
+                    entry
+                    for entry in outgoing["sampling"]["entries"]
+                    if entry["signed_residual_ratio"] is not None
+                )
+                entry["signed_residual_ratio"] = (
+                    1 << 4096,
+                    entry["signed_residual_ratio"][1],
+                )
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        assert all(args[0] is not outgoing.get(name) for name in ("sampling", "floor"))
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "owned sampling residuals must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_native_tof_sampling_residuals", probed)
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_floor_division_residuals", floored_probe
+    )
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timed_match)
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="include_sampling_residuals"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True, include_sampling_residuals=1
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_timing=timed,
+            include_floor_residuals=floored,
+            include_sampling_residuals=case != "default",
+        )
+        assert result["numerically_certified"] is False
+        assert result["command_admission_qualified"] is False
+        if case in ("copy", "default", "held", "delivered_only", "combined"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert work["sampling"] == work["floor"] == work["timing"] == 0
+                assert "sampling_residuals" not in result
+                assert "pending_sampling_residuals" not in result
+            else:
+                actual = result["sampling_residuals"]
+                assert actual["tick"] == result["source"]["tick"]
+                assert actual["source_epoch"] == result["source_epoch"]
+                assert len(actual["diagnostic"]["entries"]) == 64
+                assert actual["diagnostic"]["numerically_certified"] is False
+                if case != "delivered_only":
+                    assert [
+                        entry["tick"] for entry in result["pending_sampling_residuals"]
+                    ] == [entry["tick"] for entry in result["pending_sources"]]
+                else:
+                    assert "pending_sampling_residuals" not in result
+                if case == "combined":
+                    assert (
+                        result["timing"]["tick"]
+                        == result["floor_residuals"]["tick"]
+                        == actual["tick"]
+                    )
+                actual["diagnostic"]["entries"][0]["ray_index"] = -1
+                assert owner._tof_history[0]["tick"] == 4
+        else:
+            assert result["status"] == "unknown"
+            assert result["snapshot_available"] is False
+            assert not (
+                {
+                    "source",
+                    "frame",
+                    "sampling_residuals",
+                    "pending_sampling_residuals",
+                    "floor_residuals",
+                    "timing",
+                    "pending_sources",
+                }
+                & result.keys()
+            )
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "axis",
+        "one_third",
+        "changed_word",
+        "zero",
+        "signed_zero",
+        "subnormal",
+        "largest",
+        "mixed_budget",
+        "shape",
+        "word_type",
+        "word_long",
+        "noncanonical",
+        "nan",
+        "infinity",
+        "flag",
+    ),
+)
+def test_native_tof_direction_norm_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    source = diagnostics._sample_simulator_native_tof_source(environment, owner._epoch)
+    words = source["native_source"]["world_frame_unit_rays"]
+    if case != "actual":
+        components = (1.0, 0.0, 0.0)
+        if case == "one_third":
+            components = (1.0 / 3, 2.0 / 3, 2.0 / 3)
+        elif case == "changed_word":
+            components = (math.nextafter(1.0, math.inf), 0.0, 0.0)
+        elif case == "zero":
+            components = (0.0, 0.0, 0.0)
+        elif case == "signed_zero":
+            components = (1.0, -0.0, 0.0)
+        elif case == "subnormal":
+            components = (float.fromhex("0x0.0000000000001p-1022"), 0.0, 0.0)
+        elif case in ("largest", "mixed_budget"):
+            largest = float.fromhex("0x1.fffffffffffffp+1023")
+            smallest = float.fromhex("0x0.0000000000001p-1022")
+            components = (
+                (largest, largest, largest)
+                if case == "largest"
+                else (largest, smallest, 0.0)
+            )
+        words = tuple(value.hex() for value in components) * 64
+    if case == "shape":
+        words = words[:-1]
+    elif case in ("word_type", "word_long", "noncanonical", "nan", "infinity"):
+        replacements = {
+            "word_type": 1,
+            "word_long": "x" * 33,
+            "noncanonical": "0x1p+0",
+            "nan": "nan",
+            "infinity": "inf",
+        }
+        words = (replacements[case], *words[1:])
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError(
+            "ray norm arithmetic must not read/retain/step/replay/clock/hash"
+        )
+
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", forbidden)
+    rejected = {
+        "mixed_budget",
+        "shape",
+        "word_type",
+        "word_long",
+        "noncanonical",
+        "nan",
+        "infinity",
+        "flag",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError, match="native ray norm"):
+            diagnostics._native_tof_direction_norm_residuals(
+                world_frame_unit_rays=words,
+                synthetic_test_only=1 if case == "flag" else True,
+            )
+    else:
+        result = diagnostics._native_tof_direction_norm_residuals(
+            world_frame_unit_rays=words, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 64
+        for index, entry in enumerate(result["entries"]):
+            exact = tuple(
+                Fraction.from_float(float.fromhex(word))
+                for word in words[index * 3 : index * 3 + 3]
+            )
+            squared = sum(value * value for value in exact)
+            assert entry["ray_index"] == index
+            assert entry["direction_hex"] == words[index * 3 : index * 3 + 3]
+            assert entry["squared_norm_ratio"] == squared.as_integer_ratio()
+            assert (
+                entry["signed_squared_norm_residual_ratio"]
+                == (squared - 1).as_integer_ratio()
+            )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        result["entries"][0]["direction_hex"] = ()
+        assert len(words) == 192
+    assert environment.rng.bit_generator.state == before_rng
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

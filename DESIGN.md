@@ -2809,6 +2809,27 @@ mapping and complete coverage/error/clock qualification remain separate.
 
 [native-tof-delivery-snapshot-review]: REVIEW.md#208-current-recorder-native-tof-delivery-snapshot-2026-11-09
 
+##### Native ToF Companion Original-State/Frame Correspondence (2026-11-09)
+
+Delivered ToF belongs to the actual companion observation, not the planar State
+wire payload. The private delivery snapshot now checks both original-State/frame
+points using the recorder's existing conversion path: project actual observation
+ego/goal into State, retain actual native action/goal overrides as the recorder
+does, require exact original native State fields, and require both original and
+projected encodings to equal the retained original frame. It does not replace
+original State/frame or regenerate ToF geometry, draw RNG values or sample clocks.
+
+The [companion-frame checkpoint][native-tof-companion-frame-review] records native
+values differing despite identical binary32 wire encoding, changed State fields,
+changed valid/CRC frames and late conversion/context controls. Passing this local
+mapping check is not acceptance of ToF source/coverage/error/clock/epoch support,
+an acquisition-to-every-historic-frame proof, atomic publication, numerical or
+physical qualification, one-use execution, permission or admission. All flags
+remain false/no usable command. Fresh and held delivery keep the same actual
+acquisition identity; native versus projected equality is checked, not assumed.
+
+[native-tof-companion-frame-review]: REVIEW.md#209-native-tof-companion-original-stateframe-correspondence-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

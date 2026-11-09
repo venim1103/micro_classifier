@@ -10367,6 +10367,128 @@ def test_native_tof_delivery_snapshot(
     assert work["match"] <= 2 and work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "match",
+        "held",
+        "frame_crc",
+        "frame_other_state",
+        "state_sequence",
+        "state_goal",
+        "state_same_wire",
+        "state_age",
+        "state_type",
+        "late_state",
+        "late_frame",
+        "late_conversion",
+    ),
+)
+def test_native_tof_delivery_state_frame(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import asdict, replace
+
+    from interface.protocol import encode_state
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(environment, synthetic_test_only=True)
+    for _ in range(2 + int(case == "held")):
+        environment.step([0.125, 0.3])
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+    original_state, original_frame = owner._current[2:]
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+
+    def change_state(**fields):
+        owner._current = (
+            *owner._current[:2],
+            replace(original_state, **fields),
+            owner._current[3],
+        )
+
+    def change_frame():
+        owner._current = (
+            *owner._current[:3],
+            original_frame[:-1] + bytes([original_frame[-1] ^ 1]),
+        )
+
+    if case == "frame_crc":
+        change_frame()
+    elif case == "frame_other_state":
+        owner._current = (
+            *owner._current[:3],
+            encode_state(replace(original_state, sequence=0)),
+        )
+    elif case == "state_sequence":
+        change_state(sequence=0)
+    elif case == "state_goal":
+        change_state(goal_m=(99.0, 0.0, 0.0))
+    elif case == "state_same_wire":
+        velocity = original_state.velocity_m_s
+        change_state(
+            velocity_m_s=(math.nextafter(velocity[0], math.inf), *velocity[1:])
+        )
+        assert encode_state(owner._current[2]) == original_frame
+    elif case == "state_age":
+        change_state(ages_us=(1, *original_state.ages_us[1:]))
+    elif case == "state_type":
+        owner._current = (*owner._current[:2], asdict(original_state), original_frame)
+    original_check = diagnostics._check_native_tof_delivery_frame
+    original_conversion = rover.state_from_observation
+    work = {"frame": 0, "conversion": 0, "forbidden": 0}
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        actual = original_check(*args, **kwargs)
+        if work["frame"] == 2:
+            if case == "late_state":
+                change_state(sequence=0)
+            elif case == "late_frame":
+                change_frame()
+        return actual
+
+    def converted(observation):
+        work["conversion"] += 1
+        actual = original_conversion(observation)
+        if case == "late_conversion" and work["conversion"] == 2:
+            return replace(actual, sequence=0)
+        return actual
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "State/frame checking must not read/retain/replay/step/reset/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    monkeypatch.setattr(rover, "state_from_observation", converted)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    result = owner.snapshot_native_tof_delivery(synthetic_test_only=True)
+    assert result["source_qualified"] is False
+    assert result["command_admission_qualified"] is False
+    if case in ("match", "held"):
+        assert result["snapshot_available"] is True, result["reason"]
+        assert result["frame"] == original_frame and owner._current[2] is original_state
+        assert result["sensor_tick"] == result["source"]["tick"] == 4
+        assert result["tick"] == before_tick != 4
+    else:
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert "source" not in result and "frame" not in result
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert work["frame"] <= 2 and work["conversion"] <= 2 and work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

@@ -9862,6 +9862,45 @@ def _match_native_tof_delivered_source(environment, history, source_epoch):
     return deepcopy(selected)
 
 
+def _check_native_tof_delivery_frame(producer, current):
+    from interface.protocol import State, encode_state
+    from sim.rover import state_from_observation
+
+    observation = producer["observation"]
+    if (
+        type(observation) is not dict
+        or type(current) is not tuple
+        or len(current) != 4
+        or type(current[0]) is not int
+        or not 0 <= current[0] <= 0xFFFFFFFF // 50000
+        or type(current[2]) is not State
+        or type(current[3]) is not bytes
+        or type(observation.get("tick")) is not int
+        or observation["tick"] != current[0]
+    ):
+        raise ValueError("unsupported native ToF companion State/frame")
+    original_frame = encode_state(current[2])
+    projected = state_from_observation(observation)
+    expected = replace(
+        projected,
+        velocity_m_s=(producer["native_action"][0], 0.0, 0.0),
+        angular_velocity_rad_s=(0.0, 0.0, producer["native_action"][1]),
+        goal_m=(
+            *map(
+                float,
+                _c1_array(producer["native_goal_source"]["goal_m"], (2,)).astype(float),
+            ),
+            0.0,
+        ),
+    )
+    if (
+        not _native_tof_word_copy_matches(asdict(current[2]), asdict(expected))
+        or original_frame != current[3]
+        or encode_state(projected) != current[3]
+    ):
+        raise ValueError("native ToF companion State/frame correspondence mismatch")
+
+
 def _check_simulator_motion_receipt_clock(clock):
     if (
         type(clock) is not dict
@@ -10896,6 +10935,7 @@ class _SyntheticC1SourceRecorder:
                 environment, history_before, self._epoch
             )
             observed = producer()
+            _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
             if producer_binding != _c1_source_binding_digest(
                 {key: dynamics_before.get(key) for key in observed}
@@ -10908,6 +10948,8 @@ class _SyntheticC1SourceRecorder:
                 environment, self._tof_history, self._epoch
             )
             _check_native_tof_history_layout(self._tof_history, template)
+            observed_after = producer()
+            _check_native_tof_delivery_frame(observed_after, self._current)
             if (
                 self._simulator is not environment
                 or self._tof_history is not history_before
@@ -10921,7 +10963,7 @@ class _SyntheticC1SourceRecorder:
                 or _c1_source_binding_digest(copied) != copied_binding
                 or _c1_source_binding_digest(self._tof_history) != history_binding
                 or ownership() != owner_binding
-                or _c1_source_binding_digest(producer()) != producer_binding
+                or _c1_source_binding_digest(observed_after) != producer_binding
                 or self._source_files() != self._identities
             ):
                 raise ValueError("native ToF delivery content or identities changed")

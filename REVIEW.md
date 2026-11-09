@@ -17431,6 +17431,60 @@ Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
 local target, final five-file source/test diff and whitespace checks passed.
 Public introduction and frozen contracts unchanged; no extra source gate for docs.
 
+## 209. Native ToF Companion Original-State/Frame Correspondence (2026-11-09)
+
+Delivery snapshot409ad15 normally pushed/clean. Falsifiable local S3 hypothesis:
+actual observation-to-State conversion must exactly match the original retained
+State fields, then encoding that original State must match its original frame.
+Delivered ToF is companion observation data, not a wire State payload. Compare
+before/after snapshot publication without replacing original State/frame; an
+unchanged binary32 wire encoding alone cannot rescue changed native State words.
+All flags false/no command/source/numerical/physical/coverage/clock/one-use/
+admission adoption. This does not link every acquisition to every historic frame.
+
+Finite synthetic scope: twelve existing cloned receipt fixtures, <=four steps/
+six ordinary reads/one retention (two intakes), <=two frame checks/conversions/
+delivery matches per case, no read/retain/replay/step/reset/clock during snapshot.
+<=48 old C1 setup views per case remain unchanged controls, not task data or
+qualification. Existing source/history/word/epoch/profile caps unchanged. Four
+positions including failures/aborts: first12, adjacent ToF/style<=180, required
+root, repair reserve. No frozen wire/physical contract, threshold, firmware/
+hardware/Arm/board/model/GPU/study/data/dependency/download/artifact/cleanup.
+Results follow the focused check.
+
+First12:9PASS/3FAIL1.97s: match/held returned unknown and state_type lacked its
+asdict import. Nearby recorder read establishes the missing boundary: original
+State intentionally overrides projected action/goal with retained native source
+values, requiring identical wire encoding. Plain projected-State word equality
+was the wrong hypothesis. Repair mirrors that existing conversion/override path,
+checks original native State words and original/projected frame encodings, and
+fixes the test import. No rounding/tolerance relaxation or native replay. Same12
+use the repair reserve as position two; failure retained, no renewed old scope.
+Same12PASS4.14s; forbidden/frame/conversion and old fixture ledgers held. Third
+position changed-file format/Ruff/whitespace clear and **156 adjacent ToF controls
+passed**,6.67s. Fourth required root **2,968 passed**, known QDQ xfail/71 warnings/
+no reported skips,96.95s; root Ruff/format/whitespace clear, original capped
+source/history/receipt and other-family controls held. All four positions spent,
+initial three failures retained/no abort/no fifth or unchanged gate rerun for docs.
+
+Editor diagnostics twice repeated the older missing-asdict location after the
+import repair; current disk/runtime import is defined. Scoped Pylance syntax
+checks for both files clear, typeAt at current use resolves the dataclasses
+asdict overload, and both helper calls are compatible. This separates the stale
+editor report from current-source name-resolution/runtime evidence; no code
+change was made merely to suppress the stale report.
+
+Original native State equality and original/projected frame encoding are checked
+against actual producer content at the delivery snapshot points, not a new
+source/clock/range/error/physical/coverage/permission/admission verdict. All eight
+flags false/no command. No new model/data/study/dependency/download/hardware/
+firmware/Arm/sanitizer/board controls or artifact/cleanup. Next bounded actual
+acquisition/pending/delivery retention correspondence and explicit missing-source
+rejection; do not derive complete coverage or physical deadlines from nominal ticks.
+Scoped history/Sources/prior-design/stable-workflow preservation, companion-frame
+reference/local target, final five-file source/test diff and whitespace passed.
+No source gate was repeated for documentation; public introduction unchanged.
+
 ## Sources
 
 Hardware and tools:

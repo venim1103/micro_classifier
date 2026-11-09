@@ -54,9 +54,11 @@ dated [REVIEW.md][review] sections, not here. Replace this short state as it cha
 ## Start With Context
 
 - Read Current Work and the newest relevant checkpoint in [REVIEW.md][review]
-  before continuing implementation. Use [DESIGN.md][design] §§1, 2 and 12 for
-  active scope and gates; read §4 for teacher work, §6 for numerical/architecture
-  work and §7 for sensor, coverage and data work before editing those areas.
+  before continuing implementation. The root review and [DESIGN.md][design]
+  are reading maps; follow chapter links for the relevant numbered scope.
+  Use design §§1, 2 and 12 for active scope and gates; consult §4 for teacher
+  work, §6 for numerical/architecture work and the relevant §7 subsection for
+  sensor, coverage and data work. Do not load entire archives for routine work.
 - Check the actual worktree, nearby implementation/tests and applicable local
   instructions. Preserve user changes, including editor settings and untracked
   files. After an interrupted tool call, verify its outcome before repeating it.
@@ -75,9 +77,18 @@ dated [REVIEW.md][review] sections, not here. Replace this short state as it cha
   counts, commit histories or session handovers. This rule does not request a
   separate cleanup of existing documentation.
 - Keep architecture, accepted requirements, contracts and rationale in
-  [DESIGN.md][design]. Keep changing status, discussions, commands/results,
-  failed-check history, evidence limits and next-session handovers in dated
-  [REVIEW.md][review] updates. Preserve earlier failures and historical evidence.
+  the chapters indexed by [DESIGN.md][design]. Keep changing status,
+  discussions, commands/results, failed-check history, evidence limits and
+  next-session handovers in dated
+  [REVIEW.md][review] updates. Older numbered checkpoints live in its linked
+  archives. Preserve failures, approvals, spent ledgers and evidence limits;
+  moving a record does not renew authority or qualify its claims.
+- Keep root reading maps short; archive whole older sections before exceeding
+  about 1,000 lines. Keep individual archive/topic files around 2,500 lines or
+  less, rebase local links and preserve historical anchors. New checkpoint
+  notes should state the change, actual checks/failures, limits and next action
+  without repeating the full prior handoff. These are organization targets,
+  not experiment budgets or product requirements.
 - Use [.devcontainer/README.md][container-guide] for reusable environment/setup
   instructions. Use existing documents rather than creating new Markdown files
   unless asked. Use reference-style links and check their targets.
@@ -294,6 +305,10 @@ useful in-scope work rather than repeating the same attempt.
 - Keep raw logs for long-running authorized jobs in ignored directories. Run
   large-memory/GPU jobs serially, one GPU job at a time, and report measured
   resource use without presenting process counters as hardware guarantees.
+- After a restart, verify file sizes/tails and live processes before repeating
+  work. Preserve damaged and uncommitted versions before recovery; use bounded
+  reads and summaries instead of whole-file diffs or historical log dumps.
+  Never clear user/editor caches or attribute a crash to OOM without evidence.
 - When the final-answer gate permits a handoff, include commit IDs, verification,
   remaining boundaries and worktree state. Never continue after a stop or pause.
 

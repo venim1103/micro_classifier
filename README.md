@@ -128,7 +128,7 @@ or label source; see [the design's licensing boundaries][design] and the
 [firmware]: firmware/
 [teacher-tools]: teacher/
 [export-tools]: export/
-[milestones]: DESIGN.md#12-implementation-milestones
+[milestones]: docs/design/12-implementation-milestones.md#12-implementation-milestones
 [design]: DESIGN.md
 [review]: REVIEW.md
 [container-guide]: .devcontainer/README.md

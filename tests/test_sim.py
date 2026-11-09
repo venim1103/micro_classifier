@@ -9982,6 +9982,156 @@ def test_synthetic_c1_simulator_motion_receipt_source(
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "missing",
+        "epoch",
+        "tick",
+        "count",
+        "inputs",
+        "endpoint",
+        "metadata",
+        "nonfinite",
+        "work_limit",
+        "mutated",
+        "replaced",
+        "bad_option",
+        "without_receipt",
+    ),
+)
+def test_synthetic_c1_native_integration_source(
+    c1_motion_receipt_source_fixture, monkeypatch, case
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    source = environment._integration_source
+    before_current = deepcopy(owner._current)
+    before_sample = deepcopy(owner._dynamics_sample)
+    before_integration = deepcopy(owner._integration_sample)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    ledger = dict.fromkeys(("reads", "capture", "digest", "forbidden"), 0)
+    original_capture = diagnostics.capture_synthetic_c1_views
+    original_digest = diagnostics._c1_source_binding_digest
+    options = {
+        "capture_motion_receipt_source": True,
+        "capture_native_integration_source": True,
+    }
+    expected = None
+    if case == "missing":
+        environment._integration_source = None
+        expected = "native integration source"
+    elif case == "epoch":
+        source["rng"] = deepcopy(environment.rng)
+        expected = "producer epoch"
+    elif case == "tick":
+        source["tick_before"] -= 1
+        expected = "source ticks"
+    elif case == "count":
+        source["segments"].append(deepcopy(source["segments"][0]))
+        expected = "attempt count"
+    elif case == "inputs":
+        source["segments"][0]["inputs"]["speed_m_s"] = 0.5
+        expected = "inputs or endpoint"
+    elif case == "endpoint":
+        source["segments"][0]["values"]["next_yaw_rad"] = 0.5
+        expected = "inputs or endpoint"
+    elif case == "metadata":
+        source["segments"][0]["numerically_certified"] = True
+        expected = "source metadata"
+    elif case == "nonfinite":
+        source["segments"][0]["values"]["sinc_value"] = math.inf
+        expected = "source words"
+    elif case == "work_limit":
+        source["segments"] *= 129
+        expected = "source budget"
+    elif case in ("mutated", "replaced"):
+        expected = "changed during source capture"
+    elif case == "bad_option":
+        options["capture_native_integration_source"] = 1
+        expected = "literal bool"
+    elif case == "without_receipt":
+        options["capture_motion_receipt_source"] = False
+        expected = "requires motion receipt"
+
+    def capture(*args, **kwargs):
+        ledger["capture"] += 1
+        assert ledger["capture"] <= 2
+        result = original_capture(*args, **kwargs)
+        if case == "mutated":
+            source["segments"][0]["values"]["midpoint_rad"] += 0.001
+        elif case == "replaced":
+            environment._integration_source = {
+                **source,
+                "segments": deepcopy(source["segments"]),
+            }
+        return result
+
+    def digest(*args, **kwargs):
+        ledger["digest"] += 1
+        assert ledger["digest"] <= 32
+        return original_digest(*args, **kwargs)
+
+    def read(recorder, **kwargs):
+        ledger["reads"] += 1
+        assert ledger["reads"] <= 2
+        recorder.record_environment_tick(
+            environment, synthetic_test_only=True, **kwargs
+        )
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "integration source controls must not step/reset/replay/query guards"
+        )
+
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", capture)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr("sim.rover.integrate", forbidden)
+    monkeypatch.setattr(diagnostics, "_probe_synthetic_c1_state_motion", forbidden)
+    if expected is None:
+        normal = deepcopy(owner)
+        normal._simulator = environment
+        normal._simulator_rng = environment.rng
+        normal._simulator_odometry_rng = environment.odometry_rng
+        read(normal, capture_motion_receipt_source=True)
+        assert normal._integration_sample is None
+        read(owner, **options)
+        recorded = owner._integration_sample
+        assert recorded["source_epoch"] == owner._epoch
+        assert recorded["tick_before"] == source["tick_before"]
+        assert recorded["tick_after"] == source["tick_after"]
+        assert recorded["segments"] == source["segments"]
+        assert recorded["segments"] is not source["segments"]
+        assert original_digest(owner._dynamics_sample) == original_digest(
+            normal._dynamics_sample
+        )
+        assert original_digest(owner._receipt_history) == original_digest(
+            normal._receipt_history
+        )
+        assert owner._current[0] == normal._current[0]
+        assert owner._current[2:] == normal._current[2:]
+        np.testing.assert_array_equal(owner._current[1], normal._current[1])
+        recorded["segments"][0]["values"]["midpoint_rad"] = 99.0
+        assert source["segments"][0]["values"]["midpoint_rad"] != 99.0
+    else:
+        with pytest.raises(ValueError, match=expected):
+            read(owner, **options)
+        assert owner._current[0] == before_current[0]
+        assert owner._current[2:] == before_current[2:]
+        np.testing.assert_array_equal(owner._current[1], before_current[1])
+        assert original_digest(owner._dynamics_sample) == original_digest(before_sample)
+        assert owner._integration_sample == before_integration
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+    assert ledger["forbidden"] == 0
+
+
 @pytest.mark.parametrize("case", range(10))
 def test_synthetic_c1_recorder_reads_actual_simulator(
     c1_simulator_source_fixture, monkeypatch, case

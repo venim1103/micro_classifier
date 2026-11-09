@@ -2458,8 +2458,8 @@ candidate, under the existing 128-attempt cap. Default transitions and reset cle
 the cache; rejected preflight leaves the still-current cache unchanged. No receipt
 or wire schema changes, extra RNG/clock reads or reported actuation follow.
 
-The list is not yet ingested by the source recorder, retained history or offline
-snapshot API. Those consumers need their own actual-producer linkage, content
+Producer retention alone does not populate source-recorder, retained-history or
+offline snapshot data. Those consumers need actual-producer linkage, content
 validation and currentness checks before using it. Retention supplies no native
 roundoff, clock, physical, source or command qualification; all existing admission
 flags stay false. The [integration-source checkpoint][integration-source-review]
@@ -2467,6 +2467,31 @@ records fixed output-word/primitive-source/ownership compatibility controls,
 not numerical proof, board execution, fit, latency or task quality.
 
 [integration-source-review]: REVIEW.md#193-actual-native-integration-source-intermediates-2026-11-09
+
+##### Actual-Source Integration Ingestion (2026-11-09)
+
+The private source recorder's literal `capture_native_integration_source` option
+requires its receipt-source opt-in. It reads the actual producer cache, verifies
+RNG epoch references, transition ticks, closed finite builtin native words and
+one computed source per actual receipt attempt under the existing 128 cap.
+Input pose/action/interval and candidate endpoint words must match the receipt,
+including rejected candidates. No integration or primitive arithmetic is replayed.
+
+The temporary source snapshot includes copied integration data in its pre/post
+capture binding. Retained cache identity and recorder-owned prior integration
+sample also join stability checks before publication. Success stores a separate
+owned `_integration_sample`; reads without the option clear it. Existing source,
+receipt-history and offline receipt-snapshot schemas remain unchanged. A failed
+read does not publish a new sample or undo external mutations.
+
+This is source correspondence, not primitive correctness, native error proof,
+adversarial attestation, one-use execution, clock qualification or permission.
+Read-time native-source currentness remains a distinct dependency before an
+offline numerical consumer can use the copied sample. The
+[ingestion checkpoint][integration-ingestion-review] records bounded default/copy/fault/mutation
+controls; all qualification/admission flags stay false.
+
+[integration-ingestion-review]: REVIEW.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 
 ##### Conditional Discrete Motion Core (2026-11-06)
 

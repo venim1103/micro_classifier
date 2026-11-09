@@ -16672,6 +16672,48 @@ Scoped documentation checks passed: prior REVIEW history/Sources and DESIGN
 content preserved, AGENTS workflow unchanged, new local checkpoint anchor and
 targets valid, whitespace clean. The source gate was not rerun for documentation.
 
+## 194. Actual-Source Native Integration Cache Ingestion (2026-11-09)
+
+Retention checkpoint31643d8 normally pushed. Local hypothesis: existing staged
+actual-producer sampling can validate/copy the separate integration cache only
+under a literal opt-in requiring receipt capture, check epoch/ticks/closed finite
+native words and actual attempt inputs/candidate endpoints, then include content
+and retained cache identity in final capture stability checks. Publish a separate
+owned integration sample; default source/history/snapshot schemas remain unchanged.
+No primitive replay, mathematical correctness, source attestation or admission.
+
+Finite routine scope: fourteen fixed copy/fault/default/mutation controls using
+the existing receipt-source fixture, <=two reads/two captures/32 digests/zero
+step/reset/integrate/guard calls per case. No new setup step/clock/scene/study/data.
+At mostfour verification positions incl failures/aborts: first fourteen, adjacent
+plus style/signature, required root, one repair reserve. Existing128 attempt,
+source4096/motion16384/one command/16 brake/128 chord/16 term caps unchanged.
+No board/native study/model/dependency/download/GPU/artifact/cleanup action;
+all qualification/admission flags remain false. Results follow verification.
+
+Position one **14 passed**, 0.39 s; fixed per-case limits held, unchanged source
+fixture ledgers zero. Position two scoped Ruff formatting/lint/format-check and
+whitespace passed; **68 adjacent controls passed**, 2.04 s, history6/4/62/0,
+receipt-source10/3/43/0, original-source11/3/21/0 (reads/capture/digest/forbidden).
+Editor diagnostics clean. Pylance reports all four resolved method call sites
+compatible with the added optional bool; this is not a dynamic-call or selected
+interpreter claim. Position three root `python -m pytest -q && ruff check . &&
+git diff --check` **2,768 passed**, one known QDQ xfail, 71 warnings, no reported
+skips, 57.23 s; changed-file format checks passed. Three positions used, no
+test/style failure or abort; unused fourth is not follow-on scope.
+
+Separate ingestion supplies only copied producer-corresponding native words;
+it does not establish independently correct primitive values, numerical bounds,
+source acceptance, currentness forever, clocks, one-use execution or permission.
+Receipt/wire/history/snapshot schemas unchanged; no usable command or admitted
+predecessor, all flags false. No new artifact/native study/Arm/board/data/model/
+GPU/dependency/download/cleanup action. Next provide a bounded read-only actual
+producer/current-source recheck before native sample publication, retaining
+unknown on missing/stale/mutated data and leaving numerical obligations open.
+Scoped documentation preservation/reference/target/whitespace checks passed;
+prior REVIEW history/Sources, DESIGN except the named compatible subsection/status
+wording and stable AGENTS workflow retained. Code gate not rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

@@ -8970,6 +8970,120 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _sample_simulator_native_integration_source(environment, receipt, source_epoch):
+    source = environment._integration_source
+    if type(source) is not dict or set(source) != {
+        "rng",
+        "odometry_rng",
+        "tick_before",
+        "tick_after",
+        "segments",
+    }:
+        raise ValueError("missing or unsupported native integration source")
+    if (
+        source["rng"] is not environment.rng
+        or source["odometry_rng"] is not environment.odometry_rng
+    ):
+        raise ValueError("native integration producer epoch mismatch")
+    if any(
+        type(source[key]) is not int or source[key] != receipt[key]
+        for key in ("tick_before", "tick_after")
+    ):
+        raise ValueError("native integration source ticks mismatch")
+    segments = source["segments"]
+    if type(segments) is not list or len(segments) > 128:
+        raise ValueError("native integration source budget exhausted")
+    if len(segments) != len(receipt["segments"]):
+        raise ValueError("native integration attempt count mismatch")
+    input_keys = {"position_m", "yaw_rad", "speed_m_s", "turn_rate_rad_s", "seconds"}
+    value_keys = {
+        "angle_rad",
+        "half_angle_rad",
+        "midpoint_rad",
+        "speed_interval_m",
+        "sinc_argument",
+        "sinc_value",
+        "distance_m",
+        "cos_midpoint",
+        "sin_midpoint",
+        "displacement_m",
+        "heading_increment_rad",
+        "shifted_heading_rad",
+        "period_rad",
+        "wrapped_heading_rad",
+        "next_yaw_rad",
+        "next_position_m",
+    }
+    for computed, attempted in zip(segments, receipt["segments"], strict=True):
+        if (
+            type(computed) is not dict
+            or set(computed)
+            != {
+                "schema",
+                "allowed_use",
+                "fixture_permission_granted",
+                "numerically_certified",
+                "native_execution_qualified",
+                "inputs",
+                "values",
+            }
+            or computed["schema"] != "micro-classifier/native-integration-source/1"
+            or computed["allowed_use"] != "native_integration_diagnostics_only"
+            or any(
+                computed[flag] is not False
+                for flag in (
+                    "fixture_permission_granted",
+                    "numerically_certified",
+                    "native_execution_qualified",
+                )
+            )
+            or type(computed["inputs"]) is not dict
+            or set(computed["inputs"]) != input_keys
+            or type(computed["values"]) is not dict
+            or set(computed["values"]) != value_keys
+        ):
+            raise ValueError("unsupported native integration source metadata")
+        inputs, values = computed["inputs"], computed["values"]
+        for words in (inputs, values):
+            for key, value in words.items():
+                if key in {"position_m", "displacement_m", "next_position_m"}:
+                    if type(value) is not tuple or len(value) != 2:
+                        raise ValueError("unsupported native integration source vector")
+                    scalars = value
+                else:
+                    scalars = (value,)
+                if any(
+                    type(scalar) is not float or not math.isfinite(scalar)
+                    for scalar in scalars
+                ):
+                    raise ValueError("unsupported native integration source words")
+        for actual, expected in (
+            ((*inputs["position_m"], inputs["yaw_rad"]), attempted["start_pose_m_rad"]),
+            (
+                (inputs["speed_m_s"], inputs["turn_rate_rad_s"], inputs["seconds"]),
+                (
+                    receipt["updated_speed_m_s"],
+                    receipt["clipped_turn_rate_rad_s"],
+                    receipt["interval_seconds"],
+                ),
+            ),
+            (
+                (*values["next_position_m"], values["next_yaw_rad"]),
+                attempted["candidate_end_pose_m_rad"],
+            ),
+        ):
+            if tuple(word.hex() for word in actual) != tuple(
+                float(word).hex() for word in expected
+            ):
+                raise ValueError("native integration inputs or endpoint mismatch")
+    return {
+        "source_epoch": source_epoch,
+        "tick_before": source["tick_before"],
+        "tick_after": source["tick_after"],
+        "segments": deepcopy(segments),
+    }
+
+
 def _check_simulator_motion_receipt_chain(receipt):
     """Check diagnostic chain structure, not integration accuracy or permission."""
     if (
@@ -9247,6 +9361,7 @@ class _SyntheticC1SourceRecorder:
         self._simulator_rng = None
         self._simulator_odometry_rng = None
         self._dynamics_sample = None
+        self._integration_sample = None
         self._receipt_history = []
 
     @staticmethod
@@ -9310,6 +9425,7 @@ class _SyntheticC1SourceRecorder:
         *,
         synthetic_test_only=False,
         capture_motion_receipt_source=False,
+        capture_native_integration_source=False,
     ):
         """Read one actual simulator snapshot, without stepping or qualifying it."""
         from copy import copy
@@ -9321,6 +9437,12 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("simulator source requires synthetic_test_only=True")
         if type(capture_motion_receipt_source) is not bool:
             raise ValueError("capture_motion_receipt_source must be a literal bool")
+        if type(capture_native_integration_source) is not bool:
+            raise ValueError("capture_native_integration_source must be a literal bool")
+        if capture_native_integration_source and not capture_motion_receipt_source:
+            raise ValueError(
+                "native integration source requires motion receipt capture"
+            )
         if type(environment) is not RoverEnv:
             raise TypeError("simulator source requires the actual RoverEnv owner")
         if self._simulator is not None and self._simulator is not environment:
@@ -9371,6 +9493,11 @@ class _SyntheticC1SourceRecorder:
             if capture_motion_receipt_source
             else None
         )
+        integration_source_before = (
+            environment._integration_source
+            if capture_native_integration_source
+            else None
+        )
 
         def sample():
             snapshot = {
@@ -9416,6 +9543,12 @@ class _SyntheticC1SourceRecorder:
                 _check_simulator_motion_receipt_chain(receipt)
                 snapshot["motion_receipt"] = deepcopy(receipt)
                 snapshot["receipt_source_epoch"] = self._epoch
+                if capture_native_integration_source:
+                    snapshot["native_integration_source"] = (
+                        _sample_simulator_native_integration_source(
+                            environment, receipt, self._epoch
+                        )
+                    )
             return snapshot
 
         def owner_binding():
@@ -9436,6 +9569,7 @@ class _SyntheticC1SourceRecorder:
                     else (current[0], current[1], asdict(current[2]), current[3]),
                     "dynamics_sample": self._dynamics_sample,
                     "receipt_history": self._receipt_history,
+                    "integration_sample": self._integration_sample,
                 }
             )
 
@@ -9571,6 +9705,10 @@ class _SyntheticC1SourceRecorder:
                 capture_motion_receipt_source
                 and environment._motion_receipt_source is not receipt_source_before
             )
+            or (
+                capture_native_integration_source
+                and environment._integration_source is not integration_source_before
+            )
             or self._simulator_rng is not recorder_rng_before
             or self._simulator_odometry_rng is not recorder_odometry_rng_before
             or self._binding is not binding_before
@@ -9588,6 +9726,7 @@ class _SyntheticC1SourceRecorder:
         self._simulator = environment
         self._simulator_rng = rng_before
         self._simulator_odometry_rng = odometry_rng_before
+        self._integration_sample = snapshot.pop("native_integration_source", None)
         self._dynamics_sample = snapshot
         self._receipt_history = receipt_history
 

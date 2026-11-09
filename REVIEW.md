@@ -17724,6 +17724,61 @@ Scoped history/Sources/prior-design/stable-workflow preservation, timing-intake
 reference/local target, final five-file source/test diff and whitespace passed.
 Public introduction unchanged; no source gate rerun for documentation.
 
+## 215. Opt-In Recorder-Owned Native ToF Timing Retention (2026-11-09)
+
+Timing intake1b3ec97 normally pushed/clean. Local hypothesis: the current native
+acquisition retention method can opt in to timing with a literal flag, reuse two
+actual timed-source intakes and owner/source/frame checks, stage a separate
+bounded timing history, and publish both histories only together after closing
+checks. Timing entries pair epoch/acquisition/delivery IDs with existing retained
+sources, trim with them, preserve unknowns and reject changed duplicates. Untimed
+acquisitions remain explicit gaps, not inferred elapsed/clock support. Defaults
+retain source words without reading timing. No recorder read/step/reset/replay/
+clock in timing retention, and all qualification flags remain false/no command.
+
+Finite sixteen cloned receipt fixtures, <=sixteen steps/24 ordinary reads/
+sixteen retentions/32 timed-source intakes/256 bindings per case, <=32 controlled
+clock reads in bounded setup. Trim's twelve extra ticks exercise existing history8;
+old C1 setup views <=192 per case remain controls, not actual sensor coverage or
+study/task episodes. Existing native/source/clock/profile caps unchanged. Three
+positions including failures/aborts: first16, required root/style (all existing
+source/timing/receipt controls), repair reserve. No standalone adjacent rerun.
+No firmware/Arm/sanitizer/board/model/GPU/study/data/dependency/download/hardware/
+clock-setting/threshold/frozen-contract changes, artifacts or cleanup. Results
+follow the focused check; matching clock/hash/ticks never supplies qualification.
+First16:15PASS/1FAIL4.63s, outgoing case DID NOT RAISE because its hook retained
+the intake's first detached clock rather than the later staged recorder copy.
+The intake properly detached that earlier object. Repair tracks the final copy
+during the first intake/entry staging, not second-intake copies; same16 next.
+Repaired16PASS3.92s. Review additionally places new timing-history preflight
+inside ownership hashing immediately before the fingerprint, not only before
+producer sampling; existing source-history layout is checked there as well.
+Final required root/style gate includes the same16 and existing adjacent controls.
+Third position budget1PASS0.61s, then root3057PASS/known transformer QDQ1xfail/
+71warnings109.84s, Ruff root/changed-file check and changed-file format/diff
+checks passed. Changed-file editor diagnostics clear. All three positions spent;
+no fourth, standalone adjacent rerun or abort. Root exercised existing native,
+timing and receipt controls; no additional opt-in native/Arm/sanitizer/board gate.
+No linked firmware/board/fit/task-quality or qualified clock/source evidence.
+
+Implementation retains detached ordered epoch/tick/delivery/clock entries paired
+to uniquely retained source records, checks originals and staged copies before
+joint publication, deduplicates equal timing, rejects changed repeats and trims
+timing with source history8. Untimed acquisitions retain no timing entry; unknown
+clock status/duration remains unknown. Default uses no timing intake. Source/
+timing/owner/RNG/cache/file/producer checks remain conservative; failures publish
+no staged histories, but adversarial callback mutations themselves are not undone.
+All eight flags and clock-qualified stay false. No timing snapshot, atomic or
+perpetual freshness, complete coverage/history, physical/error/range/clock/
+expiry/one-use/permission/native-execution/admission claim or usable command.
+No generated artifact or cleanup. Source/test diff reviewed; accepted limits and
+the public introduction unchanged. Next useful slice: current delivered/pending
+source correspondence can optionally carry its retained timing entry, rejecting
+missing/mispaired timing rather than constructing elapsed or clock-gap evidence.
+Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
+local target, final five-file diff and whitespace passed. Code gate not rerun
+for documentation; no unrelated files staged or modified by this checkpoint.
+
 ## Sources
 
 Hardware and tools:

@@ -11211,6 +11211,178 @@ def test_native_tof_timing_intake(monkeypatch, c1_motion_receipt_source_fixture,
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "retain",
+        "default",
+        "flag",
+        "missing",
+        "unknown",
+        "duplicate",
+        "duplicate_changed",
+        "gap",
+        "trim",
+        "budget",
+        "epoch",
+        "late_clock",
+        "late_history",
+        "outgoing",
+        "owner_context",
+        "timing_identity",
+    ),
+)
+def test_native_tof_timing_retention(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    counters = iter((30, 10) if case == "unknown" else range(100, 10000, 10))
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", lambda: next(counters))
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step(
+        [0.125, 0.3],
+        capture_native_tof_source=True,
+        capture_native_tof_timing=case != "missing",
+    )
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    original_intake = diagnostics._sample_simulator_native_tof_timing_source
+    original_copy = diagnostics.deepcopy
+    original_binding = diagnostics._c1_source_binding_digest
+    work = {"intake": 0, "binding": 0, "forbidden": 0}
+    mutation = {"active": False}
+    outgoing = {}
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 32
+        actual = original_intake(*args, **kwargs)
+        if mutation["active"] and work["intake"] == 2:
+            if case == "late_clock":
+                actual["clock"]["duration_ns"] += 1
+            elif case == "late_history":
+                owner._tof_timing_history.append({"extra": True})
+            elif case == "outgoing":
+                outgoing["clock"]["begin_ns"] += 1
+                outgoing["clock"]["end_ns"] += 1
+            elif case == "owner_context":
+                owner._binding = {"changed": True}
+            elif case == "timing_identity":
+                environment._native_tof_timing_source = dict(
+                    environment._native_tof_timing_source
+                )
+        return actual
+
+    def copied(value, *args, **kwargs):
+        actual = original_copy(value, *args, **kwargs)
+        if (
+            work["intake"] == 1
+            and type(value) is dict
+            and value.get("scope") == "tof_geometry_sampling_enqueue_and_source_copy"
+        ):
+            outgoing["clock"] = actual
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 256
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("timing retention must not read/step/reset/replay/clock")
+
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_timing_source", intake
+    )
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    mutation["active"] = True
+    if case in (
+        "flag",
+        "missing",
+        "late_clock",
+        "late_history",
+        "outgoing",
+        "owner_context",
+        "timing_identity",
+    ):
+        with monkeypatch.context() as scoped:
+            scoped.setattr(type(owner), "record_environment_tick", forbidden)
+            for name in ("step", "reset"):
+                scoped.setattr(RoverEnv, name, forbidden)
+            for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+                scoped.setattr(rover, name, forbidden)
+            with pytest.raises(ValueError):
+                owner.record_native_tof_source(
+                    environment,
+                    synthetic_test_only=True,
+                    include_timing=1 if case == "flag" else True,
+                )
+        assert owner._tof_sample is None and owner._tof_history == []
+        if case != "late_history":
+            assert owner._tof_timing_history == []
+    else:
+        owner.record_native_tof_source(
+            environment, synthetic_test_only=True, include_timing=case != "default"
+        )
+        mutation["active"] = False
+        assert [entry["tick"] for entry in owner._tof_history] == [4]
+        if case == "default":
+            assert owner._tof_timing_history == [] and work["intake"] == 0
+        else:
+            assert [entry["tick"] for entry in owner._tof_timing_history] == [4]
+            assert owner._tof_timing_history[0]["clock"]["qualified"] is False
+            if case == "unknown":
+                assert owner._tof_timing_history[0]["clock"]["duration_ns"] is None
+            if case == "duplicate":
+                before = deepcopy(owner._tof_timing_history)
+                owner.record_native_tof_source(
+                    environment, synthetic_test_only=True, include_timing=True
+                )
+                assert owner._tof_timing_history == before
+            elif case == "duplicate_changed":
+                environment._native_tof_timing_source["clock"]["begin_ns"] += 1
+                environment._native_tof_timing_source["clock"]["end_ns"] += 1
+                with pytest.raises(ValueError, match="repeated timing"):
+                    owner.record_native_tof_source(
+                        environment, synthetic_test_only=True, include_timing=True
+                    )
+            elif case in ("budget", "epoch"):
+                if case == "budget":
+                    owner._tof_timing_history *= 9
+                else:
+                    owner._tof_timing_history[0]["source_epoch"] = "0" * 32
+                with pytest.raises(ValueError):
+                    owner.record_native_tof_source(
+                        environment, synthetic_test_only=True, include_timing=True
+                    )
+            elif case in ("gap", "trim"):
+                for _ in range(2 if case == "gap" else 12):
+                    environment.step(
+                        [0.125, 0.3],
+                        capture_native_tof_source=True,
+                        capture_native_tof_timing=case == "trim",
+                    )
+                    owner.record_environment_tick(environment, synthetic_test_only=True)
+                    if environment._native_tof_source is not None:
+                        owner.record_native_tof_source(
+                            environment,
+                            synthetic_test_only=True,
+                            include_timing=case == "trim",
+                        )
+                ticks = [entry["tick"] for entry in owner._tof_timing_history]
+                assert ticks == (
+                    [4]
+                    if case == "gap"
+                    else [entry["tick"] for entry in owner._tof_history]
+                )
+                if case == "trim":
+                    assert len(ticks) == 8 and ticks[0] > 4
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

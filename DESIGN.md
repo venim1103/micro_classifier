@@ -2939,6 +2939,30 @@ and clock qualified remain false/no usable command; clock gaps are not bridged.
 
 [native-tof-timing-intake-review]: REVIEW.md#214-bounded-native-tof-timing-source-intake-2026-11-09
 
+##### Recorder-Owned Native ToF Timing Retention (2026-11-09)
+
+Private `record_native_tof_source(..., include_timing=True)` is a separate literal
+opt-in, still requiring `synthetic_test_only=True` and the original current
+producer/read. It uses two actual timing-source intakes instead of the two
+untimed intakes; source/owner/RNG/cache/file/producer checks remain in force.
+A separate primitive timing history pairs source epoch/acquisition/delivery IDs
+and detached diagnostic clocks with uniquely retained native source entries.
+It is bounded by the same eight acquisitions, strictly ordered, preflighted
+before ownership hashing, checked before publication and trimmed with source
+history. Equal repeats deduplicate; changed repeats reject. Default untimed
+retention adds no timing entries; missing timing is not inferred or bridged.
+
+Both histories publish only after closing checks, including original timing
+cache identity and staged clock/history content. Failed retention does not publish
+staged evidence; external callback mutations are not undone. This neither adds
+clock reads nor reruns geometry/ordinary recorder reads/steps/resets. It provides
+no public timing snapshot, complete timing/coverage history, atomic/perpetual
+freshness, physical/range/error/clock/expiry/one-use/permission qualification,
+admitted predecessor or usable command. All qualification flags remain false.
+See [timing retention controls and evidence limits][native-tof-timing-retention-review].
+
+[native-tof-timing-retention-review]: REVIEW.md#215-opt-in-recorder-owned-native-tof-timing-retention-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

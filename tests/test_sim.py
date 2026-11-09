@@ -40,6 +40,125 @@ from sim.rover import (
     (
         "straight",
         "bend",
+        "clipped",
+        "braking",
+        "first_collision",
+        "later_collision",
+        "invalid_opt_in",
+        "segment_budget",
+        "nonfinite_duration",
+        "owned",
+    ),
+)
+def test_step_motion_receipt_preserves_realized_segments(monkeypatch, case):
+    from sim import rover
+
+    dt = {"segment_budget": 10.0, "nonfinite_duration": 1.3e308}.get(case, 0.25)
+    environment = RoverEnv(config=Config(dt=dt))
+    environment.speed = 0.5
+    baseline = deepcopy(environment)
+    action = np.array([0.6, 1.5 if case != "straight" else 0.0])
+    if case == "clipped":
+        action[:] = [4.0, 9.0]
+    elif case == "braking":
+        action[:] = [0.0, 0.0]
+    held_action = action.copy()
+    if case in ("invalid_opt_in", "segment_budget", "nonfinite_duration"):
+        before = environment.position.copy(), environment.tick, environment.speed
+        invalid_type = case == "invalid_opt_in"
+        with pytest.raises(
+            ValueError,
+            match="capture_motion_receipt" if invalid_type else "segment budget",
+        ):
+            environment.step(action, capture_motion_receipt=1 if invalid_type else True)
+        np.testing.assert_array_equal(environment.position, before[0])
+        assert (environment.tick, environment.speed) == before[1:]
+        return
+    original_collision = rover.swept_collision
+    attempts = []
+    reject_at = {"first_collision": 1, "later_collision": 3}.get(case)
+
+    def collision(start, end, radius, obstacles, bounds):
+        attempts.append((start.copy(), end.copy(), radius))
+        if reject_at is not None:
+            return len(attempts) == reject_at
+        return original_collision(start, end, radius, obstacles, bounds)
+
+    monkeypatch.setattr(rover, "swept_collision", collision)
+    output = environment.step(action, capture_motion_receipt=True)
+    receipt = output[-1]["motion_receipt"]
+    actual_attempts = deepcopy(attempts)
+    attempts.clear()
+    normal = baseline.step(action)
+    assert "motion_receipt" not in normal[-1]
+    assert json.dumps(output[:-1], default=json_value, sort_keys=True) == json.dumps(
+        normal[:-1], default=json_value, sort_keys=True
+    )
+    assert json.dumps(
+        {key: value for key, value in output[-1].items() if key != "motion_receipt"},
+        default=json_value,
+        sort_keys=True,
+    ) == json.dumps(normal[-1], default=json_value, sort_keys=True)
+    assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+    assert (
+        environment.odometry_rng.bit_generator.state
+        == baseline.odometry_rng.bit_generator.state
+    )
+    np.testing.assert_array_equal(action, held_action)
+    assert receipt["submitted_action"] == tuple(held_action)
+    assert receipt["tick_before"] == 0 and receipt["tick_after"] == 1
+    assert receipt["fixture_permission_granted"] is False
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert receipt[flag] is False
+    assert len(receipt["segments"]) == len(actual_attempts)
+    for index, (segment, attempted) in enumerate(
+        zip(receipt["segments"], actual_attempts, strict=True)
+    ):
+        assert segment["index"] == index
+        np.testing.assert_array_equal(segment["start_pose_m_rad"][:2], attempted[0])
+        np.testing.assert_array_equal(
+            segment["candidate_end_pose_m_rad"][:2], attempted[1]
+        )
+        assert segment["swept_radius_m"] == attempted[2]
+        assert segment["committed"] is (reject_at is None or index + 1 < reject_at)
+    np.testing.assert_array_equal(receipt["final_pose_m_rad"][:2], environment.position)
+    assert receipt["final_pose_m_rad"][2] == environment.yaw
+    if reject_at is not None:
+        assert receipt["updated_speed_m_s"] > 0.0
+        assert receipt["final_action"] == (0.0, 0.0)
+        assert receipt["complete_integration"] is False
+        assert len(receipt["segments"]) == reject_at
+        np.testing.assert_array_equal(
+            receipt["final_pose_m_rad"], receipt["segments"][-1]["start_pose_m_rad"]
+        )
+    else:
+        assert receipt["complete_integration"] is True
+        assert len(receipt["segments"]) == receipt["planned_segments"]
+    if case == "clipped":
+        assert receipt["clipped_target_speed_m_s"] == 0.6
+        assert receipt["clipped_turn_rate_rad_s"] == 1.5
+    elif case == "braking":
+        assert receipt["updated_speed_m_s"] == 0.25
+    if case == "owned":
+        receipt["segments"][0]["committed"] = False
+        receipt["submitted_action"] = (99.0, 99.0)
+        np.testing.assert_array_equal(environment.position, baseline.position)
+        assert environment.speed == baseline.speed
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "straight",
+        "bend",
         "enlarged_tube",
         "hidden_contact",
         "no_prefixes",

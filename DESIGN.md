@@ -2188,6 +2188,33 @@ remain independent; no actual command execution is authorized by this packet.
 [qualification-dynamics]: sim/rover.py
 [qualification-consumers]: sim/diagnostics.py
 
+##### Opt-In Simulator Realized-Motion Receipts (2026-11-09)
+
+The existing RoverEnv.step accepts a literal capture_motion_receipt boolean,
+default false. Only opt-in calls add motion_receipt to info. The owning step
+records submitted targets, initial state/config, clipping and acceleration-update
+results, nominal dt/segment duration, each attempted start/candidate endpoint and
+whether it was committed, plus final state and committed/planned counts. A
+collision candidate is recorded as rejected, never as traversed; final zero
+speed does not erase earlier committed intervals. Normal physics, outputs and
+sensor/odometry RNG state are preserved by bounded paired controls.
+
+Opt-in work is limited to 128 attempted segments, checked before state mutation;
+ordinary stepping acquires no new work limit. Nonliteral opt-in, excessive work
+or overflowing angle arithmetic rejects without a partial receipt. Payloads
+contain owned builtin values and an independent config dictionary; no live
+environment/array reference is exposed. All seven qualification/admission/
+training flags and fixture_permission_granted remain false.
+
+This supplies Q4 diagnostic content, not qualified clocks, request/application
+identity, fallback scheduling, serialized one-use consumption, uniform native
+motion error or admitted-predecessor uncertainty lineage. No normal controller,
+wire interface, actual-command guard, hardware or task-quality run is wired or
+admitted. The [dated receipt checkpoint][realized-receipt-review] retains the
+bounded controls, initial missing-keyword failures and required gate results.
+
+[realized-receipt-review]: REVIEW.md#182-opt-in-simulator-realized-motion-receipts-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

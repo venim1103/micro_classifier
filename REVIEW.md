@@ -16018,6 +16018,75 @@ No job/cleanup pending; original numbered task results below remain historical.
 ~~~
 
 
+## 182. Opt-In Simulator Realized-Motion Receipts (2026-11-09)
+
+The user resumed after the explicit November 6 pause. Actual worktree verification
+found only the original eight pending receipt controls at synchronized main
+2c9af96; both interrupted source-patch attempts had no effect. Python 3.12.3
+and Ruff are available at /opt/venv. Preserve section 181's first spent attempt:
+eight missing-keyword failures, no step execution, 3.04 s. No old stop, recap or
+completed documentation checkpoint ends the newly resumed continuation.
+
+Local hypothesis: opt-in recording in the actual step owner can retain every
+attempted/committed/rejected segment without changing normal outputs, integration
+order, noise/odometry RNG state or physical behavior. Final applied_action alone
+loses earlier accepted intervals when collision zeros speed/yaw. Record submitted,
+clipped and acceleration-updated commands; nominal dt and interval duration;
+initial/final poses, planned/committed segment counts and rejected candidates.
+These are simulator diagnostics, not wall-clock timing, one-use execution,
+physical/native error qualification, source authority or admitted predecessors.
+All seven qualification/admission/training flags and permission remain false.
+
+Resume the finite four-position source verification scope (one already spent).
+The remaining positions cover focused controls, changed-file style and the
+required root gate; failed/aborted attempts count. Add two bounded preflight
+controls to the eight pending controls for the now-implemented receipt work cap
+and overflowing angle arithmetic. Ten fixed cases, one environment construction
+and at most two step calls per case; seven paired single steps and three rejected
+preflights. Actual integration and collision calls are bounded by four segments
+per paired step (at most 56 each per focused/root matrix); preflights do none.
+No downloads, dependencies, studies, episode collection, GPU/native/board jobs or
+controller wiring. All fixtures are in memory; no artifacts need cleanup.
+
+The literal opt-in defaults false. A fixed 128 attempted-segment diagnostic cap
+is checked before state mutation; it is not a new cap on ordinary simulator
+physics or the already-fixed command guard. Reject nonliteral opt-in and
+unsupported work rather than silently returning a partial receipt. Collision
+records the rejected candidate but does not claim that candidate was traversed.
+Focused output/RNG parity and result-ownership controls are the cheap check.
+Required source checks and documentation/checkpoint follow their actual results.
+
+**Verified results.** Position two: ten focused controls passed, 1.44 s,
+1,746 deselected. Position three: Ruff formatted only the changed source/test
+slice; changed-file lint/format/whitespace and editor diagnostics passed.
+Position four: python -m pytest -q && ruff check . && ruff format --check
+sim/rover.py tests/test_sim.py && git diff --check passed: 2,679 tests,
+one known transformer QDQ xfail/71 warnings, no skips, 61.43 s. All four
+positions are spent, including section 181's missing-keyword failures; no
+unchanged gate is rerun for documentation. Native/board/ASan/Arm gates are
+not new evidence for this Python diagnostic-only change.
+
+The collision controls use a bounded collision predicate hook to reject the
+first or third candidate in an otherwise identical pair. They establish actual
+segment bookkeeping/parity, not new geometric task labels or collision studies.
+Paired clear/braking/clipped/turning results, both RNG states and submitted action
+content match exactly; owned receipt mutation leaves environment state unchanged.
+Three malformed/over-budget preflights reject before stepping. Ten environment
+constructions and 17 calls per successful focused/root matrix, fourteen realized
+single steps and three rejected calls; at most 56 integration/collision calls
+each. Initial red matrix adds eight constructions and eight failed API calls,
+zero realized steps. No data, generated report, download, GPU or cleanup job.
+
+Reviewed diff changes only RoverEnv.step plus one new test function; no normal
+motion formula, clipping tolerance, sensing/wire/rules/controller/default changes.
+Source receipt flags remain false; the source owner still accepts supplied
+fixture poses/States, so actual-dynamics-to-source correspondence is the next
+useful Q0 prerequisite. Bind source observation/capture content to the actual
+simulator producer, never a caller-supplied pose/State override, without treating
+derived identity/content as source/coverage qualification or command permission.
+Accepted setup/coverage, numerical/pose/range/clock error, one-use/guard/executor,
+retained uncertainty and task-quality evidence remain separately gated.
+
 ## Sources
 
 Hardware and tools:

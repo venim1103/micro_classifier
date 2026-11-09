@@ -313,13 +313,48 @@ class RoverEnv:
             ),
         }
 
-    def step(self, action):
+    def step(self, action, *, capture_motion_receipt=False):
+        if type(capture_motion_receipt) is not bool:
+            raise ValueError("capture_motion_receipt must be a literal boolean")
         if self.done:
             raise RuntimeError("episode ended; call reset before step")
         action = np.asarray(action, dtype=np.float64)
         if action.shape != (2,) or not np.isfinite(action).all():
             raise ValueError("action must contain finite speed and turn rate")
         config = self.config
+        receipt = None
+        if capture_motion_receipt:
+            sweep_angle = (
+                abs(
+                    float(
+                        np.clip(action[1], -config.max_turn_rate, config.max_turn_rate)
+                    )
+                )
+                * config.dt
+            )
+            if not math.isfinite(sweep_angle) or sweep_angle > 128 * 0.1:
+                raise ValueError("motion receipt segment budget exhausted")
+            receipt = {
+                "schema": "micro-classifier/simulator-motion-receipt/1",
+                "allowed_use": "simulation_motion_diagnostics_only",
+                "status": "recorded_simulator_motion",
+                "fixture_permission_granted": False,
+                "training_approved": False,
+                "real_input_qualified": False,
+                "free_space_qualified": False,
+                "numerically_certified": False,
+                "source_qualified": False,
+                "native_execution_qualified": False,
+                "command_admission_qualified": False,
+                "tick_before": self.tick,
+                "nominal_duration_s": config.dt,
+                "config": asdict(config),
+                "submitted_action": tuple(float(value) for value in action),
+                "initial_action": (self.speed, self.turn_rate),
+                "initial_pose_m_rad": (*map(float, self.position), float(self.yaw)),
+                "segment_limit": 128,
+                "segments": [],
+            }
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -337,6 +372,14 @@ class RoverEnv:
         segments = max(1, math.ceil(abs(self.turn_rate) * config.dt / 0.1))
         seconds = config.dt / segments
         collision = False
+        if receipt is not None:
+            receipt.update(
+                clipped_target_speed_m_s=target,
+                updated_speed_m_s=self.speed,
+                clipped_turn_rate_rad_s=self.turn_rate,
+                planned_segments=segments,
+                interval_seconds=seconds,
+            )
         for _ in range(segments):
             position, yaw = integrate(
                 self.position, self.yaw, self.speed, self.turn_rate, seconds
@@ -347,13 +390,27 @@ class RoverEnv:
                 if self.turn_rate
                 else 0
             )
-            if swept_collision(
+            rejected = swept_collision(
                 self.position,
                 position,
                 config.radius + sagitta,
                 self.scenario.obstacles,
                 self.scenario.bounds,
-            ):
+            )
+            if receipt is not None:
+                receipt["segments"].append(
+                    {
+                        "index": len(receipt["segments"]),
+                        "start_pose_m_rad": (
+                            *map(float, self.position),
+                            float(self.yaw),
+                        ),
+                        "candidate_end_pose_m_rad": (*map(float, position), float(yaw)),
+                        "swept_radius_m": config.radius + sagitta,
+                        "committed": not rejected,
+                    }
+                )
+            if rejected:
                 collision = True
                 self.speed = self.turn_rate = 0.0
                 break
@@ -371,6 +428,15 @@ class RoverEnv:
         info["applied_action"] = np.array([self.speed, self.turn_rate])
         reward = old_distance - info["distance_to_goal_m"] - config.tick_cost
         reward += config.success_reward * success - config.collision_cost * collision
+        if receipt is not None:
+            receipt.update(
+                tick_after=self.tick,
+                final_pose_m_rad=(*map(float, self.position), float(self.yaw)),
+                final_action=(self.speed, self.turn_rate),
+                complete_integration=not collision,
+                committed_segments=len(receipt["segments"]) - int(collision),
+            )
+            info["motion_receipt"] = receipt
         return self._observation(), float(reward), terminated, truncated, info
 
 

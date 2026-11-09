@@ -9523,6 +9523,106 @@ def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
     "case",
     (
         "valid",
+        "exact",
+        "observed",
+        "difference",
+        "input",
+        "operation",
+        "order",
+        "count",
+        "denominator",
+        "integer_type",
+        "oversize",
+        "noncanonical",
+        "metadata",
+        "budget",
+    ),
+)
+def test_native_arithmetic_record_relationships(
+    c1_native_integration_snapshot_fixture, monkeypatch, case
+):
+    from sim import diagnostics
+
+    source = deepcopy(c1_native_integration_snapshot_fixture[1]._integration_sample)
+    record = diagnostics._probe_native_integration_arithmetic(
+        source, synthetic_test_only=True
+    )
+    stage = record["segments"][0][0]
+    bits = 4096
+    if case in ("exact", "observed", "difference"):
+        key = {
+            "exact": "exact_result",
+            "observed": "observed_result",
+            "difference": "observed_minus_exact",
+        }[case]
+        stage[key] = (99, 1)
+    elif case == "input":
+        stage["input_hex"] = ("0x0.0p+0", stage["input_hex"][1])
+    elif case == "operation":
+        stage["operation"] = "add"
+    elif case == "order":
+        record["segments"][0].reverse()
+    elif case == "count":
+        record["segments"][0].pop()
+    elif case == "denominator":
+        stage["exact_result"] = (1, 0)
+    elif case == "integer_type":
+        stage["exact_result"] = (True, 1)
+    elif case == "oversize":
+        stage["exact_result"] = (1 << 4096, 1)
+    elif case == "noncanonical":
+        numerator, denominator = stage["exact_result"]
+        stage["exact_result"] = (numerator * 2, denominator * 2)
+    elif case == "metadata":
+        record["work"]["stages"] = True
+    elif case == "budget":
+        bits = 1
+    held_source, held_record = deepcopy(source), deepcopy(record)
+    work = {"digests": 0, "forbidden": 0}
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def digest(*args, **kwargs):
+        if case in ("oversize", "denominator", "integer_type", "noncanonical"):
+            assert args[0] is not record
+        work["digests"] += 1
+        assert work["digests"] <= 4
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("record checks must not capture/read/replay/query guards")
+
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "_probe_native_integration_arithmetic", forbidden)
+    monkeypatch.setattr("sim.rover.integrate", forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "capture_synthetic_c1_views",
+        "_sample_simulator_native_integration_source",
+        "_probe_synthetic_c1_state_motion",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case == "valid":
+        assert (
+            diagnostics._check_native_integration_arithmetic(
+                source, record, max_integer_bits=bits
+            )
+            is None
+        )
+    else:
+        with pytest.raises((ValueError, ArithmeticError)):
+            diagnostics._check_native_integration_arithmetic(
+                source, record, max_integer_bits=bits
+            )
+    assert source == held_source and record == held_record
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
         "missing",
         "stale_tick",
         "budget",

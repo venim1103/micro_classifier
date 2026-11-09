@@ -16872,6 +16872,57 @@ or exhausted records and keep every unsupported qualification obligation open.
 Scoped history/Sources/design/workflow preservation, new reference/local target
 and whitespace checks passed; code gate not rerun for documentation.
 
+## 198. Exact Native Arithmetic Record Validation (2026-11-09)
+
+Composition checkpointa5e3dfc normally pushed. Local hypothesis: sharing only
+the existing ten source-stage extraction tuples avoids duplicate stage ownership,
+while a bounded consumer can check closed metadata, order/count/operand/output
+words, canonical rational pairs and exact relationships without trusting hashes
+alone or replaying the producer. Composition invokes that consumer before copied
+publication. Existing direct source-field/Fraction tests remain independent.
+
+Finite routine scope: fourteen fixed record faults/valid/budget cases, one
+checker each, <=four digests/twenty direct rational binary operations/zero
+probe/source-read/step/reset/capture/integrate/guard calls per case after one
+existing-fixture probe prepares the control record. No extra setup read/step/
+clock/scene/data/study. At mostfour positions incl failures/aborts: first14,
+adjacent/style, required root, repair reserve. Existing <=4096-bit pre-operation
+caps, <=128 segments/ten stages and old producer/query ledgers unchanged; no
+uniform/transcendental/accumulated bound or source/clock/admission acceptance.
+All flags false; no GPU/model/dependency/download/Arm/board/artifact/cleanup.
+Results follow focused checks.
+
+First fourteen passed, 0.39 s. Local review found supplied rational records were
+hashed before bit/canonical preflight. Repair checks all bounded canonical pairs
+before hashing; existing invalid-pair cases assert the record is never hashed.
+No new case/operation/digest/bit increase. First repair patch included an invalid
+cross-file function anchor and failed without edits; targeted search confirmed
+preflight absent, then corrected scoped patch applied. Revised four positions:
+first14, repaired14, adjacent/style, required root. Focused repair check next.
+
+Repaired fourteen passed, 0.49 s; invalid pairs rejected before record hashing,
+<=four digests/zero forbidden limits held. Position three scoped Ruff formatting,
+lint/format/whitespace passed; **96 compatibility controls passed**, 3.05 s,
+unchanged old fixture ledgers zero and all old producer/query caps held.
+Position four root `python -m pytest -q && ruff check . && git diff --check`
+**2,826 passed**, one known QDQ xfail, 71 warnings, no reported skips, 76.29 s;
+changed-file format/editor diagnostics passed. All four positions spent, no
+test/style failure or abort; failed patch had no partial edit. Source gate not
+rerun for documentation. Shared extraction preserves independently coded
+source-field/Fraction reference controls; consumer has direct bounded rational
+checks, not a second call to the producer.
+
+This validates supported local record relationships only, not source provenance,
+uniform/accumulated error, sinc/trig/pi/wrap correctness, qualified clocks,
+one-use execution, permission or an admitted predecessor. All flags remain
+false, no command admitted; default source/history/wire APIs and old caps intact.
+No data/study/model/GPU/dependency/download/Arm/board/artifact/cleanup action.
+Next check retained diagnostic clock primitives and their duration/status
+consistency as a compatible offline S5 prerequisite; observed nanoseconds and
+nominal ticks still do not qualify clocks, expiry or execution identity.
+Scoped history/Sources/design/workflow preservation, new reference/local target
+and whitespace checks passed; unchanged source gate not rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

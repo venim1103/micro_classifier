@@ -8970,6 +8970,246 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _native_integration_arithmetic_stages(computed):
+    inputs, values = computed["inputs"], computed["values"]
+    return (
+        (
+            "angle_rad",
+            "mul",
+            inputs["turn_rate_rad_s"],
+            inputs["seconds"],
+            values["angle_rad"],
+        ),
+        (
+            "speed_interval_m",
+            "mul",
+            inputs["speed_m_s"],
+            inputs["seconds"],
+            values["speed_interval_m"],
+        ),
+        ("half_angle_rad", "div", values["angle_rad"], 2.0, values["half_angle_rad"]),
+        (
+            "midpoint_rad",
+            "add",
+            inputs["yaw_rad"],
+            values["half_angle_rad"],
+            values["midpoint_rad"],
+        ),
+        (
+            "distance_m",
+            "mul",
+            values["speed_interval_m"],
+            values["sinc_value"],
+            values["distance_m"],
+        ),
+        (
+            "displacement_x_m",
+            "mul",
+            values["distance_m"],
+            values["cos_midpoint"],
+            values["displacement_m"][0],
+        ),
+        (
+            "displacement_y_m",
+            "mul",
+            values["distance_m"],
+            values["sin_midpoint"],
+            values["displacement_m"][1],
+        ),
+        (
+            "next_position_x_m",
+            "add",
+            inputs["position_m"][0],
+            values["displacement_m"][0],
+            values["next_position_m"][0],
+        ),
+        (
+            "next_position_y_m",
+            "add",
+            inputs["position_m"][1],
+            values["displacement_m"][1],
+            values["next_position_m"][1],
+        ),
+        (
+            "heading_increment_rad",
+            "add",
+            inputs["yaw_rad"],
+            values["angle_rad"],
+            values["heading_increment_rad"],
+        ),
+    )
+
+
+def _check_native_integration_arithmetic(source, record, *, max_integer_bits=4096):
+    if type(max_integer_bits) is not int or not 1 <= max_integer_bits <= 4096:
+        raise ValueError("native record integer limit must be from one through 4096")
+    flags = {
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    }
+    if (
+        type(source) is not dict
+        or set(source) != {"source_epoch", "tick_before", "tick_after", "segments"}
+        or type(source["segments"]) is not list
+        or not 1 <= len(source["segments"]) <= 128
+        or type(record) is not dict
+        or set(record)
+        != flags
+        | {
+            "schema",
+            "allowed_use",
+            "status",
+            "reason",
+            "discrepancies_available",
+            "work",
+            "source_binding",
+            "segments",
+            "unsupported",
+        }
+        or record["schema"] != "micro-classifier/native-arithmetic-discrepancies/1"
+        or record["allowed_use"] != "observed_native_word_arithmetic_diagnostics_only"
+        or record["status"] != "recorded_native_word_discrepancies"
+        or record["reason"] != "supported_local_arithmetic_only"
+        or record["discrepancies_available"] is not True
+        or any(record[flag] is not False for flag in flags)
+        or type(record["segments"]) is not list
+        or len(record["segments"]) != len(source["segments"])
+        or type(record["work"]) is not dict
+        or set(record["work"]) != {"stages", "binary_operations"}
+        or any(type(value) is not int for value in record["work"].values())
+        or record["work"]
+        != {
+            "stages": 10 * len(source["segments"]),
+            "binary_operations": 20 * len(source["segments"]),
+        }
+        or record["unsupported"]
+        != (
+            "sinc_argument",
+            "sinc",
+            "cos",
+            "sin",
+            "pi_constant",
+            "heading_wrap",
+            "accumulated_motion",
+        )
+    ):
+        raise ValueError("unsupported native arithmetic record")
+
+    def pair(value):
+        if (
+            type(value) is not tuple
+            or len(value) != 2
+            or any(type(component) is not int for component in value)
+            or value[1] <= 0
+            or max(abs(value[0]).bit_length(), value[1].bit_length()) > max_integer_bits
+        ):
+            raise ValueError("unsupported or over-budget native rational record")
+        rational = Fraction(*value)
+        if (rational.numerator, rational.denominator) != value:
+            raise ValueError("noncanonical native rational record")
+        return rational
+
+    def binary(left, right, operation):
+        left_num, left_den = (
+            abs(left.numerator).bit_length(),
+            left.denominator.bit_length(),
+        )
+        right_num, right_den = (
+            abs(right.numerator).bit_length(),
+            right.denominator.bit_length(),
+        )
+        if operation in ("add", "sub"):
+            growth = max(left_num + right_den, right_num + left_den) + 1
+            denominator = left_den + right_den
+        elif operation == "mul":
+            growth, denominator = left_num + right_num, left_den + right_den
+        elif operation == "div":
+            growth, denominator = left_num + right_den, left_den + right_num
+        else:
+            raise ValueError("unsupported native record operation")
+        if max(growth, denominator) > max_integer_bits:
+            raise ArithmeticError("native_record_integer_budget_exhausted")
+        if operation == "add":
+            return left + right
+        if operation == "sub":
+            return left - right
+        if operation == "mul":
+            return left * right
+        return left / right
+
+    for stages in record["segments"]:
+        if type(stages) is not list or len(stages) != 10:
+            raise ValueError("native arithmetic stage count mismatch")
+        for stage in stages:
+            if type(stage) is not dict or set(stage) != {
+                "name",
+                "operation",
+                "input_hex",
+                "output_hex",
+                "exact_result",
+                "observed_result",
+                "observed_minus_exact",
+            }:
+                raise ValueError("unsupported native arithmetic stage record")
+            for key in ("exact_result", "observed_result", "observed_minus_exact"):
+                pair(stage[key])
+    source_binding = _c1_source_binding_digest(source)
+    if record["source_binding"] != source_binding:
+        raise ValueError("native arithmetic source binding mismatch")
+    record_binding = _c1_source_binding_digest(record)
+    for computed, stages in zip(source["segments"], record["segments"], strict=True):
+        if type(stages) is not list or len(stages) != 10:
+            raise ValueError("native arithmetic stage count mismatch")
+        for stage, expected in zip(
+            stages, _native_integration_arithmetic_stages(computed), strict=True
+        ):
+            name, operation, left, right, observed = expected
+            if (
+                any(
+                    type(word) is not float or not math.isfinite(word)
+                    for word in (left, right, observed)
+                )
+                or type(stage) is not dict
+                or set(stage)
+                != {
+                    "name",
+                    "operation",
+                    "input_hex",
+                    "output_hex",
+                    "exact_result",
+                    "observed_result",
+                    "observed_minus_exact",
+                }
+                or stage["name"] != name
+                or stage["operation"] != operation
+                or stage["input_hex"] != (left.hex(), right.hex())
+                or stage["output_hex"] != observed.hex()
+            ):
+                raise ValueError("native arithmetic source-word mismatch")
+            left_value, right_value, actual = (
+                pair(word.as_integer_ratio()) for word in (left, right, observed)
+            )
+            exact = binary(left_value, right_value, operation)
+            difference = binary(actual, exact, "sub")
+            if (
+                pair(stage["exact_result"]) != exact
+                or pair(stage["observed_result"]) != actual
+                or pair(stage["observed_minus_exact"]) != difference
+            ):
+                raise ValueError("native arithmetic rational relationship mismatch")
+    if (
+        _c1_source_binding_digest(source) != source_binding
+        or _c1_source_binding_digest(record) != record_binding
+    ):
+        raise ValueError("native arithmetic input changed during record check")
+
+
 def _probe_native_integration_arithmetic(
     source, *, max_integer_bits=4096, synthetic_test_only=False
 ):
@@ -9080,80 +9320,14 @@ def _probe_native_integration_arithmetic(
         arithmetic = _C1CommandArithmetic(16, max_integer_bits, result["work"])
         segments = []
         for computed in copied_source["segments"]:
-            inputs, values = computed["inputs"], computed["values"]
             stages = []
-            for name, operation, left, right, observed in (
-                (
-                    "angle_rad",
-                    "mul",
-                    inputs["turn_rate_rad_s"],
-                    inputs["seconds"],
-                    values["angle_rad"],
-                ),
-                (
-                    "speed_interval_m",
-                    "mul",
-                    inputs["speed_m_s"],
-                    inputs["seconds"],
-                    values["speed_interval_m"],
-                ),
-                (
-                    "half_angle_rad",
-                    "div",
-                    values["angle_rad"],
-                    2.0,
-                    values["half_angle_rad"],
-                ),
-                (
-                    "midpoint_rad",
-                    "add",
-                    inputs["yaw_rad"],
-                    values["half_angle_rad"],
-                    values["midpoint_rad"],
-                ),
-                (
-                    "distance_m",
-                    "mul",
-                    values["speed_interval_m"],
-                    values["sinc_value"],
-                    values["distance_m"],
-                ),
-                (
-                    "displacement_x_m",
-                    "mul",
-                    values["distance_m"],
-                    values["cos_midpoint"],
-                    values["displacement_m"][0],
-                ),
-                (
-                    "displacement_y_m",
-                    "mul",
-                    values["distance_m"],
-                    values["sin_midpoint"],
-                    values["displacement_m"][1],
-                ),
-                (
-                    "next_position_x_m",
-                    "add",
-                    inputs["position_m"][0],
-                    values["displacement_m"][0],
-                    values["next_position_m"][0],
-                ),
-                (
-                    "next_position_y_m",
-                    "add",
-                    inputs["position_m"][1],
-                    values["displacement_m"][1],
-                    values["next_position_m"][1],
-                ),
-                (
-                    "heading_increment_rad",
-                    "add",
-                    inputs["yaw_rad"],
-                    values["angle_rad"],
-                    values["heading_increment_rad"],
-                ),
-            ):
+            for (
+                name,
+                operation,
+                left,
+                right,
+                observed,
+            ) in _native_integration_arithmetic_stages(computed):
                 result["work"]["stages"] += 1
                 actual = arithmetic.value(observed)
                 left_value, right_value = (
@@ -10291,6 +10465,9 @@ class _SyntheticC1SourceRecorder:
                     "native_arithmetic_result_binding_or_metadata_mismatch"
                 )
                 return result
+            _check_native_integration_arithmetic(
+                before["source"], arithmetic, max_integer_bits=max_integer_bits
+            )
             arithmetic_binding = _c1_source_binding_digest(arithmetic)
             after = self.snapshot_native_integration_source(synthetic_test_only=True)
             if not after["snapshot_available"]:

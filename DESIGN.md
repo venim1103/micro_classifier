@@ -2563,6 +2563,26 @@ records bounded mutation/binding controls, reboot recovery and the actual gate.
 
 [native-arithmetic-composition-review]: REVIEW.md#197-current-owned-native-arithmetic-composition-2026-11-09
 
+##### Exact Native Arithmetic Record Validation (2026-11-09)
+
+The current-native arithmetic reader checks supported records before publication.
+Closed literal-false metadata, exact segment/stage counts and order, source-bound
+operand/output hex words, canonical rational pairs and exact observed/exact/
+difference relationships must match. Producer and consumer share only the ten
+stage extraction definitions; direct source-field/Fraction tests remain separate.
+The consumer uses bounded direct rational operations rather than replaying the
+producer, and preflights supplied integer/canonical limits before record hashing.
+
+Malformed, inconsistent or exhausted records prevent copied publication. No
+existing producer operation/query caps, source/wire APIs or admission flags change.
+This establishes only supported local record consistency, not independent source
+truth, transcendental or accumulated-motion correctness, uniform uncertainty,
+clock/one-use qualification or permission. The
+[record checkpoint][native-arithmetic-record-review] preserves bounded rational,
+source-word, malformed-pair, preflight-order and compatibility controls.
+
+[native-arithmetic-record-review]: REVIEW.md#198-exact-native-arithmetic-record-validation-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

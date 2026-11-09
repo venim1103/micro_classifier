@@ -11684,6 +11684,341 @@ def test_native_tof_floor_residuals(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default",
+        "flag",
+        "held",
+        "delivered_only",
+        "paired_timing",
+        "missing_source",
+        "bad_floor",
+        "bad_direction",
+        "owner_context",
+        "late_owner",
+        "late_source",
+        "outgoing_ratio",
+        "outgoing_flag",
+        "outgoing_budget",
+        "outgoing_index",
+    ),
+)
+def test_native_tof_owned_floor_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    counters = iter(range(100, 1000, 10))
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", lambda: next(counters))
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    for _ in range(5 if case == "held" else 4):
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_timing=case == "paired_timing",
+        )
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(
+                environment,
+                synthetic_test_only=True,
+                include_timing=case == "paired_timing",
+            )
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    if case == "missing_source":
+        owner._tof_history.pop(0)
+    elif case == "bad_floor":
+        native = owner._tof_history[0]["native_source"]
+        rays, floors = (
+            list(native["world_frame_unit_rays"]),
+            list(native["floor_candidate_ranges_m"]),
+        )
+        rays[2], floors[0] = (1.0).hex(), (1.0).hex()
+        native["world_frame_unit_rays"], native["floor_candidate_ranges_m"] = (
+            tuple(rays),
+            tuple(floors),
+        )
+    elif case == "bad_direction":
+        native = owner._tof_history[0]["native_source"]
+        native["world_frame_unit_rays"] = ("inf", *native["world_frame_unit_rays"][1:])
+    original_probe = diagnostics._native_tof_floor_division_residuals
+    original_frame = diagnostics._check_native_tof_delivery_frame
+    original_binding = diagnostics._c1_source_binding_digest
+    work = {"probe": 0, "frame": 0, "binding": 0, "forbidden": 0}
+    outgoing = {}
+
+    def probed(*args, **kwargs):
+        work["probe"] += 1
+        assert work["probe"] <= 6
+        actual = original_probe(*args, **kwargs)
+        outgoing.setdefault("diagnostic", actual)
+        if work["probe"] == 1 and case == "owner_context":
+            owner._binding = {"changed": True}
+        if work["probe"] == 6 and case == "outgoing_ratio":
+            entry = next(
+                entry
+                for entry in outgoing["diagnostic"]["entries"]
+                if entry["signed_residual_ratio"] is not None
+            )
+            numerator, denominator = entry["signed_residual_ratio"]
+            entry["signed_residual_ratio"] = numerator + 1, denominator
+        return actual
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        assert work["frame"] <= 2
+        actual = original_frame(*args, **kwargs)
+        if work["frame"] == 2:
+            if case == "late_owner":
+                owner._current = (*owner._current,)
+            elif case == "late_source":
+                owner._tof_history[0]["native_source"]["inputs"]["config"][
+                    "tof_mount_height"
+                ] += 0.01
+            elif case == "outgoing_flag":
+                outgoing["diagnostic"]["numerically_certified"] = True
+            elif case == "outgoing_index":
+                outgoing["diagnostic"]["entries"][0]["ray_index"] = 1
+            elif case == "outgoing_budget":
+                entry = next(
+                    entry
+                    for entry in outgoing["diagnostic"]["entries"]
+                    if entry["signed_residual_ratio"] is not None
+                )
+                denominator = entry["signed_residual_ratio"][1]
+                entry["signed_residual_ratio"] = 1 << 4096, denominator
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        assert not outgoing or args[0] is not outgoing["diagnostic"]
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "owned floor residuals must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_native_tof_floor_division_residuals", probed)
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="include_floor_residuals"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True, include_floor_residuals=1
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_timing=case == "paired_timing",
+            include_floor_residuals=case != "default",
+        )
+        assert (
+            result["numerically_certified"] is False
+            and result["command_admission_qualified"] is False
+        )
+        if case in ("copy", "default", "held", "delivered_only", "paired_timing"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert work["probe"] == 0
+                assert (
+                    "floor_residuals" not in result
+                    and "pending_floor_residuals" not in result
+                )
+            else:
+                actual = result["floor_residuals"]
+                assert actual["tick"] == result["source"]["tick"]
+                assert actual["source_epoch"] == result["source_epoch"]
+                assert len(actual["diagnostic"]["entries"]) == 64
+                assert actual["diagnostic"]["numerically_certified"] is False
+                if case != "delivered_only":
+                    assert [
+                        entry["tick"] for entry in result["pending_floor_residuals"]
+                    ] == [entry["tick"] for entry in result["pending_sources"]]
+                else:
+                    assert "pending_floor_residuals" not in result
+                if case == "paired_timing":
+                    assert result["timing"]["tick"] == actual["tick"]
+                actual["diagnostic"]["entries"][0]["ray_index"] = -1
+                assert owner._tof_history[0]["tick"] == 4
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert not (
+                {
+                    "source",
+                    "frame",
+                    "floor_residuals",
+                    "pending_floor_residuals",
+                    "pending_sources",
+                    "timing",
+                }
+                & result.keys()
+            )
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng and work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "rounding",
+        "changed_word",
+        "clip_zero",
+        "range_ceiling",
+        "positive_infinity",
+        "masked_word",
+        "mask",
+        "noise",
+        "dropout",
+        "word_budget",
+        "word_type",
+        "native_words",
+        "nonfinite_sample",
+        "flag",
+        "legacy",
+    ),
+)
+def test_native_tof_sampling_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    source = diagnostics._sample_simulator_native_tof_source(environment, owner._epoch)
+    config = source["native_source"]["inputs"]["config"]
+    height, maximum = config["tof_mount_height"], config["max_range"]
+    noise, dropout = config["noise_std"], config["dropout"]
+    native, words, mask = (
+        list(source["native_source"]["pre_noise_ranges_m"]),
+        list(source["sample_words"]),
+        list(source["valid_mask"]),
+    )
+    if case != "actual":
+        native = [(1.0 / 3).hex()] * 64
+        words = [int(np.float32(1.0 / 3).view(np.uint32))] * 64
+        mask = [True] * 64
+    if case == "changed_word":
+        words[0] ^= 1
+    elif case == "clip_zero":
+        native[0], words[0] = (-1.0).hex(), 0
+    elif case in ("range_ceiling", "positive_infinity", "masked_word"):
+        native[0], words[0], mask[0] = (
+            ("inf" if case == "positive_infinity" else maximum.hex()),
+            int(case == "masked_word"),
+            False,
+        )
+    elif case == "mask":
+        mask[0] = False
+    elif case == "noise":
+        noise = 0.001
+    elif case == "dropout":
+        dropout = 0.01
+    elif case == "word_budget":
+        words[0] = 1 << 32
+    elif case == "word_type":
+        words[0] = True
+    elif case == "native_words":
+        native[0] = "0.5"
+    elif case == "nonfinite_sample":
+        words[0] = 0x7F800000
+    elif case == "legacy":
+        height = None
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("sampling residuals must use only supplied words")
+
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("_sample_simulator_native_tof_source", "_c1_source_binding_digest"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    arguments = {
+        "mount_height_m": height,
+        "max_range_m": maximum,
+        "noise_std": noise,
+        "dropout": dropout,
+        "pre_noise_ranges_m": tuple(native),
+        "sample_words": tuple(words),
+        "valid_mask": tuple(mask),
+        "synthetic_test_only": 1 if case == "flag" else True,
+    }
+    if case in (
+        "actual",
+        "rounding",
+        "changed_word",
+        "clip_zero",
+        "range_ceiling",
+        "positive_infinity",
+    ):
+        actual = diagnostics._native_tof_sampling_residuals(**arguments)
+        assert (
+            actual["numerically_certified"] is False
+            and actual["source_qualified"] is False
+        )
+        assert (
+            actual["command_admission_qualified"] is False
+            and len(actual["entries"]) == 64
+        )
+        for entry in actual["entries"]:
+            if entry["valid"]:
+                target = float.fromhex(entry["clipped_target_hex"])
+                sampled = float.fromhex(entry["sample_hex"])
+                assert Fraction(*entry["signed_residual_ratio"]) == Fraction.from_float(
+                    sampled
+                ) - Fraction.from_float(target)
+            else:
+                assert (
+                    entry["sample_word"] == 0 and entry["signed_residual_ratio"] is None
+                )
+        first = actual["entries"][0]
+        if case in ("range_ceiling", "positive_infinity"):
+            assert (
+                first["status"] == "masked_invalid_native_return"
+                and first["valid"] is False
+            )
+        elif case == "clip_zero":
+            assert first["clipped_target_hex"] == (0.0).hex() and first[
+                "signed_residual_ratio"
+            ] == (0, 1)
+        elif case == "rounding":
+            assert Fraction(*first["signed_residual_ratio"]) > 0
+        elif case == "changed_word":
+            assert Fraction(*first["signed_residual_ratio"]) < 0
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_sampling_residuals(**arguments)
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

@@ -9770,6 +9770,111 @@ def _native_tof_floor_division_residuals(
     }
 
 
+def _native_tof_sampling_residuals(
+    *,
+    mount_height_m,
+    max_range_m,
+    noise_std,
+    dropout,
+    pre_noise_ranges_m,
+    sample_words,
+    valid_mask,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native sampling residuals require synthetic_test_only=True")
+    if (
+        type(mount_height_m) is not float
+        or not math.isfinite(mount_height_m)
+        or mount_height_m <= 0
+        or type(max_range_m) is not float
+        or not math.isfinite(max_range_m)
+        or max_range_m <= 0
+        or type(noise_std) not in (int, float)
+        or noise_std != 0
+        or type(dropout) not in (int, float)
+        or dropout != 0
+    ):
+        raise ValueError("native sampling residuals require ideal mounted returns")
+    if (
+        type(pre_noise_ranges_m) is not tuple
+        or len(pre_noise_ranges_m) != 64
+        or type(sample_words) is not tuple
+        or len(sample_words) != 64
+        or any(
+            type(word) is not int or not 0 <= word <= 0xFFFFFFFF
+            for word in sample_words
+        )
+        or type(valid_mask) is not tuple
+        or len(valid_mask) != 64
+        or any(type(flag) is not bool for flag in valid_mask)
+    ):
+        raise ValueError("unsupported native sampling residual word layout")
+    sampled = np.asarray(sample_words, dtype=np.uint32).view(np.float32)
+    if not np.isfinite(sampled).all():
+        raise ValueError("native sampling residuals require finite binary32 samples")
+    entries = []
+    for index, word in enumerate(pre_noise_ranges_m):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("native sampling residual source word budget exhausted")
+        native = float.fromhex(word)
+        if native.hex() != word or math.isnan(native) or native == -math.inf:
+            raise ValueError("native sampling residual source word unsupported")
+        expected_valid = math.isfinite(native) and native < max_range_m
+        if valid_mask[index] is not expected_valid:
+            raise ValueError(
+                "native sampling residual validity correspondence mismatch"
+            )
+        if not expected_valid and sample_words[index] != 0:
+            raise ValueError("native sampling residual masked word mismatch")
+        observed = float(sampled[index])
+        clipped = min(max(native + 0.0, 0.0), max_range_m) if expected_valid else 0.0
+        residual = None
+        if expected_valid:
+            difference = Fraction.from_float(observed) - Fraction.from_float(clipped)
+            numerator, denominator = difference.as_integer_ratio()
+            if (
+                max(abs(numerator).bit_length(), denominator.bit_length())
+                > _SYNTHETIC_ARITHMETIC_BITS
+            ):
+                raise ValueError("native sampling residual rational budget exhausted")
+            residual = numerator, denominator
+        entries.append(
+            {
+                "ray_index": index,
+                "pre_noise_range_hex": word,
+                "clipped_target_hex": clipped.hex(),
+                "sample_word": sample_words[index],
+                "sample_hex": observed.hex(),
+                "valid": expected_valid,
+                "signed_residual_ratio": residual,
+                "status": "computed_exact_native_sampling_residual"
+                if expected_valid
+                else "masked_invalid_native_return",
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-tof-sampling-residuals/1",
+        "allowed_use": "offline_ideal_native_sampling_diagnostics_only",
+        "status": "reported_native_sampling_residuals",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "max_range_hex": max_range_m.hex(),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_word_copy_matches(copied, expected, *, shape_only=False):
     if type(copied) is not type(expected):
         return False
@@ -11246,6 +11351,7 @@ class _SyntheticC1SourceRecorder:
         synthetic_test_only=False,
         include_pending_sources=False,
         include_timing=False,
+        include_floor_residuals=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -11253,6 +11359,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_pending_sources must be a literal bool")
         if type(include_timing) is not bool:
             raise ValueError("include_timing must be a literal bool")
+        if type(include_floor_residuals) is not bool:
+            raise ValueError("include_floor_residuals must be a literal bool")
         result = {
             "schema": "micro-classifier/synthetic-c1-native-tof-delivery-snapshot/1",
             "allowed_use": "offline_native_tof_delivery_diagnostics_only",
@@ -11325,6 +11433,21 @@ class _SyntheticC1SourceRecorder:
                 }
             )
 
+        def floor_probe(source):
+            native = source["native_source"]
+            return {
+                **{
+                    key: source[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_floor_division_residuals(
+                    mount_height_m=native["inputs"]["config"]["tof_mount_height"],
+                    world_frame_unit_rays=native["world_frame_unit_rays"],
+                    floor_candidate_ranges_m=native["floor_candidate_ranges_m"],
+                    synthetic_test_only=True,
+                ),
+            }
+
         try:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
@@ -11385,6 +11508,13 @@ class _SyntheticC1SourceRecorder:
             copied = _match_native_tof_delivered_source(
                 environment, history_before, self._epoch
             )
+            if include_floor_residuals:
+                floor_residuals = floor_probe(copied)
+                pending_floor_residuals = (
+                    tuple(floor_probe(source) for source in pending_sources)
+                    if include_pending_sources
+                    else ()
+                )
             if include_timing:
                 timing = _match_native_tof_retained_timing(copied, timing_before)
                 pending_timing = (
@@ -11465,6 +11595,21 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_floor_residuals:
+                floor_after = floor_probe(live_after)
+                pending_floor_after = (
+                    tuple(floor_probe(source) for source in pending_after)
+                    if include_pending_sources
+                    else ()
+                )
+                if not _native_tof_word_copy_matches(
+                    floor_residuals, floor_after
+                ) or not _native_tof_word_copy_matches(
+                    pending_floor_residuals, pending_floor_after
+                ):
+                    raise ValueError(
+                        "native ToF floor residual source or outgoing records changed"
+                    )
             if (
                 self._simulator is not environment
                 or self._tof_history is not history_before
@@ -11501,6 +11646,10 @@ class _SyntheticC1SourceRecorder:
             result["timing"] = timing
             if include_pending_sources:
                 result["pending_timing"] = pending_timing
+        if include_floor_residuals:
+            result["floor_residuals"] = floor_residuals
+            if include_pending_sources:
+                result["pending_floor_residuals"] = pending_floor_residuals
         return result
 
     def snapshot_receipt_history(self, *, synthetic_test_only=False):

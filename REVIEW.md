@@ -17883,6 +17883,98 @@ Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
 local target, final five-file diff and whitespace passed. Code gate not rerun
 for documentation; no unrelated files modified or staged by this checkpoint.
 
+## 218. Current-Source Native ToF Floor Residual Composition (2026-11-09)
+
+Residualee0ba25 normally pushed/clean. Local hypothesis: the actual delivered/
+optional pending snapshot can compose named floor residuals from matched native
+sources, after owner fingerprinting, and compare them again after closing frame/
+pending/timing checks. Separate literal `include_floor_residuals=False` skips
+the probe and preserves default output. Source epoch/acquisition/delivery IDs
+accompany copied diagnostics. Closing bounded word comparisons reject changed
+ratios/flags/index/budget without hashing residual output. Unknown/malformed
+source or changed owner/source/output yields no partial frame/source/diagnostic.
+
+Finite sixteen cloned controls, <=five setup steps/six ordinary reads/three
+retentions; only paired-timing uses <=six timing intakes/eight controlled clock
+reads. Setup C1 views<=48 per case. Snapshot <=six pure residual probes, each
+existing64-rays/256-words/129 conversions/128 rational operations/4096-bit
+budget; aggregate<=774 conversions/768 operations, <=two frame checks/64
+bindings, zero read/retention/step/reset/replay/new clock. Three positions
+including failures/aborts: first16, required root/style (existing adjacent
+controls), repair reserve; no standalone old run/general audit/SC18, dependency/
+download/model/GPU/study/data/firmware/Arm/sanitizer/board/hardware/threshold/
+frozen-contract action, generated artifact or cleanup. All eight flags stay
+false; exact residual/source correspondence is not a range/error/physical/
+numerical/clock/coverage/permission/admission allowance or usable command.
+First16PASS5.94s. Diff review found a closing pending probe could mutate an
+earlier delivered diagnostic after its inline comparison. Repair collects all
+closing floor outputs before comparing either group; existing outgoing-ratio
+control now mutates the delivered diagnostic during the final sixth pending
+probe, not merely before closing probes. Same16 next, then required gate.
+Repaired16PASS4.82s. Third position formatted then stopped at Ruff RUF059:
+unused unpacked `numerator` in the outgoing-budget fixture. Root did not run.
+Repair reads only the needed denominator, with no assertion/source change.
+All three positions spent; no fourth/standalone218 rerun or abort; source
+checkpoint remains uncommitted pending a permitted required gate. Earlier
+failures/ledgers are retained, not refunded. Independently useful next source
+prerequisite: the actual final sampling path's native-to-binary32 arithmetic,
+not more floor-output copying or a renamed218 retry. Only a genuinely new
+source change's required root gate may exercise existing fixtures as unchanged
+regression controls; this does not renew exhausted standalone scope.
+Resolved required regression evidence in219's genuinely new sampling-source
+gate below, with these mechanically repaired fixtures unchanged as controls;
+no standalone218 rerun or fourth position. No source checkpoint preceded that
+successful gate. Closing-probe review repair and failed RUF059 remain historical.
+
+## 219. Ideal Native ToF Sampling Residuals (2026-11-09)
+
+Independent next prerequisite from actual `_sample`: mounted validity is
+`finite(pre_noise) and pre_noise < max_range`, then noise/dropout, clipping and
+binary32 projection. Native floor-source composition does not calculate this
+final-sampling discrepancy. Local hypothesis: an offline exact diagnostic can
+report observed binary32-minus-clipped-native residuals for the supported zero
+noise/dropout case, rejecting mask/invalid-word/profile mismatches without
+adopting a tolerance. It handles invalid ceiling/infinite returns as masked,
+not max-range clearance. Pure supplied-word arithmetic alone is not provenance.
+
+Finite sixteen cloned controls, one setup step/actual native intake each;
+64 canonical native words<=32chars,64 uint32 samples/64 builtin bool masks,
+<=128 exact float-to-rational conversions/64 subtractions/4096-bit pair cap.
+No additional source/recorder read, retention, step/reset, geometry, RNG/clock
+or hash in diagnostic. Three positions including failures/aborts: first16,
+required root/style, repair reserve. Root is required for this new independent
+source change, with unchanged old fixtures including218 as controls under the
+standing regression rule, not a fourth standalone218 attempt or ledger refund.
+No old experiment, general audit/SC18, dependency/download/model/GPU/study/data/
+firmware/Arm/sanitizer/board/hardware/threshold/frozen-contract action, artifact
+or cleanup. All eight flags false, no allowance/qualification or usable command.
+First16PASS3.29s. Second position formatting, changed-file Ruff, root3121PASS/
+known transformer QDQ1xfail/71warnings95.74s, root Ruff/diff and changed-file
+format check passed; editor diagnostics clear. Existing218 controls ran only
+within this new source change's required root regression, not a standalone
+renewal; its three-position ledger remains spent. Two of219's three positions
+used, no failure/abort; reserve is not follow-on scope. No additional opt-in
+C/Arm/sanitizer/board controls, linked firmware/board/fit/task-quality evidence.
+
+Sampling controls cover actual acquisition words, rounded/changed binary32
+words, clipped negative return, strict range ceiling/infinity masked as zero,
+mask/invalid-zero/zero-noise/dropout/profile/uint32/canonical/finite-word and
+literal-opt-in conditions. Diagnostics report exact observed-minus-target
+differences, not acceptance thresholds or independently correct rounding.
+Current-source floor composition retains owner/source/output checks and all
+closing probe calls precede comparisons; oversized/changed outgoing records
+reject without entering hashes. Both source/test deltas reviewed; all eight
+flags false, no adopted allowance, full numerical/range/error/coverage/physical/
+clock/native-execution/permission/admission qualification or usable command.
+No atomic/perpetual freshness promise, artifact or cleanup; public introduction
+and accepted limits unchanged. Next useful slice: current delivered/pending
+source correspondence can optionally carry its ideal sampling residuals, with
+all closing floor/sampling/timing outputs checked after their callees rather
+than treating pure supplied-word arithmetic as provenance or a range bound.
+Scoped history/Sources/prior-design/stable-workflow preservation, both new
+references/local targets, final five-file diff and whitespace passed. Code gate
+not rerun for documentation; only these checkpoint files are staged.
+
 ## Sources
 
 Hardware and tools:

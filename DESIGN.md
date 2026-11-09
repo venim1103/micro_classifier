@@ -3011,6 +3011,48 @@ See [native floor residual controls and limits][native-tof-floor-residual-review
 
 [native-tof-floor-residual-review]: REVIEW.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 
+##### Current-Source Native ToF Floor Residuals (2026-11-09)
+
+Private `snapshot_native_tof_delivery(..., include_floor_residuals=True)` is a
+separate literal opt-in. It probes already matched actual delivered and, when
+requested, pending native sources after original ownership fingerprinting.
+Each diagnostic carries the source epoch/acquisition/delivery IDs; pending
+diagnostics preserve matched queue order. It collects all closing probe outputs
+after companion State/frame and optional pending/timing checks before bounded
+exact word comparisons. Changed ratios, flags, indices and oversized staged
+integers reject without hashing residual output. Source/owner/RNG/file/current
+checks remain; malformed/missing/changed evidence yields no partial payload.
+Default source snapshots skip residual probes and omit their fields.
+
+This composes actual-source correspondence with per-word arithmetic only. Missing
+floor candidates remain unknown; no physical, full geometric/range/error/clock/
+coverage/native-execution/permission/admission or usable-command qualification
+is adopted. All eight flags false, no atomic/perpetual freshness guarantee.
+See [source-bound floor controls and limits][native-tof-owned-floor-review].
+
+[native-tof-owned-floor-review]: REVIEW.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
+
+##### Ideal Native ToF Sampling Residuals (2026-11-09)
+
+Private synthetic-only `_native_tof_sampling_residuals` supports mounted native
+returns with positive finite height/range words and zero noise/dropout only.
+It consumes 64 canonical finite/positive-infinite pre-noise words, 64 uint32
+sample words and 64 builtin masks; nonfinite binary32 samples reject. Expected
+validity follows the actual pre-noise finite/strictly-below-ceiling branch;
+invalid returns require positive-zero sample words. For valid returns it reports
+the exact rational observed-binary32-minus-clipped-native residual, including
+zero-noise addition/clipping, original hex/word values and ray identity, under
+the existing 4096-bit pair cap. Invalid returns are masked diagnostics with no
+range residual, never max-range clearance. Unsupported profile/masks/words reject.
+
+This pure supplied-word calculation does not read/replay the producer, bind a
+current owner or decide whether any nonzero residual is acceptable. No rounding
+tolerance, ideal ray/geometry/occlusion, complete range/error/coverage, physical/
+clock/native-execution/permission/admission or usable command is qualified.
+All eight flags remain false. See [sampling residual controls and limits][native-tof-sampling-review].
+
+[native-tof-sampling-review]: REVIEW.md#219-ideal-native-tof-sampling-residuals-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

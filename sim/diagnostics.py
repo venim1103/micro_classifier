@@ -9752,6 +9752,116 @@ def _check_native_tof_history_layout(history, current):
             raise ValueError("unsupported native ToF acquisition history metadata")
 
 
+def _native_tof_history_template(environment, source_epoch):
+    from sim.rover import RoverEnv, Scenario
+
+    if (
+        type(environment) is not RoverEnv
+        or type(environment.config) is not Config
+        or type(environment.scenario) is not Scenario
+    ):
+        raise ValueError("unsupported native ToF delivery producer")
+    if (
+        type(source_epoch) is not str
+        or len(source_epoch) != 32
+        or type(environment.tick) is not int
+        or not 0 <= environment.tick <= 0xFFFFFFFF // 50000
+        or type(environment.config.latency_ticks) is not int
+        or not 0 <= environment.config.latency_ticks <= 8
+        or len(environment.scenario.obstacles) > 32
+    ):
+        raise ValueError("native ToF delivery metadata budget exhausted")
+    word = "0x0.0p+0"
+    legacy = environment.config.tof_mount_height is None
+    return {
+        "source_epoch": source_epoch,
+        "tick": environment.tick,
+        "delivery_tick": environment.tick,
+        "native_source": {
+            "schema": "micro-classifier/native-tof-source/1",
+            "allowed_use": "native_tof_diagnostics_only",
+            "status": "recorded_native_tof_values",
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            "inputs": {
+                "position_m": (0.0, 0.0),
+                "yaw_rad": 0.0,
+                "config": asdict(environment.config),
+                "scenario": asdict(environment.scenario),
+            },
+            "world_frame_unit_rays": None if legacy else (word,) * 192,
+            "floor_candidate_ranges_m": None if legacy else (word,) * 64,
+            "pre_noise_ranges_m": (word,) * 64,
+        },
+        "sample_words": (0,) * 64,
+        "valid_mask": (False,) * 64,
+    }
+
+
+def _match_native_tof_delivered_source(environment, history, source_epoch):
+    template = _native_tof_history_template(environment, source_epoch)
+    _check_native_tof_history_layout(history, template)
+    for entry in history:
+        if any(not 0 <= word <= 0xFFFFFFFF for word in entry["sample_words"]):
+            raise ValueError("unsupported native ToF delivery sample word")
+        for key in (
+            "world_frame_unit_rays",
+            "floor_candidate_ranges_m",
+            "pre_noise_ranges_m",
+        ):
+            words = entry["native_source"][key]
+            if words is None:
+                continue
+            for word in words:
+                try:
+                    value = float.fromhex(word)
+                except ValueError as error:
+                    raise ValueError(
+                        "unsupported native ToF archived hex word"
+                    ) from error
+                if (
+                    math.isnan(value)
+                    or value == -math.inf
+                    or value.hex() != word
+                    or (key == "world_frame_unit_rays" and not math.isfinite(value))
+                ):
+                    raise ValueError("unsupported native ToF archived native word")
+    tick = environment.sensor_tick
+    if type(tick) is not int or not 0 <= tick <= environment.tick:
+        raise ValueError("missing native ToF delivered acquisition tick")
+    matches = [entry for entry in history if entry["tick"] == tick]
+    if len(matches) != 1 or matches[0]["delivery_tick"] > environment.tick:
+        raise ValueError("native ToF delivered acquisition lineage missing")
+    sampled, valid = environment.tof, environment.valid
+    if (
+        type(sampled) is not np.ndarray
+        or sampled.shape != (8, 8)
+        or sampled.dtype != np.dtype(np.float32)
+        or not np.isfinite(sampled).all()
+        or type(valid) is not np.ndarray
+        or valid.shape != (8, 8)
+        or valid.dtype != np.dtype(bool)
+    ):
+        raise ValueError("unsupported native ToF delivered arrays")
+    selected = matches[0]
+    if selected["sample_words"] != tuple(
+        map(int, sampled.view(np.uint32).flat)
+    ) or selected["valid_mask"] != tuple(map(bool, valid.flat)):
+        raise ValueError("native ToF delivered words or mask mismatch")
+    return deepcopy(selected)
+
+
 def _check_simulator_motion_receipt_clock(clock):
     if (
         type(clock) is not dict

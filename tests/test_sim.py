@@ -10138,6 +10138,98 @@ def test_native_tof_acquisition_history(
     assert work["binding"] <= 256 and work["intake"] <= 32
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "match",
+        "held",
+        "missing",
+        "epoch",
+        "words",
+        "mask",
+        "sample_tick",
+        "no_tick",
+        "hex_nan",
+        "hex_long",
+        "layout",
+        "budget",
+    ),
+)
+def test_native_tof_delivered_correspondence(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(environment, synthetic_test_only=True)
+    for _ in range(2 + int(case == "held")):
+        environment.step([0.125, 0.3])
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+    assert environment.sensor_tick == 4
+    assert owner._tof_sample is None
+    history = deepcopy(owner._tof_history)
+    if case == "missing":
+        history = []
+    elif case == "epoch":
+        history[0]["source_epoch"] = "0" * 32
+    elif case == "words":
+        environment.tof[0, 0] = -99.0
+    elif case == "mask":
+        environment.valid[0, 0] = not environment.valid[0, 0]
+    elif case == "sample_tick":
+        environment.sensor_tick = 3
+    elif case == "no_tick":
+        environment.sensor_tick = None
+    elif case in ("hex_nan", "hex_long"):
+        field = history[0]["native_source"]["pre_noise_ranges_m"]
+        history[0]["native_source"]["pre_noise_ranges_m"] = (
+            "nan" if case == "hex_nan" else "x" * 33,
+            *field[1:],
+        )
+    elif case == "layout":
+        history[0]["extra"] = True
+    elif case == "budget":
+        history *= 9
+    tick_before = environment.tick
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "delivered ToF matching must not read/retain/replay/step/reset/clock"
+        )
+
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    monkeypatch.setattr(rover, "tof_ranges", forbidden)
+    monkeypatch.setattr(rover, "tof_directions", forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if case in ("match", "held"):
+        matched = diagnostics._match_native_tof_delivered_source(
+            environment, history, owner._epoch
+        )
+        assert matched == history[0]
+        assert matched["tick"] == 4 and matched["delivery_tick"] == 6
+        assert matched["native_source"]["source_qualified"] is False
+        assert matched["native_source"]["command_admission_qualified"] is False
+        matched["native_source"]["inputs"]["config"]["max_range"] = -99.0
+        assert history[0]["native_source"]["inputs"]["config"]["max_range"] > 0
+    else:
+        with pytest.raises(ValueError, match="native ToF"):
+            diagnostics._match_native_tof_delivered_source(
+                environment, history, owner._epoch
+            )
+    assert environment.tick == tick_before
+    assert environment.rng.bit_generator.state == rng_before
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

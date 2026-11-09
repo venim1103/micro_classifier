@@ -17336,6 +17336,50 @@ Scoped history/Sources/prior-design/stable-workflow preservation, acquisition
 history reference/local target, five-file source/test diff/editor diagnostics
 and whitespace checks passed; no source gate repeated for documentation.
 
+## 207. Retained Native ToF Delivered-Array Correspondence (2026-11-09)
+
+Archive checkpoint00bd408 normally pushed/clean. Small named S2/S3 prerequisite:
+independent bounded template supplies layout limits rather than trusting an
+unvalidated archive as its own template. Validate history/epoch/profile/false
+metadata/order, canonical binary64 hex words (positive infinity only for native
+range candidates) and uint32 samples; uniquely match actual sensor_tick and
+delivered matrix/mask words after nominal pending delivery. A held observation
+can match its same acquisition, not a new capture. No geometry/replay/read/
+retention/step/reset/RNG/clock during matching. This is local array correspondence,
+not recorder-currentness/publication/accepted source/coverage/numerical/physical/
+clock/one-use/admission evidence; false flags/no command.
+
+Finite synthetic controls: twelve cloned existing receipt fixtures, <=four steps/
+six ordinary reads/one explicit retention (two intakes), one delivery matcher per
+case; history8/native192+64+64/sample64/mask64/obstacles32/pending8/epoch32/C1tick
+caps unchanged. Existing setup C1 views <=48 per case are not actual ToF sources,
+coverage, episodes or qualification. Four positions incl failure/abort: first12,
+adjacent/style<=180 existing/new ToF controls, required root, repair reserve.
+No source/frame/contract/error-bound adoption, data/study/model/GPU/dependency/
+download/hardware/Arm/board/artifact/cleanup. Results follow the focused check.
+First12PASS3.28s/zero forbidden during matcher/old fixture source/receipt ledgers
+zero. Position two Ruff format/lint/format-check/whitespace passed, **128 ToF
+compatibility controls passed**,5.19s, same old ledgers zero. Post-format Pylance
+template one/matcher two resolved calls compatible; editor diagnostics clear.
+Position three required `python -m pytest -q && ruff check . && git diff
+--check` **2,940 passed**, known QDQ xfail/71 warnings/no reported skips,80.66s;
+changed-file format passed, original capped source/history/receipt/neighboring
+ledgers held. Three positions used/no failure/abort, unused fourth not follow-on.
+No unchanged gate rerun for documentation or opt-in Arm/sanitizer/board/model/
+study/data/dependency/download/hardware action; no artifact/cleanup pending.
+
+Implemented helper is local acquired-word-to-delivered-matrix/mask correspondence,
+not a recorder snapshot or admitted predecessor chain. Held matrices preserve
+their original acquisition ID; missing archived source/epoch/current context is
+not rescued by equal metadata/hashes. All flags false/no command, no native/
+physical/range/trig/coverage/clock/one-use/source/permission qualification.
+Next current-recorder read-time delivered-source publication and original
+State/frame correspondence, with conservative omission/rejection for missing,
+stale or unsupported lineage. Do not interpret local matching as source adoption.
+Scoped history/Sources/prior-design/stable-workflow preservation, delivered-array
+reference/local target, five-file source/test diff/editor diagnostics and
+whitespace checks passed; source gate not repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

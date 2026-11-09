@@ -2763,6 +2763,31 @@ are not an admitted chain or accepted evidence domain.
 
 [native-tof-history-review]: REVIEW.md#206-bounded-native-tof-acquisition-history-2026-11-09
 
+##### Retained Native ToF Delivered-Array Correspondence (2026-11-09)
+
+A separate bounded template validates archive layout independently of a fresh
+cache or the archive's own untrusted structure. It names fixed native-word/sample/
+mask lengths, original epoch/profile/false metadata, ordered acquisitions and
+canonical native binary64 hex words. Positive infinity is retained only as a
+native range candidate; sampled binary32 words are exact uint32 values. No
+geometry/sample reconstruction, clock/RNG/read/retention/step/reset is used.
+
+The adjacent matcher requires a unique retained acquisition at the actual
+`sensor_tick`, a reached nominal delivery tick, and exact current delivered ToF
+matrix/mask correspondence. A held observation matches the same acquisition,
+not another capture. It returns a detached copy or rejects missing/malformed/
+changed source content. The [delivery checkpoint][native-tof-delivery-review]
+records bounded copied-word/epoch/hex/layout/matrix/mask/held controls.
+
+This checks local native acquisition-to-array correspondence only. It does not
+yet establish recorder-currentness/read-time publication, original State/frame
+mapping, complete scan/retention coverage, shared clock/epoch/error support,
+selected-hit or native/range/physical proof, source authority, one-use execution,
+permission or admission. All flags remain false/no usable command; nominal ticks
+and consistent words are not accepted source or deadline qualification.
+
+[native-tof-delivery-review]: REVIEW.md#207-retained-native-tof-delivered-array-correspondence-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

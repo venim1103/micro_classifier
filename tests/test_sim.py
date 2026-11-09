@@ -10230,6 +10230,143 @@ def test_native_tof_delivered_correspondence(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "held",
+        "flag",
+        "no_history",
+        "producer_missing",
+        "stale_tick",
+        "pose",
+        "rng",
+        "retained_word",
+        "history_identity",
+        "copied_after",
+        "late_pose",
+        "owner_context",
+        "early_owner",
+        "late_history",
+        "files",
+    ),
+)
+def test_native_tof_delivery_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(environment, synthetic_test_only=True)
+    for _ in range(2 + int(case == "held")):
+        environment.step([0.125, 0.3])
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+    retained = owner._tof_history[0]
+    before_tick, before_frame = owner._current[0], owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    assert owner._tof_sample is None and environment.sensor_tick == 4
+    if case == "no_history":
+        owner._tof_history = []
+    elif case == "producer_missing":
+        owner._simulator = None
+    elif case == "stale_tick":
+        environment.tick += 1
+    elif case == "pose":
+        environment.position[0] += 0.125
+    elif case == "rng":
+        environment.rng = deepcopy(environment.rng)
+    elif case == "retained_word":
+        retained["sample_words"] = (1 << 64, *retained["sample_words"][1:])
+    elif case == "files":
+        owner._identities = {**owner._identities, "unexpected": "0" * 64}
+    original_match = diagnostics._match_native_tof_delivered_source
+    original_binding = diagnostics._c1_source_binding_digest
+    work = {"match": 0, "binding": 0, "forbidden": 0}
+    outgoing = {}
+
+    def matched(*args, **kwargs):
+        work["match"] += 1
+        actual = original_match(*args, **kwargs)
+        if work["match"] == 1:
+            outgoing["copy"] = actual
+            if case == "early_owner":
+                owner._binding = {"changed": True}
+        elif work["match"] == 2:
+            if case == "history_identity":
+                owner._tof_history = list(owner._tof_history)
+            elif case == "copied_after":
+                outgoing["copy"]["sample_words"] = (
+                    outgoing["copy"]["sample_words"][0] ^ 1,
+                    *outgoing["copy"]["sample_words"][1:],
+                )
+            elif case == "late_pose":
+                environment.position[0] += 0.125
+            elif case == "owner_context":
+                owner._current = (*owner._current,)
+            elif case == "late_history":
+                owner._tof_history[0]["native_source"]["inputs"]["yaw_rad"] += 0.5
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if case == "retained_word":
+            assert record is not owner._tof_history
+            assert type(record) is not dict or "tof_history" not in record
+        return original_binding(record)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "native ToF delivery must not read/retain/replay/step/reset/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_match_native_tof_delivered_source", matched)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            owner.snapshot_native_tof_delivery(synthetic_test_only=1)
+    else:
+        result = owner.snapshot_native_tof_delivery(synthetic_test_only=True)
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case in ("copy", "held"):
+            assert result["snapshot_available"] is True
+            assert result["source"] == retained
+            assert result["frame"] == before_frame
+            assert result["tick"] == before_tick
+            assert result["sensor_tick"] == 4 != before_tick
+            result["source"]["native_source"]["inputs"]["config"]["max_range"] = -99.0
+            assert retained["native_source"]["inputs"]["config"]["max_range"] > 0
+        else:
+            assert result["status"] == "unknown"
+            assert result["snapshot_available"] is False
+            assert "source" not in result and "frame" not in result
+    assert owner._current[0] == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert work["match"] <= 2 and work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

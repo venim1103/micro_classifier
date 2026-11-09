@@ -17380,6 +17380,57 @@ Scoped history/Sources/prior-design/stable-workflow preservation, delivered-arra
 reference/local target, five-file source/test diff/editor diagnostics and
 whitespace checks passed; source gate not repeated for documentation.
 
+## 208. Current-Recorder Native ToF Delivery Snapshot (2026-11-09)
+
+Correspondence checkpoint6d2169d normally pushed/clean. Local hypothesis:
+fresh-cache snapshots cannot publish retained acquisition4 delivered at6; a
+separate current-owner snapshot can match archived words twice, bind original
+recorder/producer content and recheck outgoing content and identities without
+reading/retaining/stepping/resetting/replaying or sampling clocks/RNG. Missing,
+stale, malformed or changed context yields unknown without source/frame.
+Frame remains current-recorder context, not yet proven original State mapping.
+All eight flags false/no command/no source/numerical/physical/coverage/clock/
+one-use/admission adoption.
+
+Finite synthetic scope: sixteen cloned existing receipt fixtures, <=four steps/
+six ordinary reads/one explicit retention (two intakes), <=two delivery matches/
+64 binding calls per case, forbidden operations zero; <=48 old C1 setup views
+per case are unchanged controls, not actual sources/coverage/task episodes.
+History8/native192+64+64/sample64/mask64/obstacles32/epoch32/nonwrapping C1tick
+limits unchanged. Four positions counting failure/abort: first16, adjacent ToF/
+style<=180, required root, repair reserve. No data/study/model/GPU/dependency/
+download/firmware/hardware/Arm/board/threshold or frozen-contract changes,
+artifacts or cleanup. Results follow the focused check.
+
+First16:15PASS/1FAIL1.63s, copied_after returned checked status when its control
+assigned zero to a possibly already-zero sample word. Repair uses XOR1 to force
+a changed uint32 word without relaxing production guards. Failure retained;
+repair reserve becomes position two with the same16 controls, not extra scope.
+Position two same16PASS3.11s, forbidden/match/binding/old fixture ledgers held.
+Position three format ran then Ruff C414 rejected tuple(list(current)); adjacent
+tests did not run. Repair uses tuple unpacking to create the intended new tuple
+identity without adopting Ruff's same-identity tuple(current) suggestion. Final
+fourth position is changed owner_context control plus required root/style; root
+includes the adjacent ToF controls. No fifth or separate adjacent rerun.
+Final changed owner_context1PASS2.43s/Ruff clear; required root **2,956 passed**,
+known QDQ xfail/71 warnings/no reported skips,84.94s. Root included all adjacent
+ToF controls and original capped source/history/receipt/other-family ledgers;
+changed-file format/Ruff/whitespace/editor diagnostics clear. All four positions
+spent, two failed checks retained/no abort; no unchanged gate rerun for docs.
+Runtime evidence covers all sixteen new method cases; no additional static
+call-compatibility result is claimed. No opt-in native firmware/Arm/sanitizer/
+board/model/study/data/dependency/download/hardware action or artifact/cleanup.
+
+Snapshot success is bounded read-time producer/recorder/archive correspondence,
+not original State conversion/encoded-frame proof, atomicity/perpetual freshness,
+complete acquisition/retention/scan coverage, accepted source/clock/error or a
+usable permit. All eight flags false/no command. Next check the existing actual
+observation-to-original-State/encoded-frame boundary without replacing original
+frames, inventing acceptance bounds or adopting source/admission evidence.
+Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
+local target, final five-file source/test diff and whitespace checks passed.
+Public introduction and frozen contracts unchanged; no extra source gate for docs.
+
 ## Sources
 
 Hardware and tools:

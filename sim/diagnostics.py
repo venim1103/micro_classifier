@@ -10807,6 +10807,139 @@ class _SyntheticC1SourceRecorder:
         )
         return result
 
+    def snapshot_native_tof_delivery(self, *, synthetic_test_only=False):
+        if synthetic_test_only is not True:
+            raise ValueError("native ToF delivery requires synthetic_test_only=True")
+        result = {
+            "schema": "micro-classifier/synthetic-c1-native-tof-delivery-snapshot/1",
+            "allowed_use": "offline_native_tof_delivery_diagnostics_only",
+            "status": "unknown",
+            "reason": "missing_current_native_tof_delivery",
+            "snapshot_available": False,
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+        }
+        environment, history_before = self._simulator, self._tof_history
+        current_before, dynamics_before = self._current, self._dynamics_sample
+        if environment is None or current_before is None or dynamics_before is None:
+            return result
+
+        def producer():
+            return {
+                "tick": environment.tick,
+                "pose_m_rad": (
+                    *map(float, environment.position),
+                    float(environment.yaw),
+                ),
+                "native_action": (
+                    float(environment.speed),
+                    float(environment.turn_rate),
+                ),
+                "native_goal_source": deepcopy(environment._native_goal_source),
+                "observation": environment._observation(),
+                "config": asdict(environment.config),
+                "scenario": asdict(environment.scenario),
+            }
+
+        def ownership():
+            current = self._current
+            return _c1_source_binding_digest(
+                {
+                    "epoch": self._epoch,
+                    "profile": {
+                        "config": asdict(self._config),
+                        "scenario": asdict(self._scenario),
+                    },
+                    "identities": self._identities,
+                    "current": None
+                    if current is None
+                    else (current[0], current[1], asdict(current[2]), current[3]),
+                    "dynamics_sample": self._dynamics_sample,
+                    "tof_history": self._tof_history,
+                    "binding": self._binding,
+                }
+            )
+
+        try:
+            template = _native_tof_history_template(environment, self._epoch)
+            _check_native_tof_history_layout(history_before, template)
+            if any(
+                not 0 <= word <= 0xFFFFFFFF
+                for entry in history_before
+                for word in entry["sample_words"]
+            ):
+                raise ValueError("native ToF delivery sample word budget exhausted")
+            if (
+                self._simulator_rng is not environment.rng
+                or self._simulator_odometry_rng is not environment.odometry_rng
+                or current_before[0] != environment.tick
+                or self._source_files() != self._identities
+            ):
+                raise ValueError(
+                    "native ToF delivery producer epoch/tick/files changed"
+                )
+            rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+            owner_binding = ownership()
+            history_binding = _c1_source_binding_digest(history_before)
+            copied = _match_native_tof_delivered_source(
+                environment, history_before, self._epoch
+            )
+            observed = producer()
+            producer_binding = _c1_source_binding_digest(observed)
+            if producer_binding != _c1_source_binding_digest(
+                {key: dynamics_before.get(key) for key in observed}
+            ):
+                raise ValueError(
+                    "native ToF delivery producer changed after recorder read"
+                )
+            copied_binding = _c1_source_binding_digest(copied)
+            live_after = _match_native_tof_delivered_source(
+                environment, self._tof_history, self._epoch
+            )
+            _check_native_tof_history_layout(self._tof_history, template)
+            if (
+                self._simulator is not environment
+                or self._tof_history is not history_before
+                or self._current is not current_before
+                or self._dynamics_sample is not dynamics_before
+                or environment.rng is not rng_before
+                or environment.odometry_rng is not odometry_rng_before
+                or self._simulator_rng is not rng_before
+                or self._simulator_odometry_rng is not odometry_rng_before
+                or not _native_tof_word_copy_matches(copied, live_after)
+                or _c1_source_binding_digest(copied) != copied_binding
+                or _c1_source_binding_digest(self._tof_history) != history_binding
+                or ownership() != owner_binding
+                or _c1_source_binding_digest(producer()) != producer_binding
+                or self._source_files() != self._identities
+            ):
+                raise ValueError("native ToF delivery content or identities changed")
+        except (ValueError, TypeError, OverflowError) as error:
+            result["reason"] = str(error)
+            return result
+        result.update(
+            status="checked_current_native_tof_delivery_diagnostics",
+            reason=None,
+            snapshot_available=True,
+            source_epoch=copied["source_epoch"],
+            tick=current_before[0],
+            sensor_tick=copied["tick"],
+            frame=bytes(current_before[3]),
+            source=copied,
+        )
+        return result
+
     def snapshot_receipt_history(self, *, synthetic_test_only=False):
         """Publish copied offline history only while its actual producer is current."""
         if synthetic_test_only is not True:

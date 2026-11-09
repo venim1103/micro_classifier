@@ -2788,6 +2788,27 @@ and consistent words are not accepted source or deadline qualification.
 
 [native-tof-delivery-review]: REVIEW.md#207-retained-native-tof-delivered-array-correspondence-2026-11-09
 
+##### Current-Recorder Native ToF Delivery Snapshot (2026-11-09)
+
+The separate private `snapshot_native_tof_delivery(synthetic_test_only=True)`
+uses retained acquisitions even after default reads clear the fresh cache. It
+preflights the bounded archive before hashing, fingerprints current ownership
+before matching, compares the live producer with its original recorder read,
+then repeats delivered-word matching and rechecks archive, outgoing copy,
+producer/recorder content, original object/RNG identities and source files.
+
+Success supplies a detached acquisition, its delivered `sensor_tick`, current
+recorder tick and frame context. A held observation keeps its acquisition ID;
+unknown omits source/frame and grants no authority. It does not read/retain/
+replay/step/reset, draw RNG values or sample clocks. The [snapshot checkpoint]
+[native-tof-delivery-snapshot-review] records finite controls and failed-check
+history. All source/numerical/physical/coverage/clock/one-use/permission/admission
+flags remain false. This is bounded two-point currentness, not atomic publication,
+perpetual freshness or proof of original State/frame mapping. Acquisition/frame
+mapping and complete coverage/error/clock qualification remain separate.
+
+[native-tof-delivery-snapshot-review]: REVIEW.md#208-current-recorder-native-tof-delivery-snapshot-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

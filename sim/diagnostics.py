@@ -11423,6 +11423,7 @@ class _SyntheticC1SourceRecorder:
         include_timing=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
+        include_direction_norm_residuals=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -11434,6 +11435,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_floor_residuals must be a literal bool")
         if type(include_sampling_residuals) is not bool:
             raise ValueError("include_sampling_residuals must be a literal bool")
+        if type(include_direction_norm_residuals) is not bool:
+            raise ValueError("include_direction_norm_residuals must be a literal bool")
         result = {
             "schema": "micro-classifier/synthetic-c1-native-tof-delivery-snapshot/1",
             "allowed_use": "offline_native_tof_delivery_diagnostics_only",
@@ -11541,6 +11544,20 @@ class _SyntheticC1SourceRecorder:
                 ),
             }
 
+        def direction_norm_probe(source):
+            return {
+                **{
+                    key: source[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_direction_norm_residuals(
+                    world_frame_unit_rays=source["native_source"][
+                        "world_frame_unit_rays"
+                    ],
+                    synthetic_test_only=True,
+                ),
+            }
+
         try:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
@@ -11612,6 +11629,13 @@ class _SyntheticC1SourceRecorder:
                 sampling_residuals = sampling_probe(copied)
                 pending_sampling_residuals = (
                     tuple(sampling_probe(source) for source in pending_sources)
+                    if include_pending_sources
+                    else ()
+                )
+            if include_direction_norm_residuals:
+                direction_norm_residuals = direction_norm_probe(copied)
+                pending_direction_norm_residuals = (
+                    tuple(direction_norm_probe(source) for source in pending_sources)
                     if include_pending_sources
                     else ()
                 )
@@ -11693,6 +11717,13 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_direction_norm_residuals:
+                direction_norm_after = direction_norm_probe(live_after)
+                pending_direction_norm_after = (
+                    tuple(direction_norm_probe(source) for source in pending_after)
+                    if include_pending_sources
+                    else ()
+                )
             if include_timing:
                 _check_native_tof_history_layout(self._tof_history, template)
                 _check_native_tof_timing_history(
@@ -11731,6 +11762,17 @@ class _SyntheticC1SourceRecorder:
             ):
                 raise ValueError(
                     "native ToF sampling residual source or outgoing records changed"
+                )
+            if include_direction_norm_residuals and (
+                not _native_tof_word_copy_matches(
+                    direction_norm_residuals, direction_norm_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_direction_norm_residuals, pending_direction_norm_after
+                )
+            ):
+                raise ValueError(
+                    "native ToF direction norm source or outgoing records changed"
                 )
             if (
                 self._simulator is not environment
@@ -11776,6 +11818,12 @@ class _SyntheticC1SourceRecorder:
             result["sampling_residuals"] = sampling_residuals
             if include_pending_sources:
                 result["pending_sampling_residuals"] = pending_sampling_residuals
+        if include_direction_norm_residuals:
+            result["direction_norm_residuals"] = direction_norm_residuals
+            if include_pending_sources:
+                result["pending_direction_norm_residuals"] = (
+                    pending_direction_norm_residuals
+                )
         return result
 
     def snapshot_receipt_history(self, *, synthetic_test_only=False):

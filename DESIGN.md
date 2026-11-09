@@ -3093,6 +3093,25 @@ flags remain false. See [ray-norm controls and limits][native-tof-ray-norm-revie
 
 [native-tof-ray-norm-review]: REVIEW.md#221-native-tof-direction-squared-norm-residuals-2026-11-09
 
+##### Current-Source Native ToF Ray-Norm Composition (2026-11-09)
+
+Separate literal `include_direction_norm_residuals=True` pairs the bounded
+norm diagnostic with matched delivered and requested pending sources and their
+epoch/acquisition/delivery IDs. Defaults omit these fields and make no norm
+probe calls. All closing floor/sampling/norm/timing callees precede derived
+outgoing comparisons, so late changes to an earlier diagnostic or timing pair
+reject; staged residuals never enter hashes. Missing, malformed or changed
+evidence yields unknown without partial source/frame/diagnostic data.
+
+This establishes local source-word correspondence only, not a normalization
+tolerance, ideal-direction/trig/rotation proof, numerical/range/error/coverage/
+physical/source/clock/permission/admission qualification or usable command.
+All eight flags stay false; no atomic/perpetual freshness guarantee. The
+[composition checkpoint][native-tof-owned-norm-review] records bounded controls
+and the retained/corrected held-fixture resource overrun.
+
+[native-tof-owned-norm-review]: REVIEW.md#222-current-source-native-tof-ray-norm-composition-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

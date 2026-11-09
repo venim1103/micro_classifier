@@ -29,7 +29,7 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §§220-221 for recovered source-bound sampling and native ray-norm residuals
+Read [REVIEW.md][review] §222 for source-bound native ray-norm composition
 and the latest source gate; §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

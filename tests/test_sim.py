@@ -12051,7 +12051,8 @@ def test_native_tof_owned_sampling_residuals(
     timed = case in ("combined", "cross_timing")
     floored = case in ("combined", "cross_floor")
     owner.record_environment_tick(environment, synthetic_test_only=True)
-    for _ in range(5 if case == "held" else 4):
+    retained_count = 0
+    for _ in range(4):
         environment.step(
             [0.125, 0.3],
             capture_native_tof_source=True,
@@ -12066,6 +12067,8 @@ def test_native_tof_owned_sampling_residuals(
             owner.record_native_tof_source(
                 environment, synthetic_test_only=True, include_timing=timed
             )
+            retained_count += 1
+    assert retained_count <= 3
     before_tick, before_frame = environment.tick, owner._current[3]
     before_rng = deepcopy(environment.rng.bit_generator.state)
     if case == "bad_profile":
@@ -12367,6 +12370,243 @@ def test_native_tof_direction_norm_residuals(
             assert result[flag] is False
         result["entries"][0]["direction_hex"] = ()
         assert len(words) == 192
+    assert environment.rng.bit_generator.state == before_rng
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default",
+        "flag",
+        "held",
+        "delivered_only",
+        "combined",
+        "bad_direction",
+        "missing_source",
+        "early_owner",
+        "late_source",
+        "outgoing_ratio",
+        "outgoing_budget",
+        "cross_floor",
+        "cross_sampling",
+        "cross_timing",
+        "closing_source",
+    ),
+)
+def test_native_tof_owned_direction_norm_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    counters = iter(range(100, 1000, 10))
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", lambda: next(counters))
+    timed = case in ("combined", "cross_timing")
+    floored = case in ("combined", "cross_floor")
+    sampled = case in ("combined", "cross_sampling")
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    retained_count = 0
+    delivered_at_six = None
+    for _ in range(4):
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_timing=timed,
+        )
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(
+                environment, synthetic_test_only=True, include_timing=timed
+            )
+            retained_count += 1
+        if environment.tick == 6:
+            delivered_at_six = (
+                environment.sensor_tick,
+                environment.tof.tobytes(),
+                environment.valid.tobytes(),
+            )
+    assert retained_count <= 3
+    if case == "held":
+        assert delivered_at_six == (
+            environment.sensor_tick,
+            environment.tof.tobytes(),
+            environment.valid.tobytes(),
+        )
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    if case == "bad_direction":
+        native = owner._tof_history[0]["native_source"]
+        native["world_frame_unit_rays"] = ("nan", *native["world_frame_unit_rays"][1:])
+    elif case == "missing_source":
+        owner._tof_history.pop(0)
+    original_probe = diagnostics._native_tof_direction_norm_residuals
+    original_floor = diagnostics._native_tof_floor_division_residuals
+    original_sampling = diagnostics._native_tof_sampling_residuals
+    original_timing = diagnostics._match_native_tof_retained_timing
+    original_frame = diagnostics._check_native_tof_delivery_frame
+    original_binding = diagnostics._c1_source_binding_digest
+    work = {"norm": 0, "floor": 0, "sampling": 0, "timing": 0, "frame": 0, "binding": 0}
+    outgoing = {}
+
+    def probed(*args, **kwargs):
+        work["norm"] += 1
+        assert work["norm"] <= 6
+        actual = original_probe(*args, **kwargs)
+        outgoing.setdefault("norm", actual)
+        if work["norm"] == 1 and case == "early_owner":
+            owner._binding = {"changed": True}
+        if work["norm"] == 6:
+            if case in ("outgoing_ratio", "cross_floor", "cross_sampling"):
+                kind = {"cross_floor": "floor", "cross_sampling": "sampling"}.get(
+                    case, "norm"
+                )
+                key = (
+                    "signed_squared_norm_residual_ratio"
+                    if kind == "norm"
+                    else "signed_residual_ratio"
+                )
+                entry = next(
+                    entry
+                    for entry in outgoing[kind]["entries"]
+                    if entry[key] is not None
+                )
+                numerator, denominator = entry[key]
+                entry[key] = numerator + 1, denominator
+            elif case == "cross_timing":
+                outgoing["timing"]["clock"]["begin_ns"] += 1
+                outgoing["timing"]["clock"]["end_ns"] += 1
+            elif case == "closing_source":
+                entry = owner._tof_history[0]
+                entry["sample_words"] = (
+                    entry["sample_words"][0] ^ 1,
+                    *entry["sample_words"][1:],
+                )
+        return actual
+
+    def floored_probe(*args, **kwargs):
+        work["floor"] += 1
+        assert work["floor"] <= 6
+        actual = original_floor(*args, **kwargs)
+        outgoing.setdefault("floor", actual)
+        return actual
+
+    def sampled_probe(*args, **kwargs):
+        work["sampling"] += 1
+        assert work["sampling"] <= 6
+        actual = original_sampling(*args, **kwargs)
+        outgoing.setdefault("sampling", actual)
+        return actual
+
+    def timed_match(*args, **kwargs):
+        work["timing"] += 1
+        assert work["timing"] <= 6
+        actual = original_timing(*args, **kwargs)
+        outgoing.setdefault("timing", actual)
+        return actual
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        assert work["frame"] <= 2
+        actual = original_frame(*args, **kwargs)
+        if work["frame"] == 2:
+            if case == "late_source":
+                native = owner._tof_history[0]["native_source"]
+                native["world_frame_unit_rays"] = (
+                    (0.5).hex(),
+                    *native["world_frame_unit_rays"][1:],
+                )
+            elif case == "outgoing_budget":
+                entry = outgoing["norm"]["entries"][0]
+                entry["signed_squared_norm_residual_ratio"] = 1 << 4096, 1
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        assert all(
+            args[0] is not outgoing.get(name) for name in ("norm", "floor", "sampling")
+        )
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError(
+            "owned direction norms must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_native_tof_direction_norm_residuals", probed)
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_floor_division_residuals", floored_probe
+    )
+    monkeypatch.setattr(diagnostics, "_native_tof_sampling_residuals", sampled_probe)
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timed_match)
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="include_direction_norm_residuals"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True, include_direction_norm_residuals=1
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_timing=timed,
+            include_floor_residuals=floored,
+            include_sampling_residuals=sampled,
+            include_direction_norm_residuals=case != "default",
+        )
+        assert result["numerically_certified"] is False
+        assert result["command_admission_qualified"] is False
+        if case in ("copy", "default", "held", "delivered_only", "combined"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert work["norm"] == 0
+                assert "direction_norm_residuals" not in result
+            else:
+                actual = result["direction_norm_residuals"]
+                assert actual["tick"] == result["source"]["tick"]
+                assert actual["source_epoch"] == result["source_epoch"]
+                assert len(actual["diagnostic"]["entries"]) == 64
+                assert actual["diagnostic"]["numerically_certified"] is False
+                if case != "delivered_only":
+                    assert [
+                        entry["tick"]
+                        for entry in result["pending_direction_norm_residuals"]
+                    ] == [entry["tick"] for entry in result["pending_sources"]]
+                else:
+                    assert "pending_direction_norm_residuals" not in result
+                actual["diagnostic"]["entries"][0]["ray_index"] = -1
+                assert owner._tof_history[0]["tick"] == 4
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert not (
+                {
+                    "source",
+                    "frame",
+                    "direction_norm_residuals",
+                    "pending_direction_norm_residuals",
+                    "floor_residuals",
+                    "sampling_residuals",
+                    "timing",
+                    "pending_sources",
+                }
+                & result.keys()
+            )
+    assert environment.tick == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
 
 

@@ -18073,6 +18073,63 @@ Scoped prior-review/Sources/design/stable-instruction preservation, both new
 references/local targets, final source/test diff and whitespace checks passed.
 Code gate not rerun for documentation; only the five checkpoint files staged.
 
+## 222. Current-Source Native ToF Ray-Norm Composition (2026-11-09)
+
+Recovered checkpointf1e9b55 normally pushed/clean. Local hypothesis: a separate
+literal direction-norm opt-in can pair the exact supplied-word diagnostic with
+already matched delivered/pending native sources, preserving defaults and IDs.
+All closing floor/sampling/norm/timing callees finish before any derived-output
+comparison. Last-norm-probe mutation of earlier norm/floor/sampling/timing or
+source content must yield unknown without partial source/frame/diagnostics.
+No residual enters a hash or adopts a normalization/error tolerance; all flags
+false/no ideal-direction/trig/range/coverage/physical/source/clock/admission.
+
+Local cadence review also found220's held-case five-step setup acquired at
+4,6,7,8 and therefore retained four times against its recorded cap of three.
+This finite overrun is retained, not retroactively approved or refunded. Reduce
+only that fixture to tick7 (which already holds delivered acquisition4) and
+assert actual retention count<=3; new controls use the same smaller setup and
+explicitly compare tick6/tick7 held arrays. No original safety assertions relax.
+
+Finite sixteen cloned controls, four setup steps/five ordinary reads/<=three
+retentions; timed cases<=six setup counter reads/six timing intakes. Setup C1
+views<=40. Snapshot<=six probes per norm/floor/sampling kind (18 total), six
+timing matches/two frame checks/64 bindings; fixed source64/8/4096 caps unchanged.
+Combined helper work<=2694 conversions/3456 rational operations. No snapshot
+source/recorder read, retention, step/reset, geometry/RNG/clock. Three positions
+including failures/aborts: first16 plus style, required root, repair reserve.
+Old controls run only as required regressions, not renewed standalone budgets.
+No study/model/GPU/data/dependency/download/firmware/Arm/sanitizer/board/hardware/
+threshold/frozen-contract action. Results follow; backup artifacts stay retained.
+First16PASS6.91s, then changed-file format/lint/format-check passed in the same
+position. Controls cover actual delivered/pending/held IDs, unchanged defaults,
+strict opt-in, malformed/missing sources, owner/source/output changes, oversized
+outgoing ratios and final-norm-probe mutation of earlier norm/floor/sampling/
+timing output. No forbidden operation ran; all call/binding caps held.
+Second position required root3169PASS/known transformer QDQ1xfail/71warnings
+178.39s, root Ruff/diff/changed-file format passed; editor diagnostics clear.
+Earlier source220 held control also passed with explicit<=three retentions;
+its historical four-retention overrun and exhausted ledger remain recorded.
+Two of three positions used/no failure/abort in222; unused reserve is not
+follow-on scope. No additional opt-in C/Arm/sanitizer/board/study/model gate.
+Raw focused/root logs retained under the existing recovery directory, no task
+artifact or cleanup. Runtime controls are caller evidence; no new static
+signature compatibility result claimed.
+
+Source-bound norm results pair actual current source words and exact arithmetic
+without an accepted normalization/error tolerance. All flags remain false/no
+ideal-ray/rotation/trig/range/coverage/physical/source/clock/permission/native-
+execution/admission qualification or usable command. No accepted requirement,
+frozen interface or public introduction changed. Next actual selected-hit
+calculation lineage is still unsupported: a floor or norm residual and matching
+sample do not establish which wall/cylinder/floor candidate won or complete
+geometric coverage. Advance only compatible actual-source prerequisites.
+Post-gate memory.events counters all zero; current-container peak6335553536
+bytes, not job RSS, original-host diagnosis or a hardware-fit guarantee.
+Scoped prior-review/Sources/design/stable-instruction preservation, new
+reference/local target, bounded final source/test diff and whitespace passed.
+No code gate repeated for documentation; only five checkpoint files staged.
+
 ## Sources
 
 Hardware and tools:

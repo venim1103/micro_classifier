@@ -11088,6 +11088,129 @@ def test_native_tof_acquisition_clock(
     assert work["clock"] == (4 if case == "paired" else 2)
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "negative",
+        "unknown",
+        "missing",
+        "epoch",
+        "tick",
+        "source_identity",
+        "rng",
+        "clock_flag",
+        "scope",
+        "duration",
+        "budget",
+        "late_clock",
+        "late_flags",
+        "late_cache",
+        "outgoing",
+    ),
+)
+def test_native_tof_timing_intake(monkeypatch, c1_motion_receipt_source_fixture, case):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    counters = iter(
+        (-30, -10)
+        if case == "negative"
+        else (30, 10)
+        if case == "unknown"
+        else (10, 30)
+    )
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", lambda: next(counters))
+    environment.step(
+        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_timing=True
+    )
+    timing = environment._native_tof_timing_source
+    if case == "missing":
+        environment._native_tof_timing_source = None
+    elif case == "tick":
+        timing["tick"] = True
+    elif case == "source_identity":
+        environment._native_tof_source = dict(environment._native_tof_source)
+    elif case == "rng":
+        environment.rng = deepcopy(environment.rng)
+    elif case == "clock_flag":
+        timing["clock"]["qualified"] = True
+    elif case == "scope":
+        timing["clock"]["scope"] = "state_transition_and_observation"
+    elif case == "duration":
+        timing["clock"]["duration_ns"] += 1
+    elif case == "budget":
+        timing["clock"]["begin_ns"] = 1 << 4096
+    original_intake = diagnostics._sample_simulator_native_tof_source
+    original_copy = diagnostics.deepcopy
+    work = {"intake": 0, "forbidden": 0}
+    outgoing = {}
+
+    def copied(value, *args, **kwargs):
+        actual = original_copy(value, *args, **kwargs)
+        if value is timing["clock"]:
+            outgoing["clock"] = actual
+        return actual
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 1
+        actual = original_intake(*args, **kwargs)
+        if case == "late_clock":
+            timing["clock"]["begin_ns"] += 1
+            timing["clock"]["end_ns"] += 1
+        elif case == "late_flags":
+            timing["source_qualified"] = True
+        elif case == "late_cache":
+            environment._native_tof_timing_source = dict(timing)
+        elif case == "outgoing":
+            outgoing["clock"]["duration_ns"] += 1
+        return actual
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "timing intake must not read/retain/replay/step/reset/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    epoch = "x" * 33 if case == "epoch" else owner._epoch
+    if case in ("copy", "negative", "unknown"):
+        actual = diagnostics._sample_simulator_native_tof_timing_source(
+            environment, epoch
+        )
+        assert actual["source_epoch"] == owner._epoch and actual["tick"] == 4
+        assert actual["source"]["tick"] == actual["tick"]
+        assert (
+            actual["source_qualified"] is False
+            and actual["command_admission_qualified"] is False
+        )
+        assert actual["clock"]["qualified"] is False
+        assert actual["clock"]["duration_ns"] == (None if case == "unknown" else 20)
+        actual["clock"]["begin_ns"] = -999
+        assert timing["clock"]["begin_ns"] != -999
+        actual["source"]["native_source"]["inputs"]["config"]["max_range"] = -99.0
+        assert (
+            environment._native_tof_source["source"]["inputs"]["config"]["max_range"]
+            > 0
+        )
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._sample_simulator_native_tof_timing_source(environment, epoch)
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

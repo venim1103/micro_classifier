@@ -2918,6 +2918,27 @@ Read-time intake/retention/publication of this timing cache remains separate.
 
 [native-tof-acquisition-clock-review]: REVIEW.md#213-opt-in-native-tof-acquisition-clock-windows-2026-11-09
 
+##### Bounded Native ToF Timing-Source Intake (2026-11-09)
+
+A private timing intake validates closed actual-cache metadata and eight false
+flags, original native-source/RNG identities, nominal ticks and the caller's
+bounded source epoch. It copies clock context around one existing actual native
+ToF source intake and rechecks timing/source identities, metadata and outgoing
+clock content. A shared bounded diagnostic-clock checker supports only the two
+named scopes; the existing motion-receipt wrapper and its policy remain intact.
+Signed/unknown windows stay signed/unknown rather than becoming timing bounds.
+
+The [timing-intake checkpoint][native-tof-timing-intake-review] records bounded
+missing/malformed/oversize and late cache/metadata/outgoing-copy controls. Intake
+does not step/reset, replay geometry, read/retain recorder state, draw RNG values
+or take new clock reads. Its detached primitive record is local source/clock
+pairing only, not current-owner retention/publication, atomicity/perpetual
+freshness, complete acquisition/coverage/history, physical/native/range/error/
+clock/epoch qualification, one-use evidence or permission/admission. All flags
+and clock qualified remain false/no usable command; clock gaps are not bridged.
+
+[native-tof-timing-intake-review]: REVIEW.md#214-bounded-native-tof-timing-source-intake-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

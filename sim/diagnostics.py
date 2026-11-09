@@ -9966,9 +9966,14 @@ def _check_native_tof_delivery_frame(producer, current):
         raise ValueError("native ToF companion State/frame correspondence mismatch")
 
 
-def _check_simulator_motion_receipt_clock(clock):
+def _check_simulator_diagnostic_clock(clock, *, scope):
     if (
-        type(clock) is not dict
+        scope
+        not in (
+            "state_transition_and_observation",
+            "tof_geometry_sampling_enqueue_and_source_copy",
+        )
+        or type(clock) is not dict
         or any(type(key) is not str for key in clock)
         or set(clock)
         != {
@@ -9981,7 +9986,7 @@ def _check_simulator_motion_receipt_clock(clock):
             "qualified",
         }
         or clock["domain"] != "python/time.monotonic_ns"
-        or clock["scope"] != "state_transition_and_observation"
+        or clock["scope"] != scope
         or clock["qualified"] is not False
     ):
         raise ValueError("unsupported simulator motion receipt clock metadata")
@@ -10014,6 +10019,106 @@ def _check_simulator_motion_receipt_clock(clock):
             )
     elif clock["status"] != "unknown" or clock["duration_ns"] is not None:
         raise ValueError("inconsistent unknown simulator motion receipt clock metadata")
+
+
+def _check_simulator_motion_receipt_clock(clock):
+    _check_simulator_diagnostic_clock(clock, scope="state_transition_and_observation")
+
+
+def _sample_simulator_native_tof_timing_source(environment, source_epoch):
+    from sim.rover import RoverEnv
+
+    if type(environment) is not RoverEnv:
+        raise TypeError("native ToF timing requires the actual RoverEnv")
+    if type(source_epoch) is not str or len(source_epoch) != 32:
+        raise ValueError("unsupported native ToF timing source epoch")
+    timing = environment._native_tof_timing_source
+    native_before = environment._native_tof_source
+    rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+
+    def metadata():
+        if (
+            type(timing) is not dict
+            or any(type(key) is not str for key in timing)
+            or set(timing)
+            != {
+                "schema",
+                "allowed_use",
+                "status",
+                *flags,
+                "rng",
+                "odometry_rng",
+                "tick",
+                "delivery_tick",
+                "source",
+                "clock",
+            }
+            or timing["schema"] != "micro-classifier/native-tof-timing-source/1"
+            or timing["allowed_use"] != "native_tof_timing_diagnostics_only"
+            or timing["status"] != "recorded_native_tof_timing"
+            or any(timing[flag] is not False for flag in flags)
+            or timing["rng"] is not rng_before
+            or timing["odometry_rng"] is not odometry_rng_before
+            or timing["source"] is not native_before
+            or type(timing["tick"]) is not int
+            or type(timing["delivery_tick"]) is not int
+            or not 0 <= timing["tick"] <= 0xFFFFFFFF // 50000
+            or not 0 <= timing["delivery_tick"] <= 0xFFFFFFFF // 50000
+            or timing["tick"] != environment.tick
+        ):
+            raise ValueError("unsupported native ToF timing producer metadata")
+        _check_simulator_diagnostic_clock(
+            timing["clock"], scope="tof_geometry_sampling_enqueue_and_source_copy"
+        )
+        return {
+            key: timing[key]
+            for key in (
+                "schema",
+                "allowed_use",
+                "status",
+                *flags,
+                "tick",
+                "delivery_tick",
+                "clock",
+            )
+        }
+
+    before = metadata()
+    before_binding = _c1_source_binding_digest(before)
+    copied_clock = deepcopy(timing["clock"])
+    native = _sample_simulator_native_tof_source(environment, source_epoch)
+    if (
+        environment._native_tof_timing_source is not timing
+        or environment._native_tof_source is not native_before
+        or environment.rng is not rng_before
+        or environment.odometry_rng is not odometry_rng_before
+        or native["tick"] != timing["tick"]
+        or native["delivery_tick"] != timing["delivery_tick"]
+        or _c1_source_binding_digest(metadata()) != before_binding
+        or not _native_tof_word_copy_matches(copied_clock, timing["clock"])
+    ):
+        raise ValueError("native ToF timing source changed during intake")
+    return {
+        "schema": "micro-classifier/native-tof-timing-intake/1",
+        "allowed_use": "native_tof_timing_diagnostics_only",
+        "status": "copied_native_tof_timing_diagnostics",
+        **{flag: False for flag in flags},
+        "source_epoch": source_epoch,
+        "tick": native["tick"],
+        "delivery_tick": native["delivery_tick"],
+        "clock": copied_clock,
+        "source": native,
+    }
 
 
 def _check_simulator_motion_receipt_chain(receipt):

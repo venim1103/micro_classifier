@@ -17682,6 +17682,48 @@ Scoped history/Sources/prior-design/stable-workflow preservation, acquisition
 clock reference/local target, final five-file source/test diff and whitespace
 passed. Public introduction unchanged; no source gate rerun for documentation.
 
+## 214. Bounded Native ToF Timing-Source Intake (2026-11-09)
+
+Acquisition-clock2b58e03 normally pushed/clean. Local hypothesis: share the
+existing bounded diagnostic clock policy across the two named scopes while
+preserving the receipt wrapper, and copy actual ToF timing paired to original
+native source/RNG/ticks. Closed metadata/all false flags, integer budget/status/
+duration, source epoch and actual native pending-source intake are checked;
+recheck current identities, safe metadata and detached outgoing clock after one
+native intake. Unknown/backward clocks stay unknown; no extra clock reads,
+replay, recorder read/retention, step/reset or unqualified gap bridging.
+
+Finite scope: sixteen cloned existing receipt fixtures, one step/two controlled
+clock reads each; <=one native intake/two metadata fingerprints during timing
+intake, source4096-bit/native-word/pending8/history8/epoch32/C1tick caps retained.
+First sixteen include negative/unknown, missing/epoch/tick/source/RNG/scope/clock/
+duration/oversize and late input/outgoing changes. Three positions including
+failure/abort: first16, required root/style (existing receipt/ToF controls all
+included), repair reserve. All flags/clock qualified false/no command; no
+source/clock/coverage/native/physical/one-use/permission/admission adoption.
+No firmware/Arm/sanitizer/board/model/GPU/study/data/dependency/download/hardware/
+clock-setting/threshold/frozen-contract changes, artifacts or cleanup. Results
+follow the focused check; unit counters are not measured latency samples.
+First16PASS3.85s/forbidden zero/one native intake cap/old fixture ledgers zero.
+Second required root **3,041 passed**, known QDQ xfail/71 warnings/no reported
+skips,110.89s; Ruff/format/whitespace/editor clear, original capped source/history/
+receipt/other-family controls held. Shared diagnostic clock two/receipt wrapper
+three/timing intake two resolved calls all compatible. Two positions used/no
+failure/abort; unused third is not follow-on scope. No unchanged root/standalone
+adjacent rerun for reassurance/documentation.
+
+This is bounded actual-source/clock-copy pairing, not current-recorder timing
+retention/publication or a complete/atomic/perpetually fresh source. Signed and
+unknown windows are not accepted epoch/physical/native/clock/coverage/error/
+one-use/permission/admission evidence; all flags false/no command. No extra
+firmware/Arm/sanitizer/board/model/study/data/dependency/download/hardware action,
+artifacts or cleanup. Next current-owner opt-in timing retention coupled to the
+same original actual ToF source/retained acquisition, omitting unsupported data
+and not inventing bounds or clock-gap correspondence.
+Scoped history/Sources/prior-design/stable-workflow preservation, timing-intake
+reference/local target, final five-file source/test diff and whitespace passed.
+Public introduction unchanged; no source gate rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

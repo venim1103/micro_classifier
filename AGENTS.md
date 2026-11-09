@@ -29,7 +29,7 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §213 for opt-in native ToF acquisition clock windows
+Read [REVIEW.md][review] §214 for bounded native ToF timing-source intake
 and the latest source gate; §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

@@ -16960,6 +16960,44 @@ unknown gaps or infer source/clock/execution qualification from nominal ticks.
 Scoped history/Sources/design/workflow preservation, new clock reference/local
 targets and whitespace checks passed; source gate not rerun for documentation.
 
+## 200. Adjacent Retained Clock Window Ordering (2026-11-09)
+
+Clock checkpoint39dae0b normally pushed. Local hypothesis: the existing bounded
+history pairing loop can reject a next observed window beginning before the
+immediately preceding observed window ends. Unknown windows prevent cross-gap
+comparison; touching/equal/signed windows remain supported. Counter consistency
+and nominal ticks do not establish clock reference/accuracy or one-use execution.
+
+Finite routine scope: twelve copied-history controls, one checker each, <=eight
+clock checks/seven adjacent comparisons/four digests/zero clock/source/step/
+reset/capture/guard calls per case. Reuse existing history fixture without extra
+setup read/step/clock/scene/data. Four positions incl failures/aborts: first12,
+adjacent/style, required root, repair reserve. Existing history8, integer4096,
+source/native/motion/term and old fixture caps unchanged; no timing/physical/
+source/admission qualification, no command or permission. No study/model/GPU/
+dependency/download/Arm/board/artifact/cleanup action. Results follow checks.
+
+First twelve passed, 2.60 s; <=eight bounded clock checks/seven comparisons/four
+digests and zero forbidden held, old fixture ledgers zero. Position two scoped
+Ruff formatting/lint/format/whitespace passed; **96 compatibility controls
+passed**, 2.77 s, history6/4/62/0, receipt-source10/3/43/0, original source zero;
+all old caps held. Position three root `python -m pytest -q && ruff check . &&
+git diff --check` **2,852 passed**, one known QDQ xfail, 71 warnings, no reported
+skips, 70.08 s; changed-file format/editor diagnostics passed. Three positions
+used, no failure/abort; unused fourth not follow-on scope. Source gate not
+rerun for documentation.
+
+Ordered diagnostic windows do not establish clock reference/epoch/accuracy,
+wall-time, expiry, one-use execution, source/numerical/physical qualification,
+permission or an admitted predecessor. Unknown gaps are not bridged, no error
+reset inferred; all flags false and no command admitted. Default source/history/
+native/wire APIs unchanged; no study/data/model/GPU/dependency/download/Arm/board/
+artifact/cleanup action. Next inspect actual native ToF/range calculation source
+inputs and discarded intermediates for a bounded named-consumer prerequisite;
+no physical sensor access, learned run or uniform numerical bound follows.
+Scoped history/Sources/design/workflow preservation, new window reference/local
+targets and whitespace checks passed; unchanged source gate not rerun for docs.
+
 ## Sources
 
 Hardware and tools:

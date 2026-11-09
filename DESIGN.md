@@ -2603,6 +2603,23 @@ primitive/counter/status/duration controls and remaining S5 dependencies.
 
 [receipt-clock-consistency-review]: REVIEW.md#199-diagnostic-receipt-clock-consistency-2026-11-09
 
+##### Adjacent Retained Clock Window Ordering (2026-11-09)
+
+The bounded receipt-history pairing loop rejects an observed window starting
+before the immediately preceding observed window ends. Touching and equal
+windows, signed epochs and arbitrary coherent gaps remain supported. A missing
+or backward unknown window prevents comparison across that gap; later adjacent
+observed windows are still checked. No clock is read or uncertainty reset inferred.
+
+This checks retained diagnostic ordering only, not shared physical clock
+reference/epoch, accuracy, wall-time, expiry, one-use execution, admission or
+an independently supported setup origin. Unknown gaps stay unknown; all flags
+remain false, and the source/history/native/wire APIs are unchanged. The
+[window checkpoint][receipt-clock-order-review] records bounded copied-history
+controls and the remaining source/timing qualification obligations.
+
+[receipt-clock-order-review]: REVIEW.md#200-adjacent-retained-clock-window-ordering-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

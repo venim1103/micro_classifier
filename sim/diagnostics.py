@@ -9678,6 +9678,7 @@ def _check_simulator_receipt_history(history, *, source_epoch, current, config):
     if type(history) is not list or not 1 <= len(history) <= 8:
         reject("unsupported history shape or budget")
     previous_state = previous_frame = previous_pose = previous_tick = None
+    previous_clock = None
     for entry in history:
         if (
             type(entry) is not dict
@@ -9775,6 +9776,15 @@ def _check_simulator_receipt_history(history, *, source_epoch, current, config):
             )
         ):
             reject("discontinuous retained transition")
+        clock = receipt["clock"]
+        if (
+            previous_clock is not None
+            and previous_clock["status"] == "observed"
+            and clock["status"] == "observed"
+            and clock["begin_ns"] < previous_clock["end_ns"]
+        ):
+            reject("overlapping adjacent observed clock windows")
+        previous_clock = clock
         previous_state, previous_frame, previous_pose, previous_tick = (
             states[1],
             entry["final_frame"],

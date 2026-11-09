@@ -10439,6 +10439,112 @@ def test_synthetic_c1_receipt_history_all_pairings(c1_receipt_history_fixture, c
 @pytest.mark.parametrize(
     "case",
     (
+        "ordered",
+        "touching",
+        "overlap_first",
+        "overlap_last",
+        "signed",
+        "missing_gap",
+        "backward_gap",
+        "unknown_duration",
+        "equal",
+        "trimmed",
+        "long_gap",
+        "overlap_after_gap",
+    ),
+)
+def test_retained_receipt_clock_window_order(
+    c1_receipt_history_fixture, monkeypatch, case
+):
+    from dataclasses import asdict
+
+    from sim import diagnostics, rover
+
+    environment, owner = c1_receipt_history_fixture[:2]
+    history = deepcopy(owner._receipt_history)
+    for index, entry in enumerate(history):
+        entry["motion_receipt"]["clock"].update(
+            begin_ns=index * 100,
+            end_ns=index * 100 + 20,
+            duration_ns=20,
+            status="observed",
+        )
+    clocks = [entry["motion_receipt"]["clock"] for entry in history]
+    if case == "touching":
+        clocks[1].update(begin_ns=20, end_ns=40)
+    elif case == "overlap_first":
+        clocks[1].update(begin_ns=10, end_ns=30)
+    elif case == "overlap_last":
+        clocks[-1].update(begin_ns=619, end_ns=639)
+    elif case == "signed":
+        for clock in clocks:
+            clock["begin_ns"] -= 1000
+            clock["end_ns"] -= 1000
+    elif case in ("missing_gap", "backward_gap", "overlap_after_gap"):
+        clocks[1].update(
+            begin_ns=120 if case == "backward_gap" else None,
+            end_ns=110 if case == "backward_gap" else None,
+            duration_ns=None,
+            status="unknown",
+        )
+        if case == "overlap_after_gap":
+            clocks[3].update(begin_ns=210, end_ns=230)
+        else:
+            clocks[2].update(begin_ns=10, end_ns=30)
+    elif case == "unknown_duration":
+        clocks[1].update(begin_ns=None, status="unknown")
+    elif case == "equal":
+        clocks[0].update(end_ns=0, duration_ns=0)
+        clocks[1].update(begin_ns=0, end_ns=20)
+    elif case == "trimmed":
+        history = history[-1:]
+    elif case == "long_gap":
+        for clock in clocks[1:]:
+            clock["begin_ns"] += 10**18
+            clock["end_ns"] += 10**18
+    held = deepcopy(history)
+    work = {"digests": 0, "forbidden": 0}
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def digest(*args, **kwargs):
+        work["digests"] += 1
+        assert work["digests"] <= 4
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "clock order controls must not read clocks/step/reset/capture/query guards"
+        )
+
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(rover.time, "monotonic_ns", forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    options = {
+        "source_epoch": owner._epoch,
+        "current": owner._current,
+        "config": asdict(owner._config),
+    }
+    if case in (
+        "overlap_first",
+        "overlap_last",
+        "overlap_after_gap",
+        "unknown_duration",
+    ):
+        with pytest.raises(ValueError):
+            diagnostics._check_simulator_receipt_history(history, **options)
+    else:
+        assert diagnostics._check_simulator_receipt_history(history, **options) is None
+    assert history == held and work["forbidden"] == 0
+    assert environment.tick == 11 and owner._current[0] == 10
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "trim",
         "default_gap",
         "owned",

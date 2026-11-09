@@ -10036,6 +10036,108 @@ def test_native_tof_current_snapshot(
     assert work["intake"] <= 2 and work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "append",
+        "duplicate",
+        "default_preserves",
+        "trim",
+        "budget",
+        "metadata",
+        "epoch",
+        "old_word",
+    ),
+)
+def test_native_tof_acquisition_history(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    work = {"binding": 0, "intake": 0}
+    original_binding = diagnostics._c1_source_binding_digest
+    original_intake = diagnostics._sample_simulator_native_tof_source
+    original_copy = diagnostics.deepcopy
+    outgoing = {}
+    mutation = {"enabled": False}
+
+    def copied(value, *args, **kwargs):
+        actual = original_copy(value, *args, **kwargs)
+        if mutation["enabled"] and value is owner._tof_history:
+            outgoing["history"] = actual
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 256
+        return original_binding(*args, **kwargs)
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 32
+        actual = original_intake(*args, **kwargs)
+        if mutation["enabled"] and "history" in outgoing:
+            outgoing["history"][0]["native_source"]["inputs"]["position_m"] = (
+                99.0,
+                99.0,
+            )
+        return actual
+
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(environment, synthetic_test_only=True)
+    assert len(owner._tof_history) == 1 and owner._tof_history[0]["tick"] == 4
+    original = deepcopy(owner._tof_history)
+    if case == "duplicate":
+        owner.record_native_tof_source(environment, synthetic_test_only=True)
+        assert owner._tof_history == original
+    elif case == "default_preserves":
+        environment.step([0.125, 0.3])
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+        assert owner._tof_sample is None and owner._tof_history == original
+    elif case == "trim":
+        acquired = [4]
+        for _ in range(12):
+            environment.step([0.125, 0.3], capture_native_tof_source=True)
+            owner.record_environment_tick(environment, synthetic_test_only=True)
+            if environment._native_tof_source is not None:
+                acquired.append(environment.tick)
+                owner.record_native_tof_source(environment, synthetic_test_only=True)
+        assert len(acquired) > 8
+        assert [entry["tick"] for entry in owner._tof_history] == acquired[-8:]
+    elif case in ("budget", "metadata", "epoch", "old_word"):
+        if case == "budget":
+            owner._tof_history *= 9
+        elif case == "metadata":
+            owner._tof_history[0]["native_source"]["source_qualified"] = True
+        elif case == "epoch":
+            owner._tof_history[0]["source_epoch"] = "0" * 32
+        else:
+            owner._tof_history[0]["sample_words"] = (
+                1 << 64,
+                *owner._tof_history[0]["sample_words"][1:],
+            )
+        held = owner._tof_history
+        held_sample = owner._tof_sample
+        with pytest.raises(ValueError, match="native ToF"):
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+        assert owner._tof_history is held and owner._tof_sample is held_sample
+    else:
+        owner._tof_sample["native_source"]["inputs"]["position_m"] = (99.0, 99.0)
+        assert owner._tof_history == original
+        mutation["enabled"] = True
+        held = owner._tof_history
+        with pytest.raises(ValueError, match="native ToF"):
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+        assert owner._tof_history is held and owner._tof_history == original
+    assert work["binding"] <= 256 and work["intake"] <= 32
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

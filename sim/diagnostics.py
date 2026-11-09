@@ -9674,7 +9674,7 @@ def _sample_simulator_native_tof_source(environment, source_epoch):
     }
 
 
-def _native_tof_word_copy_matches(copied, expected):
+def _native_tof_word_copy_matches(copied, expected, *, shape_only=False):
     if type(copied) is not type(expected):
         return False
     if type(expected) is dict:
@@ -9683,24 +9683,73 @@ def _native_tof_word_copy_matches(copied, expected):
             and all(type(key) is str for key in copied)
             and set(copied) == set(expected)
             and all(
-                _native_tof_word_copy_matches(copied[key], value)
+                _native_tof_word_copy_matches(copied[key], value, shape_only=shape_only)
                 for key, value in expected.items()
             )
         )
     if type(expected) is tuple:
         return len(copied) == len(expected) and all(
-            _native_tof_word_copy_matches(actual, value)
+            _native_tof_word_copy_matches(actual, value, shape_only=shape_only)
             for actual, value in zip(copied, expected, strict=True)
         )
     if type(expected) is float:
-        return copied.hex() == expected.hex()
+        return math.isfinite(copied) if shape_only else copied.hex() == expected.hex()
     if type(expected) is int:
-        return (
-            copied.bit_length() <= max(32, expected.bit_length()) and copied == expected
+        return copied.bit_length() <= max(32, expected.bit_length()) and (
+            shape_only or copied == expected
         )
     if type(expected) is str:
-        return len(copied) == len(expected) and copied == expected
-    return (expected is None or type(expected) is bool) and copied == expected
+        return (
+            len(copied) <= max(32, len(expected))
+            if shape_only
+            else len(copied) == len(expected) and copied == expected
+        )
+    return (expected is None or type(expected) is bool) and (
+        shape_only or copied == expected
+    )
+
+
+def _check_native_tof_history_layout(history, current):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native ToF acquisition history budget exhausted")
+    previous = -1
+    for entry in history:
+        if not _native_tof_word_copy_matches(entry, current, shape_only=True):
+            raise ValueError("unsupported native ToF acquisition history layout")
+        if (
+            entry["source_epoch"] != current["source_epoch"]
+            or not previous < entry["tick"] <= current["tick"]
+            or entry["delivery_tick"]
+            != entry["tick"]
+            + current["native_source"]["inputs"]["config"]["latency_ticks"]
+        ):
+            raise ValueError(
+                "native ToF acquisition history epoch or ordering mismatch"
+            )
+        previous = entry["tick"]
+        native, expected = entry["native_source"], current["native_source"]
+        if (
+            any(
+                native[key] != expected[key]
+                for key in ("schema", "allowed_use", "status")
+            )
+            or native["inputs"]["config"] != expected["inputs"]["config"]
+            or native["inputs"]["scenario"] != expected["inputs"]["scenario"]
+            or any(
+                native[flag] is not False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            )
+        ):
+            raise ValueError("unsupported native ToF acquisition history metadata")
 
 
 def _check_simulator_motion_receipt_clock(clock):
@@ -10043,6 +10092,7 @@ class _SyntheticC1SourceRecorder:
         self._dynamics_sample = None
         self._integration_sample = None
         self._tof_sample = None
+        self._tof_history = []
         self._receipt_history = []
 
     @staticmethod
@@ -10478,13 +10528,27 @@ class _SyntheticC1SourceRecorder:
         rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
         cache_before = environment._native_tof_source
         copied = _sample_simulator_native_tof_source(environment, self._epoch)
-        copied_binding = _c1_source_binding_digest(copied)
+        _check_native_tof_history_layout(self._tof_history, copied)
+        history_binding = _c1_source_binding_digest(self._tof_history)
+        history = deepcopy(self._tof_history)
+        if history and history[-1]["tick"] == copied["tick"]:
+            if not _native_tof_word_copy_matches(history[-1], copied):
+                raise ValueError("native ToF repeated acquisition words mismatch")
+        else:
+            history.append(deepcopy(copied))
+            history = history[-8:]
+        _check_native_tof_history_layout(history, copied)
+        copied_binding = _c1_source_binding_digest(
+            {"copied": copied, "history": history}
+        )
+        live_after = _sample_simulator_native_tof_source(environment, self._epoch)
+        _check_native_tof_history_layout(self._tof_history, copied)
+        _check_native_tof_history_layout(history, copied)
         if (
-            _c1_source_binding_digest(
-                _sample_simulator_native_tof_source(environment, self._epoch)
-            )
+            not _native_tof_word_copy_matches(copied, live_after)
+            or _c1_source_binding_digest({"copied": copied, "history": history})
             != copied_binding
-            or _c1_source_binding_digest(copied) != copied_binding
+            or _c1_source_binding_digest(self._tof_history) != history_binding
             or ownership() != owner_binding
             or _c1_source_binding_digest(producer()) != producer_binding
             or self._simulator is not simulator_before
@@ -10497,6 +10561,7 @@ class _SyntheticC1SourceRecorder:
         ):
             raise ValueError("native ToF producer or recorder changed during retention")
         self._tof_sample = copied
+        self._tof_history = history
 
     def snapshot_native_tof_source(self, *, synthetic_test_only=False):
         if synthetic_test_only is not True:
@@ -10578,6 +10643,8 @@ class _SyntheticC1SourceRecorder:
             rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
             cache_before = environment._native_tof_source
             live_before = _sample_simulator_native_tof_source(environment, self._epoch)
+            _check_native_tof_history_layout(self._tof_history, live_before)
+            history_binding = _c1_source_binding_digest(self._tof_history)
             if not _native_tof_word_copy_matches(retained, live_before):
                 raise ValueError("native ToF retained words differ from current source")
             observed = producer()
@@ -10610,6 +10677,7 @@ class _SyntheticC1SourceRecorder:
                 )
             if (
                 _c1_source_binding_digest(copied) != copied_binding
+                or _c1_source_binding_digest(self._tof_history) != history_binding
                 or ownership() != owner_binding
                 or _c1_source_binding_digest(producer()) != producer_binding
                 or self._source_files() != self._identities

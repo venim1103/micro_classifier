@@ -17278,6 +17278,64 @@ Scoped history/Sources/prior-design/stable-workflow preservation, snapshot
 reference/local target, five-file source/test diff/editor diagnostics and
 whitespace checks passed; source gate not repeated for documentation.
 
+## 206. Bounded Native ToF Acquisition History (2026-11-09)
+
+Snapshot checkpoint65c35e2 normally pushed/clean. Small S2 prerequisite:
+archive only explicit fresh native retention, bounded to eight copied sources,
+chronological acquisition ticks and original epoch/profile/false metadata.
+Repeated identical tick is idempotent; changed repeated words reject. Ordinary
+reads clear current fresh cache but preserve the acquisition archive; oldest
+entries trim only after a fresh append. Histories are layout/budget preflighted
+before copy/hash, not accepted range/coverage/clock/one-use/source authority.
+
+Finite synthetic controls: eight cloned existing receipt fixtures, <=16 steps/
+24 ordinary reads/16retentions/32 guarded native intake/256guarded binding queries
+per case (trim control alone spans12 extra ticks). Old C1 setup views bounded
+<=192 from existing reads, not native replay/coverage/episodes. Native64-rays/
+192+64+64/sample64/mask64, obstacles32, pending8, history8, epoch32/C1tick and
+source/motion/term/bit caps unchanged. Four positions incl failure/abort: first8,
+adjacent/style<=168 existing/new ToF controls, required root, repair reserve.
+No model/data/study/GPU/dependency/download/hardware/Arm/board/artifact/cleanup;
+all flags false/no command or source/numerical/physical/timing/coverage adoption.
+Layout-only matching has a named bounded historical-record role, while existing
+exact matching remains default. Results follow the focused check.
+First8PASS3.56s/old fixture ledgers zero/guarded caps held. Publication review
+found the staged archive needed a closing layout/content check after second
+intake, and original history must be re-preflighted before its closing hash.
+Fingerprint the copied source plus staged history together using the same query
+slots (strict matching replaces the redundant live-source fingerprint); no
+binding/intake cap increase. Strengthen the same append case with a captured
+staged-history mutation during second intake; reserved fourth position runs
+the same8 after substantive repair, no extra case/fixture/study or budget refund.
+Repaired8PASS2.78s. Position two scoped format/lint passed but compatibility
+selection115PASS/oneFAIL4.72s: old owner-content control no longer rejected.
+Moving ownership hash after first intake had silently accepted first-callee owner
+mutation. Restore ownership fingerprint before first intake; do not relax guard.
+Three positions consumed (first, repair reserve, failed adjacent/style). Fourth
+final sequence runs the same failing owner-content control first, then required
+root/style; root covers the full neighboring regression gate, no separate repeat
+of116 controls. Fixed source/history/intake/binding caps unchanged, no fifth.
+Final failing owner-content control PASS1/0.50s; root required gate **2,928
+passed**, known QDQ xfail/71 warnings/no reported skips,72.60s; scoped format/
+lint/format-check and root `ruff check . && git diff --check` passed. Old capped
+source/history/receipt and neighboring ledgers held. Editor diagnostics clear;
+Pylance exact/layout matcher all nine resolved calls compatible, history-layout
+five compatible. All four verification positions spent, one compatibility
+failure retained/no abort; no fifth/unchanged gate rerun for documentation.
+
+Final archive is bounded copied acquisition retention only; no source/frame/
+delivery/epoch/clock/one-use/numerical/physical/range/coverage/permission verdict
+or command is adopted. The current-source snapshot additionally preflights and
+checks archived content binding, but still publishes only the current source.
+Native historical layouts are not selected-hit proofs or accepted error bounds.
+No study/model/data/GPU/dependency/download/Arm/board/hardware action or artifact/
+cleanup pending. Next bounded actual retained acquisition/delivered observation
+correspondence for the named source consumer; held frames cannot count as new
+acquisitions, and missing lineage cannot be repaired by metadata or hash equality.
+Scoped history/Sources/prior-design/stable-workflow preservation, acquisition
+history reference/local target, five-file source/test diff/editor diagnostics
+and whitespace checks passed; no source gate repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

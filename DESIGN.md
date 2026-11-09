@@ -2737,6 +2737,32 @@ stale/epoch/cache and late-copy/pose mutation controls and remaining obligations
 
 [native-tof-snapshot-review]: REVIEW.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 
+##### Bounded Native ToF Acquisition History (2026-11-09)
+
+Explicit fresh-source retention now archives up to eight detached acquisition
+records. Native source word layout/work, epoch, profile, false flags and strictly
+increasing acquisition ticks are checked before copy/hash. An identical repeated
+tick is idempotent; changed repeated words reject. Ordinary reads clear the fresh
+cache but preserve the archive. Oldest entries trim only after a fresh append,
+not on a held frame or as a source/uncertainty reset. No default capture is added.
+
+The staged archive and copied current source share a closing fingerprint after
+the second intake; original and staged histories are layout-preflighted again
+before closing hashes/publication. Recorder ownership remains fingerprinted
+before first intake, preserving existing mutation rejection. Native word shape
+checks bound historical layout only; exact typed matching remains default for
+current source equality. The [history checkpoint][native-tof-history-review]
+retains the failed ownership regression, repairs and fixed synthetic controls.
+
+Archive presence, order, trimming or duplicate consistency do not qualify scan/
+retention coverage, range/native/physical bounds, actual acquisition/delivery/
+State correspondence, clocks, one-use execution, source authority or permission.
+All flags remain false/no command. A delivered-source consumer still needs its
+own complete correspondence and current-source checks; preserved words alone
+are not an admitted chain or accepted evidence domain.
+
+[native-tof-history-review]: REVIEW.md#206-bounded-native-tof-acquisition-history-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

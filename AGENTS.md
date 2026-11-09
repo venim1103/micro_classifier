@@ -29,17 +29,17 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §184 for verified native-motion source/frame integration
-and the latest source gate; §§181-183 record workflow, receipts and source ownership. The Q0-Q5
+Read [REVIEW.md][review] §185 for verified native goal/source-pose integration
+and the latest source gate; §§181-184 record workflow, receipts and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.
 
 Continue this ordered queue, deriving smaller compatible prerequisites when a
 release gate is blocked:
 
-1. Retain native goal producer words before float32 observation conversion,
-  with current sample/pose correspondence and unchanged emitted frames. Source
-  content is not qualification or permission; default behavior stays intact.
+1. Add bounded opt-in receipt timing diagnostics with explicit clock-domain
+  and unavailable-clock handling. Nominal ticks or observed timing do not qualify
+  clocks, one-use execution or permission; default behavior stays intact.
 2. Advance independently supported setup/source/coverage/error/timing evidence
   for the named consumers; implement compatible offline prerequisites without
   inventing bounds, accepting claims or starting protected studies.

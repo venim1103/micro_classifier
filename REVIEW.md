@@ -16211,6 +16211,67 @@ next retain those already-computed words and their sample/pose correspondence
 before conversion, with unchanged observations/frame bytes/default RNG/physics.
 No task labels, study episodes, hardware or broader numerical audits follow.
 
+## 185. Native Goal Producer Words and Source Pose (2026-11-09)
+
+Motion-word checkpoint 36e6142 normally pushed; continued the local Q1 producer
+precision prerequisite. _record_history already computes native projected goal
+components immediately before float32 conversion. Retain those computed words
+and their source tick/position/yaw privately, without changing arithmetic order,
+observation/history/wire shapes, motion, odometry RNG or normal controls. The C1
+actual-owner snapshot copies them and checks exact sample/pose correspondence,
+then derives source goal components and requires unchanged emitted frame bytes.
+Missing, stale, wrong-pose or contradictory observations reject before capture.
+
+Four verification positions including repairs/aborts: first four native-goal
+controls plus fourteen source/motion and ten receipt controls, adjacent/style,
+required root and one reserved repair. Reuse the one existing synthetic setup
+and its two steps; no extra environment construction/step/episode. At most five
+new source reads/one capture/32 digests/one direct interval call per matrix;
+combined fixture controls remain under 24 reads/12 captures/96 digests. No
+downloads, dependencies, GPU/native/board studies, labels or artifact/cleanup job.
+
+Independent stored-word Fraction references cover native-to-decoded goal intervals
+and signed differences. The existing source field frame remains the actual
+observation exporter frame; none is fabricated from a caller override. Native
+goal projection words contain the original computed-program errors, not a
+certified geometric/physical goal. Zero-noise/no-delay C1 profile correspondence
+is required; delayed/noisy native goals are not silently aligned to current pose.
+All source/native/numerical/coverage/admission/training flags stay false; no
+uniform sin/cos/native/pose/range/clock bound, source acceptance, one-use or
+predecessor permission follows. Actual checks and checkpoint follow their results.
+
+Position one: 27 controls passed and the existing stale-tick control failed,
+0.82 s/1,746 deselected. Source ledger 21 reads/eight captures/75 digests/zero
+forbidden. New goal-pose validation rejected the stale source earlier than the
+previous consecutive/nonwrapping guard, so its expected failure reason changed.
+Keep the assertion and limit unchanged; preflight the existing tick guard before
+reading goal content. This is a local ordering repair, not a relaxed source or
+clock requirement. The same focused controls run next; the failure stays spent.
+
+Position two passed the same 28 controls after the ordering repair, 0.38 s/
+1,746 deselected. Source ledger 21 reads/eight captures/71 digests/zero forbidden;
+Ruff changed-file format/lint/whitespace pass. Position three required root passes
+2,697 tests, one known transformer QDQ xfail/71 warnings, no skips, 54.39 s;
+repository lint, three changed-file format checks and editor diagnostics pass.
+Three positions used; fourth unused/not follow-on scope. The first failed attempt
+remains spent, with its original assertion intact. No unchanged gate rerun for docs.
+
+Producer diff preserves the original projection expressions and float32 array
+conversion, retaining only the computed tuple and source pose/tick privately.
+Old outputs, motion, sensor cadence and odometry RNG behavior remain unchanged.
+Native source/decoded goal intervals carry nonzero signed differences from
+independent Fraction references; missing/stale/wrong-pose/contradictory goals
+do not publish captures. Source word intervals still include original native
+math/pose/clock uncertainty and are not uniform error evidence or admission.
+
+Next Q4 compatible prerequisite: explicit opt-in local monotonic receipt windows
+and unavailable-clock handling, separate from nominal simulator dt/ticks. Use an
+existing standard-library clock, preserve normal outputs/RNG/physics and bounded
+reads, and never interpret a local diagnostic window as measured nominal tick
+equality, a clock bound, complete API latency or one-use/predecessor permission.
+Review the clock's documented domain and limitations before implementing it.
+No new timing study, physical/hardware access or risk/threshold adoption follows.
+
 ## Sources
 
 Hardware and tools:

@@ -9335,6 +9335,7 @@ def test_synthetic_c1_recorder_reads_actual_simulator(
         state_from_observation(environment._observation()),
         velocity_m_s=(environment.speed, 0.0, 0.0),
         angular_velocity_rad_s=(0.0, 0.0, environment.turn_rate),
+        goal_m=(*environment._native_goal_source["goal_m"], 0.0),
     )
     before_current = deepcopy(owner._current)
     before_pending = deepcopy(owner._pending)
@@ -9497,7 +9498,12 @@ def test_synthetic_c1_simulator_source_preserves_native_motion(
         source, frame, synthetic_test_only=True
     )
     assert binding["fixture_words_bound"] is True
-    for field, index in (("velocity_m_s", 0), ("angular_velocity_rad_s", 2)):
+    for field, index in (
+        ("velocity_m_s", 0),
+        ("angular_velocity_rad_s", 2),
+        ("goal_m", 0),
+        ("goal_m", 1),
+    ):
         original = Fraction(getattr(source, field)[index])
         received = Fraction(getattr(decoded, field)[index])
         component = binding["fields"][field][index]
@@ -9539,6 +9545,112 @@ def test_synthetic_c1_simulator_source_preserves_native_motion(
         "command_admission_qualified",
     ):
         assert motion[flag] is False
+
+
+@pytest.mark.parametrize("case", range(4))
+def test_synthetic_c1_simulator_source_preserves_native_goal(
+    c1_simulator_source_fixture, monkeypatch, case
+):
+    from fractions import Fraction
+
+    from interface.protocol import decode_state, encode_state
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_simulator_source_fixture[:2])
+    ledger = c1_simulator_source_fixture[2]
+    observation = environment._observation()
+    emitted = encode_state(state_from_observation(observation))
+    cached = deepcopy(environment._native_goal_source)
+    delta = np.asarray(environment.scenario.goal) - environment.position
+    cosine, sine = math.cos(environment.yaw), math.sin(environment.yaw)
+    expected_goal = (
+        float(cosine * delta[0] + sine * delta[1]),
+        float(-sine * delta[0] + cosine * delta[1]),
+    )
+    assert cached["goal_m"] == expected_goal
+    np.testing.assert_array_equal(
+        observation["goal_body_m"], np.array(expected_goal, dtype=np.float32)
+    )
+    before_current = deepcopy(owner._current)
+    original_capture = diagnostics.capture_synthetic_c1_views
+    original_digest = diagnostics._c1_source_binding_digest
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+
+    def capture(*args, **kwargs):
+        ledger["capture"] += 1
+        assert ledger["capture"] <= 12
+        return original_capture(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        ledger["digest"] += 1
+        assert ledger["digest"] <= 96
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "native goal controls must not move, reset or collect episodes"
+        )
+
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", capture)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(diagnostics, "write_episode", forbidden)
+    expected = None
+    if case == 1:
+        environment._native_goal_source = None
+        ledger["reads"] += 1
+        with pytest.raises(ValueError, match="unsupported native goal source"):
+            owner.record_environment_tick(environment, synthetic_test_only=True)
+        environment._native_goal_source = cached
+        environment._native_goal_source["tick"] -= 1
+        expected = "goal sample does not match"
+    elif case == 2:
+        environment._native_goal_source["position_m"] = (2.5, 2.5)
+        expected = "goal sample does not match"
+    elif case == 3:
+        environment.history[-1][0][2] = np.nextafter(
+            environment.history[-1][0][2], np.float32(math.inf)
+        )
+        expected = "emitted observation disagree"
+    ledger["reads"] += 1
+    if expected is not None:
+        before_capture = ledger["capture"]
+        with pytest.raises(ValueError, match=expected):
+            owner.record_environment_tick(environment, synthetic_test_only=True)
+        assert ledger["capture"] == before_capture
+        assert owner._current[0] == before_current[0]
+        np.testing.assert_array_equal(owner._current[1], before_current[1])
+        assert owner._current[2:] == before_current[2:]
+    else:
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+        source, frame = owner._current[2:]
+        assert frame == emitted
+        assert source.goal_m == (*expected_goal, 0.0)
+        decoded = decode_state(frame)
+        binding = diagnostics._bind_synthetic_c1_state_intervals(
+            source, frame, synthetic_test_only=True
+        )
+        assert binding["fixture_words_bound"] is True
+        assert any(source.goal_m[index] != decoded.goal_m[index] for index in (0, 1))
+        for index in (0, 1):
+            original, received = (
+                Fraction(source.goal_m[index]),
+                Fraction(decoded.goal_m[index]),
+            )
+            component = binding["fields"]["goal_m"][index]
+            assert Fraction(*component["decoded_minus_source"]) == received - original
+            assert tuple(Fraction(*pair) for pair in component["interval"]) == (
+                min(original, received),
+                max(original, received),
+            )
+        assert binding["source_qualified"] is False
+        assert binding["numerically_certified"] is False
+        assert binding["command_admission_qualified"] is False
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
 @pytest.fixture(scope="module")

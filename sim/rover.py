@@ -245,10 +245,17 @@ class RoverEnv:
                 cosine * error_cosine - sine * error_sine,
                 sine * error_cosine + cosine * error_sine,
             )
-        goal = np.array(
-            [cosine * delta[0] + sine * delta[1], -sine * delta[0] + cosine * delta[1]],
-            dtype=np.float32,
+        native_goal = (
+            cosine * delta[0] + sine * delta[1],
+            -sine * delta[0] + cosine * delta[1],
         )
+        goal = np.array(native_goal, dtype=np.float32)
+        self._native_goal_source = {
+            "tick": self.tick,
+            "position_m": tuple(map(float, position)),
+            "yaw_rad": float(self.yaw),
+            "goal_m": tuple(map(float, native_goal)),
+        }
         ego = np.array([self.speed, self.turn_rate, *goal], dtype=np.float32)
         self.pending_ego.append(
             (self.tick + config.odometry_latency_ticks, self.tick, ego)

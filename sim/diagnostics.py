@@ -9073,6 +9073,14 @@ class _SyntheticC1SourceRecorder:
         if self._simulator is None and self._current is not None:
             raise ValueError("fixture source cannot become a simulator source")
         if (
+            type(environment.tick) is not int
+            or not 0 <= environment.tick <= 0xFFFFFFFF // 50000
+            or (self._current is not None and environment.tick != self._current[0] + 1)
+        ):
+            raise ValueError(
+                "C1 recorder requires consecutive nonwrapping fixture ticks"
+            )
+        if (
             type(environment.config) is not Config
             or type(environment.scenario) is not Scenario
         ):
@@ -9104,6 +9112,9 @@ class _SyntheticC1SourceRecorder:
                 "native_action": (
                     float(environment.speed),
                     float(environment.turn_rate),
+                ),
+                "native_goal_source": deepcopy(
+                    getattr(environment, "_native_goal_source", None)
                 ),
                 "observation": environment._observation(),
                 "config": asdict(environment.config),
@@ -9140,13 +9151,33 @@ class _SyntheticC1SourceRecorder:
         binding_before = self._binding
         state = state_from_observation(snapshot["observation"])
         emitted_frame = encode_state(state)
+        goal_source = snapshot["native_goal_source"]
+        if type(goal_source) is not dict or set(goal_source) != {
+            "tick",
+            "position_m",
+            "yaw_rad",
+            "goal_m",
+        }:
+            raise ValueError("unsupported native goal source")
+        goal_pose = _c1_array(
+            (*goal_source["position_m"], goal_source["yaw_rad"]), (3,)
+        ).astype(float)
+        if (
+            type(goal_source["tick"]) is not int
+            or goal_source["tick"] != snapshot["tick"]
+            or tuple(float(value).hex() for value in goal_pose)
+            != tuple(value.hex() for value in snapshot["pose_m_rad"])
+        ):
+            raise ValueError("native goal sample does not match current simulator pose")
+        native_goal = _c1_array(goal_source["goal_m"], (2,)).astype(float)
         state = replace(
             state,
             velocity_m_s=(snapshot["native_action"][0], 0.0, 0.0),
             angular_velocity_rad_s=(0.0, 0.0, snapshot["native_action"][1]),
+            goal_m=(*map(float, native_goal), 0.0),
         )
         if encode_state(state) != emitted_frame:
-            raise ValueError("native simulator motion and emitted observation disagree")
+            raise ValueError("native simulator words and emitted observation disagree")
         staged = copy(self)
         staged._simulator = None
         staged.record_tick(

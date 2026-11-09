@@ -2263,6 +2263,28 @@ computed Fraction references, bounded inconsistent-ego controls and actual gates
 
 [native-motion-source-review]: REVIEW.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09
 
+##### Native Goal Producer Words (2026-11-09)
+
+The rover's existing history producer now retains its already-computed native
+goal projection tuple, source tick, position and yaw before discarding precision
+in the unchanged float32 observation conversion. No arithmetic order, odometry
+draw, delivered history/observation, frame format or motion formula changes.
+The actual-owner C1 path copies that private source record, requires exact current
+tick/pose words, derives original goal components and preserves actual emitted
+bytes. Missing/stale/wrong-pose/inconsistent source rejects before capture; the
+existing consecutive/nonwrapping tick preflight remains first.
+
+The exact word binder retains original/decoded goal intervals and signed
+discrepancies. This supersedes the earlier post-observation-goal limitation, not
+Q2/Q3 numerical/physical error requirements. Retained goal words include original
+native projection error; they are not certified world/goal semantics, accepted
+pose/range/clock bounds or source authority. Nonideal/delayed C1 profiles remain
+unsupported. All qualification/admission flags stay false and no one-use/body/
+predecessor permission follows. The [goal-word checkpoint][native-goal-source-review]
+retains independent rational controls, failure-order repair and required gate.
+
+[native-goal-source-review]: REVIEW.md#185-native-goal-producer-words-and-source-pose-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -2642,6 +2642,29 @@ detached-copy, geometry, preflight, cadence and RNG controls.
 
 [native-tof-source-review]: REVIEW.md#201-native-tof-input-and-computed-value-retention-2026-11-09
 
+##### Actual Native ToF Acquisition Cache (2026-11-09)
+
+`RoverEnv.step(capture_native_tof_source=True)` separately opts into the actual
+acquisition reached during that transition. Shared finite-pose/32-obstacle
+preflight runs before mutation and receipt clock reads. `_sample` supplies its
+actual native source dictionary to the ToF core and retains it with the exact
+post-noise/dropout/clip float32 sample and validity mask, acquisition tick,
+nominal pending delivery tick and original RNG references. The matrix and mask
+are detached from pending delivery. No extra geometry replay, RNG draw, source
+read or ToF clock read is used; ordinary output and cadence remain unchanged.
+
+Default stepping, reset and opted-in held-acquisition ticks leave no fresh cache;
+preflight rejection preserves earlier diagnostic retention. One cache covers
+the current fresh acquisition only, not complete scan history. Its acquisition
+tick may differ from the delivered sensor tick; pending/delivered-State lineage,
+recorder ownership, epochs, timing, range/native error, coverage and source
+qualification still require their independent evidence. All inner permission/
+qualification flags remain false; this permits no command or admitted chain.
+The [sampling checkpoint][native-tof-sampling-review] retains finite acquisition,
+output/RNG, held/default/reset, preflight and detached-copy controls.
+
+[native-tof-sampling-review]: REVIEW.md#202-actual-native-tof-sampling-source-retention-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

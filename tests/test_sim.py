@@ -9498,6 +9498,192 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
             print("C1 receipt source ledger:", json.dumps(ledger, sort_keys=True))
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "fresh",
+        "held",
+        "default_clear",
+        "reset_clear",
+        "receipt_pair",
+        "detached",
+        "integer_flag",
+        "none_flag",
+        "string_flag",
+        "bad_action",
+        "bad_shape",
+        "done",
+        "budget",
+        "nonfinite_pose",
+    ),
+)
+def test_actual_native_tof_sampling_source(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import rover
+
+    environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    baseline = deepcopy(environment)
+    valid = case in (
+        "fresh",
+        "held",
+        "default_clear",
+        "reset_clear",
+        "receipt_pair",
+        "detached",
+    )
+    option = True
+    action = [0.125, 0.3]
+    if case == "integer_flag":
+        option = 1
+    elif case == "none_flag":
+        option = None
+    elif case == "string_flag":
+        option = "yes"
+    elif case == "bad_action":
+        action = [math.nan, 0]
+    elif case == "bad_shape":
+        action = [0]
+    elif case == "done":
+        environment.done = True
+    elif case == "budget":
+        environment.scenario = replace(
+            environment.scenario,
+            obstacles=((3.0, 3.0, 0.01),) * 33,
+            obstacle_heights=(),
+        )
+    elif case == "nonfinite_pose":
+        environment.position[0] = math.inf
+    elif case == "detached":
+        environment.config = replace(environment.config, noise_std=0.015, dropout=0.25)
+        baseline.config = environment.config
+    environment._native_tof_source = {"retained": True}
+    held = environment._native_tof_source
+    before = deepcopy(environment)
+    work = {"tof": 0, "source": 0, "clock": 0}
+    actual = []
+    original_tof = rover.tof_ranges
+
+    def tof(*args, **kwargs):
+        work["tof"] += 1
+        result = original_tof(*args, **kwargs)
+        source = kwargs.get("source")
+        if source is not None:
+            work["source"] += 1
+            actual.append(deepcopy(source))
+        return result
+
+    def clock():
+        work["clock"] += 1
+        return work["clock"]
+
+    monkeypatch.setattr(rover, "tof_ranges", tof)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    if not valid:
+        with pytest.raises((ValueError, RuntimeError)):
+            environment.step(action, capture_native_tof_source=option)
+        assert environment._native_tof_source is held
+        assert environment.tick == before.tick
+        assert environment.speed == before.speed
+        np.testing.assert_array_equal(environment.position, before.position)
+        assert environment.rng.bit_generator.state == before.rng.bit_generator.state
+        assert work == {"tof": 0, "source": 0, "clock": 0}
+        return
+
+    def paired(capture):
+        expected = baseline.step(action, capture_motion_receipt=case == "receipt_pair")
+        result = environment.step(
+            action,
+            capture_motion_receipt=case == "receipt_pair",
+            capture_native_tof_source=capture,
+        )
+        assert result[1:4] == expected[1:4]
+        assert result[0].keys() == expected[0].keys()
+        for field, value in result[0].items():
+            if isinstance(value, np.ndarray):
+                np.testing.assert_array_equal(value, expected[0][field])
+            else:
+                assert value == expected[0][field]
+        np.testing.assert_array_equal(
+            result[0]["tof_m"].view(np.uint32), expected[0]["tof_m"].view(np.uint32)
+        )
+        np.testing.assert_array_equal(environment.position, baseline.position)
+        assert environment.yaw == baseline.yaw
+        assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+        assert (
+            environment.odometry_rng.bit_generator.state
+            == baseline.odometry_rng.bit_generator.state
+        )
+        return result
+
+    paired(True)
+    retained = environment._native_tof_source
+    assert retained is not None and retained is not held
+    assert retained["rng"] is environment.rng
+    assert retained["odometry_rng"] is environment.odometry_rng
+    assert retained["tick"] == environment.tick == 4
+    assert (
+        retained["delivery_tick"] == environment.tick + environment.config.latency_ticks
+    )
+    assert retained["source"]["inputs"]["position_m"] == tuple(
+        map(float, environment.position)
+    )
+    assert retained["source"]["inputs"]["yaw_rad"].hex() == float(environment.yaw).hex()
+    np.testing.assert_array_equal(
+        retained["source"]["pre_noise_ranges_m"].view(np.uint64),
+        actual[0]["pre_noise_ranges_m"].view(np.uint64),
+    )
+    queued = next(
+        entry for entry in environment.pending if entry[1] == retained["tick"]
+    )
+    np.testing.assert_array_equal(
+        retained["tof_m"].view(np.uint32), queued[2].view(np.uint32)
+    )
+    np.testing.assert_array_equal(retained["tof_valid"], queued[3])
+    assert not np.shares_memory(retained["tof_m"], queued[2])
+    assert not np.shares_memory(retained["tof_valid"], queued[3])
+    assert retained["tick"] != environment.sensor_tick
+    for flag in (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert retained["source"][flag] is False
+    if case in ("held", "default_clear"):
+        paired(case == "held")
+        assert environment._native_tof_source is None
+    elif case == "reset_clear":
+        environment.reset()
+        baseline.reset()
+        assert environment._native_tof_source is None
+        assert retained["rng"] is not environment.rng
+    elif case == "detached":
+        retained["tof_m"][:] = -99.0
+        retained["tof_valid"][:] = False
+        retained["source"]["pre_noise_ranges_m"][:] = -99.0
+        np.testing.assert_array_equal(
+            queued[2],
+            next(
+                entry[2] for entry in baseline.pending if entry[1] == retained["tick"]
+            ),
+        )
+        np.testing.assert_array_equal(
+            queued[3],
+            next(
+                entry[3] for entry in baseline.pending if entry[1] == retained["tick"]
+            ),
+        )
+    assert work["tof"] <= 4 and work["source"] == 1
+    assert work["clock"] == (4 if case == "receipt_pair" else 0)
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

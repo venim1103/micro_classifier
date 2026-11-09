@@ -29,7 +29,7 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §201 for native ToF input/ray/floor/pre-noise retention
+Read [REVIEW.md][review] §202 for actual native ToF acquisition-source retention
 and the latest source gate; §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.
@@ -37,8 +37,8 @@ All qualification/admission flags remain false; no usable command is admitted.
 Continue this ordered queue, deriving smaller compatible prerequisites when a
 release gate is blocked:
 
-1. Link retained native ToF/range calculation values to bounded actual sampling
-  source prerequisites, without adopting numerical or physical bounds. Nominal
+1. Retain bounded native ToF acquisition, recorder and delivery correspondence
+  as source prerequisites, without adopting numerical or physical bounds. Nominal
   ticks or observed timing do not qualify clocks, one-use execution or permission.
 2. Advance independently supported setup/source/coverage/error/timing evidence
   for the named consumers; implement compatible offline prerequisites without

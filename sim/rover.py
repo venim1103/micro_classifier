@@ -185,6 +185,7 @@ class RoverEnv:
         self.done = False
         self._motion_receipt_source = None
         self._integration_source = None
+        self._native_tof_source = None
         self.pending = deque()
         self.pending_ego = deque()
         self.ego_sample_tick = None
@@ -203,7 +204,7 @@ class RoverEnv:
         self._record_history()
         return self._observation(), self._info(False, False)
 
-    def _update_sensor(self):
+    def _update_sensor(self, *, native_source=None):
         """Quantize acquisitions to decision ticks; deliver pending frames every tick."""
         phase = (
             self.tick
@@ -211,14 +212,22 @@ class RoverEnv:
             else self.tick // self.sensor_period_ticks
         )
         if phase != self.sensor_phase:
-            self._sample()
+            if native_source is None:
+                self._sample()
+            else:
+                self._sample(native_source=native_source)
             self.sensor_phase = phase
         while self.pending and self.pending[0][0] <= self.tick:
             _, self.sensor_tick, self.tof, self.valid = self.pending.popleft()
 
-    def _sample(self):
+    def _sample(self, *, native_source=None):
         config = self.config
-        grid = tof_ranges(self.position, self.yaw, self.scenario, config)
+        if native_source is None:
+            grid = tof_ranges(self.position, self.yaw, self.scenario, config)
+        else:
+            grid = tof_ranges(
+                self.position, self.yaw, self.scenario, config, source=native_source
+            )
         valid = (
             np.ones((8, 8), dtype=bool)
             if config.tof_mount_height is None
@@ -228,6 +237,16 @@ class RoverEnv:
         valid &= self.rng.random((8, 8)) >= config.dropout
         grid = np.where(valid, np.clip(grid, 0, config.max_range), 0).astype(np.float32)
         self.pending.append((self.tick + config.latency_ticks, self.tick, grid, valid))
+        if native_source is not None:
+            self._native_tof_source = {
+                "rng": self.rng,
+                "odometry_rng": self.odometry_rng,
+                "tick": self.tick,
+                "delivery_tick": self.tick + config.latency_ticks,
+                "source": native_source,
+                "tof_m": grid.copy(),
+                "tof_valid": valid.copy(),
+            }
 
     def _record_history(self):
         config = self.config
@@ -324,15 +343,23 @@ class RoverEnv:
             ),
         }
 
-    def step(self, action, *, capture_motion_receipt=False):
+    def step(
+        self, action, *, capture_motion_receipt=False, capture_native_tof_source=False
+    ):
         if type(capture_motion_receipt) is not bool:
             raise ValueError("capture_motion_receipt must be a literal boolean")
+        if type(capture_native_tof_source) is not bool:
+            raise ValueError("capture_native_tof_source must be a literal boolean")
         if self.done:
             raise RuntimeError("episode ended; call reset before step")
         action = np.asarray(action, dtype=np.float64)
         if action.shape != (2,) or not np.isfinite(action).all():
             raise ValueError("action must contain finite speed and turn rate")
         config = self.config
+        if capture_native_tof_source:
+            _check_native_tof_source_inputs(
+                self.position, self.yaw, self.scenario, config
+            )
         receipt = None
         integration_sources = None
         begin_ns = None
@@ -372,6 +399,7 @@ class RoverEnv:
             begin_ns = _motion_receipt_clock_ns()
         self._motion_receipt_source = None
         self._integration_source = None
+        self._native_tof_source = None
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -445,7 +473,10 @@ class RoverEnv:
                 break
             self.position, self.yaw = position, yaw
         self.tick += 1
-        self._update_sensor()
+        if capture_native_tof_source:
+            self._update_sensor(native_source={})
+        else:
+            self._update_sensor()
         self._record_history()
         info = self._info(collision, False)
         success = not collision and info["distance_to_goal_m"] <= config.goal_tolerance
@@ -547,6 +578,20 @@ def tof_directions(yaw, config):
     )
 
 
+def _check_native_tof_source_inputs(position, yaw, scenario, config):
+    if type(config) is not Config or type(scenario) is not Scenario:
+        raise TypeError("ToF source requires the actual Config and Scenario")
+    if len(scenario.obstacles) > 32:
+        raise ValueError("ToF source obstacle budget exhausted")
+    source_position = np.asarray(position)
+    if (
+        source_position.shape != (2,)
+        or not np.isfinite(source_position).all()
+        or not math.isfinite(yaw)
+    ):
+        raise ValueError("ToF source requires a finite native pose")
+
+
 def _retain_native_tof_source(
     source, position, yaw, scenario, config, ranges, rays=None, floor=None
 ):
@@ -584,17 +629,7 @@ def tof_ranges(position, yaw, scenario, config, *, source=None):
     if source is not None:
         if type(source) is not dict or source:
             raise ValueError("ToF source requires an empty builtin dictionary")
-        if type(config) is not Config or type(scenario) is not Scenario:
-            raise TypeError("ToF source requires the actual Config and Scenario")
-        if len(scenario.obstacles) > 32:
-            raise ValueError("ToF source obstacle budget exhausted")
-        source_position = np.asarray(position)
-        if (
-            source_position.shape != (2,)
-            or not np.isfinite(source_position).all()
-            or not math.isfinite(yaw)
-        ):
-            raise ValueError("ToF source requires a finite native pose")
+        _check_native_tof_source_inputs(position, yaw, scenario, config)
     if config.tof_mount_height is None:
         angles = yaw + np.linspace(
             config.field_of_view / 2, -config.field_of_view / 2, 8

@@ -17051,6 +17051,64 @@ Scoped history/Sources/prior-design/stable-workflow preservation, new reference
 and local target, five-file diff/editor diagnostics and whitespace checks passed.
 No unchanged code gate was repeated for documentation.
 
+## 202. Actual Native ToF Sampling Source Retention (2026-11-09)
+
+ToF checkpoint0757bc2 normally pushed, clean worktree. Hypothesis: route a
+separate literal capture_native_tof_source opt-in through actual step acquisition,
+retain the computed source plus exact sampled matrix/mask and nominal acquisition/
+delivery ticks, while preserving RNG/output and not treating pending samples as
+delivered State source. _sample owns noise/mask/projection and pending append;
+_update_sensor may deliver older frames. Shared bounded input preflight runs
+before mutation/receipt clock reads. Default/reset/held transitions clear fresh
+source; preflight rejection preserves prior diagnostic cache. No new clock reads.
+
+Finite synthetic scope: fourteen fixed cloned-receipt-fixture controls (six
+fresh/held/default/reset/receipt/detachment; eight primitive/action/done/cap/pose
+rejections). No new Rover construction/owner read/capture/guard/RNG seed fixture.
+Per case <=four steps/four ToF calls/one native source, <=two reset controls,
+<=four existing receipt clock calls only in the paired-receipt case, zero new
+ToF clock reads. Existing module fixture remains unchanged; old ledgers held.
+Each native record <=32 obstacles/fixed64 rays/192 directions/64 floor/64 native
+ranges plus64 sampled words/mask, one retained current acquisition, not history
+coverage. Four positions incl failure/abort: first14, adjacent/style (<=128
+existing/new ToF/receipt cases), required root, repair reserve. Old4096/16384-bit,
+motion128/history8/braking16/chord128/term16 and spent scopes unchanged.
+
+No source/epoch/timing/numerical/physical/coverage/admission qualification;
+all flags false/no command. No data/study/model/GPU/dependency/download/Arm/board/
+artifact/cleanup action. Results follow focused validation; pending-to-delivered
+linkage and qualified source/error/timing bounds remain separate prerequisites.
+
+First fourteen PASS1.93s; existing receipt/source recorder ledgers all zero.
+Position two scoped Ruff format/lint/format-check/whitespace passed and **89
+compatibility controls passed**,2.88s; fixed ToF14 + new14 + existing geometry/
+cadence/receipt controls <=128. No added case, Rover constructor or owner read.
+Post-format Pylance: sampling/update three resolved calls each compatible,
+ToF core thirteen compatible; step forty resolved calls, thirty-eight compatible
+and two existing intentional `capture_motion_receipt=1` negative controls
+(tests line159/299) diagnosed. Nearby pytest.raises confirms intent; all runtime
+negative controls passed. No unexpected incompatibility or assertion relaxation;
+editor diagnostics clear. This is editor-resolved coverage, not every dynamic call.
+
+Required root `python -m pytest -q && ruff check . && git diff --check`
+**2,880 passed**, known QDQ xfail/71 warnings/no reported skips,74.03s;
+changed-file format passed, original capped source/history/receipt ledgers held.
+Three positions used/no test/style failure or abort; fourth unused, not another
+scope. No unchanged gate repeated for documentation, no opt-in Arm/sanitizer/
+board/study/model rerun or artifact/cleanup action.
+
+Actual fresh native inputs and sampled words are retained from the live `_sample`
+call, not reconstructed for replay. This does not prove complete scan/retention
+coverage, pending/delivered-State correspondence, epoch/clock/one-use support,
+native/range/trig/physical bounds, source authority or admission. All flags false,
+no command. Default physics/sampling/RNG/wire output remains unchanged.
+Next bounded recorder intake of the actual fresh acquisition cache, preserving
+capture-versus-delivery identity and conservative rejection for missing/stale/
+unsupported source content; no qualification from a matching record alone.
+Scoped history/Sources/prior-design/stable-workflow preservation, sampling
+reference/local target, five-file source/test diff/editor diagnostics and
+whitespace checks passed; no unchanged source gate repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

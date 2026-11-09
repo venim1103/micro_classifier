@@ -10959,6 +10959,135 @@ def test_native_tof_pending_original_read(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "observed",
+        "backward",
+        "negative",
+        "clock_error",
+        "clock_nonint",
+        "clock_unavailable",
+        "held",
+        "default",
+        "flag",
+        "requires_source",
+        "preflight",
+        "paired",
+        "reset",
+    ),
+)
+def test_native_tof_acquisition_clock(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import rover
+
+    environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    baseline = deepcopy(environment)
+    counters = {
+        "backward": (10, 5),
+        "negative": (-30, -10),
+        "clock_nonint": (True, 1.0),
+        "clock_unavailable": (None, None),
+        "paired": (100, 110, 130, 140),
+    }.get(case, (100, 130))
+    work = {"clock": 0}
+
+    def clock():
+        work["clock"] += 1
+        assert work["clock"] <= 4
+        if case == "clock_error":
+            raise OSError("synthetic unavailable clock")
+        return counters[work["clock"] - 1]
+
+    monkeypatch.setattr(rover.time, "monotonic_ns", clock)
+    if case in ("flag", "requires_source", "preflight"):
+        sentinel = {"prior": True}
+        environment._native_tof_timing_source = sentinel
+        if case == "preflight":
+            environment.position[0] = math.nan
+        before_position = environment.position.copy()
+        before_rng = deepcopy(environment.rng.bit_generator.state)
+        with pytest.raises(ValueError):
+            environment.step(
+                [0.125, 0.3],
+                capture_native_tof_source=case != "requires_source",
+                capture_native_tof_timing=1 if case == "flag" else True,
+            )
+        np.testing.assert_equal(environment.position, before_position)
+        assert environment.tick == baseline.tick
+        assert environment.rng.bit_generator.state == before_rng
+        assert environment._native_tof_timing_source is sentinel
+        assert work["clock"] == 0
+        return
+    expected = baseline.step([0.125, 0.3])
+    actual = environment.step(
+        [0.125, 0.3],
+        capture_native_tof_source=True,
+        capture_native_tof_timing=case != "default",
+        capture_motion_receipt=case == "paired",
+    )
+    np.testing.assert_equal(actual[0], expected[0])
+    assert actual[1:4] == expected[1:4]
+    for key, value in expected[4].items():
+        np.testing.assert_equal(actual[4][key], value)
+    assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+    assert (
+        environment.odometry_rng.bit_generator.state
+        == baseline.odometry_rng.bit_generator.state
+    )
+    if case == "default":
+        assert work["clock"] == 0
+        assert environment._native_tof_timing_source is None
+        return
+    timing = environment._native_tof_timing_source
+    assert timing["source"] is environment._native_tof_source
+    assert (
+        timing["rng"] is environment.rng
+        and timing["odometry_rng"] is environment.odometry_rng
+    )
+    assert timing["tick"] == 4 and timing["delivery_tick"] == 6
+    for flag in (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert timing[flag] is False
+    observed = timing["clock"]
+    assert observed["domain"] == "python/time.monotonic_ns"
+    assert observed["qualified"] is False
+    if case in ("backward", "clock_error", "clock_nonint", "clock_unavailable"):
+        assert observed["status"] == "unknown" and observed["duration_ns"] is None
+    else:
+        assert observed["status"] == "observed"
+        assert observed["duration_ns"] == (20 if case in ("negative", "paired") else 30)
+    if case == "paired":
+        motion = actual[4]["motion_receipt"]["clock"]
+        assert (
+            motion["begin_ns"]
+            < observed["begin_ns"]
+            <= observed["end_ns"]
+            < motion["end_ns"]
+        )
+    if case == "held":
+        baseline.step([0.125, 0.3])
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_timing=True
+        )
+        assert environment._native_tof_timing_source is None
+        assert environment._native_tof_source is None
+        assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+    elif case == "reset":
+        environment.reset()
+        assert environment._native_tof_timing_source is None
+    assert work["clock"] == (4 if case == "paired" else 2)
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

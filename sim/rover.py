@@ -186,6 +186,7 @@ class RoverEnv:
         self._motion_receipt_source = None
         self._integration_source = None
         self._native_tof_source = None
+        self._native_tof_timing_source = None
         self.pending = deque()
         self.pending_ego = deque()
         self.ego_sample_tick = None
@@ -204,7 +205,7 @@ class RoverEnv:
         self._record_history()
         return self._observation(), self._info(False, False)
 
-    def _update_sensor(self, *, native_source=None):
+    def _update_sensor(self, *, native_source=None, capture_clock=False):
         """Quantize acquisitions to decision ticks; deliver pending frames every tick."""
         phase = (
             self.tick
@@ -215,13 +216,14 @@ class RoverEnv:
             if native_source is None:
                 self._sample()
             else:
-                self._sample(native_source=native_source)
+                self._sample(native_source=native_source, capture_clock=capture_clock)
             self.sensor_phase = phase
         while self.pending and self.pending[0][0] <= self.tick:
             _, self.sensor_tick, self.tof, self.valid = self.pending.popleft()
 
-    def _sample(self, *, native_source=None):
+    def _sample(self, *, native_source=None, capture_clock=False):
         config = self.config
+        begin_ns = _motion_receipt_clock_ns() if capture_clock else None
         if native_source is None:
             grid = tof_ranges(self.position, self.yaw, self.scenario, config)
         else:
@@ -246,6 +248,36 @@ class RoverEnv:
                 "source": native_source,
                 "tof_m": grid.copy(),
                 "tof_valid": valid.copy(),
+            }
+        if capture_clock:
+            end_ns = _motion_receipt_clock_ns()
+            ordered = begin_ns is not None and end_ns is not None and end_ns >= begin_ns
+            self._native_tof_timing_source = {
+                "schema": "micro-classifier/native-tof-timing-source/1",
+                "allowed_use": "native_tof_timing_diagnostics_only",
+                "status": "recorded_native_tof_timing",
+                "fixture_permission_granted": False,
+                "training_approved": False,
+                "real_input_qualified": False,
+                "free_space_qualified": False,
+                "numerically_certified": False,
+                "source_qualified": False,
+                "native_execution_qualified": False,
+                "command_admission_qualified": False,
+                "rng": self.rng,
+                "odometry_rng": self.odometry_rng,
+                "tick": self.tick,
+                "delivery_tick": self.tick + config.latency_ticks,
+                "source": self._native_tof_source,
+                "clock": {
+                    "domain": "python/time.monotonic_ns",
+                    "scope": "tof_geometry_sampling_enqueue_and_source_copy",
+                    "begin_ns": begin_ns,
+                    "end_ns": end_ns,
+                    "duration_ns": end_ns - begin_ns if ordered else None,
+                    "status": "observed" if ordered else "unknown",
+                    "qualified": False,
+                },
             }
 
     def _record_history(self):
@@ -344,12 +376,21 @@ class RoverEnv:
         }
 
     def step(
-        self, action, *, capture_motion_receipt=False, capture_native_tof_source=False
+        self,
+        action,
+        *,
+        capture_motion_receipt=False,
+        capture_native_tof_source=False,
+        capture_native_tof_timing=False,
     ):
         if type(capture_motion_receipt) is not bool:
             raise ValueError("capture_motion_receipt must be a literal boolean")
         if type(capture_native_tof_source) is not bool:
             raise ValueError("capture_native_tof_source must be a literal boolean")
+        if type(capture_native_tof_timing) is not bool:
+            raise ValueError("capture_native_tof_timing must be a literal boolean")
+        if capture_native_tof_timing and not capture_native_tof_source:
+            raise ValueError("native ToF timing requires native ToF source capture")
         if self.done:
             raise RuntimeError("episode ended; call reset before step")
         action = np.asarray(action, dtype=np.float64)
@@ -400,6 +441,7 @@ class RoverEnv:
         self._motion_receipt_source = None
         self._integration_source = None
         self._native_tof_source = None
+        self._native_tof_timing_source = None
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -474,7 +516,9 @@ class RoverEnv:
             self.position, self.yaw = position, yaw
         self.tick += 1
         if capture_native_tof_source:
-            self._update_sensor(native_source={})
+            self._update_sensor(
+                native_source={}, capture_clock=capture_native_tof_timing
+            )
         else:
             self._update_sensor()
         self._record_history()

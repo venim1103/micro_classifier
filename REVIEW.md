@@ -17638,6 +17638,50 @@ Scoped history/Sources/prior-design/stable-workflow preservation, original-read
 reference/local target, final five-file source/test diff and whitespace passed.
 Public introduction unchanged; no source gate rerun for documentation.
 
+## 213. Opt-In Native ToF Acquisition Clock Windows (2026-11-09)
+
+Original-read checkpoint3cc2502 normally pushed/clean. Reassessed named S2/S5/Q4
+prerequisites against prepared-not-adopted §180 and the §186 monotonic precedent.
+Local hypothesis: a separate literal ToF timing opt-in, requiring native source
+capture, can bracket actual fresh geometry/noise/dropout/enqueue/source copying
+with at most two diagnostic monotonic reads, paired to that actual producer
+cache. Defaults/held/reset/rejected preflight read no ToF clocks. Signed reference
+values are supported; unavailable/noninteger/backward pairs remain unknown.
+Private cache only; observations/info/default RNG/physics/nominal ticks and old
+receipt/source behavior unchanged. No complete API latency/deadline/accuracy/
+sensor-shutter/clock/physical/source/one-use/permission/admission qualification.
+
+Finite synthetic scope: thirteen cloned existing receipt environments plus their
+baseline clones, <=two steps/one reset per clone, <=four clock reads per case
+(paired receipt2+fresh ToF2), no new fixture-family source reads/studies/episodes.
+Counters are controlled integer/unknown/error values, not latency measurements.
+Three positions including failures/aborts: first13, required root/style (all
+existing receipt/source/ToF/default parity controls included), repair reserve.
+Same native source/profile/work caps and all eight flags/clock qualified false.
+No firmware/Arm/sanitizer/board/model/GPU/study/data/dependency/download/hardware/
+clock-setting/threshold/frozen-contract changes, artifacts or cleanup. Results
+follow the focused check. See [Python monotonic semantics][python-monotonic-clock-doc].
+First13PASS3.13s, unchanged cloned output/info/RNG parity, literal-source/timing
+preflight, unknown/signed counters, held/reset clearing and nested paired receipt
+controls passed; old fixture ledgers zero. Second required root **3,025 passed**,
+known QDQ xfail/71 warnings/no reported skips,105.18s; Ruff/format/whitespace/editor
+clear, original capped source/history/receipt/other-family controls held. Sensor/
+sample forwarding three resolved compatible calls each. Step forty resolved
+calls:38compatible/two pre-existing intentional capture_motion_receipt=1 negative
+tests at159/299, not a new regression. Two positions used/no failure/abort; unused
+third not follow-on scope. No unchanged source gate rerun for documentation.
+
+Only private diagnostic acquisition context is retained; source/clock/coverage/
+native/range/physical/epoch/one-use/permission/admission flags remain false/no
+command. No measured latency/physical study, complete API bound or conversion of
+nominal ticks into qualified clocks. No opt-in firmware/Arm/sanitizer/board/model/
+study/data/dependency/download/hardware action, artifacts or cleanup. Next bounded
+actual timing-source intake and original-source pairing without new clock reads,
+replay, unsupported clock-gap bridging or source/clock acceptance.
+Scoped history/Sources/prior-design/stable-workflow preservation, acquisition
+clock reference/local target, final five-file source/test diff and whitespace
+passed. Public introduction unchanged; no source gate rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

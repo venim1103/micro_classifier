@@ -2895,6 +2895,29 @@ permission/admission. All flags remain false/no usable command.
 
 [native-tof-pending-original-read-review]: REVIEW.md#212-original-recorder-read-native-tof-pending-correspondence-2026-11-09
 
+##### Opt-In Native ToF Acquisition Clock Windows (2026-11-09)
+
+`RoverEnv.step(..., capture_native_tof_timing=True)` requires literal native ToF
+source capture as well. Only an actual fresh sample performs two diagnostic
+`time.monotonic_ns` reads: before geometry and after sampling/noise/dropout,
+pending enqueue and native-source copying. A separate private timing cache names
+that actual native-source object, RNG identities and nominal acquisition/delivery
+ticks. Default/held/reset paths clear the cache and add no ToF clock reads;
+rejected preflight preserves previous evidence. Observations/info and default
+source/receipt behavior, physics and RNG outputs remain unchanged.
+
+The [acquisition-clock checkpoint][native-tof-acquisition-clock-review] records
+controlled counter/error/unknown/default/held/reset/preflight and paired-receipt
+controls, not measured latency samples. Signed reference values are supported;
+unavailable/noninteger/backward pairs have unknown duration. Clock qualified and
+all source/admission flags remain false. The window excludes preflight, motion,
+history/observation construction, final timing publication and return; it is not
+complete API latency, sensor exposure, a physical/nominal-clock correspondence,
+deadline/error bound, epoch qualification, one-use evidence or permission.
+Read-time intake/retention/publication of this timing cache remains separate.
+
+[native-tof-acquisition-clock-review]: REVIEW.md#213-opt-in-native-tof-acquisition-clock-windows-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

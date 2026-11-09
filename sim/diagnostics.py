@@ -9093,6 +9093,134 @@ def _check_simulator_motion_receipt_chain(receipt):
         )
 
 
+def _check_simulator_receipt_history(history, *, source_epoch, current, config):
+    """Check retained pairings against a source anchor, not qualify execution."""
+    from interface.protocol import State, encode_state
+
+    def reject(reason):
+        raise ValueError(f"simulator receipt history anchor mismatch: {reason}")
+
+    if type(history) is not list or not 1 <= len(history) <= 8:
+        reject("unsupported history shape or budget")
+    previous_state = previous_frame = previous_pose = previous_tick = None
+    for entry in history:
+        if (
+            type(entry) is not dict
+            or any(type(key) is not str for key in entry)
+            or set(entry)
+            != {
+                "source_epoch",
+                "initial_state",
+                "initial_frame",
+                "final_state",
+                "final_frame",
+                "motion_receipt",
+            }
+            or type(entry["source_epoch"]) is not str
+            or entry["source_epoch"] != source_epoch
+        ):
+            reject("unsupported entry or epoch")
+        receipt = entry["motion_receipt"]
+        _check_simulator_motion_receipt_chain(receipt)
+        if (
+            receipt["schema"] != "micro-classifier/simulator-motion-receipt/1"
+            or receipt["allowed_use"] != "simulation_motion_diagnostics_only"
+            or receipt["status"] != "recorded_simulator_motion"
+            or any(
+                receipt[flag] is not False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            )
+            or type(receipt["clock"]) is not dict
+            or receipt["clock"].get("qualified") is not False
+        ):
+            reject("unsupported receipt permission or metadata")
+        states = []
+        for prefix, tick_key, action_key in (
+            ("initial", "tick_before", "initial_action"),
+            ("final", "tick_after", "final_action"),
+        ):
+            values, frame, tick = (
+                entry[f"{prefix}_state"],
+                entry[f"{prefix}_frame"],
+                receipt[tick_key],
+            )
+            if (
+                type(values) is not dict
+                or any(type(key) is not str for key in values)
+                or set(values) != set(State.__dataclass_fields__)
+                or type(frame) is not bytes
+                or type(tick) is not int
+                or not 0 <= tick <= 0xFFFFFFFF // 50000
+            ):
+                reject("unsupported original State/frame/tick")
+            for field in ("velocity_m_s", "angular_velocity_rad_s", "goal_m"):
+                if (
+                    type(values[field]) is not tuple
+                    or len(values[field]) != 3
+                    or any(type(value) is not float for value in values[field])
+                ):
+                    reject("unsupported native State words")
+            state = State(**values)
+            if (
+                encode_state(state) != frame
+                or state.sequence != tick
+                or state.timestamp_us != tick * 50000
+            ):
+                reject("State/frame/tick correspondence")
+            action = _c1_array(receipt[action_key], (2,))
+            if tuple(float(value).hex() for value in action) != (
+                state.velocity_m_s[0].hex(),
+                state.angular_velocity_rad_s[2].hex(),
+            ):
+                reject("native action/State correspondence")
+            states.append(state)
+        initial_pose = tuple(
+            float(value).hex()
+            for value in _c1_array(receipt["initial_pose_m_rad"], (3,))
+        )
+        final_pose = tuple(
+            float(value).hex() for value in _c1_array(receipt["final_pose_m_rad"], (3,))
+        )
+        if receipt["tick_after"] != receipt["tick_before"] + 1 or (
+            previous_tick is not None
+            and (
+                receipt["tick_before"] != previous_tick
+                or entry["initial_frame"] != previous_frame
+                or states[0] != previous_state
+                or initial_pose != previous_pose
+            )
+        ):
+            reject("discontinuous retained transition")
+        previous_state, previous_frame, previous_pose, previous_tick = (
+            states[1],
+            entry["final_frame"],
+            final_pose,
+            receipt["tick_after"],
+        )
+    if (
+        previous_tick != current[0]
+        or previous_frame != current[3]
+        or previous_pose
+        != tuple(float(value).hex() for value in _c1_array(current[1], (3,)))
+        or _c1_source_binding_digest(asdict(previous_state))
+        != _c1_source_binding_digest(asdict(current[2]))
+        or _c1_source_binding_digest(
+            tuple(entry["motion_receipt"]["config"] for entry in history)
+        )
+        != _c1_source_binding_digest(tuple(config for _ in history))
+    ):
+        reject("current original source or config correspondence")
+
+
 class _SyntheticC1SourceRecorder:
     """Own ideal fixture events in memory, without a rollout or runtime consumer."""
 
@@ -9399,16 +9527,12 @@ class _SyntheticC1SourceRecorder:
         receipt_history = []
         if capture_motion_receipt_source:
             if self._receipt_history:
-                last = self._receipt_history[-1]
-                if (
-                    type(last) is not dict
-                    or last.get("source_epoch") != self._epoch
-                    or type(last.get("final_frame")) is not bytes
-                    or last["final_frame"] != self._current[3]
-                    or _c1_source_binding_digest(last.get("final_state"))
-                    != _c1_source_binding_digest(asdict(self._current[2]))
-                ):
-                    raise ValueError("simulator receipt history anchor mismatch")
+                _check_simulator_receipt_history(
+                    self._receipt_history,
+                    source_epoch=self._epoch,
+                    current=self._current,
+                    config=asdict(self._config),
+                )
             receipt_history = deepcopy(self._receipt_history)
             receipt_history.append(
                 {
@@ -9421,6 +9545,17 @@ class _SyntheticC1SourceRecorder:
                 }
             )
             receipt_history = receipt_history[-self._config.history_ticks :]
+            _check_simulator_receipt_history(
+                receipt_history,
+                source_epoch=self._epoch,
+                current=(
+                    snapshot["tick"],
+                    snapshot["pose_m_rad"],
+                    state,
+                    emitted_frame,
+                ),
+                config=asdict(self._config),
+            )
         staged = copy(self)
         staged._simulator = None
         staged.record_tick(

@@ -2397,6 +2397,29 @@ and preserved style failure, not board/RAM/latency/task-quality evidence.
 
 [receipt-history-review]: REVIEW.md#190-bounded-source-linked-receipt-history-2026-11-09
 
+##### Full Retained History Pairings (2026-11-09)
+
+Opt-in receipt ingestion validates every entry in the old bounded history before
+append, then validates the planned window against the newly sampled current
+source before staged capture. Each entry requires its matching recorder epoch,
+closed original State/frame/tick data, native action correspondence, coherent
+receipt chain and literal-false permission/qualification metadata. Consecutive
+entries must match original States, frames, ticks and native pose words. The
+last entry must match the owning current source's original State/frame/pose/tick;
+all receipt configs must match the current declared profile. Existing actual
+source/owner post-capture checks still precede publication.
+
+This closes contradictory-old-entry retention, not source attestation: mutually
+consistent fabricated records may still match. Reencoding original words binds
+emitted frames, not native numerical or physical correctness. The checker does
+not validate every clock primitive, accept clock bounds, reset uncertainty,
+admit predecessors or issue permission. A later offline reader must recheck
+actual producer currentness at read time; ingestion checks are not perpetual
+freshness. The [pairing checkpoint][receipt-pairing-review] records bounded
+controls and remaining gates; all qualification/admission flags stay false.
+
+[receipt-pairing-review]: REVIEW.md#191-full-retained-source-history-pairing-checks-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

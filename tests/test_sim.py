@@ -9489,6 +9489,47 @@ def c1_receipt_history_fixture(c1_motion_receipt_source_fixture, request):
 
 @pytest.mark.parametrize(
     "case",
+    ("valid", "epoch", "frame", "tick", "native_state", "pose", "permission", "config"),
+)
+def test_synthetic_c1_receipt_history_all_pairings(c1_receipt_history_fixture, case):
+    from dataclasses import asdict
+
+    from sim import diagnostics
+
+    environment, owner = c1_receipt_history_fixture[:2]
+    history = deepcopy(owner._receipt_history)
+    if case == "epoch":
+        history[0]["source_epoch"] = "foreign"
+    elif case == "frame":
+        history[0]["final_frame"] = b"different source"
+    elif case == "tick":
+        history[0]["motion_receipt"]["tick_after"] += 1
+    elif case == "native_state":
+        history[0]["final_state"]["goal_m"] = (9.0, 9.0, 0.0)
+    elif case == "pose":
+        history[1]["motion_receipt"]["initial_pose_m_rad"] = (9.0, 9.0, 0.0)
+    elif case == "permission":
+        history[0]["motion_receipt"]["clock"]["qualified"] = True
+    elif case == "config":
+        history[0]["motion_receipt"]["config"]["noise_std"] = 1.0
+    before = deepcopy(history)
+    options = {
+        "source_epoch": owner._epoch,
+        "current": owner._current,
+        "config": asdict(owner._config),
+    }
+    if case == "valid":
+        assert diagnostics._check_simulator_receipt_history(history, **options) is None
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._check_simulator_receipt_history(history, **options)
+    assert history == before
+    assert len(owner._receipt_history) == 8
+    assert environment.tick == 11 and owner._current[0] == 10
+
+
+@pytest.mark.parametrize(
+    "case",
     (
         "trim",
         "default_gap",

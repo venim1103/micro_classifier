@@ -16529,6 +16529,49 @@ actual-current-source consistency prerequisite before offline publication,
 without inferring actuation permission or resetting uncertainty at trim/gap.
 No native/board/model/dependency/download/data/artifact/cleanup action occurred.
 
+## 191. Full Retained Source-History Pairing Checks (2026-11-09)
+
+History checkpoint 534ff48 normally pushed. Falsifiable local gap: last-anchor
+checking alone can preserve contradictory older entries during publication.
+Validate every bounded entry's epoch, original native State/emitted frame/tick,
+receipt action/pose chain, config and literal-false permission/clock flags; then
+require the full contiguous window to end at the owning current source. Validate
+the old window before append and planned window against the actual sampled new
+source before staged capture; existing source/owner pre/post checks stay intact.
+Source pairing is not clock/native/numerical/setup/coverage/one-use qualification.
+
+Finite routine scope: eight receipt-copy controls, one helper call each from the
+existing eight-transition fixture, no new step/construction/reset/query/episode.
+First eight plus six history controls; adjacent/style; required root; one repair
+reserve, at mostfour positions incl failures/aborts. Existing fixtures/caps stay
+unchanged: history12reads/eightcaptures/128digests, source12/4/128, original
+24/12/96. Helper <=8 entries/128segments each; no claimed total RAM/time bound.
+No new data/study/labels/dependencies/download/models/GPU/native/board/physical
+action, artifact or uncertainty reset. Results and remaining evidence follow.
+First patch failed at formatted history test parameter context; targeted search
+verified helper/review additions absent, then retry used the fixture print anchor.
+No partial source edit, test execution or earlier-change rollback occurred.
+
+First **14 passed** (eight pairing/six history), 0.47 s; history ledger six
+reads/four captures/62 digests/zero forbidden. Position two Ruff formatted new
+source/test layout; scoped lint/format/whitespace/editor diagnostics passed;
+unchanged adjacent **59 passed**, 2.05 s, source receipt10/3/43/0, original
+source21/8/71/0. Position three root `python -m pytest -q && ruff check . &&
+git diff --check` **2,742 passed**, one known transformer QDQ xfail, 71 warnings,
+no reported skips, 60.23 s; changed-file format checks passed. Three of four
+positions used, no test/source/style failure/abort; fourth unused, not follow-on
+scope. Failed patch caused no partial edit; no unchanged gate rerun follows docs.
+
+All bounded entries now pair to original State/frame/tick/action/pose/config and
+the actual newly sampled source before publication. This is not adversarial
+source authority, every clock-primitive validation, native/numerical/physical
+accuracy, uncertainty reset, one-use or admission evidence. Consistent fabricated
+records can still match; all qualification/admission flags remain false and no
+usable command exists. Later readers need read-time actual-producer checks,
+not an assumption that prior ingestion remains fresh. Next prepare that read-only
+offline history snapshot API without actuation, new data/studies or permission.
+No artifact/native/board/model/download/dependency/cleanup action occurred.
+
 ## Sources
 
 Hardware and tools:

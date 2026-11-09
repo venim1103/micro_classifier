@@ -18130,6 +18130,59 @@ Scoped prior-review/Sources/design/stable-instruction preservation, new
 reference/local target, bounded final source/test diff and whitespace passed.
 No code gate repeated for documentation; only five checkpoint files staged.
 
+## 223. Native ToF Minimum-Candidate Correspondence (2026-11-09)
+
+Source-bound norm checkpointb6eb16b normally pushed/clean. Actual ToF core
+reduces floor, four finite walls and near/far/top cylinder candidates through
+ordered NumPy minima. Local hypothesis: separate cold selection_source can
+retain the last candidate whose native word matches each actual final minimum,
+plus observed finite ties, without changing geometry/default/native-source-v1
+words. Metadata is diagnostic correspondence, not a uniquely identified physical
+hit, correct geometry, complete coverage, range/error or source qualification.
+Mounted finite-input/32-obstacle preflight uses the existing guard; nonempty/
+nonbuiltin/aliased source dictionaries and legacy mode reject before geometry.
+
+Finite sixteen unit cases, <=two geometry evaluations per valid case and zero
+per invalid, 64 rays/32 obstacles/<=101 nominal candidates per ray. Tracking
+adds at most100*64 candidate-word comparisons plus fixed64 entries; records
+64 kind/index/tie entries and64 detached binary64 results, no new direction
+or native-source-v1 schema/word budget. Floor=-1 index, walls0..3, cylinders
+original0..31 order; ties remain explicit and later matching operand labels
+do not establish unique causality. No sampling/RNG/clock/step/reset/recorder/
+study/model/GPU/data/dependency/download/firmware/Arm/sanitizer/board/hardware/
+threshold/frozen-contract action. Four positions counting failure/abort:
+first16/style, required root, up to two local repairs. All eight flags false;
+no admission/permission/physical/native/source/coverage/clock qualification.
+First position stopped at test collection SyntaxError0.40s: the new finite/
+missing assertion omitted parentheses around a not-expression after equality.
+No controls or style ran. Repair only supplies parentheses and combines the
+equivalent source-dictionary guard made redundant by refactoring; same16 next.
+Second position same16PASS3.34s; changed-file format/lint/format-check passed.
+Exact uint64 default/native/result parity, detached mutation, actual floor/wall/
+cylinder-near/top labels, duplicate ties/last index, yaw/missing paths,32-obstacle
+maximum and preflight invalid/legacy/alias/33-obstacle/pose cases passed. Zero
+forbidden operations and <=two direction evaluations per valid case held.
+Third position required root3185PASS/known transformer QDQ1xfail/71warnings
+111.77s, root Ruff/diff and changed-file format passed; editor diagnostics clear.
+Post-format Pylance all16 resolved tof_ranges callers compatible. Three of four
+positions spent including collection failure; no abort, unused reserve not
+follow-on scope. No additional opt-in C/Arm/sanitizer/board/model/study controls;
+this modifies Python simulation diagnostics, not linked firmware or board code.
+Current-container OOM counters all zero, peak6335553536 bytes unchanged; not job
+RSS, earlier-host cause or hardware-fit evidence. Raw logs/backups retained in
+the recovery directory; no task artifacts or cleanup.
+
+Trace words describe actual ordered minimum correspondence with ambiguity,
+not accepted scene coverage, ideal geometry, error bound, physical clearance,
+source/native-execution/clock/permission/admission qualification or a command.
+Default words, native-source-v1 schema, accepted limits and public introduction
+unchanged. Next pair the separate trace with the actual fresh sampling call
+without extra geometry/RNG/clock work, then retain/recheck supported lineage;
+no downstream consumer may infer source adoption merely from equal range words.
+Scoped prior-review/Sources/design/stable-instruction preservation, new
+reference/local target, final source/test diff and whitespace passed. Code gate
+not rerun for documentation; only the five checkpoint files staged.
+
 ## Sources
 
 Hardware and tools:

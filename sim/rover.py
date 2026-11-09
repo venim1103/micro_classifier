@@ -668,12 +668,23 @@ def _retain_native_tof_source(
     )
 
 
-def tof_ranges(position, yaw, scenario, config, *, source=None):
+def tof_ranges(position, yaw, scenario, config, *, source=None, selection_source=None):
     """Synthetic first returns from a floor, finite walls and capped cylinders."""
-    if source is not None:
-        if type(source) is not dict or source:
-            raise ValueError("ToF source requires an empty builtin dictionary")
+    if source is not None and (type(source) is not dict or source):
+        raise ValueError("ToF source requires an empty builtin dictionary")
+    if selection_source is not None:
+        if type(selection_source) is not dict or selection_source:
+            raise ValueError(
+                "ToF selection source requires an empty builtin dictionary"
+            )
+        if selection_source is source:
+            raise ValueError(
+                "ToF native and selection sources require separate dictionaries"
+            )
+    if source is not None or selection_source is not None:
         _check_native_tof_source_inputs(position, yaw, scenario, config)
+    if selection_source is not None and config.tof_mount_height is None:
+        raise ValueError("ToF selection source requires mounted rays")
     if config.tof_mount_height is None:
         angles = yaw + np.linspace(
             config.field_of_view / 2, -config.field_of_view / 2, 8
@@ -690,8 +701,22 @@ def tof_ranges(position, yaw, scenario, config, *, source=None):
     height = config.tof_mount_height
     ranges = np.divide(-height, up, out=np.full((8, 8), np.inf), where=up < 0)
     floor_source = ranges.copy() if source is not None else None
+    if selection_source is not None:
+        kinds = np.where(np.isfinite(ranges), 1, 0).astype(np.int8)
+        indices = np.full((8, 8), -1, dtype=np.int8)
+        tied = np.zeros((8, 8), dtype=bool)
+
+        def remember(candidate, previous, kind, candidate_index):
+            finite = np.isfinite(candidate)
+            matching = finite & (ranges.view(np.uint64) == candidate.view(np.uint64))
+            equal = finite & np.isfinite(previous) & (candidate == previous)
+            tied[ranges < previous] = False
+            tied[equal] = True
+            kinds[matching] = kind
+            indices[matching] = candidate_index
+
     for axis in range(2):
-        for wall in (0.0, scenario.bounds[axis]):
+        for wall_index, wall in enumerate((0.0, scenario.bounds[axis])):
             distance = np.divide(
                 wall - position[axis],
                 directions[..., axis],
@@ -712,7 +737,11 @@ def tof_ranges(position, yaw, scenario, config, *, source=None):
                 & (across >= 0)
                 & (across <= scenario.bounds[other_axis])
             )
-            ranges = np.minimum(ranges, np.where(hit, distance, np.inf))
+            candidate = np.where(hit, distance, np.inf)
+            previous = ranges
+            ranges = np.minimum(ranges, candidate)
+            if selection_source is not None:
+                remember(candidate, previous, 2, axis * 2 + wall_index)
     horizontal_squared = np.sum(directions**2, axis=-1)
     for index, (centre_x, centre_y, radius) in enumerate(scenario.obstacles):
         top = (
@@ -740,7 +769,11 @@ def tof_ranges(position, yaw, scenario, config, *, source=None):
                 & (altitude >= 0)
                 & (altitude <= top)
             )
-            ranges = np.minimum(ranges, np.where(hit, distance, np.inf))
+            candidate = np.where(hit, distance, np.inf)
+            previous = ranges
+            ranges = np.minimum(ranges, candidate)
+            if selection_source is not None:
+                remember(candidate, previous, 3 if sign == -1 else 4, index)
         distance = np.divide(
             top - height, up, out=np.full((8, 8), np.inf), where=up != 0
         )
@@ -749,10 +782,52 @@ def tof_ranges(position, yaw, scenario, config, *, source=None):
             + np.where(np.isfinite(distance), distance, 0)[..., None] * directions
         )
         hit = (distance >= 0) & (np.sum(relative**2, axis=-1) <= radius**2)
-        ranges = np.minimum(ranges, np.where(hit, distance, np.inf))
+        candidate = np.where(hit, distance, np.inf)
+        previous = ranges
+        ranges = np.minimum(ranges, candidate)
+        if selection_source is not None:
+            remember(candidate, previous, 5, index)
     if source is not None:
         _retain_native_tof_source(
             source, position, yaw, scenario, config, ranges, rays, floor_source
+        )
+    if selection_source is not None:
+        names = (
+            "none",
+            "floor",
+            "wall",
+            "cylinder_near",
+            "cylinder_far",
+            "cylinder_top",
+        )
+        selection_source.update(
+            schema="micro-classifier/native-tof-selection-source/1",
+            allowed_use="native_tof_selection_diagnostics_only",
+            status="recorded_native_minimum_correspondence",
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            inputs={
+                "position_m": tuple(map(float, position)),
+                "yaw_rad": float(yaw),
+                "config": asdict(config),
+                "scenario": asdict(scenario),
+            },
+            candidate_count=5 + 3 * len(scenario.obstacles),
+            last_matching_candidate_kind=tuple(names[int(kind)] for kind in kinds.flat),
+            last_matching_candidate_index=tuple(map(int, indices.flat)),
+            equal_minimum_observed=tuple(map(bool, tied.flat)),
+            pre_noise_ranges_m=ranges.copy(),
         )
     return ranges
 

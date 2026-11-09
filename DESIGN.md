@@ -3112,6 +3112,29 @@ and the retained/corrected held-fixture resource overrun.
 
 [native-tof-owned-norm-review]: REVIEW.md#222-current-source-native-tof-ray-norm-composition-2026-11-09
 
+##### Native ToF Minimum-Candidate Correspondence (2026-11-09)
+
+Separate cold `tof_ranges(..., selection_source={})` retains the actual mounted
+minimum reduction's last finite candidate matching each result word, its index,
+observed finite equal minima, copied profile/pose and detached pre-noise ranges.
+It observes the existing floor, four finite walls and each cylinder's near/far/
+top candidates; numeric ties stay explicit even when result words differ by
+signed zero. Last matching operand labels do not establish unique causality.
+Indices are floor/none=-1, walls0..3 in axis/side order, cylinders0..31 in input
+order. The nominal candidate count is at most101, not geometric coverage proof.
+
+Only empty builtin dictionaries are accepted; native and selection dictionaries
+must be distinct. Existing finite-input/32-obstacle guards apply and legacy
+planar selection capture rejects before geometry. Default/native-source-v1
+words and schema stay unchanged; no clock, sampling, RNG, step/reset or recorder
+read is introduced by this core trace. It is not yet retained with a fresh
+acquisition, delivered/pending source or original recorder State/frame.
+All eight flags stay false; no physical hit, unique selection, numerical/range/
+coverage/source/clock/permission/admission or usable-command qualification follows.
+See [minimum-candidate controls and limits][native-tof-selection-review].
+
+[native-tof-selection-review]: REVIEW.md#223-native-tof-minimum-candidate-correspondence-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -18804,6 +18804,165 @@ def test_tof_capped_cylinder_first_hit_satisfies_analytic_surface(top):
     "case",
     (
         "floor",
+        "wall",
+        "low",
+        "tall",
+        "yaw",
+        "missing",
+        "ties",
+        "max_obstacles",
+        "paired",
+        "legacy",
+        "bad_option",
+        "nonempty",
+        "list_option",
+        "alias",
+        "budget",
+        "pose",
+    ),
+)
+def test_native_tof_selection_source(monkeypatch, case):
+    from sim import rover
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    scene = Scenario()
+    yaw = 0.0
+    selection = {}
+    native = {} if case == "paired" else None
+    valid = case in (
+        "floor",
+        "wall",
+        "low",
+        "tall",
+        "yaw",
+        "missing",
+        "ties",
+        "max_obstacles",
+        "paired",
+    )
+    if case == "wall":
+        config = Config(tof_mount_pitch=0, wall_height=10.0)
+    elif case in ("low", "tall", "ties", "max_obstacles"):
+        count = 32 if case == "max_obstacles" else 2 if case == "ties" else 1
+        scene = Scenario(
+            obstacles=((3.0, 3.0, 0.5),) * count,
+            obstacle_heights=(0.05 if case == "low" else 1.0,) * count,
+        )
+    elif case == "yaw":
+        yaw = math.pi / 2
+        scene = Scenario(obstacles=((1.0, 4.0, 0.3),))
+    elif case == "missing":
+        config = Config(tof_mount_pitch=-math.pi / 4, wall_height=0.1)
+    elif case == "legacy":
+        config = Config(tof_mount_height=None)
+    elif case == "bad_option":
+        selection = True
+    elif case == "nonempty":
+        selection = {"occupied": True}
+    elif case == "list_option":
+        selection = []
+    elif case == "alias":
+        native = selection
+    elif case == "budget":
+        scene = Scenario(obstacles=((3.0, 3.0, 0.5),) * 33)
+    position = np.array(scene.start[:2], dtype=float)
+    if case == "pose":
+        position[0] = math.inf
+    before_position = position.copy()
+    original_directions = rover.tof_directions
+    work = {"directions": 0, "forbidden": 0}
+
+    def directions(*args, **kwargs):
+        work["directions"] += 1
+        assert work["directions"] <= 2
+        return original_directions(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "selection source must reject before geometry and never step/reset/clock"
+        )
+
+    monkeypatch.setattr(rover, "tof_directions", directions if valid else forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if valid:
+        baseline = tof_ranges(position, yaw, scene, config)
+        actual = tof_ranges(
+            position, yaw, scene, config, source=native, selection_source=selection
+        )
+        np.testing.assert_array_equal(actual.view(np.uint64), baseline.view(np.uint64))
+        np.testing.assert_array_equal(
+            selection["pre_noise_ranges_m"].view(np.uint64), actual.view(np.uint64)
+        )
+        assert not np.shares_memory(selection["pre_noise_ranges_m"], actual)
+        kinds = selection["last_matching_candidate_kind"]
+        indices = selection["last_matching_candidate_index"]
+        ties = selection["equal_minimum_observed"]
+        assert len(kinds) == len(indices) == len(ties) == 64
+        assert selection["candidate_count"] == 5 + 3 * len(scene.obstacles) <= 101
+        for kind, index, tie, distance in zip(
+            kinds, indices, ties, actual.flat, strict=True
+        ):
+            assert type(tie) is bool and type(index) is int
+            if kind in ("floor", "none"):
+                assert index == -1
+            elif kind == "wall":
+                assert 0 <= index <= 3
+            else:
+                assert kind in ("cylinder_near", "cylinder_far", "cylinder_top")
+                assert 0 <= index < len(scene.obstacles)
+            assert (kind == "none") == (not math.isfinite(distance))
+        if case in ("floor", "paired"):
+            assert "floor" in kinds
+        elif case == "wall":
+            assert "wall" in kinds
+        elif case == "low":
+            assert kinds[4 * 8 + 3] == "cylinder_top"
+        elif case == "tall":
+            assert kinds[3 * 8 + 3] == "cylinder_near"
+        elif case in ("ties", "max_obstacles"):
+            assert any(ties)
+            assert indices[3 * 8 + 3] == len(scene.obstacles) - 1
+        elif case == "missing":
+            assert set(kinds) == {"none"} and not any(ties)
+        if native is not None:
+            assert native["schema"] == "micro-classifier/native-tof-source/1"
+            assert native["inputs"] == selection["inputs"]
+            np.testing.assert_array_equal(
+                native["pre_noise_ranges_m"].view(np.uint64), actual.view(np.uint64)
+            )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert selection[flag] is False
+        selection["pre_noise_ranges_m"][:] = -99.0
+        selection["inputs"]["config"]["wall_height"] = -99.0
+        np.testing.assert_array_equal(actual.view(np.uint64), baseline.view(np.uint64))
+        assert config.wall_height > 0
+    else:
+        with pytest.raises((ValueError, TypeError), match="ToF"):
+            tof_ranges(
+                position, yaw, scene, config, source=native, selection_source=selection
+            )
+        if type(selection) is dict and case != "nonempty":
+            assert selection == {}
+    np.testing.assert_array_equal(position, before_position)
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "floor",
         "low",
         "tall",
         "yaw",

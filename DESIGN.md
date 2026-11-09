@@ -2442,6 +2442,32 @@ records bounded stale/content/mutation controls and remaining source gates.
 
 [receipt-snapshot-review]: REVIEW.md#192-read-time-actual-producer-history-snapshots-2026-11-09
 
+##### Retained Native Integration Intermediates (2026-11-09)
+
+The simulator integration core accepts an optional empty builtin source
+dictionary. It retains copied actual primitive inputs, angle/midpoint, normalized
+sinc argument/value, speed-interval product/distance, cos/sin/displacement and
+wrapped-heading intermediates from the existing operation order. The default
+two-value return and arithmetic output words remain unchanged. These are native
+computed values, not independently certified mathematical values or error bounds.
+
+Receipt-enabled transitions retain one separate private integration-source list
+with original RNG/odometry-RNG epoch references and transition ticks. Each actual
+attempt contributes its own computed source, including a rejected collision
+candidate, under the existing 128-attempt cap. Default transitions and reset clear
+the cache; rejected preflight leaves the still-current cache unchanged. No receipt
+or wire schema changes, extra RNG/clock reads or reported actuation follow.
+
+The list is not yet ingested by the source recorder, retained history or offline
+snapshot API. Those consumers need their own actual-producer linkage, content
+validation and currentness checks before using it. Retention supplies no native
+roundoff, clock, physical, source or command qualification; all existing admission
+flags stay false. The [integration-source checkpoint][integration-source-review]
+records fixed output-word/primitive-source/ownership compatibility controls,
+not numerical proof, board execution, fit, latency or task quality.
+
+[integration-source-review]: REVIEW.md#193-actual-native-integration-source-intermediates-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

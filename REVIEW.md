@@ -16613,6 +16613,65 @@ opt-in source controls; computed endpoints alone do not expose primitive inputs
 or justify error bounds. No study/data/native/board/model/dependency/download/
 artifact or cleanup action occurred.
 
+## 193. Actual Native Integration Source Intermediates (2026-11-09)
+
+Snapshot checkpoint 1e670ea normally pushed. Owning integrate computes angle,
+midpoint, normalized sinc argument/value, speed-interval product/distance,
+cos/sin/displacement and wrapped heading inline, then discards primitive values.
+Hypothesis: name those actual computed intermediates in the same operation order
+and copy them only into an explicitly empty builtin source dictionary, retaining
+the default two-value return/output words. Pylance before edit reports 18 resolved
+call sites compatible with existing five-argument signature; optional keyword
+compatibility will be rechecked, not inferred from shell interpreter selection.
+
+Finite routine scope: four fixed straight/left/right/signed-zero source controls,
+two integrate calls each plus old-expression reference (not independent numerical
+truth); no constructor/step/RNG/clock/scene/data/study. At mostfour positions:
+first four+existing core control, adjacent producer-source retention/check,
+style/signature compatibility, required root; failures/aborts consume positions.
+Producer follow-up may retain one bounded list of actual per-attempt integration
+sources separately from unchanged receipt/wire schemas, under existing128 cap
+and existing two-step receipt controls. No native error bound, math/physical
+qualification, source acceptance/permission or dependency/download/model/GPU/
+native/board/data action. Actual outcomes and remaining limits follow checks.
+
+First five core controls passed, 1.58 s; exact default/source output words match
+the retained old expressions on four fixed inputs, source values/ownership and
+false flags checked. Adjacent producer edit retains actual per-attempt source
+dictionaries in a separate epoch/tick-bound cache, including rejected candidates;
+normal transitions/reset clear it. Existing receipt root and wire schemas stay
+unchanged. Seven successful existing receipt controls check computed inputs/
+candidate outputs against their actual attempted segments under original step
+caps; no extra integration/query/study fixture calls are introduced.
+
+Position two used the existing receipt/lifecycle/snapshot/history selector:
+**28 passed**, 0.46 s; history ledger6 reads/4 captures/62 digests/0 forbidden,
+other source ledgers zero for this selector. Position three scoped Ruff format,
+lint, format-check, whitespace and editor diagnostics passed. A concurrent
+pre-format position lookup became stale after four lines of formatting movement;
+initial Pylance call-site lookup/hover were inconclusive. A nearby physical-file
+read located the final definition; corrected Pylance compatibility reports all
+**21 call sites compatible**. This is compatibility, not interpreter selection
+or dynamic numerical evidence. Position four root `python -m pytest -q && ruff
+check . && git diff --check` **2,754 passed**, one known transformer QDQ xfail,
+71 warnings, no reported skips, 58.31 s; changed-file format checks passed.
+All four verification positions spent; no test/style failure or abort, no
+unchanged successful code gate rerun for documentation.
+
+Retained source values are separate unqualified diagnostics, not native error
+bounds, independently correct primitive results, epoch attestation, clock/source
+acceptance, admitted predecessor, permission or actuation. Default source-reader
+and offline history APIs do not yet ingest this cache. Q0-Q5 remains prepared,
+all qualification/admission flags false, no usable command. Default host controls
+are compatibility only; no new C/Arm/board execution or numerical study was run.
+No artifact/download/model/data/dependency/GPU/cleanup action occurred. Next link
+the retained actual integration cache into bounded opt-in actual-source reads,
+checking producer epoch/ticks, per-attempt receipt correspondence and stability
+before copied diagnostic publication, without replay or qualification.
+Scoped documentation checks passed: prior REVIEW history/Sources and DESIGN
+content preserved, AGENTS workflow unchanged, new local checkpoint anchor and
+targets valid, whitespace clean. The source gate was not rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

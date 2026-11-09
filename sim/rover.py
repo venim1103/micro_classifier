@@ -184,6 +184,7 @@ class RoverEnv:
         self.speed = self.turn_rate = 0.0
         self.done = False
         self._motion_receipt_source = None
+        self._integration_source = None
         self.pending = deque()
         self.pending_ego = deque()
         self.ego_sample_tick = None
@@ -333,6 +334,7 @@ class RoverEnv:
             raise ValueError("action must contain finite speed and turn rate")
         config = self.config
         receipt = None
+        integration_sources = None
         begin_ns = None
         if capture_motion_receipt:
             sweep_angle = (
@@ -366,8 +368,10 @@ class RoverEnv:
                 "segment_limit": 128,
                 "segments": [],
             }
+            integration_sources = []
             begin_ns = _motion_receipt_clock_ns()
         self._motion_receipt_source = None
+        self._integration_source = None
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -394,9 +398,21 @@ class RoverEnv:
                 interval_seconds=seconds,
             )
         for _ in range(segments):
-            position, yaw = integrate(
-                self.position, self.yaw, self.speed, self.turn_rate, seconds
-            )
+            if integration_sources is None:
+                position, yaw = integrate(
+                    self.position, self.yaw, self.speed, self.turn_rate, seconds
+                )
+            else:
+                integration_source = {}
+                position, yaw = integrate(
+                    self.position,
+                    self.yaw,
+                    self.speed,
+                    self.turn_rate,
+                    seconds,
+                    source=integration_source,
+                )
+                integration_sources.append(integration_source)
             sagitta = (
                 abs(self.speed / self.turn_rate)
                 * (1 - math.cos(self.turn_rate * seconds / 2))
@@ -465,6 +481,13 @@ class RoverEnv:
                 "rng": self.rng,
                 "odometry_rng": self.odometry_rng,
                 "receipt": deepcopy(receipt),
+            }
+            self._integration_source = {
+                "rng": self.rng,
+                "odometry_rng": self.odometry_rng,
+                "tick_before": receipt["tick_before"],
+                "tick_after": self.tick,
+                "segments": integration_sources,
             }
             info["motion_receipt"] = receipt
         return observation, float(reward), terminated, truncated, info
@@ -623,15 +646,60 @@ def swept_collision(start, end, radius, obstacles, bounds):
     return False
 
 
-def integrate(position, yaw, speed, turn_rate, seconds):
+def integrate(position, yaw, speed, turn_rate, seconds, *, source=None):
     """Exact constant-twist unicycle motion over one integration interval."""
+    if source is not None and (type(source) is not dict or source):
+        raise ValueError("integration source requires an empty builtin dictionary")
     angle = turn_rate * seconds
-    midpoint = yaw + angle / 2
-    distance = speed * seconds * np.sinc(angle / (2 * math.pi))
-    next_position = np.asarray(position) + distance * np.array(
-        [math.cos(midpoint), math.sin(midpoint)]
-    )
-    return next_position, (yaw + angle + math.pi) % (2 * math.pi) - math.pi
+    half_angle = angle / 2
+    midpoint = yaw + half_angle
+    speed_interval = speed * seconds
+    sinc_argument = angle / (2 * math.pi)
+    sinc_value = np.sinc(sinc_argument)
+    distance = speed_interval * sinc_value
+    initial_position = np.asarray(position)
+    cosine, sine = math.cos(midpoint), math.sin(midpoint)
+    displacement = distance * np.array([cosine, sine])
+    next_position = initial_position + displacement
+    heading_increment = yaw + angle
+    shifted_heading = heading_increment + math.pi
+    period = 2 * math.pi
+    wrapped_heading = shifted_heading % period
+    next_yaw = wrapped_heading - math.pi
+    if source is not None:
+        source.update(
+            schema="micro-classifier/native-integration-source/1",
+            allowed_use="native_integration_diagnostics_only",
+            fixture_permission_granted=False,
+            numerically_certified=False,
+            native_execution_qualified=False,
+            inputs={
+                "position_m": tuple(map(float, initial_position)),
+                "yaw_rad": float(yaw),
+                "speed_m_s": float(speed),
+                "turn_rate_rad_s": float(turn_rate),
+                "seconds": float(seconds),
+            },
+            values={
+                "angle_rad": float(angle),
+                "half_angle_rad": float(half_angle),
+                "midpoint_rad": float(midpoint),
+                "speed_interval_m": float(speed_interval),
+                "sinc_argument": float(sinc_argument),
+                "sinc_value": float(sinc_value),
+                "distance_m": float(distance),
+                "cos_midpoint": float(cosine),
+                "sin_midpoint": float(sine),
+                "displacement_m": tuple(map(float, displacement)),
+                "heading_increment_rad": float(heading_increment),
+                "shifted_heading_rad": float(shifted_heading),
+                "period_rad": float(period),
+                "wrapped_heading_rad": float(wrapped_heading),
+                "next_yaw_rad": float(next_yaw),
+                "next_position_m": tuple(map(float, next_position)),
+            },
+        )
+    return next_position, next_yaw
 
 
 def make_scenario(name, seed=0):

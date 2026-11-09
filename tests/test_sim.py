@@ -179,11 +179,39 @@ def test_step_motion_receipt_preserves_realized_segments(monkeypatch, case):
     assert retained["odometry_rng"] is environment.odometry_rng
     assert retained["receipt"] == receipt
     assert retained["receipt"] is not receipt
+    integration_source = environment._integration_source
+    assert integration_source["rng"] is environment.rng
+    assert integration_source["odometry_rng"] is environment.odometry_rng
+    assert integration_source["tick_before"] == receipt["tick_before"]
+    assert integration_source["tick_after"] == receipt["tick_after"]
+    assert len(integration_source["segments"]) == len(receipt["segments"])
+    for computed, attempted in zip(
+        integration_source["segments"], receipt["segments"], strict=True
+    ):
+        assert computed["inputs"]["position_m"] == attempted["start_pose_m_rad"][:2]
+        assert computed["inputs"]["yaw_rad"] == attempted["start_pose_m_rad"][2]
+        assert computed["inputs"]["speed_m_s"] == receipt["updated_speed_m_s"]
+        assert (
+            computed["inputs"]["turn_rate_rad_s"] == receipt["clipped_turn_rate_rad_s"]
+        )
+        assert computed["inputs"]["seconds"] == receipt["interval_seconds"]
+        assert (
+            computed["values"]["next_position_m"]
+            == attempted["candidate_end_pose_m_rad"][:2]
+        )
+        assert (
+            computed["values"]["next_yaw_rad"]
+            == attempted["candidate_end_pose_m_rad"][2]
+        )
+        assert computed["fixture_permission_granted"] is False
+        assert computed["numerically_certified"] is False
+        assert computed["native_execution_qualified"] is False
     actual_attempts = deepcopy(attempts)
     attempts.clear()
     normal = baseline.step(action)
     assert "motion_receipt" not in normal[-1]
     assert baseline._motion_receipt_source is None
+    assert baseline._integration_source is None
     assert json.dumps(output[:-1], default=json_value, sort_keys=True) == json.dumps(
         normal[:-1], default=json_value, sort_keys=True
     )
@@ -242,11 +270,13 @@ def test_step_motion_receipt_preserves_realized_segments(monkeypatch, case):
         assert receipt["updated_speed_m_s"] == 0.25
     if case == "owned":
         held_receipt = deepcopy(retained["receipt"])
+        held_integration = deepcopy(integration_source["segments"])
         receipt["segments"][0]["committed"] = False
         receipt["submitted_action"] = (99.0, 99.0)
         receipt["config"]["dt"] = 99.0
         receipt["clock"]["qualified"] = True
         assert retained["receipt"] == held_receipt
+        assert integration_source["segments"] == held_integration
         np.testing.assert_array_equal(environment.position, baseline.position)
         assert environment.speed == baseline.speed
 
@@ -263,6 +293,7 @@ def test_step_motion_receipt_source_lifecycle(case):
     if case == "normal_clears":
         environment.step([0.125, 0.3])
         assert environment._motion_receipt_source is None
+        assert environment._integration_source is None
     elif case == "rejected_retains":
         with pytest.raises(ValueError, match="capture_motion_receipt"):
             environment.step([0.125, 0.3], capture_motion_receipt=1)
@@ -271,6 +302,7 @@ def test_step_motion_receipt_source_lifecycle(case):
     elif case == "reset_clears":
         environment.reset()
         assert environment._motion_receipt_source is None
+        assert environment._integration_source is None
         assert retained["rng"] is not environment.rng
         assert retained["odometry_rng"] is not environment.odometry_rng
     else:
@@ -17367,6 +17399,50 @@ def test_swept_collision_prevents_tunneling_and_checks_arena_boundary():
     assert swept_collision([1, 2], [5, 2], 0.2, ((3, 2, 0.1),), (6, 6))
     assert not swept_collision([1, 1], [5, 1], 0.2, ((3, 2, 0.1),), (6, 6))
     assert swept_collision([1, 1], [0.1, 1], 0.2, (), (6, 6))
+
+
+@pytest.mark.parametrize("case", ("straight", "left", "right", "signed_zero"))
+def test_native_integration_source_retains_actual_intermediates(case):
+    position = np.array([1.0, 1.0])
+    yaw, speed, seconds = 0.0, 0.5, 0.05
+    turn = {"straight": 0.0, "left": 1.5, "right": -1.5, "signed_zero": -0.0}[case]
+    angle = turn * seconds
+    midpoint = yaw + angle / 2
+    expected_position = np.asarray(position) + speed * seconds * np.sinc(
+        angle / (2 * math.pi)
+    ) * np.array([math.cos(midpoint), math.sin(midpoint)])
+    expected_yaw = (yaw + angle + math.pi) % (2 * math.pi) - math.pi
+    source = {}
+    normal = integrate(position, yaw, speed, turn, seconds)
+    captured = integrate(position, yaw, speed, turn, seconds, source=source)
+    for actual in (normal, captured):
+        assert tuple(float(value).hex() for value in actual[0]) == tuple(
+            float(value).hex() for value in expected_position
+        )
+        assert float(actual[1]).hex() == float(expected_yaw).hex()
+    assert source["inputs"]["position_m"] == (1.0, 1.0)
+    assert source["values"]["angle_rad"].hex() == float(angle).hex()
+    assert source["values"]["half_angle_rad"].hex() == float(angle / 2).hex()
+    assert source["values"]["midpoint_rad"].hex() == float(midpoint).hex()
+    assert source["values"]["sinc_argument"].hex() == float(angle / (2 * math.pi)).hex()
+    assert (
+        source["values"]["sinc_value"].hex()
+        == float(np.sinc(angle / (2 * math.pi))).hex()
+    )
+    assert source["values"]["speed_interval_m"].hex() == float(speed * seconds).hex()
+    assert (
+        source["values"]["distance_m"].hex()
+        == float(speed * seconds * np.sinc(angle / (2 * math.pi))).hex()
+    )
+    assert source["values"]["next_position_m"] == tuple(map(float, captured[0]))
+    assert source["values"]["next_yaw_rad"].hex() == float(captured[1]).hex()
+    assert source["fixture_permission_granted"] is False
+    assert source["numerically_certified"] is False
+    assert source["native_execution_qualified"] is False
+    source["values"]["next_position_m"] = (99.0, 99.0)
+    source["inputs"]["position_m"] = (99.0, 99.0)
+    np.testing.assert_array_equal(position, [1.0, 1.0])
+    np.testing.assert_array_equal(captured[0], expected_position)
 
 
 def test_constant_twist_integrates_straight_and_curved_motion():

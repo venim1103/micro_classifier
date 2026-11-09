@@ -136,7 +136,7 @@ def test_step_motion_receipt_clock_is_diagnostic_only(monkeypatch, case):
     ),
 )
 def test_step_motion_receipt_preserves_realized_segments(monkeypatch, case):
-    from sim import rover
+    from sim import diagnostics, rover
 
     dt = {"segment_budget": 10.0, "nonfinite_duration": 1.3e308}.get(case, 0.25)
     environment = RoverEnv(config=Config(dt=dt))
@@ -172,6 +172,7 @@ def test_step_motion_receipt_preserves_realized_segments(monkeypatch, case):
     monkeypatch.setattr(rover, "swept_collision", collision)
     output = environment.step(action, capture_motion_receipt=True)
     receipt = output[-1]["motion_receipt"]
+    assert diagnostics._check_simulator_motion_receipt_chain(receipt) is None
     retained = environment._motion_receipt_source
     assert retained["rng"] is environment.rng
     assert retained["odometry_rng"] is environment.odometry_rng
@@ -9462,6 +9463,85 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
     else:
         with capture.global_and_fixture_disabled():
             print("C1 receipt source ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "rejected",
+        "truncated",
+        "broken_start",
+        "broken_final",
+        "index",
+        "bool_commit",
+        "count",
+        "duration",
+        "radius",
+        "root_shape",
+        "early_rejection",
+    ),
+)
+def test_synthetic_c1_motion_receipt_chain(c1_motion_receipt_source_fixture, case):
+    from sim import diagnostics
+
+    receipt = deepcopy(
+        c1_motion_receipt_source_fixture[0]._motion_receipt_source["receipt"]
+    )
+    expected = None
+    if case == "rejected":
+        receipt["segments"][0]["committed"] = False
+        receipt["complete_integration"] = False
+        receipt["committed_segments"] = 0
+        receipt["final_pose_m_rad"] = receipt["initial_pose_m_rad"]
+        receipt["final_action"] = (0.0, 0.0)
+    elif case == "truncated":
+        receipt["planned_segments"] = 2
+        receipt["interval_seconds"] = receipt["nominal_duration_s"] / 2
+        expected = "incomplete"
+    elif case == "broken_start":
+        receipt["segments"][0]["start_pose_m_rad"] = (9.0, 9.0, 0.0)
+        expected = "discontinuous"
+    elif case == "broken_final":
+        receipt["final_pose_m_rad"] = (9.0, 9.0, 0.0)
+        expected = "final state"
+    elif case == "index":
+        receipt["segments"][0]["index"] = False
+        expected = "unsupported"
+    elif case == "bool_commit":
+        receipt["segments"][0]["committed"] = 1
+        expected = "unsupported"
+    elif case == "count":
+        receipt["committed_segments"] = 0
+        expected = "final state"
+    elif case == "duration":
+        receipt["interval_seconds"] = float(
+            np.nextafter(receipt["interval_seconds"], math.inf)
+        )
+        expected = "nominal duration"
+    elif case == "radius":
+        receipt["segments"][0]["swept_radius_m"] = 0.0
+        expected = "body radius"
+    elif case == "root_shape":
+        receipt["unknown"] = [receipt["segments"]]
+        expected = "unsupported"
+    elif case == "early_rejection":
+        receipt["planned_segments"] = 2
+        receipt["interval_seconds"] = receipt["nominal_duration_s"] / 2
+        receipt["segments"].append(deepcopy(receipt["segments"][0]))
+        receipt["segments"][1]["index"] = 1
+        receipt["segments"][0]["committed"] = False
+        receipt["complete_integration"] = False
+        expected = "rejection suffix"
+    before = deepcopy(receipt)
+    if expected is None:
+        assert diagnostics._check_simulator_motion_receipt_chain(receipt) is None
+    else:
+        with pytest.raises(ValueError, match=expected):
+            diagnostics._check_simulator_motion_receipt_chain(receipt)
+    assert receipt == before
+    assert receipt["fixture_permission_granted"] is False
+    assert receipt["clock"]["qualified"] is False
 
 
 @pytest.mark.parametrize(

@@ -16421,6 +16421,65 @@ receipt consumers; retain collision rejected candidates as attempts, not travele
 motion. Required evidence/study/ST-tools/board/learned gates remain unchanged.
 Documentation-only preservation/reference/whitespace checks do not rerun code.
 
+## 189. Retained Receipt Segment-Chain Consistency (2026-11-09)
+
+Linkage checkpoint 28f8961 normally pushed. Local hypothesis: a closed bounded
+receipt/segment shape, ordered indices, native word pose continuity, coherent
+commit/rejection suffix and final state/action plus nominal dt/division words
+can reject structurally contradictory realized receipts before source copying.
+Rejected candidate endpoints must not be counted as traveled positions. Radius
+support is only the recorded scalar >= configured body radius; no sagitta,
+collision, integration accuracy, clearance, clock, physical or one-use proof.
+No integrator replay or inferred numerical/source bounds; all flags stay false.
+
+Finite routine scope: twelve receipt-copy controls from the existing source
+fixture (two valid: completed and artificial first rejected; ten contradictory),
+one chain call each/no construction/step/reset/query. Reuse its existing one
+setup step/read only, not additional study episodes or measured latency data.
+First twelve plus eight source controls; adjacent/style; required root; one
+repair reserve, at most four positions including failures/aborts. Fixed128
+segment preflight unchanged; source fixture12read/fourcapture/128digest ceilings
+unchanged. Chain is internal validation only, no clearance/permission report or
+native loop/resource/memory qualification. No dependencies/download/models/GPU/
+native/board/data/label/study or artifact action. Results follow verification.
+First patch failed on formatted test parameter context; targeted read/search
+verified helper/review additions absent before the grounded retry. No source
+check/fixture ran during that failed patch and no earlier changes were reverted.
+
+First focused position: eighteen passed/two failed, 2.93 s; new twelve chain
+controls passed, two existing endpoint/action controls rejected earlier with
+chain-specific messages instead of their established receipt pose/action error
+category. Ledger nine reads/three captures/33 digests/zero forbidden. Repair
+preserves that category in discontinuity/final-state/final-action messages while
+retaining specific chain details. No guard order/acceptance/assertion/cap or
+tolerance changed. Failed position is spent; same20 rerun is position two.
+
+Same20 repaired controls passed, 0.39 s; ledger ten reads/three captures/35
+digests/zero forbidden. Adjacent position also checks the seven successful
+actual receipts in existing ten receipt controls, including full multi-segment
+turns and first/later collision prefixes. One chain call per existing receipt,
+no additional scene/step/clock/collision query or changed prior fixture cap.
+These structural controls are not independent native integration accuracy.
+
+Position three **39 adjacent passed**, 0.37 s, source ledger 21 reads/eight
+captures/71 digests/zero forbidden. Ruff formatted new source/test layout;
+scoped lint/format/whitespace/editor diagnostics passed. Position four required
+root `python -m pytest -q && ruff check . && git diff --check` **2,728 passed**,
+one known transformer QDQ xfail, 71 warnings, no reported skips, 63.41 s;
+changed-file format checks passed. All four positions spent including the earlier
+category failure; no fifth unchanged code run or protected study follows.
+Documentation-only scope/history/reference/whitespace checks do not rerun code.
+
+This checks closed root/segment structure and native word correspondence,
+not every config/clock primitive, integrated numerical error, physical swept
+volume, one-use executor, deadline, source qualification or admitted predecessor.
+No usable command is admitted; all flags stay false. Next retain a bounded
+contiguous source-linked receipt transition history; default-read gaps must not
+be silently bridged. Later consumers must still validate actual current source,
+clock/numerical/coverage/setup/error evidence and retained uncertainty rather
+than treating matching receipts as permission. No artifact/task data/model/
+native/board/study/cleanup action was created.
+
 ## Sources
 
 Hardware and tools:

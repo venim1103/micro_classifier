@@ -2352,6 +2352,28 @@ checkpoint][receipt-source-pose-review] retains failures, controls and limits.
 
 [receipt-source-pose-review]: REVIEW.md#188-opt-in-producer-receipt-and-source-pose-linkage-2026-11-09
 
+##### Receipt Segment-Chain Consistency (2026-11-09)
+
+Opt-in actual-source receipt ingestion checks the closed receipt root and
+segment shapes before copying. Planned/attempted segments remain bounded by the
+existing 128 cap; indices and commit flags have exact builtin types. Initial,
+successive and final native pose words must form the claimed realized chain.
+Completed receipts require all planned segments committed; incomplete receipts
+must end in exactly one rejected candidate after any committed prefix. Rejected
+candidate endpoints do not become traveled positions. Final action matches the
+recorded updated speed/turn for completion or the recorded collision stop.
+
+Nominal duration matches configured dt and the recorded per-segment stored-word
+division; neither is elapsed physical time. Recorded swept radius must support
+the configured body scalar, not prove sagitta, whole-body clearance or a native
+error allowance. The checker neither replays integration nor supplies a permit/
+qualified report; actual source epoch/tick/pose binding remains separately
+required. All flags remain false. The [chain checkpoint][receipt-chain-review]
+records independent structural copy controls, unchanged multi-segment/collision
+producer controls, failures and gates, not source/numerical/clock acceptance.
+
+[receipt-chain-review]: REVIEW.md#189-retained-receipt-segment-chain-consistency-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -8970,6 +8970,129 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _check_simulator_motion_receipt_chain(receipt):
+    """Check diagnostic chain structure, not integration accuracy or permission."""
+    if (
+        type(receipt) is not dict
+        or any(type(key) is not str for key in receipt)
+        or set(receipt)
+        != {
+            "schema",
+            "allowed_use",
+            "status",
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+            "tick_before",
+            "tick_after",
+            "nominal_duration_s",
+            "config",
+            "submitted_action",
+            "initial_action",
+            "initial_pose_m_rad",
+            "segment_limit",
+            "segments",
+            "clipped_target_speed_m_s",
+            "updated_speed_m_s",
+            "clipped_turn_rate_rad_s",
+            "planned_segments",
+            "interval_seconds",
+            "final_pose_m_rad",
+            "final_action",
+            "complete_integration",
+            "committed_segments",
+            "clock",
+        }
+        or type(receipt["config"]) is not dict
+        or type(receipt["segments"]) is not list
+        or type(receipt["segment_limit"]) is not int
+        or receipt["segment_limit"] != 128
+        or type(receipt["planned_segments"]) is not int
+        or not 1 <= receipt["planned_segments"] <= 128
+        or not 1 <= len(receipt["segments"]) <= receipt["planned_segments"]
+        or type(receipt["committed_segments"]) is not int
+        or type(receipt["complete_integration"]) is not bool
+    ):
+        raise ValueError("unsupported simulator motion receipt chain")
+    for segment in receipt["segments"]:
+        if (
+            type(segment) is not dict
+            or any(type(key) is not str for key in segment)
+            or set(segment)
+            != {
+                "index",
+                "start_pose_m_rad",
+                "candidate_end_pose_m_rad",
+                "swept_radius_m",
+                "committed",
+            }
+            or type(segment["index"]) is not int
+            or type(segment["committed"]) is not bool
+        ):
+            raise ValueError("unsupported simulator motion receipt segment")
+    duration, interval, configured_duration, radius = _c1_array(
+        (
+            receipt["nominal_duration_s"],
+            receipt["interval_seconds"],
+            receipt["config"].get("dt"),
+            receipt["config"].get("radius"),
+        ),
+        (4,),
+    )
+    if (
+        min(duration, interval, radius) <= 0
+        or float(duration).hex() != float(configured_duration).hex()
+        or float(interval).hex() != float(duration / receipt["planned_segments"]).hex()
+    ):
+        raise ValueError("inconsistent simulator motion receipt nominal duration")
+
+    def words(value, shape):
+        return tuple(float(item).hex() for item in _c1_array(value, shape))
+
+    pose = words(receipt["initial_pose_m_rad"], (3,))
+    complete = receipt["complete_integration"]
+    if complete and len(receipt["segments"]) != receipt["planned_segments"]:
+        raise ValueError("incomplete simulator motion receipt chain")
+    committed_count = 0
+    for index, segment in enumerate(receipt["segments"]):
+        if (
+            segment["index"] != index
+            or words(segment["start_pose_m_rad"], (3,)) != pose
+        ):
+            raise ValueError("discontinuous simulator motion receipt pose/action chain")
+        candidate = words(segment["candidate_end_pose_m_rad"], (3,))
+        swept_radius = _c1_array((segment["swept_radius_m"],), (1,))[0]
+        if swept_radius < radius:
+            raise ValueError("unsupported simulator motion receipt body radius")
+        if segment["committed"]:
+            pose = candidate
+            committed_count += 1
+        elif complete or index != len(receipt["segments"]) - 1:
+            raise ValueError("inconsistent simulator motion receipt rejection suffix")
+    if (
+        committed_count != receipt["committed_segments"]
+        or (not complete and committed_count != len(receipt["segments"]) - 1)
+        or pose != words(receipt["final_pose_m_rad"], (3,))
+    ):
+        raise ValueError(
+            "inconsistent simulator motion receipt pose/action final state"
+        )
+    expected_action = (
+        (receipt["updated_speed_m_s"], receipt["clipped_turn_rate_rad_s"])
+        if complete
+        else (0.0, 0.0)
+    )
+    if words(receipt["final_action"], (2,)) != words(expected_action, (2,)):
+        raise ValueError(
+            "inconsistent simulator motion receipt pose/action final action"
+        )
+
+
 class _SyntheticC1SourceRecorder:
     """Own ideal fixture events in memory, without a rollout or runtime consumer."""
 
@@ -9156,6 +9279,7 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "unsupported or over-budget producer motion receipt"
                     )
+                _check_simulator_motion_receipt_chain(receipt)
                 snapshot["motion_receipt"] = deepcopy(receipt)
                 snapshot["receipt_source_epoch"] = self._epoch
             return snapshot

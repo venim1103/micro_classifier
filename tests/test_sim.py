@@ -10610,6 +10610,167 @@ def test_native_tof_pending_correspondence(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default",
+        "flag",
+        "missing_source",
+        "missing_queue",
+        "budget",
+        "queue_identity",
+        "late_words",
+        "late_mask",
+        "outgoing",
+        "early_owner",
+        "late_history",
+        "late_tick",
+        "rng",
+        "late_owner",
+        "delivery_loss",
+    ),
+)
+def test_native_tof_pending_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from collections import deque
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    for _ in range(4):
+        environment.step([0.125, 0.3], capture_native_tof_source=True)
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+    assert environment.sensor_tick == 4
+    assert [entry[1] for entry in environment.pending] == [6, 7]
+    before_frame = owner._current[3]
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    if case in ("missing_source", "default"):
+        owner._tof_history.pop()
+    elif case == "missing_queue":
+        environment.pending.popleft()
+    elif case == "budget":
+        environment.pending = deque([environment.pending[0]] * 9)
+    elif case == "rng":
+        environment.rng = deepcopy(environment.rng)
+    elif case == "delivery_loss":
+        environment.tof.view(np.uint32)[0, 0] ^= 1
+    original_match = diagnostics._match_native_tof_pending_sources
+    original_copy = diagnostics._copy_native_tof_pending_queue
+    original_binding = diagnostics._c1_source_binding_digest
+    original_frame_check = diagnostics._check_native_tof_delivery_frame
+    work = {"match": 0, "copy": 0, "binding": 0, "frame": 0, "forbidden": 0}
+    outgoing = {}
+
+    def matched(*args, **kwargs):
+        work["match"] += 1
+        actual = original_match(*args, **kwargs)
+        if work["match"] == 1:
+            outgoing["sources"] = actual
+            if case == "early_owner":
+                owner._binding = {"changed": True}
+        elif work["match"] == 2:
+            if case == "queue_identity":
+                environment.pending = deque(environment.pending)
+            elif case == "late_mask":
+                environment.pending[0][3][0, 0] = not environment.pending[0][3][0, 0]
+            elif case == "outgoing":
+                entry = outgoing["sources"][0]
+                entry["sample_words"] = (
+                    entry["sample_words"][0] ^ 1,
+                    *entry["sample_words"][1:],
+                )
+            elif case == "late_history":
+                owner._tof_history[0]["native_source"]["inputs"]["yaw_rad"] += 0.5
+            elif case == "late_tick":
+                environment.tick += 1
+            elif case == "late_owner":
+                owner._current = (*owner._current,)
+        return actual
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        actual = original_frame_check(*args, **kwargs)
+        if work["frame"] == 2 and case == "late_words":
+            environment.pending[0][2].view(np.uint32)[0, 0] ^= 1
+        return actual
+
+    def copied(*args, **kwargs):
+        work["copy"] += 1
+        assert work["copy"] <= 4
+        return original_copy(*args, **kwargs)
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "pending snapshot must not read/retain/replay/step/reset/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_match_native_tof_pending_sources", matched)
+    monkeypatch.setattr(diagnostics, "_copy_native_tof_pending_queue", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="include_pending_sources"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True, include_pending_sources=1
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True, include_pending_sources=case != "default"
+        )
+        assert result["source_qualified"] is False
+        assert result["command_admission_qualified"] is False
+        if case in ("copy", "default"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "copy":
+                assert [entry["tick"] for entry in result["pending_sources"]] == [6, 7]
+                result["pending_sources"][0]["native_source"]["inputs"]["config"][
+                    "max_range"
+                ] = -99.0
+                assert (
+                    owner._tof_history[1]["native_source"]["inputs"]["config"][
+                        "max_range"
+                    ]
+                    > 0
+                )
+            else:
+                assert "pending_sources" not in result
+                assert work["match"] == work["copy"] == 0
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert (
+                "source" not in result
+                and "frame" not in result
+                and "pending_sources" not in result
+            )
+    assert environment.tick == before_tick + int(case == "late_tick")
+    assert owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert work["match"] <= 2 and work["frame"] <= 2 and work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

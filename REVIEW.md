@@ -17528,6 +17528,55 @@ Scoped history/Sources/prior-design/stable-workflow preservation, pending
 reference/local target, final five-file source/test diff and whitespace passed.
 Public introduction unchanged; no source gate repeated for documentation.
 
+## 211. Opt-In Current-Recorder Native ToF Pending Snapshot (2026-11-09)
+
+Pending correspondence25837b3 normally pushed/clean. Local hypothesis: an explicit
+literal include_pending_sources option can publish bounded pending evidence on
+the existing current-delivery snapshot, with default output/behavior unchanged.
+Share a bounded primitive queue copier, match sources twice, recheck queue
+content/identity and outgoing source copies under existing owner/producer/frame/
+archive/RNG/file checks. Missing or changing context omits all source/frame/
+pending payloads. This is two-point correspondence, not complete retention or
+accepted coverage/clock/physical/numerical/source/permission/admission evidence.
+
+Finite synthetic controls: sixteen cloned existing receipt fixtures, four steps/
+five ordinary reads/three retentions (six intakes), <=two pending matches/four
+queue copies/two delivered matches/64 bindings per snapshot; same pending/history8/
+native192+64+64/sample64/mask64/obstacles32/epoch32/C1tick caps. <=40 old C1 setup
+views per case are controls, not task episodes/actual sensor coverage. Three
+positions including failures/aborts: first16, required root/style (all adjacent
+controls included), one repair reserve. No standalone adjacent rerun needed for
+this optional local path. All eight flags false/no command; no firmware/Arm/
+sanitizer/hardware/board/model/GPU/study/data/dependency/download/threshold/
+frozen-contract changes, artifacts or cleanup. Results follow the focused check.
+First16PASS6.04s, capped pending/copy/binding/forbidden and old fixture ledgers
+held. Review found closing pending checks preceded the second companion-frame
+check. Move them after that check and sharpen existing late_words injection to
+occur there; same16 use repair reserve as position two. This closes a local
+publication-order gap without extra fixture families, runs or clock/atomicity
+claims. Companion-frame checks remain <=two; final root/style is position three.
+Position two same16PASS4.45s/caps and old fixture ledgers held. Third required
+root **3,000 passed**, known QDQ xfail/71 warnings/no reported skips,107.21s;
+Ruff/format/whitespace/editor clear, original capped source/history/receipt and
+other-family controls held. Queue copier three resolved calls compatible; method
+has no statically resolved callers, so no additional static call claim. Runtime
+new sixteen and unchanged old delivery/source controls cover the optional path.
+All three positions spent/no failed test/style check/abort; no unchanged root or
+standalone adjacent rerun for reassurance/documentation.
+
+Checked pending payload is detached and consistent with the current bounded
+queue/archive at two points under original current producer/State/frame checks.
+It is not atomic/perpetually fresh or complete acquisition/retention/history/
+coverage evidence; original recorder-read pending provenance remains separate.
+All flags false/no command/native/physical/clock/error/source/one-use/permission/
+admission qualifier. No extra firmware/Arm/sanitizer/board/model/study/data/
+dependency/download/hardware action, artifact or cleanup. Next original recorder
+read-time pending correspondence, retaining default behavior and explicit unknown
+for missing evidence rather than treating a resnapshot/hash as original provenance.
+Scoped history/Sources/prior-design/stable-workflow preservation, new pending
+snapshot reference/local target, final five-file source/test diff and whitespace
+passed. Public introduction unchanged; no source gate rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

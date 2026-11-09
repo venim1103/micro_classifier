@@ -9866,15 +9866,13 @@ def _match_native_tof_delivered_source(environment, history, source_epoch):
     return deepcopy(selected)
 
 
-def _match_native_tof_pending_sources(environment, history, source_epoch):
+def _copy_native_tof_pending_queue(environment):
     from collections import deque
 
-    template = _native_tof_history_template(environment, source_epoch)
-    _check_native_tof_archive_words(history, template)
     pending = environment.pending
     if type(pending) is not deque or len(pending) > 8:
         raise ValueError("native ToF pending correspondence budget exhausted")
-    selected = []
+    copied = []
     previous = -1
     for queued in pending:
         if (
@@ -9883,13 +9881,10 @@ def _match_native_tof_pending_sources(environment, history, source_epoch):
             or type(queued[0]) is not int
             or type(queued[1]) is not int
             or not previous < queued[1] <= environment.tick
-            or not environment.tick < queued[0]
+            or not environment.tick < queued[0] <= 0xFFFFFFFF // 50000 + 8
         ):
             raise ValueError("unsupported native ToF pending acquisition metadata")
         previous = queued[1]
-        matches = [entry for entry in history if entry["tick"] == queued[1]]
-        if len(matches) != 1 or matches[0]["delivery_tick"] != queued[0]:
-            raise ValueError("native ToF pending retained acquisition lineage missing")
         sampled, valid = queued[2:]
         if (
             type(sampled) is not np.ndarray
@@ -9901,10 +9896,29 @@ def _match_native_tof_pending_sources(environment, history, source_epoch):
             or valid.dtype != np.dtype(bool)
         ):
             raise ValueError("unsupported native ToF pending arrays")
+        copied.append(
+            (
+                queued[0],
+                queued[1],
+                tuple(map(int, sampled.view(np.uint32).flat)),
+                tuple(map(bool, valid.flat)),
+            )
+        )
+    return tuple(copied)
+
+
+def _match_native_tof_pending_sources(environment, history, source_epoch):
+    template = _native_tof_history_template(environment, source_epoch)
+    _check_native_tof_archive_words(history, template)
+    selected = []
+    for delivery_tick, tick, words, valid in _copy_native_tof_pending_queue(
+        environment
+    ):
+        matches = [entry for entry in history if entry["tick"] == tick]
+        if len(matches) != 1 or matches[0]["delivery_tick"] != delivery_tick:
+            raise ValueError("native ToF pending retained acquisition lineage missing")
         source = matches[0]
-        if source["sample_words"] != tuple(
-            map(int, sampled.view(np.uint32).flat)
-        ) or source["valid_mask"] != tuple(map(bool, valid.flat)):
+        if source["sample_words"] != words or source["valid_mask"] != valid:
             raise ValueError("native ToF pending sampled words or mask mismatch")
         selected.append(source)
     expected = [entry for entry in history if entry["delivery_tick"] > environment.tick]
@@ -10897,9 +10911,13 @@ class _SyntheticC1SourceRecorder:
         )
         return result
 
-    def snapshot_native_tof_delivery(self, *, synthetic_test_only=False):
+    def snapshot_native_tof_delivery(
+        self, *, synthetic_test_only=False, include_pending_sources=False
+    ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
+        if type(include_pending_sources) is not bool:
+            raise ValueError("include_pending_sources must be a literal bool")
         result = {
             "schema": "micro-classifier/synthetic-c1-native-tof-delivery-snapshot/1",
             "allowed_use": "offline_native_tof_delivery_diagnostics_only",
@@ -10982,6 +11000,15 @@ class _SyntheticC1SourceRecorder:
             rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
             owner_binding = ownership()
             history_binding = _c1_source_binding_digest(history_before)
+            if include_pending_sources:
+                pending_before = environment.pending
+                pending_binding = _c1_source_binding_digest(
+                    _copy_native_tof_pending_queue(environment)
+                )
+                pending_sources = _match_native_tof_pending_sources(
+                    environment, history_before, self._epoch
+                )
+                pending_sources_binding = _c1_source_binding_digest(pending_sources)
             copied = _match_native_tof_delivered_source(
                 environment, history_before, self._epoch
             )
@@ -11001,6 +11028,23 @@ class _SyntheticC1SourceRecorder:
             _check_native_tof_history_layout(self._tof_history, template)
             observed_after = producer()
             _check_native_tof_delivery_frame(observed_after, self._current)
+            if include_pending_sources:
+                pending_after = _match_native_tof_pending_sources(
+                    environment, self._tof_history, self._epoch
+                )
+                if (
+                    environment.pending is not pending_before
+                    or not _native_tof_word_copy_matches(pending_sources, pending_after)
+                    or _c1_source_binding_digest(pending_sources)
+                    != pending_sources_binding
+                    or _c1_source_binding_digest(
+                        _copy_native_tof_pending_queue(environment)
+                    )
+                    != pending_binding
+                ):
+                    raise ValueError(
+                        "native ToF pending context or outgoing sources changed"
+                    )
             if (
                 self._simulator is not environment
                 or self._tof_history is not history_before
@@ -11031,6 +11075,8 @@ class _SyntheticC1SourceRecorder:
             frame=bytes(current_before[3]),
             source=copied,
         )
+        if include_pending_sources:
+            result["pending_sources"] = pending_sources
         return result
 
     def snapshot_receipt_history(self, *, synthetic_test_only=False):

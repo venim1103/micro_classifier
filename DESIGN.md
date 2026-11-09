@@ -2850,6 +2850,28 @@ one-use execution, permission or admission. All flags remain false/no command.
 
 [native-tof-pending-review]: REVIEW.md#210-retained-native-tof-pending-queue-correspondence-2026-11-09
 
+##### Opt-In Current-Recorder Native ToF Pending Snapshot (2026-11-09)
+
+The private delivered snapshot accepts literal `include_pending_sources=True`.
+Its default performs no pending copies/matches and omits that payload. The opt-in
+path uses the same bounded primitive queue copier as pending matching, then
+matches retained pending sources twice and checks original deque identity,
+primitive queue words/masks and the outgoing detached copies. Closing pending
+checks follow the second companion-State/frame check. Existing current producer,
+recorder/archive/RNG/source-file and delivered-source checks still apply; unknown
+omits source, frame and pending payloads together.
+
+The [pending-snapshot checkpoint][native-tof-pending-snapshot-review] records
+finite missing-lineage, changed queue/content/identity, late frame-time word,
+outgoing-copy, unchanged-default and literal-option controls. No recorder read,
+retention, geometry replay, step/reset, clock sampling or RNG draw is performed
+by publication. This is two-point current local correspondence, not atomicity,
+perpetual freshness, a complete acquisition/history/scan proof, original-read
+pending provenance, source/coverage/physical/numerical/clock qualification or
+one-use/permission/admission. All flags remain false/no usable command.
+
+[native-tof-pending-snapshot-review]: REVIEW.md#211-opt-in-current-recorder-native-tof-pending-snapshot-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

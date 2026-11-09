@@ -9494,6 +9494,56 @@ def _sample_simulator_native_integration_source(environment, receipt, source_epo
     }
 
 
+def _check_simulator_motion_receipt_clock(clock):
+    if (
+        type(clock) is not dict
+        or any(type(key) is not str for key in clock)
+        or set(clock)
+        != {
+            "domain",
+            "scope",
+            "begin_ns",
+            "end_ns",
+            "duration_ns",
+            "status",
+            "qualified",
+        }
+        or clock["domain"] != "python/time.monotonic_ns"
+        or clock["scope"] != "state_transition_and_observation"
+        or clock["qualified"] is not False
+    ):
+        raise ValueError("unsupported simulator motion receipt clock metadata")
+    for key in ("begin_ns", "end_ns", "duration_ns"):
+        value = clock[key]
+        if value is not None:
+            if type(value) is not int:
+                raise ValueError(
+                    "unsupported simulator motion receipt clock primitive metadata"
+                )
+            if abs(value).bit_length() > _SYNTHETIC_ARITHMETIC_BITS:
+                raise ValueError(
+                    "simulator motion receipt clock integer budget exhausted"
+                )
+    begin, end = clock["begin_ns"], clock["end_ns"]
+    ordered = begin is not None and end is not None and end >= begin
+    if ordered:
+        if clock["status"] != "observed" or clock["duration_ns"] is None:
+            raise ValueError(
+                "inconsistent simulator motion receipt clock status metadata"
+            )
+        if (
+            max(abs(begin).bit_length(), abs(end).bit_length()) + 1
+            > _SYNTHETIC_ARITHMETIC_BITS
+        ):
+            raise ValueError("simulator motion receipt clock integer budget exhausted")
+        if clock["duration_ns"] != end - begin:
+            raise ValueError(
+                "inconsistent simulator motion receipt clock duration metadata"
+            )
+    elif clock["status"] != "unknown" or clock["duration_ns"] is not None:
+        raise ValueError("inconsistent unknown simulator motion receipt clock metadata")
+
+
 def _check_simulator_motion_receipt_chain(receipt):
     """Check diagnostic chain structure, not integration accuracy or permission."""
     if (
@@ -9543,6 +9593,7 @@ def _check_simulator_motion_receipt_chain(receipt):
         or type(receipt["complete_integration"]) is not bool
     ):
         raise ValueError("unsupported simulator motion receipt chain")
+    _check_simulator_motion_receipt_clock(receipt["clock"])
     for segment in receipt["segments"]:
         if (
             type(segment) is not dict

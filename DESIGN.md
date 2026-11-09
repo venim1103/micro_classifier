@@ -2583,6 +2583,26 @@ source-word, malformed-pair, preflight-order and compatibility controls.
 
 [native-arithmetic-record-review]: REVIEW.md#198-exact-native-arithmetic-record-validation-2026-11-09
 
+##### Diagnostic Receipt Clock Consistency (2026-11-09)
+
+Receipt-chain intake checks the closed diagnostic clock domain, scope, primitive
+types, status and duration. Exact builtin integer counters with nondecreasing
+endpoints require observed status and the exact integer difference; missing or
+backward counters require unknown status and no duration. Signed epochs and
+equal endpoints remain supported. Existing bounded integer pre-operation work
+guards apply; no clock is read by this check, and `qualified` must remain false.
+
+These are retained metadata consistency conditions, not accuracy, resolution,
+reference, clock-epoch attestation, wall-time, expiry or one-use guarantees.
+Unknown clocks are retained as unknown, not upgraded to observed. The source,
+history, native and wire APIs remain unchanged; all admission flags stay false.
+Adjacent observed windows still need ordering checks before any offline timing
+consumer relies on a retained sequence. The
+[clock consistency checkpoint][receipt-clock-consistency-review] records finite
+primitive/counter/status/duration controls and remaining S5 dependencies.
+
+[receipt-clock-consistency-review]: REVIEW.md#199-diagnostic-receipt-clock-consistency-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

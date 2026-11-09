@@ -9522,6 +9522,86 @@ def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
 @pytest.mark.parametrize(
     "case",
     (
+        "observed",
+        "signed",
+        "backward",
+        "missing",
+        "equal",
+        "domain",
+        "scope",
+        "qualified",
+        "duration",
+        "unknown_ordered",
+        "observed_missing",
+        "boolean",
+        "shape",
+        "budget",
+    ),
+)
+def test_simulator_receipt_clock_consistency(monkeypatch, case):
+    from sim import diagnostics, rover
+
+    clock = {
+        "domain": "python/time.monotonic_ns",
+        "scope": "state_transition_and_observation",
+        "begin_ns": 100,
+        "end_ns": 120,
+        "duration_ns": 20,
+        "status": "observed",
+        "qualified": False,
+    }
+    if case == "signed":
+        clock["begin_ns"], clock["end_ns"] = -100, -80
+    elif case == "backward":
+        clock.update(end_ns=90, duration_ns=None, status="unknown")
+    elif case == "missing":
+        clock.update(begin_ns=None, duration_ns=None, status="unknown")
+    elif case == "equal":
+        clock.update(end_ns=100, duration_ns=0)
+    elif case == "domain":
+        clock["domain"] = "wall_clock"
+    elif case == "scope":
+        clock["scope"] = "nominal_tick"
+    elif case == "qualified":
+        clock["qualified"] = True
+    elif case == "duration":
+        clock["duration_ns"] += 1
+    elif case == "unknown_ordered":
+        clock.update(status="unknown", duration_ns=None)
+    elif case == "observed_missing":
+        clock["begin_ns"] = None
+    elif case == "boolean":
+        clock["begin_ns"] = True
+    elif case == "shape":
+        clock.pop("status")
+    elif case == "budget":
+        clock["begin_ns"] = 1 << 4096
+        clock["end_ns"] = clock["begin_ns"] + 20
+    held = deepcopy(clock)
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "clock consistency must not read clocks/step/reset/capture/query guards"
+        )
+
+    monkeypatch.setattr(rover.time, "monotonic_ns", forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case in ("observed", "signed", "backward", "missing", "equal"):
+        assert diagnostics._check_simulator_motion_receipt_clock(clock) is None
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._check_simulator_motion_receipt_clock(clock)
+    assert clock == held and work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "valid",
         "exact",
         "observed",

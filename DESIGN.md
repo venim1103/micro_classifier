@@ -3156,6 +3156,29 @@ clock/permission/admission qualification. See [acquisition controls and limits][
 
 [native-tof-selection-acquisition-review]: REVIEW.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
 
+##### Bounded Native ToF Selection Intake (2026-11-09)
+
+Separate private intake checks the closed actual fresh selection-acquisition
+cache and original native-source/RNG/tick/delivery identities. Two existing
+read-only native intakes surround a detached primitive selection copy. Closing
+comparisons check both native packets, live cache/profile/pose and staged
+selection data. No geometry, source/recorder read, clock or RNG activity is used
+to reconstruct missing evidence. The fixed64 entries retain last matching
+candidate labels/indices and observed tie ambiguity, with32 obstacles/101 nominal
+candidates maximum; input/native pre-noise words use exact binary64 hex copies.
+All eight qualification/admission flags remain false. Missing/malformed/stale/
+changed evidence rejects without a packet, not an accepted source verdict.
+
+This is bounded point-in-time diagnostic correspondence, not an atomic or
+perpetual freshness guarantee, full minimum/intermediate arithmetic proof,
+unique physical hit, numerical/coverage/range bound, clock qualification or
+permission. Recorder retention, original-read State pairing and delivery
+publication are separate prerequisites; defaults and existing schemas stay
+unchanged. [Review §225][native-tof-selection-intake-review] records the finite
+controls, closing-context follow-up and required root gate.
+
+[native-tof-selection-intake-review]: REVIEW.md#225-bounded-native-tof-selection-intake-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

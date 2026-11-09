@@ -18231,6 +18231,56 @@ Scoped prior-review/Sources/design/stable-instruction preservation, new
 reference/local target, final source/test diff and whitespace passed. Code gate
 not rerun for documentation; only the five checkpoint files staged.
 
+## 225. Bounded Native ToF Selection Intake (2026-11-09)
+
+Pairing checkpoint8e368e2 normally pushed/clean. Local hypothesis: closed
+selection-cache preflight, two existing read-only native intakes and closing
+exact primitive comparisons can reject missing/malformed/stale/changed original
+acquisition identity, profile/pose/pre-noise words and outgoing selection copies.
+No reconstruction, new clocks/geometry/RNG work or recorder read is needed.
+This is diagnostic intake only, not recorder retention or delivered State proof.
+
+Finite sixteen cloned synthetic controls, one setup step/one selection trace per
+case, <=two existing native intakes, fixed64 trace entries/32 obstacles/101 nominal
+candidates. Three positions including failure/abort: focused16 with style,
+required root and one repair reserve. Failed/aborted positions count; no renewed
+old standalone run, task-data/model/GPU/study/dependency/download/firmware/Arm/
+sanitizer/board/hardware/threshold/frozen-contract action. No source/recorder read,
+replay, step/reset, clock or RNG activity after setup. Failures retain logs;
+unsupported/change rejection leaves no published packet, no task artifact or
+cleanup needed. All qualification/admission flags remain false; ties remain
+ambiguous and candidate labels are not numerical/physical/coverage proof.
+First16PASS2.85s, no replay/clock/RNG/recorder work and old fixture ledgers zero.
+Before root, closing live-profile/tick/pose checks were added: final native read
+alone does not inspect context changed after it returns. The same sixteen-case
+slice replaces the dtype rejection with a late-profile mutation control; no
+fixture/query/attempt cap increase. Second focused/style position then required
+root in position three; no further standalone position is available.
+Second16PASS2.69s, changed-file format/lint/format-check and whitespace passed.
+Closing native changes, late trace/cache/profile and outgoing-copy mutations
+reject; ordinary source/recorder reads, retention, replay/step/reset/clock guards
+and both unchanged RNG states passed. Third required root3215PASS/known QDQ1xfail/
+71warnings93.73s; root Ruff/diff, changed-file format and editor diagnostics clear.
+Three of three positions used, no failure/abort; initial dtype control passed
+once before the documented same-budget late-profile replacement. No tolerances,
+caps, assertions or default forwarding were relaxed. Existing controls ran only
+as required root regressions for this substantive source change.
+Current-container OOM counters zero/peak7414308864 bytes, not job RSS, original
+host failure cause or board fit. Raw logs/backups remain outside git in the
+recovery directory. No task artifact/cleanup, new dependency or C/Arm/sanitizer/
+board gate; no existing public schema or product/safety requirement changed.
+
+All flags false; words, identities, nominal ticks and passing controls do not
+qualify source/native execution, coverage, numerical/physical/clock bounds,
+permission or command admission. No packet is published to the recorder yet.
+Next compatible prerequisite is bounded optional retention of these paired
+selection diagnostics alongside their exact retained native acquisition IDs,
+without asserting complete coverage or enabling delivered-source publication.
+Scoped prior-review/Sources/design/stable-instruction preservation, new local
+reference, final source/test diff and whitespace passed; docs editor clear.
+No unchanged green source gate rerun for documentation; only five checkpoint
+files staged for normal upstream synchronization.
+
 ## Sources
 
 Hardware and tools:

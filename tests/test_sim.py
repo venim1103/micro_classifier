@@ -11390,6 +11390,149 @@ def test_native_tof_timing_intake(monkeypatch, c1_motion_receipt_source_fixture,
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "missing",
+        "epoch",
+        "source_identity",
+        "inputs",
+        "words",
+        "kind",
+        "index",
+        "tie",
+        "budget",
+        "flag",
+        "late_profile",
+        "late_trace",
+        "late_source",
+        "late_cache",
+        "outgoing",
+    ),
+)
+def test_native_tof_selection_intake(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step(
+        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_selection=True
+    )
+    captured = environment._native_tof_selection_source
+    selection = captured["selection"]
+    if case == "missing":
+        environment._native_tof_selection_source = None
+    elif case == "source_identity":
+        environment._native_tof_source = dict(environment._native_tof_source)
+    elif case == "inputs":
+        selection["inputs"]["yaw_rad"] += 0.25
+    elif case == "words":
+        selection["pre_noise_ranges_m"][0, 0] = np.nextafter(
+            selection["pre_noise_ranges_m"][0, 0], math.inf
+        )
+    elif case in ("kind", "index", "tie"):
+        key, value = {
+            "kind": ("last_matching_candidate_kind", "unknown"),
+            "index": ("last_matching_candidate_index", True),
+            "tie": ("equal_minimum_observed", 1),
+        }[case]
+        selection[key] = (value, *selection[key][1:])
+    elif case == "budget":
+        selection["candidate_count"] = 102
+    elif case == "flag":
+        captured["source_qualified"] = True
+    original_intake = diagnostics._sample_simulator_native_tof_source
+    original_copy = diagnostics.deepcopy
+    work = {"intake": 0, "forbidden": 0}
+    outgoing = {}
+
+    def copied(value, *args, **kwargs):
+        actual = original_copy(value, *args, **kwargs)
+        if type(value) is dict and value.get("schema") == selection["schema"]:
+            outgoing["selection"] = actual
+        return actual
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 2
+        actual = original_intake(*args, **kwargs)
+        if case == "late_source" and work["intake"] == 1:
+            environment._native_tof_source["source"]["world_frame_unit_rays"][
+                0, 0, 0
+            ] += 0.01
+        elif work["intake"] == 2:
+            if case == "late_trace":
+                selection["equal_minimum_observed"] = (
+                    not selection["equal_minimum_observed"][0],
+                    *selection["equal_minimum_observed"][1:],
+                )
+            elif case == "late_cache":
+                environment._native_tof_selection_source = dict(captured)
+            elif case == "late_profile":
+                from dataclasses import replace
+
+                environment.config = replace(environment.config, max_range=3.0)
+            elif case == "outgoing":
+                outgoing["selection"]["source_qualified"] = True
+        return actual
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "selection intake must not read/retain/replay/step/reset/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    epoch = "x" * 33 if case == "epoch" else owner._epoch
+    if case == "copy":
+        actual = diagnostics._sample_simulator_native_tof_selection_source(
+            environment, epoch
+        )
+        assert actual["source_epoch"] == owner._epoch and actual["tick"] == 4
+        assert actual["delivery_tick"] == actual["source"]["delivery_tick"] == 6
+        assert (
+            actual["selection"]["pre_noise_ranges_m"]
+            == actual["source"]["native_source"]["pre_noise_ranges_m"]
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert actual[flag] is False and actual["selection"][flag] is False
+        actual["selection"]["inputs"]["config"]["max_range"] = -99.0
+        assert selection["inputs"]["config"]["max_range"] > 0
+        actual["source"]["native_source"]["inputs"]["yaw_rad"] = -99.0
+        assert environment._native_tof_source["source"]["inputs"]["yaw_rad"] != -99.0
+        assert work["intake"] == 2
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._sample_simulator_native_tof_selection_source(
+                environment, epoch
+            )
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "retain",
         "default",
         "flag",

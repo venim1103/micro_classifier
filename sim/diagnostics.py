@@ -10392,6 +10392,189 @@ def _sample_simulator_native_tof_timing_source(environment, source_epoch):
     }
 
 
+def _sample_simulator_native_tof_selection_source(environment, source_epoch):
+    template = _native_tof_history_template(environment, source_epoch)
+    if environment.config.tof_mount_height is None:
+        raise ValueError("native ToF selection requires mounted rays")
+    captured = environment._native_tof_selection_source
+    native_before = environment._native_tof_source
+    rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+
+    def metadata():
+        if (
+            type(captured) is not dict
+            or len(captured) != 17
+            or any(type(key) is not str for key in captured)
+            or set(captured)
+            != {
+                "schema",
+                "allowed_use",
+                "status",
+                *flags,
+                "rng",
+                "odometry_rng",
+                "tick",
+                "delivery_tick",
+                "source",
+                "selection",
+            }
+            or type(captured["schema"]) is not str
+            or captured["schema"]
+            != "micro-classifier/native-tof-selection-acquisition/1"
+            or type(captured["allowed_use"]) is not str
+            or captured["allowed_use"] != "native_tof_selection_diagnostics_only"
+            or type(captured["status"]) is not str
+            or captured["status"] != "recorded_native_tof_selection_acquisition"
+            or any(captured[flag] is not False for flag in flags)
+            or captured["rng"] is not rng_before
+            or captured["odometry_rng"] is not odometry_rng_before
+            or captured["source"] is not native_before
+            or type(captured["tick"]) is not int
+            or captured["tick"] != environment.tick
+            or type(captured["delivery_tick"]) is not int
+            or not 0 <= captured["delivery_tick"] <= 0xFFFFFFFF // 50000
+            or captured["delivery_tick"]
+            != captured["tick"] + environment.config.latency_ticks
+        ):
+            raise ValueError("unsupported native ToF selection acquisition metadata")
+        selection = captured["selection"]
+        expected = {
+            "schema": "micro-classifier/native-tof-selection-source/1",
+            "allowed_use": "native_tof_selection_diagnostics_only",
+            "status": "recorded_native_minimum_correspondence",
+            **{flag: False for flag in flags},
+        }
+        if (
+            type(selection) is not dict
+            or len(selection) != 17
+            or any(type(key) is not str for key in selection)
+            or set(selection)
+            != {
+                *expected,
+                "inputs",
+                "candidate_count",
+                "last_matching_candidate_kind",
+                "last_matching_candidate_index",
+                "equal_minimum_observed",
+                "pre_noise_ranges_m",
+            }
+            or any(
+                not _native_tof_word_copy_matches(selection[key], value)
+                for key, value in expected.items()
+            )
+            or not _native_tof_word_copy_matches(
+                selection["inputs"],
+                template["native_source"]["inputs"],
+                shape_only=True,
+            )
+            or type(selection["candidate_count"]) is not int
+            or selection["candidate_count"]
+            != 5 + 3 * len(environment.scenario.obstacles)
+        ):
+            raise ValueError("unsupported native ToF selection trace metadata")
+        kinds = selection["last_matching_candidate_kind"]
+        indices = selection["last_matching_candidate_index"]
+        ties = selection["equal_minimum_observed"]
+        ranges = selection["pre_noise_ranges_m"]
+        if (
+            any(
+                type(value) is not tuple or len(value) != 64
+                for value in (kinds, indices, ties)
+            )
+            or type(ranges) is not np.ndarray
+            or ranges.shape != (8, 8)
+            or ranges.dtype != np.dtype(np.float64)
+            or np.isnan(ranges).any()
+            or np.isneginf(ranges).any()
+        ):
+            raise ValueError("unsupported native ToF selection trace layout")
+        limits = {
+            "none": (-1, 0),
+            "floor": (-1, 0),
+            "wall": (0, 4),
+            **{
+                key: (0, len(environment.scenario.obstacles))
+                for key in ("cylinder_near", "cylinder_far", "cylinder_top")
+            },
+        }
+        for kind, index, tie, distance in zip(
+            kinds, indices, ties, ranges.flat, strict=True
+        ):
+            if (
+                type(kind) is not str
+                or len(kind) > 16
+                or kind not in limits
+                or type(index) is not int
+                or not limits[kind][0] <= index < limits[kind][1]
+                or type(tie) is not bool
+                or (kind == "none") != (distance == math.inf)
+                or (kind == "none" and tie)
+            ):
+                raise ValueError("unsupported native ToF selection candidate words")
+        return {
+            **expected,
+            "inputs": deepcopy(selection["inputs"]),
+            "candidate_count": selection["candidate_count"],
+            "last_matching_candidate_kind": kinds,
+            "last_matching_candidate_index": indices,
+            "equal_minimum_observed": ties,
+            "pre_noise_ranges_m": tuple(float(word).hex() for word in ranges.flat),
+        }
+
+    before = metadata()
+    native = _sample_simulator_native_tof_source(environment, source_epoch)
+    copied = deepcopy(before)
+    closing_native = _sample_simulator_native_tof_source(environment, source_epoch)
+    after = metadata()
+    closing_template = _native_tof_history_template(environment, source_epoch)
+    if (
+        environment._native_tof_selection_source is not captured
+        or environment._native_tof_source is not native_before
+        or environment.rng is not rng_before
+        or environment.odometry_rng is not odometry_rng_before
+        or not _native_tof_word_copy_matches(template, closing_template)
+        or type(environment.position) is not np.ndarray
+        or environment.position.shape != (2,)
+        or tuple(float(word).hex() for word in environment.position)
+        != tuple(word.hex() for word in after["inputs"]["position_m"])
+        or float(environment.yaw).hex() != after["inputs"]["yaw_rad"].hex()
+        or not _native_tof_word_copy_matches(before, after)
+        or not _native_tof_word_copy_matches(copied, after)
+        or not _native_tof_word_copy_matches(native, closing_native)
+        or not _native_tof_word_copy_matches(
+            after["inputs"], closing_native["native_source"]["inputs"]
+        )
+        or after["pre_noise_ranges_m"]
+        != closing_native["native_source"]["pre_noise_ranges_m"]
+        or native["tick"] != captured["tick"]
+        or native["delivery_tick"] != captured["delivery_tick"]
+    ):
+        raise ValueError(
+            "native ToF selection source changed or pairing mismatched during intake"
+        )
+    return {
+        "schema": "micro-classifier/native-tof-selection-intake/1",
+        "allowed_use": "native_tof_selection_diagnostics_only",
+        "status": "copied_native_tof_selection_diagnostics",
+        **{flag: False for flag in flags},
+        "source_epoch": source_epoch,
+        "tick": native["tick"],
+        "delivery_tick": native["delivery_tick"],
+        "selection": copied,
+        "source": native,
+    }
+
+
 def _check_native_tof_timing_history(history, source_history, source_epoch):
     if type(history) is not list or len(history) > 8:
         raise ValueError("native ToF timing history budget exhausted")

@@ -18183,6 +18183,54 @@ Scoped prior-review/Sources/design/stable-instruction preservation, new
 reference/local target, final source/test diff and whitespace passed. Code gate
 not rerun for documentation; only the five checkpoint files staged.
 
+## 224. Actual Fresh ToF Selection Acquisition Pairing (2026-11-09)
+
+Core selection checkpoint684d8f6 normally pushed/clean. Local hypothesis:
+separate literal capture_native_tof_selection can forward the existing cold
+selection dictionary into the actual fresh ToF computation and retain a private
+cache paired by identity with the original native acquisition. Requires native
+source capture and mounted mode, with dependency/type/pose/obstacle/legacy
+preflight before mutation or clocks. Defaults retain old forwarding calls;
+default/held/reset clear the cache, rejected preflight preserves previous caches.
+No observation/info/schema/native-source-v1/sample/noise/RNG change is intended.
+
+Finite fourteen cloned synthetic controls, <=three step attempts/one reset per
+case, <=three geometry calls including baseline/reset, <=one selection trace;
+only timed pairing takes two controlled clock reads. Other paths require zero
+clock work. Existing32-obstacle/64-ray/101-candidate/fixed64 trace caps unchanged.
+Three positions including failure/abort: first14/style, required root, repair
+reserve. No recorder read/replay, task episode/data/model/GPU/study/dependency/
+download/firmware/Arm/sanitizer/board/hardware/threshold/frozen-contract action.
+All flags false/no unique physical hit/source/coverage/numerical/clock/permission/
+admission qualifier. Fresh acquisition is not delivered State or recorder-owned
+publication; nominal tick/delivery metadata and matching words are not authority.
+First14PASS2.74s, changed-file format/lint/format-check passed in the same
+position. Output/info/ego/ToF/native-word and RNG parity including nonzero
+noise/dropout, copied-source detachment, original source/RNG/tick pairing,
+default/source-only/held/reset clearing and all preflight-preservation controls
+passed; geometry/selection/clock caps held, old fixture counters zero.
+Second position required root3199PASS/known transformer QDQ1xfail/71warnings
+91.42s, root Ruff/diff and changed-file format passed; editor diagnostics clear.
+Pylance sample4/sensor4 resolved callers compatible; step40 resolved/38
+compatible plus the same two intentional capture_motion_receipt=1 negatives
+at tests/test_sim.py159/299, not production signature regressions. Two of three
+positions used/no failure/abort; unused reserve is not follow-on scope.
+Current-container OOM counters all zero, peak6335553536 bytes unchanged; not
+job RSS, earlier-host cause or hardware fit. Raw logs/backups retained in the
+recovery directory, no task artifact/cleanup or extra C/Arm/sanitizer/board gate.
+
+Selection raw data is captured during the original geometry/sample operation,
+not regenerated or inferred from a later delivered observation. Timing remains
+unqualified; acquisition tick can differ from delivered sensor_tick. All flags
+false/no unique-hit/numerical/range/coverage/physical/source/native-execution/
+clock/permission/admission qualification or usable command. Accepted limits,
+frozen interfaces and public introduction unchanged. Next bounded read-only
+intake of the closed cache and original native source pairing, omitting/rejecting
+stale/malformed/changed lineage before any recorder retention or publication.
+Scoped prior-review/Sources/design/stable-instruction preservation, new
+reference/local target, final source/test diff and whitespace passed. Code gate
+not rerun for documentation; only the five checkpoint files staged.
+
 ## Sources
 
 Hardware and tools:

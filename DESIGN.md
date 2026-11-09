@@ -3135,6 +3135,27 @@ See [minimum-candidate controls and limits][native-tof-selection-review].
 
 [native-tof-selection-review]: REVIEW.md#223-native-tof-minimum-candidate-correspondence-2026-11-09
 
+##### Actual Fresh ToF Selection Acquisition Pairing (2026-11-09)
+
+Separate literal `RoverEnv.step(..., capture_native_tof_selection=True)` requires
+native-source capture and mounted mode, with type/dependency/pose/obstacle/legacy
+preflight before mutation or clock reads. Only a fresh actual sample forwards
+the distinct selection dictionary into its existing ToF geometry evaluation.
+The private acquisition cache names the original native cache by identity,
+original RNG references, tick/nominal delivery and actual raw selection record;
+native and selection pre-noise arrays are detached from each other and sampling.
+
+Default/source-only forwarding calls, observation/info/native-source-v1 fields,
+noise/dropout/RNG order and source words stay unchanged. Default/held/reset
+paths clear selection cache; rejected preflight preserves previous caches.
+Selection adds no clock read; optional timing still takes its existing pair and
+shares the original native source identity. All flags remain false. This is
+fresh acquisition pairing only, not delivered/original State, recorder intake/
+retention/publication, unique physical hit, numerical/range/coverage/source/
+clock/permission/admission qualification. See [acquisition controls and limits][native-tof-selection-acquisition-review].
+
+[native-tof-selection-acquisition-review]: REVIEW.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

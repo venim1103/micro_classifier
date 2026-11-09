@@ -10962,6 +10962,182 @@ def test_native_tof_pending_original_read(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "default",
+        "source_only",
+        "held",
+        "reset",
+        "noise_rng",
+        "timed",
+        "flag",
+        "missing_native",
+        "legacy",
+        "budget",
+        "pose",
+        "preflight_preserves",
+        "sample_detach",
+    ),
+)
+def test_actual_native_tof_selection_acquisition(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import rover
+
+    environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    if case == "noise_rng":
+        environment.config = replace(environment.config, noise_std=0.01, dropout=0.2)
+    elif case == "legacy":
+        environment.config = replace(environment.config, tof_mount_height=None)
+    baseline = deepcopy(environment)
+    original_ranges = rover.tof_ranges
+    work = {"geometry": 0, "selection": 0, "clock": 0}
+
+    def ranges(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        if kwargs.get("selection_source") is not None:
+            work["selection"] += 1
+            assert work["selection"] <= 1
+        return original_ranges(*args, **kwargs)
+
+    def clock():
+        work["clock"] += 1
+        assert case == "timed" and work["clock"] <= 2
+        return 100 + work["clock"] * 10
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    if case == "preflight_preserves":
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_selection=True,
+        )
+        baseline.step([0.125, 0.3])
+    if case in (
+        "flag",
+        "missing_native",
+        "legacy",
+        "budget",
+        "pose",
+        "preflight_preserves",
+    ):
+        if case in ("pose", "preflight_preserves"):
+            environment.position[0] = math.nan
+        elif case == "budget":
+            environment.scenario = Scenario(obstacles=((3.0, 3.0, 0.1),) * 33)
+        before_position = environment.position.copy()
+        before_rng = deepcopy(environment.rng.bit_generator.state)
+        previous = (
+            environment._native_tof_source,
+            environment._native_tof_timing_source,
+            environment._native_tof_selection_source,
+        )
+        with pytest.raises(ValueError):
+            environment.step(
+                [0.125, 0.3],
+                capture_native_tof_source=case != "missing_native",
+                capture_native_tof_selection=1 if case == "flag" else True,
+            )
+        np.testing.assert_equal(environment.position, before_position)
+        assert environment.tick == baseline.tick
+        assert environment.rng.bit_generator.state == before_rng
+        assert all(
+            actual is expected
+            for actual, expected in zip(
+                (
+                    environment._native_tof_source,
+                    environment._native_tof_timing_source,
+                    environment._native_tof_selection_source,
+                ),
+                previous,
+                strict=True,
+            )
+        )
+        assert work["clock"] == 0
+        assert work["geometry"] == (2 if case == "preflight_preserves" else 0)
+        return
+    expected = baseline.step([0.125, 0.3])
+    actual = environment.step(
+        [0.125, 0.3],
+        capture_native_tof_source=case != "default",
+        capture_native_tof_selection=case not in ("default", "source_only"),
+        capture_native_tof_timing=case == "timed",
+    )
+    np.testing.assert_equal(actual[0], expected[0])
+    assert actual[1:4] == expected[1:4]
+    for key, value in expected[4].items():
+        np.testing.assert_equal(actual[4][key], value)
+    assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+    assert (
+        environment.odometry_rng.bit_generator.state
+        == baseline.odometry_rng.bit_generator.state
+    )
+    if case in ("default", "source_only"):
+        assert environment._native_tof_selection_source is None
+        assert work["selection"] == work["clock"] == 0
+        return
+    captured = environment._native_tof_selection_source
+    assert captured["source"] is environment._native_tof_source
+    assert captured["rng"] is environment.rng
+    assert captured["odometry_rng"] is environment.odometry_rng
+    assert captured["tick"] == 4 and captured["delivery_tick"] == 6
+    selection = captured["selection"]
+    native = environment._native_tof_source["source"]
+    assert selection["inputs"] == native["inputs"]
+    np.testing.assert_equal(
+        selection["pre_noise_ranges_m"].view(np.uint64),
+        native["pre_noise_ranges_m"].view(np.uint64),
+    )
+    assert not np.shares_memory(
+        selection["pre_noise_ranges_m"], native["pre_noise_ranges_m"]
+    )
+    assert len(selection["last_matching_candidate_kind"]) == 64
+    for flag in (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert captured[flag] is False and selection[flag] is False
+    if case == "timed":
+        assert work["clock"] == 2
+        assert environment._native_tof_timing_source["source"] is captured["source"]
+        assert environment._native_tof_timing_source["clock"]["qualified"] is False
+    else:
+        assert work["clock"] == 0
+    if case == "sample_detach":
+        held = native["pre_noise_ranges_m"].copy()
+        selection["pre_noise_ranges_m"][:] = -99.0
+        np.testing.assert_equal(
+            native["pre_noise_ranges_m"].view(np.uint64), held.view(np.uint64)
+        )
+    elif case == "held":
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_selection=True,
+        )
+        assert environment.tick == 5
+        assert environment._native_tof_selection_source is None
+        assert environment._native_tof_source is None
+        assert work["selection"] == 1
+    elif case == "reset":
+        environment.reset()
+        assert environment._native_tof_selection_source is None
+        assert environment._native_tof_source is None
+        assert work["selection"] == 1
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "observed",
         "backward",
         "negative",

@@ -10607,6 +10607,85 @@ def _check_native_tof_timing_history(history, source_history, source_epoch):
         )
 
 
+def _check_native_tof_selection_history(history, source_history, source_epoch):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native ToF selection history budget exhausted")
+    previous = -1
+    for entry in history:
+        if (
+            type(entry) is not dict
+            or len(entry) != 4
+            or any(type(key) is not str for key in entry)
+            or set(entry) != {"source_epoch", "tick", "delivery_tick", "selection"}
+            or type(entry["source_epoch"]) is not str
+            or entry["source_epoch"] != source_epoch
+            or type(entry["tick"]) is not int
+            or not previous < entry["tick"] <= 0xFFFFFFFF // 50000
+            or type(entry["delivery_tick"]) is not int
+            or not 0 <= entry["delivery_tick"] <= 0xFFFFFFFF // 50000
+        ):
+            raise ValueError("unsupported native ToF selection history metadata")
+        previous = entry["tick"]
+        matches = [source for source in source_history if source["tick"] == entry["tick"]]
+        if (
+            len(matches) != 1
+            or matches[0]["source_epoch"] != entry["source_epoch"]
+            or matches[0]["delivery_tick"] != entry["delivery_tick"]
+        ):
+            raise ValueError("native ToF selection history source pairing missing")
+        native = matches[0]["native_source"]
+        expected = {
+            "schema": "micro-classifier/native-tof-selection-source/1",
+            "allowed_use": "native_tof_selection_diagnostics_only",
+            "status": "recorded_native_minimum_correspondence",
+            **{flag: False for flag in (
+                "fixture_permission_granted", "training_approved", "real_input_qualified",
+                "free_space_qualified", "numerically_certified", "source_qualified",
+                "native_execution_qualified", "command_admission_qualified",
+            )},
+            "inputs": native["inputs"],
+            "candidate_count": 5 + 3 * len(native["inputs"]["scenario"]["obstacles"]),
+            "last_matching_candidate_kind": ("none",) * 64,
+            "last_matching_candidate_index": (-1,) * 64,
+            "equal_minimum_observed": (False,) * 64,
+            "pre_noise_ranges_m": native["pre_noise_ranges_m"],
+        }
+        selection = entry["selection"]
+        variable = {
+            "last_matching_candidate_kind", "last_matching_candidate_index",
+            "equal_minimum_observed",
+        }
+        if (
+            native["world_frame_unit_rays"] is None
+            or not _native_tof_word_copy_matches(selection, expected, shape_only=True)
+            or any(
+                not _native_tof_word_copy_matches(selection[key], value)
+                for key, value in expected.items() if key not in variable
+            )
+        ):
+            raise ValueError("unsupported native ToF retained selection layout or words")
+        limits = {
+            "none": (-1, 0), "floor": (-1, 0), "wall": (0, 4),
+            **{key: (0, len(native["inputs"]["scenario"]["obstacles"])) for key in (
+                "cylinder_near", "cylinder_far", "cylinder_top"
+            )},
+        }
+        for kind, index, tie, word in zip(
+            selection["last_matching_candidate_kind"],
+            selection["last_matching_candidate_index"],
+            selection["equal_minimum_observed"],
+            selection["pre_noise_ranges_m"], strict=True,
+        ):
+            distance = float.fromhex(word)
+            if (
+                distance.hex() != word or math.isnan(distance) or distance == -math.inf
+                or kind not in limits or not limits[kind][0] <= index < limits[kind][1]
+                or (kind == "none") != (distance == math.inf)
+                or (kind == "none" and tie)
+            ):
+                raise ValueError("unsupported native ToF retained selection candidate words")
+
+
 def _match_native_tof_retained_timing(source, timing_history):
     matches = [
         entry
@@ -10914,6 +10993,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_sample = None
         self._tof_history = []
         self._tof_timing_history = []
+        self._tof_selection_history = []
         self._receipt_history = []
 
     @staticmethod
@@ -11301,13 +11381,16 @@ class _SyntheticC1SourceRecorder:
         self._receipt_history = receipt_history
 
     def record_native_tof_source(
-        self, environment, *, synthetic_test_only=False, include_timing=False
+        self, environment, *, synthetic_test_only=False, include_timing=False,
+        include_selection=False,
     ):
         """Retain fresh acquisition words without repeating synthetic C1 staging."""
         if synthetic_test_only is not True:
             raise ValueError("native ToF retention requires synthetic_test_only=True")
         if type(include_timing) is not bool:
             raise ValueError("include_timing must be a literal bool")
+        if type(include_selection) is not bool:
+            raise ValueError("include_selection must be a literal bool")
         if (
             self._simulator is not environment
             or self._current is None
@@ -11326,6 +11409,9 @@ class _SyntheticC1SourceRecorder:
         _check_native_tof_history_layout(self._tof_history, template)
         _check_native_tof_timing_history(
             self._tof_timing_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_selection_history(
+            self._tof_selection_history, self._tof_history, self._epoch
         )
 
         def producer():
@@ -11351,6 +11437,9 @@ class _SyntheticC1SourceRecorder:
             _check_native_tof_timing_history(
                 self._tof_timing_history, self._tof_history, self._epoch
             )
+            _check_native_tof_selection_history(
+                self._tof_selection_history, self._tof_history, self._epoch
+            )
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -11365,6 +11454,7 @@ class _SyntheticC1SourceRecorder:
                     "dynamics_sample": self._dynamics_sample,
                     "tof_sample": self._tof_sample,
                     "tof_timing_history": self._tof_timing_history,
+                    "tof_selection_history": self._tof_selection_history,
                     "binding": self._binding,
                 }
             )
@@ -11382,7 +11472,16 @@ class _SyntheticC1SourceRecorder:
         timing_cache_before = (
             environment._native_tof_timing_source if include_timing else None
         )
+        selection_cache_before = (
+            environment._native_tof_selection_source if include_selection else None
+        )
         timing_history_binding = _c1_source_binding_digest(self._tof_timing_history)
+        if include_selection:
+            selection = _sample_simulator_native_tof_selection_source(environment, self._epoch)
+            selection_entry = {
+                key: deepcopy(selection[key])
+                for key in ("source_epoch", "tick", "delivery_tick", "selection")
+            }
         if include_timing:
             timing = _sample_simulator_native_tof_timing_source(
                 environment, self._epoch
@@ -11392,6 +11491,8 @@ class _SyntheticC1SourceRecorder:
                 key: deepcopy(timing[key])
                 for key in ("source_epoch", "tick", "delivery_tick", "clock")
             }
+        elif include_selection:
+            copied = selection["source"]
         else:
             copied = _sample_simulator_native_tof_source(environment, self._epoch)
         _check_native_tof_history_layout(self._tof_history, copied)
@@ -11417,14 +11518,42 @@ class _SyntheticC1SourceRecorder:
             else:
                 timing_history.append(timing_entry)
         _check_native_tof_timing_history(timing_history, history, self._epoch)
+        selection_history = [
+            deepcopy(entry) for entry in self._tof_selection_history
+            if entry["tick"] in retained_ticks
+        ]
+        if include_selection:
+            if selection_history and selection_history[-1]["tick"] == copied["tick"]:
+                if not _native_tof_word_copy_matches(selection_history[-1], selection_entry):
+                    raise ValueError("native ToF repeated selection words mismatch")
+            else:
+                selection_history.append(selection_entry)
+        _check_native_tof_selection_history(selection_history, history, self._epoch)
         copied_binding = _c1_source_binding_digest(
-            {"copied": copied, "history": history, "timing_history": timing_history}
+            {"copied": copied, "history": history, "timing_history": timing_history,
+             "selection_history": selection_history}
         )
         if include_timing:
             timing_after = _sample_simulator_native_tof_timing_source(
                 environment, self._epoch
             )
             live_after = timing_after["source"]
+        elif not include_selection:
+            live_after = _sample_simulator_native_tof_source(environment, self._epoch)
+        if include_selection:
+            selection_after = _sample_simulator_native_tof_selection_source(environment, self._epoch)
+            if not include_timing:
+                live_after = selection_after["source"]
+            if (
+                environment._native_tof_selection_source is not selection_cache_before
+                or not _native_tof_word_copy_matches(selection["source"], copied)
+                or not _native_tof_word_copy_matches(selection_after["source"], live_after)
+                or not _native_tof_word_copy_matches(
+                    selection_entry, {key: selection_after[key] for key in selection_entry}
+                )
+            ):
+                raise ValueError("native ToF selection source changed during retention")
+        if include_timing:
             if (
                 environment._native_tof_timing_source is not timing_cache_before
                 or not _native_tof_word_copy_matches(
@@ -11432,18 +11561,21 @@ class _SyntheticC1SourceRecorder:
                 )
             ):
                 raise ValueError("native ToF timing source changed during retention")
-        else:
-            live_after = _sample_simulator_native_tof_source(environment, self._epoch)
         _check_native_tof_history_layout(self._tof_history, copied)
         _check_native_tof_history_layout(history, copied)
         _check_native_tof_timing_history(
             self._tof_timing_history, self._tof_history, self._epoch
         )
         _check_native_tof_timing_history(timing_history, history, self._epoch)
+        _check_native_tof_selection_history(
+            self._tof_selection_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_selection_history(selection_history, history, self._epoch)
         if (
             not _native_tof_word_copy_matches(copied, live_after)
             or _c1_source_binding_digest(
-                {"copied": copied, "history": history, "timing_history": timing_history}
+                {"copied": copied, "history": history, "timing_history": timing_history,
+                 "selection_history": selection_history}
             )
             != copied_binding
             or _c1_source_binding_digest(self._tof_history) != history_binding
@@ -11463,6 +11595,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_sample = copied
         self._tof_history = history
         self._tof_timing_history = timing_history
+        self._tof_selection_history = selection_history
 
     def snapshot_native_tof_source(self, *, synthetic_test_only=False):
         if synthetic_test_only is not True:

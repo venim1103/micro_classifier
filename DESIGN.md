@@ -2285,6 +2285,28 @@ retains independent rational controls, failure-order repair and required gate.
 
 [native-goal-source-review]: REVIEW.md#185-native-goal-producer-words-and-source-pose-2026-11-09
 
+##### Diagnostic Receipt Clock Windows (2026-11-09)
+
+The existing opt-in simulator receipt makes at most two standard-library
+`time.monotonic_ns()` reads around state transition and observation construction.
+Default stepping and receipt preflight rejection make no diagnostic clock reads.
+The receipt's `clock` field names the Python monotonic domain and window scope;
+its integer begin/end/duration counters are separate from nominal simulator
+dt/ticks, State timestamps, UTC, device clocks and executor deadlines. The
+reference epoch is unspecified; signed references are not rejected for their
+sign. An ordered pair is `observed`, not qualified; OS read errors and
+noninteger values are unavailable and backward pairs remain `unknown` with no
+elapsed value. Clock faults do not change normal physics, RNG or motion outputs.
+
+This window excludes action validation, receipt preflight/preparation and final
+receipt publication/return. It is not complete API latency, effective accuracy,
+clock correspondence, a deadline/expiry bound, one-use execution or admission
+evidence. `clock.qualified` and all existing admission/qualification flags remain
+false. No timing study or clock configuration change follows. The [clock
+checkpoint][receipt-clock-review] records the bounded controls and primary source.
+
+[receipt-clock-review]: REVIEW.md#186-diagnostic-monotonic-receipt-windows-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

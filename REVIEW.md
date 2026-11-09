@@ -16272,6 +16272,55 @@ equality, a clock bound, complete API latency or one-use/predecessor permission.
 Review the clock's documented domain and limitations before implementing it.
 No new timing study, physical/hardware access or risk/threshold adoption follows.
 
+## 186. Diagnostic Monotonic Receipt Windows (2026-11-09)
+
+Goal-source checkpoint e868eb1 normally pushed; continued the Q4 prerequisite.
+The [official Python 3.12 clock documentation][python-monotonic-clock-doc] says
+monotonic_ns returns integer nanoseconds for a monotonic clock unaffected by
+system-clock updates; its reference point is unspecified and differences between
+reads are meaningful. Units do not establish effective accuracy, nominal dt/tick
+correspondence, suspension coverage, physical timing or clock qualification.
+Only the named standard-library read is used; no clock/privilege/security changes.
+
+Local hypothesis: at most two opt-in reads around the state-transition and
+observation-construction phase can provide diagnostic elapsed context without
+changing normal outputs, RNG state, physics or preflight behavior. The window
+excludes preflight/receipt preparation and final receipt publication/return;
+it is not complete API latency, a deadline bound or a nominal simulator tick.
+OS read errors/noninteger counters become unavailable; backward pairs remain
+unknown. Signed reference values are supported rather than assuming an epoch.
+Clock qualified is always false; no nominal field is replaced or relabeled.
+
+Four verification positions including repairs/aborts: first seven clock plus
+existing ten receipt/eighteen source/native-word controls, adjacent/style,
+required root and one reserved repair. Seven synthetic controls, at most one
+environment construction/two step calls/two clock reads each (14 calls/reads
+ceiling), no reads on normal or over-budget preflight calls. Counters are fixed
+unit fixtures, not measured latency samples or a timing study. Existing source
+fixture/receipt controls remain unchanged compatibility gates; no extra study,
+labels, downloads, dependencies, GPU/native/hardware run or artifact/cleanup job.
+Results: first focused seven clock/ten receipt/eighteen source controls **35
+passed**, 0.34 s; source ledger 21 reads/eight captures/71 digests/zero forbidden.
+Ruff format changed only new test layout; scoped lint/format/whitespace and editor
+diagnostics passed. Required root `python -m pytest -q && ruff check . && git
+diff --check` **2,704 passed**, one known transformer QDQ xfail, 71 warnings,
+no reported skips, 54.94 s; both changed-file format checks passed. Three of four
+positions used, no test/source failure/abort; fourth unused, not follow-on scope.
+Diff-review printed source/stat, then exited 127 at unavailable rg, so its later
+status command did not execute; editor search recovered the document anchors.
+This was not a failed source gate or a dependency/tool-installation reason.
+
+No qualification/admission/accuracy/clock bound was adopted. S1-S5 setup/source/
+coverage/numerical/clock/expiry/one-use evidence remains missing; no usable
+command or admitted predecessor follows. Only bounded synthetic unit controls
+and unchanged root controls ran, not a physical/latency/native/board study.
+Next bind retained receipts to actual producer epoch and source tick/pose before
+any offline consumer composition; do not trust a later caller-owned receipt copy
+or matching clock/hash as execution permission. Documentation-only follow-up
+uses preservation/reference/whitespace checks, not another successful code gate.
+
+[python-monotonic-clock-doc]: https://docs.python.org/3.12/library/time.html#time.monotonic_ns
+
 ## Sources
 
 Hardware and tools:

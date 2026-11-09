@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import math
+import time
 from collections import deque
 from dataclasses import asdict, dataclass
 from fractions import Fraction
@@ -330,6 +331,7 @@ class RoverEnv:
             raise ValueError("action must contain finite speed and turn rate")
         config = self.config
         receipt = None
+        begin_ns = None
         if capture_motion_receipt:
             sweep_angle = (
                 abs(
@@ -362,6 +364,7 @@ class RoverEnv:
                 "segment_limit": 128,
                 "segments": [],
             }
+            begin_ns = _motion_receipt_clock_ns()
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -435,16 +438,37 @@ class RoverEnv:
         info["applied_action"] = np.array([self.speed, self.turn_rate])
         reward = old_distance - info["distance_to_goal_m"] - config.tick_cost
         reward += config.success_reward * success - config.collision_cost * collision
+        observation = self._observation()
         if receipt is not None:
+            end_ns = _motion_receipt_clock_ns()
+            ordered = begin_ns is not None and end_ns is not None and end_ns >= begin_ns
             receipt.update(
                 tick_after=self.tick,
                 final_pose_m_rad=(*map(float, self.position), float(self.yaw)),
                 final_action=(self.speed, self.turn_rate),
                 complete_integration=not collision,
                 committed_segments=len(receipt["segments"]) - int(collision),
+                clock={
+                    "domain": "python/time.monotonic_ns",
+                    "scope": "state_transition_and_observation",
+                    "begin_ns": begin_ns,
+                    "end_ns": end_ns,
+                    "duration_ns": end_ns - begin_ns if ordered else None,
+                    "status": "observed" if ordered else "unknown",
+                    "qualified": False,
+                },
             )
             info["motion_receipt"] = receipt
-        return self._observation(), float(reward), terminated, truncated, info
+        return observation, float(reward), terminated, truncated, info
+
+
+def _motion_receipt_clock_ns():
+    """Read a diagnostic counter without claiming its reference or accuracy."""
+    try:
+        value = time.monotonic_ns()
+    except OSError:
+        return None
+    return value if type(value) is int else None
 
 
 def ray_ranges(position, angles, obstacles, bounds, maximum):

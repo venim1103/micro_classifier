@@ -38,6 +38,91 @@ from sim.rover import (
 @pytest.mark.parametrize(
     "case",
     (
+        "valid",
+        "signed_epoch",
+        "backward",
+        "bad_type",
+        "oserror",
+        "default",
+        "work_limit",
+    ),
+)
+def test_step_motion_receipt_clock_is_diagnostic_only(monkeypatch, case):
+    from sim import rover
+
+    environment = RoverEnv(config=Config(dt=10.0 if case == "work_limit" else 0.05))
+    baseline = deepcopy(environment)
+    samples = iter(
+        (-100, -80)
+        if case == "signed_epoch"
+        else (100, 90)
+        if case == "backward"
+        else (100, True)
+        if case == "bad_type"
+        else (OSError("clock unavailable"), 120)
+        if case == "oserror"
+        else (100, 120)
+    )
+    calls = []
+
+    def clock():
+        calls.append(None)
+        assert len(calls) <= 2
+        if case in ("default", "work_limit"):
+            raise AssertionError("normal/rejected steps must not query receipt clocks")
+        value = next(samples)
+        if isinstance(value, OSError):
+            raise value
+        return value
+
+    monkeypatch.setattr(rover.time, "monotonic_ns", clock)
+    if case == "work_limit":
+        with pytest.raises(ValueError, match="segment budget"):
+            environment.step([0.6, 1.5], capture_motion_receipt=True)
+        assert environment.tick == baseline.tick
+        np.testing.assert_array_equal(environment.position, baseline.position)
+        assert not calls
+        return
+    output = environment.step([0.125, 0.3], capture_motion_receipt=case != "default")
+    normal = baseline.step([0.125, 0.3])
+    if case == "default":
+        assert "motion_receipt" not in output[-1] and not calls
+    else:
+        assert len(calls) == 2
+        recorded = output[-1]["motion_receipt"]["clock"]
+        observed = case in ("valid", "signed_epoch")
+        assert recorded["qualified"] is False
+        assert recorded["domain"] == "python/time.monotonic_ns"
+        assert recorded["scope"] == "state_transition_and_observation"
+        assert recorded["status"] == ("observed" if observed else "unknown")
+        assert recorded["duration_ns"] == (20 if observed else None)
+        if case == "signed_epoch":
+            assert (recorded["begin_ns"], recorded["end_ns"]) == (-100, -80)
+        elif case == "backward":
+            assert (recorded["begin_ns"], recorded["end_ns"]) == (100, 90)
+        elif case == "bad_type":
+            assert recorded["end_ns"] is None
+        elif case == "oserror":
+            assert recorded["begin_ns"] is None
+        assert output[-1]["motion_receipt"]["fixture_permission_granted"] is False
+    assert json.dumps(output[:-1], default=json_value, sort_keys=True) == json.dumps(
+        normal[:-1], default=json_value, sort_keys=True
+    )
+    assert json.dumps(
+        {key: value for key, value in output[-1].items() if key != "motion_receipt"},
+        default=json_value,
+        sort_keys=True,
+    ) == json.dumps(normal[-1], default=json_value, sort_keys=True)
+    assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+    assert (
+        environment.odometry_rng.bit_generator.state
+        == baseline.odometry_rng.bit_generator.state
+    )
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "straight",
         "bend",
         "clipped",

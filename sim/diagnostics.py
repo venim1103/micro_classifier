@@ -9056,6 +9056,7 @@ class _SyntheticC1SourceRecorder:
         """Read one actual simulator snapshot, without stepping or qualifying it."""
         from copy import copy
 
+        from interface.protocol import encode_state
         from sim.rover import RoverEnv, Scenario, state_from_observation
 
         if synthetic_test_only is not True:
@@ -9138,6 +9139,14 @@ class _SyntheticC1SourceRecorder:
         recorder_odometry_rng_before = self._simulator_odometry_rng
         binding_before = self._binding
         state = state_from_observation(snapshot["observation"])
+        emitted_frame = encode_state(state)
+        state = replace(
+            state,
+            velocity_m_s=(snapshot["native_action"][0], 0.0, 0.0),
+            angular_velocity_rad_s=(0.0, 0.0, snapshot["native_action"][1]),
+        )
+        if encode_state(state) != emitted_frame:
+            raise ValueError("native simulator motion and emitted observation disagree")
         staged = copy(self)
         staged._simulator = None
         staged.record_tick(
@@ -9155,6 +9164,8 @@ class _SyntheticC1SourceRecorder:
             or self._source_files() != self._identities
         ):
             raise ValueError("simulator or recorder changed during source capture")
+        if staged._current[3] != emitted_frame:
+            raise ValueError("simulator source frame changed during capture")
         self._pending, self._history, self._latest = (
             staged._pending,
             staged._history,

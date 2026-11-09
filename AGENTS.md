@@ -29,17 +29,17 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §183 for verified actual-simulator source reads and
-the latest source gate; §182 records receipts and §181 workflow consolidation. The Q0-Q5
+Read [REVIEW.md][review] §184 for verified native-motion source/frame integration
+and the latest source gate; §§181-183 record workflow, receipts and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.
 
 Continue this ordered queue, deriving smaller compatible prerequisites when a
 release gate is blocked:
 
-1. Preserve actual native speed/yaw source words across the observation/frame
-  boundary, retaining their decoded discrepancies. Source/receipt content is
-  not qualification, one-use execution or permission; default behavior stays intact.
+1. Retain native goal producer words before float32 observation conversion,
+  with current sample/pose correspondence and unchanged emitted frames. Source
+  content is not qualification or permission; default behavior stays intact.
 2. Advance independently supported setup/source/coverage/error/timing evidence
   for the named consumers; implement compatible offline prerequisites without
   inventing bounds, accepting claims or starting protected studies.

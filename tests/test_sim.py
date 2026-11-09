@@ -9331,7 +9331,11 @@ def test_synthetic_c1_recorder_reads_actual_simulator(
     ledger = c1_simulator_source_fixture[2]
     original_capture = diagnostics.capture_synthetic_c1_views
     original_digest = diagnostics._c1_source_binding_digest
-    expected_state = state_from_observation(environment._observation())
+    expected_state = replace(
+        state_from_observation(environment._observation()),
+        velocity_m_s=(environment.speed, 0.0, 0.0),
+        angular_velocity_rad_s=(0.0, 0.0, environment.turn_rate),
+    )
     before_current = deepcopy(owner._current)
     before_pending = deepcopy(owner._pending)
     rng_before = deepcopy(environment.rng.bit_generator.state)
@@ -9433,6 +9437,108 @@ def test_synthetic_c1_recorder_reads_actual_simulator(
         assert not (environment._observation()["ego"] == 99.0).any()
     assert environment.rng.bit_generator.state == rng_before
     assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
+@pytest.mark.parametrize("speed", (0.1, 0.2, -0.0, 0.6))
+def test_synthetic_c1_simulator_source_preserves_native_motion(
+    c1_simulator_source_fixture, monkeypatch, speed
+):
+    from fractions import Fraction
+
+    from interface.protocol import decode_state, encode_state
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_simulator_source_fixture[:2])
+    ledger = c1_simulator_source_fixture[2]
+    environment.speed = speed
+    environment.history[-1][0][0] = np.float32(speed)
+    emitted = encode_state(state_from_observation(environment._observation()))
+    original_capture = diagnostics.capture_synthetic_c1_views
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def capture(*args, **kwargs):
+        ledger["capture"] += 1
+        assert ledger["capture"] <= 12
+        return original_capture(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        ledger["digest"] += 1
+        assert ledger["digest"] <= 96
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "native word controls must not move, reset or write episodes"
+        )
+
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", capture)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(diagnostics, "write_episode", forbidden)
+    if speed == 0.1:
+        bad_environment, bad_owner = deepcopy((environment, owner))
+        bad_environment.history[-1][0][0] = np.nextafter(
+            np.float32(speed), np.float32(math.inf)
+        )
+        ledger["reads"] += 1
+        with pytest.raises(ValueError, match="emitted observation disagree"):
+            bad_owner.record_environment_tick(bad_environment, synthetic_test_only=True)
+        assert bad_owner._current[0] == 1
+    ledger["reads"] += 1
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    source, frame = owner._current[2:]
+    assert frame == emitted
+    assert source.velocity_m_s[0].hex() == float(speed).hex()
+    assert source.angular_velocity_rad_s[2].hex() == environment.turn_rate.hex()
+    decoded = decode_state(frame)
+    binding = diagnostics._bind_synthetic_c1_state_intervals(
+        source, frame, synthetic_test_only=True
+    )
+    assert binding["fixture_words_bound"] is True
+    for field, index in (("velocity_m_s", 0), ("angular_velocity_rad_s", 2)):
+        original = Fraction(getattr(source, field)[index])
+        received = Fraction(getattr(decoded, field)[index])
+        component = binding["fields"][field][index]
+        assert tuple(Fraction(*pair) for pair in component["interval"]) == (
+            min(original, received),
+            max(original, received),
+        )
+        assert Fraction(*component["decoded_minus_source"]) == received - original
+    if speed in (0.1, 0.2):
+        assert (
+            Fraction(*binding["fields"]["velocity_m_s"][0]["decoded_minus_source"]) > 0
+        )
+    elif math.copysign(1, speed) < 0:
+        assert decoded.velocity_m_s[0].hex() == "-0x0.0p+0"
+    motion = diagnostics._probe_synthetic_c1_state_motion(
+        source,
+        frame,
+        reference_tick=2,
+        target_speed=0.125,
+        turn_rate=0.3,
+        error_evidence={
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        synthetic_test_only=True,
+    )
+    assert motion["fixture_motion_enclosed"] is (speed != 0.6)
+    if speed == 0.6:
+        assert motion["reason"] == "source_interval_outside_motion_domain"
+        assert decoded.velocity_m_s[0] > 0.6
+        assert motion["work"]["motion_entries"] == 0
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert motion[flag] is False
 
 
 @pytest.fixture(scope="module")

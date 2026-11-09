@@ -2243,6 +2243,26 @@ records finite synthetic controls, reset-lineage repair and actual gate results.
 
 [simulator-source-read-review]: REVIEW.md#183-recorder-reads-from-the-actual-simulator-owner-2026-11-09
 
+##### Native Motion Source Words (2026-11-09)
+
+The recorder's actual-owner path now encodes the existing observation State first,
+then derives source speed/yaw from the same original native dynamics snapshot.
+Their encoding must equal that emitted frame before capture and publication.
+Contradictory native/ego words reject without staged events; legacy fixture paths,
+normal outputs, source/decoded tolerances and all qualification flags are unchanged.
+The existing exact interval binder and motion bridge retain nonzero rounding
+discrepancies instead of collapsing both endpoints to the post-float32 word.
+
+Signed zero survives source and wire words. Binary32 0.6 overshoot still exceeds
+the motion domain and rejects before motion entries; no clamp or new allowance.
+Source goal components remain post-observation, not recovered native goal values.
+Original native motion values are not uniform native arithmetic/pose/range/clock
+error, source authority, usable permission or admitted predecessor evidence.
+The [motion-word checkpoint][native-motion-source-review] records independently
+computed Fraction references, bounded inconsistent-ego controls and actual gates.
+
+[native-motion-source-review]: REVIEW.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -16158,6 +16158,59 @@ native goal precision, infer uniform error, clamp 0.6 overshoot or admit a comma
 This is useful compatible prerequisite work, not missing routine approval or
 another request hash wrapper. Scoped docs and verified checkpoint/push follow.
 
+## 184. Native Simulator Motion Words and Emitted Frames (2026-11-09)
+
+Actual-owner checkpoint f792c3a normally pushed. Continued the adjacent Q1
+precision prerequisite: derive source speed/yaw from the already-owned native
+dynamics snapshot rather than treating float32 observation values as originals.
+Encode the existing observation State to retain the actual emitted frame,
+replace only its motion components with native words and require exact encoded
+correspondence before capture and publication. Contradictory ego/native values
+reject before staged events; no changed wire bytes, time/profile/goal semantics
+or caller-provided source/frame overrides. Existing legacy fixture APIs remain.
+
+Four verification positions including repairs/aborts: first focused source-word
+and owner controls, style/adjacent controls, required root and one reserved repair.
+Four native-word cases (0.1, 0.2, signed zero, 0.6) reuse the existing one-scene,
+two-step simulator-source fixture; no extra environment construction or actual
+step. At most five new source reads/four captures/40 digests, five direct interval
+and four motion-bridge calls (at most three motion entries), with existing
+4096-bit source/16384-bit motion/16-braking-tick/128-chord/16-term limits unchanged.
+The combined old/new fixture ledger stays below 24 reads/12 captures/96 digests.
+One same-case inconsistent-ego control uses a cloned pair, no capture or step.
+
+Independent Fraction references check original/decoded intervals and signed
+discrepancies; signed zero is retained in words and actual frame bytes. The
+unchanged motion bridge must reject binary32 0.6 overshoot before motion entries,
+not clamp it. Goal values remain post-observation, not recovered native world
+precision. Synthetic zero-error premises are conditional control assumptions,
+not accepted uniform/native/range/pose/clock error. Source/native/admission flags
+remain false; no one-use/predecessor permission, study data, GPU/native/hardware,
+download/dependency change or artifact/cleanup job follows. Actual results and
+checkpoint documentation follow the focused checks and required gate.
+
+Position one: four native-word plus ten owner controls pass, 14 tests,
+0.34 s/1,756 deselected. Combined source ledger sixteen reads/seven captures/
+53 digests/zero forbidden. Position two: same controls plus sixteen exact-source
+interval/sixteen source-motion compatibility controls pass, 46 tests,
+1.41 s/1,724 deselected; same source ledger. Ruff changed-file format/lint/
+whitespace pass. Position three required root passes 2,693 tests, one known
+transformer QDQ xfail/71 warnings, no skips, 54.43 s; repository lint, changed-file
+format and editor diagnostics pass. Three positions used; fourth reserved but
+unused, not follow-on scope. No failed checks or relaxed bound; prior successful
+source gates and spent experiment ledgers are not rerun/refunded by docs.
+
+Independent Fraction checks retain native speed and angular-rate rounding,
+literal emitted-frame bytes and negative-zero representation. The inconsistent
+ego control fails before capture; 0.6's decoded upper word remains above the
+profile maximum and the bridge reports source_interval_outside_motion_domain
+with zero motion entries. Conditional supported cases do not qualify native
+error, true source/goal semantics, body/coverage, clocks or command execution.
+Native goal values are still lost upstream at the existing float32 producer;
+next retain those already-computed words and their sample/pose correspondence
+before conversion, with unchanged observations/frame bytes/default RNG/physics.
+No task labels, study episodes, hardware or broader numerical audits follow.
+
 ## Sources
 
 Hardware and tools:

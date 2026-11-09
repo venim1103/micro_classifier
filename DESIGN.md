@@ -2307,6 +2307,28 @@ checkpoint][receipt-clock-review] records the bounded controls and primary sourc
 
 [receipt-clock-review]: REVIEW.md#186-diagnostic-monotonic-receipt-windows-2026-11-09
 
+##### Producer-Owned Receipt Retention (2026-11-09)
+
+The opt-in simulator retains one private deep copy of its completed receipt
+alongside its actual RNG/odometry RNG object references. Returned segment,
+configuration and clock dictionaries are separate caller-owned diagnostics.
+Reset clears retained data; the next preflight-approved transition clears it
+before motion, including when receipt capture is disabled. Preflight rejection
+does not invalidate the still-current receipt. Deepcopy of the entire simulator
+preserves its internal epoch-reference correspondence, not identity with the
+original simulator. Replacing a generator by an equal-state copy is a different
+epoch reference, not continued execution identity.
+
+Unexpected failures after transition begins do not roll back motion and cannot
+make a previous receipt current. Retention is neither atomic publication nor
+adversarial tamper protection, source acceptance, native execution or one-use
+permission. One capped receipt is not a measured RAM/stack bound. Actual source
+tick/pose/profile linkage still needs its own opt-in consumer. The [retention
+checkpoint][receipt-retention-review] records lifecycle and nested ownership
+controls; all admission/qualification flags stay false.
+
+[receipt-retention-review]: REVIEW.md#187-producer-owned-receipt-retention-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

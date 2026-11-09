@@ -12,6 +12,7 @@ import json
 import math
 import time
 from collections import deque
+from copy import deepcopy
 from dataclasses import asdict, dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -182,6 +183,7 @@ class RoverEnv:
         self.yaw = self.scenario.start[2]
         self.speed = self.turn_rate = 0.0
         self.done = False
+        self._motion_receipt_source = None
         self.pending = deque()
         self.pending_ego = deque()
         self.ego_sample_tick = None
@@ -365,6 +367,7 @@ class RoverEnv:
                 "segments": [],
             }
             begin_ns = _motion_receipt_clock_ns()
+        self._motion_receipt_source = None
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -458,6 +461,11 @@ class RoverEnv:
                     "qualified": False,
                 },
             )
+            self._motion_receipt_source = {
+                "rng": self.rng,
+                "odometry_rng": self.odometry_rng,
+                "receipt": deepcopy(receipt),
+            }
             info["motion_receipt"] = receipt
         return observation, float(reward), terminated, truncated, info
 

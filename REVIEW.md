@@ -16321,6 +16321,52 @@ uses preservation/reference/whitespace checks, not another successful code gate.
 
 [python-monotonic-clock-doc]: https://docs.python.org/3.12/library/time.html#time.monotonic_ns
 
+## 187. Producer-Owned Receipt Retention (2026-11-09)
+
+Clock checkpoint 0e6be95 normally pushed. A returned motion receipt remains
+caller-owned mutable diagnostic data, not an execution source. Local hypothesis:
+retain one private deep copy with actual simulator RNG/odometry RNG epoch
+references, clear it at reset and before the next completed/preflight-approved
+transition, and keep it unchanged on preflight rejection. This removes returned
+config/segment/clock aliases without claiming atomicity or adversarial ownership.
+An unexpected failure after transition begins leaves no current retained receipt;
+it does not roll back realized motion or qualify the previous copy as current.
+Replacement RNG objects remain detectable by identity, not equivalent RNG state.
+
+Finite routine scope: four lifecycle controls in the existing tests, one
+environment construction/at most two step calls per case, and one extra reset
+only in reset control. Existing ten receipt controls keep their two-step caps;
+the owned case mutates only returned data and checks the retained nested copy.
+At most four verification positions including failed/aborted focused, adjacent/
+style, required root and one repair reserve. First focus four lifecycle plus
+unchanged seven clock/ten receipt controls. No extra scene/episode/label/data,
+study, download, dependency, GPU/native/board/physical action or artifact.
+Retaining one capped receipt is not measured RAM/stack fit or clock accuracy.
+Results: first focus **21 passed**, 1.46 s; adjacent eighteen source/native-word
+controls **18 passed**, 1.47 s, source ledger 21 reads/eight captures/71 digests/
+zero forbidden. Ruff format changed only the new test layout; scoped lint/
+format/whitespace/editor diagnostics passed. Required root `python -m pytest -q
+&& ruff check . && git diff --check` **2,708 passed**, one known transformer QDQ
+xfail, 71 warnings, no reported skips, 54.98 s; both changed-file format checks
+passed. Three of four positions used; no failures/aborts, fourth unused and not
+follow-on scope. No suite rerun follows documentation-only changes.
+
+Documentation check initially exited 2: a ternary argument-list expression in
+Perl open collapsed to a scalar, producing useless-constant warnings and a
+missing-file error. No files changed. Explicit open branches repaired only the
+validator; the same exact history/design/workflow/reference and whitespace
+checks then passed. This did not consume a new source/test run or relax checks.
+
+The private copy retains actual segment/clock/config content without caller
+aliases; a later source consumer must still check its epoch/tick/poses and
+reject missing, stale or contradictory receipts before using that content.
+No one-use/native execution/source/clock/numerical/physical qualification or
+admitted predecessor follows. S1-S5 acceptance and protected studies remain
+missing; no usable command is admitted. Next add opt-in actual-source linkage
+from the retained receipt to previous/current source poses, without changing
+default recorder output or accepting caller receipt overrides. No artifact,
+study/native/board measurement or cleanup action was produced.
+
 ## Sources
 
 Hardware and tools:

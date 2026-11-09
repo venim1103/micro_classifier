@@ -172,10 +172,16 @@ def test_step_motion_receipt_preserves_realized_segments(monkeypatch, case):
     monkeypatch.setattr(rover, "swept_collision", collision)
     output = environment.step(action, capture_motion_receipt=True)
     receipt = output[-1]["motion_receipt"]
+    retained = environment._motion_receipt_source
+    assert retained["rng"] is environment.rng
+    assert retained["odometry_rng"] is environment.odometry_rng
+    assert retained["receipt"] == receipt
+    assert retained["receipt"] is not receipt
     actual_attempts = deepcopy(attempts)
     attempts.clear()
     normal = baseline.step(action)
     assert "motion_receipt" not in normal[-1]
+    assert baseline._motion_receipt_source is None
     assert json.dumps(output[:-1], default=json_value, sort_keys=True) == json.dumps(
         normal[:-1], default=json_value, sort_keys=True
     )
@@ -233,10 +239,48 @@ def test_step_motion_receipt_preserves_realized_segments(monkeypatch, case):
     elif case == "braking":
         assert receipt["updated_speed_m_s"] == 0.25
     if case == "owned":
+        held_receipt = deepcopy(retained["receipt"])
         receipt["segments"][0]["committed"] = False
         receipt["submitted_action"] = (99.0, 99.0)
+        receipt["config"]["dt"] = 99.0
+        receipt["clock"]["qualified"] = True
+        assert retained["receipt"] == held_receipt
         np.testing.assert_array_equal(environment.position, baseline.position)
         assert environment.speed == baseline.speed
+
+
+@pytest.mark.parametrize(
+    "case", ("normal_clears", "rejected_retains", "reset_clears", "epoch_retained")
+)
+def test_step_motion_receipt_source_lifecycle(case):
+    environment = RoverEnv()
+    assert environment._motion_receipt_source is None
+    environment.step([0.125, 0.3], capture_motion_receipt=True)
+    retained = environment._motion_receipt_source
+    assert retained["receipt"]["tick_after"] == environment.tick
+    if case == "normal_clears":
+        environment.step([0.125, 0.3])
+        assert environment._motion_receipt_source is None
+    elif case == "rejected_retains":
+        with pytest.raises(ValueError, match="capture_motion_receipt"):
+            environment.step([0.125, 0.3], capture_motion_receipt=1)
+        assert environment._motion_receipt_source is retained
+        assert retained["receipt"]["tick_after"] == environment.tick
+    elif case == "reset_clears":
+        environment.reset()
+        assert environment._motion_receipt_source is None
+        assert retained["rng"] is not environment.rng
+        assert retained["odometry_rng"] is not environment.odometry_rng
+    else:
+        copied = deepcopy(environment)
+        assert copied._motion_receipt_source["rng"] is copied.rng
+        assert copied._motion_receipt_source["odometry_rng"] is copied.odometry_rng
+        assert copied._motion_receipt_source["rng"] is not environment.rng
+        previous_rng = environment.rng
+        environment.rng = deepcopy(environment.rng)
+        assert (
+            retained["rng"] is previous_rng and retained["rng"] is not environment.rng
+        )
 
 
 @pytest.mark.parametrize(

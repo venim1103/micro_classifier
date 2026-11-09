@@ -17230,6 +17230,54 @@ Scoped history/Sources/prior-design/stable-workflow preservation, retention
 reference/local target, five-file source/test diff/editor diagnostics and
 whitespace checks passed; no unchanged source gate repeated for documentation.
 
+## 205. Read-Time Current Native ToF Source Snapshot (2026-11-09)
+
+Retention checkpoint33314cf normally pushed/clean. Hypothesis: bracket a copied
+retained ToF record with two bounded live intake forms and current producer/
+owner/epoch/cache/RNG/file checks; publish only the current copy and original
+frame, omit source/frame on unknown. Bounded exact typed template comparison
+preflights retained data before hashing (native float.hex including signed zero,
+uint32 words/tuple lengths/key sets/primitive types); do not hash an oversized
+mutated retained word or let boolean/int aliases match. No retention/read/frame
+advance/geometry replay/step/reset/clock during snapshot, all flags false.
+
+Finite controls: twelve cloned existing receipt fixtures, each <=one fresh step,
+two ordinary setup reads and one ToF retention (two intakes), one snapshot (<=two
+intakes/64 guarded binding queries), zero forbidden during snapshot. Old setup
+C1 views <=16 per case remain diagnostic, not native source/coverage. Native
+192+64+64/sample64/mask64/obstacles32/pending8/epoch32/C1ticks unchanged.
+Four positions incl failure/abort: first12, adjacent/style<=160 existing/new
+ToF controls, required root, repair reserve. No source/clock/physical/numerical/
+range/coverage/permission/admission adoption, no command/data/study/model/GPU/
+dependency/download/hardware/Arm/board/artifact/cleanup. Initial duplicate-path
+patch rejected/no edits; git status confirmed clean, combined diagnostics hunks
+and retried without using a test position. Results follow checks.
+First twelve PASS2.91s, <=two intake/64binding/zero forbidden; existing source/
+receipt fixture ledgers zero. Position two scoped Ruff format/lint/format-check/
+whitespace passed; **108 ToF compatibility controls passed**,3.54s, same old
+fixture ledgers zero. Post-format Pylance matcher all six resolved call sites
+compatible; LSP confirms snapshot declaration/literal opt-in, runtime twelve
+controls exercise dynamic fixture owner calls. Editor diagnostics clear.
+
+Position three required root `python -m pytest -q && ruff check . && git diff
+--check` **2,920 passed**, known QDQ xfail/71 warnings/no reported skips,77.12s;
+changed-file format passed, all original capped source/history/receipt and
+neighboring ledgers held. Three positions used/no test/style failure/abort;
+unused fourth is not follow-on authority. Initial editing failure retained.
+No unchanged source gate repeated for docs or opt-in Arm/sanitizer/board/model/
+study/data/dependency/download/hardware action; no artifact/cleanup pending.
+
+This publishes current copied acquisition diagnostics, not a usable command,
+delivered-State source frame, scan/retention coverage, source authority, epoch/
+clock/one-use/numerical/physical/range qualification or permission. Unknown has
+no partial source/frame; ordinary APIs unchanged/all flags false. Next bounded
+actual acquisition/pending/delivery lineage prerequisites for named source and
+retention consumers; no clock/error/coverage bounds follow from native words,
+nominal tick equality, a current frame anchor or consistent hashes.
+Scoped history/Sources/prior-design/stable-workflow preservation, snapshot
+reference/local target, five-file source/test diff/editor diagnostics and
+whitespace checks passed; source gate not repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

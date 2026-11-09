@@ -9674,6 +9674,35 @@ def _sample_simulator_native_tof_source(environment, source_epoch):
     }
 
 
+def _native_tof_word_copy_matches(copied, expected):
+    if type(copied) is not type(expected):
+        return False
+    if type(expected) is dict:
+        return (
+            len(copied) == len(expected)
+            and all(type(key) is str for key in copied)
+            and set(copied) == set(expected)
+            and all(
+                _native_tof_word_copy_matches(copied[key], value)
+                for key, value in expected.items()
+            )
+        )
+    if type(expected) is tuple:
+        return len(copied) == len(expected) and all(
+            _native_tof_word_copy_matches(actual, value)
+            for actual, value in zip(copied, expected, strict=True)
+        )
+    if type(expected) is float:
+        return copied.hex() == expected.hex()
+    if type(expected) is int:
+        return (
+            copied.bit_length() <= max(32, expected.bit_length()) and copied == expected
+        )
+    if type(expected) is str:
+        return len(copied) == len(expected) and copied == expected
+    return (expected is None or type(expected) is bool) and copied == expected
+
+
 def _check_simulator_motion_receipt_clock(clock):
     if (
         type(clock) is not dict
@@ -10468,6 +10497,137 @@ class _SyntheticC1SourceRecorder:
         ):
             raise ValueError("native ToF producer or recorder changed during retention")
         self._tof_sample = copied
+
+    def snapshot_native_tof_source(self, *, synthetic_test_only=False):
+        if synthetic_test_only is not True:
+            raise ValueError("native ToF snapshot requires synthetic_test_only=True")
+        result = {
+            "schema": "micro-classifier/synthetic-c1-native-tof-snapshot/1",
+            "allowed_use": "offline_native_tof_source_diagnostics_only",
+            "status": "unknown",
+            "reason": "missing_current_native_tof_source",
+            "snapshot_available": False,
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+        }
+        environment, retained = self._simulator, self._tof_sample
+        current_before, dynamics_before = self._current, self._dynamics_sample
+        if (
+            environment is None
+            or retained is None
+            or current_before is None
+            or dynamics_before is None
+        ):
+            return result
+
+        def producer():
+            return {
+                "tick": environment.tick,
+                "pose_m_rad": (
+                    *map(float, environment.position),
+                    float(environment.yaw),
+                ),
+                "native_action": (
+                    float(environment.speed),
+                    float(environment.turn_rate),
+                ),
+                "native_goal_source": deepcopy(environment._native_goal_source),
+                "observation": environment._observation(),
+                "config": asdict(environment.config),
+                "scenario": asdict(environment.scenario),
+            }
+
+        def ownership():
+            current = self._current
+            return _c1_source_binding_digest(
+                {
+                    "epoch": self._epoch,
+                    "profile": {
+                        "config": asdict(self._config),
+                        "scenario": asdict(self._scenario),
+                    },
+                    "identities": self._identities,
+                    "current": None
+                    if current is None
+                    else (current[0], current[1], asdict(current[2]), current[3]),
+                    "dynamics_sample": self._dynamics_sample,
+                    "tof_sample": self._tof_sample,
+                    "binding": self._binding,
+                }
+            )
+
+        try:
+            if (
+                self._simulator_rng is not environment.rng
+                or self._simulator_odometry_rng is not environment.odometry_rng
+                or current_before[0] != environment.tick
+                or self._source_files() != self._identities
+            ):
+                raise ValueError("native ToF producer epoch/tick/files changed")
+            rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+            cache_before = environment._native_tof_source
+            live_before = _sample_simulator_native_tof_source(environment, self._epoch)
+            if not _native_tof_word_copy_matches(retained, live_before):
+                raise ValueError("native ToF retained words differ from current source")
+            observed = producer()
+            producer_binding = _c1_source_binding_digest(observed)
+            if producer_binding != _c1_source_binding_digest(
+                {key: dynamics_before.get(key) for key in observed}
+            ):
+                raise ValueError("native ToF producer changed after recorder read")
+            owner_binding = ownership()
+            copied = deepcopy(retained)
+            if not _native_tof_word_copy_matches(copied, live_before):
+                raise ValueError("native ToF copy changed during snapshot")
+            copied_binding = _c1_source_binding_digest(copied)
+            live_after = _sample_simulator_native_tof_source(environment, self._epoch)
+            if (
+                self._simulator is not environment
+                or self._tof_sample is not retained
+                or self._current is not current_before
+                or self._dynamics_sample is not dynamics_before
+                or environment._native_tof_source is not cache_before
+                or environment.rng is not rng_before
+                or environment.odometry_rng is not odometry_rng_before
+                or self._simulator_rng is not rng_before
+                or self._simulator_odometry_rng is not odometry_rng_before
+                or not _native_tof_word_copy_matches(retained, live_after)
+                or not _native_tof_word_copy_matches(copied, live_after)
+            ):
+                raise ValueError(
+                    "native ToF source identities or words changed during snapshot"
+                )
+            if (
+                _c1_source_binding_digest(copied) != copied_binding
+                or ownership() != owner_binding
+                or _c1_source_binding_digest(producer()) != producer_binding
+                or self._source_files() != self._identities
+            ):
+                raise ValueError("native ToF source content changed during snapshot")
+        except (ValueError, TypeError, OverflowError) as error:
+            result["reason"] = str(error)
+            return result
+        result.update(
+            status="checked_current_native_tof_source_diagnostics",
+            reason=None,
+            snapshot_available=True,
+            source_epoch=copied["source_epoch"],
+            tick=copied["tick"],
+            frame=bytes(current_before[3]),
+            source=copied,
+        )
+        return result
 
     def snapshot_receipt_history(self, *, synthetic_test_only=False):
         """Publish copied offline history only while its actual producer is current."""

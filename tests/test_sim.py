@@ -9910,6 +9910,132 @@ def test_recorder_native_tof_source(
     assert work["intake"] <= 4 and work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "flag",
+        "no_retention",
+        "producer_missing",
+        "stale_tick",
+        "pose",
+        "rng",
+        "retained_word",
+        "cache_identity",
+        "copied_after",
+        "late_pose",
+        "owner_context",
+    ),
+)
+def test_native_tof_current_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(environment, synthetic_test_only=True)
+    retained = owner._tof_sample
+    before_tick, before_frame = owner._current[0], owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    if case == "no_retention":
+        owner._tof_sample = None
+    elif case == "producer_missing":
+        owner._simulator = None
+    elif case == "stale_tick":
+        environment.tick += 1
+    elif case == "pose":
+        environment.position[0] += 0.125
+    elif case == "rng":
+        environment.rng = deepcopy(environment.rng)
+    elif case == "retained_word":
+        retained["sample_words"] = (1 << 64, *retained["sample_words"][1:])
+    original_intake = diagnostics._sample_simulator_native_tof_source
+    original_copy = diagnostics.deepcopy
+    original_binding = diagnostics._c1_source_binding_digest
+    work = {"intake": 0, "binding": 0, "forbidden": 0}
+    outgoing = {}
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        actual = original_intake(*args, **kwargs)
+        if work["intake"] == 2:
+            if case == "cache_identity":
+                environment._native_tof_source = dict(environment._native_tof_source)
+            elif case == "copied_after":
+                outgoing["copy"]["native_source"]["inputs"]["config"]["max_range"] += (
+                    0.5
+                )
+            elif case == "late_pose":
+                environment.position[0] += 0.125
+            elif case == "owner_context":
+                owner._tof_sample = dict(retained)
+        return actual
+
+    def copied(value, *args, **kwargs):
+        actual = original_copy(value, *args, **kwargs)
+        if value is retained:
+            outgoing["copy"] = actual
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if case == "retained_word":
+            assert record is not retained
+            assert type(record) is not dict or record.get("tof_sample") is not retained
+        return original_binding(record)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "native ToF snapshot must not read/retain/replay/step/reset/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(rover, "tof_ranges", forbidden)
+    monkeypatch.setattr(rover, "tof_directions", forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="synthetic_test_only"):
+            owner.snapshot_native_tof_source(synthetic_test_only=1)
+    else:
+        result = owner.snapshot_native_tof_source(synthetic_test_only=True)
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == "copy":
+            assert result["snapshot_available"] is True
+            assert result["source"] == retained
+            assert result["frame"] == before_frame
+            assert result["tick"] == retained["tick"] != environment.sensor_tick
+            result["source"]["native_source"]["inputs"]["config"]["max_range"] = -99.0
+            assert retained["native_source"]["inputs"]["config"]["max_range"] > 0
+        else:
+            assert result["status"] == "unknown"
+            assert result["snapshot_available"] is False
+            assert "source" not in result and "frame" not in result
+    assert owner._current[0] == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert work["intake"] <= 2 and work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

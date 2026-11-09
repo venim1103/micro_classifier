@@ -2714,6 +2714,29 @@ remain false. Read-time current-source publication remains separate work.
 
 [native-tof-retention-review]: REVIEW.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
 
+##### Current Native ToF Source Snapshot (2026-11-09)
+
+The recorder's separate literal-opt-in `snapshot_native_tof_source` copies
+retained fresh acquisition words only while two bounded current live intakes
+and original producer/recorder/cache/RNG/file/tick/content checks agree. Exact
+typed template comparison checks bounded word tuples, metadata keys, native
+float hex (including signed zero) and primitive types before hashing retained
+data. Oversized words and bool/int aliases reject without hashing a malformed
+retained record. The first outgoing copy is checked again before publication.
+
+Unknown omits source and frame. A successful diagnostic includes a detached
+source and the original current recorder frame without stepping, reading,
+retaining, replaying geometry, drawing RNG or reading clocks. Acquisition tick
+can differ from delivered sensor tick; the frame is a current context anchor,
+not a claimed source frame for the fresh acquisition. All permission and
+qualification flags remain false. Two-point checks are not perpetual freshness,
+enforced atomicity, scan/history coverage, selected-hit/range/native/physical
+proof, source authority, one-use execution or admission. The
+[snapshot checkpoint][native-tof-snapshot-review] records copied-word, prehash,
+stale/epoch/cache and late-copy/pose mutation controls and remaining obligations.
+
+[native-tof-snapshot-review]: REVIEW.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

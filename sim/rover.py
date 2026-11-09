@@ -547,8 +547,54 @@ def tof_directions(yaw, config):
     )
 
 
-def tof_ranges(position, yaw, scenario, config):
+def _retain_native_tof_source(
+    source, position, yaw, scenario, config, ranges, rays=None, floor=None
+):
+    source.update(
+        schema="micro-classifier/native-tof-source/1",
+        allowed_use="native_tof_diagnostics_only",
+        status="recorded_native_tof_values",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        inputs={
+            "position_m": tuple(map(float, position)),
+            "yaw_rad": float(yaw),
+            "config": asdict(config),
+            "scenario": asdict(scenario),
+        },
+        world_frame_unit_rays=None if rays is None else rays.copy(),
+        floor_candidate_ranges_m=None if floor is None else floor.copy(),
+        pre_noise_ranges_m=ranges.copy(),
+    )
+
+
+def tof_ranges(position, yaw, scenario, config, *, source=None):
     """Synthetic first returns from a floor, finite walls and capped cylinders."""
+    if source is not None:
+        if type(source) is not dict or source:
+            raise ValueError("ToF source requires an empty builtin dictionary")
+        if type(config) is not Config or type(scenario) is not Scenario:
+            raise TypeError("ToF source requires the actual Config and Scenario")
+        if len(scenario.obstacles) > 32:
+            raise ValueError("ToF source obstacle budget exhausted")
+        source_position = np.asarray(position)
+        if (
+            source_position.shape != (2,)
+            or not np.isfinite(source_position).all()
+            or not math.isfinite(yaw)
+        ):
+            raise ValueError("ToF source requires a finite native pose")
     if config.tof_mount_height is None:
         angles = yaw + np.linspace(
             config.field_of_view / 2, -config.field_of_view / 2, 8
@@ -556,11 +602,15 @@ def tof_ranges(position, yaw, scenario, config):
         ranges = ray_ranges(
             position, angles, scenario.obstacles, scenario.bounds, config.max_range
         )
-        return np.broadcast_to(ranges, (8, 8)).copy()
+        ranges = np.broadcast_to(ranges, (8, 8)).copy()
+        if source is not None:
+            _retain_native_tof_source(source, position, yaw, scenario, config, ranges)
+        return ranges
     rays = tof_directions(yaw, config)
     directions, up = rays[..., :2], rays[..., 2]
     height = config.tof_mount_height
     ranges = np.divide(-height, up, out=np.full((8, 8), np.inf), where=up < 0)
+    floor_source = ranges.copy() if source is not None else None
     for axis in range(2):
         for wall in (0.0, scenario.bounds[axis]):
             distance = np.divide(
@@ -621,6 +671,10 @@ def tof_ranges(position, yaw, scenario, config):
         )
         hit = (distance >= 0) & (np.sum(relative**2, axis=-1) <= radius**2)
         ranges = np.minimum(ranges, np.where(hit, distance, np.inf))
+    if source is not None:
+        _retain_native_tof_source(
+            source, position, yaw, scenario, config, ranges, rays, floor_source
+        )
     return ranges
 
 

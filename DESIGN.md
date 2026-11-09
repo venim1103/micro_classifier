@@ -2620,6 +2620,28 @@ controls and the remaining source/timing qualification obligations.
 
 [receipt-clock-order-review]: REVIEW.md#200-adjacent-retained-clock-window-ordering-2026-11-09
 
+##### Native ToF Computation Prerequisites (2026-11-09)
+
+The synthetic `tof_ranges` core accepts an optional empty builtin source
+dictionary. It copies the actual native pose, Config and Scenario, computed
+world-frame rays, initial floor candidates and final pre-noise native ranges.
+Default arithmetic/return values remain unchanged; noise, dropout, clipping,
+float32 projection, acquisition cadence, pending delivery and wire fields stay
+outside this capture. Legacy planar geometry records no 3D rays or floor
+candidates. Native infinities remain missing candidates, not finite enclosures.
+
+Opt-in work is limited to 32 obstacle entries and fixed 8x8 grids; this is a
+diagnostic retention limit, not an accepted physical-domain or error bound.
+Returned arrays and input dataclasses are detached copies. The record permits
+`native_tof_diagnostics_only`; all permission/qualification flags remain false.
+Wall/cylinder intermediate proof, selected-hit correctness, range-error bounds,
+actual sampling/epoch linkage, source acceptance and command admission remain
+separate obligations. Matching copied/fabricated inputs is not source authority.
+The [native ToF checkpoint][native-tof-source-review] records finite native-word,
+detached-copy, geometry, preflight, cadence and RNG controls.
+
+[native-tof-source-review]: REVIEW.md#201-native-tof-input-and-computed-value-retention-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

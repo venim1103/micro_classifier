@@ -15688,6 +15688,141 @@ def test_tof_capped_cylinder_first_hit_satisfies_analytic_surface(top):
     assert ranges[row, column] < config.max_range
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "floor",
+        "low",
+        "tall",
+        "yaw",
+        "missing",
+        "legacy",
+        "bad_option",
+        "nonempty",
+        "list_option",
+        "position_shape",
+        "position_nonfinite",
+        "yaw_nonfinite",
+        "budget",
+        "config_type",
+    ),
+)
+def test_native_tof_source_preserves_computed_values(monkeypatch, case):
+    from sim import rover
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    scene = Scenario()
+    position = np.array(scene.start[:2], dtype=float)
+    yaw = 0.0
+    source = {}
+    valid = case in ("floor", "low", "tall", "yaw", "missing", "legacy")
+    if case in ("low", "tall"):
+        scene = Scenario(
+            obstacles=((3.0, 3.0, 0.5),),
+            obstacle_heights=(0.05 if case == "low" else 1.0,),
+        )
+    elif case == "yaw":
+        yaw = math.pi / 2
+        scene = Scenario(obstacles=((1.0, 4.0, 0.3),))
+    elif case == "missing":
+        config = Config(tof_mount_pitch=-math.pi / 4, wall_height=0.1)
+    elif case == "legacy":
+        config = Config(tof_mount_height=None, tof_rate_hz=None)
+    elif case == "bad_option":
+        source = True
+    elif case == "nonempty":
+        source = {"occupied": True}
+    elif case == "list_option":
+        source = []
+    elif case == "position_shape":
+        position = np.array([1.0, 1.0, 0.0])
+    elif case == "position_nonfinite":
+        position[0] = math.inf
+    elif case == "yaw_nonfinite":
+        yaw = math.nan
+    elif case == "budget":
+        scene = Scenario(obstacles=((3.0, 3.0, 0.1),) * 33)
+    elif case == "config_type":
+        config = None
+    held_position = position.copy()
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("native ToF controls must not step/reset/read clocks")
+
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(rover.time, "monotonic_ns", forbidden)
+    if valid:
+        baseline = tof_ranges(position, yaw, scene, config)
+        captured = tof_ranges(position, yaw, scene, config, source=source)
+        np.testing.assert_array_equal(captured, baseline)
+        np.testing.assert_array_equal(
+            captured.view(np.uint64), baseline.view(np.uint64)
+        )
+        np.testing.assert_array_equal(source["pre_noise_ranges_m"], captured)
+        np.testing.assert_array_equal(
+            source["pre_noise_ranges_m"].view(np.uint64), captured.view(np.uint64)
+        )
+        assert not np.shares_memory(source["pre_noise_ranges_m"], captured)
+        assert source["inputs"]["position_m"] == tuple(map(float, position))
+        assert source["inputs"]["yaw_rad"].hex() == yaw.hex()
+        assert source["schema"] == "micro-classifier/native-tof-source/1"
+        assert source["allowed_use"] == "native_tof_diagnostics_only"
+        assert source["status"] == "recorded_native_tof_values"
+        assert (
+            source["inputs"]["config"]["field_of_view"].hex()
+            == config.field_of_view.hex()
+        )
+        assert source["inputs"]["scenario"]["obstacles"] == scene.obstacles
+        assert source["inputs"]["scenario"]["bounds"] == scene.bounds
+        assert (
+            source["inputs"]["scenario"]["obstacle_heights"] == scene.obstacle_heights
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert source[flag] is False
+        if case == "legacy":
+            assert source["world_frame_unit_rays"] is None
+            assert source["floor_candidate_ranges_m"] is None
+        else:
+            rays = tof_directions(yaw, config)
+            np.testing.assert_array_equal(source["world_frame_unit_rays"], rays)
+            floor = np.divide(
+                -config.tof_mount_height,
+                rays[..., 2],
+                out=np.full((8, 8), np.inf),
+                where=rays[..., 2] < 0,
+            )
+            np.testing.assert_array_equal(source["floor_candidate_ranges_m"], floor)
+            assert source["world_frame_unit_rays"].shape == (8, 8, 3)
+        source["pre_noise_ranges_m"][:] = -99.0
+        source["inputs"]["position_m"] = (99.0, 99.0)
+        source["inputs"]["config"]["field_of_view"] = -99.0
+        source["inputs"]["scenario"]["bounds"] = (99.0, 99.0)
+        np.testing.assert_array_equal(captured, baseline)
+        assert config.field_of_view > 0
+        assert scene.bounds != (99.0, 99.0)
+    else:
+        monkeypatch.setattr(rover, "tof_directions", forbidden)
+        monkeypatch.setattr(rover, "ray_ranges", forbidden)
+        with pytest.raises((TypeError, ValueError)):
+            tof_ranges(position, yaw, scene, config, source=source)
+        if type(source) is dict and case != "nonempty":
+            assert source == {}
+    np.testing.assert_array_equal(position, held_position)
+    assert work["forbidden"] == 0
+
+
 def test_tof_low_obstacles_and_tall_obstacles_have_different_row_visibility():
     config = Config(noise_std=0, dropout=0, latency_ticks=0)
     scenes = [

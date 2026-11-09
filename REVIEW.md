@@ -16998,6 +16998,59 @@ no physical sensor access, learned run or uniform numerical bound follows.
 Scoped history/Sources/design/workflow preservation, new window reference/local
 targets and whitespace checks passed; unchanged source gate not rerun for docs.
 
+## 201. Native ToF Input and Computed-Value Retention (2026-11-09)
+
+Window checkpoint882f60e normally pushed. Owning tof_ranges computes native
+world rays, floor candidates and final ranges before _sample adds noise/dropout
+and float32 projection. Hypothesis: an optional empty builtin source dictionary
+can retain detached actual inputs/rays/floor/native ranges without changing the
+default return or sensor behavior. Pylance baseline: all nine resolved call sites
+compatible with the existing four-argument signature; added keyword rechecked
+after editing, not assumed from terminal interpreter state.
+
+Finite routine scope: fourteen fixed six geometry parity/eight preflight controls,
+<=two ToF core calls each, zero Rover constructors/step/reset/RNG/clock/source/guard
+calls; each source <=32 obstacles,64 rays/192 direction words,64 floor and64
+final range words. No cylinder/wall primitive error proof or selected-hit claim;
+native infinities remain explicit missing candidates. Four positions incl
+failures/aborts: first14, adjacent/style/signature, required root, repair reserve.
+Existing numerical/source/motion/term caps unchanged. No new timing study/data/
+model/GPU/dependency/download/Arm/board/artifact/cleanup action, all flags false,
+no physical sensor/native numerical/coverage/admission qualification. Outcomes
+follow verification; producer-owned sampling linkage remains separate. First14
+PASS2.39s. Strengthen the same fourteen controls with uint64 native-word parity,
+actual copied config/scenario bindings, detached mutation and preflight-before-ray
+assertions; this substantive test repair consumes the fourth/reserved position,
+without additional cases, geometry calls, studies or a refunded budget.
+
+Strengthened same fourteen PASS3.32s. Scoped Ruff formatting/lint/whitespace
+and **54 ToF compatibility controls passed**, 2.77s, including existing floor,
+ray/cylinder/wall/yaw, geometry-config, legacy RNG and cadence/hold/reset controls.
+Post-format Pylance signature: all twelve call sites compatible; editor diagnostics
+clear. Actual terminal environment verified `/opt/venv/bin/python`3.12.3,
+`/opt/venv/bin/ruff`, `/usr/bin/cc`; worktree contained only the three intended
+source/test/ledger files before this scoped documentation follow-up.
+
+Required root `python -m pytest -q && ruff check . && git diff --check`
+**2,866 passed**, known QDQ xfail, 71 warnings, no reported skips,75.85s;
+changed-file format passed. Existing source/history/receipt and other capped
+root ledgers held; no opt-in Arm/sanitizer/board/model study rerun. All four
+finite positions spent, no test/style failure or abort; no additional 201 source
+checks. Documentation preservation/references/targets/whitespace are checked
+separately without repeating this successful source gate.
+
+This retains actual copied computational words only, not uniform ray/range/
+trig/physical/numerical bounds or selected-hit proof. Full sampling/source/epoch/
+delivered-State linkage is still needed; native rays and infinities do not qualify
+sensor coverage, source authority, clocks, permissions or an admitted chain.
+All flags false; default acquisition/RNG/physics/wire behavior preserved.
+No data/study/model/GPU/dependency/download/hardware/artifact/cleanup action.
+Next bounded actual sampling-source linkage, keeping nominal capture/delivery
+identity distinct from source/timing/error qualification. No usable command.
+Scoped history/Sources/prior-design/stable-workflow preservation, new reference
+and local target, five-file diff/editor diagnostics and whitespace checks passed.
+No unchanged code gate was repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

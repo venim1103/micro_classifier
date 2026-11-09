@@ -2329,6 +2329,29 @@ controls; all admission/qualification flags stay false.
 
 [receipt-retention-review]: REVIEW.md#187-producer-owned-receipt-retention-2026-11-09
 
+##### Opt-In Receipt and Source-Pose Linkage (2026-11-09)
+
+Actual simulator source reading has a literal-false-by-default
+`capture_motion_receipt_source` option. When enabled it requires retained
+producer RNG/odometry epoch identity and at most 128 receipt segments before
+copying; previous/current consecutive ticks, config and exact native initial/
+final pose/action words must correspond to the owned source samples. Required
+receipt permission/qualification flags and clock qualification remain false.
+Staged source capture is followed by snapshot/content and retained-object
+identity rechecks before publication. Missing, stale, mismatched, over-budget or
+changed data rejects without publishing the staged current/pending source.
+
+Only opted-in snapshots add `motion_receipt` and `receipt_source_epoch`; normal
+source State/frame/capture behavior is unchanged. This recorder epoch is not the
+unspecified monotonic clock reference. Copy ownership and correspondence are not
+atomic publication, adversarial source attestation, numerical/clock bounds,
+segment-chain validation, one-use execution or predecessor admission. Consumers
+must still independently check the claimed realized segment chain, nominal
+duration and evidence before using it; no usable command follows. The [linkage
+checkpoint][receipt-source-pose-review] retains failures, controls and limits.
+
+[receipt-source-pose-review]: REVIEW.md#188-opt-in-producer-receipt-and-source-pose-linkage-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

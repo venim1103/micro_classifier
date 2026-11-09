@@ -16367,6 +16367,60 @@ from the retained receipt to previous/current source poses, without changing
 default recorder output or accepting caller receipt overrides. No artifact,
 study/native/board measurement or cleanup action was produced.
 
+## 188. Opt-In Producer Receipt and Source-Pose Linkage (2026-11-09)
+
+Retention checkpoint 247671a normally pushed. Hypothesis: an explicit literal
+opt-in on actual simulator source reading can copy the retained producer receipt
+only when actual generator epoch references, consecutive previous/current ticks,
+declared config and original initial/final source poses/actions agree. Returned
+caller receipt overrides remain unsupported. Receipt/clock/admission flags must
+remain false; nominal/detected clock pairs are not deadlines or permission.
+Default source snapshot/output excludes receipts. Recheck content and retained
+object identity after staged capture before publishing linked source data.
+
+Routine finite scope: eight controls using a clone of the existing ideal empty
+scenario fixture, one setup read at tick two and one receipt-enabled step to tick
+three (two diagnostic clock reads). Controls do not construct/step/reset/query
+guards/write episodes. At most two reads per case, with 12 total read/four
+capture/128 digest ceilings per matrix; valid also checks default source parity
+and nested ownership, poses checks both endpoints. Fixed128 receipt segment
+preflight is a local work limit, not a clock/memory/accuracy bound. Four check
+positions including failures/aborts: first eight controls, adjacent/style,
+required root, one repair reserve. Existing fixture controls retain their caps;
+no new scene/study/data/label/model/download/dependency/native/board action.
+Actual results and remaining producer/consumer limits follow verification.
+
+First focused position: eight failed, 3.14 s, after expected source/control
+outcomes reached assertions. Whole current-tuple equality attempted NumPy pose
+truth coercion and raised ambiguous-array ValueError. Ledger ten reads/three
+captures/41 digests/zero forbidden. Repair compares the tick and immutable
+State/frame directly, pose with exact array equality, and restores the pose
+control's native tuple representation before its second endpoint check. No
+source guard, expected rejection, tolerance or work cap changed; failed run is
+spent. The necessary same-matrix repair rerun uses position two.
+
+Repaired same eight controls **eight passed**, 0.31 s, ledger ten reads/three
+captures/41 digests/zero forbidden. Position three: Ruff formatted new source/
+test layout, scoped lint/format/editor/whitespace passed; unchanged adjacent
+receipt/source controls **39 passed**, 2.53 s, source ledger 21 reads/eight
+captures/71 digests/zero forbidden. Position four required root `python -m pytest
+-q && ruff check . && git diff --check` **2,716 passed**, one known transformer
+QDQ xfail, 71 warnings, no reported skips, 61.73 s; changed-file format checks
+passed. All four positions spent including the initial assertion failure; no
+fifth unchanged run or new study follows. Two focused matrices plus root repeat
+the new setup/read controls, not independent episode/cohort/timing evidence.
+
+The actual source retains separate copied receipt content and recorder epoch
+only when opted in; default State/frame and source snapshot remain unchanged.
+Producer identity and endpoint correspondence do not check the intermediate
+segment chain or prove mathematical/physical motion, native error, clock bounds,
+one-use identity or source/admission acceptance. No usable command or admitted
+predecessor exists; all qualification flags remain false. Next implement the
+small bounded segment-chain/nominal-duration consistency prerequisite for offline
+receipt consumers; retain collision rejected candidates as attempts, not traveled
+motion. Required evidence/study/ST-tools/board/learned gates remain unchanged.
+Documentation-only preservation/reference/whitespace checks do not rerun code.
+
 ## Sources
 
 Hardware and tools:

@@ -9052,7 +9052,13 @@ class _SyntheticC1SourceRecorder:
         self._current = tick, pose, state, frame
         self._binding = None
 
-    def record_environment_tick(self, environment, *, synthetic_test_only=False):
+    def record_environment_tick(
+        self,
+        environment,
+        *,
+        synthetic_test_only=False,
+        capture_motion_receipt_source=False,
+    ):
         """Read one actual simulator snapshot, without stepping or qualifying it."""
         from copy import copy
 
@@ -9061,6 +9067,8 @@ class _SyntheticC1SourceRecorder:
 
         if synthetic_test_only is not True:
             raise ValueError("simulator source requires synthetic_test_only=True")
+        if type(capture_motion_receipt_source) is not bool:
+            raise ValueError("capture_motion_receipt_source must be a literal bool")
         if type(environment) is not RoverEnv:
             raise TypeError("simulator source requires the actual RoverEnv owner")
         if self._simulator is not None and self._simulator is not environment:
@@ -9101,9 +9109,14 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("simulator source profile or scenario mismatch")
         if self._source_files() != self._identities:
             raise ValueError("simulator source files changed")
+        receipt_source_before = (
+            environment._motion_receipt_source
+            if capture_motion_receipt_source
+            else None
+        )
 
         def sample():
-            return {
+            snapshot = {
                 "tick": environment.tick,
                 "pose_m_rad": (
                     *map(float, environment.position),
@@ -9120,6 +9133,32 @@ class _SyntheticC1SourceRecorder:
                 "config": asdict(environment.config),
                 "scenario": asdict(environment.scenario),
             }
+            if capture_motion_receipt_source:
+                source = environment._motion_receipt_source
+                if (
+                    type(source) is not dict
+                    or any(type(key) is not str for key in source)
+                    or set(source) != {"rng", "odometry_rng", "receipt"}
+                ):
+                    raise ValueError("missing producer motion receipt source")
+                if (
+                    source["rng"] is not environment.rng
+                    or source["odometry_rng"] is not environment.odometry_rng
+                ):
+                    raise ValueError("motion receipt producer epoch mismatch")
+                receipt = source["receipt"]
+                if (
+                    type(receipt) is not dict
+                    or type(receipt.get("segments")) is not list
+                    or len(receipt["segments"]) > 128
+                    or receipt.get("segment_limit") != 128
+                ):
+                    raise ValueError(
+                        "unsupported or over-budget producer motion receipt"
+                    )
+                snapshot["motion_receipt"] = deepcopy(receipt)
+                snapshot["receipt_source_epoch"] = self._epoch
+            return snapshot
 
         def owner_binding():
             current = self._current
@@ -9142,6 +9181,54 @@ class _SyntheticC1SourceRecorder:
             )
 
         snapshot = sample()
+        if capture_motion_receipt_source:
+            receipt = snapshot["motion_receipt"]
+            previous = self._dynamics_sample
+            if (
+                previous is None
+                or type(receipt.get("tick_before")) is not int
+                or type(receipt.get("tick_after")) is not int
+                or receipt["tick_before"] != previous["tick"]
+                or receipt["tick_after"] != snapshot["tick"]
+                or receipt["tick_after"] != receipt["tick_before"] + 1
+            ):
+                raise ValueError("motion receipt ticks do not match source transition")
+            if (
+                receipt.get("schema") != "micro-classifier/simulator-motion-receipt/1"
+                or receipt.get("allowed_use") != "simulation_motion_diagnostics_only"
+                or receipt.get("status") != "recorded_simulator_motion"
+                or receipt.get("fixture_permission_granted") is not False
+                or any(
+                    receipt.get(flag) is not False
+                    for flag in (
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                        "numerically_certified",
+                        "source_qualified",
+                        "native_execution_qualified",
+                        "command_admission_qualified",
+                    )
+                )
+                or type(receipt.get("clock")) is not dict
+                or receipt["clock"].get("qualified") is not False
+                or _c1_source_binding_digest(receipt.get("config"))
+                != _c1_source_binding_digest(snapshot["config"])
+            ):
+                raise ValueError("unsupported producer motion receipt metadata")
+            for receipt_key, sample_key, expected_sample, shape in (
+                ("initial_pose_m_rad", "pose_m_rad", previous, (3,)),
+                ("final_pose_m_rad", "pose_m_rad", snapshot, (3,)),
+                ("initial_action", "native_action", previous, (2,)),
+                ("final_action", "native_action", snapshot, (2,)),
+            ):
+                actual = _c1_array(receipt.get(receipt_key), shape)
+                if tuple(float(value).hex() for value in actual) != tuple(
+                    value.hex() for value in expected_sample[sample_key]
+                ):
+                    raise ValueError(
+                        "motion receipt pose/action does not match source transition"
+                    )
         snapshot_binding = _c1_source_binding_digest(snapshot)
         recorder_binding = owner_binding()
         simulator_before = self._simulator
@@ -9189,6 +9276,10 @@ class _SyntheticC1SourceRecorder:
             or self._simulator is not simulator_before
             or environment.rng is not rng_before
             or environment.odometry_rng is not odometry_rng_before
+            or (
+                capture_motion_receipt_source
+                and environment._motion_receipt_source is not receipt_source_before
+            )
             or self._simulator_rng is not recorder_rng_before
             or self._simulator_odometry_rng is not recorder_odometry_rng_before
             or self._binding is not binding_before

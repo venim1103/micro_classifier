@@ -9447,6 +9447,139 @@ def c1_simulator_source_fixture(request):
             print("C1 simulator source ledger:", json.dumps(ledger, sort_keys=True))
 
 
+@pytest.fixture(scope="module")
+def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
+    environment, owner = deepcopy(c1_simulator_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_motion_receipt=True)
+    ledger = dict.fromkeys(("reads", "capture", "digest", "forbidden"), 0)
+    yield environment, owner, ledger
+    assert ledger["reads"] <= 12 and ledger["capture"] <= 4
+    assert ledger["digest"] <= 128 and ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 receipt source ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 receipt source ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "missing",
+        "epoch",
+        "stale_tick",
+        "poses",
+        "final_action",
+        "work_limit",
+        "mutated",
+    ),
+)
+def test_synthetic_c1_simulator_motion_receipt_source(
+    c1_motion_receipt_source_fixture, monkeypatch, case
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    ledger = c1_motion_receipt_source_fixture[2]
+    before_current = deepcopy(owner._current)
+    before_pending = deepcopy(owner._pending)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    original_capture = diagnostics.capture_synthetic_c1_views
+    original_digest = diagnostics._c1_source_binding_digest
+    source = environment._motion_receipt_source
+    expected = None
+    if case == "missing":
+        environment._motion_receipt_source = None
+        expected = "missing producer motion receipt"
+    elif case == "epoch":
+        source["rng"] = deepcopy(environment.rng)
+        expected = "producer epoch mismatch"
+    elif case == "stale_tick":
+        source["receipt"]["tick_after"] -= 1
+        expected = "receipt ticks"
+    elif case == "poses":
+        source["receipt"]["initial_pose_m_rad"] = (9.0, 9.0, 0.0)
+        expected = "receipt pose/action"
+    elif case == "final_action":
+        source["receipt"]["final_action"] = (0.5, 0.3)
+        expected = "receipt pose/action"
+    elif case == "work_limit":
+        source["receipt"]["segments"] *= 129
+        expected = "over-budget"
+    elif case == "mutated":
+        expected = "changed during source capture"
+
+    def capture(*args, **kwargs):
+        ledger["capture"] += 1
+        assert ledger["capture"] <= 4
+        result = original_capture(*args, **kwargs)
+        if case == "mutated":
+            source["receipt"]["submitted_action"] = (0.25, 0.3)
+        return result
+
+    def digest(*args, **kwargs):
+        ledger["digest"] += 1
+        assert ledger["digest"] <= 128
+        return original_digest(*args, **kwargs)
+
+    def read(recorder, **options):
+        ledger["reads"] += 1
+        assert ledger["reads"] <= 12
+        recorder.record_environment_tick(
+            environment, synthetic_test_only=True, **options
+        )
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError("receipt source controls must not step/reset/query guards")
+
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", capture)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(diagnostics, "_probe_synthetic_c1_state_motion", forbidden)
+    if expected is None:
+        normal = deepcopy(owner)
+        normal._simulator = environment
+        normal._simulator_rng = environment.rng
+        normal._simulator_odometry_rng = environment.odometry_rng
+        read(normal)
+        assert "motion_receipt" not in normal._dynamics_sample
+        read(owner, capture_motion_receipt_source=True)
+        recorded = owner._dynamics_sample["motion_receipt"]
+        assert recorded == source["receipt"] and recorded is not source["receipt"]
+        assert owner._dynamics_sample["receipt_source_epoch"] == owner._epoch
+        assert owner._current[0] == normal._current[0]
+        np.testing.assert_array_equal(owner._current[1], normal._current[1])
+        assert owner._current[2:] == normal._current[2:]
+        recorded["clock"]["qualified"] = True
+        recorded["segments"][0]["committed"] = False
+        assert source["receipt"]["clock"]["qualified"] is False
+        assert source["receipt"]["segments"][0]["committed"] is True
+    else:
+        with pytest.raises(ValueError, match=expected):
+            read(owner, capture_motion_receipt_source=True)
+        if case == "poses":
+            source["receipt"]["initial_pose_m_rad"] = tuple(
+                map(float, before_current[1])
+            )
+            source["receipt"]["final_pose_m_rad"] = (9.0, 9.0, 0.0)
+            with pytest.raises(ValueError, match=expected):
+                read(owner, capture_motion_receipt_source=True)
+        assert owner._current[0] == before_current[0]
+        np.testing.assert_array_equal(owner._current[1], before_current[1])
+        assert owner._current[2:] == before_current[2:]
+        assert len(owner._pending) == len(before_pending)
+        for actual, held in zip(owner._pending, before_pending, strict=True):
+            assert original_digest(actual) == original_digest(held)
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
 @pytest.mark.parametrize("case", range(10))
 def test_synthetic_c1_recorder_reads_actual_simulator(
     c1_simulator_source_fixture, monkeypatch, case

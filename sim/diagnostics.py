@@ -9809,12 +9809,11 @@ def _native_tof_history_template(environment, source_epoch):
     }
 
 
-def _match_native_tof_delivered_source(environment, history, source_epoch):
-    template = _native_tof_history_template(environment, source_epoch)
+def _check_native_tof_archive_words(history, template):
     _check_native_tof_history_layout(history, template)
     for entry in history:
         if any(not 0 <= word <= 0xFFFFFFFF for word in entry["sample_words"]):
-            raise ValueError("unsupported native ToF delivery sample word")
+            raise ValueError("unsupported native ToF archived sample word")
         for key in (
             "world_frame_unit_rays",
             "floor_candidate_ranges_m",
@@ -9837,6 +9836,11 @@ def _match_native_tof_delivered_source(environment, history, source_epoch):
                     or (key == "world_frame_unit_rays" and not math.isfinite(value))
                 ):
                     raise ValueError("unsupported native ToF archived native word")
+
+
+def _match_native_tof_delivered_source(environment, history, source_epoch):
+    template = _native_tof_history_template(environment, source_epoch)
+    _check_native_tof_archive_words(history, template)
     tick = environment.sensor_tick
     if type(tick) is not int or not 0 <= tick <= environment.tick:
         raise ValueError("missing native ToF delivered acquisition tick")
@@ -9860,6 +9864,53 @@ def _match_native_tof_delivered_source(environment, history, source_epoch):
     ) or selected["valid_mask"] != tuple(map(bool, valid.flat)):
         raise ValueError("native ToF delivered words or mask mismatch")
     return deepcopy(selected)
+
+
+def _match_native_tof_pending_sources(environment, history, source_epoch):
+    from collections import deque
+
+    template = _native_tof_history_template(environment, source_epoch)
+    _check_native_tof_archive_words(history, template)
+    pending = environment.pending
+    if type(pending) is not deque or len(pending) > 8:
+        raise ValueError("native ToF pending correspondence budget exhausted")
+    selected = []
+    previous = -1
+    for queued in pending:
+        if (
+            type(queued) is not tuple
+            or len(queued) != 4
+            or type(queued[0]) is not int
+            or type(queued[1]) is not int
+            or not previous < queued[1] <= environment.tick
+            or not environment.tick < queued[0]
+        ):
+            raise ValueError("unsupported native ToF pending acquisition metadata")
+        previous = queued[1]
+        matches = [entry for entry in history if entry["tick"] == queued[1]]
+        if len(matches) != 1 or matches[0]["delivery_tick"] != queued[0]:
+            raise ValueError("native ToF pending retained acquisition lineage missing")
+        sampled, valid = queued[2:]
+        if (
+            type(sampled) is not np.ndarray
+            or sampled.shape != (8, 8)
+            or sampled.dtype != np.dtype(np.float32)
+            or not np.isfinite(sampled).all()
+            or type(valid) is not np.ndarray
+            or valid.shape != (8, 8)
+            or valid.dtype != np.dtype(bool)
+        ):
+            raise ValueError("unsupported native ToF pending arrays")
+        source = matches[0]
+        if source["sample_words"] != tuple(
+            map(int, sampled.view(np.uint32).flat)
+        ) or source["valid_mask"] != tuple(map(bool, valid.flat)):
+            raise ValueError("native ToF pending sampled words or mask mismatch")
+        selected.append(source)
+    expected = [entry for entry in history if entry["delivery_tick"] > environment.tick]
+    if [entry["tick"] for entry in selected] != [entry["tick"] for entry in expected]:
+        raise ValueError("native ToF retained pending acquisition missing from queue")
+    return tuple(deepcopy(entry) for entry in selected)
 
 
 def _check_native_tof_delivery_frame(producer, current):

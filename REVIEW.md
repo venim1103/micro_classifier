@@ -17485,6 +17485,49 @@ Scoped history/Sources/prior-design/stable-workflow preservation, companion-fram
 reference/local target, final five-file source/test diff and whitespace passed.
 No source gate was repeated for documentation; public introduction unchanged.
 
+## 210. Retained Native ToF Pending-Queue Correspondence (2026-11-09)
+
+Original-State/frame2677fa8 normally pushed/clean. Local S2 hypothesis: the actual
+bounded pending queue must map uniquely and in order to retained acquisitions
+with exact sample words/masks and nominal delivery metadata; retained future
+entries must also be present in the queue. A matching delivered source cannot
+rescue missing pending lineage. Share unchanged bounded archive-word validation
+with the delivered matcher, without geometry/RNG/clock/replay/read/retain/step/
+reset during matching. Empty archive/queue is only empty local correspondence,
+not acquisition coverage. No current-owner publication or authority claimed.
+
+Finite synthetic controls: sixteen cloned existing receipt fixtures, <=four
+steps/six ordinary reads/three retentions (six intakes), one pending matcher per
+case; pending/history8/native192+64+64/sample64/mask64/obstacles32/epoch32/C1tick
+limits unchanged. <=48 old C1 setup views per case remain unchanged controls,
+not task episodes or qualified actual sensor coverage. Four positions including
+failures/aborts: first16, adjacent ToF/style<=180, required root, repair reserve.
+All eight flags false/no command/coverage/error/clock/numerical/physical/source/
+one-use/permission/admission adoption. No firmware/Arm/sanitizer/hardware/board/
+model/GPU/data/study/dependency/download/threshold/frozen contract/artifact/cleanup.
+Results follow the focused check.
+
+First16PASS3.54s/forbidden zero/old fixture ledgers zero. Second changed-file
+format/Ruff/whitespace and **172 adjacent ToF controls passed**,6.55s; old fixture
+ledgers held. Third required root **2,984 passed**, known QDQ xfail/71 warnings/
+no reported skips,96.36s; root Ruff/changed-file format/whitespace and original
+capped source/history/receipt/other-family controls held. Both new helpers have
+two resolved compatible calls each; editor diagnostics clear, including the old
+asdict report. Three positions used/no failure/abort; unused fourth is not
+follow-on scope. No unchanged gate rerun for documentation.
+
+The helper checks both directions of local pending/archive correspondence only.
+It is not current-owner publication, a complete acquisition/retention/scan or
+historic-frame proof, accepted clock/coverage/error/physical/source evidence,
+one-use execution or a usable permit. All eight flags false/no command; nominal
+pending/delivery ticks do not qualify clocks/deadlines. No extra firmware/Arm/
+sanitizer/board/model/data/study/dependency/download/hardware controls, artifact
+or cleanup. Next bounded current-recorder pending-source publication/rechecking,
+without source adoption or a matching-hash admitted predecessor chain.
+Scoped history/Sources/prior-design/stable-workflow preservation, pending
+reference/local target, final five-file source/test diff and whitespace passed.
+Public introduction unchanged; no source gate repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

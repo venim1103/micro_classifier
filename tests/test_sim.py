@@ -10489,6 +10489,127 @@ def test_native_tof_delivery_state_frame(
     assert work["frame"] <= 2 and work["conversion"] <= 2 and work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "match",
+        "multiple",
+        "empty",
+        "missing_archive",
+        "missing_queue",
+        "epoch",
+        "words",
+        "mask",
+        "duplicate",
+        "delivery_tick",
+        "overdue",
+        "layout",
+        "budget",
+        "history_budget",
+        "sample_word",
+        "hex_bad",
+    ),
+)
+def test_native_tof_pending_correspondence(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from collections import deque
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    if case == "multiple":
+        for _ in range(2):
+            environment.step([0.125, 0.3], capture_native_tof_source=True)
+            owner.record_environment_tick(environment, synthetic_test_only=True)
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+    history = deepcopy(owner._tof_history)
+    assert [entry[1] for entry in environment.pending] == (
+        [6, 7] if case == "multiple" else [4]
+    )
+    if case == "empty":
+        environment.pending = deque()
+        history = []
+    elif case == "missing_archive":
+        history = []
+    elif case == "missing_queue":
+        environment.pending = deque()
+    elif case == "epoch":
+        history[0]["source_epoch"] = "0" * 32
+    elif case == "words":
+        environment.pending[0][2][0, 0] = -99.0
+    elif case == "mask":
+        environment.pending[0][3][0, 0] = not environment.pending[0][3][0, 0]
+    elif case == "duplicate":
+        environment.pending.append(environment.pending[0])
+    elif case in ("delivery_tick", "overdue"):
+        entry = environment.pending[0]
+        environment.pending[0] = (
+            entry[0] + 1 if case == "delivery_tick" else environment.tick,
+            *entry[1:],
+        )
+    elif case == "layout":
+        environment.pending[0] = (*environment.pending[0], "extra")
+    elif case == "budget":
+        environment.pending = deque([environment.pending[0]] * 9)
+    elif case == "history_budget":
+        history *= 9
+    elif case == "sample_word":
+        history[0]["sample_words"] = (1 << 64, *history[0]["sample_words"][1:])
+    elif case == "hex_bad":
+        words = history[0]["native_source"]["world_frame_unit_rays"]
+        history[0]["native_source"]["world_frame_unit_rays"] = ("inf", *words[1:])
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "pending matching must not read/retain/replay/step/reset/clock"
+        )
+
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case in ("match", "multiple", "empty"):
+        matched = diagnostics._match_native_tof_pending_sources(
+            environment, history, owner._epoch
+        )
+        assert type(matched) is tuple
+        assert [entry["tick"] for entry in matched] == [
+            entry[1] for entry in environment.pending
+        ]
+        for entry in matched:
+            assert entry["native_source"]["source_qualified"] is False
+            assert entry["native_source"]["command_admission_qualified"] is False
+        if matched:
+            matched[0]["native_source"]["inputs"]["config"]["max_range"] = -99.0
+            assert (
+                history[-len(matched)]["native_source"]["inputs"]["config"]["max_range"]
+                > 0
+            )
+    else:
+        with pytest.raises(ValueError, match="native ToF"):
+            diagnostics._match_native_tof_pending_sources(
+                environment, history, owner._epoch
+            )
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

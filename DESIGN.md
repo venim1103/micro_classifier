@@ -2830,6 +2830,26 @@ acquisition identity; native versus projected equality is checked, not assumed.
 
 [native-tof-companion-frame-review]: REVIEW.md#209-native-tof-companion-original-stateframe-correspondence-2026-11-09
 
+##### Retained Native ToF Pending-Queue Correspondence (2026-11-09)
+
+A separate private pending-source matcher shares bounded archive-word validation
+with delivered-source matching. It checks the actual deque of at most eight
+pending samples, ordered unique acquisition IDs, unreached nominal delivery
+metadata and exact binary32 sampled words/bool masks against retained native
+sources. Every pending entry needs a retained source, and every retained entry
+still nominally due must be present in the queue. Missing correspondence in
+either direction rejects rather than being rescued by a delivered-source match.
+
+It returns detached entries in queue order, without read/retain/replay/step/reset,
+clock sampling or RNG draws. The [pending checkpoint][native-tof-pending-review]
+records bounded single/multiple/empty/missing/malformed/word/mask controls. Empty
+archive/queue is empty local correspondence only. This helper does not publish
+current-recorder evidence, prove complete acquisition/scan/history coverage,
+qualify clocks/expiry/epochs or native/range/physical error, or grant source,
+one-use execution, permission or admission. All flags remain false/no command.
+
+[native-tof-pending-review]: REVIEW.md#210-retained-native-tof-pending-queue-correspondence-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -2688,6 +2688,32 @@ bounded copies and mismatch controls without qualifying an acquisition source.
 
 [native-tof-intake-review]: REVIEW.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
 
+##### Recorder-Owned Fresh Native ToF Retention (2026-11-09)
+
+The bound recorder's separate `record_native_tof_source` operation requires a
+literal synthetic opt-in and an already-current original producer/read. It
+brackets two bounded intake copies with current producer-content, recorder,
+cache/RNG identity and source-file checks; the first returned copy must still
+match its original fingerprint before publication. Retention updates only the
+private `_tof_sample`, not the current tick, emitted frame or dynamics schema.
+Ordinary reads clear that private cache. No geometry replay, step/reset, RNG draw
+or clock occurs in this ToF-only operation.
+
+Ordinary `record_environment_tick` remains distinct: its existing staged
+`record_tick` may regenerate bounded synthetic C1 views. Those setup/default
+views are not the fresh acquisition's native source, delivered-State lineage
+or scan coverage. The first failed control exposed this distinction; the
+[retention checkpoint][native-tof-retention-review] preserves the failure,
+separate-operation repair, copied-result mutation control and finite gates.
+
+Two-point content and identity checks are not perpetual freshness, enforced
+atomicity, live-callee/source authority, shared clock/epoch support, one-use
+execution, selected-hit correctness, range/native/physical bounds, permission
+or admission. Acquisition tick may differ from delivered sensor tick; all flags
+remain false. Read-time current-source publication remains separate work.
+
+[native-tof-retention-review]: REVIEW.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

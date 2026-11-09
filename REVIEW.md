@@ -17161,6 +17161,75 @@ Scoped history/Sources/prior-design/stable-workflow preservation, intake
 reference/local target, five-file source/test diff/editor diagnostics and
 whitespace checks passed. Source gate not repeated for documentation.
 
+## 204. Recorder-Owned Fresh Native ToF Intake (2026-11-09)
+
+Intake checkpoint8d05768 normally pushed/clean. Hypothesis: the existing staged
+record_environment_tick two-sample/content/owner/producer identity checks can
+retain fresh ToF evidence separately under a literal opt-in. Native hex words
+preserve infinities without bypassing the finite-array binding codec. Add only
+private _tof_sample, include it in ownership checks, pop copied evidence before
+ordinary dynamics publication; default reads clear it. No delivered-State,
+source/epoch/clock/error/coverage/permission qualification follows.
+
+Finite synthetic scope: fourteen cloned existing receipt fixtures, <=six recorder
+reads/four steps/four ToF intake calls per case, <=64 guarded binding queries and
+pending8/native192+64+64/sample64/mask64/obstacles32 unchanged. No new Rover
+construction/source fixture/model/data/study/download/dependency/hardware or
+clock/replay during reads. Existing old fixture ledgers remain separate/held.
+Four positions incl failure/abort: first14, adjacent/style<=160 existing/new ToF/
+recorder controls, required root, repair reserve. No new bounds/accepted contracts;
+all flags false/no command/no artifact/cleanup. Initial patch rejected duplicate
+test-file path; actual git status verified clean/no partial edits, combined same
+test-file section and retried. No test position used by that editing failure.
+Results follow the focused check.
+First14: seven pass/seven fail,8.52s; forbidden geometry exposed the old
+record_tick -> capture_synthetic_c1_views -> tof_ranges path. No query cap failed.
+The staged-read/no-replay hypothesis was falsified, not an allowance to remove
+the guard. Nearby record_tick confirms existing synthetic C1 regeneration.
+Reroute to separate record_native_tof_source for an already-current bound
+producer: two strict intake copies and producer/owner/cache/content/file/epoch
+checks, no replay in that operation, no read/frame advancement. Ordinary reads
+stay unchanged except clearing the private cache. Existing bounded setup/default
+reads may regenerate their old synthetic C1 views (<=six reads/eight views each,
+<=48 existing C1 views); this is distinct from zero ToF replay during retention,
+not native/source/coverage qualification. Same14/64binding/4intake/4step/6read
+caps held; source repair uses the fourth reserve, no hard-cap increase or new
+study. Mutations now occur between the two native intake samples. Retain failure.
+Repaired14PASS2.87s, old fixture ledgers zero/query64 cap held. Publication review
+then found the first copied result needed a closing content check after the
+second intake. Add that one fingerprint and revise the same copied-content case
+to mutate the first returned copy during the second call; no case/query cap or
+fixture increase. Position three runs the revised14 plus scoped style, not a
+second adjacent invocation; the required position-four root gate supplies the
+existing neighboring regressions. No fifth position or refunded experiment.
+Revised14PASS2.69s; query64/intake4/forbidden0 caps held, old source/receipt
+fixture ledgers zero. Scoped Ruff formatting/lint/format-check/whitespace passed.
+Position-four required root `python -m pytest -q && ruff check . && git diff
+--check` **2,908 passed**, known QDQ xfail/71 warnings/no reported skips,77.57s;
+changed-file format passed and all existing capped source/history/receipt and
+neighboring regression ledgers held. All four test positions spent, seven first
+failures retained/no abort; editing duplicate-path failure also retained above.
+
+Editor diagnostics clear. Pylance restored ordinary recorder signature: four
+resolved calls compatible. New method call checker found no statically resolved
+sites (fixture owners dynamic/Any); LSP hover confirms the correct separate
+method/literal opt-in/None return. The fixed fourteen runtime controls exercise
+it; do not describe that unresolved static boundary as all-call compatibility.
+No unchanged source gate rerun for documentation, opt-in Arm/sanitizer/board/
+model/study/dependency/download/data action or artifact/cleanup pending.
+
+Implemented final path is separate record_native_tof_source, not the rejected
+ordinary-read flag/staging design. It retains actual current pending-acquisition
+words only; default reads still emit the original source/dynamics/frame behavior
+and clear private ToF retention. All flags false/no command, no clock/reference/
+one-use/numerical/physical/range/coverage/source/permission qualification. Next
+bounded read-time current-source publication/rechecking of that retained ToF
+copy, without treating current frame/tick or matching hashes as delivered-State
+source lineage, perpetual freshness, enforced atomicity or source authority.
+Scoped history/Sources/prior-design/stable-workflow preservation, retention
+reference/local target, five-file source/test diff/editor diagnostics and
+whitespace checks passed; no unchanged source gate repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

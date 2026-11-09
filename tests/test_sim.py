@@ -9783,6 +9783,133 @@ def test_native_tof_source_intake(monkeypatch, c1_motion_receipt_source_fixture,
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default_clear",
+        "missing",
+        "held",
+        "flag_integer",
+        "flag_none",
+        "flag_string",
+        "cache_identity",
+        "copied_content",
+        "owner_content",
+        "rng_epoch",
+        "pending_word",
+        "qualified",
+        "pose_after",
+    ),
+)
+def test_recorder_native_tof_source(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    work = {"intake": 0, "forbidden": 0, "binding": 0}
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    baseline, baseline_owner = deepcopy((environment, owner))
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    baseline_owner.record_environment_tick(baseline, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    baseline.step([0.125, 0.3])
+    baseline_owner.record_environment_tick(baseline, synthetic_test_only=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    cache = environment._native_tof_source
+    if case == "held":
+        environment.step([0.125, 0.3], capture_native_tof_source=True)
+    elif case == "missing":
+        environment._native_tof_source = None
+    elif case == "pending_word":
+        environment.pending[-1][2][0, 0] = -99.0
+    elif case == "qualified":
+        cache["source"]["numerically_certified"] = True
+    option = {"flag_integer": 1, "flag_none": None, "flag_string": "yes"}.get(
+        case, True
+    )
+    held_tick, held_frame = owner._current[0], owner._current[3]
+    held_dynamics = diagnostics._c1_source_binding_digest(owner._dynamics_sample)
+    original_intake = diagnostics._sample_simulator_native_tof_source
+    original_step = RoverEnv.step
+    original_tof, original_directions = rover.tof_ranges, rover.tof_directions
+    returned = []
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        result = original_intake(*args, **kwargs)
+        returned.append(result)
+        if work["intake"] == 2 and case == "copied_content":
+            returned[0]["native_source"]["inputs"]["config"]["max_range"] += 0.5
+        if work["intake"] == 1:
+            if case == "cache_identity":
+                environment._native_tof_source = dict(cache)
+            elif case == "owner_content":
+                owner._tof_sample = {"changed": True}
+            elif case == "rng_epoch":
+                environment.rng = deepcopy(environment.rng)
+            elif case == "pose_after":
+                environment.position[0] += 0.125
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("recorder ToF reads must not replay/step/reset/clock")
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(rover, "tof_ranges", forbidden)
+    monkeypatch.setattr(rover, "tof_directions", forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    valid = case in ("copy", "default_clear")
+    if valid:
+        owner.record_native_tof_source(environment, synthetic_test_only=option)
+        retained = owner._tof_sample
+        assert retained["tick"] == environment.tick
+        assert retained["source_epoch"] == owner._epoch
+        assert retained["tick"] != environment.sensor_tick
+        assert owner._current[3] == baseline_owner._current[3]
+        assert diagnostics._c1_source_binding_digest(
+            owner._dynamics_sample
+        ) == diagnostics._c1_source_binding_digest(baseline_owner._dynamics_sample)
+        assert "native_tof_source" not in owner._dynamics_sample
+        assert retained["native_source"]["source_qualified"] is False
+        assert retained["native_source"]["command_admission_qualified"] is False
+        assert retained["sample_words"] == tuple(
+            map(int, cache["tof_m"].view(np.uint32).flat)
+        )
+        if case == "copy":
+            cache["source"]["inputs"]["config"]["max_range"] = -99.0
+            assert retained["native_source"]["inputs"]["config"]["max_range"] > 0
+        else:
+            monkeypatch.setattr(rover, "tof_ranges", original_tof)
+            monkeypatch.setattr(rover, "tof_directions", original_directions)
+            original_step(environment, [0.125, 0.3])
+            owner.record_environment_tick(environment, synthetic_test_only=True)
+            assert owner._tof_sample is None
+    else:
+        with pytest.raises(ValueError):
+            owner.record_native_tof_source(environment, synthetic_test_only=option)
+        assert owner._current[0] == held_tick
+        assert owner._current[3] == held_frame
+        assert (
+            diagnostics._c1_source_binding_digest(owner._dynamics_sample)
+            == held_dynamics
+        )
+        if case != "owner_content":
+            assert owner._tof_sample is None
+    assert work["intake"] <= 4 and work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

@@ -2665,6 +2665,29 @@ output/RNG, held/default/reset, preflight and detached-copy controls.
 
 [native-tof-sampling-review]: REVIEW.md#202-actual-native-tof-sampling-source-retention-2026-11-09
 
+##### Bounded Fresh Native ToF Intake (2026-11-09)
+
+The adjacent private native-source intake validates the closed fresh ToF cache,
+literal-false metadata, original RNG references, exact current native pose and
+configuration/scenario, fixed array shapes/dtypes and a unique matching pending
+acquisition. It copies native binary64 values to hex-word tuples, sampled binary32
+values to uint32 words and masks to boolean tuples; positive infinity remains an
+explicit native candidate, not a finite enclosure. No geometry/sample replay,
+source read, step/reset, RNG draw or clock is used during intake.
+
+Preflight retains the existing 32-character owner epoch and nonwrapping C1 tick
+range; offline latency/pending work is limited to eight entries. Native grids
+remain 8x8, directions have three components and obstacles stay capped at32.
+These are local diagnostic retention limits, not accepted physical/timing/error
+bounds. Missing, already-delivered, nonfresh or mismatched pending evidence rejects.
+This single-point copied-content check is not perpetual freshness, enforced
+atomicity, source authority, scan/history coverage, selected-hit proof, numerical
+qualification or command admission. Recorder opt-in/staging remains separate;
+all flags stay false. The [intake checkpoint][native-tof-intake-review] records
+bounded copies and mismatch controls without qualifying an acquisition source.
+
+[native-tof-intake-review]: REVIEW.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

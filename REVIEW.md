@@ -17109,6 +17109,58 @@ Scoped history/Sources/prior-design/stable-workflow preservation, sampling
 reference/local target, five-file source/test diff/editor diagnostics and
 whitespace checks passed; no unchanged source gate repeated for documentation.
 
+## 203. Bounded Fresh Native ToF Source Intake (2026-11-09)
+
+Actual acquisition checkpoint05b7043 normally pushed/clean. Small prerequisite
+to recorder publication: adjacent _sample_simulator_native_tof_source validates
+the closed fresh cache and false metadata, exact pose/profile/RNG/ticks, fixed
+native/sample/mask array types and unique pending acquisition correspondence.
+Returns detached bounded tuples: native binary64 hex words (positive infinity
+remains explicit), exact uint32 sample words and boolean masks. No geometry/
+sample replay, clock/RNG/read/step/reset during intake; no source authority from
+mutually consistent words. Recorder opt-in/staging remains a following slice.
+
+Finite scope: fourteen cloned existing receipt fixtures, <=one fresh opted-in
+step/one source/one intake per case, no new Rover construction/owner read/capture/
+guard or receipt clock; pending<=8 scanned entries, native192ray+64floor+64range,
+sample64uint32+64mask, obstacles<=32. Four positions incl failure/abort: first14,
+adjacent/style<=128 existing/new ToF cases, required root, repair reserve. Old
+source/motion/history/term/bit budgets and spent scopes unchanged. No dataset/
+study/model/GPU/dependency/download/Arm/board/artifact/cleanup. All flags false,
+no admission/usable command/native/physical/range/epoch/timing qualification.
+Missing already-delivered/nonfresh/unsupported source remains conservative;
+native word relationships are not selected-hit or uniform-range proof.
+First14PASS2.71s/old fixture ledgers zero. Local review found epoch/tick metadata
+needed pre-operation bounds and decoded native arrays need not be copied again
+after bounded encoding. Repair preflights the existing32-character owner epoch,
+existing nonwrapping C1 tick range and offline latency/pending8 limit before
+addition/copy; these are retention limits, not qualified clocks or coverage.
+The reserved fourth position checks the same14 after this substantive repair,
+without added cases/fixture work or any refunded source/experiment budget.
+Repaired same14PASS0.75s. Position two scoped Ruff formatting/lint/format-check/
+whitespace passed, **82 ToF compatibility controls passed**,3.32s, existing
+source/receipt recorder ledgers zero. Post-format Pylance all two resolved intake
+calls compatible; editor diagnostics clear. Four finite positions spent after
+repair/adjacent/root; no behavioral/style failure or abort and no further 203
+source run. Retain the first review gap rather than treating green tests as bounds.
+
+Required root `python -m pytest -q && ruff check . && git diff --check`
+**2,894 passed**, known QDQ xfail,71 warnings/no reported skips,109.17s;
+changed-file format passed, old capped source/history/receipt ledgers held.
+No unchanged gate rerun for documentation or opt-in Arm/sanitizer/board/model/
+study/data/dependency/download/hardware action; no artifact/cleanup pending.
+
+Exact native/queued sample correspondence and false metadata do not establish
+recorder publication/currentness, acquired/delivered-State lineage, clock/epoch/
+one-use accuracy, scan/history coverage, native/physical/range/trig allowances,
+source authority or admission. All flags false/no command. This helper is not
+yet invoked by ordinary recorder reads or any consumer. Next integrate its
+bounded copied fresh evidence through the recorder's existing staged two-sample
+publication checks, with default reads unchanged and no source verdict adoption.
+Scoped history/Sources/prior-design/stable-workflow preservation, intake
+reference/local target, five-file source/test diff/editor diagnostics and
+whitespace checks passed. Source gate not repeated for documentation.
+
 ## Sources
 
 Hardware and tools:

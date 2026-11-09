@@ -9684,6 +9684,105 @@ def test_actual_native_tof_sampling_source(
     assert work["clock"] == (4 if case == "receipt_pair" else 0)
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "missing",
+        "tick",
+        "rng",
+        "odometry_rng",
+        "metadata",
+        "qualified",
+        "pose",
+        "config",
+        "ray_shape",
+        "range_nan",
+        "sample_words",
+        "mask",
+        "pending_gap",
+    ),
+)
+def test_native_tof_source_intake(monkeypatch, c1_motion_receipt_source_fixture, case):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    cache = environment._native_tof_source
+    computed = cache["source"]
+    if case == "missing":
+        environment._native_tof_source = None
+    elif case == "tick":
+        cache["tick"] -= 1
+    elif case in ("rng", "odometry_rng"):
+        cache[case] = deepcopy(cache[case])
+    elif case == "metadata":
+        computed["extra"] = True
+    elif case == "qualified":
+        computed["source_qualified"] = True
+    elif case == "pose":
+        computed["inputs"]["position_m"] = (99.0, 99.0)
+    elif case == "config":
+        computed["inputs"]["config"]["max_range"] += 0.5
+    elif case == "ray_shape":
+        computed["world_frame_unit_rays"] = np.zeros((8, 8, 2))
+    elif case == "range_nan":
+        computed["pre_noise_ranges_m"][0, 0] = math.nan
+    elif case == "sample_words":
+        cache["tof_m"][0, 0] = -99.0
+    elif case == "mask":
+        cache["tof_valid"][0, 0] = not cache["tof_valid"][0, 0]
+    elif case == "pending_gap":
+        environment.pending = type(environment.pending)(
+            entry for entry in environment.pending if entry[1] != cache["tick"]
+        )
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_tick = environment.tick
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("native ToF intake must not replay/read/step/reset/clock")
+
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    monkeypatch.setattr(rover, "tof_ranges", forbidden)
+    monkeypatch.setattr(rover, "tof_directions", forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if case != "copy":
+        with pytest.raises(ValueError, match="native ToF"):
+            diagnostics._sample_simulator_native_tof_source(environment, owner._epoch)
+    else:
+        copied = diagnostics._sample_simulator_native_tof_source(
+            environment, owner._epoch
+        )
+        assert copied["source_epoch"] == owner._epoch
+        assert copied["tick"] == cache["tick"] == environment.tick
+        assert copied["delivery_tick"] == cache["delivery_tick"]
+        assert copied["tick"] != environment.sensor_tick
+        for key in (
+            "world_frame_unit_rays",
+            "floor_candidate_ranges_m",
+            "pre_noise_ranges_m",
+        ):
+            assert copied["native_source"][key] == tuple(
+                float(word).hex() for word in computed[key].flat
+            )
+        assert "inf" in copied["native_source"]["floor_candidate_ranges_m"]
+        assert copied["sample_words"] == tuple(
+            map(int, cache["tof_m"].view(np.uint32).flat)
+        )
+        assert copied["valid_mask"] == tuple(map(bool, cache["tof_valid"].flat))
+        copied["native_source"]["inputs"]["config"]["max_range"] = -99.0
+        assert computed["inputs"]["config"]["max_range"] > 0
+        assert copied["native_source"]["source_qualified"] is False
+        assert copied["native_source"]["command_admission_qualified"] is False
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

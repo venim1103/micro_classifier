@@ -9467,6 +9467,119 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
 
 
 @pytest.fixture(scope="module")
+def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
+    environment, owner = deepcopy(c1_receipt_history_fixture[:2])
+    owner.record_environment_tick(
+        environment, synthetic_test_only=True, capture_motion_receipt_source=True
+    )
+    return environment, owner
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "stale_tick",
+        "epoch",
+        "pose",
+        "native_action",
+        "receipt_changed",
+        "missing",
+        "mutated",
+    ),
+)
+def test_synthetic_c1_receipt_snapshot_rechecks_current_producer(
+    c1_receipt_snapshot_fixture, monkeypatch, case
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_receipt_snapshot_fixture)
+    original_digest = diagnostics._c1_source_binding_digest
+    original_check = diagnostics._check_simulator_receipt_history
+    held_history = deepcopy(owner._receipt_history)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    expected = "owned_history_matches_current_producer"
+    if case == "stale_tick":
+        environment.tick += 1
+        expected = "producer_epoch_tick_or_source_changed"
+    elif case == "epoch":
+        environment.rng = deepcopy(environment.rng)
+        expected = "producer_epoch_tick_or_source_changed"
+    elif case == "pose":
+        environment.position[0] = np.nextafter(environment.position[0], math.inf)
+        expected = "producer_content_changed"
+    elif case == "native_action":
+        environment.speed = float(np.nextafter(environment.speed, math.inf))
+        expected = "producer_content_changed"
+    elif case == "receipt_changed":
+        environment._motion_receipt_source["receipt"]["submitted_action"] = (0.25, 0.3)
+        expected = "producer_content_changed"
+    elif case == "missing":
+        environment._motion_receipt_source = None
+        expected = "missing_or_changed_producer_receipt"
+    elif case == "mutated":
+        expected = "producer_or_history_changed_during_snapshot"
+    work = {"digests": 0, "checks": 0, "forbidden": 0}
+
+    def digest(*args, **kwargs):
+        work["digests"] += 1
+        assert work["digests"] <= 32
+        return original_digest(*args, **kwargs)
+
+    def check(*args, **kwargs):
+        work["checks"] += 1
+        assert work["checks"] <= 1
+        result = original_check(*args, **kwargs)
+        if case == "mutated":
+            owner._receipt_history[0]["motion_receipt"]["submitted_action"] = (
+                0.25,
+                0.3,
+            )
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "offline snapshots must not step/reset/capture/query guards"
+        )
+
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    result = owner.snapshot_receipt_history(synthetic_test_only=True)
+    assert result["reason"] == expected
+    assert result["snapshot_available"] is (case == "valid")
+    assert result["fixture_permission_granted"] is False
+    for flag in (
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    if case == "valid":
+        assert result["history"] == held_history
+        result["history"][0]["motion_receipt"]["segments"][0]["committed"] = False
+        assert owner._receipt_history == held_history
+        assert result["current_tick"] == environment.tick == 11
+        assert result["current_frame"] == owner._current[3]
+    else:
+        assert "history" not in result and "current_frame" not in result
+        if case != "mutated":
+            assert owner._receipt_history == held_history
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
+@pytest.fixture(scope="module")
 def c1_receipt_history_fixture(c1_motion_receipt_source_fixture, request):
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
     for _ in range(8):

@@ -29,16 +29,16 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §191 for full retained source-history pairing checks
-and the latest source gate; §§181-190 record workflow, clocks and source ownership. The Q0-Q5
+Read [REVIEW.md][review] §192 for read-time actual-producer history snapshots
+and the latest source gate; §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.
 
 Continue this ordered queue, deriving smaller compatible prerequisites when a
 release gate is blocked:
 
-1. Add read-only offline history publication with actual-current-producer
-  rechecking; reject stale or changed sources. Epoch/tick/pose linkage, nominal
+1. Retain actual native integration intermediates as bounded opt-in source
+  evidence for the named numerical consumer. Epoch/tick/pose linkage, nominal
   ticks or observed timing do not qualify clocks, one-use execution or permission.
 2. Advance independently supported setup/source/coverage/error/timing evidence
   for the named consumers; implement compatible offline prerequisites without

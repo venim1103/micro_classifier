@@ -2420,6 +2420,28 @@ controls and remaining gates; all qualification/admission flags stay false.
 
 [receipt-pairing-review]: REVIEW.md#191-full-retained-source-history-pairing-checks-2026-11-09
 
+##### Read-Time Producer History Snapshots (2026-11-09)
+
+The private source recorder's opt-in `snapshot_receipt_history` reads only its
+bound simulator. It accepts no caller current tick/environment/receipt override.
+Epoch object identity, current tick and source files must remain unchanged;
+fresh native pose/action/goal-source/observation/config/scenario/receipt content
+must match the retained source sample. The complete bounded history is checked,
+copied, then producer/owner content, object identities and source files are
+rechecked before returning `snapshot_available=True`. Stale, missing, unsupported
+or changed data yields unknown without history/current-frame publication.
+
+Snapshots are read-only owned diagnostic copies: no step/reset/C1 capture/guard
+query or RNG change. The result names an offline source-history use and leaves
+all admission/qualification flags false. Availability is not a usable command,
+clock/one-use qualification, body-clear origin, native numerical evidence,
+admitted predecessor or perpetual freshness. Two-point checks do not guarantee
+atomicity against concurrent/adversarial mutation; consumers need their own
+currentness/qualification dependencies. The [snapshot checkpoint][receipt-snapshot-review]
+records bounded stale/content/mutation controls and remaining source gates.
+
+[receipt-snapshot-review]: REVIEW.md#192-read-time-actual-producer-history-snapshots-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

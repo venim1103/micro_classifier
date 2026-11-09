@@ -9591,6 +9591,124 @@ class _SyntheticC1SourceRecorder:
         self._dynamics_sample = snapshot
         self._receipt_history = receipt_history
 
+    def snapshot_receipt_history(self, *, synthetic_test_only=False):
+        """Publish copied offline history only while its actual producer is current."""
+        if synthetic_test_only is not True:
+            raise ValueError(
+                "receipt history snapshot requires synthetic_test_only=True"
+            )
+        result = {
+            "schema": "micro-classifier/synthetic-c1-receipt-history-snapshot/1",
+            "allowed_use": "offline_source_history_diagnostics_only",
+            "status": "unknown",
+            "reason": "missing_current_producer_or_history",
+            "snapshot_available": False,
+            "fixture_permission_granted": False,
+            **{
+                flag: False
+                for flag in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+        }
+        producer = self._simulator
+        if producer is None or self._current is None or not self._receipt_history:
+            return result
+        if (
+            producer.rng is not self._simulator_rng
+            or producer.odometry_rng is not self._simulator_odometry_rng
+            or producer.tick != self._current[0]
+            or self._source_files() != self._identities
+        ):
+            result["reason"] = "producer_epoch_tick_or_source_changed"
+            return result
+        receipt_source = producer._motion_receipt_source
+        if (
+            type(receipt_source) is not dict
+            or receipt_source.get("rng") is not producer.rng
+            or receipt_source.get("odometry_rng") is not producer.odometry_rng
+        ):
+            result["reason"] = "missing_or_changed_producer_receipt"
+            return result
+
+        def producer_sample():
+            source = producer._motion_receipt_source
+            return {
+                "tick": producer.tick,
+                "pose_m_rad": (*map(float, producer.position), float(producer.yaw)),
+                "native_action": (float(producer.speed), float(producer.turn_rate)),
+                "native_goal_source": deepcopy(producer._native_goal_source),
+                "observation": producer._observation(),
+                "config": asdict(producer.config),
+                "scenario": asdict(producer.scenario),
+                "motion_receipt": deepcopy(source["receipt"]),
+                "receipt_source_epoch": self._epoch,
+            }
+
+        def owner_binding():
+            return _c1_source_binding_digest(
+                {
+                    "source_epoch": self._epoch,
+                    "current": (
+                        self._current[0],
+                        self._current[1],
+                        asdict(self._current[2]),
+                        self._current[3],
+                    ),
+                    "dynamics_sample": self._dynamics_sample,
+                    "history": self._receipt_history,
+                    "config": asdict(self._config),
+                    "source_files": self._identities,
+                }
+            )
+
+        try:
+            binding = owner_binding()
+            sampled = producer_sample()
+            sampled_binding = _c1_source_binding_digest(sampled)
+            if sampled_binding != _c1_source_binding_digest(self._dynamics_sample):
+                result["reason"] = "producer_content_changed"
+                return result
+            _check_simulator_receipt_history(
+                self._receipt_history,
+                source_epoch=self._epoch,
+                current=self._current,
+                config=asdict(self._config),
+            )
+            history = deepcopy(self._receipt_history)
+            if (
+                owner_binding() != binding
+                or _c1_source_binding_digest(producer_sample()) != sampled_binding
+                or self._simulator is not producer
+                or producer.rng is not self._simulator_rng
+                or producer.odometry_rng is not self._simulator_odometry_rng
+                or producer._motion_receipt_source is not receipt_source
+                or receipt_source["rng"] is not producer.rng
+                or receipt_source["odometry_rng"] is not producer.odometry_rng
+                or self._source_files() != self._identities
+            ):
+                result["reason"] = "producer_or_history_changed_during_snapshot"
+                return result
+        except (KeyError, TypeError, ValueError, OverflowError):
+            result["reason"] = "unsupported_or_changed_receipt_history"
+            return result
+        result.update(
+            status="recorded_current_source_history",
+            reason="owned_history_matches_current_producer",
+            snapshot_available=True,
+            source_epoch=self._epoch,
+            current_tick=self._current[0],
+            current_frame=self._current[3],
+            history=history,
+        )
+        return result
+
     def prepare_normal_request(
         self,
         decision_frame,

@@ -16572,6 +16572,47 @@ not an assumption that prior ingestion remains fresh. Next prepare that read-onl
 offline history snapshot API without actuation, new data/studies or permission.
 No artifact/native/board/model/download/dependency/cleanup action occurred.
 
+## 192. Read-Time Actual-Producer History Snapshots (2026-11-09)
+
+Pairing checkpoint c67da64 normally pushed. Local hypothesis: a read-only
+recorder-bound snapshot can reject stale producer ticks, changed RNG epoch
+identity or native pose/action/goal/observation/profile/receipt content, validate
+the whole retained history, copy it and recheck producer/owner stability before
+publication. No caller current tick/environment/receipt override, stepping or
+raw C1 capture follows. Snapshots remain offline diagnostic evidence with all
+flags false and no permission, not perpetual freshness or an admitted chain.
+
+Finite routine scope: eight controls, one reader call each, <=32 digests/one
+history-check/no forbidden step/reset/capture/guard call per case. Reuse the
+existing history fixture with one extra setup source read at tick11, no extra
+step/clock read/scene/study/data. First eight, adjacent/style, required root,
+one repair reserve: <=four positions incl failures/aborts. Old fixtures/caps
+unchanged; no native/board/model/download/dependency/label/artifact action.
+Actual results and remaining freshness/qualification limits follow verification.
+First patch failed at the formatted pairing-test parameter context; targeted
+search verified the reader/review additions absent, then retry used the existing
+named history-fixture definition. No partial edit or test run occurred.
+
+First eight snapshot controls passed, 0.58 s; per-case ceilings32 digests/one
+history checker/zero forbidden held. Position two Ruff formatted new source/test
+layout; scoped lint/format/whitespace/editor diagnostics passed; unchanged
+adjacent **73 passed**, 1.99 s, history6/4/62/0, source10/3/43/0, original
+21/8/71/0. Position three root `python -m pytest -q && ruff check . && git
+diff --check` **2,750 passed**, one known transformer QDQ xfail, 71 warnings,
+no reported skips, 59.20 s; changed-file format checks passed. Three of four
+positions used, no source/test/style failure/abort; fourth unused, not follow-on
+scope. Failed patch had no partial edit; docs-only checks do not rerun code.
+
+The read-time API supplies copied current producer-corresponding history only,
+not actuation, temporal lease, admitted predecessor or source/numerical/clock/
+setup/coverage/error/one-use qualification. All flags remain false; no usable
+command exists. Concurrent/adversarial atomicity is not established by two-point
+checks. Q0-Q5 packet remains prepared, not adopted. Next retain actual native
+integration intermediates for the named S4 numerical consumer under bounded
+opt-in source controls; computed endpoints alone do not expose primitive inputs
+or justify error bounds. No study/data/native/board/model/dependency/download/
+artifact or cleanup action occurred.
+
 ## Sources
 
 Hardware and tools:

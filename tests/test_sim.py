@@ -9507,6 +9507,166 @@ def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     return environment, owner
 
 
+@pytest.fixture(scope="module")
+def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(
+        environment,
+        synthetic_test_only=True,
+        capture_motion_receipt_source=True,
+        capture_native_integration_source=True,
+    )
+    return environment, owner
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "missing_sample",
+        "missing_cache",
+        "epoch",
+        "tick",
+        "pose",
+        "native_changed",
+        "owned_changed",
+        "mutated_pose",
+        "replaced",
+        "mutated_owner",
+        "mutated_history",
+        "bad_optin",
+        "receipt_changed",
+    ),
+)
+def test_synthetic_c1_native_integration_snapshot(
+    c1_native_integration_snapshot_fixture, monkeypatch, case
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    retained = deepcopy(owner._integration_sample)
+    original_digest = diagnostics._c1_source_binding_digest
+    original_sample = diagnostics._sample_simulator_native_integration_source
+    original_check = diagnostics._check_simulator_receipt_history
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    expected = "owned_native_source_matches_current_producer"
+    if case == "missing_sample":
+        owner._integration_sample = None
+        expected = "missing_current_native_integration_sample"
+    elif case == "missing_cache":
+        environment._integration_source = None
+        expected = "unsupported_or_changed_native_integration_source"
+    elif case == "epoch":
+        environment._integration_source["rng"] = deepcopy(environment.rng)
+        expected = "unsupported_or_changed_native_integration_source"
+    elif case == "tick":
+        environment.tick += 1
+        expected = "producer_epoch_tick_or_source_changed"
+    elif case == "pose":
+        environment.position[0] = np.nextafter(environment.position[0], math.inf)
+        expected = "producer_content_changed"
+    elif case == "native_changed":
+        environment._integration_source["segments"][0]["values"]["midpoint_rad"] += (
+            0.001
+        )
+        expected = "native_integration_source_content_changed"
+    elif case == "owned_changed":
+        owner._integration_sample["segments"][0]["values"]["midpoint_rad"] += 0.001
+        expected = "native_integration_source_content_changed"
+    elif case in ("mutated_pose", "replaced", "mutated_owner", "mutated_history"):
+        expected = "native_source_or_owner_changed_during_snapshot"
+    elif case == "receipt_changed":
+        environment._motion_receipt_source["receipt"]["submitted_action"] = (0.25, 0.3)
+        expected = "producer_content_changed"
+    work = dict.fromkeys(("digest", "sample", "check", "forbidden"), 0)
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 64
+        return original_digest(*args, **kwargs)
+
+    def check(*args, **kwargs):
+        work["check"] += 1
+        assert work["check"] <= 2
+        result = original_check(*args, **kwargs)
+        return result
+
+    def sample(*args, **kwargs):
+        work["sample"] += 1
+        assert work["sample"] <= 2
+        result = original_sample(*args, **kwargs)
+        if work["sample"] == 2 and case == "mutated_pose":
+            environment.position[0] = np.nextafter(environment.position[0], math.inf)
+        if work["sample"] == 1:
+            if case == "replaced":
+                environment._integration_source = {
+                    **environment._integration_source,
+                    "segments": deepcopy(environment._integration_source["segments"]),
+                }
+            elif case == "mutated_owner":
+                owner._integration_sample["segments"][0]["values"]["midpoint_rad"] += (
+                    0.001
+                )
+            elif case == "mutated_history":
+                owner._receipt_history[0]["motion_receipt"]["submitted_action"] = (
+                    0.25,
+                    0.3,
+                )
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "native snapshots must not step/reset/capture/replay/query guards"
+        )
+
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", sample
+    )
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr("sim.rover.integrate", forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case == "bad_optin":
+        with pytest.raises(ValueError, match="synthetic_test_only=True"):
+            owner.snapshot_native_integration_source(synthetic_test_only=1)
+    else:
+        result = owner.snapshot_native_integration_source(synthetic_test_only=True)
+        assert result["reason"] == expected
+        assert result["snapshot_available"] is (case == "valid")
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == "valid":
+            assert result["source"] == retained
+            assert result["current_tick"] == environment.tick == 3
+            assert result["current_frame"] == owner._current[3]
+            assert result["source_epoch"] == owner._epoch
+            result["source"]["segments"][0]["values"]["midpoint_rad"] = 99.0
+            assert owner._integration_sample == retained
+            assert (
+                environment._integration_source["segments"][0]["values"]["midpoint_rad"]
+                != 99.0
+            )
+        else:
+            assert "source" not in result and "current_frame" not in result
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
 @pytest.mark.parametrize(
     "case",
     (

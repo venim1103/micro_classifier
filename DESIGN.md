@@ -2493,6 +2493,27 @@ controls; all qualification/admission flags stay false.
 
 [integration-ingestion-review]: REVIEW.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 
+##### Read-Time Native Integration Snapshots (2026-11-09)
+
+The private recorder's strict opt-in `snapshot_native_integration_source` reads
+only its bound producer and takes no caller tick/epoch/environment override.
+It reuses actual receipt-history currentness and compares fresh native cache
+content to the retained integration sample. Each of its two native samples also
+reads actual pose/action/goal-source/observation/profile/receipt words. Producer
+and cache identities, RNG references and compound owner/source/history bindings
+are rechecked before owned native source/current-frame publication.
+
+Missing, stale, unsupported or changed data returns unknown without native
+source/current-frame data. No step/reset/capture/integration replay/guard query
+or RNG change follows. The diagnostic result leaves all qualification/admission
+flags false; availability is not permission, native numerical proof, clock or
+one-use qualification, body-clear origin or an admitted predecessor. Two-point
+checks are not perpetual freshness or concurrent/adversarial atomicity.
+The [native snapshot checkpoint][native-integration-snapshot-review] records
+bounded source/owner/history/currentness controls and the final-read repair.
+
+[native-integration-snapshot-review]: REVIEW.md#195-read-time-actual-native-integration-snapshots-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

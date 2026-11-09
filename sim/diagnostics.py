@@ -9848,6 +9848,121 @@ class _SyntheticC1SourceRecorder:
         )
         return result
 
+    def snapshot_native_integration_source(self, *, synthetic_test_only=False):
+        if synthetic_test_only is not True:
+            raise ValueError(
+                "native integration snapshot requires synthetic_test_only=True"
+            )
+        result = {
+            "schema": "micro-classifier/synthetic-c1-native-integration-snapshot/1",
+            "allowed_use": "offline_native_integration_diagnostics_only",
+            "status": "unknown",
+            "reason": "missing_current_native_integration_sample",
+            "snapshot_available": False,
+            "fixture_permission_granted": False,
+            **{
+                flag: False
+                for flag in (
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+        }
+        producer = self._simulator
+        if (
+            producer is None
+            or self._current is None
+            or self._integration_sample is None
+        ):
+            return result
+        source_before = producer._integration_source
+
+        def owner_binding():
+            return _c1_source_binding_digest(
+                {
+                    "source_epoch": self._epoch,
+                    "integration_sample": self._integration_sample,
+                    "current": (
+                        self._current[0],
+                        self._current[1],
+                        asdict(self._current[2]),
+                        self._current[3],
+                    ),
+                    "dynamics_sample": self._dynamics_sample,
+                    "history": self._receipt_history,
+                    "config": asdict(self._config),
+                    "source_files": self._identities,
+                }
+            )
+
+        def sample():
+            native_source = _sample_simulator_native_integration_source(
+                producer, producer._motion_receipt_source["receipt"], self._epoch
+            )
+            producer_source = {
+                "tick": producer.tick,
+                "pose_m_rad": (*map(float, producer.position), float(producer.yaw)),
+                "native_action": (float(producer.speed), float(producer.turn_rate)),
+                "native_goal_source": deepcopy(producer._native_goal_source),
+                "observation": producer._observation(),
+                "config": asdict(producer.config),
+                "scenario": asdict(producer.scenario),
+                "motion_receipt": deepcopy(producer._motion_receipt_source["receipt"]),
+                "receipt_source_epoch": self._epoch,
+            }
+            return native_source, _c1_source_binding_digest(producer_source)
+
+        try:
+            binding_before = owner_binding()
+            retained_binding = _c1_source_binding_digest(self._integration_sample)
+            producer_binding = _c1_source_binding_digest(self._dynamics_sample)
+            receipt_snapshot = self.snapshot_receipt_history(synthetic_test_only=True)
+            if not receipt_snapshot["snapshot_available"]:
+                result["reason"] = receipt_snapshot["reason"]
+                return result
+            native_sample, sampled_producer_binding = sample()
+            sampled_binding = _c1_source_binding_digest(native_sample)
+            if sampled_producer_binding != producer_binding:
+                result["reason"] = "producer_content_changed"
+                return result
+            if sampled_binding != retained_binding:
+                result["reason"] = "native_integration_source_content_changed"
+                return result
+            receipt_snapshot = self.snapshot_receipt_history(synthetic_test_only=True)
+            if not receipt_snapshot["snapshot_available"]:
+                result["reason"] = receipt_snapshot["reason"]
+                return result
+            final_native_sample, final_producer_binding = sample()
+            if (
+                _c1_source_binding_digest(final_native_sample) != sampled_binding
+                or final_producer_binding != producer_binding
+                or owner_binding() != binding_before
+                or self._simulator is not producer
+                or producer._integration_source is not source_before
+                or producer.rng is not self._simulator_rng
+                or producer.odometry_rng is not self._simulator_odometry_rng
+            ):
+                result["reason"] = "native_source_or_owner_changed_during_snapshot"
+                return result
+        except (KeyError, TypeError, ValueError, OverflowError):
+            result["reason"] = "unsupported_or_changed_native_integration_source"
+            return result
+        result.update(
+            status="recorded_current_native_source",
+            reason="owned_native_source_matches_current_producer",
+            snapshot_available=True,
+            source_epoch=receipt_snapshot["source_epoch"],
+            current_tick=receipt_snapshot["current_tick"],
+            current_frame=receipt_snapshot["current_frame"],
+            source=native_sample,
+        )
+        return result
+
     def prepare_normal_request(
         self,
         decision_frame,

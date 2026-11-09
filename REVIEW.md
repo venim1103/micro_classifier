@@ -16714,6 +16714,58 @@ Scoped documentation preservation/reference/target/whitespace checks passed;
 prior REVIEW history/Sources, DESIGN except the named compatible subsection/status
 wording and stable AGENTS workflow retained. Code gate not rerun for documentation.
 
+## 195. Read-Time Actual Native Integration Snapshots (2026-11-09)
+
+Ingestion checkpoint780ebad normally pushed. Local hypothesis: a private bound-
+producer reader can reuse actual receipt-history currentness, compare fresh
+native source to its retained copy, then recheck producer/native cache identity,
+native content and compound owner/source/history binding before publication.
+No caller epoch/tick/environment override, perpetual freshness or replay. Two
+valid receipt snapshots alone do not detect every cross-call owner/native change.
+
+Finite routine scope: fourteen fixed valid/missing/stale/content/cross-call
+mutation/opt-in controls; one reader call each, <=two receipt checks/two native
+samples/64 digests/zero step/reset/capture/integrate/guard calls per case. Existing
+receipt-source fixture cloned with one setup opt-in source read at tick3; no new
+step/clock/scene/study/data. At mostfour positions incl failures/aborts: first
+fourteen, adjacent/style, required root, one repair reserve. Existing128 attempt,
+4096/16384-bit, one command/16 brake/128 chord/16 term limits unchanged. No
+dependency/download/GPU/model/board/native study/artifact/cleanup action;
+all qualification/admission flags false. Actual results follow checks.
+
+First fourteen passed, 1.71 s; per-case caps held, original fixture ledgers zero.
+Post-validation review found the final native sample did not independently
+resample actual pose/observation words after its helper returned. Local repair
+joins a fresh producer-content binding to each of the two native samples and
+checks RNG references again; one of the existing fourteen mutation controls now
+changes actual pose after the final native helper read. No new case, helper call,
+step or hard-cap increase. Revised four-position use: first14, repaired14,
+adjacent/style, required root. Results follow the mandatory focused repair check.
+
+Position two repaired **14 passed**, 1.74 s, including actual pose change after
+the final native helper read; unchanged <=two helper/check calls/64 digests/zero
+forbidden caps held. Position three scoped Ruff formatting/lint/format-check,
+whitespace/editor diagnostics passed; **82 adjacent controls passed**, 2.18 s,
+history6/4/62/0, receipt-source10/3/43/0, original11/3/21/0. Position four root
+`python -m pytest -q && ruff check . && git diff --check` **2,782 passed**, one
+known transformer QDQ xfail, 71 warnings, no reported skips, 57.13 s; changed-file
+format checks passed. All four positions spent; no test/style failure or abort;
+the first green focused check preceded a substantive final-currentness repair,
+not an unchanged reassurance rerun. Code gate not rerun for documentation.
+
+The available native snapshot is copied diagnostic evidence, not primitive
+correctness, uniform/accumulated numerical bounds, clock/source/one-use/setup/
+coverage/error qualification, permission or an admitted predecessor. Receipt/
+wire/history APIs unchanged, all flags false, no usable command. Two-point
+checks do not prove concurrency/adversarial atomicity or perpetual freshness.
+No artifact/GPU/data/study/model/download/dependency/Arm/board/cleanup action.
+Next derive exact per-evaluation discrepancies only for supported arithmetic
+stages using retained actual native words and bounded rational operations;
+transcendental/wrapping/accumulated-motion and physical obligations stay open,
+with no measured per-evaluation discrepancy adopted as a uniform error bound.
+Scoped document preservation, new reference/local targets and whitespace checks
+passed; prior REVIEW history/Sources, DESIGN and stable AGENTS workflow retained.
+
 ## Sources
 
 Hardware and tools:

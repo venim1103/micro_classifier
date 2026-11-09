@@ -9523,6 +9523,198 @@ def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
     "case",
     (
         "valid",
+        "missing",
+        "stale_tick",
+        "budget",
+        "producer_mutated",
+        "source_mutated",
+        "owner_mutated",
+        "probe_binding",
+        "probe_flag",
+        "bad_optin",
+        "bits_type",
+        "bits_high",
+        "receipt_mutated",
+        "recorder_replaced",
+    ),
+)
+def test_synthetic_c1_current_native_arithmetic(
+    c1_native_integration_snapshot_fixture, monkeypatch, case
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    retained = deepcopy(owner._integration_sample)
+    original_probe = diagnostics._probe_native_integration_arithmetic
+    original_digest = diagnostics._c1_source_binding_digest
+    original_sample = diagnostics._sample_simulator_native_integration_source
+    original_check = diagnostics._check_simulator_receipt_history
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    original_snapshot = (
+        diagnostics._SyntheticC1SourceRecorder.snapshot_native_integration_source
+    )
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    settings = {"synthetic_test_only": True}
+    expected = "owned_current_source_arithmetic_discrepancies"
+    if case == "missing":
+        owner._integration_sample = None
+        expected = "missing_current_native_integration_sample"
+    elif case == "stale_tick":
+        environment.tick += 1
+        expected = "producer_epoch_tick_or_source_changed"
+    elif case == "budget":
+        settings["max_integer_bits"] = 1
+        expected = "native_arithmetic_budget_exhausted"
+    elif case == "producer_mutated" or case == "receipt_mutated":
+        expected = "producer_content_changed"
+    elif case == "source_mutated":
+        expected = "native_integration_source_content_changed"
+    elif case in ("owner_mutated", "recorder_replaced"):
+        expected = "native_source_or_owner_changed_during_arithmetic"
+    elif case in ("probe_binding", "probe_flag"):
+        expected = "native_arithmetic_result_binding_or_metadata_mismatch"
+    elif case == "bad_optin":
+        settings["synthetic_test_only"] = 1
+        expected = "option"
+    elif case == "bits_type":
+        settings["max_integer_bits"] = True
+        expected = "option"
+    elif case == "bits_high":
+        settings["max_integer_bits"] = 4097
+        expected = "option"
+    work = dict.fromkeys(
+        ("probe", "snapshot", "sample", "check", "binary", "digest", "forbidden"), 0
+    )
+
+    def probe(*args, **kwargs):
+        work["probe"] += 1
+        assert work["probe"] <= 1
+        result = original_probe(*args, **kwargs)
+        if case == "producer_mutated":
+            environment.position[0] = np.nextafter(environment.position[0], math.inf)
+        elif case == "source_mutated":
+            environment._integration_source["segments"][0]["values"][
+                "midpoint_rad"
+            ] += 0.001
+        elif case == "owner_mutated":
+            owner._receipt_history[0]["motion_receipt"]["submitted_action"] = (
+                0.25,
+                0.3,
+            )
+        elif case == "probe_binding":
+            result["source_binding"] = "0" * 64
+        elif case == "probe_flag":
+            result["numerically_certified"] = True
+        elif case == "receipt_mutated":
+            environment._motion_receipt_source["receipt"]["submitted_action"] = (
+                0.25,
+                0.3,
+            )
+        elif case == "recorder_replaced":
+            owner._simulator = deepcopy(environment)
+            owner._simulator_rng = owner._simulator.rng
+            owner._simulator_odometry_rng = owner._simulator.odometry_rng
+        return result
+
+    def snapshot(*args, **kwargs):
+        work["snapshot"] += 1
+        assert work["snapshot"] <= 2
+        return original_snapshot(*args, **kwargs)
+
+    def sample(*args, **kwargs):
+        work["sample"] += 1
+        assert work["sample"] <= 4
+        return original_sample(*args, **kwargs)
+
+    def check(*args, **kwargs):
+        work["check"] += 1
+        assert work["check"] <= 4
+        return original_check(*args, **kwargs)
+
+    def binary(*args, **kwargs):
+        work["binary"] += 1
+        assert work["binary"] <= 20
+        return original_binary(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 160
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "current arithmetic must not step/reset/capture/replay/query guards"
+        )
+
+    monkeypatch.setattr(diagnostics, "_probe_native_integration_arithmetic", probe)
+    monkeypatch.setattr(
+        diagnostics._SyntheticC1SourceRecorder,
+        "snapshot_native_integration_source",
+        snapshot,
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", sample
+    )
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr("sim.rover.integrate", forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if expected == "option":
+        with pytest.raises(ValueError):
+            owner.snapshot_native_integration_arithmetic(**settings)
+    else:
+        result = owner.snapshot_native_integration_arithmetic(**settings)
+        assert result["reason"] == expected
+        assert result["discrepancies_available"] is (case == "valid")
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == "valid":
+            assert result["source"] == retained
+            assert result["source_binding"] == result["arithmetic"]["source_binding"]
+            assert result["current_frame"] == owner._current[3]
+            assert result["current_tick"] == environment.tick == 3
+            assert result["source_epoch"] == owner._epoch
+            assert result["arithmetic"]["work"] == {
+                "stages": 10,
+                "binary_operations": 20,
+            }
+            result["source"]["segments"][0]["values"]["midpoint_rad"] = 99.0
+            result["arithmetic"]["segments"][0][0]["output_hex"] = "changed"
+            assert owner._integration_sample == retained
+            assert (
+                environment._integration_source["segments"][0]["values"]["midpoint_rad"]
+                != 99.0
+            )
+        else:
+            assert (
+                "arithmetic" not in result
+                and "source" not in result
+                and "current_frame" not in result
+            )
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
         "observed_changed",
         "signed_zero",
         "subnormal",

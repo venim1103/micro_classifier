@@ -10199,6 +10199,129 @@ class _SyntheticC1SourceRecorder:
         )
         return result
 
+    def snapshot_native_integration_arithmetic(
+        self, *, max_integer_bits=4096, synthetic_test_only=False
+    ):
+        if synthetic_test_only is not True:
+            raise ValueError(
+                "native arithmetic snapshot requires synthetic_test_only=True"
+            )
+        if type(max_integer_bits) is not int or not 1 <= max_integer_bits <= 4096:
+            raise ValueError(
+                "native arithmetic integer limit must be from one through 4096"
+            )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        result = {
+            "schema": "micro-classifier/synthetic-c1-native-arithmetic-snapshot/1",
+            "allowed_use": "offline_current_native_arithmetic_diagnostics_only",
+            "status": "unknown",
+            "reason": "missing_current_native_source",
+            "discrepancies_available": False,
+            **{flag: False for flag in flags},
+        }
+        producer_before = self._simulator
+
+        def owner_binding():
+            return _c1_source_binding_digest(
+                {
+                    "source_epoch": self._epoch,
+                    "integration_sample": self._integration_sample,
+                    "current": None
+                    if self._current is None
+                    else (
+                        self._current[0],
+                        self._current[1],
+                        asdict(self._current[2]),
+                        self._current[3],
+                    ),
+                    "dynamics_sample": self._dynamics_sample,
+                    "history": self._receipt_history,
+                    "config": asdict(self._config),
+                    "source_files": self._identities,
+                }
+            )
+
+        def snapshot_binding(snapshot):
+            return _c1_source_binding_digest(
+                {
+                    key: snapshot[key]
+                    for key in (
+                        "source_epoch",
+                        "current_tick",
+                        "current_frame",
+                        "source",
+                    )
+                }
+            )
+
+        try:
+            binding_before = owner_binding()
+            before = self.snapshot_native_integration_source(synthetic_test_only=True)
+            if not before["snapshot_available"]:
+                result["reason"] = before["reason"]
+                return result
+            source_binding = _c1_source_binding_digest(before["source"])
+            snapshot_before = snapshot_binding(before)
+            arithmetic = _probe_native_integration_arithmetic(
+                before["source"],
+                max_integer_bits=max_integer_bits,
+                synthetic_test_only=True,
+            )
+            if not arithmetic["discrepancies_available"]:
+                result["reason"] = arithmetic["reason"]
+                return result
+            if (
+                arithmetic.get("schema")
+                != "micro-classifier/native-arithmetic-discrepancies/1"
+                or arithmetic.get("allowed_use")
+                != "observed_native_word_arithmetic_diagnostics_only"
+                or arithmetic.get("source_binding") != source_binding
+                or any(arithmetic.get(flag) is not False for flag in flags)
+            ):
+                result["reason"] = (
+                    "native_arithmetic_result_binding_or_metadata_mismatch"
+                )
+                return result
+            arithmetic_binding = _c1_source_binding_digest(arithmetic)
+            after = self.snapshot_native_integration_source(synthetic_test_only=True)
+            if not after["snapshot_available"]:
+                result["reason"] = after["reason"]
+                return result
+            copied_arithmetic = deepcopy(arithmetic)
+            if (
+                snapshot_binding(after) != snapshot_before
+                or owner_binding() != binding_before
+                or self._simulator is not producer_before
+                or _c1_source_binding_digest(arithmetic) != arithmetic_binding
+                or _c1_source_binding_digest(copied_arithmetic) != arithmetic_binding
+            ):
+                result["reason"] = "native_source_or_owner_changed_during_arithmetic"
+                return result
+        except (KeyError, TypeError, ValueError, ArithmeticError):
+            result["reason"] = "unsupported_or_changed_native_arithmetic_snapshot"
+            return result
+        result.update(
+            status="recorded_current_native_arithmetic",
+            reason="owned_current_source_arithmetic_discrepancies",
+            discrepancies_available=True,
+            source_epoch=before["source_epoch"],
+            current_tick=before["current_tick"],
+            current_frame=before["current_frame"],
+            source_binding=source_binding,
+            source=deepcopy(before["source"]),
+            arithmetic=copied_arithmetic,
+        )
+        return result
+
     def prepare_normal_request(
         self,
         decision_frame,

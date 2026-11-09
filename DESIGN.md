@@ -2541,6 +2541,28 @@ references, source-field binding, signed-zero/subnormal and work/mutation contro
 
 [native-arithmetic-review]: REVIEW.md#196-supported-native-word-arithmetic-discrepancies-2026-11-09
 
+##### Current Owned Native Arithmetic Composition (2026-11-09)
+
+The private recorder's strict opt-in `snapshot_native_integration_arithmetic`
+accepts no caller source/tick/epoch override. Owned current-native snapshots
+bracket one supported arithmetic probe. Its source digest and literal-false
+metadata must match; current source/frame/epoch/tick data, producer identity and
+compound recorder/source/history content are rechecked before copied publication.
+An intervening contradictory source, owner or receipt prevents publication.
+
+Missing, stale, unsupported or exhausted evidence returns unknown without partial
+source/frame/arithmetic records. Default source/history/wire APIs are unchanged.
+No step/reset/capture/integration replay/guard query or actuation follows. The
+result reports only observed local arithmetic discrepancies; source acceptance,
+uniform/propagated error, transcendental correctness, clocks, one-use execution
+and command admission remain separate. All qualification/admission flags stay
+false; matching hashes are not mathematical proof or adversarial attestation.
+Consumers still need exact record/source-word validation before relying on those
+records. The [composition checkpoint][native-arithmetic-composition-review]
+records bounded mutation/binding controls, reboot recovery and the actual gate.
+
+[native-arithmetic-composition-review]: REVIEW.md#197-current-owned-native-arithmetic-composition-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

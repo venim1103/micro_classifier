@@ -16828,6 +16828,50 @@ no partial evidence, source acceptance or uniform bound follows.
 Scoped document preservation/reference/target/whitespace checks passed; prior
 REVIEW history/Sources, DESIGN and stable AGENTS workflow retained byte-for-byte.
 
+## 197. Current Owned Native Arithmetic Composition (2026-11-09)
+
+Arithmetic checkpoint7e634f3 normally pushed. Local hypothesis: recorder-bound
+native snapshots can bracket one supported arithmetic probe, matching its exact
+source binding and literal-false metadata, then rechecking copied source/frame/
+epoch/current-tick content and compound owner/source/history plus producer
+identity before publication. Separate valid snapshots alone do not detect every
+intervening history change. No caller source/current-tick/epoch override or replay.
+
+Finite routine scope: fourteen fixed controls, one outer reader each; <=two
+native snapshots/one probe/four native samples/four receipt checks/20 binary
+operations/160 digests/zero step/reset/capture/integrate/guard calls per case.
+Reuse the existing native fixture without extra setup read/step/clock/scene/data.
+Four positions incl failures/aborts: first14, adjacent/style, required root,
+one repair reserve. Existing per-native-reader64 digest, arithmetic4096-bit/
+128 segment/ten stage/two binary and all accepted motion/term caps unchanged.
+No study/model/GPU/dependency/download/Arm/board/artifact/cleanup action;
+all flags remain false, no permission or uniform numerical bound. Results follow.
+
+First fourteen passed before reboot, 3.01 s; per-case query/operation ceilings
+held, original fixture ledgers zero. After user resumed on 2026-11-09, actual
+worktree retained only the three expected composition files on main at7e634f3;
+Python `/opt/venv/bin/python`3.12.3, Ruff and host cc available. Nearby contents
+and diff checked before edits; no interrupted test repeated or environment/cache/
+dependency changed. Position two scoped formatting/lint/format-check/whitespace
+passed; **82 compatibility controls passed**, 3.26 s, original fixture ledgers
+zero. Position three root `python -m pytest -q && ruff check . && git diff
+--check` **2,812 passed**, one known QDQ xfail, 71 warnings, no reported skips,
+75.75 s; changed-file format/editor diagnostics passed. Three positions used,
+no test/style failure or abort; unused fourth is not follow-on scope. No
+unchanged successful source gate rerun for documentation.
+
+Publication is only copied current producer-corresponding local arithmetic;
+matching hashes/false metadata are not exact arithmetic-record validation or
+mathematical/native/source qualification. No uniform or accumulated bounds,
+transcendental/pi/wrapping/clock/one-use acceptance, permission or admitted
+predecessor follows; all flags false, no usable command. Default wire/source/
+history APIs unchanged. No artifact/data/study/model/GPU/download/dependency/
+Arm/board/cleanup action. Next add bounded exact record/source-word validation
+for the named numerical consumer; retain abstention on malformed, inconsistent
+or exhausted records and keep every unsupported qualification obligation open.
+Scoped history/Sources/design/workflow preservation, new reference/local target
+and whitespace checks passed; code gate not rerun for documentation.
+
 ## Sources
 
 Hardware and tools:

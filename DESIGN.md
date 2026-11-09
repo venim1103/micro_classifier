@@ -2215,6 +2215,34 @@ bounded controls, initial missing-keyword failures and required gate results.
 
 [realized-receipt-review]: REVIEW.md#182-opt-in-simulator-realized-motion-receipts-2026-11-09
 
+##### Owned Simulator Source Reads (2026-11-09)
+
+The existing private C1 recorder optionally reads one exact RoverEnv through
+record_environment_tick, requiring literal synthetic_test_only=True. It derives
+tick, pose, observation, State and frame internally; callers supply none of those
+values. The declared ideal C1 config/scenario must match exactly. The first
+successful read binds the actual environment and both RNG objects; foreign owners,
+reset/replaced epochs, stale ticks, mixed fixture/simulator recording, source-file
+changes or producer/recorder mutation during capture reject before publication.
+Capture work is staged on a shallow recorder copy; existing record_tick capture/
+delivery/retention semantics remain, but bound streams reject fixture overrides.
+
+An owned dynamics sample retains the original native speed/yaw separately from
+the State derived by state_from_observation. That existing exporter has already
+converted ego/goal to float32; its values are not recovered native precision or
+qualified Q1 source-to-decoded bounds. The next motion-word integration must
+preserve that distinction and actual emitted bytes rather than erase rounding
+discrepancies. Owned observation mutation does not change the environment.
+
+This is conditional producer/content correspondence, not accepted source/coverage
+authority, uniform native/range/pose/clock error, body support, one-use execution
+or admitted predecessor lineage. Source reads do not step/reset, query decisions/
+guards or write episodes. Existing normal APIs/physics/wire and all qualification
+flags stay unchanged. The [owner-read checkpoint][simulator-source-read-review]
+records finite synthetic controls, reset-lineage repair and actual gate results.
+
+[simulator-source-read-review]: REVIEW.md#183-recorder-reads-from-the-actual-simulator-owner-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

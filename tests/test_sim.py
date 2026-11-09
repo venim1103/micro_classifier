@@ -9296,6 +9296,146 @@ def test_synthetic_controlled_candidate_independent_audit(
 
 
 @pytest.fixture(scope="module")
+def c1_simulator_source_fixture(request):
+    from sim import diagnostics
+
+    scenario = Scenario(start=(2.0, 2.0, 0.0), obstacles=())
+    environment = RoverEnv(scenario=scenario, config=diagnostics._c1_config(None))
+    owner = diagnostics._SyntheticC1SourceRecorder(scenario, synthetic_test_only=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3])
+    ledger = dict.fromkeys(("reads", "capture", "digest", "forbidden"), 0)
+    yield environment, owner, ledger
+    assert ledger["reads"] <= 24 and ledger["capture"] <= 12
+    assert ledger["digest"] <= 96 and ledger["forbidden"] == 0
+    capture = request.config.pluginmanager.getplugin("capturemanager")
+    if capture is None:
+        print("C1 simulator source ledger:", json.dumps(ledger, sort_keys=True))
+    else:
+        with capture.global_and_fixture_disabled():
+            print("C1 simulator source ledger:", json.dumps(ledger, sort_keys=True))
+
+
+@pytest.mark.parametrize("case", range(10))
+def test_synthetic_c1_recorder_reads_actual_simulator(
+    c1_simulator_source_fixture, monkeypatch, case
+):
+    from dataclasses import replace
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_simulator_source_fixture[:2])
+    ledger = c1_simulator_source_fixture[2]
+    original_capture = diagnostics.capture_synthetic_c1_views
+    original_digest = diagnostics._c1_source_binding_digest
+    expected_state = state_from_observation(environment._observation())
+    before_current = deepcopy(owner._current)
+    before_pending = deepcopy(owner._pending)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    options = {"synthetic_test_only": True}
+    expected = None
+    if case == 1:
+        options["synthetic_test_only"] = 1
+        expected = "synthetic_test_only"
+    elif case == 2:
+        environment.config = Config()
+        expected = "profile or scenario mismatch"
+    elif case == 3:
+        environment.scenario = replace(environment.scenario, name="different-source")
+        expected = "profile or scenario mismatch"
+    elif case == 4:
+        environment.rng = deepcopy(environment.rng)
+        ledger["reads"] += 1
+        with pytest.raises(ValueError, match="source epoch changed"):
+            owner.record_environment_tick(environment, synthetic_test_only=True)
+        environment = deepcopy(environment)
+        expected = "source owner changed"
+    elif case == 5:
+        environment.tick = 1
+        expected = "consecutive nonwrapping"
+    elif case == 6:
+        with pytest.raises(ValueError, match="fixture overrides"):
+            owner.record_tick(2, pose_m_rad=[2, 2, 0], fixture_state=expected_state)
+        owner = diagnostics._SyntheticC1SourceRecorder(
+            environment.scenario, synthetic_test_only=True
+        )
+        owner.record_tick(0, pose_m_rad=[2, 2, 0], fixture_state=State())
+        before_current, before_pending = (
+            deepcopy(owner._current),
+            deepcopy(owner._pending),
+        )
+        expected = "fixture source cannot become"
+    elif case == 7:
+        options["fixture_state"] = State()
+        expected = "unexpected keyword"
+    elif case in (8, 9):
+        expected = "changed during source capture"
+
+    def capture(*args, **kwargs):
+        ledger["capture"] += 1
+        assert ledger["capture"] <= 12
+        result = original_capture(*args, **kwargs)
+        if case == 8:
+            environment.tick += 1
+        elif case == 9:
+            owner._epoch = "b" * 32
+        return result
+
+    def digest(*args, **kwargs):
+        ledger["digest"] += 1
+        assert ledger["digest"] <= 96
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        ledger["forbidden"] += 1
+        raise AssertionError(
+            "source read must not move, reset, query or write episodes"
+        )
+
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", capture)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    for name in (
+        "probe_synthetic_c1_questions",
+        "_probe_synthetic_c1_command_path_enclosure",
+        "write_episode",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    ledger["reads"] += 1
+    if expected is not None:
+        with pytest.raises((TypeError, ValueError), match=expected):
+            owner.record_environment_tick(environment, **options)
+        assert owner._current[0] == before_current[0]
+        np.testing.assert_array_equal(owner._current[1], before_current[1])
+        assert owner._current[2:] == before_current[2:]
+        assert original_digest(owner._pending) == original_digest(before_pending)
+    else:
+        owner.record_environment_tick(environment, **options)
+        assert owner._simulator is environment
+        assert owner._current[0] == environment.tick == 2
+        np.testing.assert_array_equal(
+            owner._current[1], [*environment.position, environment.yaw]
+        )
+        assert owner._current[2] == expected_state
+        assert owner._current[3] == encode_state(expected_state)
+        assert owner._dynamics_sample["native_action"] == (
+            environment.speed,
+            environment.turn_rate,
+        )
+        assert owner._latest["capture_id"] == f"{owner._epoch}:0"
+        assert owner._pending[-1]["capture_id"] == f"{owner._epoch}:2"
+        owner._dynamics_sample["observation"]["ego"][:] = 99.0
+        assert not (environment._observation()["ego"] == 99.0).any()
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
+@pytest.fixture(scope="module")
 def c1_owned_normal_request_fixture(request):
     from interface.protocol import State
     from sim import diagnostics

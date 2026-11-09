@@ -16087,6 +16087,77 @@ derived identity/content as source/coverage qualification or command permission.
 Accepted setup/coverage, numerical/pose/range/clock error, one-use/guard/executor,
 retained uncertainty and task-quality evidence remain separately gated.
 
+## 183. Recorder Reads From the Actual Simulator Owner (2026-11-09)
+
+Receipt checkpoint f7b879b normally pushed; continued the ordered Q0 prerequisite,
+not permission to execute a guarded command. Local hypothesis: the source recorder
+can derive current tick/pose/observation/State/frame from one actual RoverEnv,
+stage its capture, recheck producer/recorder stability and publish only after the
+checks succeed. No caller pose/State/frame override or mixed fixture/simulator
+stream is accepted. Exact declared C1 config/scenario and unchanged source files
+are required; this is content/provenance correspondence, not accepted authority.
+
+Four verification positions including repairs/aborts: focused ten-case matrix,
+adjacent controls/style, required root gate and one reserved repair position.
+One empty-obstacle synthetic setup, two short actual simulator steps and two
+initial source reads (one capture). Each matrix clones that in-memory pair and
+performs at most 24 owner reads/12 captures/96 instrumented digests. Source reads
+must not step/reset, query questions/guard paths or write episodes. No new study,
+labels, downloads, dependencies, GPU/native/hardware or controller wiring. Capture
+and copied owner history retain existing dimensions, retention and hard limits;
+the new actual-owner entry rejects more than 32 obstacles as a local work bound.
+
+The source State is the existing state_from_observation result, including its
+float32 ego/goal values and existing timestamp mapping; original native speed/yaw
+words are retained separately in the owned dynamics sample. Do not mistake these
+post-observation State words for the original native precision or silently erase
+Q1 discrepancies. No source/native/coverage/error/clock/admission flag is promoted,
+and no receipt supplies one-use response consumption or predecessor admission.
+All fixture data stays in memory; no cleanup job or artifact is created.
+
+Position one passed ten controls, 1.43 s/1,756 deselected; ledger ten owner reads,
+three capture calls/25 instrumented digests/zero forbidden calls. Nearby reset
+inspection exposed an additional lineage risk: the same RoverEnv can be reset
+and advanced back to the expected tick. Its reset replaces both RNG objects.
+Retain their object identities as local simulator-epoch markers and recheck
+them before/after capture, without consuming RNG or claiming measured clocks.
+The foreign-owner control also exercises same-content RNG replacement; no
+extra scene/step/capture is introduced. This substantive source repair receives
+the already-reserved necessary focused/adjacent checks within the same scope.
+
+Position two passed ten repaired source controls plus sixteen owned-current
+rechecks/eight legacy preparation controls: 34 passed, 0.42 s/1,732 deselected.
+New ledger eleven reads/three captures/25 digests/zero forbidden. Ruff changed-file
+format/lint/whitespace passed. Position three required root passed 2,689 tests,
+one known transformer QDQ xfail/71 warnings, no skips, 55.77 s; repository lint,
+changed-file format and editor diagnostics pass. Three positions used; fourth
+unused/not follow-on scope. Initial successful controls are not rerun for docs;
+old experiment scopes and native/board/error/physical qualifications stay closed.
+
+The reset control replaces an RNG object with a same-state copy, requiring epoch
+rejection even when current tick/observation bytes are unchanged. No extra scene,
+step or capture. Epoch identities are local object continuity, not clock proof,
+unforgeability or accepted execution identity. During-capture controls mutate the
+producer tick or recorder epoch; staged current/pending events are not published,
+and externally introduced changes are not silently reverted. Actual byte/pose/
+capture-ID correspondence and copied observation ownership pass without RNG use.
+
+Per matrix setup: one scenario/environment/recorder, two source reads and two
+short steps, with one tick-zero capture. A mixed-mode control creates one extra
+fixture recorder/capture before instrumentation; source matrix capture ledger
+adds three. Focused/root runs stay within the recorded hard counts; no study data,
+generated report, dependency or job. All earlier default behavior and closed
+qualification/admission flags remain unchanged.
+
+Next Q1 source-motion precision integration: the new path currently stores the
+existing post-float32 observation State, while native speed/yaw are available in
+its separate owned sample. Derive original motion words from that same snapshot
+and require their encoding to preserve the actually emitted State frame; retain
+source/decoded discrepancies and reject inconsistent observations. Do not recover
+native goal precision, infer uniform error, clamp 0.6 overshoot or admit a command.
+This is useful compatible prerequisite work, not missing routine approval or
+another request hash wrapper. Scoped docs and verified checkpoint/push follow.
+
 ## Sources
 
 Hardware and tools:

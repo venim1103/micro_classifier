@@ -8992,6 +8992,10 @@ class _SyntheticC1SourceRecorder:
         self._latest = None
         self._current = None
         self._binding = None
+        self._simulator = None
+        self._simulator_rng = None
+        self._simulator_odometry_rng = None
+        self._dynamics_sample = None
 
     @staticmethod
     def _source_files():
@@ -9004,6 +9008,8 @@ class _SyntheticC1SourceRecorder:
     def record_tick(self, tick, *, pose_m_rad, fixture_state):
         from interface.protocol import State, encode_state
 
+        if self._simulator is not None:
+            raise ValueError("bound simulator source does not accept fixture overrides")
         if (
             type(tick) is not int
             or not 0 <= tick <= 0xFFFFFFFF // 50000
@@ -9045,6 +9051,120 @@ class _SyntheticC1SourceRecorder:
         self._latest = latest
         self._current = tick, pose, state, frame
         self._binding = None
+
+    def record_environment_tick(self, environment, *, synthetic_test_only=False):
+        """Read one actual simulator snapshot, without stepping or qualifying it."""
+        from copy import copy
+
+        from sim.rover import RoverEnv, Scenario, state_from_observation
+
+        if synthetic_test_only is not True:
+            raise ValueError("simulator source requires synthetic_test_only=True")
+        if type(environment) is not RoverEnv:
+            raise TypeError("simulator source requires the actual RoverEnv owner")
+        if self._simulator is not None and self._simulator is not environment:
+            raise ValueError("simulator source owner changed")
+        if self._simulator is not None and (
+            self._simulator_rng is not environment.rng
+            or self._simulator_odometry_rng is not environment.odometry_rng
+        ):
+            raise ValueError("simulator source epoch changed")
+        if self._simulator is None and self._current is not None:
+            raise ValueError("fixture source cannot become a simulator source")
+        if (
+            type(environment.config) is not Config
+            or type(environment.scenario) is not Scenario
+        ):
+            raise ValueError("unsupported simulator source profile")
+        if len(environment.scenario.obstacles) > 32:
+            raise ValueError("simulator source obstacle budget exhausted")
+        profile = {
+            "config": asdict(environment.config),
+            "scenario": asdict(environment.scenario),
+        }
+        declared_profile = {
+            "config": asdict(self._config),
+            "scenario": asdict(self._scenario),
+        }
+        if _c1_source_binding_digest(profile) != _c1_source_binding_digest(
+            declared_profile
+        ):
+            raise ValueError("simulator source profile or scenario mismatch")
+        if self._source_files() != self._identities:
+            raise ValueError("simulator source files changed")
+
+        def sample():
+            return {
+                "tick": environment.tick,
+                "pose_m_rad": (
+                    *map(float, environment.position),
+                    float(environment.yaw),
+                ),
+                "native_action": (
+                    float(environment.speed),
+                    float(environment.turn_rate),
+                ),
+                "observation": environment._observation(),
+                "config": asdict(environment.config),
+                "scenario": asdict(environment.scenario),
+            }
+
+        def owner_binding():
+            current = self._current
+            return _c1_source_binding_digest(
+                {
+                    "epoch": self._epoch,
+                    "profile": {
+                        "config": asdict(self._config),
+                        "scenario": asdict(self._scenario),
+                    },
+                    "identities": self._identities,
+                    "pending": self._pending,
+                    "history": self._history,
+                    "latest": self._latest,
+                    "current": None
+                    if current is None
+                    else (current[0], current[1], asdict(current[2]), current[3]),
+                    "dynamics_sample": self._dynamics_sample,
+                }
+            )
+
+        snapshot = sample()
+        snapshot_binding = _c1_source_binding_digest(snapshot)
+        recorder_binding = owner_binding()
+        simulator_before = self._simulator
+        rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+        recorder_rng_before = self._simulator_rng
+        recorder_odometry_rng_before = self._simulator_odometry_rng
+        binding_before = self._binding
+        state = state_from_observation(snapshot["observation"])
+        staged = copy(self)
+        staged._simulator = None
+        staged.record_tick(
+            snapshot["tick"], pose_m_rad=snapshot["pose_m_rad"], fixture_state=state
+        )
+        if (
+            _c1_source_binding_digest(sample()) != snapshot_binding
+            or owner_binding() != recorder_binding
+            or self._simulator is not simulator_before
+            or environment.rng is not rng_before
+            or environment.odometry_rng is not odometry_rng_before
+            or self._simulator_rng is not recorder_rng_before
+            or self._simulator_odometry_rng is not recorder_odometry_rng_before
+            or self._binding is not binding_before
+            or self._source_files() != self._identities
+        ):
+            raise ValueError("simulator or recorder changed during source capture")
+        self._pending, self._history, self._latest = (
+            staged._pending,
+            staged._history,
+            staged._latest,
+        )
+        self._current, self._binding = staged._current, staged._binding
+        self._simulator = environment
+        self._simulator_rng = rng_before
+        self._simulator_odometry_rng = odometry_rng_before
+        self._dynamics_sample = snapshot
 
     def prepare_normal_request(
         self,

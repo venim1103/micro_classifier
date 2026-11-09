@@ -11383,6 +11383,166 @@ def test_native_tof_timing_retention(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default",
+        "flag",
+        "missing_delivered",
+        "missing_pending",
+        "unknown",
+        "held",
+        "timing_epoch",
+        "tick",
+        "clock_flag",
+        "budget",
+        "history_identity",
+        "late_clock",
+        "outgoing",
+        "late_owner",
+        "delivered_only",
+    ),
+)
+def test_native_tof_timing_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    counters = iter(
+        (30, 10, 100, 110, 120, 130) if case == "unknown" else range(100, 1000, 10)
+    )
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", lambda: next(counters))
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    for _ in range(5 if case == "held" else 4):
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_timing=True
+        )
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(
+                environment, synthetic_test_only=True, include_timing=True
+            )
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    if case == "default":
+        owner._tof_timing_history = None
+    elif case == "missing_delivered":
+        owner._tof_timing_history.pop(0)
+    elif case == "missing_pending":
+        owner._tof_timing_history.pop()
+    elif case == "timing_epoch":
+        owner._tof_timing_history[0]["source_epoch"] = "0" * 32
+    elif case == "tick":
+        owner._tof_timing_history[0]["tick"] = True
+    elif case == "clock_flag":
+        owner._tof_timing_history[0]["clock"]["qualified"] = True
+    elif case == "budget":
+        owner._tof_timing_history[0]["clock"]["begin_ns"] = 1 << 4096
+    original_match = diagnostics._match_native_tof_retained_timing
+    original_frame = diagnostics._check_native_tof_delivery_frame
+    original_binding = diagnostics._c1_source_binding_digest
+    work = {"match": 0, "frame": 0, "binding": 0, "forbidden": 0}
+    outgoing = {}
+
+    def matched(*args, **kwargs):
+        work["match"] += 1
+        assert work["match"] <= 6
+        actual = original_match(*args, **kwargs)
+        outgoing.setdefault("timing", actual)
+        return actual
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        assert work["frame"] <= 2
+        actual = original_frame(*args, **kwargs)
+        if work["frame"] == 2:
+            if case == "history_identity":
+                owner._tof_timing_history = list(owner._tof_timing_history)
+            elif case == "late_clock":
+                owner._tof_timing_history[0]["clock"]["begin_ns"] += 1
+                owner._tof_timing_history[0]["clock"]["end_ns"] += 1
+            elif case == "outgoing":
+                outgoing["timing"]["clock"]["begin_ns"] += 1
+                outgoing["timing"]["clock"]["end_ns"] += 1
+            elif case == "late_owner":
+                owner._binding = {"changed": True}
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "timing snapshot must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", matched)
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="include_timing"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True, include_timing=1
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_timing=case != "default",
+        )
+        assert (
+            result["source_qualified"] is False
+            and result["command_admission_qualified"] is False
+        )
+        if case in ("copy", "default", "unknown", "held", "delivered_only"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert "timing" not in result and "pending_timing" not in result
+                assert work["match"] == 0
+            else:
+                assert result["timing"]["tick"] == result["source"]["tick"]
+                assert result["timing"]["clock"]["qualified"] is False
+                assert result["timing"]["clock"]["duration_ns"] == (
+                    None if case == "unknown" else 10
+                )
+                if case != "delivered_only":
+                    assert [entry["tick"] for entry in result["pending_timing"]] == [
+                        entry["tick"] for entry in result["pending_sources"]
+                    ]
+                else:
+                    assert "pending_timing" not in result
+                result["timing"]["clock"]["begin_ns"] = -999
+                assert owner._tof_timing_history[0]["clock"]["begin_ns"] != -999
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert not (
+                {"source", "frame", "timing", "pending_timing", "pending_sources"}
+                & result.keys()
+            )
+            if case == "budget":
+                assert work["binding"] == 0
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng and work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_receipt_snapshot_fixture(c1_receipt_history_fixture):
     environment, owner = deepcopy(c1_receipt_history_fixture[:2])

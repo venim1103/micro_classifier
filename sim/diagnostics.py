@@ -10153,6 +10153,20 @@ def _check_native_tof_timing_history(history, source_history, source_epoch):
         )
 
 
+def _match_native_tof_retained_timing(source, timing_history):
+    matches = [
+        entry
+        for entry in timing_history
+        if all(
+            entry[key] == source[key]
+            for key in ("source_epoch", "tick", "delivery_tick")
+        )
+    ]
+    if len(matches) != 1:
+        raise ValueError("native ToF retained timing pair missing or ambiguous")
+    return deepcopy(matches[0])
+
+
 def _check_simulator_motion_receipt_chain(receipt):
     """Check diagnostic chain structure, not integration accuracy or permission."""
     if (
@@ -11131,12 +11145,18 @@ class _SyntheticC1SourceRecorder:
         return result
 
     def snapshot_native_tof_delivery(
-        self, *, synthetic_test_only=False, include_pending_sources=False
+        self,
+        *,
+        synthetic_test_only=False,
+        include_pending_sources=False,
+        include_timing=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
         if type(include_pending_sources) is not bool:
             raise ValueError("include_pending_sources must be a literal bool")
+        if type(include_timing) is not bool:
+            raise ValueError("include_timing must be a literal bool")
         result = {
             "schema": "micro-classifier/synthetic-c1-native-tof-delivery-snapshot/1",
             "allowed_use": "offline_native_tof_delivery_diagnostics_only",
@@ -11158,6 +11178,7 @@ class _SyntheticC1SourceRecorder:
             },
         }
         environment, history_before = self._simulator, self._tof_history
+        timing_before = self._tof_timing_history if include_timing else None
         current_before, dynamics_before = self._current, self._dynamics_sample
         if environment is None or current_before is None or dynamics_before is None:
             return result
@@ -11181,6 +11202,11 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
+            if include_timing:
+                _check_native_tof_history_layout(self._tof_history, template)
+                _check_native_tof_timing_history(
+                    self._tof_timing_history, self._tof_history, self._epoch
+                )
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -11194,6 +11220,11 @@ class _SyntheticC1SourceRecorder:
                     else (current[0], current[1], asdict(current[2]), current[3]),
                     "dynamics_sample": self._dynamics_sample,
                     "tof_history": self._tof_history,
+                    **(
+                        {"tof_timing_history": self._tof_timing_history}
+                        if include_timing
+                        else {}
+                    ),
                     "binding": self._binding,
                 }
             )
@@ -11201,6 +11232,10 @@ class _SyntheticC1SourceRecorder:
         try:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
+            if include_timing:
+                _check_native_tof_timing_history(
+                    timing_before, history_before, self._epoch
+                )
             if any(
                 not 0 <= word <= 0xFFFFFFFF
                 for entry in history_before
@@ -11232,6 +11267,8 @@ class _SyntheticC1SourceRecorder:
             rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
             owner_binding = ownership()
             history_binding = _c1_source_binding_digest(history_before)
+            if include_timing:
+                timing_binding = _c1_source_binding_digest(timing_before)
             if include_pending_sources:
                 pending_before = environment.pending
                 pending_copy = _copy_native_tof_pending_queue(environment)
@@ -11252,6 +11289,19 @@ class _SyntheticC1SourceRecorder:
             copied = _match_native_tof_delivered_source(
                 environment, history_before, self._epoch
             )
+            if include_timing:
+                timing = _match_native_tof_retained_timing(copied, timing_before)
+                pending_timing = (
+                    tuple(
+                        _match_native_tof_retained_timing(source, timing_before)
+                        for source in pending_sources
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                timing_output_binding = _c1_source_binding_digest(
+                    {"timing": timing, "pending_timing": pending_timing}
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -11286,6 +11336,39 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF pending context or outgoing sources changed"
                     )
+            if include_timing:
+                _check_native_tof_timing_history(
+                    self._tof_timing_history, self._tof_history, self._epoch
+                )
+                timing_after = _match_native_tof_retained_timing(
+                    live_after, self._tof_timing_history
+                )
+                pending_timing_after = (
+                    tuple(
+                        _match_native_tof_retained_timing(
+                            source, self._tof_timing_history
+                        )
+                        for source in pending_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                if (
+                    self._tof_timing_history is not timing_before
+                    or not _native_tof_word_copy_matches(timing, timing_after)
+                    or not _native_tof_word_copy_matches(
+                        pending_timing, pending_timing_after
+                    )
+                    or _c1_source_binding_digest(self._tof_timing_history)
+                    != timing_binding
+                    or _c1_source_binding_digest(
+                        {"timing": timing, "pending_timing": pending_timing}
+                    )
+                    != timing_output_binding
+                ):
+                    raise ValueError(
+                        "native ToF retained timing or outgoing pairs changed"
+                    )
             if (
                 self._simulator is not environment
                 or self._tof_history is not history_before
@@ -11318,6 +11401,10 @@ class _SyntheticC1SourceRecorder:
         )
         if include_pending_sources:
             result["pending_sources"] = pending_sources
+        if include_timing:
+            result["timing"] = timing
+            if include_pending_sources:
+                result["pending_timing"] = pending_timing
         return result
 
     def snapshot_receipt_history(self, *, synthetic_test_only=False):

@@ -17779,6 +17779,56 @@ Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
 local target, final five-file diff and whitespace passed. Code gate not rerun
 for documentation; no unrelated files staged or modified by this checkpoint.
 
+## 216. Retained ToF Timing Delivery Correspondence (2026-11-09)
+
+Retentiond538b76 normally pushed/clean. Local hypothesis: the actual current
+delivered/pending source snapshot can optionally carry its uniquely paired
+retained timing entry. Literal `include_timing=False` preserves default payload
+and skips timing history, even if timing is unavailable. Opt-in timing preflight
+precedes owner hashes; owner/history identity/content and detached outgoing pairs
+are checked after the closing companion State/frame and pending-source checks.
+Missing/malformed/changed timing returns unknown without source/frame/timing.
+Unknown clock remains unknown; no elapsed interval, coverage, clock domain,
+expiry, permission, admission or usable-command evidence follows from pairing.
+
+Finite sixteen cloned receipt controls, <=five steps/six ordinary reads/three
+retentions/six setup timing intakes/eight controlled setup counter reads per case.
+Snapshot <=six retained-timing matches/two frame checks/64 bindings; zero
+read/retention/step/reset/geometry/new-clock calls. Existing C1 staging<=48
+views per case, not task data or coverage studies. Existing source/word/history8/
+clock/arithmetic caps retained. Three positions including failures/aborts:
+first16, required root/style (existing adjacent controls), repair reserve; no
+standalone old experiment or general audit. No dependency/download/model/GPU/
+data/study/firmware/Arm/sanitizer/board/physical/threshold/frozen-contract action,
+artifact or cleanup. Results follow; all eight flags/clock-qualified stay false.
+First16PASS4.89s, including delivered-only, optional pending pairs, held current
+observation, detached copies, unknown clock, missing/mispaired timing, strict
+flag, clock flag/budget, prehash oversized-clock rejection, late original timing
+identity/content/owner changes and late staged-output mutation. Root3073PASS/
+known transformer QDQ1xfail/71warnings97.76s; Ruff root/changed-file checks,
+changed-file format and diff whitespace passed; editor diagnostics clear.
+Two of three positions used, no failure/abort; reserve is not follow-on scope.
+No additional opt-in C/Arm/sanitizer/board gate or standalone old experiment.
+Editor symbol lookup resolved only the snapshot definition, not dynamic test
+callers; full runtime controls are the caller evidence, not a static signature
+compatibility claim.
+
+Original timing history is bounded/preflighted before hashing and identity/
+content/output rechecked after the closing companion State/frame and optional
+pending checks. Required missing timing returns unknown without source/frame/
+timing, while default source snapshots ignore timing history entirely. Successful
+optional pairs copy original epoch/acquisition/delivery/clock fields; unknowns
+remain unknown. No source/clock/physical/range/error/coverage/expiry/one-use/
+permission/native-execution/admission qualification, linked firmware/board/fit/
+task-quality evidence, atomic/perpetual freshness or usable command. All eight
+flags/clock-qualified false. Source/test diff reviewed; accepted limits and public
+introduction unchanged, no artifact/cleanup. Next reassess the named native ToF
+source/coverage/error path; additional timing copying alone is not acceptance
+evidence and cannot resolve physical clocks or source qualification.
+Scoped history/Sources/prior-design/stable-workflow preservation, new reference/
+local target, final five-file diff and whitespace passed. Code gate not rerun
+for documentation; no unrelated files modified or staged by this checkpoint.
+
 ## Sources
 
 Hardware and tools:

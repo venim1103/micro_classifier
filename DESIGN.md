@@ -2963,6 +2963,30 @@ See [timing retention controls and evidence limits][native-tof-timing-retention-
 
 [native-tof-timing-retention-review]: REVIEW.md#215-opt-in-recorder-owned-native-tof-timing-retention-2026-11-09
 
+##### Retained ToF Timing Delivery Correspondence (2026-11-09)
+
+Private `snapshot_native_tof_delivery(..., include_timing=True)` separately opts
+in to retained timing for the actual matched delivered acquisition and, when
+requested, every actual matched pending acquisition in queue order. It retains
+the existing current-owner/original State/frame/source/queue checks and literal
+synthetic-only opt-in. Before ownership hashing it validates the bounded timing
+history against retained native sources; epoch/acquisition/delivery IDs must
+uniquely agree. After closing frame/pending checks it rechecks original history
+identity/content and detached outgoing pairs. Missing, malformed or changed
+timing yields unknown with no source/frame/pending/timing payload. Default
+snapshots omit timing and do not inspect timing history.
+
+Successful optional `timing` and `pending_timing` entries are detached diagnostic
+records only. Held observations use the matched acquisition, not current tick
+as a substitute; unknown clock duration/status stays unknown. No geometry,
+ordinary recorder read, retention, step/reset or new clock read is introduced.
+This establishes no elapsed coverage, physical timing, accepted clock domain,
+expiry/one-use/native execution/permission/admission or usable command. All
+qualification flags remain false; no atomic or perpetual freshness guarantee.
+See [timing delivery controls and limits][native-tof-timing-delivery-review].
+
+[native-tof-timing-delivery-review]: REVIEW.md#216-retained-tof-timing-delivery-correspondence-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

@@ -16766,6 +16766,68 @@ with no measured per-evaluation discrepancy adopted as a uniform error bound.
 Scoped document preservation, new reference/local targets and whitespace checks
 passed; prior REVIEW history/Sources, DESIGN and stable AGENTS workflow retained.
 
+## 196. Supported Native-Word Arithmetic Discrepancies (2026-11-09)
+
+Native snapshot checkpoint85a6123 normally pushed. Targeted search found no
+_C1SourceArithmetic class; nearby owning _C1CommandArithmetic supports bounded
+exact rational value/binary operations and pre-operation bit guards. Hypothesis:
+reuse only those operations at <=4096 bits for ten local retained add/mul/div
+stages, publish exact observed-minus-exact dyadics with operand/output hex words,
+and retain unsupported sinc/trig/pi/wrapping/accumulated obligations explicitly.
+Copied input correspondence is not actual-current-source or numerical qualification.
+
+Finite routine scope: sixteen fixed copied-source controls, one probe each,
+<=20 rational binary operations/two digests/no source-read/step/reset/capture/
+integrate/guard calls per case. Reuse existing snapshot setup fixture; no extra
+step/clock/scene/data/study. Probe <=128 segments/ten stages each/two binary
+operations per stage and existing <=4096-bit pre-operation cap; no increase
+to accepted motion/term bounds. Four positions incl failures/aborts: first16,
+adjacent/style, required root, one repair reserve. No GPU/model/download/dependency/
+native study/Arm/board/artifact/cleanup action. All flags false, no permission,
+uniform error bound, independently correct transcendental value or admission.
+First patch failed at formatted test parameters; targeted search confirmed probe,
+test and review additions absent, then retry used the verified fixture definition.
+No partial edit or test run. Actual results follow checks.
+
+First sixteen passed, 1.65 s; <=20 binary/two digest/zero forbidden limits held,
+original source fixture ledgers zero. Reference follow-up binds every returned
+stage name/operand/output hex word independently to its intended source fields,
+then checks exact Fraction results/differences; altered observed-word case must
+have a positive local discrepancy, and unsupported dependencies remain explicit.
+No new case/operation/bit increase. Revised positions: first16, strengthened16,
+adjacent/style, required root; focused follow-up check comes next.
+
+Strengthened sixteen passed, 1.69 s. Position three Ruff formatted both files,
+then lint failed with I001 import grouping and six B023 loop-lambda binding
+warnings in the direct reference; the chained adjacent tests did not run.
+Equivalent explicit add/mul/div branches and the import-group blank line repair
+only the reference test. Fourth/final verification position runs focused repair
+controls first, scoped style and the pending adjacent/required root gates in
+sequence; no further position, scope/bit/operation cap increase or tolerance
+relaxation. Actual outcomes follow; the failed style position remains spent.
+
+Fourth/final sequence: repaired **16 passed**, 0.32 s; scoped Ruff formatting,
+lint/format checks passed, **68 compatibility controls passed**, 0.52 s with
+unchanged fixture ledgers zero; required root `python -m pytest -q && ruff check
+. && git diff --check` **2,798 passed**, one known QDQ xfail, 71 warnings, no
+reported skips, 57.26 s. Changed-file formatting and editor diagnostics passed.
+All four positions spent including failed style; repaired/adjacent/root checks
+were the finite pending final sequence, not extra standalone positions or old
+experiment renewal. Code gate not repeated for documentation.
+
+Exact local arithmetic records preserve copied operand/output words and direct
+rational differences, not primitive/source provenance, mathematical sinc/trig/
+pi/wrap correctness, uniform/accumulated errors, accepted clocks or permission.
+Synthetic changed-word inputs may yield exact relationships and still be false
+source claims. All flags remain false, no command/predecessor admitted. Existing
+source/history/native snapshot/wire APIs unchanged; no artifact/data/study/GPU/
+model/dependency/download/Arm/board/cleanup action. Next compose the owned
+current-native reader and arithmetic probe with before/after source-content and
+owner/currentness rechecks before copied diagnostic discrepancy publication;
+no partial evidence, source acceptance or uniform bound follows.
+Scoped document preservation/reference/target/whitespace checks passed; prior
+REVIEW history/Sources, DESIGN and stable AGENTS workflow retained byte-for-byte.
+
 ## Sources
 
 Hardware and tools:

@@ -8970,6 +8970,242 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _probe_native_integration_arithmetic(
+    source, *, max_integer_bits=4096, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native arithmetic requires synthetic_test_only=True")
+    if type(max_integer_bits) is not int or not 1 <= max_integer_bits <= 4096:
+        raise ValueError(
+            "native arithmetic integer limit must be from one through 4096"
+        )
+    result = {
+        "schema": "micro-classifier/native-arithmetic-discrepancies/1",
+        "allowed_use": "observed_native_word_arithmetic_diagnostics_only",
+        "status": "unknown",
+        "reason": "unsupported_native_source",
+        "discrepancies_available": False,
+        "fixture_permission_granted": False,
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "work": {"stages": 0, "binary_operations": 0},
+    }
+    try:
+        if (
+            type(source) is not dict
+            or set(source) != {"source_epoch", "tick_before", "tick_after", "segments"}
+            or type(source["source_epoch"]) is not str
+            or any(
+                type(source[key]) is not int for key in ("tick_before", "tick_after")
+            )
+            or not 0 <= source["tick_before"] < source["tick_after"] <= 0xFFFFFFFF
+            or source["tick_after"] != source["tick_before"] + 1
+            or type(source["segments"]) is not list
+            or not 1 <= len(source["segments"]) <= 128
+        ):
+            return result
+        for computed in source["segments"]:
+            if (
+                type(computed) is not dict
+                or set(computed)
+                != {
+                    "schema",
+                    "allowed_use",
+                    "fixture_permission_granted",
+                    "numerically_certified",
+                    "native_execution_qualified",
+                    "inputs",
+                    "values",
+                }
+                or computed["schema"] != "micro-classifier/native-integration-source/1"
+                or computed["allowed_use"] != "native_integration_diagnostics_only"
+                or any(
+                    computed[flag] is not False
+                    for flag in (
+                        "fixture_permission_granted",
+                        "numerically_certified",
+                        "native_execution_qualified",
+                    )
+                )
+                or type(computed["inputs"]) is not dict
+                or type(computed["values"]) is not dict
+                or set(computed["inputs"])
+                != {"position_m", "yaw_rad", "speed_m_s", "turn_rate_rad_s", "seconds"}
+                or set(computed["values"])
+                != {
+                    "angle_rad",
+                    "half_angle_rad",
+                    "midpoint_rad",
+                    "speed_interval_m",
+                    "sinc_argument",
+                    "sinc_value",
+                    "distance_m",
+                    "cos_midpoint",
+                    "sin_midpoint",
+                    "displacement_m",
+                    "heading_increment_rad",
+                    "shifted_heading_rad",
+                    "period_rad",
+                    "wrapped_heading_rad",
+                    "next_yaw_rad",
+                    "next_position_m",
+                }
+            ):
+                return result
+            for words in (computed["inputs"], computed["values"]):
+                for key, value in words.items():
+                    if key in {"position_m", "displacement_m", "next_position_m"}:
+                        if type(value) is not tuple or len(value) != 2:
+                            return result
+                        scalars = value
+                    else:
+                        scalars = (value,)
+                    if any(
+                        type(scalar) is not float or not math.isfinite(scalar)
+                        for scalar in scalars
+                    ):
+                        return result
+        binding_before = _c1_source_binding_digest(source)
+        copied_source = deepcopy(source)
+        arithmetic = _C1CommandArithmetic(16, max_integer_bits, result["work"])
+        segments = []
+        for computed in copied_source["segments"]:
+            inputs, values = computed["inputs"], computed["values"]
+            stages = []
+            for name, operation, left, right, observed in (
+                (
+                    "angle_rad",
+                    "mul",
+                    inputs["turn_rate_rad_s"],
+                    inputs["seconds"],
+                    values["angle_rad"],
+                ),
+                (
+                    "speed_interval_m",
+                    "mul",
+                    inputs["speed_m_s"],
+                    inputs["seconds"],
+                    values["speed_interval_m"],
+                ),
+                (
+                    "half_angle_rad",
+                    "div",
+                    values["angle_rad"],
+                    2.0,
+                    values["half_angle_rad"],
+                ),
+                (
+                    "midpoint_rad",
+                    "add",
+                    inputs["yaw_rad"],
+                    values["half_angle_rad"],
+                    values["midpoint_rad"],
+                ),
+                (
+                    "distance_m",
+                    "mul",
+                    values["speed_interval_m"],
+                    values["sinc_value"],
+                    values["distance_m"],
+                ),
+                (
+                    "displacement_x_m",
+                    "mul",
+                    values["distance_m"],
+                    values["cos_midpoint"],
+                    values["displacement_m"][0],
+                ),
+                (
+                    "displacement_y_m",
+                    "mul",
+                    values["distance_m"],
+                    values["sin_midpoint"],
+                    values["displacement_m"][1],
+                ),
+                (
+                    "next_position_x_m",
+                    "add",
+                    inputs["position_m"][0],
+                    values["displacement_m"][0],
+                    values["next_position_m"][0],
+                ),
+                (
+                    "next_position_y_m",
+                    "add",
+                    inputs["position_m"][1],
+                    values["displacement_m"][1],
+                    values["next_position_m"][1],
+                ),
+                (
+                    "heading_increment_rad",
+                    "add",
+                    inputs["yaw_rad"],
+                    values["angle_rad"],
+                    values["heading_increment_rad"],
+                ),
+            ):
+                result["work"]["stages"] += 1
+                actual = arithmetic.value(observed)
+                left_value, right_value = (
+                    arithmetic.value(left),
+                    arithmetic.value(right),
+                )
+                result["work"]["binary_operations"] += 1
+                exact = arithmetic.binary(left_value, right_value, operation)
+                result["work"]["binary_operations"] += 1
+                difference = arithmetic.binary(actual, exact, "sub")
+                stages.append(
+                    {
+                        "name": name,
+                        "operation": operation,
+                        "input_hex": (left.hex(), right.hex()),
+                        "output_hex": observed.hex(),
+                        "exact_result": (exact.numerator, exact.denominator),
+                        "observed_result": (actual.numerator, actual.denominator),
+                        "observed_minus_exact": (
+                            difference.numerator,
+                            difference.denominator,
+                        ),
+                    }
+                )
+            segments.append(stages)
+        if _c1_source_binding_digest(source) != binding_before:
+            result["reason"] = "native_source_changed_during_arithmetic"
+            return result
+    except ArithmeticError:
+        result["reason"] = "native_arithmetic_budget_exhausted"
+        return result
+    except (KeyError, TypeError, ValueError):
+        return result
+    result.update(
+        status="recorded_native_word_discrepancies",
+        reason="supported_local_arithmetic_only",
+        discrepancies_available=True,
+        source_binding=binding_before,
+        segments=segments,
+        unsupported=(
+            "sinc_argument",
+            "sinc",
+            "cos",
+            "sin",
+            "pi_constant",
+            "heading_wrap",
+            "accumulated_motion",
+        ),
+    )
+    return result
+
+
 def _sample_simulator_native_integration_source(environment, receipt, source_epoch):
     source = environment._integration_source
     if type(source) is not dict or set(source) != {

@@ -9523,6 +9523,237 @@ def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
     "case",
     (
         "valid",
+        "observed_changed",
+        "signed_zero",
+        "subnormal",
+        "missing",
+        "metadata",
+        "nonfinite",
+        "numeric_type",
+        "vector",
+        "budget",
+        "work_limit",
+        "tick",
+        "bad_optin",
+        "bits_type",
+        "bits_high",
+        "mutated",
+    ),
+)
+def test_native_integration_arithmetic_discrepancies(
+    c1_native_integration_snapshot_fixture, monkeypatch, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics
+
+    source = deepcopy(c1_native_integration_snapshot_fixture[1]._integration_sample)
+    settings = {"synthetic_test_only": True}
+    computed = source["segments"][0]
+    expected = None
+    if case == "observed_changed":
+        computed["values"]["angle_rad"] = float(
+            np.nextafter(computed["values"]["angle_rad"], math.inf)
+        )
+    elif case == "signed_zero":
+        computed["inputs"]["turn_rate_rad_s"] = -0.0
+        computed["values"]["angle_rad"] = -0.0
+    elif case == "subnormal":
+        computed["inputs"]["speed_m_s"] = math.ulp(0.0)
+        computed["values"]["speed_interval_m"] = 0.0
+    elif case == "missing":
+        source = None
+        expected = "unsupported_native_source"
+    elif case == "metadata":
+        computed["numerically_certified"] = True
+        expected = "unsupported_native_source"
+    elif case == "nonfinite":
+        computed["values"]["sin_midpoint"] = math.inf
+        expected = "unsupported_native_source"
+    elif case == "numeric_type":
+        computed["inputs"]["speed_m_s"] = True
+        expected = "unsupported_native_source"
+    elif case == "vector":
+        computed["values"]["displacement_m"] = (0.0,)
+        expected = "unsupported_native_source"
+    elif case == "budget":
+        settings["max_integer_bits"] = 1
+        expected = "native_arithmetic_budget_exhausted"
+    elif case == "work_limit":
+        source["segments"] *= 129
+        expected = "unsupported_native_source"
+    elif case == "tick":
+        source["tick_after"] += 1
+        expected = "unsupported_native_source"
+    elif case == "bad_optin":
+        settings["synthetic_test_only"] = 1
+        expected = "option"
+    elif case == "bits_type":
+        settings["max_integer_bits"] = True
+        expected = "option"
+    elif case == "bits_high":
+        settings["max_integer_bits"] = 4097
+        expected = "option"
+    elif case == "mutated":
+        expected = "native_source_changed_during_arithmetic"
+    saved_source = deepcopy(source)
+    work = dict.fromkeys(("binary", "digest", "forbidden"), 0)
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def binary(*args, **kwargs):
+        work["binary"] += 1
+        assert work["binary"] <= 20
+        result = original_binary(*args, **kwargs)
+        if case == "mutated" and work["binary"] == 1:
+            source["segments"][0]["values"]["midpoint_rad"] += 0.001
+        return result
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 2
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "arithmetic controls must not capture/read/replay/query guards"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr("sim.rover.integrate", forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "capture_synthetic_c1_views",
+        "_sample_simulator_native_integration_source",
+        "_probe_synthetic_c1_state_motion",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if expected == "option":
+        with pytest.raises(ValueError):
+            diagnostics._probe_native_integration_arithmetic(source, **settings)
+    else:
+        result = diagnostics._probe_native_integration_arithmetic(source, **settings)
+        assert result["discrepancies_available"] is (expected is None)
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if expected is None:
+            assert result["reason"] == "supported_local_arithmetic_only"
+            assert result["work"] == {"stages": 10, "binary_operations": 20}
+            assert len(result["segments"]) == 1
+            inputs = saved_source["segments"][0]["inputs"]
+            values = saved_source["segments"][0]["values"]
+            expected_words = {
+                "angle_rad": (
+                    inputs["turn_rate_rad_s"],
+                    inputs["seconds"],
+                    values["angle_rad"],
+                ),
+                "speed_interval_m": (
+                    inputs["speed_m_s"],
+                    inputs["seconds"],
+                    values["speed_interval_m"],
+                ),
+                "half_angle_rad": (values["angle_rad"], 2.0, values["half_angle_rad"]),
+                "midpoint_rad": (
+                    inputs["yaw_rad"],
+                    values["half_angle_rad"],
+                    values["midpoint_rad"],
+                ),
+                "distance_m": (
+                    values["speed_interval_m"],
+                    values["sinc_value"],
+                    values["distance_m"],
+                ),
+                "displacement_x_m": (
+                    values["distance_m"],
+                    values["cos_midpoint"],
+                    values["displacement_m"][0],
+                ),
+                "displacement_y_m": (
+                    values["distance_m"],
+                    values["sin_midpoint"],
+                    values["displacement_m"][1],
+                ),
+                "next_position_x_m": (
+                    inputs["position_m"][0],
+                    values["displacement_m"][0],
+                    values["next_position_m"][0],
+                ),
+                "next_position_y_m": (
+                    inputs["position_m"][1],
+                    values["displacement_m"][1],
+                    values["next_position_m"][1],
+                ),
+                "heading_increment_rad": (
+                    inputs["yaw_rad"],
+                    values["angle_rad"],
+                    values["heading_increment_rad"],
+                ),
+            }
+            assert {stage["name"] for stage in result["segments"][0]} == set(
+                expected_words
+            )
+            for stage in result["segments"][0]:
+                expected_left, expected_right, expected_output = expected_words[
+                    stage["name"]
+                ]
+                assert stage["input_hex"] == (expected_left.hex(), expected_right.hex())
+                assert stage["output_hex"] == expected_output.hex()
+                left, right = (
+                    Fraction.from_float(float.fromhex(word))
+                    for word in stage["input_hex"]
+                )
+                if stage["operation"] == "add":
+                    exact = left + right
+                elif stage["operation"] == "mul":
+                    exact = left * right
+                else:
+                    assert stage["operation"] == "div"
+                    exact = left / right
+                observed = Fraction.from_float(float.fromhex(stage["output_hex"]))
+                assert Fraction(*stage["exact_result"]) == exact
+                assert Fraction(*stage["observed_result"]) == observed
+                assert Fraction(*stage["observed_minus_exact"]) == observed - exact
+            if case == "signed_zero":
+                assert result["segments"][0][0]["output_hex"] == "-0x0.0p+0"
+            elif case == "observed_changed":
+                assert Fraction(*result["segments"][0][0]["observed_minus_exact"]) > 0
+            elif case == "subnormal":
+                assert Fraction(*result["segments"][0][1]["observed_minus_exact"]) < 0
+            result["segments"][0][0]["input_hex"] = ("changed", "changed")
+            assert set(result["unsupported"]) == {
+                "sinc_argument",
+                "sinc",
+                "cos",
+                "sin",
+                "pi_constant",
+                "heading_wrap",
+                "accumulated_motion",
+            }
+        else:
+            assert result["reason"] == expected
+            assert "segments" not in result and "source_binding" not in result
+    if case != "mutated":
+        assert source == saved_source
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
         "missing_sample",
         "missing_cache",
         "epoch",

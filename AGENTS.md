@@ -29,7 +29,7 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §195 for read-time actual native integration snapshots
+Read [REVIEW.md][review] §196 for supported native-word arithmetic discrepancies
 and the latest source gate; §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.
@@ -37,8 +37,8 @@ All qualification/admission flags remain false; no usable command is admitted.
 Continue this ordered queue, deriving smaller compatible prerequisites when a
 release gate is blocked:
 
-1. Derive bounded per-evaluation discrepancies for supported retained native
-  arithmetic stages, without adopting uniform or transcendental bounds. Nominal
+1. Compose current owned native snapshots with supported local arithmetic
+  discrepancy publication, without uniform or transcendental bounds. Nominal
   ticks or observed timing do not qualify clocks, one-use execution or permission.
 2. Advance independently supported setup/source/coverage/error/timing evidence
   for the named consumers; implement compatible offline prerequisites without

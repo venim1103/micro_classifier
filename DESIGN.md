@@ -2514,6 +2514,33 @@ bounded source/owner/history/currentness controls and the final-read repair.
 
 [native-integration-snapshot-review]: REVIEW.md#195-read-time-actual-native-integration-snapshots-2026-11-09
 
+##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
+
+The private arithmetic probe consumes copied diagnostic native-source words,
+not actual-current-source authority. It reuses bounded rational value/binary
+operations at at most the existing 4,096-bit source cap. Ten retained stages are
+supported: angle and speed-interval products, half-angle division, midpoint
+addition, distance product, both displacement products, both position additions
+and heading-increment addition. Operand/output hex words retain signed zero;
+exact results, observed dyadics and observed-minus-exact dyadics are recorded.
+
+Closed finite native words and at most 128 segments bound ten stages and two
+rational binary operations per stage. A copied working source and before/after
+input binding detect changed input; unsupported or exhausted work returns
+unknown without partial stage publication. No integrate, capture, guard, source
+read or physical operation follows. The supplied words may be synthetic or
+fabricated; their exact rational relationships do not establish provenance.
+
+Sinc argument/value, cos/sin, pi-constant, heading wrapping and accumulated-motion
+obligations remain explicitly unsupported. Local discrepancies are not uniform
+native bounds, propagated uncertainty or numerical/source/command qualification.
+Consumers still require actual source/currentness and their separate acceptance
+dependencies; all qualification/admission flags remain false. The
+[arithmetic checkpoint][native-arithmetic-review] records fixed direct Fraction
+references, source-field binding, signed-zero/subnormal and work/mutation controls.
+
+[native-arithmetic-review]: REVIEW.md#196-supported-native-word-arithmetic-discrepancies-2026-11-09
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source

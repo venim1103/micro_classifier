@@ -28032,7 +28032,7 @@ def test_native_tof_cylinder_selection_snapshot(
     ),
 )
 @pytest.mark.parametrize(
-    "kind", ("offset", "projection", "horizontal_norm", "discriminant")
+    "kind", ("offset", "projection", "horizontal_norm", "discriminant", "root_squared")
 )
 def test_native_tof_cylinder_offset_snapshot(
     monkeypatch, c1_motion_receipt_source_fixture, case, kind
@@ -28045,11 +28045,16 @@ def test_native_tof_cylinder_offset_snapshot(
     projection = kind == "projection"
     horizontal_norm = kind == "horizontal_norm"
     discriminant = kind == "discriminant"
+    root_squared = kind == "root_squared"
+    residual_key = (
+        "signed_squared_residual_ratio" if root_squared else "signed_residual_ratio"
+    )
     value_cap, binary_cap, oracle_cap = {
         "offset": (72, 48, 48),
         "projection": (1560, 3072, 3072),
         "horizontal_norm": (2352, 3096, 1536),
         "discriminant": (3522, 4662, 3132),
+        "root_squared": (4290, 5430, 768),
     }[kind]
     field = f"cylinder_{kind}_residuals"
     option = f"include_{field}"
@@ -28080,6 +28085,7 @@ def test_native_tof_cylinder_offset_snapshot(
             "combined_offset",
             "combined_projection",
             "combined_norm",
+            "combined_discriminant",
             "late",
             "forbidden",
         ),
@@ -28122,12 +28128,16 @@ def test_native_tof_cylinder_offset_snapshot(
         owner._tof_cylinder_history.pop(0)
     elif case == "missing_pending":
         owner._tof_cylinder_history.pop()
-    elif case in ("residual", "infinite_observation", "malformed"):
+    elif case in ("residual", "infinite_observation", "malformed") or (
+        root_squared and case == "work_limit"
+    ):
         trace = owner._tof_cylinder_history[0]["cylinder"]
         entry = trace if horizontal_norm else trace["cylinders"][0]
         key = (
             "horizontal_squared"
             if horizontal_norm
+            else "root_m"
+            if root_squared
             else "discriminant_m2"
             if discriminant
             else "projection_m"
@@ -28140,6 +28150,10 @@ def test_native_tof_cylinder_offset_snapshot(
                 if case == "malformed"
                 else "inf"
                 if case == "infinite_observation"
+                else (2.0**20).hex()
+                if case == "work_limit"
+                else (-abs(float.fromhex(entry[key][0])) - 0.125).hex()
+                if root_squared
                 else (float.fromhex(entry[key][0]) + 0.125).hex()
             ),
             *entry[key][1:],
@@ -28156,12 +28170,14 @@ def test_native_tof_cylinder_offset_snapshot(
         "pending": "_match_native_tof_pending_sources",
         "chain": "_native_tof_cylinder_stage_chain_diagnostics",
     }
-    if projection or horizontal_norm or discriminant:
+    if projection or horizontal_norm or discriminant or root_squared:
         names["combined_offset"] = "_native_tof_cylinder_offset_residuals"
-    if horizontal_norm or discriminant:
+    if horizontal_norm or discriminant or root_squared:
         names["combined_projection"] = "_native_tof_cylinder_projection_residuals"
-    if discriminant:
+    if discriminant or root_squared:
         names["combined_norm"] = "_native_tof_cylinder_horizontal_norm_residuals"
+    if root_squared:
+        names["combined_discriminant"] = "_native_tof_cylinder_discriminant_residuals"
     originals = {name: getattr(diagnostics, symbol) for name, symbol in names.items()}
     outgoing = {name: [] for name in names}
 
@@ -28175,8 +28191,8 @@ def test_native_tof_cylinder_offset_snapshot(
                 target = outgoing["offset"][1 if case == "late_pending_report" else 0][
                     "entries"
                 ][0]
-                numerator, denominator = target["signed_residual_ratio"]
-                target["signed_residual_ratio"] = (numerator ^ 1, denominator)
+                numerator, denominator = target[residual_key]
+                target[residual_key] = (numerator ^ 1, denominator)
             elif case == "late_cylinder":
                 outgoing["cylinder"][0]["cylinder"]["source_qualified"] = True
             elif case == "late_owner":
@@ -28259,18 +28275,24 @@ def test_native_tof_cylinder_offset_snapshot(
             **{option: case != "default"},
             **(
                 {"include_cylinder_offset_residuals": True}
-                if (projection or horizontal_norm or discriminant)
+                if (projection or horizontal_norm or discriminant or root_squared)
                 and case == "selection_combined"
                 else {}
             ),
             **(
                 {"include_cylinder_projection_residuals": True}
-                if (horizontal_norm or discriminant) and case == "selection_combined"
+                if (horizontal_norm or discriminant or root_squared)
+                and case == "selection_combined"
                 else {}
             ),
             **(
                 {"include_cylinder_horizontal_norm_residuals": True}
-                if discriminant and case == "selection_combined"
+                if (discriminant or root_squared) and case == "selection_combined"
+                else {}
+            ),
+            **(
+                {"include_cylinder_discriminant_residuals": True}
+                if root_squared and case == "selection_combined"
                 else {}
             ),
             include_cylinder_selection_diagnostics=case == "selection_combined",
@@ -28323,7 +28345,7 @@ def test_native_tof_cylinder_offset_snapshot(
                     assert len(diagnostic["entries"]) == (
                         64
                         if horizontal_norm
-                        else (64 if projection or discriminant else 2)
+                        else (64 if projection or discriminant or root_squared else 2)
                         * len(trace["cylinders"])
                     )
                     reference_bases = []
@@ -28405,6 +28427,24 @@ def test_native_tof_cylinder_offset_snapshot(
                                 entry["exact_unrounded_expression_ratio"]
                                 == exact.as_integer_ratio()
                             )
+                        elif root_squared:
+                            index, ray = entry["obstacle_index"], entry["ray_index"]
+                            cylinder = trace["cylinders"][index]
+                            discriminant_word = cylinder["discriminant_m2"][ray]
+                            exact = Fraction.from_float(
+                                max(float.fromhex(discriminant_word), 0.0)
+                            )
+                            observed_word = cylinder["root_m"][ray]
+                            assert (
+                                diagnostic["comparison_basis"]
+                                == "supplied_root_squared_minus_nonnegative_supplied_discriminant"
+                            )
+                            assert entry["discriminant_hex"] == discriminant_word
+                            assert entry["observed_root_hex"] == observed_word
+                            assert (
+                                entry["exact_nonnegative_discriminant_ratio"]
+                                == exact.as_integer_ratio()
+                            )
                         elif projection:
                             index = entry["obstacle_index"]
                             ray = entry["ray_index"]
@@ -28461,27 +28501,43 @@ def test_native_tof_cylinder_offset_snapshot(
                         assert work["oracle"] <= oracle_cap
                         observed = float.fromhex(observed_word)
                         if math.isfinite(observed):
-                            residual = Fraction.from_float(observed) - exact
+                            observed_value = Fraction.from_float(observed)
+                            if root_squared:
+                                observed_value *= observed_value
+                                work["oracle"] += 1
+                                assert (
+                                    entry["exact_observed_root_squared_ratio"]
+                                    == observed_value.as_integer_ratio()
+                                )
+                                assert entry["observed_root_nonnegative"] is (
+                                    observed >= 0
+                                )
+                                assert entry["status"] == (
+                                    "computed_exact_cylinder_root_squared_residual"
+                                    if observed >= 0
+                                    else "inconsistent_negative_cylinder_root"
+                                )
+                            residual = observed_value - exact
                             work["oracle"] += 1
                             assert work["oracle"] <= oracle_cap
-                            assert (
-                                entry["signed_residual_ratio"]
-                                == residual.as_integer_ratio()
-                            )
+                            assert entry[residual_key] == residual.as_integer_ratio()
                         else:
-                            assert entry["signed_residual_ratio"] is None
+                            assert entry[residual_key] is None
+                            if root_squared:
+                                assert (
+                                    entry["exact_observed_root_squared_ratio"] is None
+                                )
+                                assert entry["observed_root_nonnegative"] is None
+                                assert (
+                                    entry["status"] == "unknown_nonfinite_cylinder_root"
+                                )
                 if case == "residual":
-                    assert (
-                        reports[0]["diagnostic"]["entries"][0]["signed_residual_ratio"][
-                            0
-                        ]
-                        != 0
-                    )
+                    assert reports[0]["diagnostic"]["entries"][0][residual_key][0] != 0
                 if case == "delivered_only":
                     assert f"pending_{field}" not in result
                 if case == "output_detached":
                     before_history = deepcopy(owner._tof_cylinder_history)
-                    reports[0]["diagnostic"]["entries"][0]["signed_residual_ratio"] = (
+                    reports[0]["diagnostic"]["entries"][0][residual_key] = (
                         99,
                         1,
                     )
@@ -28492,24 +28548,33 @@ def test_native_tof_cylinder_offset_snapshot(
                         "cylinder_selection_diagnostics" in result
                         and "pending_cylinder_selection_diagnostics" in result
                     )
-                    if projection or horizontal_norm or discriminant:
+                    if projection or horizontal_norm or discriminant or root_squared:
                         assert work["combined_offset"] == closing_count
                         assert all(
                             result["cylinder_offset_residuals"]["diagnostic"][flag]
                             is False
                             for flag in flags
                         )
-                    if horizontal_norm or discriminant:
+                    if horizontal_norm or discriminant or root_squared:
                         assert work["combined_projection"] == closing_count
                         assert all(
                             result["cylinder_projection_residuals"]["diagnostic"][flag]
                             is False
                             for flag in flags
                         )
-                    if discriminant:
+                    if discriminant or root_squared:
                         assert work["combined_norm"] == closing_count
                         assert all(
                             result["cylinder_horizontal_norm_residuals"]["diagnostic"][
+                                flag
+                            ]
+                            is False
+                            for flag in flags
+                        )
+                    if root_squared:
+                        assert work["combined_discriminant"] == closing_count
+                        assert all(
+                            result["cylinder_discriminant_residuals"]["diagnostic"][
                                 flag
                             ]
                             is False
@@ -28534,6 +28599,7 @@ def test_native_tof_cylinder_offset_snapshot(
             assert work["combined_offset"] == 0
             assert work["combined_projection"] == 0
             assert work["combined_norm"] == 0
+            assert work["combined_discriminant"] == 0
     assert environment.tick == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry

@@ -2453,6 +2453,19 @@ coverage/clock/one-use/permission/admission or usable command. See
 [actual controls, failed root and revalidation][native-tof-cylinder-matched-discriminant-review].
 
 
+#### Matched Retained Cylinder Root-Squared Consistency (2026-11-10)
+
+Default-off literal `include_cylinder_root_squared_residuals` requires
+`include_cylinder=True`. Matched delivered/pending identities and independent
+closing checks compose supplied-root-squared minus nonnegative supplied
+discriminant; separate negative-root status and unknown nonfinite-root residual
+remain. <=32 cylinders/4096 words/2048 entries/4096 values/4096 binary operations
+per helper,4096-bit ceiling; <=18 original/closing invocations across delivered/
+<=8 pending records. No sqrt-rounding certification or corrected discriminant.
+All eight flags false, no geometry/source/coverage/error/clock/one-use/permission/
+admission or usable command. See [actual checks and retained failure][native-tof-cylinder-matched-root-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2472,13 +2485,14 @@ coverage/clock/one-use/permission/admission or usable command. See
 [native-tof-cylinder-side-minimum-review]: ../review/261-265.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10
 [native-tof-cylinder-top-offset-review]: ../review/261-265.md#264-supplied-word-cylinder-top-offset-expression-2026-11-10
 [native-tof-cylinder-top-division-review]: ../review/261-265.md#265-guarded-supplied-word-cylinder-top-division-2026-11-10
-[native-tof-cylinder-top-relative-review]: ../../REVIEW.md#266-supplied-word-cylinder-top-relative-expression-2026-11-10
-[native-tof-cylinder-top-radial-review]: ../../REVIEW.md#267-independent-supplied-word-cylinder-cap-square-expressions-2026-11-10
-[native-tof-cylinder-top-mask-review]: ../../REVIEW.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10
-[native-tof-cylinder-top-minimum-review]: ../../REVIEW.md#269-supplied-word-cylinder-cap-minimum-correspondence-2026-11-10
-[native-tof-cylinder-chain-review]: ../../REVIEW.md#270-captured-cylinder-stage-chain-word-correspondence-2026-11-10
+[native-tof-cylinder-top-relative-review]: ../review/266-270.md#266-supplied-word-cylinder-top-relative-expression-2026-11-10
+[native-tof-cylinder-top-radial-review]: ../review/266-270.md#267-independent-supplied-word-cylinder-cap-square-expressions-2026-11-10
+[native-tof-cylinder-top-mask-review]: ../review/266-270.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10
+[native-tof-cylinder-top-minimum-review]: ../review/266-270.md#269-supplied-word-cylinder-cap-minimum-correspondence-2026-11-10
+[native-tof-cylinder-chain-review]: ../review/266-270.md#270-captured-cylinder-stage-chain-word-correspondence-2026-11-10
 [native-tof-cylinder-selection-review]: ../../REVIEW.md#271-matched-retained-cylinder-selection-reports-2026-11-10
 [native-tof-cylinder-matched-offset-review]: ../../REVIEW.md#272-matched-retained-cylinder-offset-residuals-2026-11-10
 [native-tof-cylinder-matched-projection-review]: ../../REVIEW.md#273-matched-retained-cylinder-projection-residuals-2026-11-10
 [native-tof-cylinder-matched-horizontal-review]: ../../REVIEW.md#275-matched-retained-cylinder-horizontal-norm-residuals-2026-11-10
 [native-tof-cylinder-matched-discriminant-review]: ../../REVIEW.md#276-matched-retained-cylinder-discriminant-residuals-2026-11-10
+[native-tof-cylinder-matched-root-review]: ../../REVIEW.md#277-matched-retained-cylinder-root-squared-consistency-2026-11-10

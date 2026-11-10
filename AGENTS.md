@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §276 for matched retained cylinder discriminant
-residuals; §274 records the lossless topic relocation to chapter05 and §272 the
-lossless 261-265 archive. §§231-275
+Read [REVIEW.md][review] §277 for matched retained cylinder root-squared
+consistency and the lossless 266-270 archive; §274 records the lossless topic
+relocation to chapter05. §§231-276
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next compose bounded supplied-word root-squared consistency with matched retained
+Next compose bounded supplied-word side-numerator arithmetic with matched retained
 cylinder records, preserving identity/closing checks and unresolved word ties.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.

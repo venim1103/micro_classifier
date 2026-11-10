@@ -1590,6 +1590,24 @@ source/clock/permission/admission qualification or usable command follows.
 See [wall-history controls and limits][native-tof-wall-history-review].
 
 
+##### Bounded Native ToF Wall Recorder Retention (2026-11-10)
+
+Separate `record_native_tof_source(include_wall=True)` retains detached wall
+words under the original epoch/acquisition/delivery IDs. Typed preflight,
+including canonical common ray/floor/final words, precedes structured history
+hashing. Equal repeats deduplicate; changed repeats reject. Wall records trim
+only against the existing eight-entry native window; missing capture stays a
+gap. Closing wall/selection/timing probes precede their comparisons, followed
+by live/staged typed history, owner/producer/cache and wall-history identity
+checks before publication. Timing and selection can coexist. Default retention
+does not consume the optional live wall cache or replay geometry/read clocks.
+
+All eight flags stay false. This retains bounded diagnostic words, not delivery
+publication, independently correct arithmetic/masking/geometry, complete coverage,
+uniform error bounds, physical clearance, clock/source/permission/admission
+qualification or usable commands. See [retention controls and limits][native-tof-wall-retention-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2308,6 +2326,7 @@ figure is not an established minimum.
 [native-tof-wall-acquisition-review]: ../../REVIEW.md#233-actual-fresh-tof-wall-acquisition-pairing-2026-11-10
 [native-tof-wall-intake-review]: ../../REVIEW.md#234-bounded-native-tof-wall-intake-2026-11-10
 [native-tof-wall-history-review]: ../../REVIEW.md#235-bounded-native-tof-wall-history-preflight-2026-11-10
+[native-tof-wall-retention-review]: ../../REVIEW.md#236-bounded-native-tof-wall-recorder-retention-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

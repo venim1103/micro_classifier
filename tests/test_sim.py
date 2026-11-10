@@ -12253,6 +12253,263 @@ def test_native_tof_selection_retention(
         "default",
         "flag",
         "missing",
+        "duplicate",
+        "duplicate_changed",
+        "gap",
+        "trim",
+        "budget",
+        "history_identity",
+        "late_wall",
+        "late_history",
+        "outgoing",
+        "owner_context",
+        "wall_identity",
+        "combined",
+        "noncanonical_pair",
+    ),
+)
+def test_native_tof_wall_retention(monkeypatch, c1_motion_receipt_source_fixture, case):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    work = dict.fromkeys(
+        (
+            "intake",
+            "native",
+            "binding",
+            "forbidden",
+            "clock",
+            "geometry",
+            "reads",
+            "retention",
+            "mutations",
+        ),
+        0,
+    )
+    original_ranges, original_read = (
+        rover.tof_ranges,
+        type(owner).record_environment_tick,
+    )
+
+    def ranges(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 13
+        return original_ranges(*args, **kwargs)
+
+    def clock():
+        work["clock"] += 1
+        assert case == "combined" and work["clock"] <= 2
+        return 100 + work["clock"] * 10
+
+    def read():
+        work["reads"] += 1
+        assert work["reads"] <= 14
+        return original_read(owner, environment, synthetic_test_only=True)
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    read()
+    environment.step(
+        [0.125, 0.3],
+        capture_native_tof_source=True,
+        capture_native_tof_wall=case != "missing",
+        capture_native_tof_selection=case == "combined",
+        capture_native_tof_timing=case == "combined",
+    )
+    read()
+    if case == "default":
+        environment._native_tof_wall_source["source_qualified"] = True
+    original_intake = diagnostics._sample_simulator_native_tof_wall_source
+    original_native, original_copy = (
+        diagnostics._sample_simulator_native_tof_source,
+        diagnostics.deepcopy,
+    )
+    original_binding = diagnostics._c1_source_binding_digest
+    mutation = {"active": True}
+    outgoing = {}
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 20
+        actual = original_intake(*args, **kwargs)
+        if mutation["active"] and work["intake"] == 2:
+            if case == "late_wall":
+                actual["wall"]["source_qualified"] = True
+            elif case == "late_history":
+                owner._tof_wall_history.append({"extra": True})
+            elif case == "outgoing":
+                outgoing["wall"]["source_qualified"] = True
+            elif case == "owner_context":
+                owner._binding = {"changed": True}
+            elif case == "wall_identity":
+                environment._native_tof_wall_source = dict(
+                    environment._native_tof_wall_source
+                )
+            elif case == "history_identity":
+                owner._tof_wall_history = list(owner._tof_wall_history)
+            if case in (
+                "late_wall",
+                "late_history",
+                "outgoing",
+                "owner_context",
+                "wall_identity",
+                "history_identity",
+            ):
+                work["mutations"] += 1
+        return actual
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= (10 if case == "combined" else 40)
+        return original_native(*args, **kwargs)
+
+    def copied(value, *args, **kwargs):
+        actual = original_copy(value, *args, **kwargs)
+        if (
+            work["intake"] == 1
+            and type(value) is dict
+            and value.get("schema") == "micro-classifier/native-tof-wall-source/1"
+        ):
+            outgoing["wall"] = actual
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 256
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("wall retention must not read/step/reset/replay/clock")
+
+    def retain(selected=True):
+        work["retention"] += 1
+        assert work["retention"] <= 10
+        with monkeypatch.context() as scoped:
+            scoped.setattr(type(owner), "record_environment_tick", forbidden)
+            for name in ("step", "reset"):
+                scoped.setattr(RoverEnv, name, forbidden)
+            for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+                scoped.setattr(rover, name, forbidden)
+            return owner.record_native_tof_source(
+                environment,
+                synthetic_test_only=True,
+                include_wall=selected,
+                include_selection=case == "combined",
+                include_timing=case == "combined",
+            )
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_wall_source", intake)
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    rejected = {
+        "flag",
+        "missing",
+        "late_wall",
+        "late_history",
+        "outgoing",
+        "owner_context",
+        "wall_identity",
+        "history_identity",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            retain(1 if case == "flag" else True)
+        assert owner._tof_sample is None and owner._tof_history == []
+        if case != "late_history":
+            assert owner._tof_wall_history == []
+    else:
+        retain(case != "default")
+        mutation["active"] = False
+        assert [entry["tick"] for entry in owner._tof_history] == [4]
+        if case == "default":
+            assert owner._tof_wall_history == [] and work["intake"] == 0
+        else:
+            assert [entry["tick"] for entry in owner._tof_wall_history] == [4]
+            entry = owner._tof_wall_history[0]
+            assert all(
+                entry["wall"][flag] is False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            )
+            assert (
+                entry["wall"]["pre_noise_ranges_m"]
+                == owner._tof_history[0]["native_source"]["pre_noise_ranges_m"]
+            )
+            if case == "combined":
+                assert owner._tof_timing_history[0]["clock"]["qualified"] is False
+                assert owner._tof_selection_history[0]["tick"] == entry["tick"]
+                assert work["clock"] == 2 and work["native"] == 10
+            elif case == "duplicate":
+                before = deepcopy(owner._tof_wall_history)
+                retain()
+                assert owner._tof_wall_history == before
+            elif case == "duplicate_changed":
+                raw = environment._native_tof_wall_source["wall"]["walls"][0]
+                raw["numerator_m"] = math.nextafter(raw["numerator_m"], math.inf)
+                with pytest.raises(ValueError, match="repeated wall"):
+                    retain()
+            elif case == "budget":
+                owner._tof_wall_history *= 9
+                with pytest.raises(ValueError):
+                    retain()
+            elif case == "noncanonical_pair":
+                paired = owner._tof_history[0]["native_source"]
+                words = ("0.0", *paired["world_frame_unit_rays"][1:])
+                paired["world_frame_unit_rays"] = words
+                owner._tof_wall_history[0]["wall"]["world_frame_unit_rays"] = words
+                bindings_before = work["binding"]
+                with pytest.raises(ValueError, match="canonical"):
+                    retain()
+                assert work["binding"] == bindings_before
+            elif case in ("gap", "trim"):
+                for _ in range(2 if case == "gap" else 12):
+                    environment.step(
+                        [0.125, 0.3],
+                        capture_native_tof_source=True,
+                        capture_native_tof_wall=case == "trim",
+                    )
+                    read()
+                    if environment._native_tof_source is not None:
+                        retain(case == "trim")
+                ticks = [entry["tick"] for entry in owner._tof_wall_history]
+                assert ticks == (
+                    [4]
+                    if case == "gap"
+                    else [entry["tick"] for entry in owner._tof_history]
+                )
+                if case == "trim":
+                    assert len(ticks) == 8 and ticks[0] > 4
+    assert work["mutations"] == int(
+        case
+        in (
+            "late_wall",
+            "late_history",
+            "outgoing",
+            "owner_context",
+            "wall_identity",
+            "history_identity",
+        )
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "retain",
+        "default",
+        "flag",
+        "missing",
         "unknown",
         "duplicate",
         "duplicate_changed",

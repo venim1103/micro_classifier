@@ -11174,6 +11174,17 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
             )
         ):
             raise ValueError("unsupported native ToF retained wall layout or words")
+        for key in (
+            "world_frame_unit_rays",
+            "floor_candidate_ranges_m",
+            "pre_noise_ranges_m",
+        ):
+            for word in trace[key]:
+                canonical(
+                    word,
+                    finite=key == "world_frame_unit_rays",
+                    range_only=key != "world_frame_unit_rays",
+                )
         for wall, reference in zip(trace["walls"], expected["walls"], strict=True):
             if any(
                 not _native_tof_word_copy_matches(wall[key], reference[key])
@@ -11510,6 +11521,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_history = []
         self._tof_timing_history = []
         self._tof_selection_history = []
+        self._tof_wall_history = []
         self._receipt_history = []
 
     @staticmethod
@@ -11903,6 +11915,7 @@ class _SyntheticC1SourceRecorder:
         synthetic_test_only=False,
         include_timing=False,
         include_selection=False,
+        include_wall=False,
     ):
         """Retain fresh acquisition words without repeating synthetic C1 staging."""
         if synthetic_test_only is not True:
@@ -11911,6 +11924,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_timing must be a literal bool")
         if type(include_selection) is not bool:
             raise ValueError("include_selection must be a literal bool")
+        if type(include_wall) is not bool:
+            raise ValueError("include_wall must be a literal bool")
         if (
             self._simulator is not environment
             or self._current is None
@@ -11932,6 +11947,9 @@ class _SyntheticC1SourceRecorder:
         )
         _check_native_tof_selection_history(
             self._tof_selection_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_wall_history(
+            self._tof_wall_history, self._tof_history, self._epoch
         )
 
         def producer():
@@ -11960,6 +11978,9 @@ class _SyntheticC1SourceRecorder:
             _check_native_tof_selection_history(
                 self._tof_selection_history, self._tof_history, self._epoch
             )
+            _check_native_tof_wall_history(
+                self._tof_wall_history, self._tof_history, self._epoch
+            )
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -11975,6 +11996,7 @@ class _SyntheticC1SourceRecorder:
                     "tof_sample": self._tof_sample,
                     "tof_timing_history": self._tof_timing_history,
                     "tof_selection_history": self._tof_selection_history,
+                    "tof_wall_history": self._tof_wall_history,
                     "binding": self._binding,
                 }
             )
@@ -11995,7 +12017,17 @@ class _SyntheticC1SourceRecorder:
         selection_cache_before = (
             environment._native_tof_selection_source if include_selection else None
         )
+        wall_cache_before = (
+            environment._native_tof_wall_source if include_wall else None
+        )
+        wall_history_before = self._tof_wall_history
         timing_history_binding = _c1_source_binding_digest(self._tof_timing_history)
+        if include_wall:
+            wall = _sample_simulator_native_tof_wall_source(environment, self._epoch)
+            wall_entry = {
+                key: deepcopy(wall[key])
+                for key in ("source_epoch", "tick", "delivery_tick", "wall")
+            }
         if include_selection:
             selection = _sample_simulator_native_tof_selection_source(
                 environment, self._epoch
@@ -12015,6 +12047,8 @@ class _SyntheticC1SourceRecorder:
             }
         elif include_selection:
             copied = selection["source"]
+        elif include_wall:
+            copied = wall["source"]
         else:
             copied = _sample_simulator_native_tof_source(environment, self._epoch)
         _check_native_tof_history_layout(self._tof_history, copied)
@@ -12054,12 +12088,25 @@ class _SyntheticC1SourceRecorder:
             else:
                 selection_history.append(selection_entry)
         _check_native_tof_selection_history(selection_history, history, self._epoch)
+        wall_history = [
+            deepcopy(entry)
+            for entry in self._tof_wall_history
+            if entry["tick"] in retained_ticks
+        ]
+        if include_wall:
+            if wall_history and wall_history[-1]["tick"] == copied["tick"]:
+                if not _native_tof_word_copy_matches(wall_history[-1], wall_entry):
+                    raise ValueError("native ToF repeated wall words mismatch")
+            else:
+                wall_history.append(wall_entry)
+        _check_native_tof_wall_history(wall_history, history, self._epoch)
         copied_binding = _c1_source_binding_digest(
             {
                 "copied": copied,
                 "history": history,
                 "timing_history": timing_history,
                 "selection_history": selection_history,
+                "wall_history": wall_history,
             }
         )
         if include_timing:
@@ -12067,7 +12114,7 @@ class _SyntheticC1SourceRecorder:
                 environment, self._epoch
             )
             live_after = timing_after["source"]
-        elif not include_selection:
+        elif not include_selection and not include_wall:
             live_after = _sample_simulator_native_tof_source(environment, self._epoch)
         if include_selection:
             selection_after = _sample_simulator_native_tof_selection_source(
@@ -12075,18 +12122,31 @@ class _SyntheticC1SourceRecorder:
             )
             if not include_timing:
                 live_after = selection_after["source"]
-            if (
-                environment._native_tof_selection_source is not selection_cache_before
-                or not _native_tof_word_copy_matches(selection["source"], copied)
-                or not _native_tof_word_copy_matches(
-                    selection_after["source"], live_after
-                )
-                or not _native_tof_word_copy_matches(
-                    selection_entry,
-                    {key: selection_after[key] for key in selection_entry},
-                )
-            ):
-                raise ValueError("native ToF selection source changed during retention")
+        if include_wall:
+            wall_after = _sample_simulator_native_tof_wall_source(
+                environment, self._epoch
+            )
+            if not include_timing and not include_selection:
+                live_after = wall_after["source"]
+        if include_selection and (
+            environment._native_tof_selection_source is not selection_cache_before
+            or not _native_tof_word_copy_matches(selection["source"], copied)
+            or not _native_tof_word_copy_matches(selection_after["source"], live_after)
+            or not _native_tof_word_copy_matches(
+                selection_entry,
+                {key: selection_after[key] for key in selection_entry},
+            )
+        ):
+            raise ValueError("native ToF selection source changed during retention")
+        if include_wall and (
+            environment._native_tof_wall_source is not wall_cache_before
+            or not _native_tof_word_copy_matches(wall["source"], copied)
+            or not _native_tof_word_copy_matches(wall_after["source"], live_after)
+            or not _native_tof_word_copy_matches(
+                wall_entry, {key: wall_after[key] for key in wall_entry}
+            )
+        ):
+            raise ValueError("native ToF wall source changed during retention")
         if include_timing and (
             environment._native_tof_timing_source is not timing_cache_before
             or not _native_tof_word_copy_matches(
@@ -12104,6 +12164,10 @@ class _SyntheticC1SourceRecorder:
             self._tof_selection_history, self._tof_history, self._epoch
         )
         _check_native_tof_selection_history(selection_history, history, self._epoch)
+        _check_native_tof_wall_history(
+            self._tof_wall_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_wall_history(wall_history, history, self._epoch)
         if (
             not _native_tof_word_copy_matches(copied, live_after)
             or _c1_source_binding_digest(
@@ -12112,6 +12176,7 @@ class _SyntheticC1SourceRecorder:
                     "history": history,
                     "timing_history": timing_history,
                     "selection_history": selection_history,
+                    "wall_history": wall_history,
                 }
             )
             != copied_binding
@@ -12121,6 +12186,7 @@ class _SyntheticC1SourceRecorder:
             or ownership() != owner_binding
             or _c1_source_binding_digest(producer()) != producer_binding
             or self._simulator is not simulator_before
+            or self._tof_wall_history is not wall_history_before
             or environment._native_tof_source is not cache_before
             or environment.rng is not rng_before
             or environment.odometry_rng is not odometry_rng_before
@@ -12133,6 +12199,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_history = history
         self._tof_timing_history = timing_history
         self._tof_selection_history = selection_history
+        self._tof_wall_history = wall_history
 
     def snapshot_native_tof_source(self, *, synthetic_test_only=False):
         if synthetic_test_only is not True:

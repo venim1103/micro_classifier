@@ -398,6 +398,66 @@ utility/pre-move review retained locally. Exact prior section/design/stable-
 workflow conservation, four changed local targets/anchors, final helper diff
 and whitespace passed. Root below800 lines; no code suite rerun for documents.
 
+## 236. Bounded Native ToF Wall Recorder Retention (2026-11-10)
+
+Checkpoint `61e3a44` pushed/clean. Local hypothesis: a separate literal wall
+retention opt-in can stage typed wall records with already matched original
+native acquisition IDs, deduplicate equal repeats and trim against the existing
+eight-entry native window. Existing typed native/selection/timing checks remain;
+wall layout preflight precedes ownership/outgoing hashes. Collect all closing
+wall/selection/timing probes before companion comparisons, recheck typed live/
+staged histories and owner/producer/cache/history identity before one final
+assignment. This does not publish delivery, qualify sources/geometry/coverage/
+physical/numerical/clock/permission or admit commands; all eight flags false.
+
+Sixteen synthetic controls with original parent fixtures unchanged. Per case
+at most13 geometry evaluations/14 ordinary recorder reads/10 retention attempts,
+20 wall intakes/40 native intakes (combined timing+selection case instead at
+most10 native),256 binding calls; only combined capture uses two setup clocks.
+During retention zero recorder reads/step/reset/geometry/replay/clock/RNG. Fixed
+8native/8wall/4wall-candidate/64ray and canonical word caps unchanged. Three
+pytest positions counting failures/aborts: first16/60 seconds, one necessary
+control/repair reserve, final root/300 seconds. Preserve logs starting
+`wall-236-focused-1.log` in the local recovery directory; no study/model/data/
+dependency/download/firmware/Arm/board/hardware work or old ledger refund.
+
+First sixteen passed,2404 deselected,1.93 s. Integration review found the
+native-history entry guard checks layout rather than canonical common words;
+wall-history common-word equality alone could therefore hash a jointly changed
+noncanonical native/wall word. Add canonical ray/floor/final word validation to
+the owning wall-history helper and one prehash binding-count regression. The
+same maximum12896 parse cap covers the added common-word checks. Narrowly revise
+the reserved focused position to17 retention+16 affected layout controls (33),
+same60 seconds and per-case resource caps; final root position unchanged.
+This is necessary shared-guard repair, not a standalone rerun of235 or an old
+ledger refund. Retain `wall-236-focused-2.log`; no failure/abort so far.
+
+Strengthened affected33 passed,2388 deselected,4.03 s, including the joint-word
+prehash rejection. Formatting then Ruff stopped on SIM102 in the moved nested
+selection guard; no format-check/root command ran after that lint failure.
+Manually merge only the equivalent short-circuit guard, then rerun the same
+focused style check before the unused final root position. Retain this style
+failure; no pytest position is refunded or new standalone run authorized.
+
+Equivalent guard repair passed the same focused Ruff/format/whitespace checks.
+Final required root gate:3344 passed,1 known transformer QDQ xfailed,71 warnings,
+71.05 s; root Ruff, changed-file format check and whitespace passed. All three
+pytest positions spent, no pytest failure/abort; the separate lint failure is
+retained above. Editor diagnostics clear. Pylance resolved no retention callers;
+this is not static compatibility evidence. Runtime controls cover the new
+keyword and combined path. AST comparison confines production changes to
+initialization, retention and the shared canonical-word guard, plus one new
+test; all other source/test nodes unchanged. No additional C/Arm/sanitizer/board
+opt-in gates ran; these Python controls are not firmware or hardware evidence.
+
+Optional wall retention now implements the stated deduplication/window/closing
+checks. Default avoids live wall intake; unknown/missing evidence is not filled
+by a hash or nominal tick. Logs retained, no cleanup/deletion or new artifacts
+outside the ignored local recovery directory. All eight flags false, no adopted
+bound, source/geometry/coverage/clock/permission/admission or usable command.
+Next wire optional correspondence into the existing current-owner delivered/
+pending snapshot, matching all three IDs and omitting partial payload on unknown.
+
 ## Sources
 
 Hardware and tools:

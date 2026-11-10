@@ -276,11 +276,28 @@ post-wall minimum and final pre-noise arrays retain calculation context.
 Default evaluation order and first-return words remain unchanged; no replay,
 clock or RNG is introduced. Acquisition/recorder wiring remains separate work.
 
-This is only the quadratic portion: side distances/altitudes/masks/minima and
-top-cap operands/results are not yet retained. Matching raw words is not correct
+This describes the quadratic portion; side/top stages are documented below.
+Matching raw words is not correct
 intersections, geometry/coverage, primitive or uniform error, physical/source/
 clock/native/permission/admission qualification. All eight flags remain false.
 See [quadratic trace controls and limits][native-tof-cylinder-trace-review].
+
+
+#### Actual Cylinder Side/Top Calculation Stages (2026-11-10)
+
+The same cold trace additionally copies each near/far side's original division
+numerator/result, altitude, hit mask, candidate and predecessor/result minimum.
+Top-cap records retain actual offset/division, relative vector, squared radial
+sum/radius, hit/candidate and minima. Named scalar/array intermediates preserve
+the original expression order. The per-cylinder side tuple then top record
+links the actual post-wall result to final pre-noise ranges, without replay or
+host-specific word-tie adoption. All arrays/inputs are detached; default output
+words and existing32-obstacle/64-ray/preflight limits remain unchanged.
+
+Acquisition/cache pairing, closed intake and recorder retention are not yet
+wired. Observed-stage correspondence is not geometry, coverage, primitive or
+uniform error, physical/source/clock/native/permission/admission qualification;
+all eight flags remain false. See [side/top controls and limits][native-tof-cylinder-stages-review].
 
 
 ### Synthetic Evaluation Tooling (2026-10-16)
@@ -2356,3 +2373,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-wall-minimum-review]: ../../REVIEW.md#244-native-tof-wall-minimum-word-correspondence-2026-11-10
 [native-tof-wall-selection-match-review]: ../../REVIEW.md#245-matched-native-tof-wall-selection-diagnostics-2026-11-10
 [native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
+[native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10

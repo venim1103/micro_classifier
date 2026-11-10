@@ -949,11 +949,13 @@ def tof_ranges(
                     "projection_m": projection.copy(),
                     "discriminant_m2": discriminant.copy(),
                     "root_m": root.copy(),
+                    "sides": [],
                 }
             )
         for sign in (-1, 1):
+            side_numerator = -projection + sign * root
             distance = np.divide(
-                -projection + sign * root,
+                side_numerator,
                 horizontal_squared,
                 out=np.full((8, 8), np.inf),
                 where=horizontal_squared > 0,
@@ -970,19 +972,48 @@ def tof_ranges(
             ranges = np.minimum(ranges, candidate)
             if selection_source is not None:
                 remember(candidate, previous, 3 if sign == -1 else 4, index)
-        distance = np.divide(
-            top - height, up, out=np.full((8, 8), np.inf), where=up != 0
-        )
+            if cylinder_source is not None:
+                cylinder_entries[-1]["sides"].append(
+                    {
+                        "sign": sign,
+                        "numerator_m": side_numerator.copy(),
+                        "distance_m": distance.copy(),
+                        "altitude_m": altitude.copy(),
+                        "hit": hit.copy(),
+                        "candidate_m": candidate.copy(),
+                        "previous_minimum_m": previous.copy(),
+                        "minimum_after_m": ranges.copy(),
+                    }
+                )
+        top_offset = top - height
+        distance = np.divide(top_offset, up, out=np.full((8, 8), np.inf), where=up != 0)
         relative = (
             offset
             + np.where(np.isfinite(distance), distance, 0)[..., None] * directions
         )
-        hit = (distance >= 0) & (np.sum(relative**2, axis=-1) <= radius**2)
+        distance_nonnegative = distance >= 0
+        radial_squared = np.sum(relative**2, axis=-1)
+        top_radius_squared = radius**2
+        hit = distance_nonnegative & (radial_squared <= top_radius_squared)
         candidate = np.where(hit, distance, np.inf)
         previous = ranges
         ranges = np.minimum(ranges, candidate)
         if selection_source is not None:
             remember(candidate, previous, 5, index)
+        if cylinder_source is not None:
+            entry = cylinder_entries[-1]
+            entry["sides"] = tuple(entry["sides"])
+            entry["top"] = {
+                "numerator_m": float(top_offset),
+                "distance_m": distance.copy(),
+                "relative_m": relative.copy(),
+                "radial_squared_m2": radial_squared.copy(),
+                "radius_squared_m2": float(top_radius_squared),
+                "hit": hit.copy(),
+                "candidate_m": candidate.copy(),
+                "previous_minimum_m": previous.copy(),
+                "minimum_after_m": ranges.copy(),
+            }
     if source is not None:
         _retain_native_tof_source(
             source, position, yaw, scenario, config, ranges, rays, floor_source
@@ -1058,7 +1089,7 @@ def tof_ranges(
         cylinder_source.update(
             schema="micro-classifier/native-tof-cylinder-source/1",
             allowed_use="native_tof_cylinder_diagnostics_only",
-            status="recorded_native_cylinder_quadratic_values",
+            status="recorded_native_cylinder_calculation_values",
             **{
                 flag: False
                 for flag in (

@@ -589,6 +589,46 @@ physical/source/clock/coverage/geometry/permission/admission evidence or usable
 command. Next retain actual side/top calculation stages; a quadratic-only trace
 and matching final words do not establish the missing cylinder reduction chain.
 
+## 247. Actual Native ToF Cylinder Side/Top Trace (2026-11-10)
+
+Checkpoint `971e33d` pushed/clean. Local hypothesis: naming the existing side
+numerator, top offset and radial sum permits copying actual side/top operands,
+distances, projections, masks, candidates and predecessor/result minima without
+changing numerical order or first returns. Preserve the cold-only bounded trace,
+strict preflight/defaults and eight false flags; no acquisition wiring yet.
+
+Extend the existing21 controls with two declared valid side/top ray cases;
+23 controls, unchanged <=2 geometry/directions,32 roots/obstacle oracle records,
+100 minima/candidates and101 divisions intercepted for traced call. Added fixed
+64-ray side/top correspondence and detachment checks, not new episodes, sensor
+domain or geometry/error qualification. Three pytest positions including
+failures/aborts: first23/60 seconds, one necessary repair reserve, final root/
+300 seconds. Retain `cylinder-247-*` logs, no old attempt refund. No step/reset/
+clock/RNG/replay/study/task data/model/dependency/download/hardware action.
+
+First invocation:2 failed,21 passed,2606 deselected,3.49 s. Both newly declared
+valid-hit fixtures assumed start(2,2), while actual `Scenario.start` defaults
+to(1,3). Set the fixture's intended start explicitly; no production repair,
+predicate/limit/tolerance relaxation or extra scenario family. Existing21
+controls passed. Retain failure/log/position; rerun same23 within reserve.
+
+Same23 passed,2606 deselected,2.91 s; focused Ruff/format/whitespace passed.
+Required root:3552 passed,1 known transformer QDQ xfailed,71 warnings,87.53 s;
+root Ruff, changed-file format check and whitespace passed. All three pytest
+positions spent including first failure; no abort. Editor diagnostics clear;
+AST proves only `tof_ranges` and existing cylinder matrix changed, all other
+source/test nodes intact. Signature unchanged from §246's24 compatible callers.
+No additional C/Arm/sanitizer/board opt-in gates ran; host checks do not qualify
+firmware/hardware. Logs retained, no cleanup or extra source acquisition.
+
+Actual intercepted divisions/candidates/minima match copied side/top records;
+quadratic/post-wall/cylinder/final lineage and bitwise baseline parity hold for
+these bounded fixtures. Valid-hit declarations are not physical sensor evidence
+or coverage/error qualification. All eight flags false, no geometry, uniform
+error, physical/source/clock/permission/admission or usable command. Next pair
+the complete trace with actual fresh native acquisition, then closed intake/
+retention; no held tick or matching word substitutes for original source IDs.
+
 ## Sources
 
 Hardware and tools:

@@ -23400,6 +23400,8 @@ def test_native_tof_wall_source(monkeypatch, case):
         "scenario_type",
         "position_shape",
         "bad_yaw",
+        "side_hit",
+        "top_hit",
     ),
 )
 def test_native_tof_cylinder_source(monkeypatch, case):
@@ -23421,6 +23423,12 @@ def test_native_tof_cylinder_source(monkeypatch, case):
         obstacles=((3.0, 3.0, 0.5),) * count,
         obstacle_heights=(0.25,) if case == "heights" else (),
     )
+    if case in ("side_hit", "top_hit"):
+        scene = Scenario(
+            start=(2.0, 2.0, 0.0),
+            obstacles=((3.0, 2.0, 0.25),),
+            obstacle_heights=(0.1,) if case == "top_hit" else (),
+        )
     position = np.array(scene.start[:2], dtype=float)
     yaw = math.pi / 2 if case == "yaw" else math.inf if case == "bad_yaw" else 0.0
     native = {} if case in ("paired", "all", "alias_native") else None
@@ -23437,6 +23445,8 @@ def test_native_tof_cylinder_source(monkeypatch, case):
         "signed_zero",
         "yaw",
         "max_obstacles",
+        "side_hit",
+        "top_hit",
     )
     if case == "legacy":
         config = Config(tof_mount_height=None)
@@ -23466,16 +23476,26 @@ def test_native_tof_cylinder_source(monkeypatch, case):
         np.sqrt,
         np.minimum,
     )
+    original_divide, original_where = np.divide, np.where
     work = {"directions": 0, "forbidden": 0, "oracle": 0}
     roots, minima, direction_words = [], [], []
+    divisions, candidates = [], []
 
     def directions(*args, **kwargs):
         work["directions"] += 1
         assert work["directions"] <= 2
-        if case in ("parallel", "signed_zero"):
+        if case in ("parallel", "signed_zero", "side_hit", "top_hit"):
             result = np.zeros((8, 8, 3), dtype=np.float64)
             if case == "signed_zero":
                 result[..., 0] = -1.0
+            elif case in ("side_hit", "top_hit"):
+                vertical = (
+                    scene.obstacle_heights[0] - config.tof_mount_height
+                    if case == "top_hit"
+                    else 0.0
+                )
+                length = math.hypot(1.0, vertical)
+                result[..., 0], result[..., 2] = 1.0 / length, vertical / length
         else:
             result = original_directions(*args, **kwargs)
         direction_words.append(result.copy())
@@ -23493,6 +23513,21 @@ def test_native_tof_cylinder_source(monkeypatch, case):
         minima.append(result.copy())
         return result
 
+    def divide(*args, **kwargs):
+        assert len(divisions) < 101
+        result = original_divide(*args, **kwargs)
+        divisions.append(
+            (np.asarray(args[0]).copy(), np.asarray(args[1]).copy(), result.copy())
+        )
+        return result
+
+    def where(*args, **kwargs):
+        result = original_where(*args, **kwargs)
+        if len(args) == 3 and np.isscalar(args[2]) and args[2] == math.inf:
+            assert len(candidates) < 100
+            candidates.append((args[0].copy(), args[1].copy(), result.copy()))
+        return result
+
     def forbidden(*args, **kwargs):
         work["forbidden"] += 1
         raise AssertionError(
@@ -23508,6 +23543,8 @@ def test_native_tof_cylinder_source(monkeypatch, case):
         with monkeypatch.context() as interception:
             interception.setattr(np, "sqrt", square_root)
             interception.setattr(np, "minimum", minimum)
+            interception.setattr(np, "divide", divide)
+            interception.setattr(np, "where", where)
             actual = tof_ranges(
                 position,
                 yaw,
@@ -23521,8 +23558,10 @@ def test_native_tof_cylinder_source(monkeypatch, case):
         np.testing.assert_array_equal(actual.view(np.uint64), baseline.view(np.uint64))
         assert len(roots) == len(trace["cylinders"]) == count <= 32
         assert len(minima) == 4 + 3 * count <= 100
+        assert len(candidates) == len(minima)
+        assert len(divisions) == 5 + 3 * count <= 101
         assert trace["schema"] == "micro-classifier/native-tof-cylinder-source/1"
-        assert trace["status"] == "recorded_native_cylinder_quadratic_values"
+        assert trace["status"] == "recorded_native_cylinder_calculation_values"
         for flag in (
             "fixture_permission_granted",
             "training_approved",
@@ -23580,6 +23619,79 @@ def test_native_tof_cylinder_source(monkeypatch, case):
             np.testing.assert_array_equal(
                 clamped.view(np.uint64), np.maximum(discriminant, 0).view(np.uint64)
             )
+            assert type(entry["sides"]) is tuple and len(entry["sides"]) == 2
+            for stage, record in enumerate((*entry["sides"], entry["top"])):
+                reduction_index = 4 + 3 * index + stage
+                numerator, denominator, distance = divisions[reduction_index + 1]
+                predicate, raw_distance, candidate = candidates[reduction_index]
+                for name, expected in (
+                    ("distance_m", distance),
+                    ("candidate_m", candidate),
+                    ("previous_minimum_m", minima[reduction_index - 1]),
+                    ("minimum_after_m", minima[reduction_index]),
+                ):
+                    assert record[name].dtype == np.float64 and record[name].shape == (
+                        8,
+                        8,
+                    )
+                    np.testing.assert_array_equal(
+                        record[name].view(np.uint64), expected.view(np.uint64)
+                    )
+                    assert not np.shares_memory(record[name], actual)
+                np.testing.assert_array_equal(
+                    record["distance_m"].view(np.uint64), raw_distance.view(np.uint64)
+                )
+                assert record["hit"].dtype == bool and record["hit"].shape == (8, 8)
+                np.testing.assert_array_equal(record["hit"], predicate)
+                if stage < 2:
+                    assert record["sign"] == (-1, 1)[stage]
+                    np.testing.assert_array_equal(
+                        record["numerator_m"].view(np.uint64), numerator.view(np.uint64)
+                    )
+                    np.testing.assert_array_equal(
+                        denominator.view(np.uint64),
+                        trace["horizontal_squared"].view(np.uint64),
+                    )
+                    altitude = (
+                        config.tof_mount_height
+                        + np.where(np.isfinite(distance), distance, 0) * rays[..., 2]
+                    )
+                    np.testing.assert_array_equal(
+                        record["altitude_m"].view(np.uint64), altitude.view(np.uint64)
+                    )
+                else:
+                    assert record["numerator_m"].hex() == float(numerator).hex()
+                    np.testing.assert_array_equal(
+                        denominator.view(np.uint64), rays[..., 2].view(np.uint64)
+                    )
+                    relative = (
+                        offset
+                        + np.where(np.isfinite(distance), distance, 0)[..., None]
+                        * rays[..., :2]
+                    )
+                    radial = np.sum(relative**2, axis=-1)
+                    np.testing.assert_array_equal(
+                        record["relative_m"].view(np.uint64), relative.view(np.uint64)
+                    )
+                    np.testing.assert_array_equal(
+                        record["radial_squared_m2"].view(np.uint64),
+                        radial.view(np.uint64),
+                    )
+                    assert record["radius_squared_m2"].hex() == float(radius**2).hex()
+            previous_expected = (
+                trace["post_wall_ranges_m"]
+                if index == 0
+                else trace["cylinders"][index - 1]["top"]["minimum_after_m"]
+            )
+            np.testing.assert_array_equal(
+                entry["sides"][0]["previous_minimum_m"].view(np.uint64),
+                previous_expected.view(np.uint64),
+            )
+        if trace["cylinders"]:
+            np.testing.assert_array_equal(
+                trace["cylinders"][-1]["top"]["minimum_after_m"].view(np.uint64),
+                actual.view(np.uint64),
+            )
         if wall is not None:
             np.testing.assert_array_equal(
                 trace["post_wall_ranges_m"].view(np.uint64),
@@ -23593,9 +23705,23 @@ def test_native_tof_cylinder_source(monkeypatch, case):
                 )
         if case == "parallel":
             assert (trace["horizontal_squared"] == 0).all()
+        if case in ("side_hit", "top_hit"):
+            stage = (
+                trace["cylinders"][0]["sides"][0]
+                if case == "side_hit"
+                else trace["cylinders"][0]["top"]
+            )
+            assert stage["hit"].all()
+            np.testing.assert_array_equal(
+                stage["distance_m"].view(np.uint64), actual.view(np.uint64)
+            )
         for entry in trace["cylinders"]:
             for name in ("offset_m", "projection_m", "discriminant_m2", "root_m"):
                 entry[name][:] = -99.0
+            for stage in (*entry["sides"], entry["top"]):
+                for value in stage.values():
+                    if type(value) is np.ndarray:
+                        value[:] = False if value.dtype == bool else -99.0
         for name in (
             "world_frame_unit_rays",
             "horizontal_squared",

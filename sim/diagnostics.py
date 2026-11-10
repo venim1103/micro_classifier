@@ -9770,6 +9770,96 @@ def _native_tof_floor_division_residuals(
     }
 
 
+def _native_tof_wall_offset_residuals(
+    *, wall_m_hex, position_axis_m_hex, numerator_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native wall offset residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native wall offset residual rational budget unsupported")
+
+    def decoded(words, finite_only):
+        if type(words) is not tuple or len(words) != 4:
+            raise ValueError("native wall offset residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native wall offset residual word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native wall offset residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native wall offset residual words must be canonical")
+            values.append(value)
+        return values
+
+    walls = decoded(wall_m_hex, True)
+    positions = decoded(position_axis_m_hex, True)
+    observed = decoded(numerator_m_hex, False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    for wall_index, (wall, position, numerator) in enumerate(
+        zip(walls, positions, observed, strict=True)
+    ):
+        try:
+            exact = arithmetic.binary(
+                arithmetic.value(wall), arithmetic.value(position), "sub"
+            )
+            residual = (
+                arithmetic.binary(arithmetic.value(numerator), exact, "sub")
+                if math.isfinite(numerator)
+                else None
+            )
+        except ArithmeticError as error:
+            raise ValueError(
+                "native wall offset residual rational budget exhausted"
+            ) from error
+        entries.append(
+            {
+                "wall_index": wall_index,
+                "wall_hex": wall_m_hex[wall_index],
+                "position_axis_hex": position_axis_m_hex[wall_index],
+                "observed_numerator_hex": numerator_m_hex[wall_index],
+                "exact_difference_ratio": exact.as_integer_ratio(),
+                "signed_residual_ratio": None
+                if residual is None
+                else residual.as_integer_ratio(),
+                "status": "unknown_nonfinite_wall_offset"
+                if residual is None
+                else "computed_exact_wall_offset_word_residual",
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-tof-wall-offset-residuals/1",
+        "allowed_use": "offline_wall_offset_word_diagnostics_only",
+        "status": "reported_wall_offset_word_residuals",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_selected_wall_residuals(
     *,
     position_m_hex,

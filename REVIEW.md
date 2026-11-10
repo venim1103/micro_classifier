@@ -513,6 +513,55 @@ independently supported wall-operation arithmetic from the actual captured
 operand/result words, without confusing per-evaluation residuals with accepted
 rounding bounds, scene coverage or independent geometry proof.
 
+## 238. Native ToF Wall Offset Word Residuals (2026-11-10)
+
+Checkpoint `213eae3` pushed/clean. Actual cold wall capture records the scalar
+`wall - position[axis]` result separately from division. Local hypothesis: a
+pure bounded helper can report its exact supplied-word subtraction and signed
+observed-minus-exact residual for four walls, preserving original words and
+leaving nonfinite observed offsets unknown. This isolates an operation-word
+discrepancy, not independent source binding, correct rounding, a uniform error
+allowance, wall division/masking/geometry/coverage or physical clearance proof.
+
+Sixteen synthetic controls with unchanged parent fixtures; only the actual-word
+case performs one setup step/geometry evaluation/closed wall intake (two native
+intakes). All others use declared synthetic words without acquisitions. One
+helper call per case,12 canonical words of at most32 characters,4 entries,
+at most12 guarded rational conversions/8 guarded operations,4096-bit cap.
+During diagnostics no source intake/recorder read/retention/step/reset/geometry/
+clock/RNG activity. Three pytest positions including failures/aborts: first16/
+60 seconds, one necessary repair/control reserve, final root/300 seconds.
+Retain `wall-238-focused-1.log`, reserve and root in the existing local recovery
+directory. All eight flags false; no study/task data/model/dependency/download/
+firmware/Arm/board/hardware work or renewed old ledger/qualification authority.
+
+First focused position failed collection (unclosed parametrization),0.31 s;
+no cases ran and the position is spent. Actual file sizes/tails were complete.
+The overly broad insertion anchor displaced five lines of an unrelated original
+test header, rather than truncating the file. Preserve the malformed test file
+as `wall-238-boundary-before.py` in the local recovery directory; restore exactly
+the five original header/import lines and remove the dangling partial header.
+Use the reserved same16/60-second focused check after this local repair; final
+root position unchanged. No old interrupted attempts refunded or limits relaxed.
+
+Repaired same16 passed,2445 deselected,2.60 s. Focused Ruff/format/whitespace
+passed. Required root:3384 passed,1 known transformer QDQ xfailed,71 warnings,
+78.69 s; root Ruff, changed-file format check and whitespace passed. All three
+pytest positions spent, including the collection failure; no abort. Editor
+diagnostics clear. AST comparison proves exactly one new helper/test, with every
+prior production/test node unchanged, including the repaired original header.
+No additional C/Arm/sanitizer/board opt-in gates ran; host checks do not qualify
+firmware/hardware. Original and malformed versions/logs retained; no deletion.
+
+Finite supplied subtraction residuals are now computed exactly; deliberately
+changed words are reported as discrepancies, not accepted as correct rounding.
+Actual-word fixture uses one fresh captured wall source; other words are declared
+synthetic, not measured acquisitions. All eight flags false, no adopted uniform
+bound, geometry/coverage/source/clock/physical/permission/admission or usable
+command. Next independently check the captured numerator-to-distance division
+operation, preserving zero-denominator branch and nonfinite-result unknowns;
+do not fold subtraction and division into an unsupported single rounding claim.
+
 ## Sources
 
 Hardware and tools:

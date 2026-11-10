@@ -1626,6 +1626,22 @@ geometry/coverage/error/physical correctness, clock/source/permission/admission
 qualification or usable commands. See [wall delivery controls and limits][native-tof-wall-delivery-review].
 
 
+##### Native ToF Wall Offset Word Residuals (2026-11-10)
+
+Private `_native_tof_wall_offset_residuals` takes four declared canonical
+wall/position/observed-numerator word triples. Guarded exact rational subtraction
+reports the supplied-operand difference and signed observed-minus-exact residual,
+preserving original words including signed zero. Finite operands are required;
+nonfinite observed offsets retain the exact difference but leave the residual
+unknown. Shape/type/length/canonicality and the existing4096-bit rational cap
+are checked. The fixed four-entry path uses at most12 value conversions/eight
+guarded operations, without source intake, replay, hashing or RNG/clock reads.
+
+All eight flags stay false. Per-word residuals are not source correspondence,
+correct-rounding certification, uniform error allowance, wall-division/masking/
+geometry/coverage/physical proof or permission/admission. See [offset controls and limits][native-tof-wall-offset-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2346,6 +2362,7 @@ figure is not an established minimum.
 [native-tof-wall-history-review]: ../../REVIEW.md#235-bounded-native-tof-wall-history-preflight-2026-11-10
 [native-tof-wall-retention-review]: ../../REVIEW.md#236-bounded-native-tof-wall-recorder-retention-2026-11-10
 [native-tof-wall-delivery-review]: ../../REVIEW.md#237-native-tof-wall-deliveredpending-correspondence-2026-11-10
+[native-tof-wall-offset-review]: ../../REVIEW.md#238-native-tof-wall-offset-word-residuals-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

@@ -19935,6 +19935,215 @@ def test_synthetic_c1_straight_capsule_rejects_malformed_turns(c1_history, turn)
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
+        "rounded",
+        "mismatch",
+        "signed_zero",
+        "subnormal",
+        "large_finite",
+        "infinite_positive",
+        "infinite_negative",
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_operand",
+        "work_limit",
+    ),
+)
+def test_native_tof_wall_offset_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "wall": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_wall = diagnostics._sample_simulator_native_tof_wall_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def wall_intake(*args, **kwargs):
+        setup["wall"] += 1
+        assert setup["wall"] <= 1
+        return original_wall(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_wall_source", wall_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "wall_m_hex": ((1.0).hex(),) * 4,
+        "position_axis_m_hex": ((0.0).hex(),) * 4,
+        "numerator_m_hex": ((1.0).hex(),) * 4,
+    }
+    if case == "actual":
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        )
+        packet = diagnostics._sample_simulator_native_tof_wall_source(
+            environment, owner._epoch
+        )
+        walls = packet["wall"]["walls"]
+        arguments = {
+            "wall_m_hex": tuple(wall["wall_m"] for wall in walls),
+            "position_axis_m_hex": tuple(wall["position_axis_m"] for wall in walls),
+            "numerator_m_hex": tuple(wall["numerator_m"] for wall in walls),
+        }
+    elif case == "rounded":
+        arguments["position_axis_m_hex"] = ((2.0**-54).hex(),) * 4
+    elif case == "mismatch":
+        arguments["numerator_m_hex"] = ((2.0).hex(),) * 4
+    elif case == "signed_zero":
+        arguments["wall_m_hex"] = ((-0.0).hex(),) * 4
+        arguments["numerator_m_hex"] = ((-0.0).hex(),) * 4
+    elif case == "subnormal":
+        arguments["wall_m_hex"] = (math.ulp(0.0).hex(),) * 4
+        arguments["numerator_m_hex"] = arguments["wall_m_hex"]
+    elif case in (
+        "large_finite",
+        "work_limit",
+        "infinite_positive",
+        "infinite_negative",
+    ):
+        maximum = float.fromhex("0x1.fffffffffffffp+1023")
+        sign = -1 if case == "infinite_negative" else 1
+        arguments["wall_m_hex"] = ((sign * maximum).hex(),) * 4
+        arguments["numerator_m_hex"] = arguments["wall_m_hex"]
+        if case.startswith("infinite_"):
+            arguments["position_axis_m_hex"] = ((-sign * maximum).hex(),) * 4
+            arguments["numerator_m_hex"] = ("-inf" if sign == -1 else "inf",) * 4
+    elif case == "shape":
+        arguments["position_axis_m_hex"] = arguments["position_axis_m_hex"][:-1]
+    elif case == "noncanonical":
+        arguments["numerator_m_hex"] = ("0.0",) * 4
+    elif case == "overflow_word":
+        arguments["numerator_m_hex"] = ("0x1p+99999",) * 4
+    elif case == "nan":
+        arguments["numerator_m_hex"] = ("nan",) * 4
+    elif case == "finite_operand":
+        arguments["wall_m_hex"] = ("inf",) * 4
+    arguments_before = deepcopy(arguments)
+    before_tick = environment.tick
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = {"values": 0, "binary": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 12
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 8
+        return original_binary(instance, left, right, operation)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall offset residuals must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case == "work_limit":
+        monkeypatch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 16)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_wall_source",
+        "_sample_simulator_native_tof_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case in (
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_operand",
+        "work_limit",
+    ):
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_wall_offset_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        if case != "work_limit":
+            assert work["values"] == work["binary"] == 0
+    else:
+        result = diagnostics._native_tof_wall_offset_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 4
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for index, entry in enumerate(result["entries"]):
+            wall = float.fromhex(arguments["wall_m_hex"][index])
+            position = float.fromhex(arguments["position_axis_m_hex"][index])
+            observed = float.fromhex(arguments["numerator_m_hex"][index])
+            exact = Fraction.from_float(wall) - Fraction.from_float(position)
+            assert entry["wall_index"] == index
+            assert entry["wall_hex"] == arguments["wall_m_hex"][index]
+            assert entry["position_axis_hex"] == arguments["position_axis_m_hex"][index]
+            assert (
+                entry["observed_numerator_hex"] == arguments["numerator_m_hex"][index]
+            )
+            assert entry["exact_difference_ratio"] == exact.as_integer_ratio()
+            if math.isfinite(observed):
+                residual = Fraction.from_float(observed) - exact
+                assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
+                assert entry["status"] == "computed_exact_wall_offset_word_residual"
+                if case in ("rounded", "mismatch"):
+                    assert residual > 0
+            else:
+                assert entry["status"] == "unknown_nonfinite_wall_offset"
+                assert entry["signed_residual_ratio"] is None
+    assert arguments == arguments_before and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+    assert setup == (
+        {"geometry": 1, "wall": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "wall": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

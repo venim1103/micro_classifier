@@ -1677,6 +1677,23 @@ altitude/across/masking/geometry/coverage/physical/source/clock/permission/
 admission qualification. See [matched arithmetic controls and limits][native-tof-wall-arithmetic-review].
 
 
+##### Native ToF Wall Projection Expression Residuals (2026-11-10)
+
+Private `_native_tof_wall_projection_residuals` compares supplied altitude/across
+results with the exact unrounded base+distance*direction expression. Nonfinite
+raw distance selects the native zero fallback; original raw/effective/base/ray/
+observed words and branch identity are retained. Finite observed results get
+signed discrepancies; nonfinite results leave residual unknown. Four walls/
+64 rays bound963 canonical words,256 paired entries,1283 conversions and1536
+guarded operations under the existing4096-bit rational cap. No source intake,
+replay, recorder read/retention, hashing or RNG/clock occurs.
+
+Intermediate products are not captured: these are combined-expression residuals,
+not isolated multiply/add rounding results or an FMA claim. All eight flags stay
+false; no accepted uniform allowance, masking/geometry/coverage/physical/source/
+clock/permission/admission or usable command follows. See [projection controls and limits][native-tof-wall-projection-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2400,6 +2417,7 @@ figure is not an established minimum.
 [native-tof-wall-offset-review]: ../../REVIEW.md#238-native-tof-wall-offset-word-residuals-2026-11-10
 [native-tof-wall-division-review]: ../../REVIEW.md#239-native-tof-wall-division-word-residuals-2026-11-10
 [native-tof-wall-arithmetic-review]: ../../REVIEW.md#240-matched-native-tof-wall-arithmetic-diagnostics-2026-11-10
+[native-tof-wall-projection-review]: ../../REVIEW.md#241-native-tof-wall-projection-expression-residuals-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

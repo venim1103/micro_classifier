@@ -20779,6 +20779,309 @@ def test_native_tof_wall_residual_snapshot(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
+        "rounded",
+        "four_walls",
+        "mismatch",
+        "zero_distance",
+        "positive_inf_distance",
+        "negative_inf_distance",
+        "subnormal",
+        "large_finite",
+        "overflow_observed",
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_ray",
+        "finite_base",
+        "work_limit",
+        "word_type",
+    ),
+)
+def test_native_tof_wall_projection_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "wall": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_wall = diagnostics._sample_simulator_native_tof_wall_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def wall_intake(*args, **kwargs):
+        setup["wall"] += 1
+        assert setup["wall"] <= 1
+        return original_wall(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_wall_source", wall_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "mount_height_m_hex": (1.0).hex(),
+        "position_m_hex": ((1.0).hex(),) * 2,
+        "world_frame_unit_rays": ((1.0).hex(),) * 192,
+        "distance_m_hex": (((0.5).hex(),) * 64,) * 4,
+        "altitude_m_hex": (((1.5).hex(),) * 64,) * 4,
+        "across_m_hex": (((1.5).hex(),) * 64,) * 4,
+    }
+    if case == "actual":
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        )
+        packet = diagnostics._sample_simulator_native_tof_wall_source(
+            environment, owner._epoch
+        )
+        trace = packet["wall"]
+        arguments = {
+            "mount_height_m_hex": float(
+                trace["inputs"]["config"]["tof_mount_height"]
+            ).hex(),
+            "position_m_hex": tuple(
+                value.hex() for value in trace["inputs"]["position_m"]
+            ),
+            "world_frame_unit_rays": trace["world_frame_unit_rays"],
+            "distance_m_hex": tuple(wall["distance_m"] for wall in trace["walls"]),
+            "altitude_m_hex": tuple(wall["altitude_m"] for wall in trace["walls"]),
+            "across_m_hex": tuple(wall["across_m"] for wall in trace["walls"]),
+        }
+    elif case in ("rounded", "subnormal", "work_limit"):
+        distance = 2.0**-54 if case == "rounded" else math.ulp(0.0)
+        arguments["distance_m_hex"] = ((distance.hex(),) * 64,) * 4
+        arguments["altitude_m_hex"] = arguments["across_m_hex"] = (
+            ((1.0).hex(),) * 64,
+        ) * 4
+    elif case == "four_walls":
+        arguments["position_m_hex"] = ((2.0).hex(), (3.0).hex())
+        arguments["world_frame_unit_rays"] = (
+            (2.0).hex(),
+            (4.0).hex(),
+            (0.5).hex(),
+        ) * 64
+        arguments["distance_m_hex"] = (((0.25).hex(),) * 64,) * 4
+        arguments["altitude_m_hex"] = (((1.125).hex(),) * 64,) * 4
+        arguments["across_m_hex"] = tuple(
+            ((4.0 if index < 2 else 2.5).hex(),) * 64 for index in range(4)
+        )
+    elif case == "mismatch":
+        arguments["altitude_m_hex"] = arguments["across_m_hex"] = (
+            ((2.0).hex(),) * 64,
+        ) * 4
+    elif case == "zero_distance":
+        arguments["position_m_hex"] = ((-0.0).hex(),) * 2
+        arguments["distance_m_hex"] = arguments["across_m_hex"] = (
+            ((-0.0).hex(),) * 64,
+        ) * 4
+        arguments["altitude_m_hex"] = (((1.0).hex(),) * 64,) * 4
+    elif case in ("positive_inf_distance", "negative_inf_distance"):
+        arguments["distance_m_hex"] = (
+            ("inf" if case == "positive_inf_distance" else "-inf",) * 64,
+        ) * 4
+        arguments["altitude_m_hex"] = arguments["across_m_hex"] = (
+            ((1.0).hex(),) * 64,
+        ) * 4
+    elif case in ("large_finite", "overflow_observed"):
+        maximum = float.fromhex("0x1.fffffffffffffp+1023")
+        arguments["distance_m_hex"] = ((maximum.hex(),) * 64,) * 4
+        arguments["altitude_m_hex"] = arguments["across_m_hex"] = (
+            (maximum.hex(),) * 64,
+        ) * 4
+        if case == "overflow_observed":
+            arguments["world_frame_unit_rays"] = ((2.0).hex(),) * 192
+            arguments["altitude_m_hex"] = arguments["across_m_hex"] = (
+                ("inf",) * 64,
+            ) * 4
+    elif case == "shape":
+        arguments["across_m_hex"] = arguments["across_m_hex"][:-1]
+    elif case == "noncanonical":
+        arguments["mount_height_m_hex"] = "1.0"
+    elif case == "overflow_word":
+        arguments["mount_height_m_hex"] = "0x1p+99999"
+    elif case == "nan":
+        arguments["distance_m_hex"] = (("nan",) * 64,) * 4
+    elif case == "finite_ray":
+        arguments["world_frame_unit_rays"] = ("inf",) * 192
+    elif case == "finite_base":
+        arguments["mount_height_m_hex"] = "inf"
+    elif case == "word_type":
+        arguments["altitude_m_hex"] = ((False,) * 64,) * 4
+    arguments_before = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = {"values": 0, "binary": 0, "oracle": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 1283
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 1536
+        return original_binary(instance, left, right, operation)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall projection residuals must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case == "work_limit":
+        monkeypatch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 16)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_wall_source",
+        "_sample_simulator_native_tof_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case in (
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_ray",
+        "finite_base",
+        "work_limit",
+        "word_type",
+    ):
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_wall_projection_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        if case != "work_limit":
+            assert work["values"] == work["binary"] == 0
+    else:
+        result = diagnostics._native_tof_wall_projection_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 256
+        assert (
+            result["comparison_basis"]
+            == "unrounded_supplied_word_multiply_plus_add_after_distance_branch"
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for index, entry in enumerate(result["entries"]):
+            wall_index, ray = divmod(index, 64)
+            other_axis = 1 - wall_index // 2
+            raw_word = arguments["distance_m_hex"][wall_index][ray]
+            raw = float.fromhex(raw_word)
+            effective = raw if math.isfinite(raw) else 0.0
+            assert entry["wall_index"] == wall_index and entry["ray_index"] == ray
+            assert (
+                entry["raw_distance_hex"] == raw_word
+                and entry["effective_distance_hex"] == effective.hex()
+            )
+            assert entry["distance_branch"] == (
+                "finite_distance"
+                if math.isfinite(raw)
+                else "nonfinite_distance_zero_fallback"
+            )
+            for name, base_word, direction_index, observed_word in (
+                (
+                    "altitude",
+                    arguments["mount_height_m_hex"],
+                    ray * 3 + 2,
+                    arguments["altitude_m_hex"][wall_index][ray],
+                ),
+                (
+                    "across",
+                    arguments["position_m_hex"][other_axis],
+                    ray * 3 + other_axis,
+                    arguments["across_m_hex"][wall_index][ray],
+                ),
+            ):
+                component = entry[name]
+                direction_word = arguments["world_frame_unit_rays"][direction_index]
+                exact = Fraction.from_float(
+                    float.fromhex(base_word)
+                ) + Fraction.from_float(effective) * Fraction.from_float(
+                    float.fromhex(direction_word)
+                )
+                work["oracle"] += 2
+                assert work["oracle"] <= 1536
+                assert (
+                    component["base_hex"] == base_word
+                    and component["direction_hex"] == direction_word
+                )
+                assert component["observed_hex"] == observed_word
+                assert (
+                    component["exact_unrounded_expression_ratio"]
+                    == exact.as_integer_ratio()
+                )
+                observed = float.fromhex(observed_word)
+                if math.isfinite(observed):
+                    residual = Fraction.from_float(observed) - exact
+                    work["oracle"] += 1
+                    assert work["oracle"] <= 1536
+                    assert (
+                        component["signed_residual_ratio"]
+                        == residual.as_integer_ratio()
+                    )
+                    assert (
+                        component["status"]
+                        == "computed_exact_wall_projection_expression_residual"
+                    )
+                    if case == "rounded":
+                        assert residual < 0
+                    elif case == "mismatch":
+                        assert residual > 0
+                else:
+                    assert component["status"] == "unknown_nonfinite_wall_projection"
+                    assert component["signed_residual_ratio"] is None
+    assert arguments == arguments_before and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "wall": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "wall": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

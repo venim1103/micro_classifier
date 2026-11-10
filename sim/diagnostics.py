@@ -9770,6 +9770,151 @@ def _native_tof_floor_division_residuals(
     }
 
 
+def _native_tof_wall_projection_residuals(
+    *,
+    mount_height_m_hex,
+    position_m_hex,
+    world_frame_unit_rays,
+    distance_m_hex,
+    altitude_m_hex,
+    across_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native wall projection residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native wall projection residual rational budget unsupported")
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native wall projection residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError(
+                    "native wall projection residual word budget exhausted"
+                )
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native wall projection residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native wall projection residual words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    height = decoded((mount_height_m_hex,), 1, True)[0]
+    positions = decoded(position_m_hex, 2, True)
+    rays = decoded(world_frame_unit_rays, 192, True)
+    arrays = []
+    for words in (distance_m_hex, altitude_m_hex, across_m_hex):
+        if type(words) is not tuple or len(words) != 4:
+            raise ValueError("native wall projection residual wall count unsupported")
+        arrays.append([decoded(row, 64, False) for row in words])
+    distances, altitudes, across_values = arrays
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+
+    def component(
+        base, base_word, direction, direction_word, distance, observed, observed_word
+    ):
+        exact = arithmetic.binary(
+            base, arithmetic.binary(distance, arithmetic.value(direction), "mul"), "add"
+        )
+        residual = (
+            arithmetic.binary(arithmetic.value(observed), exact, "sub")
+            if math.isfinite(observed)
+            else None
+        )
+        return {
+            "base_hex": base_word,
+            "direction_hex": direction_word,
+            "observed_hex": observed_word,
+            "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+            "signed_residual_ratio": None
+            if residual is None
+            else residual.as_integer_ratio(),
+            "status": "unknown_nonfinite_wall_projection"
+            if residual is None
+            else "computed_exact_wall_projection_expression_residual",
+        }
+
+    entries = []
+    try:
+        base_height = arithmetic.value(height)
+        base_positions = tuple(arithmetic.value(position) for position in positions)
+        for wall_index, observed_distances in enumerate(distances):
+            other_axis = 1 - wall_index // 2
+            for ray_index, distance in enumerate(observed_distances):
+                finite = math.isfinite(distance)
+                effective = distance if finite else 0.0
+                rational_distance = arithmetic.value(effective)
+                up_index, across_index = ray_index * 3 + 2, ray_index * 3 + other_axis
+                entries.append(
+                    {
+                        "wall_index": wall_index,
+                        "ray_index": ray_index,
+                        "raw_distance_hex": distance_m_hex[wall_index][ray_index],
+                        "effective_distance_hex": effective.hex(),
+                        "distance_branch": "finite_distance"
+                        if finite
+                        else "nonfinite_distance_zero_fallback",
+                        "altitude": component(
+                            base_height,
+                            mount_height_m_hex,
+                            rays[up_index],
+                            world_frame_unit_rays[up_index],
+                            rational_distance,
+                            altitudes[wall_index][ray_index],
+                            altitude_m_hex[wall_index][ray_index],
+                        ),
+                        "across": component(
+                            base_positions[other_axis],
+                            position_m_hex[other_axis],
+                            rays[across_index],
+                            world_frame_unit_rays[across_index],
+                            rational_distance,
+                            across_values[wall_index][ray_index],
+                            across_m_hex[wall_index][ray_index],
+                        ),
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native wall projection residual rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-wall-projection-residuals/1",
+        "allowed_use": "offline_wall_projection_word_diagnostics_only",
+        "status": "reported_wall_projection_expression_residuals",
+        "comparison_basis": "unrounded_supplied_word_multiply_plus_add_after_distance_branch",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_wall_division_residuals(
     *, numerator_m_hex, world_frame_unit_rays, distance_m_hex, synthetic_test_only=False
 ):

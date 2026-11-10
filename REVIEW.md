@@ -343,6 +343,44 @@ supported altitude/across and mask/selection prerequisites from captured words.
 Archive whole231-235 verbatim and rebase their five design references to keep
 the root map short; retain the pre-move review and mechanical utility locally.
 
+## 241. Native ToF Wall Projection Expression Residuals (2026-11-10)
+
+Checkpoint `7450fb2` pushed/clean. Actual wall trace retains altitude/across
+results but not intermediate products. Local hypothesis: diagnose each against
+the exact unrounded supplied-word base+distance*direction expression after the
+native nonfinite-distance zero fallback. This is a combined-expression residual,
+not an isolated multiplication/addition rounding result, FMA claim, uniform
+allowance, independent geometry/coverage/source qualification or admission.
+
+Twenty bounded controls with unchanged parent fixtures; only actual-word case
+uses one setup acquisition/geometry/closed wall intake with two native intakes.
+Each case one helper call,963 canonical words<=32 characters,256 paired entries,
+at most1283 guarded conversions/1536 guarded operations under existing4096-bit
+cap. Independent fixture oracle at most1536 Fraction operations. During helper
+no source intake/read/retention/step/reset/replay/clock/RNG. Three pytest positions
+including failures/aborts: first20/60 seconds, one necessary repair/control
+reserve, final root/300 seconds. Retain `wall-241-*` logs in existing local
+recovery directory. All eight flags false, no old ledger refund or new study/
+task data/model/dependency/download/native/hardware action. Preserve signed/raw
+words; nonfinite observed projections leave residual unknown, not finite bounds.
+
+First20 passed,2499 deselected,3.18 s. Focused Ruff/format/whitespace passed.
+Required root:3442 passed,1 known transformer QDQ xfailed,71 warnings,104.32 s;
+root Ruff, changed-file format check and whitespace passed. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Editor diagnostics clear. AST comparison proves exactly one new helper/test;
+every previous source/test node remains unchanged. No additional C/Arm/sanitizer/
+board opt-in gates ran; host checks do not qualify firmware/hardware. Logs
+retained, no cleanup/deletion or new dependency/download/model/study/hardware.
+
+Actual-word fixture uses one fresh captured wall packet; other inputs are
+declared synthetic. Signed/raw words and explicit nonfinite-distance fallback
+are preserved; discrepancy reporting is not acceptance of changed arithmetic.
+All eight flags false, no primitive roundoff/FMA/uniform-error or independent
+masking/geometry/coverage/physical/source/clock/permission/admission qualification.
+Next compose projection diagnostics with matched delivered/pending wall records
+and original IDs, before independently supported mask/selection prerequisites.
+
 ## Sources
 
 Hardware and tools:

@@ -20413,30 +20413,35 @@ def test_native_tof_wall_division_residuals(
 
 
 @pytest.mark.parametrize(
-    "case",
-    (
-        "copy",
-        "default",
-        "flag",
-        "dependency",
-        "missing",
-        "delivered_only",
-        "held",
-        "late_offset",
-        "late_division",
-        "late_timing",
-        "late_selection",
-        "late_pending",
-        "late_wall",
-        "late_owner",
-        "late_budget",
-        "work_limit",
-        "combined",
-        "late_norm",
-    ),
+    ("projection", "case"),
+    [
+        (projection, case)
+        for projection in (False, True)
+        for case in (
+            "copy",
+            "default",
+            "flag",
+            "dependency",
+            "missing",
+            "delivered_only",
+            "held",
+            "late_offset",
+            "late_division",
+            "late_timing",
+            "late_selection",
+            "late_pending",
+            "late_wall",
+            "late_owner",
+            "late_budget",
+            "work_limit",
+            "combined",
+            "late_norm",
+        )
+    ]
+    + [(True, "late_projection"), (True, "projection_only")],
 )
 def test_native_tof_wall_residual_snapshot(
-    monkeypatch, c1_motion_receipt_source_fixture, case
+    monkeypatch, c1_motion_receipt_source_fixture, projection, case
 ):
     from fractions import Fraction
 
@@ -20452,6 +20457,7 @@ def test_native_tof_wall_residual_snapshot(
             "clock",
             "offset",
             "division",
+            "projection",
             "wall",
             "selection",
             "timing",
@@ -20530,6 +20536,7 @@ def test_native_tof_wall_residual_snapshot(
     originals = {
         "offset": diagnostics._native_tof_wall_offset_residuals,
         "division": diagnostics._native_tof_wall_division_residuals,
+        "projection": diagnostics._native_tof_wall_projection_residuals,
         "wall": diagnostics._match_native_tof_retained_wall,
         "selection": diagnostics._match_native_tof_retained_selection,
         "timing": diagnostics._match_native_tof_retained_timing,
@@ -20547,9 +20554,16 @@ def test_native_tof_wall_residual_snapshot(
         )
         actual = originals[name](*args, **kwargs)
         outgoing.setdefault(name, actual)
-        if name == "division" and work[name] == closing_count:
+        if (
+            name == ("projection" if projection else "division")
+            and work[name] == closing_count
+        ):
             if case in ("late_offset", "late_division"):
                 target = outgoing[case.removeprefix("late_")]["entries"][0]
+                numerator, denominator = target["signed_residual_ratio"]
+                target["signed_residual_ratio"] = (numerator ^ 1, denominator)
+            elif case == "late_projection":
+                target = outgoing["projection"]["entries"][0]["altitude"]
                 numerator, denominator = target["signed_residual_ratio"]
                 target["signed_residual_ratio"] = (numerator ^ 1, denominator)
             elif case == "late_timing":
@@ -20588,12 +20602,12 @@ def test_native_tof_wall_residual_snapshot(
 
     def value(instance, argument):
         work["values"] += 1
-        assert work["values"] <= 4680
+        assert work["values"] <= (12378 if projection else 4680)
         return original_value(instance, argument)
 
     def binary(instance, left, right, operation):
         work["binary"] += 1
-        assert work["binary"] <= 3120
+        assert work["binary"] <= (12336 if projection else 3120)
         return original_binary(instance, left, right, operation)
 
     def forbidden(*args, **kwargs):
@@ -20605,6 +20619,7 @@ def test_native_tof_wall_residual_snapshot(
     for name, symbol in (
         ("offset", "_native_tof_wall_offset_residuals"),
         ("division", "_native_tof_wall_division_residuals"),
+        ("projection", "_native_tof_wall_projection_residuals"),
         ("wall", "_match_native_tof_retained_wall"),
         ("selection", "_match_native_tof_retained_selection"),
         ("timing", "_match_native_tof_retained_timing"),
@@ -20635,18 +20650,26 @@ def test_native_tof_wall_residual_snapshot(
     ):
         monkeypatch.setattr(diagnostics, name, forbidden)
     if case in ("flag", "dependency"):
-        with pytest.raises(ValueError, match="include_wall_residuals"):
+        with pytest.raises(ValueError, match=r"include_wall(?:_projection)?_residuals"):
             owner.snapshot_native_tof_delivery(
                 synthetic_test_only=True,
                 include_wall=case != "dependency",
-                include_wall_residuals=1 if case == "flag" else True,
+                include_wall_residuals=False
+                if projection
+                else 1
+                if case == "flag"
+                else True,
+                include_wall_projection_residuals=(1 if case == "flag" else True)
+                if projection
+                else False,
             )
     else:
         result = owner.snapshot_native_tof_delivery(
             synthetic_test_only=True,
             include_pending_sources=case != "delivered_only",
             include_wall=True,
-            include_wall_residuals=case != "default",
+            include_wall_residuals=case not in ("default", "projection_only"),
+            include_wall_projection_residuals=projection and case != "default",
             include_timing=combined,
             include_selection=combined,
             include_direction_norm_residuals=combined,
@@ -20662,7 +20685,20 @@ def test_native_tof_wall_residual_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
-        if case in ("copy", "default", "delivered_only", "held", "combined"):
+        if not projection:
+            assert (
+                "wall_projection_residuals" not in result
+                and "pending_wall_projection_residuals" not in result
+            )
+            assert work["projection"] == 0
+        if case in (
+            "copy",
+            "default",
+            "delivered_only",
+            "held",
+            "combined",
+            "projection_only",
+        ):
             assert result["snapshot_available"] is True, result["reason"]
             assert result["frame"] == before_frame
             if case == "default":
@@ -20671,35 +20707,66 @@ def test_native_tof_wall_residual_snapshot(
                     and "pending_wall_residuals" not in result
                 )
                 assert work["offset"] == work["division"] == 0
+                assert work["projection"] == 0
+                assert (
+                    "wall_projection_residuals" not in result
+                    and "pending_wall_projection_residuals" not in result
+                )
             else:
-                pairs = [(result["wall_residuals"], result["wall"], result["source"])]
+                field = (
+                    "wall_projection_residuals"
+                    if case == "projection_only"
+                    else "wall_residuals"
+                )
+                pending_field = f"pending_{field}"
+                pairs = [(result[field], result["wall"], result["source"])]
                 if case != "delivered_only":
-                    assert result["pending_wall_residuals"]
+                    assert result[pending_field]
                     pairs.extend(
                         zip(
-                            result["pending_wall_residuals"],
+                            result[pending_field],
                             result["pending_wall"],
                             result["pending_sources"],
                             strict=True,
                         )
                     )
                 else:
-                    assert "pending_wall_residuals" not in result
+                    assert pending_field not in result
+                projections = (
+                    {
+                        entry["tick"]: entry
+                        for entry in (
+                            result["wall_projection_residuals"],
+                            *result.get("pending_wall_projection_residuals", ()),
+                        )
+                    }
+                    if projection
+                    else {}
+                )
+                if case == "projection_only":
+                    assert (
+                        "wall_residuals" not in result
+                        and "pending_wall_residuals" not in result
+                    )
+                    assert work["offset"] == work["division"] == 0
                 for diagnostic, record, source in pairs:
                     for key in ("source_epoch", "tick", "delivery_tick"):
                         assert diagnostic[key] == record[key] == source[key]
-                    assert all(
-                        diagnostic[kind][flag] is False
-                        for kind in ("offset", "division")
-                        for flag in flags
-                    )
+                    if case != "projection_only":
+                        assert all(
+                            diagnostic[kind][flag] is False
+                            for kind in ("offset", "division")
+                            for flag in flags
+                        )
                     walls = record["wall"]["walls"]
-                    for index, entry in enumerate(diagnostic["offset"]["entries"]):
+                    for index, entry in enumerate(
+                        diagnostic.get("offset", {}).get("entries", ())
+                    ):
                         assert (
                             entry["observed_numerator_hex"]
                             == walls[index]["numerator_m"]
                         )
-                    for entry in diagnostic["division"]["entries"]:
+                    for entry in diagnostic.get("division", {}).get("entries", ()):
                         index, ray = entry["wall_index"], entry["ray_index"]
                         direction_word = record["wall"]["world_frame_unit_rays"][
                             ray * 3 + index // 2
@@ -20713,7 +20780,7 @@ def test_native_tof_wall_residual_snapshot(
                         direction = float.fromhex(direction_word)
                         if direction != 0:
                             work["oracle"] += 2
-                            assert work["oracle"] <= 1536
+                            assert work["oracle"] <= (6144 if projection else 1536)
                             exact = Fraction.from_float(
                                 float.fromhex(entry["numerator_hex"])
                             ) / Fraction.from_float(direction)
@@ -20729,6 +20796,67 @@ def test_native_tof_wall_residual_snapshot(
                                         Fraction.from_float(observed) - exact
                                     ).as_integer_ratio()
                                 )
+                    if projection:
+                        projected = projections[source["tick"]]
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert projected[key] == source[key]
+                        assert all(
+                            projected["diagnostic"][flag] is False for flag in flags
+                        )
+                        assert len(projected["diagnostic"]["entries"]) == 256
+                        trace = record["wall"]
+                        for entry in projected["diagnostic"]["entries"]:
+                            index, ray = entry["wall_index"], entry["ray_index"]
+                            other_axis = 1 - index // 2
+                            raw_word = walls[index]["distance_m"][ray]
+                            raw = float.fromhex(raw_word)
+                            effective = raw if math.isfinite(raw) else 0.0
+                            assert entry["raw_distance_hex"] == raw_word
+                            assert entry["effective_distance_hex"] == effective.hex()
+                            for name, base_word, direction_index, observed_word in (
+                                (
+                                    "altitude",
+                                    float(
+                                        trace["inputs"]["config"]["tof_mount_height"]
+                                    ).hex(),
+                                    ray * 3 + 2,
+                                    walls[index]["altitude_m"][ray],
+                                ),
+                                (
+                                    "across",
+                                    trace["inputs"]["position_m"][other_axis].hex(),
+                                    ray * 3 + other_axis,
+                                    walls[index]["across_m"][ray],
+                                ),
+                            ):
+                                component = entry[name]
+                                direction_word = trace["world_frame_unit_rays"][
+                                    direction_index
+                                ]
+                                assert component["base_hex"] == base_word
+                                assert component["direction_hex"] == direction_word
+                                assert component["observed_hex"] == observed_word
+                                exact = Fraction.from_float(
+                                    float.fromhex(base_word)
+                                ) + Fraction.from_float(
+                                    effective
+                                ) * Fraction.from_float(float.fromhex(direction_word))
+                                work["oracle"] += 2
+                                assert work["oracle"] <= 6144
+                                assert (
+                                    component["exact_unrounded_expression_ratio"]
+                                    == exact.as_integer_ratio()
+                                )
+                                observed = float.fromhex(observed_word)
+                                if math.isfinite(observed):
+                                    work["oracle"] += 1
+                                    assert work["oracle"] <= 6144
+                                    assert (
+                                        component["signed_residual_ratio"]
+                                        == (
+                                            Fraction.from_float(observed) - exact
+                                        ).as_integer_ratio()
+                                    )
                 if case == "held":
                     assert result["sensor_tick"] == 4 and result["tick"] == 7
                 if combined:
@@ -20740,13 +20868,22 @@ def test_native_tof_wall_residual_snapshot(
                         ]
                         is False
                     )
-                result["wall_residuals"]["offset"]["entries"][0][
-                    "observed_numerator_hex"
-                ] = "changed"
-                assert (
-                    owner._tof_wall_history[0]["wall"]["walls"][0]["numerator_m"]
-                    != "changed"
-                )
+                if projection:
+                    result["wall_projection_residuals"]["diagnostic"]["entries"][0][
+                        "altitude"
+                    ]["observed_hex"] = "changed"
+                    assert (
+                        owner._tof_wall_history[0]["wall"]["walls"][0]["altitude_m"][0]
+                        != "changed"
+                    )
+                else:
+                    result["wall_residuals"]["offset"]["entries"][0][
+                        "observed_numerator_hex"
+                    ] = "changed"
+                    assert (
+                        owner._tof_wall_history[0]["wall"]["walls"][0]["numerator_m"]
+                        != "changed"
+                    )
         else:
             assert (
                 result["status"] == "unknown" and result["snapshot_available"] is False
@@ -20759,6 +20896,8 @@ def test_native_tof_wall_residual_snapshot(
                     "pending_wall",
                     "wall_residuals",
                     "pending_wall_residuals",
+                    "wall_projection_residuals",
+                    "pending_wall_projection_residuals",
                     "pending_sources",
                     "selection",
                     "pending_selection",

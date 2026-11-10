@@ -381,6 +381,46 @@ masking/geometry/coverage/physical/source/clock/permission/admission qualificati
 Next compose projection diagnostics with matched delivered/pending wall records
 and original IDs, before independently supported mask/selection prerequisites.
 
+## 242. Matched Native ToF Wall Projection Diagnostics (2026-11-10)
+
+Checkpoint `7b6cc4f` pushed/clean. Local hypothesis: an independent literal
+projection opt-in requiring matched wall publication can reuse the projection
+helper under original epoch/acquisition/delivery IDs, alone or with offset/
+division and other companions. All closing probes precede typed live-history
+and outgoing comparisons. Default skips projection; unknown omits partial data.
+No primitive-product/addition rounding, FMA, uniform allowance or qualification.
+
+Extend the existing snapshot test, not another setup fixture: original18-case
+family keeps4680 conversions/3120 operations/1536 oracle operations; new20-case
+projection family includes dedicated late-projection and projection-only controls
+with at most12378 conversions/12336 guarded operations/6144 Fraction oracle
+operations. Common caps unchanged:4 setup steps,3 geometry/retentions,5 recorder
+reads,6 setup clocks only with companions; at most6 of each diagnostic/matcher,
+2 pending/4 queue/2 frame/64 bindings,4096-bit rational cap. No source intake/
+read/retention/step/reset/replay/clock/RNG during snapshot. Three pytest positions
+counting failures/aborts: first38/60 seconds, one necessary repair/control reserve,
+final root/300 seconds. Retain `wall-242-*` logs in existing recovery directory.
+All eight flags false, no old ledger refund or study/task data/model/dependency/
+download/native/hardware action. New family adds work; old family caps unchanged.
+
+First38 passed,2501 deselected,10.93 s, including all18 original cases with their
+original caps and20 projection cases. Focused Ruff/format/whitespace passed.
+Required root:3462 passed,1 known transformer QDQ xfailed,71 warnings,90.01 s;
+root Ruff, changed-file format check and whitespace passed. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Editor diagnostics clear. AST comparison confines changes to the existing
+delivery snapshot and its existing integration test; all other source/test nodes
+unchanged. No additional C/Arm/sanitizer/board opt-in gates ran; host checks are
+not firmware/hardware capability. Logs retained, no cleanup/deletion.
+
+Projection-only and combined paths use original matched record IDs; default
+skips the new helper and unknown carries no partial data. Deliberate late
+projection/companion/history mutations reject. All eight flags false, no adopted
+primitive rounding/FMA/uniform error or geometry/coverage/physical/source/clock/
+permission/admission qualification. Next independently check stored hit-mask
+comparisons and candidate selection against captured distance/altitude/across
+words and supplied native limits, without claiming physical intersections.
+
 ## Sources
 
 Hardware and tools:

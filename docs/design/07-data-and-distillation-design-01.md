@@ -1694,6 +1694,23 @@ false; no accepted uniform allowance, masking/geometry/coverage/physical/source/
 clock/permission/admission or usable command follows. See [projection controls and limits][native-tof-wall-projection-review].
 
 
+##### Matched Native ToF Wall Projection Diagnostics (2026-11-10)
+
+Separate `include_wall_projection_residuals=True` on the delivery snapshot
+requires matched wall publication. It attaches projection diagnostics to original
+epoch/acquisition/delivery IDs for delivered and optional pending records, alone
+or alongside offset/division and timing/selection/arithmetic companions. Closing
+probes complete before live-history/output checks; missing/changed evidence
+yields unknown without partial data. Default skips projection work. No source
+intake/replay, recorder read/retention, RNG or clocks are added.
+
+The original arithmetic integration controls retain their original resource
+caps; projection cases have separately bounded added work. All eight flags stay
+false. Product words remain uncaptured; matched combined-expression residuals do
+not certify primitive roundoff, FMA, uniform error, masking/geometry/coverage/
+physical/source/clock/permission/admission. See [matched projection controls and limits][native-tof-wall-projection-match-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2418,6 +2435,7 @@ figure is not an established minimum.
 [native-tof-wall-division-review]: ../../REVIEW.md#239-native-tof-wall-division-word-residuals-2026-11-10
 [native-tof-wall-arithmetic-review]: ../../REVIEW.md#240-matched-native-tof-wall-arithmetic-diagnostics-2026-11-10
 [native-tof-wall-projection-review]: ../../REVIEW.md#241-native-tof-wall-projection-expression-residuals-2026-11-10
+[native-tof-wall-projection-match-review]: ../../REVIEW.md#242-matched-native-tof-wall-projection-diagnostics-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

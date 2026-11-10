@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §241 for wall projection expression residuals and the
-latest source gate; §§231-240 retain separate arithmetic, trace, acquisition,
-intake, prehash, recorder, delivery and matched-diagnostic limits.
+Read [REVIEW.md][review] §242 for matched wall projection diagnostics and the
+latest source gate; §§231-241 retain separate arithmetic, trace, acquisition,
+intake, prehash, recorder, delivery and expression-diagnostic limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next connect projection diagnostics to matched wall record IDs, then advance
-supported mask/selection prerequisites. Intermediate products are not captured;
-combined-expression residuals are not primitive roundoff or a uniform allowance.
+Next advance hit-mask/candidate word correspondence from captured comparison
+inputs. Intermediate products are not captured; matched combined-expression
+residuals are not primitive roundoff, geometry proof or a uniform allowance.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

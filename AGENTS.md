@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §262 for side mask/candidate correspondence and
-the latest source gate; §255 records the design-topic relocation. §§231-261
+Read [REVIEW.md][review] §263 for conservative side-minimum correspondence and
+the latest source gate; §255 records the design-topic relocation. §§231-262
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement bounded supplied-word side-minimum correspondence, retaining
-observed predecessors and unresolved equal-value/different-word ties.
+Next implement standalone supplied-word top/cap offset and guarded-division
+expressions before cap hit-mask/candidate/minimum and matched-source composition.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

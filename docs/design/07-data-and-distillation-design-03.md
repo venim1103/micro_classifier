@@ -2293,6 +2293,20 @@ source/geometry/coverage/clock/permission/admission proof; all eight flags false
 See [actual controls and gate][native-tof-cylinder-side-mask-review].
 
 
+#### Supplied-Word Cylinder Side Minimum Correspondence (2026-11-10)
+
+`_native_tof_cylinder_side_minimum_diagnostics` reports each captured observed
+predecessor/candidate/result independently; no preceding result reconstruction
+or chain claim. Strict lower operand or identical words select known word;
+equal-value/different-word ties remain unresolved when value matches, wrong
+numeric minimum remains mismatch even on ties. No host signed-zero tie adoption.
+<=32 cylinders/64 rays/two sides,12288 canonical finite/+inf words/32 characters,
+4096 entries/20480 helper operand-word comparisons, aggregate counts separate.
+No rational work/intake/read/hash/retention/replay/clock/RNG or composition. All
+eight flags false; no primitive/uniform/numerical/physical/source/geometry/
+coverage/clock/permission/admission proof. See [actual controls and gate][native-tof-cylinder-side-minimum-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2309,3 +2323,4 @@ See [actual controls and gate][native-tof-cylinder-side-mask-review].
 [native-tof-cylinder-side-division-review]: ../../REVIEW.md#260-supplied-word-cylinder-side-division-residuals-2026-11-10
 [native-tof-cylinder-side-altitude-review]: ../../REVIEW.md#261-supplied-word-cylinder-side-altitude-expression-2026-11-10
 [native-tof-cylinder-side-mask-review]: ../../REVIEW.md#262-supplied-word-cylinder-side-maskcandidate-correspondence-2026-11-10
+[native-tof-cylinder-side-minimum-review]: ../../REVIEW.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10

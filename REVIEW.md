@@ -587,6 +587,48 @@ one-use/permission/admission or usable command. Next conservative side-minimum
 word correspondence from captured observed predecessor/candidate/result, with
 equal-value/different-word tie semantics unresolved.
 
+## 263. Supplied-Word Cylinder Side Minimum Correspondence (2026-11-10)
+
+Checkpoint `f389c68` pushed/clean. Native side minimum consumes captured observed
+predecessor and candidate; report numeric minimum and word correspondence
+without recomputing a preceding result. Strict lower operand or identical words
+select known expected word. Equal-value/different-word ties remain unresolved
+when numeric minimum matches; a wrong numeric value remains mismatch even on
+such ties. No NumPy/host signed-zero tie semantics or geometry adopted.
+<=32 cylinders/64 rays/two sides,12288 canonical finite/+inf words/32 characters,
+4096 entries/20480 helper operand-word comparisons, aggregate counts separate.
+No rational work/intake/read/hash/retention/replay/clock/RNG or composition.
+
+30 bounded synthetic controls, <=32768 oracle comparisons; actual nonempty
+setup <=1 geometry/selected intake,2 native intakes, otherwise none. Each
+selection/identical or signed-zero tie/wrong numeric or word result, observed
+predecessor independent of wrong preceding result, finite extremes/+inf,
+max32/empty and typed preflight; input/tick/RNG preserved. Three pytest positions
+including failures/aborts: first30/60 seconds, one necessary repair reserve,
+final root/300 seconds; retain `cylinder-263-*` logs. No old refunds/protected
+runs/task data/dependencies/hardware. All eight flags false, no primitive/
+uniform/numerical/physical/source/geometry/coverage/clock/one-use/permission/
+admission or usable command. Next standalone top/cap offset and guarded-division
+expressions before cap hit-mask/candidate/minimum and matched-source composition.
+
+First30 passed,2968 deselected,2.89 s. Required root3921 passed,1 known
+transformer QDQ xfailed,71 warnings,87.14 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new side
+minimum helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-263-focused-1.log`/
+`cylinder-263-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, strict/identical selections, both signed
+zero tie orders, wrong numeric even on tie, strict value-correct/wrong-word
+result, independent observed predecessor, finite extremes/+inf and typed
+rejection agree with bounded independent oracle, input/tick/RNG unchanged.
+All eight flags false, no primitive/uniform/numerical/physical/source/geometry/
+coverage/clock/one-use/permission/admission or usable command. Next standalone
+top/cap offset then guarded division. Archive whole251-255 losslessly before
+further root review growth, retaining all ledgers and rebasing local targets.
+
 ## Sources
 
 Hardware and tools:

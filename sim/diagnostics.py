@@ -10037,6 +10037,159 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_side_minimum_diagnostics(
+    *,
+    side_previous_minimum_m_hex,
+    side_candidate_m_hex,
+    side_minimum_after_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder side minimum diagnostics require synthetic_test_only=True"
+        )
+    if (
+        type(side_previous_minimum_m_hex) is not tuple
+        or len(side_previous_minimum_m_hex) > 32
+    ):
+        raise ValueError("native cylinder side minimum obstacle count unsupported")
+    count = len(side_previous_minimum_m_hex)
+    arrays = []
+    for rows in (
+        side_previous_minimum_m_hex,
+        side_candidate_m_hex,
+        side_minimum_after_m_hex,
+    ):
+        if type(rows) is not tuple or len(rows) != count:
+            raise ValueError("native cylinder side minimum obstacle count unsupported")
+        group = []
+        for sides in rows:
+            if type(sides) is not tuple or len(sides) != 2:
+                raise ValueError("native cylinder side minimum side count unsupported")
+            decoded_sides = []
+            for words in sides:
+                if type(words) is not tuple or len(words) != 64:
+                    raise ValueError(
+                        "native cylinder side minimum word count unsupported"
+                    )
+                values = []
+                for word in words:
+                    if type(word) is not str or len(word) > 32:
+                        raise ValueError(
+                            "native cylinder side minimum word budget exhausted"
+                        )
+                    try:
+                        value = float.fromhex(word)
+                    except (ValueError, OverflowError) as error:
+                        raise ValueError(
+                            "native cylinder side minimum words must be canonical"
+                        ) from error
+                    if value.hex() != word or math.isnan(value) or value == -math.inf:
+                        raise ValueError(
+                            "native cylinder side minimum words must be canonical"
+                        )
+                    values.append(value)
+                decoded_sides.append(values)
+            group.append(decoded_sides)
+        arrays.append(group)
+    previous_values, candidates, minima = arrays
+    entries = []
+    for obstacle_index, sides in enumerate(minima):
+        for side_index, values in enumerate(sides):
+            for ray_index, observed in enumerate(values):
+                previous = previous_values[obstacle_index][side_index][ray_index]
+                candidate = candidates[obstacle_index][side_index][ray_index]
+                previous_word = side_previous_minimum_m_hex[obstacle_index][side_index][
+                    ray_index
+                ]
+                candidate_word = side_candidate_m_hex[obstacle_index][side_index][
+                    ray_index
+                ]
+                observed_word = side_minimum_after_m_hex[obstacle_index][side_index][
+                    ray_index
+                ]
+                if previous < candidate:
+                    expected_word, expected_value, selection = (
+                        previous_word,
+                        previous,
+                        "previous",
+                    )
+                elif candidate < previous:
+                    expected_word, expected_value, selection = (
+                        candidate_word,
+                        candidate,
+                        "candidate",
+                    )
+                elif previous_word == candidate_word:
+                    expected_word, expected_value, selection = (
+                        previous_word,
+                        previous,
+                        "equal_identical_words",
+                    )
+                else:
+                    expected_word, expected_value, selection = (
+                        None,
+                        previous,
+                        "equal_value_word_tie",
+                    )
+                value_matches = observed == expected_value
+                word_matches = (
+                    observed_word == expected_word
+                    if expected_word is not None
+                    else None
+                    if value_matches
+                    else False
+                )
+                entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "side_index": side_index,
+                        "sign": (-1, 1)[side_index],
+                        "ray_index": ray_index,
+                        "previous_hex": previous_word,
+                        "candidate_hex": candidate_word,
+                        "observed_minimum_hex": observed_word,
+                        "expected_minimum_hex": expected_word,
+                        "selection": selection,
+                        "minimum_value_matches": value_matches,
+                        "minimum_word_matches": word_matches,
+                        "status": "unknown_equal_value_word_tie"
+                        if word_matches is None
+                        else "matched_stored_cylinder_side_minimum_words"
+                        if word_matches
+                        else "mismatched_stored_cylinder_side_minimum_words",
+                    }
+                )
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-side-minimum-diagnostics/1",
+        "allowed_use": "offline_cylinder_side_minimum_word_diagnostics_only",
+        "status": "reported_stored_cylinder_side_minimum_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "word_mismatch_count": sum(
+            entry["minimum_word_matches"] is False for entry in entries
+        ),
+        "value_mismatch_count": sum(
+            not entry["minimum_value_matches"] for entry in entries
+        ),
+        "unresolved_word_count": sum(
+            entry["minimum_word_matches"] is None for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_side_mask_candidate_diagnostics(
     *,
     top_m_hex,

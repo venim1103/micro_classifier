@@ -25394,6 +25394,356 @@ def test_native_tof_cylinder_top_offset_residuals(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
+        "negative_up",
+        "mixed",
+        "rounded",
+        "mismatch",
+        "zero_up",
+        "negative_zero_up",
+        "branch_mismatch",
+        "negative_infinite_bypass",
+        "signed_zero",
+        "subnormal",
+        "large_finite",
+        "positive_inf",
+        "negative_inf",
+        "nonfinite_numerator",
+        "negative_nonfinite_numerator",
+        "empty",
+        "max_obstacles",
+        "flag",
+        "shape",
+        "rays_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_rays",
+        "word_type",
+        "word_budget",
+        "budget",
+        "tuple_type",
+        "work_limit",
+        "bit_type",
+        "bit_limit",
+        "late_branch_mismatch",
+        "zero_nonfinite_numerator",
+    ),
+)
+def test_native_tof_cylinder_top_division_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "cylinder": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_cylinder = diagnostics._sample_simulator_native_tof_cylinder_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def cylinder_intake(*args, **kwargs):
+        setup["cylinder"] += 1
+        assert setup["cylinder"] <= 1
+        return original_cylinder(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_cylinder_source", cylinder_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    up_values = (2.0,) * 64
+    arguments = {
+        "world_frame_unit_rays": tuple(
+            word for up in up_values for word in ((1.0).hex(), (0.0).hex(), up.hex())
+        ),
+        "top_numerator_m_hex": ((1.0).hex(),),
+        "top_distance_m_hex": (((0.5).hex(),) * 64,),
+    }
+    if case == "actual":
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        trace = diagnostics._sample_simulator_native_tof_cylinder_source(
+            environment, owner._epoch
+        )["cylinder"]
+        assert len(trace["cylinders"]) == 1
+        arguments = {
+            "world_frame_unit_rays": trace["world_frame_unit_rays"],
+            "top_numerator_m_hex": tuple(
+                entry["top"]["numerator_m"] for entry in trace["cylinders"]
+            ),
+            "top_distance_m_hex": tuple(
+                entry["top"]["distance_m"] for entry in trace["cylinders"]
+            ),
+        }
+    elif case == "negative_up":
+        up_values = (-2.0,) * 64
+        arguments["top_distance_m_hex"] = (((-0.5).hex(),) * 64,)
+    elif case == "mixed":
+        up_values = (2.0, -2.0, 0.0, -0.0) * 16
+        arguments["top_distance_m_hex"] = (
+            ((0.5).hex(), (-0.5).hex(), "inf", "inf") * 16,
+        )
+    elif case == "rounded":
+        up_values = (3.0,) * 64
+        arguments["top_distance_m_hex"] = (((1.0 / 3).hex(),) * 64,)
+    elif case == "mismatch":
+        arguments["top_distance_m_hex"] = (((0.0).hex(),) * 64,)
+    elif case in (
+        "zero_up",
+        "negative_zero_up",
+        "branch_mismatch",
+        "negative_infinite_bypass",
+        "zero_nonfinite_numerator",
+    ):
+        up_values = (-0.0 if case == "negative_zero_up" else 0.0,) * 64
+        if case != "branch_mismatch":
+            arguments["top_distance_m_hex"] = (
+                ("-inf" if case == "negative_infinite_bypass" else "inf",) * 64,
+            )
+        if case == "zero_nonfinite_numerator":
+            arguments["top_numerator_m_hex"] = ("inf",)
+    elif case in (
+        "signed_zero",
+        "subnormal",
+        "large_finite",
+        "nonfinite_numerator",
+        "negative_nonfinite_numerator",
+    ):
+        numerator = {
+            "signed_zero": -0.0,
+            "subnormal": math.ulp(0.0),
+            "large_finite": float.fromhex("0x1.fffffffffffffp+1023"),
+            "nonfinite_numerator": math.inf,
+            "negative_nonfinite_numerator": -math.inf,
+        }[case]
+        up_values = (1.0,) * 64
+        arguments["top_numerator_m_hex"] = (numerator.hex(),)
+        arguments["top_distance_m_hex"] = ((numerator.hex(),) * 64,)
+    elif case in ("positive_inf", "negative_inf", "work_limit"):
+        up_values = (math.ulp(0.0),) * 64
+        arguments["top_numerator_m_hex"] = (
+            (-1.0 if case == "negative_inf" else 1.0).hex(),
+        )
+        arguments["top_distance_m_hex"] = (
+            ("-inf" if case == "negative_inf" else "inf",) * 64,
+        )
+    elif case in ("empty", "max_obstacles", "budget"):
+        for name in ("top_numerator_m_hex", "top_distance_m_hex"):
+            arguments[name] *= {"empty": 0, "max_obstacles": 32, "budget": 33}[case]
+    elif case == "shape":
+        arguments["top_distance_m_hex"] = (((0.5).hex(),) * 65,)
+    elif case == "rays_shape":
+        arguments["world_frame_unit_rays"] = arguments["world_frame_unit_rays"][:-1]
+    elif case in ("noncanonical", "overflow_word", "nan", "word_type", "word_budget"):
+        arguments["top_distance_m_hex"] = (
+            (
+                {
+                    "noncanonical": "0.5",
+                    "overflow_word": "0x1p+99999",
+                    "nan": "nan",
+                    "word_type": False,
+                    "word_budget": "0" * 33,
+                }[case],
+            )
+            * 64,
+        )
+    elif case == "finite_rays":
+        up_values = (math.inf,) * 64
+    elif case == "tuple_type":
+        arguments["top_numerator_m_hex"] = list(arguments["top_numerator_m_hex"])
+    elif case == "late_branch_mismatch":
+        up_values = (2.0,) * 63 + (0.0,)
+        arguments["top_numerator_m_hex"] *= 32
+        row = ((0.5).hex(),) * 63 + ("inf",)
+        arguments["top_distance_m_hex"] = (row,) * 31 + (row[:-1] + ((0.0).hex(),),)
+    if case not in ("actual", "rays_shape"):
+        arguments["world_frame_unit_rays"] = tuple(
+            word for up in up_values for word in ((1.0).hex(), (0.0).hex(), up.hex())
+        )
+    before_arguments = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = {"values": 0, "binary": 0, "oracle": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 2144
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 4096
+        return original_binary(instance, left, right, operation)
+
+    def oracle(left, right, operation):
+        work["oracle"] += 1
+        assert work["oracle"] <= 4096
+        return left / right if operation == "div" else left - right
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder top division must not intake/read/retain/hash/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case in ("work_limit", "bit_type", "bit_limit"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {"work_limit": 16, "bit_type": True, "bit_limit": 4097}[case],
+        )
+    for name in (
+        "_sample_simulator_native_tof_cylinder_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "branch_mismatch",
+        "negative_infinite_bypass",
+        "flag",
+        "shape",
+        "rays_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_rays",
+        "word_type",
+        "word_budget",
+        "budget",
+        "tuple_type",
+        "work_limit",
+        "bit_type",
+        "bit_limit",
+        "late_branch_mismatch",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_cylinder_top_division_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        if case == "work_limit":
+            assert work["values"] == 1 and work["binary"] == 0
+        else:
+            assert work["values"] == work["binary"] == 0
+    else:
+        result = diagnostics._native_tof_cylinder_top_division_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert (
+            result["comparison_basis"] == "supplied_top_numerator_divided_by_nonzero_up"
+        )
+        assert len(result["entries"]) == 64 * len(arguments["top_numerator_m_hex"])
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for index, entry in enumerate(result["entries"]):
+            obstacle_index, ray_index = divmod(index, 64)
+            numerator_word = arguments["top_numerator_m_hex"][obstacle_index]
+            up_word = arguments["world_frame_unit_rays"][ray_index * 3 + 2]
+            observed_word = arguments["top_distance_m_hex"][obstacle_index][ray_index]
+            numerator, up, observed = map(
+                float.fromhex, (numerator_word, up_word, observed_word)
+            )
+            assert (
+                entry["obstacle_index"] == obstacle_index
+                and entry["ray_index"] == ray_index
+            )
+            assert (
+                entry["numerator_hex"] == numerator_word and entry["up_hex"] == up_word
+            )
+            assert entry["observed_distance_hex"] == observed_word
+            if up == 0:
+                assert observed_word == "inf"
+                assert (
+                    entry["exact_quotient_ratio"]
+                    is entry["signed_residual_ratio"]
+                    is None
+                )
+                assert entry["status"] == "not_divided_zero_up"
+            elif not math.isfinite(numerator):
+                assert (
+                    entry["exact_quotient_ratio"]
+                    is entry["signed_residual_ratio"]
+                    is None
+                )
+                assert entry["status"] == "unknown_nonfinite_cylinder_top_numerator"
+            else:
+                quotient = oracle(
+                    Fraction.from_float(numerator), Fraction.from_float(up), "div"
+                )
+                assert entry["exact_quotient_ratio"] == quotient.as_integer_ratio()
+                if math.isfinite(observed):
+                    residual = oracle(Fraction.from_float(observed), quotient, "sub")
+                    assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
+                    assert (
+                        entry["status"]
+                        == "computed_exact_cylinder_top_division_word_residual"
+                    )
+                    if case != "actual":
+                        assert (residual != 0) is (case in ("rounded", "mismatch"))
+                else:
+                    assert entry["signed_residual_ratio"] is None
+                    assert entry["status"] == "unknown_nonfinite_cylinder_top_distance"
+        if case in ("empty", "zero_up", "negative_zero_up", "zero_nonfinite_numerator"):
+            assert work["values"] == work["binary"] == 0
+        if case == "max_obstacles":
+            assert work["values"] == 2144 and work["binary"] == work["oracle"] == 4096
+    assert arguments == before_arguments and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "cylinder": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "cylinder": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

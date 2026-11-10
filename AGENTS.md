@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §264 for the supplied-word cap offset and lossless
-251-255 archive; §255 records the design-topic relocation. §§231-263
+Read [REVIEW.md][review] §265 for guarded cap division; §264 records the lossless
+251-255 archive and §255 the design-topic relocation. §§231-264
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement standalone supplied-word top/cap division with the `up != 0`
-guard before relative/radial/mask/candidate/minimum and matched-source composition.
+Next implement standalone supplied-word top/cap relative expressions with
+nonfinite-distance zero fallback before radial/selection and source composition.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

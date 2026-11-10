@@ -10037,6 +10037,141 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_top_division_residuals(
+    *,
+    world_frame_unit_rays,
+    top_numerator_m_hex,
+    top_distance_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder top division residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder top division rational budget unsupported")
+    if (
+        type(top_numerator_m_hex) is not tuple
+        or len(top_numerator_m_hex) > 32
+        or type(top_distance_m_hex) is not tuple
+        or len(top_distance_m_hex) != len(top_numerator_m_hex)
+    ):
+        raise ValueError("native cylinder top division obstacle count unsupported")
+
+    def decoded(words, count, finite_only=False):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native cylinder top division word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder top division word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder top division words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native cylinder top division words must be canonical")
+            values.append(value)
+        return values
+
+    rays = decoded(world_frame_unit_rays, 192, True)
+    up = rays[2::3]
+    numerators = decoded(top_numerator_m_hex, len(top_numerator_m_hex))
+    distances = tuple(decoded(words, 64) for words in top_distance_m_hex)
+    for words in top_distance_m_hex:
+        if any(
+            value == 0 and words[ray_index] != "inf"
+            for ray_index, value in enumerate(up)
+        ):
+            raise ValueError(
+                "native cylinder top division branch correspondence mismatch"
+            )
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        denominators = (
+            tuple(arithmetic.value(value) if value != 0 else None for value in up)
+            if numerators
+            else ()
+        )
+        has_division = any(value is not None for value in denominators)
+        for obstacle_index, numerator in enumerate(numerators):
+            numerator_value = (
+                arithmetic.value(numerator)
+                if has_division and math.isfinite(numerator)
+                else None
+            )
+            for ray_index, observed in enumerate(distances[obstacle_index]):
+                quotient = residual = None
+                if up[ray_index] == 0:
+                    status = "not_divided_zero_up"
+                elif numerator_value is None:
+                    status = "unknown_nonfinite_cylinder_top_numerator"
+                else:
+                    quotient = arithmetic.binary(
+                        numerator_value, denominators[ray_index], "div"
+                    )
+                    residual = (
+                        arithmetic.binary(arithmetic.value(observed), quotient, "sub")
+                        if math.isfinite(observed)
+                        else None
+                    )
+                    status = (
+                        "unknown_nonfinite_cylinder_top_distance"
+                        if residual is None
+                        else "computed_exact_cylinder_top_division_word_residual"
+                    )
+                entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "ray_index": ray_index,
+                        "numerator_hex": top_numerator_m_hex[obstacle_index],
+                        "up_hex": world_frame_unit_rays[ray_index * 3 + 2],
+                        "observed_distance_hex": top_distance_m_hex[obstacle_index][
+                            ray_index
+                        ],
+                        "exact_quotient_ratio": None
+                        if quotient is None
+                        else quotient.as_integer_ratio(),
+                        "signed_residual_ratio": None
+                        if residual is None
+                        else residual.as_integer_ratio(),
+                        "status": status,
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder top division rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-top-division-residuals/1",
+        "allowed_use": "offline_cylinder_top_division_word_diagnostics_only",
+        "status": "reported_cylinder_top_division_word_residuals",
+        "comparison_basis": "supplied_top_numerator_divided_by_nonzero_up",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_top_offset_residuals(
     *, mount_height_m_hex, top_m_hex, top_offset_m_hex, synthetic_test_only=False
 ):

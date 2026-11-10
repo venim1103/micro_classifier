@@ -491,6 +491,51 @@ conservation passed; nine changed-context local targets valid, no stale root
 251-255 anchor targets in searched unignored Markdown. Final root849/design2341/
 archive204 lines. Original backups and all failed/passing logs retained.
 
+## 265. Guarded Supplied-Word Cylinder Top Division (2026-11-10)
+
+Checkpoint `02c9f57` pushed/clean. Native cap divide uses `up != 0`, including
+negative finite up, unlike side horizontal-positive guard. Hypothesis: preflight
+all zero-up outputs as literal +inf before rational work; elsewhere supplied
+finite numerator/up exact quotient and observed-minus-exact residual. Nonfinite
+numerator/distance explicit unknown; bypass no quotient/residual. Raw signed
+zero words retained; matching infinity is not a finite/geometric intersection.
+<=32 cylinders/64 rays/2272 canonical words/32 characters,4096-bit rational
+ceiling, shared up/numerator <=2144 values/4096 binary operations/2048 entries.
+No intake/read/hash/retention/replay/clock/RNG or composition. All eight flags
+false; no primitive uniform/numerical/physical/source/geometry/coverage/clock/
+one-use/permission/admission or usable command.
+
+35 bounded synthetic controls, <=4096 oracle operations; actual nonempty setup
+<=1 geometry/selected intake,2 native intakes, otherwise none. Positive/negative/
+mixed up, both signed-zero bypasses/nonfinite numerator bypass, late invalid
+branch before rational work, rounded/perturbed/finite extremes/nonfinite unknown,
+max32/empty and typed/work rejection. Input/tick/RNG preserved. Three pytest
+positions including failures/aborts: first35/60 seconds, one necessary repair
+reserve, final root/300 seconds; retain `cylinder-265-*` logs. No old refunds/
+protected runs/task data/dependencies/hardware. Next supplied-word relative
+expression with explicit nonfinite-distance zero fallback, before radial/mask/
+candidate/minimum and matched-source prerequisites.
+
+First35 passed,3029 deselected,0.47 s. Required root3987 passed,1 known
+transformer QDQ xfailed,71 warnings,88.60 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new top
+division helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-265-focused-1.log`/
+`cylinder-265-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, positive/negative/mixed up, both signed
+zero bypasses/nonfinite numerator bypass (zero rational work), late invalid
+branch before rational work, signed words/rounded/perturbed/finite extremes/
+nonfinite unknown and typed/work rejection verified within caps, input/tick/RNG
+unchanged. Max32 reaches2144 values/4096 binary+oracle operations; source limit
+remains4096 bits. No primitive uniform/numerical/physical/source/geometry/
+coverage/clock/one-use/permission/admission or usable command. All eight flags
+false. Next combined relative expression offset + effective_distance*horizontal
+ray, raw nonfinite distance -> +0. Products are uncaptured: no isolated multiply/
+add/FMA rounding claim, before radial and selection/source prerequisites.
+
 ## Sources
 
 Hardware and tools:

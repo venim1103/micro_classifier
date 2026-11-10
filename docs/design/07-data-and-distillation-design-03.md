@@ -2321,6 +2321,20 @@ physical/source/geometry/coverage/clock/permission/admission proof. See
 [actual controls, failed expectation and gate][native-tof-cylinder-top-offset-review].
 
 
+#### Guarded Supplied-Word Cylinder Top Division (2026-11-10)
+
+`_native_tof_cylinder_top_division_residuals` preflights zero-up outputs as +inf
+before rational work; nonzero up, including negative, gives supplied finite
+numerator/up exact quotient and observed-minus-exact residual. Nonfinite
+numerator/distance explicit unknown; bypass no quotient/residual. Raw signed
+zero words retained; matching infinity is not a finite/geometric intersection.
+<=32 cylinders/64 rays/2272 canonical words/32 characters,4096-bit rational
+ceiling, shared up/numerator <=2144 values/4096 binary operations/2048 entries.
+No intake/read/hash/retention/replay/clock/RNG or composition. All eight flags
+false; no primitive uniform/numerical/physical/source/geometry/coverage/clock/
+permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-division-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2339,3 +2353,4 @@ physical/source/geometry/coverage/clock/permission/admission proof. See
 [native-tof-cylinder-side-mask-review]: ../../REVIEW.md#262-supplied-word-cylinder-side-maskcandidate-correspondence-2026-11-10
 [native-tof-cylinder-side-minimum-review]: ../../REVIEW.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10
 [native-tof-cylinder-top-offset-review]: ../../REVIEW.md#264-supplied-word-cylinder-top-offset-expression-2026-11-10
+[native-tof-cylinder-top-division-review]: ../../REVIEW.md#265-guarded-supplied-word-cylinder-top-division-2026-11-10

@@ -2263,6 +2263,21 @@ geometry/coverage/clock/permission/admission proof; all eight flags false.
 See [actual controls and gate][native-tof-cylinder-side-division-review].
 
 
+#### Supplied-Word Cylinder Side-Altitude Expression (2026-11-10)
+
+`_native_tof_cylinder_side_altitude_residuals` reports exact unrounded supplied
+height+effective_distance*up and observed-minus-exact ratios. Finite raw distance
+used; otherwise effective +0, with raw/effective words and branch retained.
+<=32 cylinders/64 rays/two sides,8385 canonical words/32 characters, finite
+height/rays, other words non-NaN; existing4096-bit rational ceiling, <=8257 value
+calls/12288 binary operations/4096 entries. Nonfinite observations yield unknown
+residuals. Original signed words retained without host zero-tie adoption. No
+intake/read/hash/retention/replay/clock/RNG or matched-source composition. Product
+not separately captured: no isolated multiplication/addition rounding/FMA,
+uniform/numerical/physical/source/geometry/coverage/clock/permission/admission
+proof. All eight flags false; [actual controls and gate][native-tof-cylinder-side-altitude-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2277,3 +2292,4 @@ See [actual controls and gate][native-tof-cylinder-side-division-review].
 [native-tof-cylinder-root-squared-review]: ../../REVIEW.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10
 [native-tof-cylinder-side-numerator-review]: ../../REVIEW.md#259-supplied-word-cylinder-side-numerator-expressions-2026-11-10
 [native-tof-cylinder-side-division-review]: ../../REVIEW.md#260-supplied-word-cylinder-side-division-residuals-2026-11-10
+[native-tof-cylinder-side-altitude-review]: ../../REVIEW.md#261-supplied-word-cylinder-side-altitude-expression-2026-11-10

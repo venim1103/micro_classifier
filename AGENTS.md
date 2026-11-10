@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §260 for supplied-word side-division residuals and
-the latest source gate; §255 records the design-topic relocation. §§231-259
+Read [REVIEW.md][review] §261 for the supplied-word side-altitude expression and
+the latest source gate; §255 records the design-topic relocation. §§231-260
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement a bounded supplied-word side-altitude expression diagnostic with
-the native nonfinite-distance fallback, without primitive or geometry claims.
+Next implement bounded supplied-word side hit-mask/candidate correspondence,
+keeping predicates separate from candidate selection and geometry qualification.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

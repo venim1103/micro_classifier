@@ -502,6 +502,48 @@ coverage/clock/one-use/permission/admission or usable command. Next side altitud
 height+effective_distance*up with explicit native nonfinite-distance zero
 fallback; uncaptured product is not isolated multiplication/addition proof.
 
+## 261. Supplied-Word Cylinder Side-Altitude Expression (2026-11-10)
+
+Checkpoint `08015e2` pushed/clean. Native altitude is height+effective_distance*up
+with finite raw distance used, otherwise +0. Local hypothesis: bounded exact
+unrounded supplied-word expression and observed-minus-exact ratios, preserving
+raw/effective words and fallback branch. Product is not separately captured;
+no isolated multiplication/addition rounding/FMA or geometric claim follows.
+<=32 cylinders/64 rays/two sides,8385 canonical words/32 characters, finite
+height/rays, other words non-NaN, existing4096-bit rational ceiling, <=8257
+value calls/12288 binary operations/4096 entries. Nonfinite observations unknown;
+original signed words retained without host zero-tie adoption. No intake/read/
+hash/retention/replay/clock/RNG or matched-source composition.
+
+31 bounded synthetic controls, independent Fraction oracle <=12288 operations;
+actual nonempty setup <=1 geometry/selected intake,2 native intakes, otherwise
+no acquisition. ±inf distance fallback and deliberate fallback-result mismatch,
+negative distance/up, rounded/subnormal/large/nonfinite altitude, max32/empty and
+malformed/work ceilings. Three pytest positions including failures/aborts:
+first31/60 seconds, one necessary repair reserve, final root/300 seconds;
+retain `cylinder-261-*` logs. No old refunds/protected runs/task data/dependencies/
+hardware. All eight flags false, no primitive/FMA/uniform/numerical/physical/
+source/geometry/coverage/clock/one-use/permission/admission or usable command.
+Side mask/candidate correspondence remains next, independent of geometry.
+
+First31 passed,2902 deselected,0.52 s. Required root3856 passed,1 known
+transformer QDQ xfailed,71 warnings,86.87 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new side-
+altitude helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-261-focused-1.log`/
+`cylinder-261-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, finite/±inf-distance zero fallback,
+deliberate fallback-result mismatch, signed-zero/negative distance/up,
+rounded/subnormal/large/nonfinite altitude and malformed/work rejection agree
+with independent Fraction oracle within caps, leaving input/tick/RNG unchanged.
+All eight flags false, no primitive/FMA/uniform/numerical/physical/source/
+geometry/coverage/clock/one-use/permission/admission or usable command. Next
+side hit-mask/candidate correspondence: stored-word predicates separately from
+selection using observed hit, not a geometric intersection claim.
+
 ## Sources
 
 Hardware and tools:

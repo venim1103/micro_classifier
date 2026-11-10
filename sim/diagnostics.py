@@ -10037,6 +10037,144 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_side_altitude_residuals(
+    *,
+    mount_height_m_hex,
+    world_frame_unit_rays,
+    side_distance_m_hex,
+    side_altitude_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder side altitude residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder side altitude rational budget unsupported")
+    if (
+        type(side_distance_m_hex) is not tuple
+        or len(side_distance_m_hex) > 32
+        or type(side_altitude_m_hex) is not tuple
+        or len(side_altitude_m_hex) != len(side_distance_m_hex)
+    ):
+        raise ValueError("native cylinder side altitude obstacle count unsupported")
+
+    def decoded(words, size, finite_only):
+        if type(words) is not tuple or len(words) != size:
+            raise ValueError("native cylinder side altitude word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder side altitude word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder side altitude words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native cylinder side altitude words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    height = decoded((mount_height_m_hex,), 1, True)[0]
+    rays = decoded(world_frame_unit_rays, 192, True)
+    groups = []
+    for rows in (side_distance_m_hex, side_altitude_m_hex):
+        group = []
+        for sides in rows:
+            if type(sides) is not tuple or len(sides) != 2:
+                raise ValueError("native cylinder side altitude side count unsupported")
+            group.append(tuple(decoded(words, 64, False) for words in sides))
+        groups.append(group)
+    distances, altitudes = groups
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        base = arithmetic.value(height) if distances else None
+        ups = (
+            tuple(arithmetic.value(rays[index * 3 + 2]) for index in range(64))
+            if distances
+            else ()
+        )
+        for obstacle_index, sides in enumerate(distances):
+            for side_index, values in enumerate(sides):
+                for ray_index, distance in enumerate(values):
+                    finite = math.isfinite(distance)
+                    effective = distance if finite else 0.0
+                    exact = arithmetic.binary(
+                        base,
+                        arithmetic.binary(
+                            arithmetic.value(effective), ups[ray_index], "mul"
+                        ),
+                        "add",
+                    )
+                    observed = altitudes[obstacle_index][side_index][ray_index]
+                    residual = (
+                        arithmetic.binary(arithmetic.value(observed), exact, "sub")
+                        if math.isfinite(observed)
+                        else None
+                    )
+                    entries.append(
+                        {
+                            "obstacle_index": obstacle_index,
+                            "side_index": side_index,
+                            "sign": (-1, 1)[side_index],
+                            "ray_index": ray_index,
+                            "mount_height_hex": mount_height_m_hex,
+                            "up_hex": world_frame_unit_rays[ray_index * 3 + 2],
+                            "raw_distance_hex": side_distance_m_hex[obstacle_index][
+                                side_index
+                            ][ray_index],
+                            "effective_distance_hex": effective.hex(),
+                            "distance_branch": "finite_distance"
+                            if finite
+                            else "nonfinite_distance_zero_fallback",
+                            "observed_altitude_hex": side_altitude_m_hex[
+                                obstacle_index
+                            ][side_index][ray_index],
+                            "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                            "signed_residual_ratio": None
+                            if residual is None
+                            else residual.as_integer_ratio(),
+                            "status": "unknown_nonfinite_cylinder_side_altitude"
+                            if residual is None
+                            else "computed_exact_cylinder_side_altitude_expression_residual",
+                        }
+                    )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder side altitude rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-side-altitude-residuals/1",
+        "allowed_use": "offline_cylinder_side_altitude_word_diagnostics_only",
+        "status": "reported_cylinder_side_altitude_expression_residuals",
+        "comparison_basis": "unrounded_supplied_word_height_plus_effective_distance_times_up",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_side_division_residuals(
     *,
     horizontal_squared_hex,

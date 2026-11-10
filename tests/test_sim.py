@@ -23451,6 +23451,361 @@ def test_native_tof_cylinder_side_division_residuals(
     "case",
     (
         "actual",
+        "exact",
+        "rounded",
+        "mismatch",
+        "signed_zero",
+        "zero_distance",
+        "positive_inf_distance",
+        "negative_inf_distance",
+        "fallback_mismatch",
+        "negative_distance",
+        "negative_up",
+        "subnormal",
+        "large_finite",
+        "positive_inf_altitude",
+        "negative_inf_altitude",
+        "empty",
+        "max_obstacles",
+        "flag",
+        "shape",
+        "side_shape",
+        "ray_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_ray",
+        "finite_height",
+        "word_type",
+        "word_budget",
+        "budget",
+        "work_limit",
+        "bit_limit",
+    ),
+)
+def test_native_tof_cylinder_side_altitude_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "cylinder": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_cylinder = diagnostics._sample_simulator_native_tof_cylinder_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def cylinder_intake(*args, **kwargs):
+        setup["cylinder"] += 1
+        assert setup["cylinder"] <= 1
+        return original_cylinder(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_cylinder_source", cylinder_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "mount_height_m_hex": (1.0).hex(),
+        "world_frame_unit_rays": ((1.0).hex(),) * 192,
+        "side_distance_m_hex": ((((0.5).hex(),) * 64,) * 2,),
+        "side_altitude_m_hex": ((((1.5).hex(),) * 64,) * 2,),
+    }
+    if case == "actual":
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        trace = diagnostics._sample_simulator_native_tof_cylinder_source(
+            environment, owner._epoch
+        )["cylinder"]
+        assert len(trace["cylinders"]) == 1
+        arguments = {
+            "mount_height_m_hex": float(
+                trace["inputs"]["config"]["tof_mount_height"]
+            ).hex(),
+            "world_frame_unit_rays": trace["world_frame_unit_rays"],
+            "side_distance_m_hex": tuple(
+                tuple(side["distance_m"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+            "side_altitude_m_hex": tuple(
+                tuple(side["altitude_m"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+        }
+    elif case in ("rounded", "subnormal", "work_limit"):
+        arguments["side_distance_m_hex"] = (
+            (((2.0**-54 if case == "rounded" else math.ulp(0.0)).hex(),) * 64,) * 2,
+        )
+        arguments["side_altitude_m_hex"] = ((((1.0).hex(),) * 64,) * 2,)
+    elif case == "mismatch":
+        arguments["side_altitude_m_hex"] = ((((2.0).hex(),) * 64,) * 2,)
+    elif case == "signed_zero":
+        arguments["mount_height_m_hex"] = (-0.0).hex()
+        arguments["world_frame_unit_rays"] = ((-0.0).hex(),) * 192
+        arguments["side_distance_m_hex"] = arguments["side_altitude_m_hex"] = (
+            (((-0.0).hex(),) * 64,) * 2,
+        )
+    elif case in (
+        "zero_distance",
+        "positive_inf_distance",
+        "negative_inf_distance",
+        "fallback_mismatch",
+    ):
+        distance = {
+            "zero_distance": -0.0,
+            "positive_inf_distance": math.inf,
+            "negative_inf_distance": -math.inf,
+            "fallback_mismatch": math.inf,
+        }[case]
+        arguments["side_distance_m_hex"] = (((distance.hex(),) * 64,) * 2,)
+        arguments["side_altitude_m_hex"] = (
+            (((2.0 if case == "fallback_mismatch" else 1.0).hex(),) * 64,) * 2,
+        )
+    elif case in ("negative_distance", "negative_up"):
+        if case == "negative_distance":
+            arguments["side_distance_m_hex"] = ((((-0.5).hex(),) * 64,) * 2,)
+        else:
+            arguments["world_frame_unit_rays"] = (
+                (1.0).hex(),
+                (1.0).hex(),
+                (-1.0).hex(),
+            ) * 64
+        arguments["side_altitude_m_hex"] = ((((0.5).hex(),) * 64,) * 2,)
+    elif case in ("large_finite", "positive_inf_altitude", "negative_inf_altitude"):
+        maximum = float.fromhex("0x1.fffffffffffffp+1023")
+        arguments["side_distance_m_hex"] = (((maximum.hex(),) * 64,) * 2,)
+        arguments["side_altitude_m_hex"] = (((maximum.hex(),) * 64,) * 2,)
+        if case != "large_finite":
+            up = -2.0 if case == "negative_inf_altitude" else 2.0
+            arguments["world_frame_unit_rays"] = (
+                (1.0).hex(),
+                (1.0).hex(),
+                up.hex(),
+            ) * 64
+            arguments["side_altitude_m_hex"] = (
+                (("-inf" if up < 0 else "inf",) * 64,) * 2,
+            )
+    elif case in ("empty", "max_obstacles", "budget"):
+        for name in ("side_distance_m_hex", "side_altitude_m_hex"):
+            arguments[name] *= {"empty": 0, "max_obstacles": 32, "budget": 33}[case]
+    elif case == "shape":
+        arguments["side_altitude_m_hex"] = ((((1.5).hex(),) * 65,) * 2,)
+    elif case == "side_shape":
+        arguments["side_altitude_m_hex"] = (arguments["side_altitude_m_hex"][0] * 2,)
+    elif case == "ray_shape":
+        arguments["world_frame_unit_rays"] = arguments["world_frame_unit_rays"][:-1]
+    elif case in ("noncanonical", "overflow_word", "nan", "word_type", "word_budget"):
+        arguments["side_altitude_m_hex"] = (
+            (
+                (
+                    {
+                        "noncanonical": "1.5",
+                        "overflow_word": "0x1p+99999",
+                        "nan": "nan",
+                        "word_type": False,
+                        "word_budget": "0" * 33,
+                    }[case],
+                )
+                * 64,
+            )
+            * 2,
+        )
+    elif case == "finite_ray":
+        arguments["world_frame_unit_rays"] = ("inf",) * 192
+    elif case == "finite_height":
+        arguments["mount_height_m_hex"] = "inf"
+    before_arguments = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = {"values": 0, "binary": 0, "oracle": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 8257
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 12288
+        return original_binary(instance, left, right, operation)
+
+    def oracle(left, right, operation):
+        work["oracle"] += 1
+        assert work["oracle"] <= 12288
+        return (
+            left * right
+            if operation == "mul"
+            else left + right
+            if operation == "add"
+            else left - right
+        )
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder side altitude must not intake/read/retain/hash/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case in ("work_limit", "bit_limit"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            16 if case == "work_limit" else True,
+        )
+    for name in (
+        "_sample_simulator_native_tof_cylinder_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "side_shape",
+        "ray_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_ray",
+        "finite_height",
+        "word_type",
+        "word_budget",
+        "budget",
+        "work_limit",
+        "bit_limit",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_cylinder_side_altitude_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        if case != "work_limit":
+            assert work["values"] == work["binary"] == 0
+    else:
+        result = diagnostics._native_tof_cylinder_side_altitude_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert (
+            result["comparison_basis"]
+            == "unrounded_supplied_word_height_plus_effective_distance_times_up"
+        )
+        assert len(result["entries"]) == 128 * len(arguments["side_distance_m_hex"])
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for index, entry in enumerate(result["entries"]):
+            stage, ray_index = divmod(index, 64)
+            obstacle_index, side_index = divmod(stage, 2)
+            distance_word = arguments["side_distance_m_hex"][obstacle_index][
+                side_index
+            ][ray_index]
+            up_word = arguments["world_frame_unit_rays"][ray_index * 3 + 2]
+            observed_word = arguments["side_altitude_m_hex"][obstacle_index][
+                side_index
+            ][ray_index]
+            assert (
+                entry["obstacle_index"] == obstacle_index
+                and entry["ray_index"] == ray_index
+            )
+            assert (
+                entry["side_index"] == side_index
+                and entry["sign"] == (-1, 1)[side_index]
+            )
+            assert (
+                entry["mount_height_hex"] == arguments["mount_height_m_hex"]
+                and entry["up_hex"] == up_word
+            )
+            assert (
+                entry["raw_distance_hex"] == distance_word
+                and entry["observed_altitude_hex"] == observed_word
+            )
+            distance, up, observed = (
+                float.fromhex(word) for word in (distance_word, up_word, observed_word)
+            )
+            effective = distance if math.isfinite(distance) else 0.0
+            assert entry["effective_distance_hex"] == effective.hex()
+            assert entry["distance_branch"] == (
+                "finite_distance"
+                if math.isfinite(distance)
+                else "nonfinite_distance_zero_fallback"
+            )
+            height = Fraction.from_float(float.fromhex(arguments["mount_height_m_hex"]))
+            exact = oracle(
+                height,
+                oracle(Fraction.from_float(effective), Fraction.from_float(up), "mul"),
+                "add",
+            )
+            assert entry["exact_unrounded_expression_ratio"] == exact.as_integer_ratio()
+            if math.isfinite(observed):
+                residual = oracle(Fraction.from_float(observed), exact, "sub")
+                assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
+                assert (
+                    entry["status"]
+                    == "computed_exact_cylinder_side_altitude_expression_residual"
+                )
+                if case in ("rounded", "subnormal", "large_finite"):
+                    assert residual < 0
+                elif case in ("mismatch", "fallback_mismatch"):
+                    assert residual > 0
+                elif case != "actual":
+                    assert residual == 0
+            else:
+                assert entry["signed_residual_ratio"] is None
+                assert entry["status"] == "unknown_nonfinite_cylinder_side_altitude"
+    assert arguments == before_arguments and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "cylinder": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "cylinder": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "inside",
         "outside_distance",
         "outside_altitude",

@@ -502,6 +502,55 @@ Checkpoint administration: piping the diff through `head` under `pipefail`
 stopped before staging. Verified HEAD/index unchanged; resume staging directly,
 without repeating successful code gates or refunding any attempt.
 
+## 245. Matched Native ToF Wall Selection Diagnostics (2026-11-10)
+
+Checkpoint `3b6e6e8` pushed/clean. Local hypothesis: a separate literal-bool
+wall-selection diagnostic opt-in can derive mask/candidate/minimum checks from
+each matched delivered/pending wall record, preserving original three IDs and
+unresolved word ties. Requires wall inclusion, skips by default. Collect closing
+probes before typed live-history and outgoing comparisons; unknown omits payload.
+
+Extend the existing38-case matrix without increasing either old family's caps.
+New23-case family uses same setup<=4 steps/5 reads/3 geometry+retentions/6 setup
+clocks when combined; snapshot<=6 each matcher/diagnostic,2 pending matchers,
+4 queue copies/2 frame checks/64 bindings. Existing projection caps12378 rational
+values/12336 operations/6144 oracle operations remain; new mask/minimum helpers
+add no rational work. Each pair <=1603 canonical words,512 entries and existing
+fixed predicate/word checks. All old fixture caps/unknown attempts unchanged.
+Three pytest positions counting failures/aborts: first61 controls/60 seconds,
+one necessary repair reserve, final root/300 seconds. Retain `wall-245-*` logs.
+No read/retention/intake/step/reset/replay/clock/RNG during snapshot, no studies,
+new dependencies/downloads/models/hardware. All eight flags false, no geometry,
+coverage, physical/source/clock/numerical/permission/admission or usable command.
+
+First invocation:18 failed,43 passed,2545 deselected,28.86 s. New probe used
+nonexistent `inputs.bounds_m`; the existing closed packet and mask control use
+`inputs.scenario.bounds`. Repair that lookup only and rerun the same61 controls
+within the reserve. All38 original cases passed; failure/position/log retained,
+no schema/cap/assertion/tolerance change or historical attempt refund.
+
+Same61 passed,2545 deselected,11.58 s. Focused Ruff/format/whitespace passed.
+Required root:3529 passed,1 known transformer QDQ xfailed,71 warnings,91.51 s;
+root Ruff, changed-file format check and whitespace passed. All three pytest
+positions spent including first failure; no abort. Editor diagnostics clear;
+AST proves only owning snapshot and existing integration matrix changed, all
+other source/test nodes intact. Pylance resolved no method call sites: no static
+compatibility claim; runtime controls cover callers. No additional C/Arm/
+sanitizer/board opt-in gates ran; host checks do not qualify firmware/hardware.
+
+Moved all14 complete wall design sections and their14 reference definitions
+byte-for-byte from chapter01 into existing chapter02; source pointer/root map
+now locate them. Immediate conservation check passed, both original chapters
+retained under `wall-245-design-{1,2}-before.md` in the recovery directory.
+Chapter01 was2496 lines; relocation leaves2240 and chapter02 2321 before this
+checkpoint's new section. No old evidence/ledgers/Sources or accepted contracts
+changed; no successful code gate rerun for documentation. Logs/backups retained.
+
+All eight flags false, no adopted uniform/native error, geometry/coverage,
+physical/source/clock/permission/admission or usable command. Wall operation
+correspondence does not cover the final cylinder/scene reduction. Next advance
+actual cylinder arithmetic/source prerequisites without replay or qualification.
+
 ## Sources
 
 Hardware and tools:

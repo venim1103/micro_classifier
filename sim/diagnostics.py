@@ -12976,6 +12976,7 @@ class _SyntheticC1SourceRecorder:
         include_wall=False,
         include_wall_residuals=False,
         include_wall_projection_residuals=False,
+        include_wall_selection_diagnostics=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -12999,6 +13000,14 @@ class _SyntheticC1SourceRecorder:
         if include_wall_projection_residuals and not include_wall:
             raise ValueError(
                 "include_wall_projection_residuals requires include_wall=True"
+            )
+        if type(include_wall_selection_diagnostics) is not bool:
+            raise ValueError(
+                "include_wall_selection_diagnostics must be a literal bool"
+            )
+        if include_wall_selection_diagnostics and not include_wall:
+            raise ValueError(
+                "include_wall_selection_diagnostics requires include_wall=True"
             )
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
@@ -13195,6 +13204,40 @@ class _SyntheticC1SourceRecorder:
                 ),
             }
 
+        def wall_selection_probe(record):
+            trace = record["wall"]
+            walls = trace["walls"]
+            candidates = tuple(wall["candidate_m"] for wall in walls)
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "mask_candidate": _native_tof_wall_mask_candidate_diagnostics(
+                    wall_height_m_hex=float(
+                        trace["inputs"]["config"]["wall_height"]
+                    ).hex(),
+                    bounds_m_hex=tuple(
+                        float(value).hex()
+                        for value in trace["inputs"]["scenario"]["bounds"]
+                    ),
+                    distance_m_hex=tuple(wall["distance_m"] for wall in walls),
+                    altitude_m_hex=tuple(wall["altitude_m"] for wall in walls),
+                    across_m_hex=tuple(wall["across_m"] for wall in walls),
+                    hit_masks=tuple(wall["hit"] for wall in walls),
+                    candidate_m_hex=candidates,
+                    synthetic_test_only=True,
+                ),
+                "minimum": _native_tof_wall_minimum_diagnostics(
+                    floor_candidate_ranges_m=trace["floor_candidate_ranges_m"],
+                    candidate_m_hex=candidates,
+                    minimum_after_m_hex=tuple(
+                        wall["minimum_after_m"] for wall in walls
+                    ),
+                    synthetic_test_only=True,
+                ),
+            }
+
         try:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
@@ -13347,6 +13390,13 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_wall_selection_diagnostics:
+                wall_selection_diagnostics = wall_selection_probe(wall)
+                pending_wall_selection_diagnostics = (
+                    tuple(wall_selection_probe(record) for record in pending_wall)
+                    if include_pending_sources
+                    else ()
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -13453,6 +13503,13 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_wall_selection_diagnostics:
+                wall_selection_diagnostics_after = wall_selection_probe(wall_after)
+                pending_wall_selection_diagnostics_after = (
+                    tuple(wall_selection_probe(record) for record in pending_wall_after)
+                    if include_pending_sources
+                    else ()
+                )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_timing or include_selection or include_wall:
@@ -13547,6 +13604,18 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_wall_selection_diagnostics and (
+                not _native_tof_word_copy_matches(
+                    wall_selection_diagnostics, wall_selection_diagnostics_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_wall_selection_diagnostics,
+                    pending_wall_selection_diagnostics_after,
+                )
+            ):
+                raise ValueError(
+                    "native ToF wall selection source or outgoing records changed"
+                )
             if include_wall_projection_residuals and (
                 not _native_tof_word_copy_matches(
                     wall_projection_residuals, wall_projection_residuals_after
@@ -13650,6 +13719,12 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_wall_projection_residuals"] = (
                     pending_wall_projection_residuals
+                )
+        if include_wall_selection_diagnostics:
+            result["wall_selection_diagnostics"] = wall_selection_diagnostics
+            if include_pending_sources:
+                result["pending_wall_selection_diagnostics"] = (
+                    pending_wall_selection_diagnostics
                 )
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals

@@ -20413,9 +20413,9 @@ def test_native_tof_wall_division_residuals(
 
 
 @pytest.mark.parametrize(
-    ("projection", "case"),
+    ("projection", "case", "checks"),
     [
-        (projection, case)
+        (projection, case, False)
         for projection in (False, True)
         for case in (
             "copy",
@@ -20438,10 +20438,38 @@ def test_native_tof_wall_division_residuals(
             "late_norm",
         )
     ]
-    + [(True, "late_projection"), (True, "projection_only")],
+    + [(True, "late_projection", False), (True, "projection_only", False)]
+    + [
+        (True, case, True)
+        for case in (
+            "copy",
+            "default",
+            "flag",
+            "dependency",
+            "missing",
+            "delivered_only",
+            "held",
+            "late_offset",
+            "late_division",
+            "late_timing",
+            "late_selection",
+            "late_pending",
+            "late_wall",
+            "late_owner",
+            "late_budget",
+            "work_limit",
+            "combined",
+            "late_norm",
+            "late_projection",
+            "projection_only",
+            "late_mask",
+            "late_minimum",
+            "selection_only",
+        )
+    ],
 )
 def test_native_tof_wall_residual_snapshot(
-    monkeypatch, c1_motion_receipt_source_fixture, projection, case
+    monkeypatch, c1_motion_receipt_source_fixture, projection, case, checks
 ):
     from fractions import Fraction
 
@@ -20458,6 +20486,8 @@ def test_native_tof_wall_residual_snapshot(
             "offset",
             "division",
             "projection",
+            "mask",
+            "minimum",
             "wall",
             "selection",
             "timing",
@@ -20537,6 +20567,8 @@ def test_native_tof_wall_residual_snapshot(
         "offset": diagnostics._native_tof_wall_offset_residuals,
         "division": diagnostics._native_tof_wall_division_residuals,
         "projection": diagnostics._native_tof_wall_projection_residuals,
+        "mask": diagnostics._native_tof_wall_mask_candidate_diagnostics,
+        "minimum": diagnostics._native_tof_wall_minimum_diagnostics,
         "wall": diagnostics._match_native_tof_retained_wall,
         "selection": diagnostics._match_native_tof_retained_selection,
         "timing": diagnostics._match_native_tof_retained_timing,
@@ -20555,7 +20587,8 @@ def test_native_tof_wall_residual_snapshot(
         actual = originals[name](*args, **kwargs)
         outgoing.setdefault(name, actual)
         if (
-            name == ("projection" if projection else "division")
+            name
+            == ("minimum" if checks else "projection" if projection else "division")
             and work[name] == closing_count
         ):
             if case in ("late_offset", "late_division"):
@@ -20566,6 +20599,11 @@ def test_native_tof_wall_residual_snapshot(
                 target = outgoing["projection"]["entries"][0]["altitude"]
                 numerator, denominator = target["signed_residual_ratio"]
                 target["signed_residual_ratio"] = (numerator ^ 1, denominator)
+            elif case == "late_mask":
+                outgoing["mask"]["mask_mismatch_count"] ^= 1
+            elif case == "late_minimum":
+                target = outgoing["minimum"]["entries"][0]
+                target["minimum_value_matches"] = not target["minimum_value_matches"]
             elif case == "late_timing":
                 outgoing["timing"]["clock"]["begin_ns"] += 1
                 outgoing["timing"]["clock"]["end_ns"] += 1
@@ -20620,6 +20658,8 @@ def test_native_tof_wall_residual_snapshot(
         ("offset", "_native_tof_wall_offset_residuals"),
         ("division", "_native_tof_wall_division_residuals"),
         ("projection", "_native_tof_wall_projection_residuals"),
+        ("mask", "_native_tof_wall_mask_candidate_diagnostics"),
+        ("minimum", "_native_tof_wall_minimum_diagnostics"),
         ("wall", "_match_native_tof_retained_wall"),
         ("selection", "_match_native_tof_retained_selection"),
         ("timing", "_match_native_tof_retained_timing"),
@@ -20650,17 +20690,23 @@ def test_native_tof_wall_residual_snapshot(
     ):
         monkeypatch.setattr(diagnostics, name, forbidden)
     if case in ("flag", "dependency"):
-        with pytest.raises(ValueError, match=r"include_wall(?:_projection)?_residuals"):
+        with pytest.raises(
+            ValueError,
+            match=r"include_wall(?:_projection)?_residuals|include_wall_selection_diagnostics",
+        ):
             owner.snapshot_native_tof_delivery(
                 synthetic_test_only=True,
                 include_wall=case != "dependency",
                 include_wall_residuals=False
-                if projection
+                if projection or checks
                 else 1
                 if case == "flag"
                 else True,
                 include_wall_projection_residuals=(1 if case == "flag" else True)
-                if projection
+                if projection and not checks
+                else False,
+                include_wall_selection_diagnostics=(1 if case == "flag" else True)
+                if checks
                 else False,
             )
     else:
@@ -20668,8 +20714,11 @@ def test_native_tof_wall_residual_snapshot(
             synthetic_test_only=True,
             include_pending_sources=case != "delivered_only",
             include_wall=True,
-            include_wall_residuals=case not in ("default", "projection_only"),
-            include_wall_projection_residuals=projection and case != "default",
+            include_wall_residuals=case
+            not in ("default", "projection_only", "selection_only"),
+            include_wall_projection_residuals=projection
+            and case not in ("default", "selection_only"),
+            include_wall_selection_diagnostics=checks and case != "default",
             include_timing=combined,
             include_selection=combined,
             include_direction_norm_residuals=combined,
@@ -20685,6 +20734,10 @@ def test_native_tof_wall_residual_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
+        if not checks:
+            assert "wall_selection_diagnostics" not in result
+            assert "pending_wall_selection_diagnostics" not in result
+            assert work["mask"] == work["minimum"] == 0
         if not projection:
             assert (
                 "wall_projection_residuals" not in result
@@ -20698,6 +20751,7 @@ def test_native_tof_wall_residual_snapshot(
             "held",
             "combined",
             "projection_only",
+            "selection_only",
         ):
             assert result["snapshot_available"] is True, result["reason"]
             assert result["frame"] == before_frame
@@ -20708,13 +20762,18 @@ def test_native_tof_wall_residual_snapshot(
                 )
                 assert work["offset"] == work["division"] == 0
                 assert work["projection"] == 0
+                assert work["mask"] == work["minimum"] == 0
+                assert "wall_selection_diagnostics" not in result
+                assert "pending_wall_selection_diagnostics" not in result
                 assert (
                     "wall_projection_residuals" not in result
                     and "pending_wall_projection_residuals" not in result
                 )
             else:
                 field = (
-                    "wall_projection_residuals"
+                    "wall_selection_diagnostics"
+                    if case == "selection_only"
+                    else "wall_projection_residuals"
                     if case == "projection_only"
                     else "wall_residuals"
                 )
@@ -20740,10 +20799,10 @@ def test_native_tof_wall_residual_snapshot(
                             *result.get("pending_wall_projection_residuals", ()),
                         )
                     }
-                    if projection
+                    if projection and case != "selection_only"
                     else {}
                 )
-                if case == "projection_only":
+                if case in ("projection_only", "selection_only"):
                     assert (
                         "wall_residuals" not in result
                         and "pending_wall_residuals" not in result
@@ -20752,7 +20811,7 @@ def test_native_tof_wall_residual_snapshot(
                 for diagnostic, record, source in pairs:
                     for key in ("source_epoch", "tick", "delivery_tick"):
                         assert diagnostic[key] == record[key] == source[key]
-                    if case != "projection_only":
+                    if case not in ("projection_only", "selection_only"):
                         assert all(
                             diagnostic[kind][flag] is False
                             for kind in ("offset", "division")
@@ -20796,7 +20855,51 @@ def test_native_tof_wall_residual_snapshot(
                                         Fraction.from_float(observed) - exact
                                     ).as_integer_ratio()
                                 )
-                    if projection:
+                    if checks:
+                        selected = next(
+                            entry
+                            for entry in (
+                                result["wall_selection_diagnostics"],
+                                *result.get("pending_wall_selection_diagnostics", ()),
+                            )
+                            if entry["tick"] == source["tick"]
+                        )
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert selected[key] == source[key]
+                        for kind in ("mask_candidate", "minimum"):
+                            assert all(selected[kind][flag] is False for flag in flags)
+                            assert len(selected[kind]["entries"]) == 256
+                        assert selected["mask_candidate"]["mask_mismatch_count"] == 0
+                        assert (
+                            selected["mask_candidate"]["candidate_mismatch_count"] == 0
+                        )
+                        minimum = selected["minimum"]
+                        assert (
+                            minimum["word_mismatch_count"]
+                            == minimum["value_mismatch_count"]
+                            == 0
+                        )
+                        assert minimum["unresolved_word_count"] == sum(
+                            entry["minimum_word_matches"] is None
+                            for entry in minimum["entries"]
+                        )
+                        for entry in minimum["entries"]:
+                            index, ray = entry["wall_index"], entry["ray_index"]
+                            previous = (
+                                record["wall"]["floor_candidate_ranges_m"]
+                                if index == 0
+                                else walls[index - 1]["minimum_after_m"]
+                            )
+                            assert entry["previous_hex"] == previous[ray]
+                            assert (
+                                entry["candidate_hex"]
+                                == walls[index]["candidate_m"][ray]
+                            )
+                            assert (
+                                entry["observed_minimum_hex"]
+                                == walls[index]["minimum_after_m"][ray]
+                            )
+                    if projection and case != "selection_only":
                         projected = projections[source["tick"]]
                         for key in ("source_epoch", "tick", "delivery_tick"):
                             assert projected[key] == source[key]
@@ -20868,7 +20971,17 @@ def test_native_tof_wall_residual_snapshot(
                         ]
                         is False
                     )
-                if projection:
+                if checks:
+                    result["wall_selection_diagnostics"]["minimum"]["entries"][0][
+                        "observed_minimum_hex"
+                    ] = "changed"
+                    assert (
+                        owner._tof_wall_history[0]["wall"]["walls"][0][
+                            "minimum_after_m"
+                        ][0]
+                        != "changed"
+                    )
+                elif projection:
                     result["wall_projection_residuals"]["diagnostic"]["entries"][0][
                         "altitude"
                     ]["observed_hex"] = "changed"
@@ -20898,6 +21011,8 @@ def test_native_tof_wall_residual_snapshot(
                     "pending_wall_residuals",
                     "wall_projection_residuals",
                     "pending_wall_projection_residuals",
+                    "wall_selection_diagnostics",
+                    "pending_wall_selection_diagnostics",
                     "pending_sources",
                     "selection",
                     "pending_selection",

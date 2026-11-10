@@ -2438,6 +2438,21 @@ coverage/clock/one-use/permission/admission or usable command. See
 [actual controls and gate][native-tof-cylinder-matched-horizontal-review].
 
 
+#### Matched Retained Cylinder Discriminant Residuals (2026-11-10)
+
+`snapshot_native_tof_delivery(include_cylinder_discriminant_residuals=True)`
+requires literal bool and `include_cylinder=True`; default skips discriminant
+arithmetic. Matched delivered/pending epoch/tick/delivery identities and
+independent closing checks remain. Existing supplied-word combined-expression
+discrepancy is not isolated primitive/FMA or geometry evidence. <=32 cylinders/
+4256 words/2048 entries/4256 values/8352 binary operations per helper,4096-bit
+ceiling unchanged; <=18 invocations across original/closing delivered/<=8 pending
+records. Nonfinite observation residual stays unknown; unsupported nonfinite
+operands still reject. All eight flags false, no uniform/numerical/physical/source/
+coverage/clock/one-use/permission/admission or usable command. See
+[actual controls, failed root and revalidation][native-tof-cylinder-matched-discriminant-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2466,3 +2481,4 @@ coverage/clock/one-use/permission/admission or usable command. See
 [native-tof-cylinder-matched-offset-review]: ../../REVIEW.md#272-matched-retained-cylinder-offset-residuals-2026-11-10
 [native-tof-cylinder-matched-projection-review]: ../../REVIEW.md#273-matched-retained-cylinder-projection-residuals-2026-11-10
 [native-tof-cylinder-matched-horizontal-review]: ../../REVIEW.md#275-matched-retained-cylinder-horizontal-norm-residuals-2026-11-10
+[native-tof-cylinder-matched-discriminant-review]: ../../REVIEW.md#276-matched-retained-cylinder-discriminant-residuals-2026-11-10

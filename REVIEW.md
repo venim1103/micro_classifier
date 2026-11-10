@@ -557,6 +557,68 @@ tick/frame/RNG preservation verified. All eight flags false; no uniform/numerica
 physical/source/geometry/coverage/clock/one-use/permission/admission evidence or
 usable command. Next matched discriminant discrepancy as an independent report.
 
+## 276. Matched Retained Cylinder Discriminant Residuals (2026-11-10)
+
+Checkpoint `d74dbd5` pushed/clean. Existing supplied-word helper owns unrounded
+projection^2-horizontal_squared*(offset norm-radius^2) discrepancy, not isolated
+primitive or geometry qualification. Hypothesis: matched original/closing cylinder
+records can compose that report with original epoch/acquisition/delivery identities
+and all existing closing checks. Literal default-off
+`include_cylinder_discriminant_residuals` requires `include_cylinder=True`.
+Existing <=32 cylinders/4256 words/2048 entries/4256 values/8352 binary operations
+per helper,4096-bit ceiling unchanged; <=18 invocations across original/closing
+delivered/<=8 pending records. Nonfinite observation residual stays unknown;
+unsupported nonfinite supplied operands still reject conservatively.
+
+Finite routine plan: reuse23-case arithmetic family in four modes,92 controls;
+prior mode caps unchanged. New discriminant fixtures <=3522 values/4662 binary/
+3132 exact oracle operations including combined existing norm/projection/offset/
+selection reports, <=6 calls each included helper. Per mode <=4 steps/5 reads/3
+geometries/3 retentions/6 cylinder matches/2 pending matches/64 digests, no runtime
+intake/read/retain/step/reset/replay/clock. Empty/one/two fixtures, exact base/dot/
+discriminant oracles, default/dependency/held/delivered/detachment, nonzero or
+unknown observed residual, missing/malformed/late output/pending/native/cylinder/
+owner/budget and bit exhaustion; preserve tick/frame/both RNGs. Three pytest
+positions including failures/aborts: first92/60 seconds, one necessary repair
+reserve, final root/300 seconds; retain `cylinder-276-*` logs. No historical refunds/
+protected studies/task data/dependencies/hardware; all eight flags false, no
+uniform/numerical/physical/source/geometry/coverage/clock/one-use/permission/
+admission or usable command. Next independent matched root-squared consistency.
+
+First92 passed,3260 deselected,26.53 s. Initial required root1 failed,4274
+passed,1 known transformer QDQ xfailed,71 warnings,138.56 s. Failure is unchanged
+`test_build_audit_timeout_terminates_descendants[timeout]`, test line1923:
+`status.exists()` then `/proc/171341/stat` read raised `ProcessLookupError` as
+the descendant disappeared. Primary log retains the traceback; this is the same
+exists/read race family retained in §251, not a discriminant failure or proof of
+a fixed cleanup test. No unrelated source/test edit, tolerance/assertion change
+or old-budget refund. Root Ruff/format/diff tail did not execute after failure;
+narrow style and editor/Pylance syntax already passed. Caller query returned no
+sites, not compatibility proof; AST preserves original23 cases and all nodes/
+parameters outside the changed snapshot method and arithmetic family.
+
+Narrow routine-plan revision: use the one unused necessary-repair reserve for
+one required root revalidation/300 seconds plus original style/diff gates. Three
+pytest positions total unchanged, first focus and failed root spent, no extra
+focused invocation or retry beyond this remaining position. Retain both root
+logs, diagnose any new failure; no protected experiments or additional opt-ins.
+
+Single remaining root revalidation4275 passed,1 known transformer QDQ xfailed,
+71 warnings,123.90 s; root Ruff, changed-file format check and whitespace passed.
+Unrelated audit source/test confirmed unchanged. All three pytest positions
+spent including failed root, no aborts; no further check position or historical
+refund. Logs `cylinder-276-focused-1.log`/`cylinder-276-root-1.log`/
+`cylinder-276-root-2.log` retained under recovery directory. Successful
+revalidation does not fix or erase the race. No additional C/Arm/sanitizer/board
+opt-in gates ran.
+
+Exact supplied-word discriminant oracle, nonzero/unknown observed residuals,
+unchanged prior mode caps, combined independent reports, default skipped work,
+late-change suppression, conservative bit exhaustion and tick/frame/RNG preserved.
+All eight flags false; no uniform/numerical/physical/source/geometry/coverage/
+clock/one-use/permission/admission or usable command. Next independent matched
+root-squared consistency; archive whole266-270 before further root-review growth.
+
 ## Sources
 
 Hardware and tools:

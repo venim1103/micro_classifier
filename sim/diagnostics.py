@@ -10037,6 +10037,154 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_side_division_residuals(
+    *,
+    horizontal_squared_hex,
+    side_numerator_m_hex,
+    side_distance_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder side division residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder side division rational budget unsupported")
+    if (
+        type(side_numerator_m_hex) is not tuple
+        or len(side_numerator_m_hex) > 32
+        or type(side_distance_m_hex) is not tuple
+        or len(side_distance_m_hex) != len(side_numerator_m_hex)
+    ):
+        raise ValueError("native cylinder side division obstacle count unsupported")
+
+    def decoded(words, finite_only):
+        if type(words) is not tuple or len(words) != 64:
+            raise ValueError("native cylinder side division word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder side division word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder side division words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native cylinder side division words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    horizontal = decoded(horizontal_squared_hex, True)
+    groups = []
+    for rows in (side_numerator_m_hex, side_distance_m_hex):
+        group = []
+        for sides in rows:
+            if type(sides) is not tuple or len(sides) != 2:
+                raise ValueError("native cylinder side division side count unsupported")
+            group.append(tuple(decoded(words, False) for words in sides))
+        groups.append(group)
+    numerators, distances = groups
+    for sides in distances:
+        if any(
+            horizontal[ray_index] <= 0 and value != math.inf
+            for values in sides
+            for ray_index, value in enumerate(values)
+        ):
+            raise ValueError(
+                "native cylinder side division branch correspondence mismatch"
+            )
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        denominators = (
+            tuple(
+                arithmetic.value(value) if value > 0 else None for value in horizontal
+            )
+            if numerators
+            else ()
+        )
+        for obstacle_index, sides in enumerate(numerators):
+            for side_index, values in enumerate(sides):
+                for ray_index, numerator in enumerate(values):
+                    observed = distances[obstacle_index][side_index][ray_index]
+                    quotient = residual = None
+                    if horizontal[ray_index] <= 0:
+                        status = "not_divided_nonpositive_horizontal"
+                    elif not math.isfinite(numerator):
+                        status = "unknown_nonfinite_cylinder_side_numerator"
+                    else:
+                        quotient = arithmetic.binary(
+                            arithmetic.value(numerator), denominators[ray_index], "div"
+                        )
+                        residual = (
+                            arithmetic.binary(
+                                arithmetic.value(observed), quotient, "sub"
+                            )
+                            if math.isfinite(observed)
+                            else None
+                        )
+                        status = (
+                            "unknown_nonfinite_cylinder_side_distance"
+                            if residual is None
+                            else "computed_exact_cylinder_side_division_word_residual"
+                        )
+                    entries.append(
+                        {
+                            "obstacle_index": obstacle_index,
+                            "side_index": side_index,
+                            "sign": (-1, 1)[side_index],
+                            "ray_index": ray_index,
+                            "numerator_hex": side_numerator_m_hex[obstacle_index][
+                                side_index
+                            ][ray_index],
+                            "horizontal_squared_hex": horizontal_squared_hex[ray_index],
+                            "observed_distance_hex": side_distance_m_hex[
+                                obstacle_index
+                            ][side_index][ray_index],
+                            "exact_quotient_ratio": None
+                            if quotient is None
+                            else quotient.as_integer_ratio(),
+                            "signed_residual_ratio": None
+                            if residual is None
+                            else residual.as_integer_ratio(),
+                            "status": status,
+                        }
+                    )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder side division rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-side-division-residuals/1",
+        "allowed_use": "offline_cylinder_side_division_word_diagnostics_only",
+        "status": "reported_cylinder_side_division_word_residuals",
+        "comparison_basis": "supplied_side_numerator_divided_by_positive_horizontal_squared",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_side_numerator_residuals(
     *, projection_m_hex, root_m_hex, side_numerator_m_hex, synthetic_test_only=False
 ):

@@ -2248,6 +2248,21 @@ uniform/numerical/physical/source/coverage/clock/permission/admission proof.
 All eight flags false; [actual controls and gate][native-tof-cylinder-side-numerator-review].
 
 
+#### Supplied-Word Cylinder Side-Division Residuals (2026-11-10)
+
+`_native_tof_cylinder_side_division_residuals` checks nonpositive-horizontal
+bypass output +inf before rational work, then reports exact finite-operand
+numerator/horizontal_squared and observed-minus-exact ratios. Nonfinite numerator
+or distance stays unknown; matching infinity is not a finite intersection or
+geometric branch evidence. <=32 cylinders/64 rays/two sides,8256 canonical
+words/32 characters, finite horizontal operands, other words non-NaN; existing
+4096-bit rational ceiling, <=8256 value calls/8192 binary operations/4096
+entries. No division in bypass, no intake/read/hash/retention/replay/clock/RNG or
+matched-source composition. No primitive/uniform/numerical/physical/source/
+geometry/coverage/clock/permission/admission proof; all eight flags false.
+See [actual controls and gate][native-tof-cylinder-side-division-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2261,3 +2276,4 @@ All eight flags false; [actual controls and gate][native-tof-cylinder-side-numer
 [native-tof-cylinder-discriminant-review]: ../../REVIEW.md#257-supplied-word-cylinder-discriminant-expression-2026-11-10
 [native-tof-cylinder-root-squared-review]: ../../REVIEW.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10
 [native-tof-cylinder-side-numerator-review]: ../../REVIEW.md#259-supplied-word-cylinder-side-numerator-expressions-2026-11-10
+[native-tof-cylinder-side-division-review]: ../../REVIEW.md#260-supplied-word-cylinder-side-division-residuals-2026-11-10

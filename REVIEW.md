@@ -460,6 +460,48 @@ uniform/numerical/physical/source/geometry/coverage/clock/one-use/permission/
 admission or usable command. Next side division with explicit native nonpositive-
 horizontal bypass; matching infinity is not a finite intersection.
 
+## 260. Supplied-Word Cylinder Side-Division Residuals (2026-11-10)
+
+Checkpoint `e9ec74b` pushed/clean. Native side divide executes only where
+horizontal_squared>0; otherwise output +inf. Local hypothesis: preflight exact
+bypass words before rational work, then report finite-operand quotient and
+observed-minus-exact residual; nonfinite numerator/distance stays unknown.
+Matching infinity is not a finite intersection or geometric branch evidence.
+<=32 cylinders/64 rays/two ordered sides,8256 canonical words/32 characters;
+finite horizontal operands, other words non-NaN, existing4096-bit rational
+ceiling, <=8256 value calls/8192 binary operations/4096 entries. Shared positive
+denominators only, no division for nonpositive horizontal words. No intake/read/
+hash/retention/replay/clock/RNG or matched-source composition.
+
+31 bounded synthetic controls, independent Fraction oracle <=8192 operations;
+actual nonempty setup <=1 geometry/selected intake,2 native intakes, otherwise
+no acquisition. Zero/-zero/negative-horizontal bypass, finite and negative-inf
+bypass mismatch rejected before arithmetic; opposite rounded residuals,
+subnormal/large/nonfinite numerator-distance, max32/empty and malformed/work
+ceilings. Three pytest positions including failures/aborts: first31/60 seconds,
+one necessary repair reserve, final root/300 seconds; retain `cylinder-260-*`
+logs. No prior refunds/protected runs/task data/dependencies/hardware. All eight
+flags false, no primitive/uniform/numerical/physical/source/geometry/coverage/
+clock/one-use/permission/admission or usable command. Side altitude remains next.
+
+First31 passed,2871 deselected,2.81 s. Required root3825 passed,1 known
+transformer QDQ xfailed,71 warnings,86.81 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new side-
+division helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-260-focused-1.log`/
+`cylinder-260-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, both signs, opposite rounded residuals,
+zero/-zero/negative-horizontal bypass with zero rational work, malformed bypass
+pre-arithmetic rejection and subnormal/large/nonfinite controls agree with
+independent Fraction oracle within caps, leaving input/tick/RNG unchanged. All
+eight flags false, no primitive/uniform/numerical/physical/source/geometry/
+coverage/clock/one-use/permission/admission or usable command. Next side altitude
+height+effective_distance*up with explicit native nonfinite-distance zero
+fallback; uncaptured product is not isolated multiplication/addition proof.
+
 ## Sources
 
 Hardware and tools:

@@ -10037,6 +10037,145 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_top_radial_residuals(
+    *,
+    top_relative_m_hex,
+    radius_m_hex,
+    radial_squared_m2_hex,
+    radius_squared_m2_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder top radial residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder top radial rational budget unsupported")
+    if type(radius_m_hex) is not tuple or len(radius_m_hex) > 32:
+        raise ValueError("native cylinder top radial obstacle count unsupported")
+    count = len(radius_m_hex)
+    if any(
+        type(rows) is not tuple or len(rows) != count
+        for rows in (top_relative_m_hex, radial_squared_m2_hex, radius_squared_m2_hex)
+    ):
+        raise ValueError("native cylinder top radial obstacle count unsupported")
+
+    def decoded(words, size, finite_only):
+        if type(words) is not tuple or len(words) != size:
+            raise ValueError("native cylinder top radial word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder top radial word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder top radial words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native cylinder top radial words must be canonical")
+            values.append(value)
+        return values
+
+    radii = decoded(radius_m_hex, count, True)
+    relatives = tuple(decoded(words, 128, True) for words in top_relative_m_hex)
+    radius_squares = decoded(radius_squared_m2_hex, count, False)
+    radial_squares = tuple(decoded(words, 64, False) for words in radial_squared_m2_hex)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    radial_entries, radius_entries = [], []
+    try:
+        for obstacle_index, radius in enumerate(radii):
+            radius_value = arithmetic.value(radius)
+            exact = arithmetic.binary(radius_value, radius_value, "mul")
+            observed = radius_squares[obstacle_index]
+            residual = (
+                arithmetic.binary(arithmetic.value(observed), exact, "sub")
+                if math.isfinite(observed)
+                else None
+            )
+            radius_entries.append(
+                {
+                    "obstacle_index": obstacle_index,
+                    "radius_hex": radius_m_hex[obstacle_index],
+                    "observed_radius_squared_hex": radius_squared_m2_hex[
+                        obstacle_index
+                    ],
+                    "exact_square_ratio": exact.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": "unknown_nonfinite_cylinder_top_radius_squared"
+                    if residual is None
+                    else "computed_exact_cylinder_top_radius_squared_word_residual",
+                }
+            )
+            for ray_index, observed in enumerate(radial_squares[obstacle_index]):
+                relative = tuple(
+                    arithmetic.value(relatives[obstacle_index][ray_index * 2 + axis])
+                    for axis in range(2)
+                )
+                exact = arithmetic.binary(
+                    arithmetic.binary(relative[0], relative[0], "mul"),
+                    arithmetic.binary(relative[1], relative[1], "mul"),
+                    "add",
+                )
+                residual = (
+                    arithmetic.binary(arithmetic.value(observed), exact, "sub")
+                    if math.isfinite(observed)
+                    else None
+                )
+                radial_entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "ray_index": ray_index,
+                        "relative_xy_hex": top_relative_m_hex[obstacle_index][
+                            ray_index * 2 : ray_index * 2 + 2
+                        ],
+                        "observed_radial_squared_hex": radial_squared_m2_hex[
+                            obstacle_index
+                        ][ray_index],
+                        "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                        "signed_residual_ratio": None
+                        if residual is None
+                        else residual.as_integer_ratio(),
+                        "status": "unknown_nonfinite_cylinder_top_radial_squared"
+                        if residual is None
+                        else "computed_exact_cylinder_top_radial_squared_expression_residual",
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder top radial rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-top-radial-residuals/1",
+        "allowed_use": "offline_cylinder_top_radial_word_diagnostics_only",
+        "status": "reported_cylinder_top_radial_and_radius_word_residuals",
+        "comparison_basis": "independent_supplied_word_relative_sum_of_squares_and_radius_squared",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "radial_entries": tuple(radial_entries),
+        "radius_entries": tuple(radius_entries),
+    }
+
+
 def _native_tof_cylinder_top_relative_residuals(
     *,
     offset_m_hex,

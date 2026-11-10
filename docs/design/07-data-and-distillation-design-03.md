@@ -2351,6 +2351,22 @@ false, no primitive uniform/numerical/physical/source/geometry/coverage/clock/
 permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-relative-review].
 
 
+#### Independent Supplied-Word Cylinder Cap Square Expressions (2026-11-10)
+
+`_native_tof_cylinder_top_radial_residuals` reports exact supplied relative sum
+of squares and radius square in independent entry groups, with observed-minus-
+exact residuals. Finite supplied relative/radius operands, nonfinite observations
+unknown residual; signed words retained, no tie adoption. Negative radius can
+match arithmetic, not geometry. Intermediate relative squares uncaptured: no
+isolated multiply/add/FMA rounding for combined radial expression. <=32
+cylinders/64 rays/6208 canonical words/32 characters,4096-bit rational ceiling,
+<=6208 values/8256 binary operations/2048 radial+32 radius entries. All words
+preflight before rational work; exhaustion rejects without result. No predicate/
+selection/composition/intake/read/hash/retention/replay/clock/RNG. All eight flags
+false; no primitive uniform/numerical/physical/source/geometry/coverage/clock/
+permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-radial-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2371,3 +2387,4 @@ permission/admission proof. See [actual controls and gate][native-tof-cylinder-t
 [native-tof-cylinder-top-offset-review]: ../../REVIEW.md#264-supplied-word-cylinder-top-offset-expression-2026-11-10
 [native-tof-cylinder-top-division-review]: ../../REVIEW.md#265-guarded-supplied-word-cylinder-top-division-2026-11-10
 [native-tof-cylinder-top-relative-review]: ../../REVIEW.md#266-supplied-word-cylinder-top-relative-expression-2026-11-10
+[native-tof-cylinder-top-radial-review]: ../../REVIEW.md#267-independent-supplied-word-cylinder-cap-square-expressions-2026-11-10

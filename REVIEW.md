@@ -580,6 +580,53 @@ physical/source/geometry/coverage/clock/one-use/permission/admission or usable
 command. Next independently report relative.x^2+relative.y^2 and radius^2 from
 supplied words, keeping cap radial predicate and candidate selection separate.
 
+## 267. Independent Supplied-Word Cylinder Cap Square Expressions (2026-11-10)
+
+Checkpoint `915807f` pushed/clean. Native cap radial sum of relative squares and
+radius square feed a separate comparison. Hypothesis: report supplied-word
+unrounded relative.x^2+relative.y^2 and radius^2 in separate entry groups,
+observed-minus-exact residuals; nonfinite observation explicit unknown residual.
+Finite supplied relative/radius operands, signed words retained without tie
+adoption. Negative radius can match arithmetic but does not prove geometry.
+Intermediate relative squares uncaptured: no isolated multiply/add/FMA rounding
+claim for combined radial expression. <=32 cylinders/64 rays/6208 canonical
+words/32 characters,4096-bit rational ceiling, <=6208 values/8256 binary
+operations/2048 radial+32 radius entries. All words preflight before rational
+work; exhaustion rejects without result. No predicate/selection/composition,
+intake/read/hash/retention/replay/clock/RNG. All eight flags false, no primitive
+uniform/numerical/physical/source/geometry/coverage/clock/one-use/permission/
+admission or usable command.
+
+31 bounded synthetic controls, <=8256 oracle operations; actual nonempty setup
+<=1 geometry/selected intake,2 native intakes, otherwise none. Separate radial/
+radius faults, signed/negative-radius words, rounding/subnormal/finite extremes/
+overflow exact targets/nonfinite unknown, max32/empty and typed/ingress/binary
+rejection. Input/tick/RNG preserved. Three pytest positions including failures/
+aborts: first31/60 seconds, one necessary repair reserve, final root/300 seconds;
+retain `cylinder-267-*` logs. No old refunds/protected runs/task data/dependencies/
+hardware. Next cap stored-word hit-mask/candidate correspondence independently
+from arithmetic/geometry qualification, then conservative minimum words.
+
+First31 passed,3099 deselected,0.63 s. Required root4053 passed,1 known
+transformer QDQ xfailed,71 warnings,99.95 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new cap
+square helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-267-focused-1.log`/
+`cylinder-267-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, independent radial/radius faults, negative
+radius arithmetic (not geometry), signed words/rounding/subnormal/finite extremes/
+overflow exact targets/nonfinite unknown and typed/ingress/binary rejection
+verified within caps, input/tick/RNG unchanged. Max32 reaches6208 values/8256
+binary+oracle operations; source ceiling remains4096 bits. All eight flags false,
+no isolated relative-square multiply/add/FMA rounding, primitive uniform/
+numerical/physical/source/geometry/coverage/clock/one-use/permission/admission or
+usable command. Next cap stored predicates (distance>=0 and radial<=radius^2)
+separately from observed-hit candidate selection and conservative minimum words.
+Archive whole256-260 losslessly before further root review growth.
+
 ## Sources
 
 Hardware and tools:

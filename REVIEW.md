@@ -498,6 +498,43 @@ valid, no stale old cylinder target in tracked/unignored Markdown, whitespace
 clear. Only five docs changed; final chapters02/03 are2343/2204 lines. Code suite
 not rerun; §254 remains latest actual source gate. No failed/aborted check.
 
+## 256. Supplied Horizontal Squared-Ray Expression (2026-11-10)
+
+Checkpoint `027cec7` pushed/clean. Native owning path is `np.sum(directions**2,
+axis=-1)` immediately before cylinder projection/discriminant. Local hypothesis:
+report exact supplied ray.x²+ray.y² and observed-minus-exact discrepancy, not
+isolated primitive/FMA or normalization certification. Fixed64 rays, canonical
+preflight256 words/32 characters, finite rays/non-NaN observations (infinite
+observations unknown residual). Existing4096-bit rational ceiling, <=192 value
+calls/256 binary operations,64 entries; no source/recorder read/hash/replay/
+clock/RNG. No new physical/numerical bound or matched-source composition.
+
+20 synthetic cases in existing test file, actual nonempty source, rounded/
+signed-zero/subnormal/large/infinite observations and malformed/work budgets;
+Fraction oracle <=256 operations. Actual setup <=1 geometry/selected intake,
+2 native intakes, parent ledgers unchanged. Three pytest positions including
+failures/aborts: first20/60 seconds, one necessary repair reserve, final root/
+300 seconds; retain `cylinder-256-*` logs. No old refunds/protected runs/task
+data/dependencies/hardware. All eight flags false, no source/geometry/coverage/
+error/numerical/physical/clock/permission/admission or usable command.
+
+First20 passed,2778 deselected,3.00 s. Required root3721 passed,1 known
+transformer QDQ xfailed,71 warnings,88.03 s; root Ruff, changed-file format check
+and whitespace passed. Editor diagnostics clear. AST proves only new horizontal
+helper/test added; all prior source/test nodes intact, no existing signature
+changed. Two of three pytest positions used, no failures/aborts; unused reserve
+is not follow-on authority. Logs `cylinder-256-focused-1.log`/
+`cylinder-256-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty trace, supplied-word rounded/mismatch/signed-zero/subnormal/
+large/infinite observations and preflight/work-budget rejection agree with
+independent Fraction oracle within caps, leaving input/tick/RNG unchanged. All
+eight flags false, no source/geometry/coverage/normalization/isolated primitive/
+FMA/uniform error/numerical/physical/clock/one-use/permission/admission or usable
+command. Next bounded combined supplied-word discriminant expression; inner
+products/subexpressions remain uncaptured, not qualified by matching words.
+
 ## Sources
 
 Hardware and tools:

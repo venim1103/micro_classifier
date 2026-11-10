@@ -21927,6 +21927,270 @@ def test_native_tof_cylinder_projection_residuals(
     "case",
     (
         "actual",
+        "exact",
+        "rounded",
+        "mismatch",
+        "signed_zero",
+        "subnormal",
+        "large_finite",
+        "positive_inf",
+        "negative_inf",
+        "flag",
+        "shape",
+        "ray_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_ray",
+        "word_type",
+        "word_budget",
+        "work_limit",
+        "bit_limit",
+    ),
+)
+def test_native_tof_cylinder_horizontal_norm_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "cylinder": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_cylinder = diagnostics._sample_simulator_native_tof_cylinder_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def cylinder_intake(*args, **kwargs):
+        setup["cylinder"] += 1
+        assert setup["cylinder"] <= 1
+        return original_cylinder(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_cylinder_source", cylinder_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "world_frame_unit_rays": ((1.0).hex(),) * 192,
+        "horizontal_squared_hex": ((2.0).hex(),) * 64,
+    }
+    if case == "actual":
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        trace = diagnostics._sample_simulator_native_tof_cylinder_source(
+            environment, owner._epoch
+        )["cylinder"]
+        assert len(trace["cylinders"]) == 1
+        arguments = {
+            "world_frame_unit_rays": trace["world_frame_unit_rays"],
+            "horizontal_squared_hex": trace["horizontal_squared"],
+        }
+    elif case == "rounded":
+        arguments["world_frame_unit_rays"] = (
+            (1.0).hex(),
+            (2.0**-27).hex(),
+            (0.0).hex(),
+        ) * 64
+        arguments["horizontal_squared_hex"] = ((1.0).hex(),) * 64
+    elif case == "mismatch":
+        arguments["horizontal_squared_hex"] = ((3.0).hex(),) * 64
+    elif case == "signed_zero":
+        arguments["world_frame_unit_rays"] = (
+            (-0.0).hex(),
+            (0.0).hex(),
+            (0.0).hex(),
+        ) * 64
+        arguments["horizontal_squared_hex"] = ((-0.0).hex(),) * 64
+    elif case in ("subnormal", "work_limit"):
+        arguments["world_frame_unit_rays"] = (
+            math.ulp(0.0).hex(),
+            (0.0).hex(),
+            (0.0).hex(),
+        ) * 64
+        arguments["horizontal_squared_hex"] = ((0.0).hex(),) * 64
+    elif case == "large_finite":
+        maximum = float.fromhex("0x1.fffffffffffffp+1023").hex()
+        arguments["world_frame_unit_rays"] = (maximum, (0.0).hex(), (0.0).hex()) * 64
+        arguments["horizontal_squared_hex"] = (maximum,) * 64
+    elif case in ("positive_inf", "negative_inf"):
+        arguments["horizontal_squared_hex"] = (
+            "inf" if case == "positive_inf" else "-inf",
+        ) * 64
+    elif case == "shape":
+        arguments["horizontal_squared_hex"] = arguments["horizontal_squared_hex"][:-1]
+    elif case == "ray_shape":
+        arguments["world_frame_unit_rays"] = arguments["world_frame_unit_rays"][:-1]
+    elif case in ("noncanonical", "overflow_word", "nan", "word_type", "word_budget"):
+        arguments["horizontal_squared_hex"] = (
+            {
+                "noncanonical": "2.0",
+                "overflow_word": "0x1p+99999",
+                "nan": "nan",
+                "word_type": False,
+                "word_budget": "0" * 33,
+            }[case],
+        ) * 64
+    elif case == "finite_ray":
+        arguments["world_frame_unit_rays"] = ("inf",) * 192
+    before_arguments = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = {"values": 0, "binary": 0, "oracle": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 192
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 256
+        return original_binary(instance, left, right, operation)
+
+    def oracle(left, right, operation):
+        work["oracle"] += 1
+        assert work["oracle"] <= 256
+        return (
+            left * right
+            if operation == "mul"
+            else left + right
+            if operation == "add"
+            else left - right
+        )
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder horizontal norm must not intake/read/retain/hash/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case in ("work_limit", "bit_limit"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            16 if case == "work_limit" else True,
+        )
+    for name in (
+        "_sample_simulator_native_tof_cylinder_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "ray_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_ray",
+        "word_type",
+        "word_budget",
+        "work_limit",
+        "bit_limit",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_cylinder_horizontal_norm_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        if case != "work_limit":
+            assert work["values"] == work["binary"] == 0
+    else:
+        result = diagnostics._native_tof_cylinder_horizontal_norm_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 64
+        assert (
+            result["comparison_basis"]
+            == "unrounded_supplied_word_horizontal_sum_of_squares"
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for index, entry in enumerate(result["entries"]):
+            words = arguments["world_frame_unit_rays"][index * 3 : index * 3 + 2]
+            horizontal = tuple(
+                Fraction.from_float(float.fromhex(word)) for word in words
+            )
+            exact = oracle(
+                oracle(horizontal[0], horizontal[0], "mul"),
+                oracle(horizontal[1], horizontal[1], "mul"),
+                "add",
+            )
+            observed_word = arguments["horizontal_squared_hex"][index]
+            assert entry["ray_index"] == index and entry["horizontal_ray_hex"] == words
+            assert entry["observed_horizontal_squared_hex"] == observed_word
+            assert entry["exact_unrounded_expression_ratio"] == exact.as_integer_ratio()
+            observed = float.fromhex(observed_word)
+            if math.isfinite(observed):
+                residual = oracle(Fraction.from_float(observed), exact, "sub")
+                assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
+                assert (
+                    entry["status"]
+                    == "computed_exact_cylinder_horizontal_norm_expression_residual"
+                )
+                if case in ("rounded", "subnormal"):
+                    assert residual < 0
+                elif case == "mismatch":
+                    assert residual > 0
+            else:
+                assert entry["signed_residual_ratio"] is None
+                assert entry["status"] == "unknown_nonfinite_cylinder_horizontal_norm"
+    assert arguments == before_arguments and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "cylinder": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "cylinder": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "inside",
         "outside_distance",
         "outside_altitude",

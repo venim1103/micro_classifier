@@ -10037,6 +10037,106 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_horizontal_norm_residuals(
+    *, world_frame_unit_rays, horizontal_squared_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder horizontal norm residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder horizontal norm rational budget unsupported")
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native cylinder horizontal norm word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError(
+                    "native cylinder horizontal norm word budget exhausted"
+                )
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder horizontal norm words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native cylinder horizontal norm words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    rays = decoded(world_frame_unit_rays, 192, True)
+    observed = decoded(horizontal_squared_hex, 64, False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        for ray_index, value in enumerate(observed):
+            horizontal = tuple(
+                arithmetic.value(rays[ray_index * 3 + axis]) for axis in range(2)
+            )
+            exact = arithmetic.binary(
+                arithmetic.binary(horizontal[0], horizontal[0], "mul"),
+                arithmetic.binary(horizontal[1], horizontal[1], "mul"),
+                "add",
+            )
+            residual = (
+                arithmetic.binary(arithmetic.value(value), exact, "sub")
+                if math.isfinite(value)
+                else None
+            )
+            entries.append(
+                {
+                    "ray_index": ray_index,
+                    "horizontal_ray_hex": world_frame_unit_rays[
+                        ray_index * 3 : ray_index * 3 + 2
+                    ],
+                    "observed_horizontal_squared_hex": horizontal_squared_hex[
+                        ray_index
+                    ],
+                    "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": "unknown_nonfinite_cylinder_horizontal_norm"
+                    if residual is None
+                    else "computed_exact_cylinder_horizontal_norm_expression_residual",
+                }
+            )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder horizontal norm rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-horizontal-norm-residuals/1",
+        "allowed_use": "offline_cylinder_horizontal_norm_word_diagnostics_only",
+        "status": "reported_cylinder_horizontal_norm_expression_residuals",
+        "comparison_basis": "unrounded_supplied_word_horizontal_sum_of_squares",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_projection_residuals(
     *, offset_m_hex, world_frame_unit_rays, projection_m_hex, synthetic_test_only=False
 ):

@@ -2193,6 +2193,19 @@ coverage/clock/permission/admission proof. Standalone, all eight flags false.
 See [actual controls, archive conservation and gate][native-tof-cylinder-projection-review].
 
 
+#### Supplied Horizontal Squared-Ray Expression (2026-11-10)
+
+`_native_tof_cylinder_horizontal_norm_residuals` reports exact supplied
+ray.x²+ray.y² and observed-minus-exact ratios, fixed64 entries. Canonical
+preflight256 words/32 characters; finite rays, non-NaN observations may be
+infinite (unknown residual). Existing4096-bit rational ceiling, <=192 value calls/
+256 binary operations. No source/recorder read, hash, replay, clock or RNG;
+signed-zero words retained. Intermediate squares/sum are not captured, so this
+is a combined expression diagnostic, not normalization, isolated primitive/FMA,
+uniform/numerical/physical/source/geometry/coverage/clock/permission/admission
+qualification. Standalone, all eight flags false. See [actual controls and gate][native-tof-cylinder-horizontal-review].
+
+
 [native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2202,3 +2215,4 @@ See [actual controls, archive conservation and gate][native-tof-cylinder-project
 [native-tof-cylinder-delivery-review]: ../../REVIEW.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
 [native-tof-cylinder-offset-review]: ../../REVIEW.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
 [native-tof-cylinder-projection-review]: ../../REVIEW.md#254-supplied-word-cylinder-projection-expressions-2026-11-10
+[native-tof-cylinder-horizontal-review]: ../../REVIEW.md#256-supplied-horizontal-squared-ray-expression-2026-11-10

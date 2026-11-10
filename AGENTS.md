@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §257 for the supplied-word discriminant expression and
-the latest source gate; §255 records the design-topic relocation. §§231-256
+Read [REVIEW.md][review] §258 for supplied-word root-squared consistency and
+the latest source gate; §255 records the design-topic relocation. §§231-257
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement a bounded supplied-word root-squared consistency diagnostic,
-then stage prerequisites without adopting numerical bounds or square-root claims.
+Next implement a bounded supplied-word side-numerator expression diagnostic,
+then stage prerequisites without adopting numerical bounds or root/geometry claims.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

@@ -10037,6 +10037,117 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_root_squared_residuals(
+    *, discriminant_m2_hex, root_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder root squared residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder root squared rational budget unsupported")
+    if (
+        type(discriminant_m2_hex) is not tuple
+        or len(discriminant_m2_hex) > 32
+        or type(root_m_hex) is not tuple
+        or len(root_m_hex) != len(discriminant_m2_hex)
+    ):
+        raise ValueError("native cylinder root squared obstacle count unsupported")
+
+    def decoded(rows, finite_only):
+        result = []
+        for words in rows:
+            if type(words) is not tuple or len(words) != 64:
+                raise ValueError("native cylinder root squared word count unsupported")
+            values = []
+            for word in words:
+                if type(word) is not str or len(word) > 32:
+                    raise ValueError(
+                        "native cylinder root squared word budget exhausted"
+                    )
+                try:
+                    value = float.fromhex(word)
+                except (ValueError, OverflowError) as error:
+                    raise ValueError(
+                        "native cylinder root squared words must be canonical"
+                    ) from error
+                if (
+                    value.hex() != word
+                    or math.isnan(value)
+                    or (finite_only and not math.isfinite(value))
+                ):
+                    raise ValueError(
+                        "native cylinder root squared words must be canonical"
+                    )
+                values.append(value)
+            result.append(values)
+        return result
+
+    discriminants = decoded(discriminant_m2_hex, True)
+    roots = decoded(root_m_hex, False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        for obstacle_index, values in enumerate(discriminants):
+            for ray_index, discriminant in enumerate(values):
+                clamped = arithmetic.value(discriminant if discriminant > 0 else 0.0)
+                observed = roots[obstacle_index][ray_index]
+                squared = residual = nonnegative = None
+                if math.isfinite(observed):
+                    root = arithmetic.value(observed)
+                    squared = arithmetic.binary(root, root, "mul")
+                    residual = arithmetic.binary(squared, clamped, "sub")
+                    nonnegative = observed >= 0
+                entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "ray_index": ray_index,
+                        "discriminant_hex": discriminant_m2_hex[obstacle_index][
+                            ray_index
+                        ],
+                        "observed_root_hex": root_m_hex[obstacle_index][ray_index],
+                        "exact_nonnegative_discriminant_ratio": clamped.as_integer_ratio(),
+                        "exact_observed_root_squared_ratio": None
+                        if squared is None
+                        else squared.as_integer_ratio(),
+                        "signed_squared_residual_ratio": None
+                        if residual is None
+                        else residual.as_integer_ratio(),
+                        "observed_root_nonnegative": nonnegative,
+                        "status": "unknown_nonfinite_cylinder_root"
+                        if residual is None
+                        else "inconsistent_negative_cylinder_root"
+                        if not nonnegative
+                        else "computed_exact_cylinder_root_squared_residual",
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder root squared rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-root-squared-residuals/1",
+        "allowed_use": "offline_cylinder_root_squared_word_diagnostics_only",
+        "status": "reported_cylinder_root_squared_residuals",
+        "comparison_basis": "supplied_root_squared_minus_nonnegative_supplied_discriminant",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_discriminant_residuals(
     *,
     offset_m_hex,

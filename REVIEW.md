@@ -573,6 +573,46 @@ FMA/uniform error/numerical/physical/source/geometry/coverage/clock/one-use/
 permission/admission or usable command. Next root-squared consistency against
 supplied nonnegative discriminant, not square-root rounding/error certification.
 
+## 258. Supplied-Word Cylinder Root-Squared Consistency (2026-11-10)
+
+Checkpoint `fb0424c` pushed/clean. Owning root is sqrt(max(discriminant,0));
+local hypothesis: exact supplied root²-max(supplied discriminant,0) plus
+separate finite-root sign exposes algebraic mismatch without approximating sqrt
+or claiming a root-distance error bound. Negative root stays inconsistent even
+when its square matches; signed-zero words retained without host tie adoption.
+Finite discriminants, canonical non-NaN observed roots; infinities unknown.
+<=32*64 pairs/4096 words,32 characters,4096-bit rational ceiling, <=4096
+value calls/4096 binary operations/2048 entries. No intake/read/hash/retention/
+replay/clock/RNG/sqrt or matched-source composition.
+
+24 bounded synthetic controls, independent Fraction squared oracle <=4096 ops;
+actual nonempty setup <=1 geometry/selected intake,2 native intakes, otherwise
+no acquisition. Hooks forbid source/step/reset/clock/sqrt during helper call;
+input/tick/RNG preserved. Three pytest positions including failures/aborts:
+first24/60 seconds, one necessary repair reserve, final root/300 seconds;
+logs `cylinder-258-*` retained. No prior refunds/protected runs/task data/
+dependencies/hardware. All eight flags false, no sqrt rounding/primitive/error
+allowance/numerical/physical/source/geometry/coverage/clock/one-use/permission/
+admission or usable command. Side arithmetic/predicates remain later work.
+
+First24 passed,2821 deselected,2.87 s. Required root3768 passed,1 known
+transformer QDQ xfailed,71 warnings,86.99 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new root-
+squared helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-258-focused-1.log`/
+`cylinder-258-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, finite negative-root/negative-discriminant,
+signed-zero/rounded/subnormal/large/infinite observations and malformed/work
+rejections agree with independent squared Fraction oracle within caps, leaving
+input/tick/RNG unchanged. Square agreement alone does not establish nonnegative
+root; sign is separate, and neither is primitive sqrt, rounding/error, geometry,
+coverage, physical/source/clock/one-use/permission/admission evidence. All eight
+flags false, no usable command. Next supplied-word -projection+sign*root side
+numerator expression, then division/projection/predicate prerequisites.
+
 ## Sources
 
 Hardware and tools:

@@ -2220,6 +2220,20 @@ numerical/physical/source/geometry/coverage/clock/permission/admission proof.
 All eight flags false. See [actual controls and gate][native-tof-cylinder-discriminant-review].
 
 
+#### Supplied-Word Cylinder Root-Squared Consistency (2026-11-10)
+
+`_native_tof_cylinder_root_squared_residuals` reports exact supplied root² minus
+max(supplied discriminant,0) and a separate finite-root nonnegative flag. Negative
+finite roots stay inconsistent even when squares match; original signed-zero
+words retained without host tie adoption. Finite discriminants; non-NaN observed
+root infinities yield unknown square/residual/sign. <=32 cylinders/64 rays,
+4096 canonical words/32 characters, existing4096-bit rational ceiling, <=4096
+value calls/4096 binary operations/2048 entries. No intake/read/hash/retention/
+replay/clock/RNG/sqrt or matched-source composition. No sqrt rounding/root-error
+allowance/primitive/numerical/physical/source/geometry/coverage/clock/permission/
+admission qualification. All eight flags false; [actual controls and gate][native-tof-cylinder-root-squared-review].
+
+
 [native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2231,3 +2245,4 @@ All eight flags false. See [actual controls and gate][native-tof-cylinder-discri
 [native-tof-cylinder-projection-review]: ../../REVIEW.md#254-supplied-word-cylinder-projection-expressions-2026-11-10
 [native-tof-cylinder-horizontal-review]: ../../REVIEW.md#256-supplied-horizontal-squared-ray-expression-2026-11-10
 [native-tof-cylinder-discriminant-review]: ../../REVIEW.md#257-supplied-word-cylinder-discriminant-expression-2026-11-10
+[native-tof-cylinder-root-squared-review]: ../../REVIEW.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10

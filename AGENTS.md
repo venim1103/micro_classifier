@@ -31,12 +31,12 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §249 for bounded closed cylinder intake and
-the latest source gate; §§231-248 retain wall correspondence and the complete
+Read [REVIEW.md][review] §250 for typed cylinder history validation and
+the latest source gate; §§231-249 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement typed cylinder history validation, then recorder retention.
+Next implement explicit cylinder recorder retention, then delivery correspondence.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

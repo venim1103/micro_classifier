@@ -328,8 +328,24 @@ copied content, ticks and declared centre/radius/top operands. Per metadata pass
 <=45696 float words plus6144 mask booleans; no new arithmetic/replay/hash/clock/
 RNG/recorder read. This is diagnostic ownership/copy validation, not arithmetic,
 geometry, coverage, source, clock, permission or admission qualification. All eight
-flags false. Typed history/retention remain separate prerequisites. See
+flags false. Recorder retention remains a separate prerequisite. See
 [actual controls and gate][native-tof-cylinder-intake-review].
+
+
+#### Typed Cylinder History Prehash Guard (2026-11-10)
+
+`_check_native_tof_cylinder_history` checks exact builtin history/source lists
+of at most eight entries, strictly increasing ticks and unique epoch/tick/delivery
+pairing against already validated native history. Closed copied trace shapes
+allow at most32 cylinders each with two ordered sides and one cap, fixed64-ray
+flat tuples and literal bool masks/flags. Declared centre/radius/top, inputs,
+rays and final ranges must match native words. Other words are canonical hex,
+at most32 characters, non-NaN; declared operands/rays are finite and candidate/
+range slots exclude negative infinity. At max8x32, <=365568 float-word parses
+and49152 mask booleans. The guard does not intake/copy/hash/read/retain/replay or
+use clocks/RNG, and does not qualify source/geometry/coverage/error/clock/
+permission/admission. All eight flags false, including when it returns `None`.
+Recorder wiring remains separate. See [controls and limits][native-tof-cylinder-history-review].
 
 
 ### Synthetic Evaluation Tooling (2026-10-16)
@@ -2408,3 +2424,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
 [native-tof-cylinder-intake-review]: ../../REVIEW.md#249-bounded-native-tof-cylinder-intake-2026-11-10
+[native-tof-cylinder-history-review]: ../../REVIEW.md#250-typed-cylinder-history-prehash-guard-2026-11-10

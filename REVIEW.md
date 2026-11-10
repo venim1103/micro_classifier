@@ -468,6 +468,44 @@ permission/admission qualification and no usable command. Next typed cylinder
 history prehash validation, then explicit recorder retention. No replay or
 automatic source adoption follows from matching words.
 
+## 250. Typed Cylinder History Prehash Guard (2026-11-10)
+
+Checkpoint `453deeb` pushed/clean. Local hypothesis: use the paired, already
+validated native history to build closed cylinder trace/stage shapes, then
+reject malformed/noncanonical/overlong words and inconsistent native IDs or
+declared operands before hashing. Exact builtin lists <=8 each, strictly
+increasing ticks and unique epoch/tick/delivery pair; <=32 cylinders each with
+two ordered sides/cap and fixed64-ray flattened tuples. At max8x32, <=365568
+float-word parses (each <=32 characters) plus49152 literal mask booleans; no
+source intake/copy/hash/read/retention/replay/clock/RNG in the guard.
+
+Reuse original16 wall history cases/caps, add26 cylinder controls including
+8x32 typed records, malformed side/top, nonfinite/range/word budgets and source
+list caps. One setup step/geometry and <=2 setup native intakes per case before
+patching all source/read/hash/replay hooks forbidden. Parent ledgers unchanged.
+Three pytest positions including failures/aborts: first42/60 seconds, one
+necessary repair reserve, final root/300 seconds; retain `cylinder-250-*`
+logs. No old refunds, protected studies, task data, dependencies or hardware.
+All eight flags false; no geometry/coverage/error/source/clock/permission or
+admission qualification and no usable command. Recorder wiring remains next.
+
+First42 passed,2652 deselected,3.85 s. Required root3617 passed,1 known
+transformer QDQ xfailed,71 warnings,123.49 s; root Ruff, changed-file format
+check and whitespace passed. Editor diagnostics clear. AST proves one added
+history guard and only existing history matrix changed; all prior source/test
+nodes intact. No prior signature changed. Two of three pytest positions used,
+no failures/aborts; unused reserve is not follow-on authority. Logs
+`cylinder-250-focused-1.log`/`cylinder-250-root-1.log` retained under recovery
+directory. No additional C/Arm/sanitizer/board opt-in gates ran.
+
+Max8x32 retained shapes pass without mutating either supplied history; malformed
+words/stages/IDs/budgets fail without any source intake/hash/read/recorder/
+geometry/clock activity inside the guard. Synthetic cloned IDs are unit fixtures,
+not fresh acquisition or one-use/timing/physical evidence. All eight flags false,
+no source/geometry/coverage/uniform error/numerical/physical/clock/permission/
+admission qualification and no usable command. Next explicit cylinder retention
+using this guard before history hash, then delivery correspondence.
+
 ## Sources
 
 Hardware and tools:

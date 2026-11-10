@@ -12114,6 +12114,193 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _check_native_tof_cylinder_history(history, source_history, source_epoch):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native ToF cylinder history budget exhausted")
+    if type(source_history) is not list or len(source_history) > 8:
+        raise ValueError("native ToF cylinder source history budget exhausted")
+    previous = -1
+    side_arrays = (
+        "numerator_m",
+        "distance_m",
+        "altitude_m",
+        "candidate_m",
+        "previous_minimum_m",
+        "minimum_after_m",
+    )
+    top_arrays = (
+        "distance_m",
+        "radial_squared_m2",
+        "candidate_m",
+        "previous_minimum_m",
+        "minimum_after_m",
+    )
+    range_arrays = ("candidate_m", "previous_minimum_m", "minimum_after_m")
+    zero = "0x0.0p+0"
+    vector = (zero,) * 64
+
+    def canonical(word, finite=False, range_only=False):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("unsupported native ToF retained cylinder word budget")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError("unsupported native ToF retained cylinder word") from error
+        if (
+            value.hex() != word
+            or math.isnan(value)
+            or (finite and not math.isfinite(value))
+            or (range_only and value == -math.inf)
+        ):
+            raise ValueError("unsupported native ToF retained cylinder canonical word")
+
+    for entry in history:
+        if (
+            type(entry) is not dict
+            or len(entry) != 4
+            or any(type(key) is not str for key in entry)
+            or set(entry) != {"source_epoch", "tick", "delivery_tick", "cylinder"}
+            or type(entry["source_epoch"]) is not str
+            or entry["source_epoch"] != source_epoch
+            or type(entry["tick"]) is not int
+            or not previous < entry["tick"] <= 0xFFFFFFFF // 50000
+            or type(entry["delivery_tick"]) is not int
+            or not 0 <= entry["delivery_tick"] <= 0xFFFFFFFF // 50000
+        ):
+            raise ValueError("unsupported native ToF cylinder history metadata")
+        previous = entry["tick"]
+        matches = [
+            source for source in source_history if source["tick"] == entry["tick"]
+        ]
+        if (
+            len(matches) != 1
+            or matches[0]["source_epoch"] != entry["source_epoch"]
+            or matches[0]["delivery_tick"] != entry["delivery_tick"]
+        ):
+            raise ValueError("native ToF cylinder history source pairing missing")
+        native = matches[0]["native_source"]
+        inputs = native["inputs"]
+        obstacles = inputs["scenario"]["obstacles"]
+        if type(obstacles) is not tuple or len(obstacles) > 32:
+            raise ValueError("native ToF retained cylinder obstacle budget exhausted")
+        expected = {
+            "schema": "micro-classifier/native-tof-cylinder-source/1",
+            "allowed_use": "native_tof_cylinder_diagnostics_only",
+            "status": "recorded_native_cylinder_calculation_values",
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            "inputs": inputs,
+            "world_frame_unit_rays": native["world_frame_unit_rays"],
+            "horizontal_squared": vector,
+            "post_wall_ranges_m": vector,
+            "pre_noise_ranges_m": native["pre_noise_ranges_m"],
+            "cylinders": tuple(
+                {
+                    "obstacle_index": index,
+                    "centre_m": tuple(float(value).hex() for value in obstacle[:2]),
+                    "radius_m": float(obstacle[2]).hex(),
+                    "top_m": float(
+                        inputs["scenario"]["obstacle_heights"][index]
+                        if inputs["scenario"]["obstacle_heights"]
+                        else inputs["config"]["obstacle_height"]
+                    ).hex(),
+                    "offset_m": (zero,) * 2,
+                    **{
+                        key: vector
+                        for key in ("projection_m", "discriminant_m2", "root_m")
+                    },
+                    "sides": tuple(
+                        {
+                            "sign": sign,
+                            **{key: vector for key in side_arrays},
+                            "hit": (False,) * 64,
+                        }
+                        for sign in (-1, 1)
+                    ),
+                    "top": {
+                        "numerator_m": zero,
+                        "radius_squared_m2": zero,
+                        "relative_m": (zero,) * 128,
+                        **{key: vector for key in top_arrays},
+                        "hit": (False,) * 64,
+                    },
+                }
+                for index, obstacle in enumerate(obstacles)
+            ),
+        }
+        trace = entry["cylinder"]
+        if (
+            native["world_frame_unit_rays"] is None
+            or not _native_tof_word_copy_matches(trace, expected, shape_only=True)
+            or any(
+                not _native_tof_word_copy_matches(trace[key], value)
+                for key, value in expected.items()
+                if key not in ("horizontal_squared", "post_wall_ranges_m", "cylinders")
+            )
+        ):
+            raise ValueError("unsupported native ToF retained cylinder layout or words")
+        for key in (
+            "world_frame_unit_rays",
+            "horizontal_squared",
+            "post_wall_ranges_m",
+            "pre_noise_ranges_m",
+        ):
+            for word in trace[key]:
+                canonical(
+                    word,
+                    finite=key == "world_frame_unit_rays",
+                    range_only=key in ("post_wall_ranges_m", "pre_noise_ranges_m"),
+                )
+        for cylinder, reference in zip(
+            trace["cylinders"], expected["cylinders"], strict=True
+        ):
+            if any(
+                not _native_tof_word_copy_matches(cylinder[key], reference[key])
+                for key in ("obstacle_index", "centre_m", "radius_m", "top_m")
+            ):
+                raise ValueError(
+                    "unsupported native ToF retained cylinder identity words"
+                )
+            for word in (
+                *cylinder["centre_m"],
+                cylinder["radius_m"],
+                cylinder["top_m"],
+            ):
+                canonical(word, finite=True)
+            for key in ("offset_m", "projection_m", "discriminant_m2", "root_m"):
+                for word in cylinder[key]:
+                    canonical(word)
+            for side, expected_side in zip(
+                cylinder["sides"], reference["sides"], strict=True
+            ):
+                if not _native_tof_word_copy_matches(
+                    side["sign"], expected_side["sign"]
+                ):
+                    raise ValueError(
+                        "unsupported native ToF retained cylinder side sign"
+                    )
+                for key in side_arrays:
+                    for word in side[key]:
+                        canonical(word, range_only=key in range_arrays)
+            top = cylinder["top"]
+            for key in ("numerator_m", "radius_squared_m2"):
+                canonical(top[key])
+            for key in (*top_arrays, "relative_m"):
+                for word in top[key]:
+                    canonical(word, range_only=key in range_arrays)
+
+
 def _match_native_tof_retained_wall(source, wall_history):
     matches = [
         entry

@@ -12047,47 +12047,79 @@ def test_native_tof_wall_intake(
 
 
 @pytest.mark.parametrize(
-    "case",
-    (
-        "copy",
-        "oversize",
-        "tuple_history",
-        "order",
-        "duplicate",
-        "epoch",
-        "missing_pair",
-        "delivery",
-        "flag",
-        "word_shape",
-        "noncanonical",
-        "overflow",
-        "index",
-        "mask",
-        "profile",
-        "rays",
-    ),
+    ("cylinder", "case"),
+    [
+        (cylinder, case)
+        for cylinder in (False, True)
+        for case in (
+            "copy",
+            "oversize",
+            "tuple_history",
+            "order",
+            "duplicate",
+            "epoch",
+            "missing_pair",
+            "delivery",
+            "flag",
+            "word_shape",
+            "noncanonical",
+            "overflow",
+            "index",
+            "mask",
+            "profile",
+            "rays",
+        )
+    ]
+    + [
+        (True, case)
+        for case in (
+            "side_count",
+            "side_sign",
+            "top_shape",
+            "nonfinite",
+            "range_negative",
+            "word_budget",
+            "source_oversize",
+            "source_tuple",
+            "obstacle_operand",
+            "max_obstacles",
+        )
+    ],
 )
 def test_native_tof_wall_history_layout(
-    monkeypatch, c1_motion_receipt_source_fixture, case
+    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
 ):
+    from dataclasses import replace
+
     from sim import diagnostics, rover
 
+    kind = "cylinder" if cylinder else "wall"
+    validate = getattr(diagnostics, f"_check_native_tof_{kind}_history")
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if cylinder:
+        environment.scenario = replace(
+            environment.scenario,
+            obstacles=((3.0, 3.0, 0.25),) * (32 if case == "max_obstacles" else 1),
+        )
     environment.step(
-        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        [0.125, 0.3],
+        capture_native_tof_source=True,
+        **{f"capture_native_tof_{kind}": True},
     )
-    packet = diagnostics._sample_simulator_native_tof_wall_source(
+    packet = getattr(diagnostics, f"_sample_simulator_native_tof_{kind}_source")(
         environment, owner._epoch
     )
     source_history = [packet["source"]]
     history = [
         {
             key: deepcopy(packet[key])
-            for key in ("source_epoch", "tick", "delivery_tick", "wall")
+            for key in ("source_epoch", "tick", "delivery_tick", kind)
         }
     ]
-    trace = history[0]["wall"]
-    if case == "copy":
+    trace = history[0][kind]
+    entry = trace["cylinders"][0] if cylinder else trace["walls"][0]
+    stage = entry["sides"][0] if cylinder else entry
+    if case in ("copy", "max_obstacles"):
         for offset in range(1, 8):
             paired_source, paired_wall = deepcopy((source_history[0], history[0]))
             for entry in (paired_source, paired_wall):
@@ -12112,18 +12144,36 @@ def test_native_tof_wall_history_layout(
     elif case == "flag":
         trace["source_qualified"] = True
     elif case == "word_shape":
-        trace["walls"][0]["distance_m"] = ("0x0.0p+0",) * 65
+        stage["distance_m"] = ("0x0.0p+0",) * 65
     elif case in ("noncanonical", "overflow"):
         word = "0.0" if case == "noncanonical" else "0x1p+999999"
-        trace["walls"][0]["numerator_m"] = word
+        stage["numerator_m"] = (word,) * 64 if cylinder else word
     elif case == "index":
-        trace["walls"][0]["wall_index"] = False
+        entry["obstacle_index" if cylinder else "wall_index"] = False
     elif case == "mask":
-        trace["walls"][0]["hit"] = (1,) * 64
+        stage["hit"] = (1,) * 64
     elif case == "profile":
         trace["inputs"]["config"]["max_range"] = 3.0
     elif case == "rays":
         trace["world_frame_unit_rays"] = ("0x0.0p+0",) * 192
+    elif case == "side_count":
+        entry["sides"] *= 2
+    elif case == "side_sign":
+        entry["sides"][1]["sign"] = True
+    elif case == "top_shape":
+        entry["top"]["relative_m"] = ("0x0.0p+0",) * 129
+    elif case == "nonfinite":
+        entry["root_m"] = ("nan",) * 64
+    elif case == "range_negative":
+        stage["candidate_m"] = ("-inf",) * 64
+    elif case == "word_budget":
+        stage["numerator_m"] = ("0" * 33,) * 64
+    elif case == "source_oversize":
+        source_history *= 9
+    elif case == "source_tuple":
+        source_history = tuple(source_history)
+    elif case == "obstacle_operand":
+        entry["radius_m"] = "0x0.0p+0"
     before = deepcopy((history, source_history))
     work = {"forbidden": 0}
 
@@ -12136,6 +12186,7 @@ def test_native_tof_wall_history_layout(
     for name in (
         "_sample_simulator_native_tof_source",
         "_sample_simulator_native_tof_wall_source",
+        "_sample_simulator_native_tof_cylinder_source",
         "_c1_source_binding_digest",
     ):
         monkeypatch.setattr(diagnostics, name, forbidden)
@@ -12145,19 +12196,12 @@ def test_native_tof_wall_history_layout(
         monkeypatch.setattr(RoverEnv, name, forbidden)
     for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
         monkeypatch.setattr(rover, name, forbidden)
-    if case == "copy":
-        assert (
-            diagnostics._check_native_tof_wall_history(
-                history, source_history, owner._epoch
-            )
-            is None
-        )
+    if case in ("copy", "max_obstacles"):
+        assert validate(history, source_history, owner._epoch) is None
         assert len(history) == len(source_history) == 8
     else:
         with pytest.raises(ValueError):
-            diagnostics._check_native_tof_wall_history(
-                history, source_history, owner._epoch
-            )
+            validate(history, source_history, owner._epoch)
     assert (history, source_history) == before
     assert work["forbidden"] == 0
 

@@ -2423,6 +2423,21 @@ geometry/coverage/clock/one-use/permission/admission or usable command; all eigh
 flags false. See [actual controls and gate][native-tof-cylinder-matched-projection-review].
 
 
+#### Matched Retained Cylinder Horizontal-Norm Residuals (2026-11-10)
+
+`snapshot_native_tof_delivery(include_cylinder_horizontal_norm_residuals=True)`
+requires literal bool and `include_cylinder=True`; default skips norm arithmetic.
+Shared64-ray norm report exists even for zero cylinders. Matched delivered/
+pending epoch/tick/delivery identities and independent closing checks remain.
+Existing unrounded supplied-word sum-of-squares discrepancy is not isolated
+primitive/FMA or geometry evidence. 256 words/64 entries/192 values/256 binary
+operations per helper,4096-bit ceiling unchanged; <=18 invocations across
+original/closing delivered/<=8 pending records. Nonfinite observation residual
+stays unknown. All eight flags false, no uniform/numerical/physical/source/
+coverage/clock/one-use/permission/admission or usable command. See
+[actual controls and gate][native-tof-cylinder-matched-horizontal-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2450,3 +2465,4 @@ flags false. See [actual controls and gate][native-tof-cylinder-matched-projecti
 [native-tof-cylinder-selection-review]: ../../REVIEW.md#271-matched-retained-cylinder-selection-reports-2026-11-10
 [native-tof-cylinder-matched-offset-review]: ../../REVIEW.md#272-matched-retained-cylinder-offset-residuals-2026-11-10
 [native-tof-cylinder-matched-projection-review]: ../../REVIEW.md#273-matched-retained-cylinder-projection-residuals-2026-11-10
+[native-tof-cylinder-matched-horizontal-review]: ../../REVIEW.md#275-matched-retained-cylinder-horizontal-norm-residuals-2026-11-10

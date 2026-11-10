@@ -512,6 +512,51 @@ chapter05 entirety and root REVIEW/Sources/stable AGENTS intact, only intended
 incoming pointer changes. All27 historical heading anchors preserved and30
 moved/changed local targets valid. Whitespace passed; code suite not rerun.
 
+## 275. Matched Retained Cylinder Horizontal-Norm Residuals (2026-11-10)
+
+Checkpoint `a9c453e` pushed/clean. Existing shared64-ray squared horizontal norm
+helper owns unrounded supplied-word sum-of-squares discrepancy, not geometry or
+isolated primitive rounding. Hypothesis: matched original/closing cylinder
+records compose that shared report even with zero cylinders, retaining original
+epoch/acquisition/delivery identities and all closing checks. Literal default-off
+`include_cylinder_horizontal_norm_residuals` requires `include_cylinder=True`.
+Existing256 words/64 entries/192 values/256 binary operations per helper,
+4096-bit ceiling unchanged; <=18 invocations across original/closing delivered/
+<=8 pending records. Nonfinite observation residual stays unknown.
+
+Finite routine plan: reuse23-case arithmetic family in offset/projection/norm
+modes,69 controls. Unchanged offset72 values/48 binary/48 oracle caps; unchanged
+projection1560 values/3072 binary+oracle caps. New norm fixtures <=2352 values/
+3096 binary/1536 exact oracle operations including combined existing projection/
+offset/selection reports; <=6 calls each included helper. Per mode <=4 steps/
+5 reads/3 geometries/3 retentions/6 cylinder matches/2 pending matches/64 digests,
+no runtime intake/read/retain/step/reset/replay/clock. Empty/one/two fixtures,
+exact actual oracles, default/dependency/held/delivered/detachment, nonzero or
+unknown observed residual, missing/malformed/late output/pending/native/cylinder/
+owner/budget and bit exhaustion; preserve tick/frame/both RNGs. Three pytest
+positions including failures/aborts: first69/60 seconds, one necessary repair
+reserve, final root/300 seconds; retain `cylinder-275-*` logs. No historical refunds/
+protected studies/task data/dependencies/hardware; all eight flags false, no
+uniform/numerical/physical/source/geometry/coverage/clock/one-use/permission/
+admission or usable command. Next independent matched discriminant arithmetic.
+
+First69 passed,3260 deselected,12.35 s. Required root4252 passed,1 known
+transformer QDQ xfailed,71 warnings,113.14 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. Caller query returned no
+sites, not static compatibility proof. AST confines changes to snapshot method/
+existing arithmetic family; original23 cases and all other nodes/existing
+snapshot parameters preserved. Two of three pytest positions used, no failures/
+aborts; unused reserve is not follow-on authority. Logs `cylinder-275-focused-1.log`/
+`cylinder-275-root-1.log` retained under recovery directory. No additional C/Arm/
+sanitizer/board opt-in gates ran.
+
+Actual shared norm oracle matches even with zero cylinders; nonzero/unknown
+observed residuals, unchanged old-mode caps, combined independent reports,
+default skipped work, late-change suppression, conservative bit exhaustion and
+tick/frame/RNG preservation verified. All eight flags false; no uniform/numerical/
+physical/source/geometry/coverage/clock/one-use/permission/admission evidence or
+usable command. Next matched discriminant discrepancy as an independent report.
+
 ## Sources
 
 Hardware and tools:

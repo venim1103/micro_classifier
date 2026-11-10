@@ -15742,6 +15742,7 @@ class _SyntheticC1SourceRecorder:
         include_cylinder_selection_diagnostics=False,
         include_cylinder_offset_residuals=False,
         include_cylinder_projection_residuals=False,
+        include_cylinder_horizontal_norm_residuals=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -15797,6 +15798,14 @@ class _SyntheticC1SourceRecorder:
         if include_cylinder_projection_residuals and not include_cylinder:
             raise ValueError(
                 "include_cylinder_projection_residuals requires include_cylinder=True"
+            )
+        if type(include_cylinder_horizontal_norm_residuals) is not bool:
+            raise ValueError(
+                "include_cylinder_horizontal_norm_residuals must be a literal bool"
+            )
+        if include_cylinder_horizontal_norm_residuals and not include_cylinder:
+            raise ValueError(
+                "include_cylinder_horizontal_norm_residuals requires include_cylinder=True"
             )
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
@@ -16073,6 +16082,20 @@ class _SyntheticC1SourceRecorder:
                     projection_m_hex=tuple(
                         entry["projection_m"] for entry in trace["cylinders"]
                     ),
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def cylinder_horizontal_norm_probe(record):
+            trace = record["cylinder"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_cylinder_horizontal_norm_residuals(
+                    world_frame_unit_rays=trace["world_frame_unit_rays"],
+                    horizontal_squared_hex=trace["horizontal_squared"],
                     synthetic_test_only=True,
                 ),
             }
@@ -16369,6 +16392,18 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_horizontal_norm_residuals:
+                cylinder_horizontal_norm_residuals = cylinder_horizontal_norm_probe(
+                    cylinder
+                )
+                pending_cylinder_horizontal_norm_residuals = (
+                    tuple(
+                        cylinder_horizontal_norm_probe(record)
+                        for record in pending_cylinder
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -16533,6 +16568,18 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_horizontal_norm_residuals:
+                cylinder_horizontal_norm_residuals_after = (
+                    cylinder_horizontal_norm_probe(cylinder_after)
+                )
+                pending_cylinder_horizontal_norm_residuals_after = (
+                    tuple(
+                        cylinder_horizontal_norm_probe(record)
+                        for record in pending_cylinder_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_timing or include_selection or include_wall or include_cylinder:
@@ -16656,6 +16703,19 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_cylinder_horizontal_norm_residuals and (
+                not _native_tof_word_copy_matches(
+                    cylinder_horizontal_norm_residuals,
+                    cylinder_horizontal_norm_residuals_after,
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_cylinder_horizontal_norm_residuals,
+                    pending_cylinder_horizontal_norm_residuals_after,
+                )
+            ):
+                raise ValueError(
+                    "native ToF cylinder horizontal norm source or outgoing records changed"
+                )
             if include_cylinder_projection_residuals and (
                 not _native_tof_word_copy_matches(
                     cylinder_projection_residuals, cylinder_projection_residuals_after
@@ -16835,6 +16895,14 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_cylinder_projection_residuals"] = (
                     pending_cylinder_projection_residuals
+                )
+        if include_cylinder_horizontal_norm_residuals:
+            result["cylinder_horizontal_norm_residuals"] = (
+                cylinder_horizontal_norm_residuals
+            )
+            if include_pending_sources:
+                result["pending_cylinder_horizontal_norm_residuals"] = (
+                    pending_cylinder_horizontal_norm_residuals
                 )
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals

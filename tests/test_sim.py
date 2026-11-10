@@ -28031,16 +28031,17 @@ def test_native_tof_cylinder_selection_snapshot(
         "selection_combined",
     ),
 )
-@pytest.mark.parametrize("projection", (False, True))
+@pytest.mark.parametrize("kind", ("offset", "projection", "horizontal_norm"))
 def test_native_tof_cylinder_offset_snapshot(
-    monkeypatch, c1_motion_receipt_source_fixture, case, projection
+    monkeypatch, c1_motion_receipt_source_fixture, case, kind
 ):
     from dataclasses import replace
     from fractions import Fraction
 
     from sim import diagnostics, rover
 
-    kind = "projection" if projection else "offset"
+    projection = kind == "projection"
+    horizontal_norm = kind == "horizontal_norm"
     field = f"cylinder_{kind}_residuals"
     option = f"include_{field}"
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
@@ -28068,6 +28069,7 @@ def test_native_tof_cylinder_offset_snapshot(
             "oracle",
             "chain",
             "combined_offset",
+            "combined_projection",
             "late",
             "forbidden",
         ),
@@ -28111,8 +28113,15 @@ def test_native_tof_cylinder_offset_snapshot(
     elif case == "missing_pending":
         owner._tof_cylinder_history.pop()
     elif case in ("residual", "infinite_observation", "malformed"):
-        entry = owner._tof_cylinder_history[0]["cylinder"]["cylinders"][0]
-        key = "projection_m" if projection else "offset_m"
+        trace = owner._tof_cylinder_history[0]["cylinder"]
+        entry = trace if horizontal_norm else trace["cylinders"][0]
+        key = (
+            "horizontal_squared"
+            if horizontal_norm
+            else "projection_m"
+            if projection
+            else "offset_m"
+        )
         entry[key] = (
             (
                 "0.0"
@@ -28135,8 +28144,10 @@ def test_native_tof_cylinder_offset_snapshot(
         "pending": "_match_native_tof_pending_sources",
         "chain": "_native_tof_cylinder_stage_chain_diagnostics",
     }
-    if projection:
+    if projection or horizontal_norm:
         names["combined_offset"] = "_native_tof_cylinder_offset_residuals"
+    if horizontal_norm:
+        names["combined_projection"] = "_native_tof_cylinder_projection_residuals"
     originals = {name: getattr(diagnostics, symbol) for name, symbol in names.items()}
     outgoing = {name: [] for name in names}
 
@@ -28183,12 +28194,16 @@ def test_native_tof_cylinder_offset_snapshot(
 
     def value(instance, argument):
         work["values"] += 1
-        assert work["values"] <= (1560 if projection else 72)
+        assert work["values"] <= (
+            2352 if horizontal_norm else 1560 if projection else 72
+        )
         return original_value(instance, argument)
 
     def binary(instance, left, right, operation):
         work["binary"] += 1
-        assert work["binary"] <= (3072 if projection else 48)
+        assert work["binary"] <= (
+            3096 if horizontal_norm else 3072 if projection else 48
+        )
         return original_binary(instance, left, right, operation)
 
     def forbidden(*args, **kwargs):
@@ -28234,7 +28249,12 @@ def test_native_tof_cylinder_offset_snapshot(
             **{option: case != "default"},
             **(
                 {"include_cylinder_offset_residuals": True}
-                if projection and case == "selection_combined"
+                if (projection or horizontal_norm) and case == "selection_combined"
+                else {}
+            ),
+            **(
+                {"include_cylinder_projection_residuals": True}
+                if horizontal_norm and case == "selection_combined"
                 else {}
             ),
             include_cylinder_selection_diagnostics=case == "selection_combined",
@@ -28285,11 +28305,41 @@ def test_native_tof_cylinder_offset_snapshot(
                     assert all(diagnostic[flag] is False for flag in flags)
                     trace = record["cylinder"]
                     assert len(diagnostic["entries"]) == (
-                        64 if projection else 2
-                    ) * len(trace["cylinders"])
+                        64
+                        if horizontal_norm
+                        else (64 if projection else 2) * len(trace["cylinders"])
+                    )
                     for entry in diagnostic["entries"]:
-                        index = entry["obstacle_index"]
-                        if projection:
+                        if horizontal_norm:
+                            ray = entry["ray_index"]
+                            ray_words = trace["world_frame_unit_rays"][
+                                ray * 3 : ray * 3 + 2
+                            ]
+                            ray_values = tuple(
+                                Fraction.from_float(float.fromhex(word))
+                                for word in ray_words
+                            )
+                            exact = (
+                                ray_values[0] * ray_values[0]
+                                + ray_values[1] * ray_values[1]
+                            )
+                            work["oracle"] += 3
+                            observed_word = trace["horizontal_squared"][ray]
+                            assert (
+                                diagnostic["comparison_basis"]
+                                == "unrounded_supplied_word_horizontal_sum_of_squares"
+                            )
+                            assert entry["horizontal_ray_hex"] == ray_words
+                            assert (
+                                entry["observed_horizontal_squared_hex"]
+                                == observed_word
+                            )
+                            assert (
+                                entry["exact_unrounded_expression_ratio"]
+                                == exact.as_integer_ratio()
+                            )
+                        elif projection:
+                            index = entry["obstacle_index"]
                             ray = entry["ray_index"]
                             offset_words = trace["cylinders"][index]["offset_m"]
                             ray_words = trace["world_frame_unit_rays"][
@@ -28323,6 +28373,7 @@ def test_native_tof_cylinder_offset_snapshot(
                                 == exact.as_integer_ratio()
                             )
                         else:
+                            index = entry["obstacle_index"]
                             axis = entry["axis"]
                             position = trace["inputs"]["position_m"][axis]
                             centre = float.fromhex(
@@ -28340,12 +28391,16 @@ def test_native_tof_cylinder_offset_snapshot(
                                 entry["exact_difference_ratio"]
                                 == exact.as_integer_ratio()
                             )
-                        assert work["oracle"] <= (3072 if projection else 48)
+                        assert work["oracle"] <= (
+                            1536 if horizontal_norm else 3072 if projection else 48
+                        )
                         observed = float.fromhex(observed_word)
                         if math.isfinite(observed):
                             residual = Fraction.from_float(observed) - exact
                             work["oracle"] += 1
-                            assert work["oracle"] <= (3072 if projection else 48)
+                            assert work["oracle"] <= (
+                                1536 if horizontal_norm else 3072 if projection else 48
+                            )
                             assert (
                                 entry["signed_residual_ratio"]
                                 == residual.as_integer_ratio()
@@ -28374,10 +28429,17 @@ def test_native_tof_cylinder_offset_snapshot(
                         "cylinder_selection_diagnostics" in result
                         and "pending_cylinder_selection_diagnostics" in result
                     )
-                    if projection:
+                    if projection or horizontal_norm:
                         assert work["combined_offset"] == closing_count
                         assert all(
                             result["cylinder_offset_residuals"]["diagnostic"][flag]
+                            is False
+                            for flag in flags
+                        )
+                    if horizontal_norm:
+                        assert work["combined_projection"] == closing_count
+                        assert all(
+                            result["cylinder_projection_residuals"]["diagnostic"][flag]
                             is False
                             for flag in flags
                         )
@@ -28398,6 +28460,7 @@ def test_native_tof_cylinder_offset_snapshot(
         if case != "selection_combined":
             assert work["chain"] == 0
             assert work["combined_offset"] == 0
+            assert work["combined_projection"] == 0
     assert environment.tick == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry

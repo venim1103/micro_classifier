@@ -10037,6 +10037,113 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_top_offset_residuals(
+    *, mount_height_m_hex, top_m_hex, top_offset_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder top offset residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError(
+            "native cylinder top offset residual rational budget unsupported"
+        )
+    if (
+        type(top_m_hex) is not tuple
+        or len(top_m_hex) > 32
+        or type(top_offset_m_hex) is not tuple
+        or len(top_offset_m_hex) != len(top_m_hex)
+    ):
+        raise ValueError(
+            "native cylinder top offset residual obstacle count unsupported"
+        )
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError(
+                "native cylinder top offset residual word count unsupported"
+            )
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError(
+                    "native cylinder top offset residual word budget exhausted"
+                )
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder top offset residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native cylinder top offset residual words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    height = decoded((mount_height_m_hex,), 1, True)[0]
+    tops = decoded(top_m_hex, len(top_m_hex), True)
+    offsets = decoded(top_offset_m_hex, len(top_m_hex), False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        height_value = arithmetic.value(height)
+        for obstacle_index, (top, observed) in enumerate(
+            zip(tops, offsets, strict=True)
+        ):
+            exact = arithmetic.binary(arithmetic.value(top), height_value, "sub")
+            residual = (
+                arithmetic.binary(arithmetic.value(observed), exact, "sub")
+                if math.isfinite(observed)
+                else None
+            )
+            entries.append(
+                {
+                    "obstacle_index": obstacle_index,
+                    "mount_height_hex": mount_height_m_hex,
+                    "top_hex": top_m_hex[obstacle_index],
+                    "observed_top_offset_hex": top_offset_m_hex[obstacle_index],
+                    "exact_difference_ratio": exact.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": "unknown_nonfinite_cylinder_top_offset"
+                    if residual is None
+                    else "computed_exact_cylinder_top_offset_word_residual",
+                }
+            )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder top offset residual rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-top-offset-residuals/1",
+        "allowed_use": "offline_cylinder_top_offset_word_diagnostics_only",
+        "status": "reported_cylinder_top_offset_word_residuals",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "basis": "unrounded_supplied_top_minus_mount_height",
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_side_minimum_diagnostics(
     *,
     side_previous_minimum_m_hex,

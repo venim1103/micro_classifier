@@ -2307,15 +2307,29 @@ eight flags false; no primitive/uniform/numerical/physical/source/geometry/
 coverage/clock/permission/admission proof. See [actual controls and gate][native-tof-cylinder-side-minimum-review].
 
 
+#### Supplied-Word Cylinder Top Offset Expression (2026-11-10)
+
+`_native_tof_cylinder_top_offset_residuals` reports exact supplied top minus
+mount height and observed-minus-exact residual. Finite operands, non-NaN
+observations; observed +/-inf retains exact target but unknown residual.
+Signed-zero words retained, no tie adoption. <=32 cylinders/65 canonical
+words/32 characters,4096-bit rational ceiling, shared mount value <=65 value
+calls/64 binary operations/32 entries. All words preflight before rational
+work; exhaustion rejects without result. No intake/read/hash/retention/replay/
+clock/RNG or composition. All eight flags false, no primitive uniform/numerical/
+physical/source/geometry/coverage/clock/permission/admission proof. See
+[actual controls, failed expectation and gate][native-tof-cylinder-top-offset-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
 [native-tof-cylinder-intake-review]: ../review/246-250.md#249-bounded-native-tof-cylinder-intake-2026-11-10
 [native-tof-cylinder-history-review]: ../review/246-250.md#250-typed-cylinder-history-prehash-guard-2026-11-10
-[native-tof-cylinder-retention-review]: ../../REVIEW.md#251-explicit-cylinder-recorder-retention-2026-11-10
-[native-tof-cylinder-delivery-review]: ../../REVIEW.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
-[native-tof-cylinder-offset-review]: ../../REVIEW.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
-[native-tof-cylinder-projection-review]: ../../REVIEW.md#254-supplied-word-cylinder-projection-expressions-2026-11-10
+[native-tof-cylinder-retention-review]: ../review/251-255.md#251-explicit-cylinder-recorder-retention-2026-11-10
+[native-tof-cylinder-delivery-review]: ../review/251-255.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
+[native-tof-cylinder-offset-review]: ../review/251-255.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
+[native-tof-cylinder-projection-review]: ../review/251-255.md#254-supplied-word-cylinder-projection-expressions-2026-11-10
 [native-tof-cylinder-horizontal-review]: ../../REVIEW.md#256-supplied-horizontal-squared-ray-expression-2026-11-10
 [native-tof-cylinder-discriminant-review]: ../../REVIEW.md#257-supplied-word-cylinder-discriminant-expression-2026-11-10
 [native-tof-cylinder-root-squared-review]: ../../REVIEW.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10
@@ -2324,3 +2338,4 @@ coverage/clock/permission/admission proof. See [actual controls and gate][native
 [native-tof-cylinder-side-altitude-review]: ../../REVIEW.md#261-supplied-word-cylinder-side-altitude-expression-2026-11-10
 [native-tof-cylinder-side-mask-review]: ../../REVIEW.md#262-supplied-word-cylinder-side-maskcandidate-correspondence-2026-11-10
 [native-tof-cylinder-side-minimum-review]: ../../REVIEW.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10
+[native-tof-cylinder-top-offset-review]: ../../REVIEW.md#264-supplied-word-cylinder-top-offset-expression-2026-11-10

@@ -295,8 +295,8 @@ links the actual post-wall result to final pre-noise ranges, without replay or
 host-specific word-tie adoption. All arrays/inputs are detached; default output
 words and existing32-obstacle/64-ray/preflight limits remain unchanged.
 
-Closed intake and recorder retention are not yet wired; acquisition pairing
-is documented below. Observed-stage correspondence is not geometry, coverage, primitive or
+Recorder retention is not yet wired; acquisition pairing and closed intake
+are documented below. Observed-stage correspondence is not geometry, coverage, primitive or
 uniform error, physical/source/clock/native/permission/admission qualification;
 all eight flags remain false. See [side/top controls and limits][native-tof-cylinder-stages-review].
 
@@ -309,10 +309,27 @@ mutation and clocks. Only fresh sampling forwards the original trace dict,
 pairing native cache/RNG identities and acquisition/delivery ticks; held/default/
 reset clears it and rejected preflight preserves previous caches. The old default
 forwarding path is unchanged. Wall/selection/timing can accompany the same sample
-without extra geometry, RNG or clock reads. Closed intake and retention remain
+without extra geometry, RNG or clock reads. Recorder retention remains
 separate work; nominal IDs/timing and matching words do not qualify source,
 geometry, coverage, numerical/physical error, clocks, permission or admission.
 Eight flags remain false. See [acquisition controls and limits][native-tof-cylinder-acquisition-review].
+
+
+#### Bounded Closed Cylinder Intake (2026-11-10)
+
+`_sample_simulator_native_tof_cylinder_source` requires exact builtin acquisition/
+trace/entry/stage dictionaries and tuple counts, <=32 paired obstacle entries,
+two ordered sides and one cap each, exact float64/bool array shapes and original
+native/RNG identities. Before any native intake it rejects malformed layouts,
+nonliteral flags, NaNs, nonfinite declared operands/rays and negative-infinite
+candidate/range words. Two native intakes bracket canonical detached word copies;
+closing checks cover cache/native/RNG identity, template/pose/input/output words,
+copied content, ticks and declared centre/radius/top operands. Per metadata pass
+<=45696 float words plus6144 mask booleans; no new arithmetic/replay/hash/clock/
+RNG/recorder read. This is diagnostic ownership/copy validation, not arithmetic,
+geometry, coverage, source, clock, permission or admission qualification. All eight
+flags false. Typed history/retention remain separate prerequisites. See
+[actual controls and gate][native-tof-cylinder-intake-review].
 
 
 ### Synthetic Evaluation Tooling (2026-10-16)
@@ -2390,3 +2407,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
+[native-tof-cylinder-intake-review]: ../../REVIEW.md#249-bounded-native-tof-cylinder-intake-2026-11-10

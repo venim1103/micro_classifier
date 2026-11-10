@@ -11774,37 +11774,68 @@ def test_native_tof_selection_intake(
 
 
 @pytest.mark.parametrize(
-    "case",
-    (
-        "copy",
-        "missing",
-        "epoch",
-        "source_identity",
-        "inputs",
-        "words",
-        "shape",
-        "index",
-        "mask",
-        "budget",
-        "flag",
-        "late_profile",
-        "late_trace",
-        "late_source",
-        "late_cache",
-        "outgoing",
-    ),
+    ("cylinder", "case"),
+    [
+        (cylinder, case)
+        for cylinder in (False, True)
+        for case in (
+            "copy",
+            "missing",
+            "epoch",
+            "source_identity",
+            "inputs",
+            "words",
+            "shape",
+            "index",
+            "mask",
+            "budget",
+            "flag",
+            "late_profile",
+            "late_trace",
+            "late_source",
+            "late_cache",
+            "outgoing",
+        )
+    ]
+    + [
+        (True, case)
+        for case in (
+            "side_count",
+            "side_sign",
+            "top_shape",
+            "entry_scalar",
+            "nonfinite",
+            "max_obstacles",
+            "dtype",
+        )
+    ],
 )
-def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, case):
+def test_native_tof_wall_intake(
+    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
+):
+    from dataclasses import replace
+
     from sim import diagnostics, rover
 
+    kind = "cylinder" if cylinder else "wall"
+    cache_name = f"_native_tof_{kind}_source"
+    sample = getattr(diagnostics, f"_sample_simulator_native_tof_{kind}_source")
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if cylinder:
+        environment.scenario = replace(
+            environment.scenario,
+            obstacles=((3.0, 3.0, 0.25),) * (32 if case == "max_obstacles" else 1),
+        )
     environment.step(
-        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        [0.125, 0.3],
+        capture_native_tof_source=True,
+        **{f"capture_native_tof_{kind}": True},
     )
-    captured = environment._native_tof_wall_source
-    trace = captured["wall"]
+    captured = getattr(environment, cache_name)
+    trace = captured[kind]
+    entries = trace["cylinders" if cylinder else "walls"]
     if case == "missing":
-        environment._native_tof_wall_source = None
+        setattr(environment, cache_name, None)
     elif case == "source_identity":
         environment._native_tof_source = dict(environment._native_tof_source)
     elif case == "inputs":
@@ -11814,13 +11845,28 @@ def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, c
     elif case == "shape":
         trace["world_frame_unit_rays"] = np.zeros((8, 8, 2))
     elif case == "index":
-        trace["walls"][0]["wall_index"] = False
+        entries[0]["obstacle_index" if cylinder else "wall_index"] = False
     elif case == "mask":
-        trace["walls"][0]["hit"] = trace["walls"][0]["hit"].astype(np.uint8)
+        stage = entries[0]["sides"][0] if cylinder else entries[0]
+        stage["hit"] = stage["hit"].astype(np.uint8)
     elif case == "budget":
-        trace["walls"] *= 2
+        trace["cylinders" if cylinder else "walls"] *= 33 if cylinder else 2
     elif case == "flag":
         captured["source_qualified"] = True
+    elif case == "side_count":
+        entries[0]["sides"] *= 2
+    elif case == "side_sign":
+        entries[0]["sides"][1]["sign"] = True
+    elif case == "top_shape":
+        entries[0]["top"]["relative_m"] = np.zeros((8, 8))
+    elif case == "entry_scalar":
+        entries[0]["radius_m"] = True
+    elif case == "nonfinite":
+        entries[0]["offset_m"][0] = math.nan
+    elif case == "dtype":
+        entries[0]["sides"][0]["distance_m"] = entries[0]["sides"][0][
+            "distance_m"
+        ].astype(np.float32)
     original_intake, original_copy = (
         diagnostics._sample_simulator_native_tof_source,
         diagnostics.deepcopy,
@@ -11832,7 +11878,7 @@ def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, c
         actual = original_copy(value, *args, **kwargs)
         if (
             type(value) is dict
-            and value.get("schema") == "micro-classifier/native-tof-wall-source/1"
+            and value.get("schema") == f"micro-classifier/native-tof-{kind}-source/1"
         ):
             outgoing["wall"] = actual
         return actual
@@ -11848,10 +11894,17 @@ def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, c
             work["mutations"] += 1
         elif work["intake"] == 2:
             if case == "late_trace":
-                entry = trace["walls"][0]
-                entry["numerator_m"] = math.nextafter(entry["numerator_m"], math.inf)
+                if cylinder:
+                    entries[0]["projection_m"][0, 0] = math.nextafter(
+                        entries[0]["projection_m"][0, 0], math.inf
+                    )
+                else:
+                    entry = trace["walls"][0]
+                    entry["numerator_m"] = math.nextafter(
+                        entry["numerator_m"], math.inf
+                    )
             elif case == "late_cache":
-                environment._native_tof_wall_source = dict(captured)
+                setattr(environment, cache_name, dict(captured))
             elif case == "late_profile":
                 from dataclasses import replace
 
@@ -11881,20 +11934,54 @@ def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, c
     before_rng = deepcopy(environment.rng.bit_generator.state)
     before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
     epoch = "x" * 33 if case == "epoch" else owner._epoch
-    if case == "copy":
-        actual = diagnostics._sample_simulator_native_tof_wall_source(
-            environment, epoch
-        )
+    if case in ("copy", "max_obstacles"):
+        actual = sample(environment, epoch)
         assert actual["source_epoch"] == owner._epoch and actual["tick"] == 4
         assert actual["delivery_tick"] == actual["source"]["delivery_tick"] == 6
         for name in (
             "pre_noise_ranges_m",
             "world_frame_unit_rays",
-            "floor_candidate_ranges_m",
+            *(("floor_candidate_ranges_m",) if not cylinder else ()),
         ):
-            assert actual["wall"][name] == actual["source"]["native_source"][name]
-        assert len(actual["wall"]["walls"]) == 4
-        for index, entry in enumerate(actual["wall"]["walls"]):
+            assert actual[kind][name] == actual["source"]["native_source"][name]
+        if cylinder:
+            assert (
+                len(actual[kind]["cylinders"])
+                == len(entries)
+                == (32 if case == "max_obstacles" else 1)
+            )
+            for index, entry in enumerate(actual[kind]["cylinders"]):
+                raw = entries[index]
+                assert entry["obstacle_index"] == index
+                assert entry["centre_m"] == tuple(
+                    value.hex() for value in raw["centre_m"]
+                )
+                assert (
+                    entry["radius_m"] == raw["radius_m"].hex()
+                    and entry["top_m"] == raw["top_m"].hex()
+                )
+                for name in ("offset_m", "projection_m", "discriminant_m2", "root_m"):
+                    assert entry[name] == tuple(
+                        float(word).hex() for word in raw[name].flat
+                    )
+                for copied_stage, raw_stage in zip(
+                    (*entry["sides"], entry["top"]),
+                    (*raw["sides"], raw["top"]),
+                    strict=True,
+                ):
+                    for name, value in raw_stage.items():
+                        if type(value) is np.ndarray:
+                            expected = (
+                                tuple(map(bool, value.flat))
+                                if value.dtype == bool
+                                else tuple(float(word).hex() for word in value.flat)
+                            )
+                        else:
+                            expected = value.hex() if type(value) is float else value
+                        assert copied_stage[name] == expected
+        else:
+            assert len(actual["wall"]["walls"]) == 4
+        for index, entry in enumerate(actual.get("wall", {}).get("walls", ())):
             assert entry["wall_index"] == index
             assert entry["numerator_m"] == trace["walls"][index]["numerator_m"].hex()
             for name in (
@@ -11918,17 +12005,21 @@ def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, c
             "native_execution_qualified",
             "command_admission_qualified",
         ):
-            assert actual[flag] is False and actual["wall"][flag] is False
-        actual["wall"]["inputs"]["config"]["max_range"] = -99.0
-        actual["wall"]["walls"][0]["numerator_m"] = "changed"
+            assert actual[flag] is False and actual[kind][flag] is False
+        actual[kind]["inputs"]["config"]["max_range"] = -99.0
+        if cylinder:
+            actual[kind]["cylinders"][0]["sides"][0]["distance_m"] = ("changed",) * 64
+            assert type(entries[0]["sides"][0]["distance_m"]) is np.ndarray
+        else:
+            actual["wall"]["walls"][0]["numerator_m"] = "changed"
+            assert type(trace["walls"][0]["numerator_m"]) is float
         assert trace["inputs"]["config"]["max_range"] > 0
-        assert type(trace["walls"][0]["numerator_m"]) is float
         actual["source"]["native_source"]["inputs"]["yaw_rad"] = -99.0
         assert environment._native_tof_source["source"]["inputs"]["yaw_rad"] != -99.0
         assert work["intake"] == 2
     else:
         with pytest.raises(ValueError):
-            diagnostics._sample_simulator_native_tof_wall_source(environment, epoch)
+            sample(environment, epoch)
     if case in (
         "missing",
         "epoch",
@@ -11938,6 +12029,12 @@ def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, c
         "mask",
         "budget",
         "flag",
+        "side_count",
+        "side_sign",
+        "top_shape",
+        "entry_scalar",
+        "nonfinite",
+        "dtype",
     ):
         assert work["intake"] == 0
     assert environment.tick == before_tick

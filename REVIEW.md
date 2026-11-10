@@ -431,6 +431,43 @@ uniform error/physical/clock/permission/admission qualification. All eight flags
 false and no usable command. Next closed cylinder intake with typed fixed shapes,
 canonical detached words and closing source/cache/profile/output checks; no replay.
 
+## 249. Bounded Native ToF Cylinder Intake (2026-11-10)
+
+Checkpoint `a8ead88` pushed/clean. Local hypothesis: closed typed acquisition/
+trace/cylinder/side/top layouts and fixed arrays can be detached to canonical
+words, bracketed by two existing native intakes and closing cache/RNG/profile/
+pose/content/output checks. No geometry replay, hashing, recorder read or clock.
+Up to32 cylinders, each two sides/one top, fixed64-ray arrays; each metadata
+pass <=45696 canonical array/entry words plus6144 builtin mask booleans. Inputs
+remain under the existing native template/profile budget; no arithmetic proof.
+
+Reuse original16 wall-intake cases/caps and add23 cylinder cases including
+malformed side/top/type controls and max32 repeated declared cylinders. One
+setup step/geometry, <=2 native intakes per case; existing parent ledgers remain
+unchanged. Three pytest positions including failures/aborts: first39/60 seconds,
+one necessary repair reserve, final root/300 seconds. Retain `cylinder-249-*`
+logs, no old attempt refund/study/task-data/model/dependency/download/hardware.
+All eight flags false, no geometry/coverage/error/source/clock/permission or
+admission qualification and no usable command.
+
+First39 passed,2629 deselected,3.42 s; original16 wall cases unchanged in scope.
+Required root3591 passed,1 known transformer QDQ xfailed,71 warnings,82.82 s;
+root Ruff, changed-file format check and whitespace passed. Editor diagnostics
+clear. AST proves one added intake helper and only the existing intake matrix
+changed; all prior source/test nodes remain. No prior signature changed. Two
+of three pytest positions used, no failures/aborts; unused reserve is not
+follow-on authority. `cylinder-249-focused-1.log`/`cylinder-249-root-1.log`
+retained under the recovery directory. No additional C/Arm/sanitizer/board
+opt-in gates ran.
+
+Successful max32 and nonempty copies preserve original IDs/words and are
+detached; malformed layout, oversized/count/type/nonfinite controls reject
+before native intake and late mutations reject without publishing a result.
+All eight flags false, no source/geometry/coverage/numerical/physical/clock/
+permission/admission qualification and no usable command. Next typed cylinder
+history prehash validation, then explicit recorder retention. No replay or
+automatic source adoption follows from matching words.
+
 ## Sources
 
 Hardware and tools:

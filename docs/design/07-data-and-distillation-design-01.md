@@ -1496,6 +1496,25 @@ unchanged. [Review §225][native-tof-selection-intake-review] records the finite
 controls, closing-context follow-up and required root gate.
 
 
+##### Selected Native ToF Wall-Word Residuals (2026-11-10)
+
+Private synthetic-only `_native_tof_selected_wall_residuals` consumes supplied
+canonical position/bounds/ray/range words and fixed64 candidate labels/indices.
+For each supplied finite wall selection it reports the exact observed-minus-
+`(wall-position_axis)/direction_axis` discrepancy using guarded rational
+arithmetic, with at most256 value conversions/192 operations and4096-bit
+preflight. Other kinds have no wall quotient; infinite wall words remain
+unknown, zero wall denominators and unsupported layouts reject. Original words,
+wall index and ray index are retained; all eight flags remain false.
+
+This compares supplied stored operands, not ideal geometry or independently
+retained subtraction/division primitives. It does not authenticate a source,
+prove candidate masking/minima, cover unselected walls/cylinders or accept a
+tolerance, full range/error/coverage, physical clearance, clock, permission or
+admission. There is no source/recorder read, geometry/replay, clock or RNG work.
+See [wall-word controls and limits][native-tof-wall-word-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2204,11 +2223,12 @@ figure is not an established minimum.
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
-[native-tof-ray-norm-review]: ../../REVIEW.md#221-native-tof-direction-squared-norm-residuals-2026-11-09
-[native-tof-owned-norm-review]: ../../REVIEW.md#222-current-source-native-tof-ray-norm-composition-2026-11-09
-[native-tof-selection-review]: ../../REVIEW.md#223-native-tof-minimum-candidate-correspondence-2026-11-09
-[native-tof-selection-acquisition-review]: ../../REVIEW.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
-[native-tof-selection-intake-review]: ../../REVIEW.md#225-bounded-native-tof-selection-intake-2026-11-09
+[native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09
+[native-tof-owned-norm-review]: ../review/221-225.md#222-current-source-native-tof-ray-norm-composition-2026-11-09
+[native-tof-selection-review]: ../review/221-225.md#223-native-tof-minimum-candidate-correspondence-2026-11-09
+[native-tof-selection-acquisition-review]: ../review/221-225.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
+[native-tof-selection-intake-review]: ../review/221-225.md#225-bounded-native-tof-selection-intake-2026-11-09
+[native-tof-wall-word-review]: ../../REVIEW.md#231-selected-native-tof-wall-word-residuals-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

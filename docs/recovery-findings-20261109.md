@@ -62,5 +62,5 @@ attempts before execution. No new source checkpoint or crash diagnosis follows.
 [review]: ../REVIEW.md
 [source]: ../sim/diagnostics.py
 [tests]: ../tests/test_sim.py
-[gate]: ../REVIEW.md#225-bounded-native-tof-selection-intake-2026-11-09
+[gate]: review/221-225.md#225-bounded-native-tof-selection-intake-2026-11-09
 [restart]: ../REVIEW.md#226-selection-retention-recovery-budget-blocker-2026-11-09

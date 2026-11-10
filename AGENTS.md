@@ -31,11 +31,13 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §230 for verified current-delivery native ToF selection
-correspondence and the latest source gate. §§226-228 preserve earlier interrupted/unknown
+Read [REVIEW.md][review] §231 for bounded selected-wall word residuals and the
+latest source gate; §230 retains verified current-delivery selection correspondence.
+§§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
 Next advance independently supported native ToF calculation/source prerequisites;
-selected candidate labels alone do not prove geometry or complete coverage.
+supplied selected-wall discrepancies do not retain discarded primitive wall
+intermediates, prove geometry or establish complete coverage.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

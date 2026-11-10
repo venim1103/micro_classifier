@@ -12338,6 +12338,285 @@ def test_native_tof_selection_snapshot(
         "actual",
         "exact",
         "rounded",
+        "four_walls",
+        "non_wall",
+        "zero_direction",
+        "infinite",
+        "signed_zero",
+        "subnormal",
+        "large_finite",
+        "work_limit",
+        "flag",
+        "shape",
+        "noncanonical",
+        "label",
+        "index",
+    ),
+)
+def test_native_tof_selected_wall_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    setup = {"geometry": 0, "intake": 0}
+    original_geometry = rover.tof_ranges
+    original_intake = diagnostics._sample_simulator_native_tof_selection_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def intake(*args, **kwargs):
+        setup["intake"] += 1
+        assert setup["intake"] <= 1
+        return original_intake(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_selection_source", intake
+    )
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step(
+        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_selection=True
+    )
+    packet = diagnostics._sample_simulator_native_tof_selection_source(
+        environment, owner._epoch
+    )
+    native, selected = packet["source"]["native_source"], packet["selection"]
+    arguments = {
+        "position_m_hex": tuple(
+            value.hex() for value in native["inputs"]["position_m"]
+        ),
+        "bounds_m_hex": tuple(
+            float(value).hex() for value in native["inputs"]["scenario"]["bounds"]
+        ),
+        "world_frame_unit_rays": native["world_frame_unit_rays"],
+        "pre_noise_ranges_m": native["pre_noise_ranges_m"],
+        "last_matching_candidate_kind": selected["last_matching_candidate_kind"],
+        "last_matching_candidate_index": selected["last_matching_candidate_index"],
+    }
+    if case != "actual":
+        arguments.update(
+            position_m_hex=((0.0).hex(),) * 2,
+            bounds_m_hex=((1.0).hex(),) * 2,
+            world_frame_unit_rays=((3.0).hex(), (0.0).hex(), (0.0).hex()) * 64,
+            pre_noise_ranges_m=((1.0 / 3).hex(),) * 64,
+            last_matching_candidate_kind=("wall",) * 64,
+            last_matching_candidate_index=(1,) * 64,
+        )
+    if case == "exact":
+        arguments["world_frame_unit_rays"] = (
+            (1.0).hex(),
+            (0.0).hex(),
+            (0.0).hex(),
+        ) * 64
+        arguments["pre_noise_ranges_m"] = ((1.0).hex(),) * 64
+    elif case == "four_walls":
+        directions = (
+            (-1.0, 0.0, 0.0),
+            (1.0, 0.0, 0.0),
+            (0.0, -1.0, 0.0),
+            (0.0, 1.0, 0.0),
+        )
+        arguments["position_m_hex"] = ((0.5).hex(),) * 2
+        arguments["last_matching_candidate_index"] = tuple(
+            index % 4 for index in range(64)
+        )
+        arguments["world_frame_unit_rays"] = tuple(
+            component.hex()
+            for index in range(64)
+            for component in directions[index % 4]
+        )
+        arguments["pre_noise_ranges_m"] = ((0.5).hex(),) * 64
+    elif case == "non_wall":
+        arguments["last_matching_candidate_kind"] = ("floor",) * 64
+        arguments["last_matching_candidate_index"] = (-1,) * 64
+    elif case == "zero_direction":
+        arguments["world_frame_unit_rays"] = (
+            (0.0).hex(),
+            (1.0).hex(),
+            (0.0).hex(),
+        ) * 64
+    elif case == "infinite":
+        arguments["pre_noise_ranges_m"] = ("inf",) * 64
+    elif case == "signed_zero":
+        arguments["world_frame_unit_rays"] = (
+            (-1.0).hex(),
+            (0.0).hex(),
+            (0.0).hex(),
+        ) * 64
+        arguments["last_matching_candidate_index"] = (0,) * 64
+        arguments["pre_noise_ranges_m"] = ((-0.0).hex(),) * 64
+    elif case in ("subnormal", "large_finite", "work_limit"):
+        distance = (
+            math.ulp(0.0)
+            if case == "subnormal"
+            else float.fromhex("0x1.fffffffffffffp+1023")
+        )
+        arguments["bounds_m_hex"] = (distance.hex(), (1.0).hex())
+        arguments["world_frame_unit_rays"] = (
+            (1.0).hex(),
+            (0.0).hex(),
+            (0.0).hex(),
+        ) * 64
+        arguments["pre_noise_ranges_m"] = (distance.hex(),) * 64
+    elif case == "shape":
+        arguments["world_frame_unit_rays"] = arguments["world_frame_unit_rays"][:-1]
+    elif case == "noncanonical":
+        arguments["position_m_hex"] = ("0.0", (0.0).hex())
+    elif case == "label":
+        arguments["last_matching_candidate_kind"] = ("unsupported",) * 64
+    elif case == "index":
+        arguments["last_matching_candidate_index"] = (True,) * 64
+    arguments_before = deepcopy(arguments)
+    tick_before = environment.tick
+    rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+    rng_state_before = deepcopy(rng_before.bit_generator.state)
+    odometry_state_before = deepcopy(odometry_rng_before.bit_generator.state)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = {"values": 0, "binary": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 256
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 192
+        return original_binary(instance, left, right, operation)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall residuals must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case == "work_limit":
+        monkeypatch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 16)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_selection_source", forbidden
+    )
+    rejected = {
+        "zero_direction",
+        "work_limit",
+        "flag",
+        "shape",
+        "noncanonical",
+        "label",
+        "index",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_selected_wall_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_selected_wall_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 64
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for entry in result["entries"]:
+            index = entry["ray_index"]
+            kind = arguments["last_matching_candidate_kind"][index]
+            assert entry["candidate_kind"] == kind
+            assert entry["observed_range_hex"] == arguments["pre_noise_ranges_m"][index]
+            if kind != "wall":
+                assert entry["status"] == "not_selected_wall"
+                assert (
+                    entry["exact_quotient_ratio"] is None
+                    and entry["signed_residual_ratio"] is None
+                )
+                continue
+            if case == "infinite":
+                assert entry["status"] == "unknown_nonfinite_wall_candidate"
+                assert (
+                    entry["exact_quotient_ratio"] is None
+                    and entry["signed_residual_ratio"] is None
+                )
+                continue
+            wall_index = arguments["last_matching_candidate_index"][index]
+            axis = wall_index // 2
+            wall_word = (
+                arguments["bounds_m_hex"][axis] if wall_index % 2 else (0.0).hex()
+            )
+            position_word = arguments["position_m_hex"][axis]
+            direction_word = arguments["world_frame_unit_rays"][index * 3 + axis]
+            wall_num, wall_den = float.fromhex(wall_word).as_integer_ratio()
+            position_num, position_den = float.fromhex(position_word).as_integer_ratio()
+            direction_num, direction_den = float.fromhex(
+                direction_word
+            ).as_integer_ratio()
+            observed_num, observed_den = float.fromhex(
+                entry["observed_range_hex"]
+            ).as_integer_ratio()
+            exact = Fraction(
+                (wall_num * position_den - position_num * wall_den) * direction_den,
+                wall_den * position_den * direction_num,
+            )
+            residual = Fraction(
+                observed_num * exact.denominator - exact.numerator * observed_den,
+                observed_den * exact.denominator,
+            )
+            assert entry["status"] == "computed_exact_selected_wall_residual"
+            assert (
+                entry["wall_hex"] == wall_word
+                and entry["position_axis_hex"] == position_word
+            )
+            assert entry["direction_axis_hex"] == direction_word
+            assert entry["exact_quotient_ratio"] == exact.as_integer_ratio()
+            assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
+        if case == "rounded":
+            assert result["entries"][0]["signed_residual_ratio"][0] != 0
+        if case == "signed_zero":
+            assert result["entries"][0]["observed_range_hex"] == (-0.0).hex()
+        selected_count = sum(
+            entry["candidate_kind"] == "wall" for entry in result["entries"]
+        )
+        if case == "actual":
+            assert selected_count > 0
+        assert work["values"] == (0 if case == "infinite" else 4 * selected_count)
+        assert work["binary"] == (0 if case == "infinite" else 3 * selected_count)
+    assert arguments == arguments_before and environment.tick == tick_before
+    assert (
+        environment.rng is rng_before
+        and environment.odometry_rng is odometry_rng_before
+    )
+    assert rng_before.bit_generator.state == rng_state_before
+    assert odometry_rng_before.bit_generator.state == odometry_state_before
+    assert setup == {"geometry": 1, "intake": 1}
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
+        "rounded",
         "changed_word",
         "upward",
         "signed_zero",

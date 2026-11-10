@@ -183,11 +183,11 @@ for this project.
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-sampling-review]: ../review/183-220.md#219-ideal-native-tof-sampling-residuals-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
-[native-tof-ray-norm-review]: ../../REVIEW.md#221-native-tof-direction-squared-norm-residuals-2026-11-09
-[native-tof-owned-norm-review]: ../../REVIEW.md#222-current-source-native-tof-ray-norm-composition-2026-11-09
-[native-tof-selection-review]: ../../REVIEW.md#223-native-tof-minimum-candidate-correspondence-2026-11-09
-[native-tof-selection-acquisition-review]: ../../REVIEW.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
-[native-tof-selection-intake-review]: ../../REVIEW.md#225-bounded-native-tof-selection-intake-2026-11-09
+[native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09
+[native-tof-owned-norm-review]: ../review/221-225.md#222-current-source-native-tof-ray-norm-composition-2026-11-09
+[native-tof-selection-review]: ../review/221-225.md#223-native-tof-minimum-candidate-correspondence-2026-11-09
+[native-tof-selection-acquisition-review]: ../review/221-225.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
+[native-tof-selection-intake-review]: ../review/221-225.md#225-bounded-native-tof-selection-intake-2026-11-09
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

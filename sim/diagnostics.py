@@ -9770,6 +9770,152 @@ def _native_tof_floor_division_residuals(
     }
 
 
+def _native_tof_selected_wall_residuals(
+    *,
+    position_m_hex,
+    bounds_m_hex,
+    world_frame_unit_rays,
+    pre_noise_ranges_m,
+    last_matching_candidate_kind,
+    last_matching_candidate_index,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native wall residuals require synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native wall residual rational budget unsupported")
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native wall residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native wall residual word budget exhausted")
+            value = float.fromhex(word)
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or value == -math.inf
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native wall residual words must be canonical")
+            values.append(value)
+        return values
+
+    position = decoded(position_m_hex, 2, True)
+    bounds = decoded(bounds_m_hex, 2, True)
+    rays = decoded(world_frame_unit_rays, 192, True)
+    observed = decoded(pre_noise_ranges_m, 64, False)
+    if any(value <= 0 for value in bounds):
+        raise ValueError("native wall residual bounds words must be positive")
+    if (
+        type(last_matching_candidate_kind) is not tuple
+        or len(last_matching_candidate_kind) != 64
+        or type(last_matching_candidate_index) is not tuple
+        or len(last_matching_candidate_index) != 64
+    ):
+        raise ValueError("native wall residual candidate count unsupported")
+    for kind, index in zip(
+        last_matching_candidate_kind, last_matching_candidate_index, strict=True
+    ):
+        if (
+            type(kind) is not str
+            or kind
+            not in {
+                "none",
+                "floor",
+                "wall",
+                "cylinder_near",
+                "cylinder_far",
+                "cylinder_top",
+            }
+            or type(index) is not int
+            or (kind in ("none", "floor") and index != -1)
+            or (kind == "wall" and not 0 <= index < 4)
+            or (kind.startswith("cylinder_") and not 0 <= index < 32)
+        ):
+            raise ValueError("native wall residual candidate words unsupported")
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    for ray_index, (kind, index, distance) in enumerate(
+        zip(
+            last_matching_candidate_kind,
+            last_matching_candidate_index,
+            observed,
+            strict=True,
+        )
+    ):
+        entry = {
+            "ray_index": ray_index,
+            "candidate_kind": kind,
+            "candidate_index": index,
+            "observed_range_hex": distance.hex(),
+            "wall_hex": None,
+            "position_axis_hex": None,
+            "direction_axis_hex": None,
+            "exact_quotient_ratio": None,
+            "signed_residual_ratio": None,
+            "status": "not_selected_wall",
+        }
+        if kind == "wall":
+            axis = index // 2
+            wall = bounds[axis] if index % 2 else 0.0
+            direction = rays[ray_index * 3 + axis]
+            if direction == 0:
+                raise ValueError("native wall residual branch correspondence mismatch")
+            entry.update(
+                wall_hex=wall.hex(),
+                position_axis_hex=position[axis].hex(),
+                direction_axis_hex=direction.hex(),
+            )
+            if distance == math.inf:
+                entry["status"] = "unknown_nonfinite_wall_candidate"
+            else:
+                try:
+                    numerator = arithmetic.binary(
+                        arithmetic.value(wall), arithmetic.value(position[axis]), "sub"
+                    )
+                    quotient = arithmetic.binary(
+                        numerator, arithmetic.value(direction), "div"
+                    )
+                    residual = arithmetic.binary(
+                        arithmetic.value(distance), quotient, "sub"
+                    )
+                except ArithmeticError as error:
+                    raise ValueError(
+                        "native wall residual rational budget exhausted"
+                    ) from error
+                entry.update(
+                    status="computed_exact_selected_wall_residual",
+                    exact_quotient_ratio=quotient.as_integer_ratio(),
+                    signed_residual_ratio=residual.as_integer_ratio(),
+                )
+        entries.append(entry)
+    return {
+        "schema": "micro-classifier/native-tof-selected-wall-residuals/1",
+        "allowed_use": "offline_selected_wall_word_diagnostics_only",
+        "status": "reported_selected_wall_word_residuals",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "position_m_hex": position_m_hex,
+        "bounds_m_hex": bounds_m_hex,
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_direction_norm_residuals(
     *, world_frame_unit_rays, synthetic_test_only=False
 ):

@@ -2335,6 +2335,22 @@ false; no primitive uniform/numerical/physical/source/geometry/coverage/clock/
 permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-division-review].
 
 
+#### Supplied-Word Cylinder Top Relative Expression (2026-11-10)
+
+`_native_tof_cylinder_top_relative_residuals` reports each axis exact combined
+offset + effective_distance*horizontal ray expression and observed-minus-exact
+residual. Raw nonfinite distance -> +0; raw/effective words and branch retained,
+nonfinite observation unknown residual. Products uncaptured, no isolated
+multiply/add/FMA rounding claim. Finite offsets/rays, other words non-NaN;
+signed-zero words retained, no tie adoption. <=32 cylinders/64 rays/two axes/
+6400 canonical words/32 characters,4096-bit rational ceiling, shared horizontal/
+offset/effective values <=6336 values/12288 binary operations/4096 entries.
+All words preflight before rational work; exhaustion rejects without result.
+No intake/read/hash/retention/replay/clock/RNG or composition. All eight flags
+false, no primitive uniform/numerical/physical/source/geometry/coverage/clock/
+permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-relative-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2354,3 +2370,4 @@ permission/admission proof. See [actual controls and gate][native-tof-cylinder-t
 [native-tof-cylinder-side-minimum-review]: ../../REVIEW.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10
 [native-tof-cylinder-top-offset-review]: ../../REVIEW.md#264-supplied-word-cylinder-top-offset-expression-2026-11-10
 [native-tof-cylinder-top-division-review]: ../../REVIEW.md#265-guarded-supplied-word-cylinder-top-division-2026-11-10
+[native-tof-cylinder-top-relative-review]: ../../REVIEW.md#266-supplied-word-cylinder-top-relative-expression-2026-11-10

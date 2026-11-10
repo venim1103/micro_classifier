@@ -536,6 +536,50 @@ false. Next combined relative expression offset + effective_distance*horizontal
 ray, raw nonfinite distance -> +0. Products are uncaptured: no isolated multiply/
 add/FMA rounding claim, before radial and selection/source prerequisites.
 
+## 266. Supplied-Word Cylinder Top Relative Expression (2026-11-10)
+
+Checkpoint `2d5056a` pushed/clean. Native relative is offset + effective_distance
+times horizontal ray, raw nonfinite distance -> +0. Hypothesis: report each axis
+unrounded supplied-word combined expression and observed-minus-exact residual,
+explicit raw/effective words and fallback; nonfinite observation unknown residual.
+Products are uncaptured: no isolated multiply/add/FMA rounding claim. Finite
+offsets/rays, other words non-NaN, signed-zero words retained without tie adoption.
+<=32 cylinders/64 rays/two axes/6400 canonical words/32 characters,4096-bit
+rational ceiling, shared horizontal/offset/effective values <=6336 values/
+12288 binary operations/4096 entries. All words preflight before rational work;
+budget exhaustion rejects without result. No intake/read/hash/retention/replay/
+clock/RNG or composition. All eight flags false, no primitive uniform/numerical/
+physical/source/geometry/coverage/clock/one-use/permission/admission or usable command.
+
+35 bounded synthetic controls, <=12288 oracle operations; actual nonempty setup
+<=1 geometry/selected intake,2 native intakes, otherwise none. Both axes/mixed
+finite and +/-inf distance fallback, signed words/rounded/perturbed/cancellation/
+finite extremes/overflow exact target/nonfinite unknown, max32/empty and typed/
+ingress/binary exhaustion before result. Input/tick/RNG preserved. Three pytest
+positions including failures/aborts: first35/60 seconds, one necessary repair
+reserve, final root/300 seconds; retain `cylinder-266-*` logs. No old refunds/
+protected runs/task data/dependencies/hardware. Next independent supplied-word
+radial-squared and radius-squared prerequisites before cap selection/composition.
+
+First35 passed,3064 deselected,4.03 s. Required root4022 passed,1 known
+transformer QDQ xfailed,71 warnings,98.02 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new top
+relative helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-266-focused-1.log`/
+`cylinder-266-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, both axes/mixed finite and nonfinite
+distance fallback, raw/effective signed words, rounded/perturbed/cancellation/
+finite extremes/overflow exact target/nonfinite unknown and typed/ingress/binary
+rejection verified within caps, input/tick/RNG unchanged. Max32 reaches6336
+values/12288 binary+oracle operations; source ceiling remains4096 bits. All eight
+flags false, no isolated multiply/add/FMA rounding, primitive uniform/numerical/
+physical/source/geometry/coverage/clock/one-use/permission/admission or usable
+command. Next independently report relative.x^2+relative.y^2 and radius^2 from
+supplied words, keeping cap radial predicate and candidate selection separate.
+
 ## Sources
 
 Hardware and tools:

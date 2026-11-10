@@ -10037,6 +10037,141 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_top_relative_residuals(
+    *,
+    offset_m_hex,
+    world_frame_unit_rays,
+    top_distance_m_hex,
+    top_relative_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder top relative residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder top relative rational budget unsupported")
+    if type(offset_m_hex) is not tuple or len(offset_m_hex) > 32:
+        raise ValueError("native cylinder top relative obstacle count unsupported")
+    count = len(offset_m_hex)
+    if any(
+        type(rows) is not tuple or len(rows) != count
+        for rows in (top_distance_m_hex, top_relative_m_hex)
+    ):
+        raise ValueError("native cylinder top relative obstacle count unsupported")
+
+    def decoded(words, size, finite_only):
+        if type(words) is not tuple or len(words) != size:
+            raise ValueError("native cylinder top relative word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder top relative word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder top relative words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native cylinder top relative words must be canonical")
+            values.append(value)
+        return values
+
+    rays = decoded(world_frame_unit_rays, 192, True)
+    offsets = tuple(decoded(words, 2, True) for words in offset_m_hex)
+    distances = tuple(decoded(words, 64, False) for words in top_distance_m_hex)
+    relatives = tuple(decoded(words, 128, False) for words in top_relative_m_hex)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        horizontal = (
+            tuple(
+                tuple(arithmetic.value(rays[ray_index * 3 + axis]) for axis in range(2))
+                for ray_index in range(64)
+            )
+            if offsets
+            else ()
+        )
+        for obstacle_index, offset in enumerate(offsets):
+            bases = tuple(arithmetic.value(value) for value in offset)
+            for ray_index, distance in enumerate(distances[obstacle_index]):
+                finite = math.isfinite(distance)
+                effective = distance if finite else 0.0
+                effective_value = arithmetic.value(effective)
+                for axis in range(2):
+                    exact = arithmetic.binary(
+                        bases[axis],
+                        arithmetic.binary(
+                            effective_value, horizontal[ray_index][axis], "mul"
+                        ),
+                        "add",
+                    )
+                    observed = relatives[obstacle_index][ray_index * 2 + axis]
+                    residual = (
+                        arithmetic.binary(arithmetic.value(observed), exact, "sub")
+                        if math.isfinite(observed)
+                        else None
+                    )
+                    entries.append(
+                        {
+                            "obstacle_index": obstacle_index,
+                            "ray_index": ray_index,
+                            "axis": axis,
+                            "offset_axis_hex": offset_m_hex[obstacle_index][axis],
+                            "direction_axis_hex": world_frame_unit_rays[
+                                ray_index * 3 + axis
+                            ],
+                            "raw_distance_hex": top_distance_m_hex[obstacle_index][
+                                ray_index
+                            ],
+                            "effective_distance_hex": effective.hex(),
+                            "distance_branch": "finite_distance"
+                            if finite
+                            else "nonfinite_distance_zero_fallback",
+                            "observed_relative_hex": top_relative_m_hex[obstacle_index][
+                                ray_index * 2 + axis
+                            ],
+                            "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                            "signed_residual_ratio": None
+                            if residual is None
+                            else residual.as_integer_ratio(),
+                            "status": "unknown_nonfinite_cylinder_top_relative"
+                            if residual is None
+                            else "computed_exact_cylinder_top_relative_expression_residual",
+                        }
+                    )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder top relative rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-top-relative-residuals/1",
+        "allowed_use": "offline_cylinder_top_relative_word_diagnostics_only",
+        "status": "reported_cylinder_top_relative_expression_residuals",
+        "comparison_basis": "unrounded_supplied_word_offset_plus_effective_distance_times_horizontal_ray",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_top_division_residuals(
     *,
     world_frame_unit_rays,

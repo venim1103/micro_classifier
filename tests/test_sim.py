@@ -26877,6 +26877,364 @@ def test_native_tof_cylinder_top_mask_candidate_diagnostics(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "candidate_lower",
+        "previous_lower",
+        "alternating",
+        "equal_word",
+        "both_infinite",
+        "infinite_previous",
+        "infinite_candidate",
+        "signed_zero_previous",
+        "signed_zero_candidate",
+        "tie_wrong_value",
+        "same_value_wrong_word_previous",
+        "same_value_wrong_word_candidate",
+        "upstream_mismatch",
+        "wrong_minimum",
+        "subnormal",
+        "large_finite",
+        "empty",
+        "max_obstacles",
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+        "word_type",
+        "word_budget",
+        "budget",
+        "container_type",
+        "ray_shape",
+        "late_nan",
+    ),
+)
+def test_native_tof_cylinder_top_minimum_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "cylinder": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_cylinder = diagnostics._sample_simulator_native_tof_cylinder_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def cylinder_intake(*args, **kwargs):
+        setup["cylinder"] += 1
+        assert setup["cylinder"] <= 1
+        return original_cylinder(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_cylinder_source", cylinder_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "top_previous_minimum_m_hex": (((2.0).hex(),) * 64,),
+        "top_candidate_m_hex": (((1.0).hex(),) * 64,),
+        "top_minimum_after_m_hex": (((1.0).hex(),) * 64,),
+    }
+    if case == "actual":
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        trace = diagnostics._sample_simulator_native_tof_cylinder_source(
+            environment, owner._epoch
+        )["cylinder"]
+        assert len(trace["cylinders"]) == 1
+        arguments = {
+            "top_previous_minimum_m_hex": tuple(
+                entry["top"]["previous_minimum_m"] for entry in trace["cylinders"]
+            ),
+            "top_candidate_m_hex": tuple(
+                entry["top"]["candidate_m"] for entry in trace["cylinders"]
+            ),
+            "top_minimum_after_m_hex": tuple(
+                entry["top"]["minimum_after_m"] for entry in trace["cylinders"]
+            ),
+        }
+    elif case in ("previous_lower", "infinite_candidate"):
+        arguments["top_previous_minimum_m_hex"] = (((1.0).hex(),) * 64,)
+        arguments["top_candidate_m_hex"] = (
+            ("inf" if case == "infinite_candidate" else (2.0).hex(),) * 64,
+        )
+    elif case == "alternating":
+        arguments["top_previous_minimum_m_hex"] = tuple(
+            (value.hex(),) * 64 for value in (4.0, 3.0, 3.0, 2.0)
+        )
+        arguments["top_candidate_m_hex"] = tuple(
+            (value.hex(),) * 64 for value in (3.0, 5.0, 2.0, 6.0)
+        )
+        arguments["top_minimum_after_m_hex"] = tuple(
+            (value.hex(),) * 64 for value in (3.0, 3.0, 2.0, 2.0)
+        )
+    elif case == "equal_word":
+        arguments["top_previous_minimum_m_hex"] = arguments["top_candidate_m_hex"]
+    elif case in ("both_infinite", "infinite_previous"):
+        arguments["top_previous_minimum_m_hex"] = (("inf",) * 64,)
+        if case == "both_infinite":
+            arguments["top_candidate_m_hex"] = arguments["top_minimum_after_m_hex"] = (
+                ("inf",) * 64,
+            )
+    elif case in ("signed_zero_previous", "signed_zero_candidate", "tie_wrong_value"):
+        previous, candidate = (
+            (0.0, -0.0) if case == "signed_zero_candidate" else (-0.0, 0.0)
+        )
+        arguments["top_previous_minimum_m_hex"] = ((previous.hex(),) * 64,)
+        arguments["top_candidate_m_hex"] = ((candidate.hex(),) * 64,)
+        arguments["top_minimum_after_m_hex"] = (
+            ((1.0 if case == "tie_wrong_value" else previous).hex(),) * 64,
+        )
+    elif case in ("same_value_wrong_word_previous", "same_value_wrong_word_candidate"):
+        if case == "same_value_wrong_word_previous":
+            arguments["top_previous_minimum_m_hex"] = (((-0.0).hex(),) * 64,)
+        else:
+            arguments["top_candidate_m_hex"] = (((-0.0).hex(),) * 64,)
+        arguments["top_minimum_after_m_hex"] = (((0.0).hex(),) * 64,)
+    elif case == "upstream_mismatch":
+        for name in arguments:
+            arguments[name] *= 2
+        arguments["top_minimum_after_m_hex"] = (
+            ((3.0).hex(),) * 64,
+            arguments["top_minimum_after_m_hex"][1],
+        )
+    elif case == "wrong_minimum":
+        arguments["top_minimum_after_m_hex"] = (((3.0).hex(),) * 64,)
+    elif case in ("subnormal", "large_finite"):
+        maximum = float.fromhex("0x1.fffffffffffffp+1023")
+        target = math.ulp(0.0) if case == "subnormal" else math.nextafter(maximum, 0.0)
+        arguments["top_previous_minimum_m_hex"] = (
+            ((1.0 if case == "subnormal" else maximum).hex(),) * 64,
+        )
+        arguments["top_candidate_m_hex"] = arguments["top_minimum_after_m_hex"] = (
+            (target.hex(),) * 64,
+        )
+    elif case in ("empty", "max_obstacles", "budget", "late_nan"):
+        for name in arguments:
+            arguments[name] *= {
+                "empty": 0,
+                "max_obstacles": 32,
+                "budget": 33,
+                "late_nan": 32,
+            }[case]
+        if case == "late_nan":
+            arguments["top_minimum_after_m_hex"] = arguments["top_minimum_after_m_hex"][
+                :-1
+            ] + (arguments["top_minimum_after_m_hex"][-1][:-1] + ("nan",),)
+    elif case == "shape":
+        arguments["top_minimum_after_m_hex"] = ()
+    elif case in (
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+        "word_type",
+        "word_budget",
+    ):
+        arguments["top_previous_minimum_m_hex"] = (
+            (
+                {
+                    "noncanonical": "2.0",
+                    "overflow_word": "0x1p+99999",
+                    "nan": "nan",
+                    "negative_infinity": "-inf",
+                    "word_type": 1,
+                    "word_budget": "0" * 33,
+                }[case],
+            )
+            * 64,
+        )
+    elif case == "container_type":
+        arguments["top_previous_minimum_m_hex"] = list(
+            arguments["top_previous_minimum_m_hex"]
+        )
+    elif case == "ray_shape":
+        arguments["top_candidate_m_hex"] = (((1.0).hex(),) * 65,)
+    before_arguments = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"comparisons": 0, "forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder top minimum must not intake/read/retain/hash/step/reset/replay/clock/rational"
+        )
+
+    for name in (
+        "_sample_simulator_native_tof_cylinder_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+        "word_type",
+        "word_budget",
+        "budget",
+        "container_type",
+        "ray_shape",
+        "late_nan",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_cylinder_top_minimum_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_cylinder_top_minimum_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 64 * len(
+            arguments["top_previous_minimum_m_hex"]
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        word_mismatches = value_mismatches = unresolved = 0
+        for index, entry in enumerate(result["entries"]):
+            obstacle_index, ray_index = divmod(index, 64)
+            previous_word = arguments["top_previous_minimum_m_hex"][obstacle_index][
+                ray_index
+            ]
+            candidate_word = arguments["top_candidate_m_hex"][obstacle_index][ray_index]
+            observed_word = arguments["top_minimum_after_m_hex"][obstacle_index][
+                ray_index
+            ]
+            previous, candidate, observed = map(
+                float.fromhex, (previous_word, candidate_word, observed_word)
+            )
+            work["comparisons"] += 8
+            assert work["comparisons"] <= 16384
+            value_matches = observed == min(previous, candidate)
+            if previous == candidate and previous_word != candidate_word:
+                expected_word, selection = None, "equal_value_word_tie"
+                word_matches = None if value_matches else False
+            else:
+                expected_word = (
+                    previous_word if previous <= candidate else candidate_word
+                )
+                selection = (
+                    "equal_identical_words"
+                    if previous_word == candidate_word
+                    else "previous"
+                    if previous < candidate
+                    else "candidate"
+                )
+                word_matches = observed_word == expected_word
+            assert (
+                entry["obstacle_index"] == obstacle_index
+                and entry["ray_index"] == ray_index
+            )
+            assert (
+                entry["previous_hex"] == previous_word
+                and entry["candidate_hex"] == candidate_word
+            )
+            assert (
+                entry["observed_minimum_hex"] == observed_word
+                and entry["expected_minimum_hex"] == expected_word
+            )
+            assert entry["selection"] == selection
+            assert (
+                entry["minimum_value_matches"] is value_matches
+                and entry["minimum_word_matches"] is word_matches
+            )
+            assert entry["status"] == (
+                "unknown_equal_value_word_tie"
+                if word_matches is None
+                else "matched_stored_cylinder_top_minimum_words"
+                if word_matches
+                else "mismatched_stored_cylinder_top_minimum_words"
+            )
+            word_mismatches += word_matches is False
+            value_mismatches += not value_matches
+            unresolved += word_matches is None
+            if case == "upstream_mismatch" and obstacle_index == 1:
+                assert (
+                    entry["previous_hex"] == (2.0).hex()
+                    and entry["minimum_word_matches"] is True
+                )
+        assert result["word_mismatch_count"] == word_mismatches
+        assert result["value_mismatch_count"] == value_mismatches
+        assert result["unresolved_word_count"] == unresolved
+        assert word_mismatches == (
+            64
+            if case
+            in (
+                "wrong_minimum",
+                "tie_wrong_value",
+                "same_value_wrong_word_previous",
+                "same_value_wrong_word_candidate",
+                "upstream_mismatch",
+            )
+            else 0
+        )
+        assert value_mismatches == (
+            64
+            if case in ("wrong_minimum", "tie_wrong_value", "upstream_mismatch")
+            else 0
+        )
+        if case != "actual":
+            assert unresolved == (
+                64 if case in ("signed_zero_previous", "signed_zero_candidate") else 0
+            )
+    assert arguments == before_arguments and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "cylinder": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "cylinder": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

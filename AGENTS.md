@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §268 for cap mask/candidate correspondence and the
-lossless 256-260 archive; §255 records the design-topic relocation. §§231-267
+Read [REVIEW.md][review] §269 for conservative cap-minimum correspondence; §268
+records the lossless 256-260 archive and §255 the design-topic relocation. §§231-268
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement bounded supplied-word cap-minimum correspondence from captured
-observed predecessors, preserving unresolved equal-value/different-word ties.
+Next implement bounded captured cylinder stage-chain word correspondence,
+without recomputing minima or resolving equal-value/different-word ties.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

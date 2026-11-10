@@ -2382,6 +2382,20 @@ physical/source/geometry/coverage/clock/permission/admission proof. See
 [actual controls and gate][native-tof-cylinder-top-mask-review].
 
 
+#### Supplied-Word Cylinder Cap Minimum Correspondence (2026-11-10)
+
+`_native_tof_cylinder_top_minimum_diagnostics` reports each captured observed
+predecessor/candidate/result independently; no preceding result reconstruction
+or chain claim. Strict lower operand or identical words select known word;
+equal-value/different-word ties remain unresolved when value matches, wrong
+numeric minimum remains mismatch even on ties. No host signed-zero tie adoption.
+<=32 cylinders/64 rays/6144 canonical finite/+inf words/32 characters,2048
+entries/10240 helper operand-word comparisons, aggregate counts separate. No
+rational work/intake/read/hash/retention/replay/clock/RNG or composition. All
+eight flags false, no primitive uniform/numerical/physical/source/geometry/
+coverage/clock/permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-minimum-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2404,3 +2418,4 @@ physical/source/geometry/coverage/clock/permission/admission proof. See
 [native-tof-cylinder-top-relative-review]: ../../REVIEW.md#266-supplied-word-cylinder-top-relative-expression-2026-11-10
 [native-tof-cylinder-top-radial-review]: ../../REVIEW.md#267-independent-supplied-word-cylinder-cap-square-expressions-2026-11-10
 [native-tof-cylinder-top-mask-review]: ../../REVIEW.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10
+[native-tof-cylinder-top-minimum-review]: ../../REVIEW.md#269-supplied-word-cylinder-cap-minimum-correspondence-2026-11-10

@@ -482,6 +482,49 @@ Whole-section byte checks and prior REVIEW/Sources/design/stable AGENTS
 conservation passed; ten changed-context local targets valid, no stale root
 256-260 anchor targets in searched unignored Markdown. Originals/logs retained.
 
+## 269. Supplied-Word Cylinder Cap Minimum Correspondence (2026-11-10)
+
+Checkpoint `84f8bfa` pushed/clean. Native cap minimum consumes captured observed
+predecessor/candidate; hypothesis: independently report numeric minimum and word
+correspondence without reconstructing a preceding result. Strict lower operand
+or identical words select known word; equal-value/different-word ties unresolved
+when numeric minimum matches, wrong numeric value remains mismatch even on ties.
+No host signed-zero tie semantics adopted. <=32 cylinders/64 rays/6144 canonical
+finite/+inf words/32 characters,2048 entries/10240 helper operand-word comparisons,
+aggregate counts separate. No rational work/intake/read/hash/retention/replay/
+clock/RNG or composition. All eight flags false, no primitive uniform/numerical/
+physical/source/geometry/coverage/clock/one-use/permission/admission or usable command.
+
+31 bounded synthetic controls, <=16384 oracle comparisons; actual nonempty
+setup <=1 geometry/selected intake,2 native intakes, otherwise none. Both strict
+selections/identical or signed-zero ties/wrong numeric or word results for both
+strict selections, captured predecessor independent of bad earlier result,
+finite extremes/+inf/max32/empty and typed preflight; input/tick/RNG preserved.
+Three pytest positions including failures/aborts: first31/60 seconds, one
+necessary repair reserve, final root/300 seconds; retain `cylinder-269-*` logs.
+No old refunds/protected runs/task data/dependencies/hardware. Next bounded
+captured cylinder stage-chain word correspondence before source composition;
+minimum ties and all numerical/geometry/qualification limits remain unresolved.
+
+First31 passed,3165 deselected,0.72 s. Required root4119 passed,1 known
+transformer QDQ xfailed,71 warnings,97.07 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new cap
+minimum helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-269-focused-1.log`/
+`cylinder-269-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, both strict selections/identical or signed
+zero ties, wrong numeric even on tie, strict value-correct/wrong-word results for
+both selections, independent captured predecessor, finite extremes/+inf and
+typed rejection verified within caps, input/tick/RNG unchanged. All eight flags
+false, no primitive uniform/numerical/physical/source/geometry/coverage/clock/
+one-use/permission/admission or usable command. Next bounded captured stage-chain
+word correspondence: side/top predecessor to preceding observed minimum,
+post-wall start and final pre-noise ranges, without minimum recomputation,
+tie resolution or numerical/geometry/source qualification.
+
 ## Sources
 
 Hardware and tools:

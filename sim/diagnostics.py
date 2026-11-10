@@ -10037,6 +10037,143 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_top_minimum_diagnostics(
+    *,
+    top_previous_minimum_m_hex,
+    top_candidate_m_hex,
+    top_minimum_after_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder top minimum diagnostics require synthetic_test_only=True"
+        )
+    if (
+        type(top_previous_minimum_m_hex) is not tuple
+        or len(top_previous_minimum_m_hex) > 32
+    ):
+        raise ValueError("native cylinder top minimum obstacle count unsupported")
+    count = len(top_previous_minimum_m_hex)
+    arrays = []
+    for rows in (
+        top_previous_minimum_m_hex,
+        top_candidate_m_hex,
+        top_minimum_after_m_hex,
+    ):
+        if type(rows) is not tuple or len(rows) != count:
+            raise ValueError("native cylinder top minimum obstacle count unsupported")
+        group = []
+        for words in rows:
+            if type(words) is not tuple or len(words) != 64:
+                raise ValueError("native cylinder top minimum word count unsupported")
+            values = []
+            for word in words:
+                if type(word) is not str or len(word) > 32:
+                    raise ValueError(
+                        "native cylinder top minimum word budget exhausted"
+                    )
+                try:
+                    value = float.fromhex(word)
+                except (ValueError, OverflowError) as error:
+                    raise ValueError(
+                        "native cylinder top minimum words must be canonical"
+                    ) from error
+                if value.hex() != word or math.isnan(value) or value == -math.inf:
+                    raise ValueError(
+                        "native cylinder top minimum words must be canonical"
+                    )
+                values.append(value)
+            group.append(values)
+        arrays.append(group)
+    previous_values, candidates, minima = arrays
+    entries = []
+    for obstacle_index, values in enumerate(minima):
+        for ray_index, observed in enumerate(values):
+            previous = previous_values[obstacle_index][ray_index]
+            candidate = candidates[obstacle_index][ray_index]
+            previous_word = top_previous_minimum_m_hex[obstacle_index][ray_index]
+            candidate_word = top_candidate_m_hex[obstacle_index][ray_index]
+            observed_word = top_minimum_after_m_hex[obstacle_index][ray_index]
+            if previous < candidate:
+                expected_word, expected_value, selection = (
+                    previous_word,
+                    previous,
+                    "previous",
+                )
+            elif candidate < previous:
+                expected_word, expected_value, selection = (
+                    candidate_word,
+                    candidate,
+                    "candidate",
+                )
+            elif previous_word == candidate_word:
+                expected_word, expected_value, selection = (
+                    previous_word,
+                    previous,
+                    "equal_identical_words",
+                )
+            else:
+                expected_word, expected_value, selection = (
+                    None,
+                    previous,
+                    "equal_value_word_tie",
+                )
+            value_matches = observed == expected_value
+            word_matches = (
+                observed_word == expected_word
+                if expected_word is not None
+                else None
+                if value_matches
+                else False
+            )
+            entries.append(
+                {
+                    "obstacle_index": obstacle_index,
+                    "ray_index": ray_index,
+                    "previous_hex": previous_word,
+                    "candidate_hex": candidate_word,
+                    "observed_minimum_hex": observed_word,
+                    "expected_minimum_hex": expected_word,
+                    "selection": selection,
+                    "minimum_value_matches": value_matches,
+                    "minimum_word_matches": word_matches,
+                    "status": "unknown_equal_value_word_tie"
+                    if word_matches is None
+                    else "matched_stored_cylinder_top_minimum_words"
+                    if word_matches
+                    else "mismatched_stored_cylinder_top_minimum_words",
+                }
+            )
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-top-minimum-diagnostics/1",
+        "allowed_use": "offline_cylinder_top_minimum_word_diagnostics_only",
+        "status": "reported_stored_cylinder_top_minimum_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "word_mismatch_count": sum(
+            entry["minimum_word_matches"] is False for entry in entries
+        ),
+        "value_mismatch_count": sum(
+            not entry["minimum_value_matches"] for entry in entries
+        ),
+        "unresolved_word_count": sum(
+            entry["minimum_word_matches"] is None for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_top_mask_candidate_diagnostics(
     *,
     radius_squared_m2_hex,

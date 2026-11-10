@@ -2234,11 +2234,25 @@ allowance/primitive/numerical/physical/source/geometry/coverage/clock/permission
 admission qualification. All eight flags false; [actual controls and gate][native-tof-cylinder-root-squared-review].
 
 
-[native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
-[native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
-[native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
-[native-tof-cylinder-intake-review]: ../../REVIEW.md#249-bounded-native-tof-cylinder-intake-2026-11-10
-[native-tof-cylinder-history-review]: ../../REVIEW.md#250-typed-cylinder-history-prehash-guard-2026-11-10
+#### Supplied-Word Cylinder Side-Numerator Expressions (2026-11-10)
+
+`_native_tof_cylinder_side_numerator_residuals` reports exact supplied
+-projection+sign*root for ordered signs(-1,1) and observed-minus-exact ratios.
+<=32 cylinders/64 rays/two sides,8192 canonical words/32 characters, existing
+4096-bit rational ceiling, <=8193 value calls/10240 binary operations/4096
+entries. Finite operands, non-NaN observed infinities produce unknown residuals;
+original signed words retained without host zero-tie adoption. No intake/read/
+hash/retention/replay/clock/RNG or matched-source composition. Combined expression
+only, not isolated unary/multiply/add rounding, root validity, geometric branch,
+uniform/numerical/physical/source/coverage/clock/permission/admission proof.
+All eight flags false; [actual controls and gate][native-tof-cylinder-side-numerator-review].
+
+
+[native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
+[native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
+[native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
+[native-tof-cylinder-intake-review]: ../review/246-250.md#249-bounded-native-tof-cylinder-intake-2026-11-10
+[native-tof-cylinder-history-review]: ../review/246-250.md#250-typed-cylinder-history-prehash-guard-2026-11-10
 [native-tof-cylinder-retention-review]: ../../REVIEW.md#251-explicit-cylinder-recorder-retention-2026-11-10
 [native-tof-cylinder-delivery-review]: ../../REVIEW.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
 [native-tof-cylinder-offset-review]: ../../REVIEW.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
@@ -2246,3 +2260,4 @@ admission qualification. All eight flags false; [actual controls and gate][nativ
 [native-tof-cylinder-horizontal-review]: ../../REVIEW.md#256-supplied-horizontal-squared-ray-expression-2026-11-10
 [native-tof-cylinder-discriminant-review]: ../../REVIEW.md#257-supplied-word-cylinder-discriminant-expression-2026-11-10
 [native-tof-cylinder-root-squared-review]: ../../REVIEW.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10
+[native-tof-cylinder-side-numerator-review]: ../../REVIEW.md#259-supplied-word-cylinder-side-numerator-expressions-2026-11-10

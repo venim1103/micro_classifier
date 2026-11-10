@@ -27646,6 +27646,364 @@ def test_native_tof_cylinder_stage_chain_diagnostics(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "empty",
+        "two_cylinders",
+        "default",
+        "delivered_only",
+        "held",
+        "missing_delivered",
+        "missing_pending",
+        "flag",
+        "dependency",
+        "late_side_mask",
+        "late_side_minimum",
+        "late_top_mask",
+        "late_top_minimum",
+        "late_chain",
+        "late_pending_report",
+        "late_cylinder",
+        "late_owner",
+        "late_budget",
+        "chain_fault",
+        "mask_fault",
+        "candidate_fault",
+        "minimum_fault",
+        "word_tie",
+        "output_detached",
+        "late_native",
+        "late_pending",
+        "malformed",
+    ),
+)
+def test_native_tof_cylinder_selection_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    obstacles = (
+        ()
+        if case == "empty"
+        else ((3.0, 3.0, 0.25), (4.0, 4.0, 0.5))
+        if case == "two_cylinders"
+        else ((3.0, 3.0, 0.25),)
+    )
+    environment.scenario = replace(environment.scenario, obstacles=obstacles)
+    owner = type(owner)(environment.scenario, synthetic_test_only=True)
+    work = dict.fromkeys(
+        (
+            "geometry",
+            "steps",
+            "reads",
+            "retention",
+            "side_mask",
+            "side_minimum",
+            "top_mask",
+            "top_minimum",
+            "chain",
+            "cylinder",
+            "pending",
+            "binding",
+            "late",
+            "forbidden",
+        ),
+        0,
+    )
+    original_geometry = rover.tof_ranges
+
+    def geometry(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        return original_geometry(*args, **kwargs)
+
+    def read():
+        work["reads"] += 1
+        assert work["reads"] <= 5
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    read()
+    for _ in range(4 if case == "held" else 3):
+        work["steps"] += 1
+        assert work["steps"] <= 4
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        read()
+        if environment._native_tof_source is not None:
+            work["retention"] += 1
+            assert work["retention"] <= 3
+            owner.record_native_tof_source(
+                environment, synthetic_test_only=True, include_cylinder=True
+            )
+    if case == "missing_delivered":
+        owner._tof_cylinder_history.pop(0)
+    elif case == "missing_pending":
+        owner._tof_cylinder_history.pop()
+    elif case in (
+        "chain_fault",
+        "mask_fault",
+        "candidate_fault",
+        "minimum_fault",
+        "word_tie",
+        "malformed",
+    ):
+        entry = owner._tof_cylinder_history[0]["cylinder"]["cylinders"][0]
+        if case == "chain_fault":
+            entry["top"]["previous_minimum_m"] = ((9.0).hex(),) * 64
+        elif case == "mask_fault":
+            entry["sides"][0]["hit"] = tuple(
+                not value for value in entry["sides"][0]["hit"]
+            )
+        elif case == "candidate_fault":
+            entry["top"]["candidate_m"] = ((0.0).hex(),) * 64
+        elif case == "minimum_fault":
+            entry["top"]["minimum_after_m"] = ((9.0).hex(),) * 64
+        elif case == "word_tie":
+            entry["top"]["previous_minimum_m"] = ((-0.0).hex(),) * 64
+            entry["top"]["candidate_m"] = ((0.0).hex(),) * 64
+            entry["top"]["minimum_after_m"] = ((-0.0).hex(),) * 64
+        else:
+            entry["top"]["hit"] = (1,) * 64
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    closing_count = 2 * (
+        1 + (0 if case == "delivered_only" else len(environment.pending))
+    )
+    names = {
+        "side_mask": "_native_tof_cylinder_side_mask_candidate_diagnostics",
+        "side_minimum": "_native_tof_cylinder_side_minimum_diagnostics",
+        "top_mask": "_native_tof_cylinder_top_mask_candidate_diagnostics",
+        "top_minimum": "_native_tof_cylinder_top_minimum_diagnostics",
+        "chain": "_native_tof_cylinder_stage_chain_diagnostics",
+        "cylinder": "_match_native_tof_retained_cylinder",
+        "pending": "_match_native_tof_pending_sources",
+    }
+    originals = {name: getattr(diagnostics, symbol) for name, symbol in names.items()}
+    outgoing = {name: [] for name in names}
+
+    def called(name, *args, **kwargs):
+        work[name] += 1
+        assert work[name] <= (2 if name == "pending" else 6)
+        result = originals[name](*args, **kwargs)
+        outgoing[name].append(result)
+        if name == "chain" and work[name] == closing_count:
+            if case in ("late_side_mask", "late_top_mask"):
+                outgoing[case.removeprefix("late_")][0]["mask_mismatch_count"] ^= 1
+            elif case in ("late_side_minimum", "late_top_minimum"):
+                outgoing[case.removeprefix("late_")][0]["word_mismatch_count"] ^= 1
+            elif case == "late_chain":
+                outgoing["chain"][0]["final_mismatch_count"] ^= 1
+            elif case == "late_pending_report":
+                assert len(outgoing["chain"]) > 2
+                outgoing["chain"][1]["final_mismatch_count"] ^= 1
+            elif case == "late_cylinder":
+                outgoing["cylinder"][0]["cylinder"]["source_qualified"] = True
+            elif case == "late_owner":
+                owner._binding = {"changed": True}
+            elif case == "late_budget":
+                owner._tof_cylinder_history.extend(owner._tof_cylinder_history * 8)
+                outgoing["bindings_before_late_budget"] = work["binding"]
+            elif case == "late_native":
+                owner._tof_history[0]["native_source"]["source_qualified"] = True
+            elif case == "late_pending":
+                target = outgoing["pending"][0][0]
+                target["sample_words"] = (
+                    target["sample_words"][0] ^ 1,
+                    *target["sample_words"][1:],
+                )
+            else:
+                return result
+            work["late"] += 1
+        return result
+
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder selection snapshot must not read/retain/step/reset/replay/clock/rational"
+        )
+
+    for name, symbol in names.items():
+        monkeypatch.setattr(
+            diagnostics,
+            symbol,
+            lambda *args, _name=name, **kwargs: called(_name, *args, **kwargs),
+        )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_cylinder_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    if case in ("flag", "dependency"):
+        with pytest.raises(ValueError, match="include_cylinder_selection_diagnostics"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True,
+                include_cylinder=case != "dependency",
+                include_cylinder_selection_diagnostics=1 if case == "flag" else True,
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_cylinder=True,
+            include_cylinder_selection_diagnostics=case != "default",
+        )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        assert all(result[flag] is False for flag in flags)
+        accepted = {
+            "copy",
+            "empty",
+            "two_cylinders",
+            "default",
+            "delivered_only",
+            "held",
+            "chain_fault",
+            "mask_fault",
+            "candidate_fault",
+            "minimum_fault",
+            "word_tie",
+            "output_detached",
+        }
+        if case in accepted:
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert (
+                    "cylinder_selection_diagnostics" not in result
+                    and "pending_cylinder_selection_diagnostics" not in result
+                )
+                assert all(
+                    work[name] == 0
+                    for name in (
+                        "side_mask",
+                        "side_minimum",
+                        "top_mask",
+                        "top_minimum",
+                        "chain",
+                    )
+                )
+            else:
+                assert all(
+                    work[name] == closing_count
+                    for name in (
+                        "side_mask",
+                        "side_minimum",
+                        "top_mask",
+                        "top_minimum",
+                        "chain",
+                    )
+                )
+                records = (result["cylinder"], *result.get("pending_cylinder", ()))
+                reports = (
+                    result["cylinder_selection_diagnostics"],
+                    *result.get("pending_cylinder_selection_diagnostics", ()),
+                )
+                assert len(records) == len(reports)
+                for record, report in zip(records, reports, strict=True):
+                    assert all(
+                        record[key] == report[key]
+                        for key in ("source_epoch", "tick", "delivery_tick")
+                    )
+                    for part in (
+                        "side_mask_candidate",
+                        "side_minimum",
+                        "top_mask_candidate",
+                        "top_minimum",
+                        "stage_chain",
+                    ):
+                        assert all(report[part][flag] is False for flag in flags)
+                    count = len(record["cylinder"]["cylinders"])
+                    assert len(report["side_minimum"]["entries"]) == count * 128
+                    assert len(report["top_minimum"]["entries"]) == count * 64
+                    assert len(report["stage_chain"]["entries"]) == count * 192
+                    assert len(report["stage_chain"]["final_entries"]) == 64
+                report = reports[0]
+                if case == "chain_fault":
+                    assert report["stage_chain"]["stage_mismatch_count"] == 64
+                elif case == "mask_fault":
+                    assert report["side_mask_candidate"]["mask_mismatch_count"] == 64
+                elif case == "candidate_fault":
+                    assert (
+                        report["top_mask_candidate"]["candidate_mismatch_count"] == 64
+                    )
+                elif case == "minimum_fault":
+                    assert report["top_minimum"]["value_mismatch_count"] == 64
+                elif case == "word_tie":
+                    assert report["top_minimum"]["unresolved_word_count"] == 64
+                else:
+                    assert (
+                        report["stage_chain"]["stage_mismatch_count"]
+                        == report["stage_chain"]["final_mismatch_count"]
+                        == 0
+                    )
+                if case == "delivered_only":
+                    assert "pending_cylinder_selection_diagnostics" not in result
+                if case == "output_detached":
+                    before_history = deepcopy(owner._tof_cylinder_history)
+                    report["top_minimum"]["source_qualified"] = True
+                    report["stage_chain"]["entries"][0]["predecessor_word_matches"] = (
+                        False
+                    )
+                    assert owner._tof_cylinder_history == before_history
+        else:
+            assert result["snapshot_available"] is False
+            assert (
+                "cylinder_selection_diagnostics" not in result
+                and "pending_cylinder_selection_diagnostics" not in result
+            )
+            assert (
+                "cylinder" not in result
+                and "frame" not in result
+                and "source" not in result
+            )
+            if case.startswith("late_"):
+                assert work["late"] == 1
+            if case == "late_budget":
+                assert work["binding"] == outgoing["bindings_before_late_budget"]
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

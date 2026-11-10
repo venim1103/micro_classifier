@@ -2410,6 +2410,23 @@ eight flags false; no numerical/physical/geometry/coverage/source/clock/one-use/
 permission/admission or usable command. See [actual controls and gate][native-tof-cylinder-chain-review].
 
 
+#### Matched Retained Cylinder Selection Reports (2026-11-10)
+
+`snapshot_native_tof_delivery(include_cylinder_selection_diagnostics=True)`
+requires literal bool and `include_cylinder=True`. Default skips all five
+reports. Delivered/pending reports retain matched epoch/tick/delivery identities;
+side/cap mask-candidate and conservative minima plus captured chain recompute at
+closing and compare before publication. Chain entry containers adapt to tuples
+at this boundary, preserving standalone contract and strict closed comparator.
+Unknown snapshots omit reports/source/frame. Stable diagnostic mismatches may
+publish, unresolved ties remain unresolved, all eight flags false. Existing <=8
+retained/<=8 pending/<=32 cylinders/64 rays stay fixed; <=18 invocations per helper
+across original/closing records, <=18496 entries per composed record. No extra
+runtime intake/read/retain/replay/clock/rational work, numerical/physical/source/
+geometry/coverage/one-use/permission/admission or usable command. See
+[actual controls, failed first check and repair][native-tof-cylinder-selection-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2434,3 +2451,4 @@ permission/admission or usable command. See [actual controls and gate][native-to
 [native-tof-cylinder-top-mask-review]: ../../REVIEW.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10
 [native-tof-cylinder-top-minimum-review]: ../../REVIEW.md#269-supplied-word-cylinder-cap-minimum-correspondence-2026-11-10
 [native-tof-cylinder-chain-review]: ../../REVIEW.md#270-captured-cylinder-stage-chain-word-correspondence-2026-11-10
+[native-tof-cylinder-selection-review]: ../../REVIEW.md#271-matched-retained-cylinder-selection-reports-2026-11-10

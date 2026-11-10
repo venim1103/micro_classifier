@@ -15739,6 +15739,7 @@ class _SyntheticC1SourceRecorder:
         include_wall_residuals=False,
         include_wall_projection_residuals=False,
         include_wall_selection_diagnostics=False,
+        include_cylinder_selection_diagnostics=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -15772,6 +15773,14 @@ class _SyntheticC1SourceRecorder:
         if include_wall_selection_diagnostics and not include_wall:
             raise ValueError(
                 "include_wall_selection_diagnostics requires include_wall=True"
+            )
+        if type(include_cylinder_selection_diagnostics) is not bool:
+            raise ValueError(
+                "include_cylinder_selection_diagnostics must be a literal bool"
+            )
+        if include_cylinder_selection_diagnostics and not include_cylinder:
+            raise ValueError(
+                "include_cylinder_selection_diagnostics requires include_cylinder=True"
             )
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
@@ -16012,6 +16021,92 @@ class _SyntheticC1SourceRecorder:
                 ),
             }
 
+        def cylinder_selection_probe(record):
+            trace = record["cylinder"]
+            cylinders = trace["cylinders"]
+            side_previous = tuple(
+                tuple(side["previous_minimum_m"] for side in entry["sides"])
+                for entry in cylinders
+            )
+            side_after = tuple(
+                tuple(side["minimum_after_m"] for side in entry["sides"])
+                for entry in cylinders
+            )
+            side_candidates = tuple(
+                tuple(side["candidate_m"] for side in entry["sides"])
+                for entry in cylinders
+            )
+            top_previous = tuple(
+                entry["top"]["previous_minimum_m"] for entry in cylinders
+            )
+            top_after = tuple(entry["top"]["minimum_after_m"] for entry in cylinders)
+            top_candidates = tuple(entry["top"]["candidate_m"] for entry in cylinders)
+            report = {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "side_mask_candidate": _native_tof_cylinder_side_mask_candidate_diagnostics(
+                    top_m_hex=tuple(entry["top_m"] for entry in cylinders),
+                    discriminant_m2_hex=tuple(
+                        entry["discriminant_m2"] for entry in cylinders
+                    ),
+                    side_distance_m_hex=tuple(
+                        tuple(side["distance_m"] for side in entry["sides"])
+                        for entry in cylinders
+                    ),
+                    side_altitude_m_hex=tuple(
+                        tuple(side["altitude_m"] for side in entry["sides"])
+                        for entry in cylinders
+                    ),
+                    side_hit_masks=tuple(
+                        tuple(side["hit"] for side in entry["sides"])
+                        for entry in cylinders
+                    ),
+                    side_candidate_m_hex=side_candidates,
+                    synthetic_test_only=True,
+                ),
+                "side_minimum": _native_tof_cylinder_side_minimum_diagnostics(
+                    side_previous_minimum_m_hex=side_previous,
+                    side_candidate_m_hex=side_candidates,
+                    side_minimum_after_m_hex=side_after,
+                    synthetic_test_only=True,
+                ),
+                "top_mask_candidate": _native_tof_cylinder_top_mask_candidate_diagnostics(
+                    radius_squared_m2_hex=tuple(
+                        entry["top"]["radius_squared_m2"] for entry in cylinders
+                    ),
+                    top_distance_m_hex=tuple(
+                        entry["top"]["distance_m"] for entry in cylinders
+                    ),
+                    radial_squared_m2_hex=tuple(
+                        entry["top"]["radial_squared_m2"] for entry in cylinders
+                    ),
+                    top_hit_masks=tuple(entry["top"]["hit"] for entry in cylinders),
+                    top_candidate_m_hex=top_candidates,
+                    synthetic_test_only=True,
+                ),
+                "top_minimum": _native_tof_cylinder_top_minimum_diagnostics(
+                    top_previous_minimum_m_hex=top_previous,
+                    top_candidate_m_hex=top_candidates,
+                    top_minimum_after_m_hex=top_after,
+                    synthetic_test_only=True,
+                ),
+                "stage_chain": _native_tof_cylinder_stage_chain_diagnostics(
+                    post_wall_ranges_m_hex=trace["post_wall_ranges_m"],
+                    side_previous_minimum_m_hex=side_previous,
+                    side_minimum_after_m_hex=side_after,
+                    top_previous_minimum_m_hex=top_previous,
+                    top_minimum_after_m_hex=top_after,
+                    pre_noise_ranges_m_hex=trace["pre_noise_ranges_m"],
+                    synthetic_test_only=True,
+                ),
+            }
+            chain = report["stage_chain"]
+            chain["entries"] = tuple(chain["entries"])
+            chain["final_entries"] = tuple(chain["final_entries"])
+            return report
+
         try:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
@@ -16193,6 +16288,15 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_selection_diagnostics:
+                cylinder_selection_diagnostics = cylinder_selection_probe(cylinder)
+                pending_cylinder_selection_diagnostics = (
+                    tuple(
+                        cylinder_selection_probe(record) for record in pending_cylinder
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -16323,6 +16427,18 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_selection_diagnostics:
+                cylinder_selection_diagnostics_after = cylinder_selection_probe(
+                    cylinder_after
+                )
+                pending_cylinder_selection_diagnostics_after = (
+                    tuple(
+                        cylinder_selection_probe(record)
+                        for record in pending_cylinder_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_timing or include_selection or include_wall or include_cylinder:
@@ -16446,6 +16562,18 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_cylinder_selection_diagnostics and (
+                not _native_tof_word_copy_matches(
+                    cylinder_selection_diagnostics, cylinder_selection_diagnostics_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_cylinder_selection_diagnostics,
+                    pending_cylinder_selection_diagnostics_after,
+                )
+            ):
+                raise ValueError(
+                    "native ToF cylinder selection source or outgoing records changed"
+                )
             if include_wall_selection_diagnostics and (
                 not _native_tof_word_copy_matches(
                     wall_selection_diagnostics, wall_selection_diagnostics_after
@@ -16571,6 +16699,12 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_wall_selection_diagnostics"] = (
                     pending_wall_selection_diagnostics
+                )
+        if include_cylinder_selection_diagnostics:
+            result["cylinder_selection_diagnostics"] = cylinder_selection_diagnostics
+            if include_pending_sources:
+                result["pending_cylinder_selection_diagnostics"] = (
+                    pending_cylinder_selection_diagnostics
                 )
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals

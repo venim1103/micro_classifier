@@ -565,6 +565,59 @@ false, input/tick/RNG preserved. Next bounded matched retained cylinder selectio
 reports, retaining original epoch/tick/delivery and closing comparisons; no
 source/numerical/physical/geometry/coverage/clock/one-use/permission/admission.
 
+## 271. Matched Retained Cylinder Selection Reports (2026-11-10)
+
+Checkpoint `12ac061` pushed/clean. Existing delivered/pending cylinder matcher
+already preserves epoch/acquisition/delivery identities and typed original and
+closing ownership/pair checks. Hypothesis: opt-in composition can report supported
+side/cap mask-candidate/minimum and captured-chain diagnostics on those matched
+words, with independent closing recomputation before publishing. Default-off
+literal `include_cylinder_selection_diagnostics` requires `include_cylinder=True`.
+No numerical residual composition or qualification/admission follows.
+
+Finite routine plan: 28 synthetic integration controls, each <=4 steps/5 recorder
+reads/3 geometries/3 retentions; <=6 calls each of five reports and cylinder matcher,
+2 pending matches/64 binding digests, no runtime source intake/read/retain/step/
+reset/replay/clock/rational calls. Setup bounds include held path, empty/one/two
+cylinders; unchanged <=8 retained/<=8 pending/<=32 cylinders/64 rays/32-character
+words. At API limits <=18 calls per report across original/closing delivered and
+pending records, <=18496 entries per composed record; aggregate counts separate.
+Fixtures verify default/dependency/held/delivered-only/detachment, independent
+mask/candidate/minimum/chain faults and unresolved ties, missing/malformed records,
+late report/pending/native/cylinder/owner/budget changes fail closed. Three pytest
+positions including failures/aborts: first28/60 seconds, one necessary repair
+reserve, final root/300 seconds; retain `cylinder-271-*` logs. No old refunds or
+protected studies/task data/dependencies/hardware. All eight flags false, no
+numerical/physical/source/geometry/coverage/clock/one-use/permission/admission or
+usable command. Pylance caller query returned no sites, not compatibility proof;
+existing keyword-only defaults and required root controls remain the check.
+
+First integration invocation11 failed,17 passed,3232 deselected,12.90 s.
+Closing comparator intentionally supports closed dict/tuple/scalar values, not
+lists; standalone chain report uses lists. Diagnosed from owning comparator and
+report return shapes. Repair only new snapshot boundary: convert chain entry/
+final-entry containers to tuples; do not broaden comparator, weaken closing
+checks or change standalone helper. Remaining necessary repair invocation and
+root remain within recorded three positions; failure retained, no refunds.
+
+Same28 controls passed,3232 deselected,5.54 s after boundary repair. Required
+root4183 passed,1 known transformer QDQ xfailed,71 warnings,116.84 s; root Ruff,
+changed-file format check and whitespace passed. Editor/Pylance syntax clear.
+AST confines source changes to delivery snapshot method/new test; all other nodes
+and pre-existing parameters preserved. All three pytest positions spent including
+first failure; no aborts. Logs `cylinder-271-focused-1.log`/`-focused-2.log`/
+`-root-1.log` retained under recovery directory. No additional C/Arm/sanitizer/
+board opt-in gates ran.
+
+All28 controls within caps: default calls none of five reports, matched original/
+closing delivered/pending identities retained, missing/malformed and late report/
+source/owner/budget changes suppress snapshot; stable mismatches remain reports,
+not qualification. Detachment, held delivery and unresolved ties verified, input
+tick/frame/both RNGs preserved. All eight flags false; no numerical/physical/
+source/geometry/coverage/clock/one-use/permission/admission or usable command.
+Next bounded matched supplied-word cylinder offset residuals, keeping geometric
+error bounds and protected source/numerical/physical acceptance unresolved.
+
 ## Sources
 
 Hardware and tools:

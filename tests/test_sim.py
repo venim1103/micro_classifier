@@ -11533,17 +11533,40 @@ def test_native_tof_selection_intake(
 @pytest.mark.parametrize(
     "case",
     (
-        "retain", "default", "flag", "missing", "duplicate", "duplicate_changed",
-        "gap", "trim", "budget", "epoch", "late_selection", "late_history",
-        "outgoing", "owner_context", "selection_identity", "timed",
+        "retain",
+        "default",
+        "flag",
+        "missing",
+        "duplicate",
+        "duplicate_changed",
+        "gap",
+        "trim",
+        "budget",
+        "epoch",
+        "late_selection",
+        "late_history",
+        "outgoing",
+        "owner_context",
+        "selection_identity",
+        "timed",
     ),
 )
-def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fixture, case):
+def test_native_tof_selection_retention(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
     from sim import diagnostics, rover
 
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    work = {"intake": 0, "native": 0, "binding": 0, "forbidden": 0, "clock": 0,
-            "geometry": 0, "reads": 0, "retention": 0}
+    work = {
+        "intake": 0,
+        "native": 0,
+        "binding": 0,
+        "forbidden": 0,
+        "clock": 0,
+        "geometry": 0,
+        "reads": 0,
+        "retention": 0,
+    }
     original_ranges = rover.tof_ranges
     original_read = type(owner).record_environment_tick
 
@@ -11566,7 +11589,8 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
     monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
     read()
     environment.step(
-        [0.125, 0.3], capture_native_tof_source=True,
+        [0.125, 0.3],
+        capture_native_tof_source=True,
         capture_native_tof_selection=case != "missing",
         capture_native_tof_timing=case == "timed",
     )
@@ -11594,7 +11618,9 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
             elif case == "owner_context":
                 owner._binding = {"changed": True}
             elif case == "selection_identity":
-                environment._native_tof_selection_source = dict(environment._native_tof_selection_source)
+                environment._native_tof_selection_source = dict(
+                    environment._native_tof_selection_source
+                )
         return actual
 
     def native(*args, **kwargs):
@@ -11604,7 +11630,11 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
 
     def copied(value, *args, **kwargs):
         actual = original_copy(value, *args, **kwargs)
-        if work["intake"] == 1 and type(value) is dict and value.get("schema") == "micro-classifier/native-tof-selection-source/1":
+        if (
+            work["intake"] == 1
+            and type(value) is dict
+            and value.get("schema") == "micro-classifier/native-tof-selection-source/1"
+        ):
             outgoing["selection"] = actual
         return actual
 
@@ -11615,7 +11645,9 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
 
     def forbidden(*args, **kwargs):
         work["forbidden"] += 1
-        raise AssertionError("selection retention must not read/step/reset/replay/clock")
+        raise AssertionError(
+            "selection retention must not read/step/reset/replay/clock"
+        )
 
     def retain(selected=True):
         work["retention"] += 1
@@ -11627,15 +11659,27 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
             for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
                 scoped.setattr(rover, name, forbidden)
             return owner.record_native_tof_source(
-                environment, synthetic_test_only=True, include_selection=selected,
+                environment,
+                synthetic_test_only=True,
+                include_selection=selected,
                 include_timing=case == "timed",
             )
 
-    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_selection_source", intake)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_selection_source", intake
+    )
     monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
     monkeypatch.setattr(diagnostics, "deepcopy", copied)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
-    if case in ("flag", "missing", "late_selection", "late_history", "outgoing", "owner_context", "selection_identity"):
+    if case in (
+        "flag",
+        "missing",
+        "late_selection",
+        "late_history",
+        "outgoing",
+        "owner_context",
+        "selection_identity",
+    ):
         with pytest.raises(ValueError):
             retain(1 if case == "flag" else True)
         assert owner._tof_sample is None and owner._tof_history == []
@@ -11652,7 +11696,10 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
             entry = owner._tof_selection_history[0]
             assert entry["selection"]["source_qualified"] is False
             assert entry["selection"]["command_admission_qualified"] is False
-            assert entry["selection"]["pre_noise_ranges_m"] == owner._tof_history[0]["native_source"]["pre_noise_ranges_m"]
+            assert (
+                entry["selection"]["pre_noise_ranges_m"]
+                == owner._tof_history[0]["native_source"]["pre_noise_ranges_m"]
+            )
             if case == "timed":
                 assert owner._tof_timing_history[0]["clock"]["qualified"] is False
                 assert work["clock"] == 2
@@ -11662,7 +11709,10 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
                 assert owner._tof_selection_history == before
             elif case == "duplicate_changed":
                 raw = environment._native_tof_selection_source["selection"]
-                raw["equal_minimum_observed"] = (not raw["equal_minimum_observed"][0], *raw["equal_minimum_observed"][1:])
+                raw["equal_minimum_observed"] = (
+                    not raw["equal_minimum_observed"][0],
+                    *raw["equal_minimum_observed"][1:],
+                )
                 with pytest.raises(ValueError, match="repeated selection"):
                     retain()
             elif case in ("budget", "epoch"):
@@ -11675,14 +11725,19 @@ def test_native_tof_selection_retention(monkeypatch, c1_motion_receipt_source_fi
             elif case in ("gap", "trim"):
                 for _ in range(2 if case == "gap" else 12):
                     environment.step(
-                        [0.125, 0.3], capture_native_tof_source=True,
+                        [0.125, 0.3],
+                        capture_native_tof_source=True,
                         capture_native_tof_selection=case == "trim",
                     )
                     read()
                     if environment._native_tof_source is not None:
                         retain(case == "trim")
                 ticks = [entry["tick"] for entry in owner._tof_selection_history]
-                assert ticks == ([4] if case == "gap" else [entry["tick"] for entry in owner._tof_history])
+                assert ticks == (
+                    [4]
+                    if case == "gap"
+                    else [entry["tick"] for entry in owner._tof_history]
+                )
                 if case == "trim":
                     assert len(ticks) == 8 and ticks[0] > 4
     assert work["forbidden"] == 0

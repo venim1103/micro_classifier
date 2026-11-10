@@ -31,11 +31,11 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §225 for bounded native ToF selection intake
-and the latest verified source gate. §§226-227 preserve the unverified selection-
-retention WIP's missing ledger and initial finite revalidation plan; §228 supersedes
-their routine approval blocker. Revalidate under standing authority using that
-initial plan, recording each actual attempt and retaining historical unknowns.
+Read [REVIEW.md][review] §229 for verified bounded native ToF selection retention
+and the latest source gate. §§226-228 preserve the earlier interrupted/unknown
+attempts and autonomous routine-recovery authority; those attempts are not refunded.
+Next pair retained selection diagnostics with actual delivered/pending acquisition
+sources without replay or claiming complete geometric coverage.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

@@ -498,6 +498,64 @@ in clarifying protected versus routine runs. Earlier review/Sources and all othe
 tracked files remain unchanged; local reference targets, document sizes and editor
 diagnostics passed. The code suite was not rerun for this instruction-only update.
 
+## 229. Native ToF Selection-Retention Revalidation (2026-11-10)
+
+Resumed at `9ada796` under §228 standing authority. Clean worktree; complete WIP
+source/test bytes still match `5465393`, no live test/compiler job. Terminal and
+Pylance select `/opt/venv/bin/python` 3.12.3; Ruff, timeout and host/Arm compilers
+are present, disk reports 321 GiB free. No damaged input requires repair. Earlier
+interruptions remain at least one spent/unknown attempt, with additional count
+and original ceiling unknown; no historical pass or refund is inferred.
+
+Fresh ledger uses §227's initial plan: at most two focused sixteen-case matrices
+(60 seconds each) and one final required root run (300 seconds); failures,
+collection errors, aborts, timeouts and unknown outcomes count. Preserve all
+existing case/parent-fixture/work caps. A focused repair reserve is not a reason
+to rerun unchanged success. No study/model/GPU/data/dependency/download/hardware/
+firmware/physical-bound action; all qualification/admission flags remain false.
+Hypothesis: WIP optional retention pairs detached selection diagnostics with the
+same bounded native history and rejects late mutations without replay/clock work.
+
+Attempt 1 is launching the existing `test_native_tof_selection_retention` matrix
+via `timeout 60s /opt/venv/bin/python -m pytest -q
+tests/test_sim.py::test_native_tof_selection_retention --tb=short`. Raw output is
+retained in `.git/recovery-20261109-PmbQpU/retention-229-focused-1.log`; outcome
+16 passed in 1.27 seconds, exit 0. Existing receipt/simulator fixture ledgers
+reported zero reads/captures/digests/forbidden work; in-case caps held. One fresh
+pytest attempt used, no failure/abort; focused repair reserve remains unused.
+Next changed-file lint/format checks, then the required root gate if style passes.
+
+Changed-file Ruff stopped at SIM102 in the WIP's nested timing identity/content
+guard; formatting and root did not run. Repair combines the literal-bool guard
+with the same short-circuit condition, preserving its rejection and opt-out
+semantics. Attempt 2 now launches the same sixteen-case/60-second focused check;
+log `.git/recovery-20261109-PmbQpU/retention-229-focused-2.log`. No assertion or
+work cap changes; this uses the reserved repair invocation, not an old refund.
+Attempt 2 passed all sixteen cases in 2.03 seconds, exit 0; old fixture counters
+again zero. Ruff lint passed after the repair; only the two WIP Python files were
+formatted, then changed-file format/lint and whitespace checks passed.
+
+Attempt 3 now launches the one planned final root `timeout 300s python -m pytest
+-q`, followed on success by root Ruff/diff and changed-file format checks. Log:
+`.git/recovery-20261109-PmbQpU/retention-229-root-1.log`. This exhausts the initial
+three pytest positions, counting any failure/interruption. No extra opt-in native,
+sanitizer, Arm, model, GPU or board run; no source checkpoint precedes this gate.
+Attempt 3 passed: 3,231 tests, known transformer QDQ xfail and 71 warnings in
+78.40 seconds, exit 0; no skips reported. Root Ruff/diff and changed-file format
+passed; source/test editor diagnostics clear. Static AST comparison confirmed
+formatting preserves every source/test node except the intended equivalent guard
+merge. All three fresh pytest positions used, no pytest failure/abort; the SIM102
+style failure and all historical unknown attempts remain recorded. Old controls
+ran only as required regressions, not renewed standalone audits/experiments.
+
+Optional bounded selection retention is now verified as a source prerequisite,
+not delivery correspondence, numerical/physical/coverage/clock/source adoption,
+permission or command admission. All eight flags remain false. Raw logs/backups
+remain in the recorded local recovery directory; no task artifact or cleanup.
+Next compose retained selection with matched delivered/pending acquisition IDs,
+collect all closing probes before comparing derived outputs, and fail unknown
+without partial payloads when lineage is absent or changes.
+
 ## Sources
 
 Hardware and tools:

@@ -472,6 +472,32 @@ command. Next independently bounded quadratic/stage prerequisites; before the
 design topic exceeds2500 lines, losslessly relocate complete cylinder topic into
 an existing adjacent chapter with reading-map/target conservation checks.
 
+## 255. Lossless Cylinder Design Topic Relocation (2026-11-10)
+
+Checkpoint `d4016e5` pushed/clean. Chapter02 had2492 lines before additional
+cylinder stages. Existing adjacent chapter03 had2050 lines and room for the
+complete topic. Moved the whole cylinder prerequisite section and nine reference
+definitions byte-for-byte, appended after existing chapter03 topics to avoid
+changing their heading ownership. Both chapters share a directory, so those
+relative targets remain unchanged; root design reading map points to chapter03,
+and chapter02 has a short pointer. Immediate conservation passed; chapters02/03
+were2339/2204 lines before the pointer. Originals retained as
+`cylinder-255-design-{2,3}-before.md`/`cylinder-255-map-before.md` in recovery
+directory. No evidence, failures, ledgers or source/test code changed or renewed.
+
+Documentation-only: validate moved/new local targets, exact topic/definition/
+prior-content conservation and whitespace; do not rerun successful code suite.
+Eight flags remain false; no numerical/source/physical/clock/permission/admission
+qualification or usable command. Next bounded horizontal squared-ray expression
+diagnostic as a cylinder quadratic prerequisite, preserving combined-expression
+limitations and the original4096-bit rational ceiling.
+
+Actual checks passed: complete topic/nine definitions byte-exact, prior chapter/
+map/checkpoint/Sources/stable instructions conserved,11 local targets/anchors
+valid, no stale old cylinder target in tracked/unignored Markdown, whitespace
+clear. Only five docs changed; final chapters02/03 are2343/2204 lines. Code suite
+not rerun; §254 remains latest actual source gate. No failed/aborted check.
+
 ## Sources
 
 Hardware and tools:

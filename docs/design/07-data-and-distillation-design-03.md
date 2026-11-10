@@ -2048,3 +2048,157 @@ isolation remains the default and all broader gates remain open.
 [sinc-path-review]: ../../REVIEW.md
 [sinc-route-review]: ../../REVIEW.md
 [c1-prototype-source]: ../../sim/diagnostics.py
+
+### Native ToF Cylinder Computation Prerequisites (2026-11-10)
+
+Optional cold `tof_ranges(..., cylinder_source={})` retains actual horizontal
+squared norms and each cylinder's offset, projection, discriminant and root
+arrays from the existing evaluation. Empty builtin dictionary must be separate
+from native/selection/wall outputs; actual finite mounted source inputs and the
+existing32-obstacle cap are checked before geometry. Detached inputs/rays,
+post-wall minimum and final pre-noise arrays retain calculation context.
+Default evaluation order and first-return words remain unchanged; no replay,
+clock or RNG is introduced. Fresh-acquisition pairing is documented below;
+recorder wiring remains separate work.
+
+This describes the quadratic portion; side/top stages are documented below.
+Matching raw words is not correct
+intersections, geometry/coverage, primitive or uniform error, physical/source/
+clock/native/permission/admission qualification. All eight flags remain false.
+See [quadratic trace controls and limits][native-tof-cylinder-trace-review].
+
+
+#### Actual Cylinder Side/Top Calculation Stages (2026-11-10)
+
+The same cold trace additionally copies each near/far side's original division
+numerator/result, altitude, hit mask, candidate and predecessor/result minimum.
+Top-cap records retain actual offset/division, relative vector, squared radial
+sum/radius, hit/candidate and minima. Named scalar/array intermediates preserve
+the original expression order. The per-cylinder side tuple then top record
+links the actual post-wall result to final pre-noise ranges, without replay or
+host-specific word-tie adoption. All arrays/inputs are detached; default output
+words and existing32-obstacle/64-ray/preflight limits remain unchanged.
+
+Recorder retention, acquisition pairing and closed intake
+are documented below. Observed-stage correspondence is not geometry, coverage, primitive or
+uniform error, physical/source/clock/native/permission/admission qualification;
+all eight flags remain false. See [side/top controls and limits][native-tof-cylinder-stages-review].
+
+
+#### Actual Fresh Cylinder Acquisition Pairing (2026-11-10)
+
+`RoverEnv.step(capture_native_tof_cylinder=False)` is a separate literal-bool
+opt-in requiring native source capture and mounted rays. Preflight precedes
+mutation and clocks. Only fresh sampling forwards the original trace dict,
+pairing native cache/RNG identities and acquisition/delivery ticks; held/default/
+reset clears it and rejected preflight preserves previous caches. The old default
+forwarding path is unchanged. Wall/selection/timing can accompany the same sample
+without extra geometry, RNG or clock reads. Delivery correspondence is documented
+below; nominal IDs/timing and matching words do not qualify source,
+geometry, coverage, numerical/physical error, clocks, permission or admission.
+Eight flags remain false. See [acquisition controls and limits][native-tof-cylinder-acquisition-review].
+
+
+#### Bounded Closed Cylinder Intake (2026-11-10)
+
+`_sample_simulator_native_tof_cylinder_source` requires exact builtin acquisition/
+trace/entry/stage dictionaries and tuple counts, <=32 paired obstacle entries,
+two ordered sides and one cap each, exact float64/bool array shapes and original
+native/RNG identities. Before any native intake it rejects malformed layouts,
+nonliteral flags, NaNs, nonfinite declared operands/rays and negative-infinite
+candidate/range words. Two native intakes bracket canonical detached word copies;
+closing checks cover cache/native/RNG identity, template/pose/input/output words,
+copied content, ticks and declared centre/radius/top operands. Per metadata pass
+<=45696 float words plus6144 mask booleans; no new arithmetic/replay/hash/clock/
+RNG/recorder read. This is diagnostic ownership/copy validation, not arithmetic,
+geometry, coverage, source, clock, permission or admission qualification. All eight
+flags false. Delivery correspondence is documented below. See
+[actual controls and gate][native-tof-cylinder-intake-review].
+
+
+#### Typed Cylinder History Prehash Guard (2026-11-10)
+
+`_check_native_tof_cylinder_history` checks exact builtin history/source lists
+of at most eight entries, strictly increasing ticks and unique epoch/tick/delivery
+pairing against already validated native history. Closed copied trace shapes
+allow at most32 cylinders each with two ordered sides and one cap, fixed64-ray
+flat tuples and literal bool masks/flags. Declared centre/radius/top, inputs,
+rays and final ranges must match native words. Other words are canonical hex,
+at most32 characters, non-NaN; declared operands/rays are finite and candidate/
+range slots exclude negative infinity. At max8x32, <=365568 float-word parses
+and49152 mask booleans. The guard does not intake/copy/hash/read/retain/replay or
+use clocks/RNG, and does not qualify source/geometry/coverage/error/clock/
+permission/admission. All eight flags false, including when it returns `None`.
+Recorder wiring is documented below. See [controls and limits][native-tof-cylinder-history-review].
+
+
+#### Explicit Cylinder Recorder Retention (2026-11-10)
+
+`record_native_tof_source(include_cylinder=False)` is a separate literal-bool
+opt-in, retaining detached closed-intake words with original epoch/tick/delivery
+IDs. Typed guards precede history hashing; staged cylinder entries are limited
+to the native history's at most eight retained ticks. Equal repeated words are
+idempotent, changed repeats reject. Closing checks cover original cache/history
+identities and entry/native/producer/owner words before any staged commit.
+The default skips cold cylinder intake and all companions can coexist without
+additional geometry, recorder read or clock. At most six typed-cylinder guards
+per successful retention; each has the existing8x32 word/mask budgets. Delivery
+publication is documented below. This does not certify source/geometry/coverage/
+roundoff/uniform error/clocks/one-use execution/permission/admission; eight flags
+remain false. See [actual checks, failure and limits][native-tof-cylinder-retention-review].
+
+
+#### Delivered and Pending Cylinder Correspondence (2026-11-10)
+
+`snapshot_native_tof_delivery(include_cylinder=False)` is a separate literal-bool
+opt-in. After typed preflight, one detached cylinder record matches each delivered/
+pending native epoch/tick/delivery pair; copied records are typed before hashing.
+Closing probes and guards check original history identity, retained/native/output
+words, pending queue, current frame and producer/owner context before publication.
+Outputs are `cylinder` and optional `pending_cylinder`; unknown omits source,
+frame and all companion payloads. Default skips cylinder history, with wall/
+selection/timing/direction-norm companions available independently. At most eight
+typed-cylinder guards per successful snapshot, each with existing8x32 budgets;
+no acquisition intake, geometry replay, recorder read or new clock/RNG activity.
+Matching words do not resolve unequal-word value ties or prove source, geometry,
+coverage, roundoff, physical error, clock, one-use execution, permission or
+admission. Eight flags remain false. See [actual controls and gate][native-tof-cylinder-delivery-review].
+
+
+#### Supplied-Word Cylinder Offset Discrepancies (2026-11-10)
+
+`_native_tof_cylinder_offset_residuals` reports exact supplied position-minus-centre
+ratios and observed-minus-exact residuals for both axes of <=32 cylinders. Builtin
+canonical word preflight <=130 strings,32 characters each; position/centre are
+finite and non-NaN observations may be infinite (unknown residual, exact operand
+difference retained). Existing4096-bit rational ceiling, <=192 value calls and128
+binary operations,64 entries; no source/recorder read, hash, replay, clock or RNG.
+Signed-zero words retained without inferring tie semantics. Report remains
+standalone: no matched-source composition, isolated primitive/uniform error bound,
+geometry, coverage, source, numerical/physical/clock/permission/admission proof.
+Eight flags false. See [actual controls and gate][native-tof-cylinder-offset-review].
+
+
+#### Supplied-Word Cylinder Projection Expressions (2026-11-10)
+
+`_native_tof_cylinder_projection_residuals` reports exact unrounded supplied
+offset.x*ray.x + offset.y*ray.y and observed-minus-exact ratios for <=32 cylinders
+and64 rays. Preflight <=2304 canonical words,32 characters each; finite offsets/
+rays, non-NaN observations may be infinite (unknown residual). Existing4096-bit
+rational ceiling, <=2240 value calls/8192 binary operations,2048 entries. No
+intake/read/hash/retention/replay/clock/RNG. Original intermediate product words
+are absent, so discrepancy is combined expression error, not isolated multiply/
+add roundoff, FMA certification, uniform/numerical/physical/source/geometry/
+coverage/clock/permission/admission proof. Standalone, all eight flags false.
+See [actual controls, archive conservation and gate][native-tof-cylinder-projection-review].
+
+
+[native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
+[native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
+[native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
+[native-tof-cylinder-intake-review]: ../../REVIEW.md#249-bounded-native-tof-cylinder-intake-2026-11-10
+[native-tof-cylinder-history-review]: ../../REVIEW.md#250-typed-cylinder-history-prehash-guard-2026-11-10
+[native-tof-cylinder-retention-review]: ../../REVIEW.md#251-explicit-cylinder-recorder-retention-2026-11-10
+[native-tof-cylinder-delivery-review]: ../../REVIEW.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
+[native-tof-cylinder-offset-review]: ../../REVIEW.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
+[native-tof-cylinder-projection-review]: ../../REVIEW.md#254-supplied-word-cylinder-projection-expressions-2026-11-10

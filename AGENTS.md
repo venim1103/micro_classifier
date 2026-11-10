@@ -32,7 +32,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 ## Current Work
 
 Read [REVIEW.md][review] §254 for supplied-word cylinder projection expressions and
-the latest source gate; §§231-253 retain wall correspondence and the complete
+the latest source gate; §255 records their design-topic relocation. §§231-253
+retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.

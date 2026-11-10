@@ -31,12 +31,12 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §234 for bounded actual native wall-cache intake and
-the latest source gate; §§230-233 retain selection delivery and wall prerequisites.
+Read [REVIEW.md][review] §235 for bounded wall-history preflight and the latest
+source gate; §§231-234 retain wall arithmetic, trace, acquisition and intake limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
 Next advance independently supported native ToF calculation/source prerequisites;
-the new wall intake is not yet retained in recorder history or published for
+the new history validator is not yet wired into recorder wall retention or
 delivery, and it does not prove arithmetic, geometry or complete coverage.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.

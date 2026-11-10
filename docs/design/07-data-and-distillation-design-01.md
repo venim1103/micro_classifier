@@ -1572,6 +1572,24 @@ admission qualification or usable commands. Recorder retention and delivery
 publication remain separate. See [wall intake controls and limits][native-tof-wall-intake-review].
 
 
+##### Bounded Native ToF Wall-History Preflight (2026-11-10)
+
+Private `_check_native_tof_wall_history` preflights at most eight copied wall
+records against existing prevalidated native history. It requires strictly
+ordered unique epoch/acquisition/delivery IDs, one native match, exact metadata/
+false flags/common input/ray/floor/final words and four typed axis/side entries.
+Fixed64 array/mask lengths and builtin types are checked before canonical
+binary64 hex decoding; strings are at most32 characters, overflow/NaN/unsupported
+range words reject. Scalar wall/position words match the native profile/pose;
+variable intermediate words remain diagnostics, not accepted arithmetic.
+
+This is a prehash layout gate, not recorder retention or delivery publication.
+It uses no native intake, geometry/replay, recorder read, clock/RNG or hash.
+All eight flags remain false; no numerical/geometric/coverage/error/physical/
+source/clock/permission/admission qualification or usable command follows.
+See [wall-history controls and limits][native-tof-wall-history-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2289,6 +2307,7 @@ figure is not an established minimum.
 [native-tof-wall-trace-review]: ../../REVIEW.md#232-actual-native-tof-wall-calculation-trace-2026-11-10
 [native-tof-wall-acquisition-review]: ../../REVIEW.md#233-actual-fresh-tof-wall-acquisition-pairing-2026-11-10
 [native-tof-wall-intake-review]: ../../REVIEW.md#234-bounded-native-tof-wall-intake-2026-11-10
+[native-tof-wall-history-review]: ../../REVIEW.md#235-bounded-native-tof-wall-history-preflight-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

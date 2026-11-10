@@ -11920,6 +11920,122 @@ def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, c
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "oversize",
+        "tuple_history",
+        "order",
+        "duplicate",
+        "epoch",
+        "missing_pair",
+        "delivery",
+        "flag",
+        "word_shape",
+        "noncanonical",
+        "overflow",
+        "index",
+        "mask",
+        "profile",
+        "rays",
+    ),
+)
+def test_native_tof_wall_history_layout(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step(
+        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+    )
+    packet = diagnostics._sample_simulator_native_tof_wall_source(
+        environment, owner._epoch
+    )
+    source_history = [packet["source"]]
+    history = [
+        {
+            key: deepcopy(packet[key])
+            for key in ("source_epoch", "tick", "delivery_tick", "wall")
+        }
+    ]
+    trace = history[0]["wall"]
+    if case == "copy":
+        for offset in range(1, 8):
+            paired_source, paired_wall = deepcopy((source_history[0], history[0]))
+            for entry in (paired_source, paired_wall):
+                entry["tick"] += offset
+                entry["delivery_tick"] += offset
+            source_history.append(paired_source)
+            history.append(paired_wall)
+    elif case == "oversize":
+        history *= 9
+    elif case == "tuple_history":
+        history = tuple(history)
+    elif case in ("order", "duplicate"):
+        second = deepcopy(history[0])
+        second["tick"] = 3 if case == "order" else 4
+        history.append(second)
+    elif case == "epoch":
+        history[0]["source_epoch"] = "changed"
+    elif case == "missing_pair":
+        source_history = []
+    elif case == "delivery":
+        history[0]["delivery_tick"] += 1
+    elif case == "flag":
+        trace["source_qualified"] = True
+    elif case == "word_shape":
+        trace["walls"][0]["distance_m"] = ("0x0.0p+0",) * 65
+    elif case in ("noncanonical", "overflow"):
+        word = "0.0" if case == "noncanonical" else "0x1p+999999"
+        trace["walls"][0]["numerator_m"] = word
+    elif case == "index":
+        trace["walls"][0]["wall_index"] = False
+    elif case == "mask":
+        trace["walls"][0]["hit"] = (1,) * 64
+    elif case == "profile":
+        trace["inputs"]["config"]["max_range"] = 3.0
+    elif case == "rays":
+        trace["world_frame_unit_rays"] = ("0x0.0p+0",) * 192
+    before = deepcopy((history, source_history))
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall layout preflight must not intake/read/retain/replay/clock/hash"
+        )
+
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_wall_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "copy":
+        assert (
+            diagnostics._check_native_tof_wall_history(
+                history, source_history, owner._epoch
+            )
+            is None
+        )
+        assert len(history) == len(source_history) == 8
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._check_native_tof_wall_history(
+                history, source_history, owner._epoch
+            )
+    assert (history, source_history) == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "retain",
         "default",
         "flag",

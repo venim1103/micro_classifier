@@ -11071,6 +11071,123 @@ def _check_native_tof_selection_history(history, source_history, source_epoch):
                 )
 
 
+def _check_native_tof_wall_history(history, source_history, source_epoch):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native ToF wall history budget exhausted")
+    if type(source_history) is not list or len(source_history) > 8:
+        raise ValueError("native ToF wall source history budget exhausted")
+    previous = -1
+    arrays = ("distance_m", "altitude_m", "across_m", "candidate_m", "minimum_after_m")
+
+    def canonical(word, finite=False, range_only=False):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("unsupported native ToF retained wall word budget")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError("unsupported native ToF retained wall word") from error
+        if (
+            value.hex() != word
+            or math.isnan(value)
+            or (finite and not math.isfinite(value))
+            or (range_only and value == -math.inf)
+        ):
+            raise ValueError("unsupported native ToF retained wall canonical word")
+
+    for entry in history:
+        if (
+            type(entry) is not dict
+            or len(entry) != 4
+            or any(type(key) is not str for key in entry)
+            or set(entry) != {"source_epoch", "tick", "delivery_tick", "wall"}
+            or type(entry["source_epoch"]) is not str
+            or entry["source_epoch"] != source_epoch
+            or type(entry["tick"]) is not int
+            or not previous < entry["tick"] <= 0xFFFFFFFF // 50000
+            or type(entry["delivery_tick"]) is not int
+            or not 0 <= entry["delivery_tick"] <= 0xFFFFFFFF // 50000
+        ):
+            raise ValueError("unsupported native ToF wall history metadata")
+        previous = entry["tick"]
+        matches = [
+            source for source in source_history if source["tick"] == entry["tick"]
+        ]
+        if (
+            len(matches) != 1
+            or matches[0]["source_epoch"] != entry["source_epoch"]
+            or matches[0]["delivery_tick"] != entry["delivery_tick"]
+        ):
+            raise ValueError("native ToF wall history source pairing missing")
+        native = matches[0]["native_source"]
+        expected = {
+            "schema": "micro-classifier/native-tof-wall-source/1",
+            "allowed_use": "native_tof_wall_diagnostics_only",
+            "status": "recorded_native_wall_calculation_values",
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            "inputs": native["inputs"],
+            **{
+                key: native[key]
+                for key in (
+                    "world_frame_unit_rays",
+                    "floor_candidate_ranges_m",
+                    "pre_noise_ranges_m",
+                )
+            },
+            "walls": tuple(
+                {
+                    "wall_index": index,
+                    "axis": index // 2,
+                    "side": index % 2,
+                    "wall_m": float(
+                        native["inputs"]["scenario"]["bounds"][index // 2]
+                        if index % 2
+                        else 0.0
+                    ).hex(),
+                    "position_axis_m": native["inputs"]["position_m"][index // 2].hex(),
+                    "numerator_m": "0x0.0p+0",
+                    **{key: ("0x0.0p+0",) * 64 for key in arrays},
+                    "hit": (False,) * 64,
+                }
+                for index in range(4)
+            ),
+        }
+        trace = entry["wall"]
+        if (
+            native["world_frame_unit_rays"] is None
+            or not _native_tof_word_copy_matches(trace, expected, shape_only=True)
+            or any(
+                not _native_tof_word_copy_matches(trace[key], value)
+                for key, value in expected.items()
+                if key != "walls"
+            )
+        ):
+            raise ValueError("unsupported native ToF retained wall layout or words")
+        for wall, reference in zip(trace["walls"], expected["walls"], strict=True):
+            if any(
+                not _native_tof_word_copy_matches(wall[key], reference[key])
+                for key in ("wall_index", "axis", "side", "wall_m", "position_axis_m")
+            ):
+                raise ValueError("unsupported native ToF retained wall identity words")
+            canonical(wall["numerator_m"])
+            for key in arrays:
+                for word in wall[key]:
+                    canonical(
+                        word, range_only=key in ("candidate_m", "minimum_after_m")
+                    )
+
+
 def _match_native_tof_retained_selection(source, selection_history):
     matches = [
         entry

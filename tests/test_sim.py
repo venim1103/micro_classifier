@@ -28041,6 +28041,7 @@ def test_native_tof_cylinder_selection_snapshot(
         "root_squared",
         "side_numerator",
         "side_division",
+        "side_altitude",
     ),
 )
 def test_native_tof_cylinder_offset_snapshot(
@@ -28055,8 +28056,9 @@ def test_native_tof_cylinder_offset_snapshot(
     horizontal_norm = kind == "horizontal_norm"
     discriminant = kind == "discriminant"
     root_squared = kind == "root_squared"
-    side_numerator = kind in ("side_numerator", "side_division")
+    side_numerator = kind in ("side_numerator", "side_division", "side_altitude")
     side_division = kind == "side_division"
+    side_altitude = kind == "side_altitude"
     residual_key = (
         "signed_squared_residual_ratio" if root_squared else "signed_residual_ratio"
     )
@@ -28068,6 +28070,7 @@ def test_native_tof_cylinder_offset_snapshot(
         "root_squared": (4290, 5430, 768),
         "side_numerator": (5832, 7350, 2304),
         "side_division": (7752, 8886, 1536),
+        "side_altitude": (9678, 11190, 2304),
     }[kind]
     field = f"cylinder_{kind}_residuals"
     option = f"include_{field}"
@@ -28101,6 +28104,7 @@ def test_native_tof_cylinder_offset_snapshot(
             "combined_discriminant",
             "combined_root",
             "combined_numerator",
+            "combined_division",
             "late",
             "forbidden",
         ),
@@ -28148,6 +28152,12 @@ def test_native_tof_cylinder_offset_snapshot(
         trace["horizontal_squared"] = ((0.0).hex(), *trace["horizontal_squared"][1:])
         for side in trace["cylinders"][0]["sides"]:
             side["distance_m"] = ("inf", *side["distance_m"][1:])
+    elif side_altitude and case == "copy":
+        trace = owner._tof_cylinder_history[0]["cylinder"]
+        height_word = float(trace["inputs"]["config"]["tof_mount_height"]).hex()
+        for side in trace["cylinders"][0]["sides"]:
+            side["distance_m"] = ("inf", *side["distance_m"][1:])
+            side["altitude_m"] = (height_word, *side["altitude_m"][1:])
     elif case in ("residual", "infinite_observation", "malformed") or (
         (root_squared or side_numerator) and case == "work_limit"
     ):
@@ -28158,6 +28168,8 @@ def test_native_tof_cylinder_offset_snapshot(
         key = (
             "horizontal_squared"
             if horizontal_norm
+            else "altitude_m"
+            if side_altitude
             else "distance_m"
             if side_division
             else "numerator_m"
@@ -28206,8 +28218,10 @@ def test_native_tof_cylinder_offset_snapshot(
         names["combined_discriminant"] = "_native_tof_cylinder_discriminant_residuals"
     if side_numerator:
         names["combined_root"] = "_native_tof_cylinder_root_squared_residuals"
-    if side_division:
+    if side_division or side_altitude:
         names["combined_numerator"] = "_native_tof_cylinder_side_numerator_residuals"
+    if side_altitude:
+        names["combined_division"] = "_native_tof_cylinder_side_division_residuals"
     originals = {name: getattr(diagnostics, symbol) for name, symbol in names.items()}
     outgoing = {name: [] for name in names}
 
@@ -28339,7 +28353,12 @@ def test_native_tof_cylinder_offset_snapshot(
             ),
             **(
                 {"include_cylinder_side_numerator_residuals": True}
-                if side_division and case == "selection_combined"
+                if (side_division or side_altitude) and case == "selection_combined"
+                else {}
+            ),
+            **(
+                {"include_cylinder_side_division_residuals": True}
+                if side_altitude and case == "selection_combined"
                 else {}
             ),
             include_cylinder_selection_diagnostics=case == "selection_combined",
@@ -28472,6 +28491,42 @@ def test_native_tof_cylinder_offset_snapshot(
                                 == trace["horizontal_squared"][ray]
                             )
                             assert entry["observed_discriminant_hex"] == observed_word
+                            assert (
+                                entry["exact_unrounded_expression_ratio"]
+                                == exact.as_integer_ratio()
+                            )
+                        elif side_altitude:
+                            index, ray = entry["obstacle_index"], entry["ray_index"]
+                            side = entry["side_index"]
+                            cylinder = trace["cylinders"][index]
+                            height_word = float(
+                                trace["inputs"]["config"]["tof_mount_height"]
+                            ).hex()
+                            distance_word = cylinder["sides"][side]["distance_m"][ray]
+                            distance = float.fromhex(distance_word)
+                            effective = distance if math.isfinite(distance) else 0.0
+                            up_word = trace["world_frame_unit_rays"][ray * 3 + 2]
+                            exact = Fraction.from_float(float.fromhex(height_word)) + (
+                                Fraction.from_float(effective)
+                                * Fraction.from_float(float.fromhex(up_word))
+                            )
+                            work["oracle"] += 2
+                            observed_word = cylinder["sides"][side]["altitude_m"][ray]
+                            assert (
+                                diagnostic["comparison_basis"]
+                                == "unrounded_supplied_word_height_plus_effective_distance_times_up"
+                            )
+                            assert side in (0, 1) and entry["sign"] == (-1, 1)[side]
+                            assert entry["mount_height_hex"] == height_word
+                            assert entry["up_hex"] == up_word
+                            assert entry["raw_distance_hex"] == distance_word
+                            assert entry["effective_distance_hex"] == effective.hex()
+                            assert entry["distance_branch"] == (
+                                "finite_distance"
+                                if math.isfinite(distance)
+                                else "nonfinite_distance_zero_fallback"
+                            )
+                            assert entry["observed_altitude_hex"] == observed_word
                             assert (
                                 entry["exact_unrounded_expression_ratio"]
                                 == exact.as_integer_ratio()
@@ -28718,10 +28773,19 @@ def test_native_tof_cylinder_offset_snapshot(
                             is False
                             for flag in flags
                         )
-                    if side_division:
+                    if side_division or side_altitude:
                         assert work["combined_numerator"] == closing_count
                         assert all(
                             result["cylinder_side_numerator_residuals"]["diagnostic"][
+                                flag
+                            ]
+                            is False
+                            for flag in flags
+                        )
+                    if side_altitude:
+                        assert work["combined_division"] == closing_count
+                        assert all(
+                            result["cylinder_side_division_residuals"]["diagnostic"][
                                 flag
                             ]
                             is False
@@ -28749,6 +28813,7 @@ def test_native_tof_cylinder_offset_snapshot(
             assert work["combined_discriminant"] == 0
             assert work["combined_root"] == 0
             assert work["combined_numerator"] == 0
+            assert work["combined_division"] == 0
     assert environment.tick == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry

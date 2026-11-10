@@ -2327,6 +2327,20 @@ no geometry/source/coverage/error/clock/one-use/permission/admission or usable
 command. See [actual guarded controls and limits][native-tof-cylinder-matched-division-review].
 
 
+#### Matched Retained Cylinder Side-Altitude Residuals (2026-11-10)
+
+Default-off literal `include_cylinder_side_altitude_residuals` requires
+`include_cylinder=True`. Matched delivered/pending identities and independent
+closing checks compose captured height/up-ray/ordered distance/altitude words
+through the unchanged combined-expression helper. Raw nonfinite distance retains
+its word and explicit +0 effective fallback; nonfinite observation residual stays
+unknown. <=32 cylinders/8385 words/4096 entries/8257 values/12288 binary operations
+per helper,4096-bit ceiling unchanged; <=18 original/closing invocations across
+delivered/<=8 pending records. No corrected upstream words or isolated primitive/
+FMA claim; all eight flags false, no geometry/source/coverage/error/clock/one-use/
+permission/admission or usable command. See [actual controls and limits][native-tof-cylinder-matched-altitude-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2359,3 +2373,4 @@ command. See [actual guarded controls and limits][native-tof-cylinder-matched-di
 [native-tof-cylinder-matched-root-review]: ../../REVIEW.md#277-matched-retained-cylinder-root-squared-consistency-2026-11-10
 [native-tof-cylinder-matched-numerator-review]: ../../REVIEW.md#278-matched-retained-cylinder-side-numerator-residuals-2026-11-10
 [native-tof-cylinder-matched-division-review]: ../../REVIEW.md#279-matched-retained-cylinder-side-division-residuals-2026-11-10
+[native-tof-cylinder-matched-altitude-review]: ../../REVIEW.md#280-matched-retained-cylinder-side-altitude-residuals-2026-11-10

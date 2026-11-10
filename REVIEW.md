@@ -543,6 +543,48 @@ All eight flags false; no uniform/numerical/physical/source/geometry/coverage/
 clock/one-use/permission/admission or usable command. Next matched side-altitude
 combined expression, preserving the captured nonfinite-distance fallback.
 
+## 280. Matched Retained Cylinder Side-Altitude Residuals (2026-11-10)
+
+Hypothesis: default-off literal `include_cylinder_side_altitude_residuals`
+requiring `include_cylinder=True` composes captured mount height/up-ray/ordered
+distance/altitude words through the unchanged combined-expression helper.
+Matched delivered/pending identities and independent closing checks remain.
+Raw nonfinite distance retains its word and explicit +0 effective fallback, not
+an inferred geometric hit. Cheapest discriminator: existing23-case snapshot family
+expanded to eighth mode,184 cases, exact height+effective-distance*up oracle.
+New copy control supplies +inf distance and height altitude on both sides at one
+ray of a retained synthetic trace; no corrected upstream source or geometry claim.
+
+Fresh bounded routine ledger under standing authority: <=3 pytest invocations,
+focused then required root plus one diagnosed-repair reserve,300 s each. Root
+`python -m pytest -q && ruff check . && git diff --check`, changed Python format
+check. Fixture <=4steps/5reads/3geometries/3retentions/6active-helper+cylinder
+matches/2pending matches/64digests. New mode <=9678 values/11190 binary operations/
+2304 oracle operations; prior seven caps unchanged. Combined control adds previous
+seven arithmetic helpers and chain <=6each. No snapshot intake/read/retain/step/
+reset/replay/clock; tick/frame/RNG preserved. Existing helper <=32 cylinders/8385
+words/4096 entries/8257 values/12288 binary operations,4096-bit ceiling unchanged;
+<=18 original/closing invocations across delivered/<=8 pending records. Explicit
+21-bit observed altitude in16-bit work-limit control. Preserve failures and unknown
+historical attempts; diagnose before rerun, no protected experiment or old refund.
+No additional C/Arm/sanitizer/board opt-ins, dependencies, models or task data.
+
+Focused184 passed/3260 deselected,35.84 s. Required root4367 passed,1 known
+transformer QDQ xfailed,71 warnings,136.31 s; root Ruff, changed-file format and
+whitespace passed. Editor/Pylance syntax clean; AST confirms only snapshot and
+existing arithmetic family changed, prior defaults/23 cases conserved. Pylance
+signature query found no call sites, not compatibility proof. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Logs `cylinder-280-focused-1.log`/`cylinder-280-root-1.log` retained under recovery
+directory; no additional C/Arm/sanitizer/board opt-in gates ran.
+
+Exact combined-expression/ordered sides, raw nonfinite/+0 fallback, unknown
+nonfinite observation, default skipped work, detached output, identity/closing
+suppression and forced bit exhaustion verified. Prior seven caps unchanged.
+All eight flags false; no isolated primitive/FMA or uniform error, numerical/
+physical/source/geometry/coverage/clock/one-use/permission/admission or usable
+command. Next matched top-offset arithmetic, not corrected upstream words.
+
 ## Sources
 
 Hardware and tools:

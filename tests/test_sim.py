@@ -13323,10 +13323,23 @@ def test_native_tof_selection_snapshot(
         "late_timing_budget",
     ),
 )
-def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture, case):
+@pytest.mark.parametrize("cylinder", (False, True))
+def test_native_tof_wall_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
+):
+    from dataclasses import replace
+
     from sim import diagnostics, rover
 
+    kind = "cylinder" if cylinder else "wall"
+    history_name = f"_tof_{kind}_history"
+    matcher_name = f"_match_native_tof_retained_{kind}"
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if cylinder:
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
+        owner = type(owner)(environment.scenario, synthetic_test_only=True)
     work = dict.fromkeys(
         (
             "steps",
@@ -13335,6 +13348,7 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
             "geometry",
             "clock",
             "wall",
+            "other_wall",
             "selection",
             "timing",
             "arithmetic",
@@ -13386,7 +13400,8 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
         environment.step(
             [0.125, 0.3],
             capture_native_tof_source=True,
-            capture_native_tof_wall=True,
+            **{f"capture_native_tof_{kind}": True},
+            **({"capture_native_tof_wall": True} if cylinder and combined else {}),
             capture_native_tof_selection=combined,
             capture_native_tof_timing=combined,
         )
@@ -13397,7 +13412,8 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
             owner.record_native_tof_source(
                 environment,
                 synthetic_test_only=True,
-                include_wall=True,
+                **{f"include_{kind}": True},
+                **({"include_wall": True} if cylinder and combined else {}),
                 include_selection=combined,
                 include_timing=combined,
             )
@@ -13406,26 +13422,28 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
     before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
     closing_match_count = 2 * (1 + len(environment.pending))
     if case == "default":
-        owner._tof_wall_history = None
+        setattr(owner, history_name, None)
     elif case == "missing_delivered":
-        owner._tof_wall_history.pop(0)
+        getattr(owner, history_name).pop(0)
     elif case == "missing_pending":
-        owner._tof_wall_history.pop()
+        getattr(owner, history_name).pop()
     elif case == "epoch":
-        owner._tof_wall_history[0]["source_epoch"] = "0" * 32
+        getattr(owner, history_name)[0]["source_epoch"] = "0" * 32
     elif case == "delivery_tick":
-        owner._tof_wall_history[0]["delivery_tick"] += 1
+        getattr(owner, history_name)[0]["delivery_tick"] += 1
     elif case == "type":
-        selected = owner._tof_wall_history[0]["wall"]["walls"][0]
+        trace = getattr(owner, history_name)[0][kind]
+        selected = trace["cylinders"][0]["sides"][0] if cylinder else trace["walls"][0]
         selected["hit"] = (1, *selected["hit"][1:])
     elif case == "budget":
-        owner._tof_wall_history *= 9
+        setattr(owner, history_name, getattr(owner, history_name) * 9)
     elif case == "noncanonical_pair":
         paired = owner._tof_history[0]["native_source"]
         words = ("0.0", *paired["world_frame_unit_rays"][1:])
         paired["world_frame_unit_rays"] = words
-        owner._tof_wall_history[0]["wall"]["world_frame_unit_rays"] = words
-    original_wall = diagnostics._match_native_tof_retained_wall
+        getattr(owner, history_name)[0][kind]["world_frame_unit_rays"] = words
+    original_wall = getattr(diagnostics, matcher_name)
+    original_other_wall = diagnostics._match_native_tof_retained_wall
     original_selection = diagnostics._match_native_tof_retained_selection
     original_timing = diagnostics._match_native_tof_retained_timing
     original_arithmetic = diagnostics._native_tof_direction_norm_residuals
@@ -13459,6 +13477,8 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
                 "late_timing_budget",
             ):
                 name = case.removeprefix("late_").removesuffix("_budget")
+                if cylinder and name == "wall":
+                    name = "cylinder"
                 getattr(owner, f"_tof_{name}_history").extend(
                     getattr(owner, f"_tof_{name}_history") * 8
                 )
@@ -13467,6 +13487,11 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
                 return actual
             work["late"] += 1
         return actual
+
+    def other_wall(*args, **kwargs):
+        work["other_wall"] += 1
+        assert cylinder and combined and work["other_wall"] <= 6
+        return original_other_wall(*args, **kwargs)
 
     def selection(*args, **kwargs):
         work["selection"] += 1
@@ -13507,12 +13532,15 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
         actual = original_frame(*args, **kwargs)
         if work["frame"] == 2:
             if case == "history_identity":
-                owner._tof_wall_history = list(owner._tof_wall_history)
+                setattr(owner, history_name, list(getattr(owner, history_name)))
             elif case == "late_wall":
-                selected = owner._tof_wall_history[0]["wall"]["walls"][0]
+                trace = getattr(owner, history_name)[0][kind]
+                selected = (
+                    trace["cylinders"][0]["sides"][0] if cylinder else trace["walls"][0]
+                )
                 selected["hit"] = (not selected["hit"][0], *selected["hit"][1:])
             elif case == "outgoing":
-                outgoing["wall"]["wall"]["source_qualified"] = True
+                outgoing["wall"][kind]["source_qualified"] = True
             elif case == "late_owner":
                 owner._binding = {"changed": True}
             else:
@@ -13531,7 +13559,9 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
             "wall snapshot must not read/retain/step/reset/replay/clock"
         )
 
-    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_wall", matched)
+    monkeypatch.setattr(diagnostics, matcher_name, matched)
+    if cylinder:
+        monkeypatch.setattr(diagnostics, "_match_native_tof_retained_wall", other_wall)
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_selection", selection)
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timing)
     monkeypatch.setattr(diagnostics, "_native_tof_direction_norm_residuals", arithmetic)
@@ -13540,7 +13570,7 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
     monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
     monkeypatch.setattr(
-        diagnostics, "_sample_simulator_native_tof_wall_source", forbidden
+        diagnostics, f"_sample_simulator_native_tof_{kind}_source", forbidden
     )
     for name in ("record_environment_tick", "record_native_tof_source"):
         monkeypatch.setattr(type(owner), name, forbidden)
@@ -13549,13 +13579,16 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
     for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
         monkeypatch.setattr(rover, name, forbidden)
     if case == "flag":
-        with pytest.raises(ValueError, match="include_wall"):
-            owner.snapshot_native_tof_delivery(synthetic_test_only=True, include_wall=1)
+        with pytest.raises(ValueError, match=f"include_{kind}"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True, **{f"include_{kind}": 1}
+            )
     else:
         result = owner.snapshot_native_tof_delivery(
             synthetic_test_only=True,
             include_pending_sources=case != "delivered_only",
-            include_wall=case != "default",
+            **{f"include_{kind}": case != "default"},
+            **({"include_wall": True} if cylinder and combined else {}),
             include_selection=combined,
             include_timing=combined,
             include_direction_norm_residuals=combined,
@@ -13575,29 +13608,39 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
             assert result["snapshot_available"] is True, result["reason"]
             assert result["frame"] == before_frame
             if case == "default":
-                assert "wall" not in result and "pending_wall" not in result
+                assert kind not in result and f"pending_{kind}" not in result
                 assert work["wall"] == 0
             else:
-                selected = result["wall"]
+                selected = result[kind]
+                if cylinder:
+                    assert len(selected[kind]["cylinders"]) == 1
+                    assert len(selected[kind]["cylinders"][0]["sides"]) == 2
                 for key in ("source_epoch", "tick", "delivery_tick"):
                     assert selected[key] == result["source"][key]
                 assert (
-                    selected["wall"]["pre_noise_ranges_m"]
+                    selected[kind]["pre_noise_ranges_m"]
                     == result["source"]["native_source"]["pre_noise_ranges_m"]
                 )
-                assert all(selected["wall"][flag] is False for flag in flags)
+                assert all(selected[kind][flag] is False for flag in flags)
                 if case == "held":
                     assert result["sensor_tick"] == 4 and result["tick"] == 7
                 if case != "delivered_only":
                     for entry, source in zip(
-                        result["pending_wall"], result["pending_sources"], strict=True
+                        result[f"pending_{kind}"],
+                        result["pending_sources"],
+                        strict=True,
                     ):
                         for key in ("source_epoch", "tick", "delivery_tick"):
                             assert entry[key] == source[key]
-                        assert all(entry["wall"][flag] is False for flag in flags)
+                        assert all(entry[kind][flag] is False for flag in flags)
                 else:
-                    assert "pending_wall" not in result
+                    assert f"pending_{kind}" not in result
                 if combined:
+                    if cylinder:
+                        assert result["wall"]["tick"] == selected["tick"]
+                        assert all(
+                            result["wall"]["wall"][flag] is False for flag in flags
+                        )
                     assert result["timing"]["clock"]["qualified"] is False
                     assert result["selection"]["selection"]["source_qualified"] is False
                     assert (
@@ -13606,8 +13649,10 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
                         ]
                         is False
                     )
-                selected["wall"]["source_qualified"] = True
-                assert owner._tof_wall_history[0]["wall"]["source_qualified"] is False
+                selected[kind]["source_qualified"] = True
+                assert (
+                    getattr(owner, history_name)[0][kind]["source_qualified"] is False
+                )
         else:
             assert (
                 result["status"] == "unknown" and result["snapshot_available"] is False
@@ -13618,6 +13663,8 @@ def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture,
                     "frame",
                     "wall",
                     "pending_wall",
+                    "cylinder",
+                    "pending_cylinder",
                     "selection",
                     "pending_selection",
                     "timing",

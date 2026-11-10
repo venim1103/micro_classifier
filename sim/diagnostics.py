@@ -12301,6 +12301,20 @@ def _check_native_tof_cylinder_history(history, source_history, source_epoch):
                     canonical(word, range_only=key in range_arrays)
 
 
+def _match_native_tof_retained_cylinder(source, cylinder_history):
+    matches = [
+        entry
+        for entry in cylinder_history
+        if all(
+            entry[key] == source[key]
+            for key in ("source_epoch", "tick", "delivery_tick")
+        )
+    ]
+    if len(matches) != 1:
+        raise ValueError("native ToF retained cylinder pair missing or ambiguous")
+    return deepcopy(matches[0])
+
+
 def _match_native_tof_retained_wall(source, wall_history):
     matches = [
         entry
@@ -13521,6 +13535,7 @@ class _SyntheticC1SourceRecorder:
         include_timing=False,
         include_selection=False,
         include_wall=False,
+        include_cylinder=False,
         include_wall_residuals=False,
         include_wall_projection_residuals=False,
         include_wall_selection_diagnostics=False,
@@ -13538,6 +13553,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_selection must be a literal bool")
         if type(include_wall) is not bool:
             raise ValueError("include_wall must be a literal bool")
+        if type(include_cylinder) is not bool:
+            raise ValueError("include_cylinder must be a literal bool")
         if type(include_wall_residuals) is not bool:
             raise ValueError("include_wall_residuals must be a literal bool")
         if include_wall_residuals and not include_wall:
@@ -13586,6 +13603,7 @@ class _SyntheticC1SourceRecorder:
         timing_before = self._tof_timing_history if include_timing else None
         selection_before = self._tof_selection_history if include_selection else None
         wall_before = self._tof_wall_history if include_wall else None
+        cylinder_before = self._tof_cylinder_history if include_cylinder else None
         current_before, dynamics_before = self._current, self._dynamics_sample
         if environment is None or current_before is None or dynamics_before is None:
             return result
@@ -13609,7 +13627,7 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
-            if include_timing or include_selection or include_wall:
+            if include_timing or include_selection or include_wall or include_cylinder:
                 _check_native_tof_history_layout(self._tof_history, template)
             if include_timing:
                 _check_native_tof_timing_history(
@@ -13622,6 +13640,10 @@ class _SyntheticC1SourceRecorder:
             if include_wall:
                 _check_native_tof_wall_history(
                     self._tof_wall_history, self._tof_history, self._epoch
+                )
+            if include_cylinder:
+                _check_native_tof_cylinder_history(
+                    self._tof_cylinder_history, self._tof_history, self._epoch
                 )
             return _c1_source_binding_digest(
                 {
@@ -13649,6 +13671,11 @@ class _SyntheticC1SourceRecorder:
                     **(
                         {"tof_wall_history": self._tof_wall_history}
                         if include_wall
+                        else {}
+                    ),
+                    **(
+                        {"tof_cylinder_history": self._tof_cylinder_history}
+                        if include_cylinder
                         else {}
                     ),
                     "binding": self._binding,
@@ -13798,6 +13825,10 @@ class _SyntheticC1SourceRecorder:
                 )
             if include_wall:
                 _check_native_tof_wall_history(wall_before, history_before, self._epoch)
+            if include_cylinder:
+                _check_native_tof_cylinder_history(
+                    cylinder_before, history_before, self._epoch
+                )
             if any(
                 not 0 <= word <= 0xFFFFFFFF
                 for entry in history_before
@@ -13835,6 +13866,8 @@ class _SyntheticC1SourceRecorder:
                 selection_binding = _c1_source_binding_digest(selection_before)
             if include_wall:
                 wall_binding = _c1_source_binding_digest(wall_before)
+            if include_cylinder:
+                cylinder_binding = _c1_source_binding_digest(cylinder_before)
             if include_pending_sources:
                 pending_before = environment.pending
                 pending_copy = _copy_native_tof_pending_queue(environment)
@@ -13922,6 +13955,22 @@ class _SyntheticC1SourceRecorder:
                 )
                 wall_output_binding = _c1_source_binding_digest(
                     {"wall": wall, "pending_wall": pending_wall}
+                )
+            if include_cylinder:
+                cylinder = _match_native_tof_retained_cylinder(copied, cylinder_before)
+                pending_cylinder = (
+                    tuple(
+                        _match_native_tof_retained_cylinder(source, cylinder_before)
+                        for source in pending_sources
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                _check_native_tof_cylinder_history(
+                    [cylinder, *pending_cylinder], history_before, self._epoch
+                )
+                cylinder_output_binding = _c1_source_binding_digest(
+                    {"cylinder": cylinder, "pending_cylinder": pending_cylinder}
                 )
             if include_wall_residuals:
                 wall_residuals = wall_residual_probe(wall)
@@ -14041,6 +14090,23 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder:
+                _check_native_tof_cylinder_history(
+                    self._tof_cylinder_history, self._tof_history, self._epoch
+                )
+                cylinder_after = _match_native_tof_retained_cylinder(
+                    live_after, self._tof_cylinder_history
+                )
+                pending_cylinder_after = (
+                    tuple(
+                        _match_native_tof_retained_cylinder(
+                            source, self._tof_cylinder_history
+                        )
+                        for source in pending_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_wall_projection_residuals:
                 wall_projection_residuals_after = wall_projection_probe(wall_after)
                 pending_wall_projection_residuals_after = (
@@ -14059,7 +14125,7 @@ class _SyntheticC1SourceRecorder:
                 )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
-            if include_timing or include_selection or include_wall:
+            if include_timing or include_selection or include_wall or include_cylinder:
                 _check_native_tof_history_layout(self._tof_history, template)
             if include_timing:
                 _check_native_tof_timing_history(
@@ -14072,6 +14138,10 @@ class _SyntheticC1SourceRecorder:
             if include_wall:
                 _check_native_tof_wall_history(
                     self._tof_wall_history, self._tof_history, self._epoch
+                )
+            if include_cylinder:
+                _check_native_tof_cylinder_history(
+                    self._tof_cylinder_history, self._tof_history, self._epoch
                 )
             if include_pending_sources and (
                 environment.pending is not pending_before
@@ -14104,6 +14174,31 @@ class _SyntheticC1SourceRecorder:
                 ):
                     raise ValueError(
                         "native ToF retained wall or outgoing pairs changed"
+                    )
+            if include_cylinder:
+                _check_native_tof_cylinder_history(
+                    [cylinder, *pending_cylinder], self._tof_history, self._epoch
+                )
+                _check_native_tof_cylinder_history(
+                    [cylinder_after, *pending_cylinder_after],
+                    self._tof_history,
+                    self._epoch,
+                )
+                if (
+                    self._tof_cylinder_history is not cylinder_before
+                    or not _native_tof_word_copy_matches(cylinder, cylinder_after)
+                    or not _native_tof_word_copy_matches(
+                        pending_cylinder, pending_cylinder_after
+                    )
+                    or _c1_source_binding_digest(self._tof_cylinder_history)
+                    != cylinder_binding
+                    or _c1_source_binding_digest(
+                        {"cylinder": cylinder, "pending_cylinder": pending_cylinder}
+                    )
+                    != cylinder_output_binding
+                ):
+                    raise ValueError(
+                        "native ToF retained cylinder or outgoing pairs changed"
                     )
             if include_selection:
                 _check_native_tof_selection_history(
@@ -14257,6 +14352,10 @@ class _SyntheticC1SourceRecorder:
             result["wall"] = wall
             if include_pending_sources:
                 result["pending_wall"] = pending_wall
+        if include_cylinder:
+            result["cylinder"] = cylinder
+            if include_pending_sources:
+                result["pending_cylinder"] = pending_cylinder
         if include_wall_residuals:
             result["wall_residuals"] = wall_residuals
             if include_pending_sources:

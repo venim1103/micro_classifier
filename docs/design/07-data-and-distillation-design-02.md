@@ -309,8 +309,8 @@ mutation and clocks. Only fresh sampling forwards the original trace dict,
 pairing native cache/RNG identities and acquisition/delivery ticks; held/default/
 reset clears it and rejected preflight preserves previous caches. The old default
 forwarding path is unchanged. Wall/selection/timing can accompany the same sample
-without extra geometry, RNG or clock reads. Delivery correspondence remains
-separate work; nominal IDs/timing and matching words do not qualify source,
+without extra geometry, RNG or clock reads. Delivery correspondence is documented
+below; nominal IDs/timing and matching words do not qualify source,
 geometry, coverage, numerical/physical error, clocks, permission or admission.
 Eight flags remain false. See [acquisition controls and limits][native-tof-cylinder-acquisition-review].
 
@@ -328,7 +328,7 @@ copied content, ticks and declared centre/radius/top operands. Per metadata pass
 <=45696 float words plus6144 mask booleans; no new arithmetic/replay/hash/clock/
 RNG/recorder read. This is diagnostic ownership/copy validation, not arithmetic,
 geometry, coverage, source, clock, permission or admission qualification. All eight
-flags false. Delivery correspondence remains a separate prerequisite. See
+flags false. Delivery correspondence is documented below. See
 [actual controls and gate][native-tof-cylinder-intake-review].
 
 
@@ -359,9 +359,26 @@ identities and entry/native/producer/owner words before any staged commit.
 The default skips cold cylinder intake and all companions can coexist without
 additional geometry, recorder read or clock. At most six typed-cylinder guards
 per successful retention; each has the existing8x32 word/mask budgets. Delivery
-publication remains separate. This does not certify source/geometry/coverage/
+publication is documented below. This does not certify source/geometry/coverage/
 roundoff/uniform error/clocks/one-use execution/permission/admission; eight flags
 remain false. See [actual checks, failure and limits][native-tof-cylinder-retention-review].
+
+
+#### Delivered and Pending Cylinder Correspondence (2026-11-10)
+
+`snapshot_native_tof_delivery(include_cylinder=False)` is a separate literal-bool
+opt-in. After typed preflight, one detached cylinder record matches each delivered/
+pending native epoch/tick/delivery pair; copied records are typed before hashing.
+Closing probes and guards check original history identity, retained/native/output
+words, pending queue, current frame and producer/owner context before publication.
+Outputs are `cylinder` and optional `pending_cylinder`; unknown omits source,
+frame and all companion payloads. Default skips cylinder history, with wall/
+selection/timing/direction-norm companions available independently. At most eight
+typed-cylinder guards per successful snapshot, each with existing8x32 budgets;
+no acquisition intake, geometry replay, recorder read or new clock/RNG activity.
+Matching words do not resolve unequal-word value ties or prove source, geometry,
+coverage, roundoff, physical error, clock, one-use execution, permission or
+admission. Eight flags remain false. See [actual controls and gate][native-tof-cylinder-delivery-review].
 
 
 ### Synthetic Evaluation Tooling (2026-10-16)
@@ -2442,3 +2459,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-cylinder-intake-review]: ../../REVIEW.md#249-bounded-native-tof-cylinder-intake-2026-11-10
 [native-tof-cylinder-history-review]: ../../REVIEW.md#250-typed-cylinder-history-prehash-guard-2026-11-10
 [native-tof-cylinder-retention-review]: ../../REVIEW.md#251-explicit-cylinder-recorder-retention-2026-11-10
+[native-tof-cylinder-delivery-review]: ../../REVIEW.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10

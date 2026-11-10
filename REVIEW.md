@@ -559,6 +559,45 @@ error/numerical/physical/clock/one-use/permission/admission qualification and no
 usable command. Next detached delivered/pending cylinder matching with closing
 retained-history/cache/output checks; no publication is implied by retention.
 
+## 252. Delivered and Pending Cylinder Correspondence (2026-11-10)
+
+Checkpoint `e4e69c0` pushed/clean. Local hypothesis: separate literal
+`include_cylinder=False` matches one retained record for each delivered/pending
+native original epoch/tick/delivery, validates typed copies before hashing,
+then closes matching/history/producer/output checks before publication. Default
+skips cylinder history; no acquisition replay, intake, recorder read or clock.
+Unknown must omit source/frame and all companion payloads. At most8 typed
+cylinder guards per successful snapshot, each <=8x32 word/mask budgets.
+
+Reuse original24 wall snapshot cases/caps, add24 cylinder cases with a cloned
+one-cylinder scene/new standard recorder. Setup <=4 steps,5 reads,3 geometry/
+retentions,6 setup clocks only combined; each retention's prior bounds unchanged.
+Snapshot <=6 each selected/wall/selection/timing/arithmetic matchers,2 pending
+matchers,4 queue copies,2 frame checks,64 binding checks; no new rational work.
+Three pytest positions including failures/aborts: first48/60 seconds, one
+necessary repair reserve, final root/300 seconds; retain `cylinder-252-*` logs.
+No old refunds/protected runs/task data/dependencies/hardware. All eight flags
+false; no geometry/coverage/error/source/clock/permission/admission or usable
+command. Matching words preserve, rather than resolve, unequal-word value ties.
+
+First48 passed,2687 deselected,8.92 s. Required root3658 passed,1 known
+transformer QDQ xfailed,71 warnings,90.29 s; root Ruff, changed-file format
+check and whitespace passed. Editor diagnostics clear. AST proves one added
+matcher, only delivery snapshot and existing snapshot matrix changed; all other
+source/test nodes intact. Pylance resolved no callers at formatted snapshot
+position13529:8 (zero-based), so no static compatibility evidence. Two of three
+pytest positions used, no failures/aborts; unused reserve is not follow-on
+authority. Logs `cylinder-252-focused-1.log`/`cylinder-252-root-1.log` retained
+under recovery directory. No additional C/Arm/sanitizer/board opt-in gates ran.
+
+Delivered/pending and held/original IDs, nonempty detached copies, defaults,
+literal flags, missing pairs, typed/canonical/oversize controls, late retained/
+outgoing/owner/companion mutations and prehash late-budget rejection pass within
+stated caps. Parent ledgers unchanged. All eight flags false, no source/geometry/
+coverage/numerical/physical/uniform error/clock/one-use/permission/admission
+qualification and no usable command. Next independent supplied-word cylinder
+offset discrepancies; no fresh sampling or uniform error bound follows.
+
 ## Sources
 
 Hardware and tools:

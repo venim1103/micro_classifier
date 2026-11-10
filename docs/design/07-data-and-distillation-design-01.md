@@ -1515,6 +1515,25 @@ admission. There is no source/recorder read, geometry/replay, clock or RNG work.
 See [wall-word controls and limits][native-tof-wall-word-review].
 
 
+##### Actual Native ToF Wall Calculation Trace (2026-11-10)
+
+Separate cold `tof_ranges(..., wall_source={})` copies the four actual mounted
+wall computations in axis/side order. Each records native numerator, raw
+division, altitude/across words, predicate, masked candidate and post-wall
+minimum, plus original pose/profile/rays/floor/final ranges. Copies are detached
+from native/selection outputs; empty builtin distinct dictionaries and existing
+finite-input/32-obstacle preflight apply. Legacy mode rejects before geometry.
+Defaults/native-source-v1/selection words and expression order stay unchanged.
+There is no added direction, geometry, sampling, RNG/clock or recorder work.
+
+These are actual cold calculation values, not independently correct arithmetic,
+physical hits, complete coverage, an adopted error allowance or source/clock/
+permission/admission qualification. All eight flags false. Fresh acquisition
+pairing, closed intake, recorder retention and delivery remain separate; this
+trace is not retroactively reconstructed from final selected words.
+See [wall trace controls and limits][native-tof-wall-trace-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2229,6 +2248,7 @@ figure is not an established minimum.
 [native-tof-selection-acquisition-review]: ../review/221-225.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
 [native-tof-selection-intake-review]: ../review/221-225.md#225-bounded-native-tof-selection-intake-2026-11-09
 [native-tof-wall-word-review]: ../../REVIEW.md#231-selected-native-tof-wall-word-residuals-2026-11-10
+[native-tof-wall-trace-review]: ../../REVIEW.md#232-actual-native-tof-wall-calculation-trace-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

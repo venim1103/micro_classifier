@@ -20030,6 +20030,267 @@ def test_native_tof_selection_source(monkeypatch, case):
 @pytest.mark.parametrize(
     "case",
     (
+        "actual",
+        "paired",
+        "selection",
+        "all",
+        "occluded",
+        "parallel",
+        "signed_zero",
+        "yaw",
+        "max_obstacles",
+        "legacy",
+        "bad_option",
+        "nonempty",
+        "alias_native",
+        "alias_selection",
+        "budget",
+        "pose",
+    ),
+)
+def test_native_tof_wall_source(monkeypatch, case):
+    from sim import rover
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    scene = Scenario()
+    position = np.array(scene.start[:2], dtype=float)
+    yaw = math.pi / 2 if case == "yaw" else 0.0
+    native = {} if case in ("paired", "all", "alias_native") else None
+    selection = {} if case in ("selection", "all", "alias_selection") else None
+    trace = {}
+    valid = case in (
+        "actual",
+        "paired",
+        "selection",
+        "all",
+        "occluded",
+        "parallel",
+        "signed_zero",
+        "yaw",
+        "max_obstacles",
+    )
+    if case in ("occluded", "max_obstacles", "budget"):
+        count = 33 if case == "budget" else 32 if case == "max_obstacles" else 1
+        scene = Scenario(obstacles=((3.0, 3.0, 0.5),) * count)
+    elif case == "legacy":
+        config = Config(tof_mount_height=None)
+    elif case == "bad_option":
+        trace = True
+    elif case == "nonempty":
+        trace = {"occupied": True}
+    elif case == "alias_native":
+        trace = native
+    elif case == "alias_selection":
+        trace = selection
+    elif case == "pose":
+        position[0] = math.inf
+    if case == "signed_zero":
+        position[0] = 0.0
+    before_position = position.copy()
+    original_directions = rover.tof_directions
+    original_divide, original_where, original_minimum = np.divide, np.where, np.minimum
+    work = {"directions": 0, "forbidden": 0}
+    divisions, candidates, minima, direction_words = [], [], [], []
+
+    def directions(*args, **kwargs):
+        work["directions"] += 1
+        assert work["directions"] <= 2
+        if case in ("parallel", "signed_zero"):
+            result = np.zeros((8, 8, 3), dtype=np.float64)
+            result[..., 0] = -1.0 if case == "signed_zero" else 1.0
+        else:
+            result = original_directions(*args, **kwargs)
+        direction_words.append(result.copy())
+        return result
+
+    def divide(*args, **kwargs):
+        assert len(divisions) < 101
+        result = original_divide(*args, **kwargs)
+        divisions.append(
+            (np.asarray(args[0]).copy(), np.asarray(args[1]).copy(), result.copy())
+        )
+        return result
+
+    def where(*args, **kwargs):
+        result = original_where(*args, **kwargs)
+        if len(args) == 3 and np.isscalar(args[2]) and args[2] == math.inf:
+            assert len(candidates) < 100
+            candidates.append((args[0].copy(), args[1].copy(), result.copy()))
+        return result
+
+    def minimum(*args, **kwargs):
+        assert len(minima) < 100
+        result = original_minimum(*args, **kwargs)
+        minima.append((args[0].copy(), args[1].copy(), result.copy()))
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall trace must reject before geometry and never step/reset/clock"
+        )
+
+    monkeypatch.setattr(rover, "tof_directions", directions if valid else forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if valid:
+        baseline = tof_ranges(position, yaw, scene, config)
+        with monkeypatch.context() as interception:
+            interception.setattr(np, "divide", divide)
+            interception.setattr(np, "where", where)
+            interception.setattr(np, "minimum", minimum)
+            actual = tof_ranges(
+                position,
+                yaw,
+                scene,
+                config,
+                source=native,
+                selection_source=selection,
+                wall_source=trace,
+            )
+        np.testing.assert_array_equal(actual.view(np.uint64), baseline.view(np.uint64))
+        assert len(trace["walls"]) == 4
+        assert len(divisions) == 5 + 3 * len(scene.obstacles) <= 101
+        assert len(candidates) == len(minima) == 4 + 3 * len(scene.obstacles) <= 100
+        np.testing.assert_array_equal(
+            trace["world_frame_unit_rays"].view(np.uint64),
+            direction_words[1].view(np.uint64),
+        )
+        np.testing.assert_array_equal(
+            trace["floor_candidate_ranges_m"].view(np.uint64),
+            divisions[0][2].view(np.uint64),
+        )
+        np.testing.assert_array_equal(
+            trace["pre_noise_ranges_m"].view(np.uint64), actual.view(np.uint64)
+        )
+        for index, entry in enumerate(trace["walls"]):
+            axis, side = index // 2, index % 2
+            numerator, denominator, distance = divisions[index + 1]
+            predicate, raw_distance, candidate = candidates[index]
+            previous, minimum_candidate, reduced = minima[index]
+            assert (
+                entry["wall_index"] == index
+                and entry["axis"] == axis
+                and entry["side"] == side
+            )
+            assert (
+                entry["wall_m"].hex()
+                == float(scene.bounds[axis] if side else 0.0).hex()
+            )
+            assert entry["position_axis_m"].hex() == float(position[axis]).hex()
+            assert entry["numerator_m"].hex() == float(numerator).hex()
+            np.testing.assert_array_equal(
+                denominator.view(np.uint64),
+                direction_words[1][..., axis].view(np.uint64),
+            )
+            np.testing.assert_array_equal(
+                entry["distance_m"].view(np.uint64), distance.view(np.uint64)
+            )
+            np.testing.assert_array_equal(
+                entry["distance_m"].view(np.uint64), raw_distance.view(np.uint64)
+            )
+            np.testing.assert_array_equal(entry["hit"], predicate)
+            np.testing.assert_array_equal(
+                entry["candidate_m"].view(np.uint64), candidate.view(np.uint64)
+            )
+            np.testing.assert_array_equal(
+                entry["candidate_m"].view(np.uint64), minimum_candidate.view(np.uint64)
+            )
+            np.testing.assert_array_equal(
+                entry["minimum_after_m"].view(np.uint64), reduced.view(np.uint64)
+            )
+            previous_expected = (
+                trace["walls"][index - 1]["minimum_after_m"]
+                if index
+                else trace["floor_candidate_ranges_m"]
+            )
+            np.testing.assert_array_equal(
+                previous.view(np.uint64), previous_expected.view(np.uint64)
+            )
+            finite_distance = np.where(np.isfinite(distance), distance, 0)
+            altitude = (
+                config.tof_mount_height + finite_distance * direction_words[1][..., 2]
+            )
+            across = (
+                position[1 - axis] + finite_distance * direction_words[1][..., 1 - axis]
+            )
+            np.testing.assert_array_equal(
+                entry["altitude_m"].view(np.uint64), altitude.view(np.uint64)
+            )
+            np.testing.assert_array_equal(
+                entry["across_m"].view(np.uint64), across.view(np.uint64)
+            )
+            for name in (
+                "distance_m",
+                "altitude_m",
+                "across_m",
+                "candidate_m",
+                "minimum_after_m",
+            ):
+                assert entry[name].shape == (8, 8) and entry[name].dtype == np.float64
+                assert not np.shares_memory(entry[name], actual)
+            assert entry["hit"].dtype == bool and entry["hit"].shape == (8, 8)
+        for entry in trace["walls"]:
+            for name in (
+                "distance_m",
+                "altitude_m",
+                "across_m",
+                "candidate_m",
+                "minimum_after_m",
+            ):
+                entry[name][:] = -99.0
+        if case == "parallel":
+            assert np.isinf(divisions[3][2]).all() and np.isinf(divisions[4][2]).all()
+        elif case == "signed_zero":
+            assert np.signbit(divisions[1][2]).all() and (divisions[1][2] == 0).all()
+        if native is not None:
+            assert native["schema"] == "micro-classifier/native-tof-source/1"
+            np.testing.assert_array_equal(
+                native["pre_noise_ranges_m"].view(np.uint64), baseline.view(np.uint64)
+            )
+        if selection is not None:
+            assert (
+                selection["schema"] == "micro-classifier/native-tof-selection-source/1"
+            )
+            np.testing.assert_array_equal(
+                selection["pre_noise_ranges_m"].view(np.uint64),
+                baseline.view(np.uint64),
+            )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert trace[flag] is False
+        trace["inputs"]["config"]["wall_height"] = -99.0
+        assert config.wall_height > 0
+        np.testing.assert_array_equal(actual.view(np.uint64), baseline.view(np.uint64))
+    else:
+        before_trace = deepcopy(trace)
+        with pytest.raises((ValueError, TypeError), match="ToF"):
+            tof_ranges(
+                position,
+                yaw,
+                scene,
+                config,
+                source=native,
+                selection_source=selection,
+                wall_source=trace,
+            )
+        assert trace == before_trace
+    np.testing.assert_array_equal(position, before_position)
+    assert work["directions"] == (2 if valid else 0) and work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "floor",
         "low",
         "tall",

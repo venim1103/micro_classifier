@@ -729,7 +729,16 @@ def _retain_native_tof_source(
     )
 
 
-def tof_ranges(position, yaw, scenario, config, *, source=None, selection_source=None):
+def tof_ranges(
+    position,
+    yaw,
+    scenario,
+    config,
+    *,
+    source=None,
+    selection_source=None,
+    wall_source=None,
+):
     """Synthetic first returns from a floor, finite walls and capped cylinders."""
     if source is not None and (type(source) is not dict or source):
         raise ValueError("ToF source requires an empty builtin dictionary")
@@ -742,10 +751,17 @@ def tof_ranges(position, yaw, scenario, config, *, source=None, selection_source
             raise ValueError(
                 "ToF native and selection sources require separate dictionaries"
             )
-    if source is not None or selection_source is not None:
+    if wall_source is not None:
+        if type(wall_source) is not dict or wall_source:
+            raise ValueError("ToF wall source requires an empty builtin dictionary")
+        if wall_source is source or wall_source is selection_source:
+            raise ValueError("ToF wall source requires a separate dictionary")
+    if source is not None or selection_source is not None or wall_source is not None:
         _check_native_tof_source_inputs(position, yaw, scenario, config)
     if selection_source is not None and config.tof_mount_height is None:
         raise ValueError("ToF selection source requires mounted rays")
+    if wall_source is not None and config.tof_mount_height is None:
+        raise ValueError("ToF wall source requires mounted rays")
     if config.tof_mount_height is None:
         angles = yaw + np.linspace(
             config.field_of_view / 2, -config.field_of_view / 2, 8
@@ -761,7 +777,10 @@ def tof_ranges(position, yaw, scenario, config, *, source=None, selection_source
     directions, up = rays[..., :2], rays[..., 2]
     height = config.tof_mount_height
     ranges = np.divide(-height, up, out=np.full((8, 8), np.inf), where=up < 0)
-    floor_source = ranges.copy() if source is not None else None
+    floor_source = (
+        ranges.copy() if source is not None or wall_source is not None else None
+    )
+    wall_entries = [] if wall_source is not None else None
     if selection_source is not None:
         kinds = np.where(np.isfinite(ranges), 1, 0).astype(np.int8)
         indices = np.full((8, 8), -1, dtype=np.int8)
@@ -778,8 +797,9 @@ def tof_ranges(position, yaw, scenario, config, *, source=None, selection_source
 
     for axis in range(2):
         for wall_index, wall in enumerate((0.0, scenario.bounds[axis])):
+            wall_offset = wall - position[axis]
             distance = np.divide(
-                wall - position[axis],
+                wall_offset,
                 directions[..., axis],
                 out=np.full((8, 8), np.inf),
                 where=directions[..., axis] != 0,
@@ -803,6 +823,23 @@ def tof_ranges(position, yaw, scenario, config, *, source=None, selection_source
             ranges = np.minimum(ranges, candidate)
             if selection_source is not None:
                 remember(candidate, previous, 2, axis * 2 + wall_index)
+            if wall_source is not None:
+                wall_entries.append(
+                    {
+                        "wall_index": axis * 2 + wall_index,
+                        "axis": axis,
+                        "side": wall_index,
+                        "wall_m": float(wall),
+                        "position_axis_m": float(position[axis]),
+                        "numerator_m": float(wall_offset),
+                        "distance_m": distance.copy(),
+                        "altitude_m": altitude.copy(),
+                        "across_m": across.copy(),
+                        "hit": hit.copy(),
+                        "candidate_m": candidate.copy(),
+                        "minimum_after_m": ranges.copy(),
+                    }
+                )
     horizontal_squared = np.sum(directions**2, axis=-1)
     for index, (centre_x, centre_y, radius) in enumerate(scenario.obstacles):
         top = (
@@ -888,6 +925,35 @@ def tof_ranges(position, yaw, scenario, config, *, source=None, selection_source
             last_matching_candidate_kind=tuple(names[int(kind)] for kind in kinds.flat),
             last_matching_candidate_index=tuple(map(int, indices.flat)),
             equal_minimum_observed=tuple(map(bool, tied.flat)),
+            pre_noise_ranges_m=ranges.copy(),
+        )
+    if wall_source is not None:
+        wall_source.update(
+            schema="micro-classifier/native-tof-wall-source/1",
+            allowed_use="native_tof_wall_diagnostics_only",
+            status="recorded_native_wall_calculation_values",
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            inputs={
+                "position_m": tuple(map(float, position)),
+                "yaw_rad": float(yaw),
+                "config": asdict(config),
+                "scenario": asdict(scenario),
+            },
+            world_frame_unit_rays=rays.copy(),
+            floor_candidate_ranges_m=floor_source.copy(),
+            walls=tuple(wall_entries),
             pre_noise_ranges_m=ranges.copy(),
         )
     return ranges

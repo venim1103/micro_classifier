@@ -417,6 +417,63 @@ and only the footer EOF difference. A one-file mechanical trailing-newline
 normalization then passed exact section-plus-footer conservation and staged/
 unstaged whitespace checks; fourteen changed local references in total.
 
+## 232. Actual Native ToF Wall Calculation Trace (2026-11-10)
+
+Checkpoint `68c5d5d` pushed/clean. Selected supplied-word discrepancies do not
+retain the actual discarded wall division/masking/minimum intermediates. Local
+hypothesis: a separate cold empty builtin `wall_source` can copy those actual
+values during the original geometry evaluation without changing default/native/
+selection output words. It rejects aliasing and unsupported mounted/input paths
+before geometry. It does not forward into fresh acquisitions or source delivery,
+adopt physical/numerical bounds, prove masking/coverage or admit a command.
+All eight flags false, existing 32-obstacle/64-ray domain unchanged.
+
+First reversible source probe: at most two geometry evaluations, four detached
+wall records, original default parity and false flags; 60 seconds. Passed; log
+`wall-232-probe-1.log` retained in existing local recovery directory. No source/
+recorder/step/reset/clock/model/study/data/dependency/download/hardware action.
+Now add sixteen synthetic unit cases: at most two geometry evaluations each,
+zero for rejection, and one intercepted evaluation with at most101 divides/
+100 candidate masks/100 minima. Four wall records retain 4*64*5 float values,
+4*64 booleans, original ray/floor/final word copies and fixed metadata; no added
+geometry, RNG or clock. Independent altitude/across comparisons are at most
+eight fixed64 arrays. Two focused pytest positions/60 seconds each (one reserve
+for necessary controls/repair), then one required root/300 seconds; failures and
+aborts count, prior ledgers untouched. First focused output `wall-232-focused-1.log`.
+
+First focused: nine failed/seven passed, 2340 deselected, 5.13 s. All valid cases
+reached the same fixture defect: the detachment mutation overwrote one staged
+wall minimum before the next wall's predecessor comparison. Keep every lineage
+assertion and move mutation after all four comparisons; reserve position reruns
+the unchanged sixteen cases. No source repair, tolerance/cap relaxation or old
+ledger refund; output `wall-232-focused-2.log`, root remains unused.
+
+Second focused: sixteen passed, 2340 deselected, 2.62 s. Intercepted original
+division/mask/minimum operands/results agree word-for-word with trace copies;
+default/native/selection words, four-wall order, predecessor lineage, occluded
+and zero-denominator/signed-zero paths,32-obstacle bound, detached mutations and
+alias/legacy/invalid preflight controls passed. No forbidden operation ran.
+Ruff format/lint and editor diagnostics passed. Final root3279 passed/known
+transformer QDQ one xfailed/71 warnings,86.52 s; root Ruff/diff and changed-file
+format passed, no reported skip. Pylance all20 resolved callers compatible.
+All three pytest positions spent including the first focused failure; separate
+initial probe retained, no abort. Logs remain in the local recovery directory.
+No additional opt-in C/Arm/sanitizer/board/model/study gate; this changes Python
+simulation tracing, not firmware, source qualification or actuation.
+
+AST ownership: only `tof_ranges` changes and one new test; all other source/test
+nodes remain exact. Original numeric expression order remains subtraction then
+division; the numerator is named once rather than recomputed for the trace.
+The current helper retains actual operands/results, not their independent
+correctness, physical wall hits, complete coverage or acceptable error. All
+eight flags false. Next pair the separate trace with the original fresh native
+acquisition without extra geometry/RNG/clock work, then add bounded closed-cache
+intake/retention only as evidence permits. No current-source or delivery claim
+follows from this cold trace; accepted limits and existing schemas unchanged.
+Prior checkpoint/Sources/design/stable-workflow preservation, new local target/
+anchor, final owning-function diff and whitespace passed. Root823 lines; no
+code gate repeated for documentation. Only the five scoped files are staged.
+
 ## Sources
 
 Hardware and tools:

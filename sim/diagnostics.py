@@ -10037,6 +10037,167 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_side_mask_candidate_diagnostics(
+    *,
+    top_m_hex,
+    discriminant_m2_hex,
+    side_distance_m_hex,
+    side_altitude_m_hex,
+    side_hit_masks,
+    side_candidate_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder side mask diagnostics require synthetic_test_only=True"
+        )
+    if type(top_m_hex) is not tuple or len(top_m_hex) > 32:
+        raise ValueError("native cylinder side mask obstacle count unsupported")
+    count = len(top_m_hex)
+    if any(
+        type(rows) is not tuple or len(rows) != count
+        for rows in (
+            discriminant_m2_hex,
+            side_distance_m_hex,
+            side_altitude_m_hex,
+            side_hit_masks,
+            side_candidate_m_hex,
+        )
+    ):
+        raise ValueError("native cylinder side mask obstacle count unsupported")
+
+    def decoded(words, size, finite_only=False, range_only=False):
+        if type(words) is not tuple or len(words) != size:
+            raise ValueError("native cylinder side mask word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder side mask word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder side mask words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+                or (range_only and value == -math.inf)
+            ):
+                raise ValueError("native cylinder side mask words must be canonical")
+            values.append(value)
+        return values
+
+    tops = decoded(top_m_hex, count, True)
+    discriminants = tuple(decoded(words, 64) for words in discriminant_m2_hex)
+    arrays = []
+    for rows, candidate in (
+        (side_distance_m_hex, False),
+        (side_altitude_m_hex, False),
+        (side_candidate_m_hex, True),
+    ):
+        group = []
+        for sides in rows:
+            if type(sides) is not tuple or len(sides) != 2:
+                raise ValueError("native cylinder side mask side count unsupported")
+            group.append(
+                tuple(decoded(words, 64, range_only=candidate) for words in sides)
+            )
+        arrays.append(group)
+    for sides in side_hit_masks:
+        if (
+            type(sides) is not tuple
+            or len(sides) != 2
+            or any(
+                type(words) is not tuple
+                or len(words) != 64
+                or any(type(hit) is not bool for hit in words)
+                for words in sides
+            )
+        ):
+            raise ValueError(
+                "native cylinder side mask requires two builtin bool masks"
+            )
+    distances, altitudes, _ = arrays
+    entries = []
+    for obstacle_index, sides in enumerate(distances):
+        for side_index, values in enumerate(sides):
+            for ray_index, distance in enumerate(values):
+                altitude = altitudes[obstacle_index][side_index][ray_index]
+                comparisons = (
+                    discriminants[obstacle_index][ray_index] >= 0,
+                    distance >= 0,
+                    altitude >= 0,
+                    altitude <= tops[obstacle_index],
+                )
+                expected_hit = all(comparisons)
+                observed_hit = side_hit_masks[obstacle_index][side_index][ray_index]
+                expected_candidate = (
+                    side_distance_m_hex[obstacle_index][side_index][ray_index]
+                    if observed_hit
+                    else "inf"
+                )
+                mask_matches = observed_hit == expected_hit
+                candidate_matches = (
+                    side_candidate_m_hex[obstacle_index][side_index][ray_index]
+                    == expected_candidate
+                )
+                entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "side_index": side_index,
+                        "sign": (-1, 1)[side_index],
+                        "ray_index": ray_index,
+                        "top_hex": top_m_hex[obstacle_index],
+                        "discriminant_hex": discriminant_m2_hex[obstacle_index][
+                            ray_index
+                        ],
+                        "distance_hex": side_distance_m_hex[obstacle_index][side_index][
+                            ray_index
+                        ],
+                        "altitude_hex": side_altitude_m_hex[obstacle_index][side_index][
+                            ray_index
+                        ],
+                        "comparison_results": comparisons,
+                        "expected_hit": expected_hit,
+                        "observed_hit": observed_hit,
+                        "mask_matches": mask_matches,
+                        "expected_candidate_hex": expected_candidate,
+                        "observed_candidate_hex": side_candidate_m_hex[obstacle_index][
+                            side_index
+                        ][ray_index],
+                        "candidate_matches": candidate_matches,
+                        "status": "matched_stored_cylinder_side_mask_candidate_words"
+                        if mask_matches and candidate_matches
+                        else "mismatched_stored_cylinder_side_mask_candidate_words",
+                    }
+                )
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-side-mask-candidate-diagnostics/1",
+        "allowed_use": "offline_cylinder_side_mask_candidate_word_diagnostics_only",
+        "status": "reported_stored_cylinder_side_mask_candidate_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "mask_mismatch_count": sum(not entry["mask_matches"] for entry in entries),
+        "candidate_mismatch_count": sum(
+            not entry["candidate_matches"] for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_side_altitude_residuals(
     *,
     mount_height_m_hex,

@@ -2278,6 +2278,21 @@ uniform/numerical/physical/source/geometry/coverage/clock/permission/admission
 proof. All eight flags false; [actual controls and gate][native-tof-cylinder-side-altitude-review].
 
 
+#### Supplied-Word Cylinder Side Mask/Candidate Correspondence (2026-11-10)
+
+`_native_tof_cylinder_side_mask_candidate_diagnostics` reports four stored-word
+predicates (discriminant>=0, distance>=0, altitude>=0, altitude<=top) and hit
+correspondence separately from candidate selection based on observed hit.
+<=32 cylinders/64 rays/two sides,14368 canonical words/32 characters,4096
+literal bools. Finite tops, other words non-NaN, candidates exclude -inf;
+<=4096 entries/16384 operand predicates/8192 mask and candidate comparisons.
+Candidate signed-zero word mismatch stays separate; matching hit=True/+inf is
+not a finite intersection. No rational work/intake/read/hash/retention/replay/
+clock/RNG or matched-source composition. No primitive/uniform/numerical/physical/
+source/geometry/coverage/clock/permission/admission proof; all eight flags false.
+See [actual controls and gate][native-tof-cylinder-side-mask-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2293,3 +2308,4 @@ proof. All eight flags false; [actual controls and gate][native-tof-cylinder-sid
 [native-tof-cylinder-side-numerator-review]: ../../REVIEW.md#259-supplied-word-cylinder-side-numerator-expressions-2026-11-10
 [native-tof-cylinder-side-division-review]: ../../REVIEW.md#260-supplied-word-cylinder-side-division-residuals-2026-11-10
 [native-tof-cylinder-side-altitude-review]: ../../REVIEW.md#261-supplied-word-cylinder-side-altitude-expression-2026-11-10
+[native-tof-cylinder-side-mask-review]: ../../REVIEW.md#262-supplied-word-cylinder-side-maskcandidate-correspondence-2026-11-10

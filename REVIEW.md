@@ -544,6 +544,49 @@ geometry/coverage/clock/one-use/permission/admission or usable command. Next
 side hit-mask/candidate correspondence: stored-word predicates separately from
 selection using observed hit, not a geometric intersection claim.
 
+## 262. Supplied-Word Cylinder Side Mask/Candidate Correspondence (2026-11-10)
+
+Checkpoint `34ec07e` pushed/clean. Native side hit is conjunction of stored-word
+discriminant>=0, distance>=0, altitude>=0, altitude<=top; candidate is observed
+hit?distance:+inf. Hypothesis: report mask correspondence independently from
+candidate selection based on observed hit, not a geometric intersection claim.
+<=32 cylinders/64 rays/two sides,14368 canonical words/32 characters and4096
+literal bools. Finite tops, other words non-NaN, candidates exclude -inf, as
+nearby wall diagnostic. <=4096 entries/16384 operand predicates/8192 mask and
+candidate comparisons. No rational work/intake/read/hash/retention/replay/clock/
+RNG or matched-source composition. Candidate signed-zero word mismatch retained;
+matching hit=True/+inf candidate is not a finite intersection.
+
+35 bounded synthetic controls, same predicate/comparison oracle caps; actual
+nonempty setup <=1 geometry/selected intake,2 native intakes, otherwise none.
+Four predicate boundary/false controls, nonfinite operands, independent mask/
+candidate faults, signed-zero word mismatch, max32/empty and typed preflight.
+Input/tick/RNG preserved. Three pytest positions including failures/aborts:
+first35/60 seconds, one necessary repair reserve, final root/300 seconds;
+retain `cylinder-262-*` logs. No old refunds/protected runs/task data/dependencies/
+hardware. All eight flags false, no primitive/uniform/numerical/physical/source/
+geometry/coverage/clock/one-use/permission/admission or usable command. Minimum
+word correspondence remains next, preserving equal-value/different-word ties.
+
+First35 passed,2933 deselected,2.95 s. Required root3891 passed,1 known
+transformer QDQ xfailed,71 warnings,87.18 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new side
+mask/candidate helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-262-focused-1.log`/
+`cylinder-262-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty/max32/empty controls, four stored predicates/boundaries, separate
+mask/candidate faults and counts, signed-zero word mismatch, nonfinite operands
+and typed rejection agree with independent operand comparisons within caps,
+leaving input/tick/RNG unchanged. Matching hit=True/+inf candidate is explicitly
+word correspondence only, not a finite/geometric intersection. All eight flags
+false, no primitive/uniform/numerical/physical/source/geometry/coverage/clock/
+one-use/permission/admission or usable command. Next conservative side-minimum
+word correspondence from captured observed predecessor/candidate/result, with
+equal-value/different-word tie semantics unresolved.
+
 ## Sources
 
 Hardware and tools:

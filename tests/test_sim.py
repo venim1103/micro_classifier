@@ -23807,6 +23807,383 @@ def test_native_tof_cylinder_side_altitude_residuals(
     (
         "actual",
         "inside",
+        "outside_discriminant",
+        "outside_distance",
+        "outside_low_altitude",
+        "outside_top",
+        "boundaries",
+        "infinite_distance",
+        "negative_inf_distance",
+        "infinite_altitude",
+        "negative_inf_altitude",
+        "positive_inf_discriminant",
+        "negative_inf_discriminant",
+        "signed_zero",
+        "zero_sign_changed",
+        "mask_changed",
+        "candidate_changed",
+        "both_changed",
+        "empty",
+        "max_obstacles",
+        "flag",
+        "shape",
+        "side_shape",
+        "bool_type",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_top",
+        "word_type",
+        "word_budget",
+        "budget",
+        "negative_inf_candidate",
+        "top_type",
+        "discriminant_shape",
+        "mask_shape",
+    ),
+)
+def test_native_tof_cylinder_side_mask_candidate_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "cylinder": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_cylinder = diagnostics._sample_simulator_native_tof_cylinder_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def cylinder_intake(*args, **kwargs):
+        setup["cylinder"] += 1
+        assert setup["cylinder"] <= 1
+        return original_cylinder(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_cylinder_source", cylinder_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "top_m_hex": ((1.0).hex(),),
+        "discriminant_m2_hex": (((1.0).hex(),) * 64,),
+        "side_distance_m_hex": ((((0.5).hex(),) * 64,) * 2,),
+        "side_altitude_m_hex": ((((0.5).hex(),) * 64,) * 2,),
+        "side_hit_masks": (((True,) * 64,) * 2,),
+        "side_candidate_m_hex": ((((0.5).hex(),) * 64,) * 2,),
+    }
+    if case == "actual":
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        trace = diagnostics._sample_simulator_native_tof_cylinder_source(
+            environment, owner._epoch
+        )["cylinder"]
+        assert len(trace["cylinders"]) == 1
+        arguments = {
+            "top_m_hex": tuple(entry["top_m"] for entry in trace["cylinders"]),
+            "discriminant_m2_hex": tuple(
+                entry["discriminant_m2"] for entry in trace["cylinders"]
+            ),
+            "side_distance_m_hex": tuple(
+                tuple(side["distance_m"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+            "side_altitude_m_hex": tuple(
+                tuple(side["altitude_m"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+            "side_hit_masks": tuple(
+                tuple(side["hit"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+            "side_candidate_m_hex": tuple(
+                tuple(side["candidate_m"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+        }
+    elif case in (
+        "outside_discriminant",
+        "outside_distance",
+        "outside_low_altitude",
+        "outside_top",
+        "negative_inf_distance",
+        "infinite_altitude",
+        "negative_inf_altitude",
+        "negative_inf_discriminant",
+    ):
+        name, word = {
+            "outside_discriminant": ("discriminant_m2_hex", (-0.5).hex()),
+            "outside_distance": ("side_distance_m_hex", (-0.5).hex()),
+            "outside_low_altitude": ("side_altitude_m_hex", (-0.5).hex()),
+            "outside_top": ("side_altitude_m_hex", math.nextafter(1.0, math.inf).hex()),
+            "negative_inf_distance": ("side_distance_m_hex", "-inf"),
+            "infinite_altitude": ("side_altitude_m_hex", "inf"),
+            "negative_inf_altitude": ("side_altitude_m_hex", "-inf"),
+            "negative_inf_discriminant": ("discriminant_m2_hex", "-inf"),
+        }[case]
+        arguments[name] = (
+            ((word,) * 64,) if name == "discriminant_m2_hex" else (((word,) * 64,) * 2,)
+        )
+        arguments["side_hit_masks"] = (((False,) * 64,) * 2,)
+        arguments["side_candidate_m_hex"] = ((("inf",) * 64,) * 2,)
+    elif case == "boundaries":
+        arguments["discriminant_m2_hex"] = (((-0.0).hex(),) * 64,)
+        arguments["side_distance_m_hex"] = arguments["side_candidate_m_hex"] = (
+            (((0.0).hex(),) * 64,) * 2,
+        )
+        arguments["side_altitude_m_hex"] = (
+            (tuple((0.0 if ray % 2 == 0 else 1.0).hex() for ray in range(64)),) * 2,
+        )
+    elif case == "infinite_distance":
+        arguments["side_distance_m_hex"] = arguments["side_candidate_m_hex"] = (
+            (("inf",) * 64,) * 2,
+        )
+    elif case == "positive_inf_discriminant":
+        arguments["discriminant_m2_hex"] = (("inf",) * 64,)
+    elif case in ("signed_zero", "zero_sign_changed"):
+        arguments["discriminant_m2_hex"] = (((-0.0).hex(),) * 64,)
+        arguments["side_distance_m_hex"] = arguments["side_altitude_m_hex"] = (
+            (((-0.0).hex(),) * 64,) * 2,
+        )
+        arguments["side_candidate_m_hex"] = (
+            (((0.0 if case == "zero_sign_changed" else -0.0).hex(),) * 64,) * 2,
+        )
+    elif case in ("mask_changed", "both_changed"):
+        arguments["side_hit_masks"] = (((False,) * 64,) * 2,)
+        arguments["side_candidate_m_hex"] = (
+            (("inf" if case == "mask_changed" else (0.75).hex(),) * 64,) * 2,
+        )
+    elif case == "candidate_changed":
+        arguments["side_candidate_m_hex"] = ((((0.75).hex(),) * 64,) * 2,)
+    elif case in ("empty", "max_obstacles", "budget"):
+        for name in arguments:
+            arguments[name] *= {"empty": 0, "max_obstacles": 32, "budget": 33}[case]
+    elif case == "shape":
+        arguments["side_distance_m_hex"] = ()
+    elif case == "side_shape":
+        arguments["side_candidate_m_hex"] = (arguments["side_candidate_m_hex"][0] * 2,)
+    elif case == "bool_type":
+        arguments["side_hit_masks"] = (((1,) * 64,) * 2,)
+    elif case in (
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "word_type",
+        "word_budget",
+        "negative_inf_candidate",
+    ):
+        arguments["side_candidate_m_hex"] = (
+            (
+                (
+                    {
+                        "noncanonical": "0.5",
+                        "overflow_word": "0x1p+99999",
+                        "nan": "nan",
+                        "word_type": False,
+                        "word_budget": "0" * 33,
+                        "negative_inf_candidate": "-inf",
+                    }[case],
+                )
+                * 64,
+            )
+            * 2,
+        )
+    elif case == "finite_top":
+        arguments["top_m_hex"] = ("inf",)
+    elif case == "top_type":
+        arguments["top_m_hex"] = list(arguments["top_m_hex"])
+    elif case == "discriminant_shape":
+        arguments["discriminant_m2_hex"] = (((1.0).hex(),) * 65,)
+    elif case == "mask_shape":
+        arguments["side_hit_masks"] = (((True,) * 65,) * 2,)
+    before_arguments = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"predicates": 0, "consistency": 0, "forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder side mask must not intake/read/retain/hash/step/reset/replay/clock/rational"
+        )
+
+    for name in (
+        "_sample_simulator_native_tof_cylinder_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "side_shape",
+        "bool_type",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_top",
+        "word_type",
+        "word_budget",
+        "budget",
+        "negative_inf_candidate",
+        "top_type",
+        "discriminant_shape",
+        "mask_shape",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_cylinder_side_mask_candidate_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_cylinder_side_mask_candidate_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 128 * len(arguments["top_m_hex"])
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        mask_mismatches = candidate_mismatches = 0
+        for index, entry in enumerate(result["entries"]):
+            stage, ray_index = divmod(index, 64)
+            obstacle_index, side_index = divmod(stage, 2)
+            top_word = arguments["top_m_hex"][obstacle_index]
+            discriminant_word = arguments["discriminant_m2_hex"][obstacle_index][
+                ray_index
+            ]
+            distance_word = arguments["side_distance_m_hex"][obstacle_index][
+                side_index
+            ][ray_index]
+            altitude_word = arguments["side_altitude_m_hex"][obstacle_index][
+                side_index
+            ][ray_index]
+            candidate_word = arguments["side_candidate_m_hex"][obstacle_index][
+                side_index
+            ][ray_index]
+            observed_hit = arguments["side_hit_masks"][obstacle_index][side_index][
+                ray_index
+            ]
+            top, discriminant, distance, altitude = (
+                float.fromhex(word)
+                for word in (top_word, discriminant_word, distance_word, altitude_word)
+            )
+            comparisons = (
+                discriminant >= 0,
+                distance >= 0,
+                altitude >= 0,
+                altitude <= top,
+            )
+            work["predicates"] += 4
+            assert work["predicates"] <= 16384
+            expected_hit = all(comparisons)
+            expected_candidate = distance_word if observed_hit else "inf"
+            mask_matches = observed_hit == expected_hit
+            candidate_matches = candidate_word == expected_candidate
+            work["consistency"] += 2
+            assert work["consistency"] <= 8192
+            assert (
+                entry["obstacle_index"] == obstacle_index
+                and entry["ray_index"] == ray_index
+            )
+            assert (
+                entry["side_index"] == side_index
+                and entry["sign"] == (-1, 1)[side_index]
+            )
+            assert (
+                entry["top_hex"] == top_word
+                and entry["discriminant_hex"] == discriminant_word
+            )
+            assert (
+                entry["distance_hex"] == distance_word
+                and entry["altitude_hex"] == altitude_word
+            )
+            assert (
+                entry["observed_candidate_hex"] == candidate_word
+                and entry["expected_candidate_hex"] == expected_candidate
+            )
+            assert entry["comparison_results"] == comparisons
+            assert (
+                entry["expected_hit"] is expected_hit
+                and entry["observed_hit"] is observed_hit
+            )
+            assert (
+                entry["mask_matches"] is mask_matches
+                and entry["candidate_matches"] is candidate_matches
+            )
+            assert entry["status"] == (
+                "matched_stored_cylinder_side_mask_candidate_words"
+                if mask_matches and candidate_matches
+                else "mismatched_stored_cylinder_side_mask_candidate_words"
+            )
+            mask_mismatches += not mask_matches
+            candidate_mismatches += not candidate_matches
+        assert result["mask_mismatch_count"] == mask_mismatches
+        assert result["candidate_mismatch_count"] == candidate_mismatches
+        assert mask_mismatches == (
+            128 if case in ("mask_changed", "both_changed") else 0
+        )
+        assert candidate_mismatches == (
+            128
+            if case in ("candidate_changed", "both_changed", "zero_sign_changed")
+            else 0
+        )
+        if case == "infinite_distance":
+            assert all(
+                entry["observed_hit"] and entry["observed_candidate_hex"] == "inf"
+                for entry in result["entries"]
+            )
+    assert arguments == before_arguments and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "cylinder": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "cylinder": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "inside",
         "outside_distance",
         "outside_altitude",
         "outside_across",

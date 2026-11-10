@@ -474,6 +474,71 @@ Prior checkpoint/Sources/design/stable-workflow preservation, new local target/
 anchor, final owning-function diff and whitespace passed. Root823 lines; no
 code gate repeated for documentation. Only the five scoped files are staged.
 
+## 233. Actual Fresh ToF Wall Acquisition Pairing (2026-11-10)
+
+Checkpoint `3ae989b` pushed/clean. Local hypothesis: a separate literal wall
+capture opt-in can forward the existing cold trace dictionary through the
+original fresh sample and cache it against the original native/RNG/tick/delivery
+identities, preserving default forwarding and RNG/geometry/clock order. Preflight
+rejects missing native dependency, legacy/invalid flags/pose/budget before
+mutation. Default/held/reset paths clear the wall cache; all eight flags false.
+It does not retain/publish a recorder source, establish complete coverage/error/
+physical/clock evidence or admit commands. No new bounds/contracts are adopted.
+
+First reversible probe: two fresh `RoverEnv` constructions and one step each,
+at most four geometry evaluations total, zero clock/recorder/source intake;
+existing64/32/4wall shape caps. Compare outputs/RNG/native identity and trace
+word parity within60 seconds; retain `wall-233-probe-1.log` in the existing local
+recovery directory. Further finite unit controls/root gate follow only after
+this direct probe; failures/aborts retained, old budgets are not renewed.
+
+First probe failed: default rate held acquisition at tick1, so indexing the
+expected fresh cache raised TypeError. This exposes a probe-profile mistake,
+not evidence of failed fresh forwarding. No source change; retry once with the
+existing every-tick `tof_rate_hz=None` synthetic profile and the same two
+constructions/one step each/four geometry maximum. Retain the failed log and
+`wall-233-probe-2.log`; this does not qualify a clock or change product defaults.
+
+Second probe passed: counted four geometry calls, zero clocks and original
+native/RNG/acquisition identity, output and RNG parity with nonzero noise/dropout.
+Now sixteen cloned acquisition controls, at most three step attempts/one reset
+each and three geometry evaluations including baseline/reset, one original wall
+capture; timing/combined-selection cases permit two controlled clock reads, all
+others zero. No recorder read/intake/retention, replay or new task data. Fixed
+64ray/four-wall/32obstacle caps unchanged. Three pytest positions including
+failure/abort: focused16/60 seconds, one necessary repair/control reserve, final
+required root/300 seconds. Preserve logs `wall-233-focused-1.log` onward; old
+spent/unknown ledgers remain, no model/GPU/hardware/dependency/study action.
+
+First sixteen passed, 2356 deselected,0.33 s. Original wall dictionary/native/
+RNG/acquisition IDs, output/info/native-word/RNG parity with noise/dropout,
+timing/selection coexistence, copied-word detachment and default/source-only/
+held/reset clearing passed. Strict flag/dependency/legacy/pose/obstacle preflight
+preserves prior cache identities and both RNG states; setup limits held, old
+fixture counters zero. Changed-file format/lint and editor diagnostics passed.
+Required root3295 passed/known transformer QDQ one xfailed/71 warnings,100.83 s;
+root Ruff/diff and changed-file format passed, no reported skip. Two of three
+pytest positions used/no pytest failure or abort; unused reserve is not follow-on
+scope. The separately failed held-tick probe remains spent with both probe logs.
+No additional opt-in C/Arm/sanitizer/board/model/study gate or task artifact.
+
+Pylance `_update_sensor` all5 and refreshed `_sample` all5 resolved callers
+compatible. Initial stale post-format positions for sample/step resolved no
+calls, so were not compatibility evidence. Refreshed step40 resolved/38 compatible
+plus the same two intentional `capture_motion_receipt=1` negatives at159/299;
+no new resolved production incompatibility claimed. AST ownership confines
+changes to reset/update/sample/step and exactly one new test; all other nodes
+unchanged. Defaults retain their old forwarding calls; wall capture adds no
+geometry or RNG/clock operation. It pairs actual raw wall words locally, not
+correct geometry, physical clearance, clock/deadline/one-use or source admission.
+All eight flags false, accepted requirements and native-source-v1 unchanged.
+Next bounded read-only closed-cache intake with original native ownership,
+typed shape/work preflight and closing context/copy checks; do not reconstruct
+missing wall intermediates from final range words or publish to the recorder yet.
+Prior checkpoint/Sources/design/stable-workflow preservation, new local target/
+anchor, final four-method diff and whitespace passed; no code gate repeated for
+documentation. Only the five scoped source/test/design/workflow/review files.
+
 ## Sources
 
 Hardware and tools:

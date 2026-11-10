@@ -1534,6 +1534,25 @@ trace is not retroactively reconstructed from final selected words.
 See [wall trace controls and limits][native-tof-wall-trace-review].
 
 
+##### Actual Fresh ToF Wall Acquisition Pairing (2026-11-10)
+
+Separate literal `RoverEnv.step(..., capture_native_tof_wall=True)` requires
+native-source capture and mounted mode, with type/dependency/pose/obstacle/legacy
+preflight before mutation or clocks. Only the original fresh sample forwards
+its separate wall dictionary; the private wall acquisition cache binds the raw
+trace to original native-cache/RNG identities and acquisition/nominal-delivery
+ticks. Timing and selection opt-ins may coexist against that same native cache.
+Default/source-only forwarding calls, observations/info, native-source-v1 and
+noise/dropout/RNG order stay unchanged. Default/held/reset clear the wall cache;
+rejected preflight preserves previous caches. No additional geometry or clocks.
+
+All eight flags stay false. This establishes local fresh-acquisition pairing,
+not closed intake, recorder retention, delivered State, independent arithmetic/
+masking/coverage/error/physical correctness, clock qualification, permission or
+admission. Missing intermediate data must not be reconstructed from selection
+labels. See [wall acquisition controls and limits][native-tof-wall-acquisition-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2249,6 +2268,7 @@ figure is not an established minimum.
 [native-tof-selection-intake-review]: ../review/221-225.md#225-bounded-native-tof-selection-intake-2026-11-09
 [native-tof-wall-word-review]: ../../REVIEW.md#231-selected-native-tof-wall-word-residuals-2026-11-10
 [native-tof-wall-trace-review]: ../../REVIEW.md#232-actual-native-tof-wall-calculation-trace-2026-11-10
+[native-tof-wall-acquisition-review]: ../../REVIEW.md#233-actual-fresh-tof-wall-acquisition-pairing-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

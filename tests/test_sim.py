@@ -11138,6 +11138,217 @@ def test_actual_native_tof_selection_acquisition(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "default",
+        "source_only",
+        "selection",
+        "held",
+        "reset",
+        "noise_rng",
+        "timed",
+        "flag",
+        "missing_native",
+        "legacy",
+        "budget",
+        "pose",
+        "preflight_preserves",
+        "sample_detach",
+        "timed_selection",
+    ),
+)
+def test_actual_native_tof_wall_acquisition(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import rover
+
+    environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    if case == "noise_rng":
+        environment.config = replace(environment.config, noise_std=0.01, dropout=0.2)
+    elif case == "legacy":
+        environment.config = replace(environment.config, tof_mount_height=None)
+    baseline = deepcopy(environment)
+    original_ranges = rover.tof_ranges
+    work = {"geometry": 0, "wall": 0, "selection": 0, "clock": 0}
+    originals = []
+
+    def ranges(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        wall = kwargs.get("wall_source")
+        if wall is not None:
+            work["wall"] += 1
+            assert work["wall"] <= 1 and kwargs.get("source") is not None
+            originals.append(wall)
+        if kwargs.get("selection_source") is not None:
+            work["selection"] += 1
+            assert work["selection"] <= 1
+        return original_ranges(*args, **kwargs)
+
+    def clock():
+        work["clock"] += 1
+        assert case in ("timed", "timed_selection") and work["clock"] <= 2
+        return 100 + work["clock"] * 10
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    if case == "preflight_preserves":
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        )
+        baseline.step([0.125, 0.3])
+    if case in (
+        "flag",
+        "missing_native",
+        "legacy",
+        "budget",
+        "pose",
+        "preflight_preserves",
+    ):
+        if case in ("pose", "preflight_preserves"):
+            environment.position[0] = math.nan
+        elif case == "budget":
+            environment.scenario = Scenario(obstacles=((3.0, 3.0, 0.1),) * 33)
+        before_position = environment.position.copy()
+        before_rng = deepcopy(environment.rng.bit_generator.state)
+        before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+        previous = tuple(
+            getattr(environment, name)
+            for name in (
+                "_native_tof_source",
+                "_native_tof_timing_source",
+                "_native_tof_selection_source",
+                "_native_tof_wall_source",
+            )
+        )
+        with pytest.raises(ValueError):
+            environment.step(
+                [0.125, 0.3],
+                capture_native_tof_source=case != "missing_native",
+                capture_native_tof_wall=1 if case == "flag" else True,
+            )
+        np.testing.assert_equal(environment.position, before_position)
+        assert environment.tick == baseline.tick
+        assert environment.rng.bit_generator.state == before_rng
+        assert environment.odometry_rng.bit_generator.state == before_odometry
+        assert all(
+            actual is expected
+            for actual, expected in zip(
+                (
+                    environment._native_tof_source,
+                    environment._native_tof_timing_source,
+                    environment._native_tof_selection_source,
+                    environment._native_tof_wall_source,
+                ),
+                previous,
+                strict=True,
+            )
+        )
+        assert work["clock"] == 0
+        assert work["geometry"] == (2 if case == "preflight_preserves" else 0)
+        assert work["wall"] == int(case == "preflight_preserves")
+        return
+    expected = baseline.step([0.125, 0.3])
+    actual = environment.step(
+        [0.125, 0.3],
+        capture_native_tof_source=case != "default",
+        capture_native_tof_wall=case not in ("default", "source_only"),
+        capture_native_tof_selection=case in ("selection", "timed_selection"),
+        capture_native_tof_timing=case in ("timed", "timed_selection"),
+    )
+    np.testing.assert_equal(actual[0], expected[0])
+    assert actual[1:4] == expected[1:4]
+    for key, value in expected[4].items():
+        np.testing.assert_equal(actual[4][key], value)
+    assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+    assert (
+        environment.odometry_rng.bit_generator.state
+        == baseline.odometry_rng.bit_generator.state
+    )
+    if case in ("default", "source_only"):
+        assert environment._native_tof_wall_source is None
+        assert work["wall"] == work["clock"] == work["selection"] == 0
+        return
+    captured = environment._native_tof_wall_source
+    assert captured["source"] is environment._native_tof_source
+    assert (
+        captured["rng"] is environment.rng
+        and captured["odometry_rng"] is environment.odometry_rng
+    )
+    assert captured["tick"] == 4 and captured["delivery_tick"] == 6
+    wall = captured["wall"]
+    assert len(originals) == 1 and originals[0] is wall
+    native = environment._native_tof_source["source"]
+    assert wall["inputs"] == native["inputs"]
+    for name in (
+        "pre_noise_ranges_m",
+        "world_frame_unit_rays",
+        "floor_candidate_ranges_m",
+    ):
+        np.testing.assert_equal(
+            wall[name].view(np.uint64), native[name].view(np.uint64)
+        )
+        assert not np.shares_memory(wall[name], native[name])
+    assert len(wall["walls"]) == 4
+    assert work["wall"] == 1
+    for flag in (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert captured[flag] is False and wall[flag] is False
+    if case in ("timed", "timed_selection"):
+        assert work["clock"] == 2
+        assert environment._native_tof_timing_source["source"] is captured["source"]
+        assert environment._native_tof_timing_source["clock"]["qualified"] is False
+    else:
+        assert work["clock"] == 0
+    if case in ("selection", "timed_selection"):
+        assert work["selection"] == 1
+        assert environment._native_tof_selection_source["source"] is captured["source"]
+        np.testing.assert_equal(
+            environment._native_tof_selection_source["selection"][
+                "pre_noise_ranges_m"
+            ].view(np.uint64),
+            wall["pre_noise_ranges_m"].view(np.uint64),
+        )
+    else:
+        assert work["selection"] == 0
+    if case == "sample_detach":
+        held = native["pre_noise_ranges_m"].copy()
+        wall["pre_noise_ranges_m"][:] = -99.0
+        wall["walls"][0]["distance_m"][:] = -99.0
+        np.testing.assert_equal(
+            native["pre_noise_ranges_m"].view(np.uint64), held.view(np.uint64)
+        )
+    elif case == "held":
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        )
+        assert environment.tick == 5
+        assert (
+            environment._native_tof_wall_source is None
+            and environment._native_tof_source is None
+        )
+        assert work["wall"] == 1 and work["geometry"] == 2
+    elif case == "reset":
+        environment.reset()
+        assert (
+            environment._native_tof_wall_source is None
+            and environment._native_tof_source is None
+        )
+        assert work["wall"] == 1 and work["geometry"] == 3
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "observed",
         "backward",
         "negative",

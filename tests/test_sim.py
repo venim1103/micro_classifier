@@ -28040,6 +28040,7 @@ def test_native_tof_cylinder_selection_snapshot(
         "discriminant",
         "root_squared",
         "side_numerator",
+        "side_division",
     ),
 )
 def test_native_tof_cylinder_offset_snapshot(
@@ -28054,7 +28055,8 @@ def test_native_tof_cylinder_offset_snapshot(
     horizontal_norm = kind == "horizontal_norm"
     discriminant = kind == "discriminant"
     root_squared = kind == "root_squared"
-    side_numerator = kind == "side_numerator"
+    side_numerator = kind in ("side_numerator", "side_division")
+    side_division = kind == "side_division"
     residual_key = (
         "signed_squared_residual_ratio" if root_squared else "signed_residual_ratio"
     )
@@ -28065,6 +28067,7 @@ def test_native_tof_cylinder_offset_snapshot(
         "discriminant": (3522, 4662, 3132),
         "root_squared": (4290, 5430, 768),
         "side_numerator": (5832, 7350, 2304),
+        "side_division": (7752, 8886, 1536),
     }[kind]
     field = f"cylinder_{kind}_residuals"
     option = f"include_{field}"
@@ -28097,6 +28100,7 @@ def test_native_tof_cylinder_offset_snapshot(
             "combined_norm",
             "combined_discriminant",
             "combined_root",
+            "combined_numerator",
             "late",
             "forbidden",
         ),
@@ -28139,6 +28143,11 @@ def test_native_tof_cylinder_offset_snapshot(
         owner._tof_cylinder_history.pop(0)
     elif case == "missing_pending":
         owner._tof_cylinder_history.pop()
+    elif side_division and case == "copy":
+        trace = owner._tof_cylinder_history[0]["cylinder"]
+        trace["horizontal_squared"] = ((0.0).hex(), *trace["horizontal_squared"][1:])
+        for side in trace["cylinders"][0]["sides"]:
+            side["distance_m"] = ("inf", *side["distance_m"][1:])
     elif case in ("residual", "infinite_observation", "malformed") or (
         (root_squared or side_numerator) and case == "work_limit"
     ):
@@ -28149,6 +28158,8 @@ def test_native_tof_cylinder_offset_snapshot(
         key = (
             "horizontal_squared"
             if horizontal_norm
+            else "distance_m"
+            if side_division
             else "numerator_m"
             if side_numerator
             else "root_m"
@@ -28195,6 +28206,8 @@ def test_native_tof_cylinder_offset_snapshot(
         names["combined_discriminant"] = "_native_tof_cylinder_discriminant_residuals"
     if side_numerator:
         names["combined_root"] = "_native_tof_cylinder_root_squared_residuals"
+    if side_division:
+        names["combined_numerator"] = "_native_tof_cylinder_side_numerator_residuals"
     originals = {name: getattr(diagnostics, symbol) for name, symbol in names.items()}
     outgoing = {name: [] for name in names}
 
@@ -28322,6 +28335,11 @@ def test_native_tof_cylinder_offset_snapshot(
             **(
                 {"include_cylinder_root_squared_residuals": True}
                 if side_numerator and case == "selection_combined"
+                else {}
+            ),
+            **(
+                {"include_cylinder_side_numerator_residuals": True}
+                if side_division and case == "selection_combined"
                 else {}
             ),
             include_cylinder_selection_diagnostics=case == "selection_combined",
@@ -28458,6 +28476,34 @@ def test_native_tof_cylinder_offset_snapshot(
                                 entry["exact_unrounded_expression_ratio"]
                                 == exact.as_integer_ratio()
                             )
+                        elif side_division:
+                            index, ray = entry["obstacle_index"], entry["ray_index"]
+                            side = entry["side_index"]
+                            cylinder = trace["cylinders"][index]
+                            numerator_word = cylinder["sides"][side]["numerator_m"][ray]
+                            horizontal_word = trace["horizontal_squared"][ray]
+                            denominator = float.fromhex(horizontal_word)
+                            numerator = float.fromhex(numerator_word)
+                            observed_word = cylinder["sides"][side]["distance_m"][ray]
+                            exact = None
+                            if denominator > 0 and math.isfinite(numerator):
+                                exact = Fraction.from_float(
+                                    numerator
+                                ) / Fraction.from_float(denominator)
+                                work["oracle"] += 1
+                            assert (
+                                diagnostic["comparison_basis"]
+                                == "supplied_side_numerator_divided_by_positive_horizontal_squared"
+                            )
+                            assert side in (0, 1) and entry["sign"] == (-1, 1)[side]
+                            assert entry["numerator_hex"] == numerator_word
+                            assert entry["horizontal_squared_hex"] == horizontal_word
+                            assert entry["observed_distance_hex"] == observed_word
+                            assert entry["exact_quotient_ratio"] == (
+                                None if exact is None else exact.as_integer_ratio()
+                            )
+                            if denominator <= 0:
+                                assert observed_word == "inf"
                         elif side_numerator:
                             index, ray = entry["obstacle_index"], entry["ray_index"]
                             side = entry["side_index"]
@@ -28577,12 +28623,24 @@ def test_native_tof_cylinder_offset_snapshot(
                                     if observed >= 0
                                     else "inconsistent_negative_cylinder_root"
                                 )
+                            if side_division:
+                                assert entry["status"] == (
+                                    "computed_exact_cylinder_side_division_word_residual"
+                                )
                             residual = observed_value - exact
                             work["oracle"] += 1
                             assert work["oracle"] <= oracle_cap
                             assert entry[residual_key] == residual.as_integer_ratio()
                         else:
                             assert entry[residual_key] is None
+                            if side_division:
+                                assert entry["status"] == (
+                                    "not_divided_nonpositive_horizontal"
+                                    if denominator <= 0
+                                    else "unknown_nonfinite_cylinder_side_numerator"
+                                    if not math.isfinite(numerator)
+                                    else "unknown_nonfinite_cylinder_side_distance"
+                                )
                             if root_squared:
                                 assert (
                                     entry["exact_observed_root_squared_ratio"] is None
@@ -28660,6 +28718,15 @@ def test_native_tof_cylinder_offset_snapshot(
                             is False
                             for flag in flags
                         )
+                    if side_division:
+                        assert work["combined_numerator"] == closing_count
+                        assert all(
+                            result["cylinder_side_numerator_residuals"]["diagnostic"][
+                                flag
+                            ]
+                            is False
+                            for flag in flags
+                        )
         else:
             assert result["snapshot_available"] is False
             assert field not in result and f"pending_{field}" not in result
@@ -28681,6 +28748,7 @@ def test_native_tof_cylinder_offset_snapshot(
             assert work["combined_norm"] == 0
             assert work["combined_discriminant"] == 0
             assert work["combined_root"] == 0
+            assert work["combined_numerator"] == 0
     assert environment.tick == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry

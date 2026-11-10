@@ -421,6 +421,45 @@ permission/admission qualification. Next independently check stored hit-mask
 comparisons and candidate selection against captured distance/altitude/across
 words and supplied native limits, without claiming physical intersections.
 
+## 243. Native ToF Wall Mask/Candidate Word Correspondence (2026-11-10)
+
+Checkpoint `c579ecc` pushed/clean. Local hypothesis: independently report whether
+stored hit bits match the five native comparisons on supplied distance/altitude/
+across/limit words, and whether candidate words match selection using the
+observed hit bit. Keeping these checks separate distinguishes mask discrepancies
+from candidate-copy discrepancies. `hit=True` plus+inf candidate is possible
+under the native comparisons; it is not a finite physical intersection claim.
+
+Twenty-one bounded controls with unchanged parent fixtures; only actual-word
+case uses one setup acquisition/geometry/closed wall intake with two native
+intakes. One helper call per case,1027 canonical words<=32 characters,256 strict
+builtin hit bits/records,1280 predicate comparisons plus512 consistency checks;
+fixture oracle at most1280 predicates. No source intake/read/retention/step/reset/
+geometry/replay/clock/RNG or rational arithmetic during diagnostics. Three
+pytest positions counting failures/aborts: first21/60 seconds, one necessary
+repair/control reserve, final root/300 seconds. Retain `wall-243-*` logs in
+existing recovery directory. All eight flags false, no adopted physical limits,
+source/geometry/coverage/numerical/clock/permission/admission or usable command;
+no old ledger refund or study/task data/model/dependency/download/hardware action.
+
+First21 passed,2539 deselected,4.03 s. Focused Ruff/format/whitespace passed.
+Required root:3483 passed,1 known transformer QDQ xfailed,71 warnings,113.87 s;
+root Ruff, changed-file format check and whitespace passed. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Editor diagnostics clear. AST comparison proves exactly one new helper/test;
+all previous arithmetic/source/delivery/test nodes unchanged. No additional
+C/Arm/sanitizer/board opt-in gates ran; host checks do not qualify hardware or
+firmware. Logs retained, no cleanup/deletion or new dependencies/studies/models.
+
+Actual-word fixture covers a fresh captured packet; other words are declared
+synthetic. Mask and candidate discrepancies remain separate; signed-zero
+candidate word changes reject correspondence even when numerically equal.
+`hit=True` with+inf candidate is recorded without claiming a finite intersection.
+All eight flags false, no adopted physical limits or source/geometry/coverage/
+numerical/clock/permission/admission or usable command. Next advance supplied
+per-wall minimum operand/result words, leaving equal-value/different-word ties
+unknown rather than adopting unsupported host-specific tie semantics.
+
 ## Sources
 
 Hardware and tools:

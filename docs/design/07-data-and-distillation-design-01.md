@@ -1711,6 +1711,23 @@ not certify primitive roundoff, FMA, uniform error, masking/geometry/coverage/
 physical/source/clock/permission/admission. See [matched projection controls and limits][native-tof-wall-projection-match-review].
 
 
+##### Native ToF Wall Mask/Candidate Word Correspondence (2026-11-10)
+
+Private `_native_tof_wall_mask_candidate_diagnostics` reports whether stored hit
+bits match five comparisons on supplied distance/altitude/across and finite
+limit words. Candidate-copy checks separately use the observed hit bit, not the
+recomputed bit, distinguishing mask discrepancies from selection discrepancies.
+Original words and signed-zero differences are retained. Fixed four-wall/64-ray
+input bounds1027 canonical words/256 builtin bools and256 records/1280 predicates;
+no rational arithmetic, source intake, replay, hashing or RNG/clock occurs.
+
+Mismatch reporting does not accept altered words. Native comparisons can yield
+`hit=True` with an infinite candidate; matching this is not a finite intersection
+or independently correct geometry. All eight flags stay false; no physical-limit/
+coverage/numerical/source/clock/permission/admission qualification follows.
+See [mask/candidate controls and limits][native-tof-wall-mask-candidate-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2436,6 +2453,7 @@ figure is not an established minimum.
 [native-tof-wall-arithmetic-review]: ../../REVIEW.md#240-matched-native-tof-wall-arithmetic-diagnostics-2026-11-10
 [native-tof-wall-projection-review]: ../../REVIEW.md#241-native-tof-wall-projection-expression-residuals-2026-11-10
 [native-tof-wall-projection-match-review]: ../../REVIEW.md#242-matched-native-tof-wall-projection-diagnostics-2026-11-10
+[native-tof-wall-mask-candidate-review]: ../../REVIEW.md#243-native-tof-wall-maskcandidate-word-correspondence-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

@@ -9770,6 +9770,137 @@ def _native_tof_floor_division_residuals(
     }
 
 
+def _native_tof_wall_mask_candidate_diagnostics(
+    *,
+    wall_height_m_hex,
+    bounds_m_hex,
+    distance_m_hex,
+    altitude_m_hex,
+    across_m_hex,
+    hit_masks,
+    candidate_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native wall mask diagnostics require synthetic_test_only=True"
+        )
+
+    def decoded(words, count, finite_only=False, range_only=False):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native wall mask word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native wall mask word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError("native wall mask words must be canonical") from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+                or (range_only and value == -math.inf)
+            ):
+                raise ValueError("native wall mask words must be canonical")
+            values.append(value)
+        return values
+
+    height = decoded((wall_height_m_hex,), 1, True)[0]
+    bounds = decoded(bounds_m_hex, 2, True)
+    arrays = []
+    for words, candidate in (
+        (distance_m_hex, False),
+        (altitude_m_hex, False),
+        (across_m_hex, False),
+        (candidate_m_hex, True),
+    ):
+        if type(words) is not tuple or len(words) != 4:
+            raise ValueError("native wall mask wall count unsupported")
+        arrays.append([decoded(row, 64, range_only=candidate) for row in words])
+    if (
+        type(hit_masks) is not tuple
+        or len(hit_masks) != 4
+        or any(
+            type(row) is not tuple
+            or len(row) != 64
+            or any(type(hit) is not bool for hit in row)
+            for row in hit_masks
+        )
+    ):
+        raise ValueError("native wall mask requires four builtin bool masks")
+    distances, altitudes, across_values, _ = arrays
+    entries = []
+    for wall_index, observed_distances in enumerate(distances):
+        other_axis = 1 - wall_index // 2
+        for ray_index, distance in enumerate(observed_distances):
+            altitude, across = (
+                altitudes[wall_index][ray_index],
+                across_values[wall_index][ray_index],
+            )
+            comparisons = (
+                distance >= 0,
+                altitude >= 0,
+                altitude <= height,
+                across >= 0,
+                across <= bounds[other_axis],
+            )
+            expected_hit = all(comparisons)
+            observed_hit = hit_masks[wall_index][ray_index]
+            expected_candidate = (
+                distance_m_hex[wall_index][ray_index] if observed_hit else "inf"
+            )
+            mask_matches = observed_hit == expected_hit
+            candidate_matches = (
+                candidate_m_hex[wall_index][ray_index] == expected_candidate
+            )
+            entries.append(
+                {
+                    "wall_index": wall_index,
+                    "ray_index": ray_index,
+                    "distance_hex": distance_m_hex[wall_index][ray_index],
+                    "altitude_hex": altitude_m_hex[wall_index][ray_index],
+                    "across_hex": across_m_hex[wall_index][ray_index],
+                    "comparison_results": comparisons,
+                    "expected_hit": expected_hit,
+                    "observed_hit": observed_hit,
+                    "mask_matches": mask_matches,
+                    "expected_candidate_hex": expected_candidate,
+                    "observed_candidate_hex": candidate_m_hex[wall_index][ray_index],
+                    "candidate_matches": candidate_matches,
+                    "status": "matched_stored_wall_mask_candidate_words"
+                    if mask_matches and candidate_matches
+                    else "mismatched_stored_wall_mask_candidate_words",
+                }
+            )
+    return {
+        "schema": "micro-classifier/native-tof-wall-mask-candidate-diagnostics/1",
+        "allowed_use": "offline_wall_mask_candidate_word_diagnostics_only",
+        "status": "reported_stored_wall_mask_candidate_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "wall_height_m_hex": wall_height_m_hex,
+        "bounds_m_hex": bounds_m_hex,
+        "mask_mismatch_count": sum(not entry["mask_matches"] for entry in entries),
+        "candidate_mismatch_count": sum(
+            not entry["candidate_matches"] for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_wall_projection_residuals(
     *,
     mount_height_m_hex,

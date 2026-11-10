@@ -21221,6 +21221,280 @@ def test_native_tof_wall_projection_residuals(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "inside",
+        "outside_distance",
+        "outside_altitude",
+        "outside_across",
+        "boundaries",
+        "four_walls",
+        "infinite_distance",
+        "negative_inf_distance",
+        "infinite_altitude",
+        "signed_zero",
+        "zero_sign_changed",
+        "mask_changed",
+        "candidate_changed",
+        "both_changed",
+        "flag",
+        "shape",
+        "bool_type",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+    ),
+)
+def test_native_tof_wall_mask_candidate_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "wall": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_wall = diagnostics._sample_simulator_native_tof_wall_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def wall_intake(*args, **kwargs):
+        setup["wall"] += 1
+        assert setup["wall"] <= 1
+        return original_wall(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_wall_source", wall_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "wall_height_m_hex": (1.0).hex(),
+        "bounds_m_hex": ((2.0).hex(), (3.0).hex()),
+        "distance_m_hex": (((0.5).hex(),) * 64,) * 4,
+        "altitude_m_hex": (((0.5).hex(),) * 64,) * 4,
+        "across_m_hex": (((0.5).hex(),) * 64,) * 4,
+        "hit_masks": ((True,) * 64,) * 4,
+        "candidate_m_hex": (((0.5).hex(),) * 64,) * 4,
+    }
+    if case == "actual":
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        )
+        packet = diagnostics._sample_simulator_native_tof_wall_source(
+            environment, owner._epoch
+        )
+        trace = packet["wall"]
+        arguments = {
+            "wall_height_m_hex": float(trace["inputs"]["config"]["wall_height"]).hex(),
+            "bounds_m_hex": tuple(
+                float(value).hex() for value in trace["inputs"]["scenario"]["bounds"]
+            ),
+            "distance_m_hex": tuple(wall["distance_m"] for wall in trace["walls"]),
+            "altitude_m_hex": tuple(wall["altitude_m"] for wall in trace["walls"]),
+            "across_m_hex": tuple(wall["across_m"] for wall in trace["walls"]),
+            "hit_masks": tuple(wall["hit"] for wall in trace["walls"]),
+            "candidate_m_hex": tuple(wall["candidate_m"] for wall in trace["walls"]),
+        }
+    elif case in (
+        "outside_distance",
+        "outside_altitude",
+        "outside_across",
+        "negative_inf_distance",
+        "infinite_altitude",
+    ):
+        name, word = {
+            "outside_distance": ("distance_m_hex", (-0.5).hex()),
+            "outside_altitude": ("altitude_m_hex", math.nextafter(1.0, math.inf).hex()),
+            "outside_across": ("across_m_hex", (4.0).hex()),
+            "negative_inf_distance": ("distance_m_hex", "-inf"),
+            "infinite_altitude": ("altitude_m_hex", "inf"),
+        }[case]
+        arguments[name] = ((word,) * 64,) * 4
+        arguments["hit_masks"] = ((False,) * 64,) * 4
+        arguments["candidate_m_hex"] = (("inf",) * 64,) * 4
+    elif case == "boundaries":
+        arguments["distance_m_hex"] = arguments["candidate_m_hex"] = (
+            ((0.0).hex(),) * 64,
+        ) * 4
+        arguments["altitude_m_hex"] = (
+            tuple((0.0 if ray % 2 == 0 else 1.0).hex() for ray in range(64)),
+        ) * 4
+        arguments["across_m_hex"] = tuple(
+            tuple(
+                (0.0 if ray % 2 == 0 else 3.0 if wall < 2 else 2.0).hex()
+                for ray in range(64)
+            )
+            for wall in range(4)
+        )
+    elif case == "four_walls":
+        arguments["across_m_hex"] = (((2.5).hex(),) * 64,) * 4
+        arguments["hit_masks"] = tuple((index < 2,) * 64 for index in range(4))
+        arguments["candidate_m_hex"] = tuple(
+            ((0.5).hex() if index < 2 else "inf",) * 64 for index in range(4)
+        )
+    elif case == "infinite_distance":
+        arguments["distance_m_hex"] = arguments["candidate_m_hex"] = (
+            ("inf",) * 64,
+        ) * 4
+    elif case in ("signed_zero", "zero_sign_changed"):
+        arguments["distance_m_hex"] = arguments["altitude_m_hex"] = arguments[
+            "across_m_hex"
+        ] = (((-0.0).hex(),) * 64,) * 4
+        arguments["candidate_m_hex"] = (
+            (((0.0 if case == "zero_sign_changed" else -0.0).hex()),) * 64,
+        ) * 4
+    elif case in ("mask_changed", "both_changed"):
+        arguments["hit_masks"] = ((False,) * 64,) * 4
+        arguments["candidate_m_hex"] = (
+            ("inf" if case == "mask_changed" else (0.75).hex(),) * 64,
+        ) * 4
+    elif case == "candidate_changed":
+        arguments["candidate_m_hex"] = (((0.75).hex(),) * 64,) * 4
+    elif case == "shape":
+        arguments["hit_masks"] = arguments["hit_masks"][:-1]
+    elif case == "bool_type":
+        arguments["hit_masks"] = ((1,) * 64,) * 4
+    elif case == "noncanonical":
+        arguments["candidate_m_hex"] = (("0.5",) * 64,) * 4
+    elif case == "overflow_word":
+        arguments["bounds_m_hex"] = ("0x1p+99999", (3.0).hex())
+    elif case == "nan":
+        arguments["distance_m_hex"] = (("nan",) * 64,) * 4
+    arguments_before = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"predicates": 0, "forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall mask diagnostics must not read/retain/step/reset/replay/clock/rational"
+        )
+
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_wall_source",
+        "_sample_simulator_native_tof_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    if case in ("flag", "shape", "bool_type", "noncanonical", "overflow_word", "nan"):
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_wall_mask_candidate_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_wall_mask_candidate_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 256
+        assert result["wall_height_m_hex"] == arguments["wall_height_m_hex"]
+        assert result["bounds_m_hex"] == arguments["bounds_m_hex"]
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        mask_mismatches = candidate_mismatches = 0
+        for index, entry in enumerate(result["entries"]):
+            wall, ray = divmod(index, 64)
+            distance = float.fromhex(arguments["distance_m_hex"][wall][ray])
+            altitude = float.fromhex(arguments["altitude_m_hex"][wall][ray])
+            across = float.fromhex(arguments["across_m_hex"][wall][ray])
+            height = float.fromhex(arguments["wall_height_m_hex"])
+            bound = float.fromhex(arguments["bounds_m_hex"][1 - wall // 2])
+            predicates = (
+                distance >= 0,
+                altitude >= 0,
+                altitude <= height,
+                across >= 0,
+                across <= bound,
+            )
+            work["predicates"] += 5
+            assert work["predicates"] <= 1280
+            hit = arguments["hit_masks"][wall][ray]
+            expected_candidate = (
+                arguments["distance_m_hex"][wall][ray] if hit else "inf"
+            )
+            expected_mask_match = hit == all(predicates)
+            expected_candidate_match = (
+                arguments["candidate_m_hex"][wall][ray] == expected_candidate
+            )
+            assert entry["wall_index"] == wall and entry["ray_index"] == ray
+            assert entry["distance_hex"] == arguments["distance_m_hex"][wall][ray]
+            assert entry["altitude_hex"] == arguments["altitude_m_hex"][wall][ray]
+            assert entry["across_hex"] == arguments["across_m_hex"][wall][ray]
+            assert entry["comparison_results"] == predicates
+            assert (
+                entry["expected_hit"] is all(predicates)
+                and entry["observed_hit"] is hit
+            )
+            assert entry["mask_matches"] is expected_mask_match
+            assert entry["candidate_matches"] is expected_candidate_match
+            assert entry["expected_candidate_hex"] == expected_candidate
+            assert (
+                entry["observed_candidate_hex"]
+                == arguments["candidate_m_hex"][wall][ray]
+            )
+            assert entry["status"] == (
+                "matched_stored_wall_mask_candidate_words"
+                if expected_mask_match and expected_candidate_match
+                else "mismatched_stored_wall_mask_candidate_words"
+            )
+            mask_mismatches += not expected_mask_match
+            candidate_mismatches += not expected_candidate_match
+            if case == "infinite_distance":
+                assert (
+                    entry["observed_hit"] is True
+                    and entry["observed_candidate_hex"] == "inf"
+                )
+        assert result["mask_mismatch_count"] == mask_mismatches
+        assert result["candidate_mismatch_count"] == candidate_mismatches
+        assert mask_mismatches == (
+            256 if case in ("mask_changed", "both_changed") else 0
+        )
+        assert candidate_mismatches == (
+            256
+            if case in ("candidate_changed", "both_changed", "zero_sign_changed")
+            else 0
+        )
+    assert arguments == arguments_before and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "wall": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "wall": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

@@ -458,6 +458,61 @@ bound, source/geometry/coverage/clock/permission/admission or usable command.
 Next wire optional correspondence into the existing current-owner delivered/
 pending snapshot, matching all three IDs and omitting partial payload on unknown.
 
+## 237. Native ToF Wall Delivered/Pending Correspondence (2026-11-10)
+
+Checkpoint `7def694` pushed/clean. Local hypothesis: the existing current-owner
+delivery snapshot can optionally match retained wall records to each delivered/
+pending source by epoch/acquisition/delivery IDs, with typed prehash guards and
+detached copies. Default must avoid wall history/intake. Collect closing wall,
+selection, timing, arithmetic and pending queue probes before outgoing payload
+comparisons; missing/changed evidence returns unknown without partial payload.
+No geometry, native recapture, new recorder read/retention, clocks or RNG.
+
+Twenty-one bounded synthetic controls, unchanged parent fixtures: per case at
+most4 setup steps,3 geometry evaluations/retentions,5 recorder reads and6 setup
+clocks only with combined companions. Snapshot at most6 wall/selection/timing/
+direction-norm probes each,2 pending matchers/4 queue copies/2 frame checks,
+64 bindings, zero forbidden source-intake/read/retention/step/reset/geometry/
+clock calls. Existing8-history/4-wall/64-ray/canonical-word/rational work caps
+unchanged. Three pytest positions including failures/aborts: first21/60 seconds,
+one necessary repair/control reserve, final root/300 seconds. Preserve logs
+`wall-237-focused-1.log`, reserve and root in the existing local recovery
+directory. This is fresh routine integration, not renewed old studies/ledgers.
+All eight flags false; no numerical/geometry/coverage/physical/source/clock/
+permission/admission qualification, dependencies/downloads/model/hardware work.
+
+First21 passed,2421 deselected,5.40 s. Closing-order review found the last wall
+matcher could mutate an owned history after its earlier preflight. Move/repeat
+the live native/timing/selection/wall guards after the final queue-copy probe,
+before any closing structured payload hashes. Strengthen the reserved control
+position to24 cases (same60 seconds and per-case caps), adding oversized live
+wall/selection/timing mutations at the final wall matcher and requiring no
+subsequent binding hash. Final root position unchanged; no failure/abort or old
+ledger refund. Retain `wall-237-focused-2.log` for this necessary repair check.
+
+Strengthened24 passed,2421 deselected,5.09 s; late history-budget guards reject
+before another binding hash. Flatten the moved pending guard with equivalent
+short-circuit `and` before focused formatting/lint and the final root gate.
+No failure/abort so far; both focused positions spent, root remains unused.
+
+Focused Ruff/format/whitespace passed. Required root:3368 passed,1 known
+transformer QDQ xfailed,71 warnings,71.16 s; root Ruff, changed-file format check
+and whitespace passed. All three pytest positions spent, no failures/aborts.
+Editor diagnostics clear. AST ownership comparison found only the existing
+delivery snapshot changed, one new bounded wall matcher and one new test; all
+other production/test nodes unchanged. Runtime callers cover the new keyword;
+no static compatibility claim or additional C/Arm/sanitizer/board opt-in gates.
+The host/root results are not linked firmware or hardware evidence.
+
+Detached delivered/pending wall records now use original source IDs, with live
+prehash guards and late outgoing checks. Default ignores wall history; unknown
+omits all partial source/frame/companions. Logs retained, no cleanup/deletion;
+all eight flags false, no adopted numerical/physical bound, source/geometry/
+coverage/clock/permission/admission qualification or usable command. Next advance
+independently supported wall-operation arithmetic from the actual captured
+operand/result words, without confusing per-evaluation residuals with accepted
+rounding bounds, scene coverage or independent geometry proof.
+
 ## Sources
 
 Hardware and tools:

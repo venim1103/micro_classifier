@@ -13095,6 +13095,370 @@ def test_native_tof_selection_snapshot(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "default",
+        "flag",
+        "missing_delivered",
+        "missing_pending",
+        "held",
+        "epoch",
+        "delivery_tick",
+        "type",
+        "budget",
+        "noncanonical_pair",
+        "history_identity",
+        "late_wall",
+        "outgoing",
+        "late_owner",
+        "late_probe",
+        "late_selection",
+        "late_arithmetic",
+        "late_pending",
+        "delivered_only",
+        "combined",
+        "late_wall_budget",
+        "late_selection_budget",
+        "late_timing_budget",
+    ),
+)
+def test_native_tof_wall_snapshot(monkeypatch, c1_motion_receipt_source_fixture, case):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    work = dict.fromkeys(
+        (
+            "steps",
+            "reads",
+            "retention",
+            "geometry",
+            "clock",
+            "wall",
+            "selection",
+            "timing",
+            "arithmetic",
+            "pending",
+            "queue",
+            "frame",
+            "binding",
+            "forbidden",
+            "late",
+        ),
+        0,
+    )
+    combined = case in (
+        "combined",
+        "late_probe",
+        "late_selection",
+        "late_arithmetic",
+        "late_pending",
+        "late_selection_budget",
+        "late_timing_budget",
+    )
+    original_ranges = rover.tof_ranges
+
+    def ranges(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        return original_ranges(*args, **kwargs)
+
+    def clock():
+        work["clock"] += 1
+        assert combined and work["clock"] <= 6
+        return 100 + work["clock"] * 10
+
+    def read():
+        work["reads"] += 1
+        assert work["reads"] <= 5
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    read()
+    for _ in range(4 if case == "held" else 3):
+        work["steps"] += 1
+        assert work["steps"] <= 4
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_wall=True,
+            capture_native_tof_selection=combined,
+            capture_native_tof_timing=combined,
+        )
+        read()
+        if environment._native_tof_source is not None:
+            work["retention"] += 1
+            assert work["retention"] <= 3
+            owner.record_native_tof_source(
+                environment,
+                synthetic_test_only=True,
+                include_wall=True,
+                include_selection=combined,
+                include_timing=combined,
+            )
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    closing_match_count = 2 * (1 + len(environment.pending))
+    if case == "default":
+        owner._tof_wall_history = None
+    elif case == "missing_delivered":
+        owner._tof_wall_history.pop(0)
+    elif case == "missing_pending":
+        owner._tof_wall_history.pop()
+    elif case == "epoch":
+        owner._tof_wall_history[0]["source_epoch"] = "0" * 32
+    elif case == "delivery_tick":
+        owner._tof_wall_history[0]["delivery_tick"] += 1
+    elif case == "type":
+        selected = owner._tof_wall_history[0]["wall"]["walls"][0]
+        selected["hit"] = (1, *selected["hit"][1:])
+    elif case == "budget":
+        owner._tof_wall_history *= 9
+    elif case == "noncanonical_pair":
+        paired = owner._tof_history[0]["native_source"]
+        words = ("0.0", *paired["world_frame_unit_rays"][1:])
+        paired["world_frame_unit_rays"] = words
+        owner._tof_wall_history[0]["wall"]["world_frame_unit_rays"] = words
+    original_wall = diagnostics._match_native_tof_retained_wall
+    original_selection = diagnostics._match_native_tof_retained_selection
+    original_timing = diagnostics._match_native_tof_retained_timing
+    original_arithmetic = diagnostics._native_tof_direction_norm_residuals
+    original_pending = diagnostics._match_native_tof_pending_sources
+    original_queue = diagnostics._copy_native_tof_pending_queue
+    original_frame = diagnostics._check_native_tof_delivery_frame
+    original_binding = diagnostics._c1_source_binding_digest
+    outgoing = {}
+
+    def matched(*args, **kwargs):
+        work["wall"] += 1
+        assert work["wall"] <= 6
+        actual = original_wall(*args, **kwargs)
+        outgoing.setdefault("wall", actual)
+        if work["wall"] == closing_match_count:
+            if case == "late_probe":
+                outgoing["timing"]["clock"]["begin_ns"] += 1
+                outgoing["timing"]["clock"]["end_ns"] += 1
+            elif case == "late_selection":
+                outgoing["selection"]["selection"]["source_qualified"] = True
+            elif case == "late_arithmetic":
+                outgoing["arithmetic"]["source_qualified"] = True
+            elif case == "late_pending":
+                outgoing["pending"][0]["sample_words"] = (
+                    outgoing["pending"][0]["sample_words"][0] ^ 1,
+                    *outgoing["pending"][0]["sample_words"][1:],
+                )
+            elif case in (
+                "late_wall_budget",
+                "late_selection_budget",
+                "late_timing_budget",
+            ):
+                name = case.removeprefix("late_").removesuffix("_budget")
+                getattr(owner, f"_tof_{name}_history").extend(
+                    getattr(owner, f"_tof_{name}_history") * 8
+                )
+                outgoing["bindings_before_late_budget"] = work["binding"]
+            else:
+                return actual
+            work["late"] += 1
+        return actual
+
+    def selection(*args, **kwargs):
+        work["selection"] += 1
+        assert work["selection"] <= 6
+        actual = original_selection(*args, **kwargs)
+        outgoing.setdefault("selection", actual)
+        return actual
+
+    def timing(*args, **kwargs):
+        work["timing"] += 1
+        assert work["timing"] <= 6
+        actual = original_timing(*args, **kwargs)
+        outgoing.setdefault("timing", actual)
+        return actual
+
+    def arithmetic(*args, **kwargs):
+        work["arithmetic"] += 1
+        assert work["arithmetic"] <= 6
+        actual = original_arithmetic(*args, **kwargs)
+        outgoing.setdefault("arithmetic", actual)
+        return actual
+
+    def pending(*args, **kwargs):
+        work["pending"] += 1
+        assert work["pending"] <= 2
+        actual = original_pending(*args, **kwargs)
+        outgoing.setdefault("pending", actual)
+        return actual
+
+    def queue(*args, **kwargs):
+        work["queue"] += 1
+        assert work["queue"] <= 4
+        return original_queue(*args, **kwargs)
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        assert work["frame"] <= 2
+        actual = original_frame(*args, **kwargs)
+        if work["frame"] == 2:
+            if case == "history_identity":
+                owner._tof_wall_history = list(owner._tof_wall_history)
+            elif case == "late_wall":
+                selected = owner._tof_wall_history[0]["wall"]["walls"][0]
+                selected["hit"] = (not selected["hit"][0], *selected["hit"][1:])
+            elif case == "outgoing":
+                outgoing["wall"]["wall"]["source_qualified"] = True
+            elif case == "late_owner":
+                owner._binding = {"changed": True}
+            else:
+                return actual
+            work["late"] += 1
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall snapshot must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_wall", matched)
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_selection", selection)
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timing)
+    monkeypatch.setattr(diagnostics, "_native_tof_direction_norm_residuals", arithmetic)
+    monkeypatch.setattr(diagnostics, "_match_native_tof_pending_sources", pending)
+    monkeypatch.setattr(diagnostics, "_copy_native_tof_pending_queue", queue)
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_wall_source", forbidden
+    )
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="include_wall"):
+            owner.snapshot_native_tof_delivery(synthetic_test_only=True, include_wall=1)
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_wall=case != "default",
+            include_selection=combined,
+            include_timing=combined,
+            include_direction_norm_residuals=combined,
+        )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        assert all(result[flag] is False for flag in flags)
+        if case in ("copy", "default", "held", "delivered_only", "combined"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert "wall" not in result and "pending_wall" not in result
+                assert work["wall"] == 0
+            else:
+                selected = result["wall"]
+                for key in ("source_epoch", "tick", "delivery_tick"):
+                    assert selected[key] == result["source"][key]
+                assert (
+                    selected["wall"]["pre_noise_ranges_m"]
+                    == result["source"]["native_source"]["pre_noise_ranges_m"]
+                )
+                assert all(selected["wall"][flag] is False for flag in flags)
+                if case == "held":
+                    assert result["sensor_tick"] == 4 and result["tick"] == 7
+                if case != "delivered_only":
+                    for entry, source in zip(
+                        result["pending_wall"], result["pending_sources"], strict=True
+                    ):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert entry[key] == source[key]
+                        assert all(entry["wall"][flag] is False for flag in flags)
+                else:
+                    assert "pending_wall" not in result
+                if combined:
+                    assert result["timing"]["clock"]["qualified"] is False
+                    assert result["selection"]["selection"]["source_qualified"] is False
+                    assert (
+                        result["direction_norm_residuals"]["diagnostic"][
+                            "source_qualified"
+                        ]
+                        is False
+                    )
+                selected["wall"]["source_qualified"] = True
+                assert owner._tof_wall_history[0]["wall"]["source_qualified"] is False
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert not (
+                {
+                    "source",
+                    "frame",
+                    "wall",
+                    "pending_wall",
+                    "selection",
+                    "pending_selection",
+                    "timing",
+                    "pending_timing",
+                    "pending_sources",
+                    "direction_norm_residuals",
+                    "pending_direction_norm_residuals",
+                }
+                & result.keys()
+            )
+            if case in ("budget", "noncanonical_pair"):
+                assert work["binding"] == 0
+            if case in (
+                "late_wall_budget",
+                "late_selection_budget",
+                "late_timing_budget",
+            ):
+                assert work["binding"] == outgoing["bindings_before_late_budget"]
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert work["late"] == int(
+        case
+        in (
+            "history_identity",
+            "late_wall",
+            "outgoing",
+            "late_owner",
+            "late_probe",
+            "late_selection",
+            "late_arithmetic",
+            "late_pending",
+            "late_wall_budget",
+            "late_selection_budget",
+            "late_timing_budget",
+        )
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "rounded",

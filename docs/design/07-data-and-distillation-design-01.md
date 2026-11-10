@@ -1608,6 +1608,24 @@ uniform error bounds, physical clearance, clock/source/permission/admission
 qualification or usable commands. See [retention controls and limits][native-tof-wall-retention-review].
 
 
+##### Native ToF Wall Delivered/Pending Correspondence (2026-11-10)
+
+Optional `snapshot_native_tof_delivery(include_wall=True)` publishes detached
+wall records for the matched delivered source and, when requested, each pending
+source. All three epoch/acquisition/delivery IDs must match uniquely. Typed
+canonical history checks precede ownership/payload hashes. Closing native/frame,
+timing, arithmetic, selection, wall and queue probes precede outgoing comparisons;
+live histories are preflighted again after the last probe. Identity/content or
+output changes and missing/mispaired records yield unknown with no partial
+source/frame/companion payload. Default snapshots do not consume wall history.
+
+No wall intake, geometry recapture, recorder read/retention, RNG or clock is
+performed. Held delivery is not a new acquisition. All eight flags remain false;
+this is bounded diagnostic correspondence, not independent arithmetic/masking/
+geometry/coverage/error/physical correctness, clock/source/permission/admission
+qualification or usable commands. See [wall delivery controls and limits][native-tof-wall-delivery-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2327,6 +2345,7 @@ figure is not an established minimum.
 [native-tof-wall-intake-review]: ../../REVIEW.md#234-bounded-native-tof-wall-intake-2026-11-10
 [native-tof-wall-history-review]: ../../REVIEW.md#235-bounded-native-tof-wall-history-preflight-2026-11-10
 [native-tof-wall-retention-review]: ../../REVIEW.md#236-bounded-native-tof-wall-recorder-retention-2026-11-10
+[native-tof-wall-delivery-review]: ../../REVIEW.md#237-native-tof-wall-deliveredpending-correspondence-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

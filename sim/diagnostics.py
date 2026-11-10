@@ -11199,6 +11199,20 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _match_native_tof_retained_wall(source, wall_history):
+    matches = [
+        entry
+        for entry in wall_history
+        if all(
+            entry[key] == source[key]
+            for key in ("source_epoch", "tick", "delivery_tick")
+        )
+    ]
+    if len(matches) != 1:
+        raise ValueError("native ToF retained wall pair missing or ambiguous")
+    return deepcopy(matches[0])
+
+
 def _match_native_tof_retained_selection(source, selection_history):
     matches = [
         entry
@@ -12342,6 +12356,7 @@ class _SyntheticC1SourceRecorder:
         include_pending_sources=False,
         include_timing=False,
         include_selection=False,
+        include_wall=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -12354,6 +12369,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_timing must be a literal bool")
         if type(include_selection) is not bool:
             raise ValueError("include_selection must be a literal bool")
+        if type(include_wall) is not bool:
+            raise ValueError("include_wall must be a literal bool")
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
         if type(include_sampling_residuals) is not bool:
@@ -12383,6 +12400,7 @@ class _SyntheticC1SourceRecorder:
         environment, history_before = self._simulator, self._tof_history
         timing_before = self._tof_timing_history if include_timing else None
         selection_before = self._tof_selection_history if include_selection else None
+        wall_before = self._tof_wall_history if include_wall else None
         current_before, dynamics_before = self._current, self._dynamics_sample
         if environment is None or current_before is None or dynamics_before is None:
             return result
@@ -12406,7 +12424,7 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
-            if include_timing or include_selection:
+            if include_timing or include_selection or include_wall:
                 _check_native_tof_history_layout(self._tof_history, template)
             if include_timing:
                 _check_native_tof_timing_history(
@@ -12415,6 +12433,10 @@ class _SyntheticC1SourceRecorder:
             if include_selection:
                 _check_native_tof_selection_history(
                     self._tof_selection_history, self._tof_history, self._epoch
+                )
+            if include_wall:
+                _check_native_tof_wall_history(
+                    self._tof_wall_history, self._tof_history, self._epoch
                 )
             return _c1_source_binding_digest(
                 {
@@ -12437,6 +12459,11 @@ class _SyntheticC1SourceRecorder:
                     **(
                         {"tof_selection_history": self._tof_selection_history}
                         if include_selection
+                        else {}
+                    ),
+                    **(
+                        {"tof_wall_history": self._tof_wall_history}
+                        if include_wall
                         else {}
                     ),
                     "binding": self._binding,
@@ -12503,6 +12530,8 @@ class _SyntheticC1SourceRecorder:
                 _check_native_tof_selection_history(
                     selection_before, history_before, self._epoch
                 )
+            if include_wall:
+                _check_native_tof_wall_history(wall_before, history_before, self._epoch)
             if any(
                 not 0 <= word <= 0xFFFFFFFF
                 for entry in history_before
@@ -12538,6 +12567,8 @@ class _SyntheticC1SourceRecorder:
                 timing_binding = _c1_source_binding_digest(timing_before)
             if include_selection:
                 selection_binding = _c1_source_binding_digest(selection_before)
+            if include_wall:
+                wall_binding = _c1_source_binding_digest(wall_before)
             if include_pending_sources:
                 pending_before = environment.pending
                 pending_copy = _copy_native_tof_pending_queue(environment)
@@ -12610,6 +12641,22 @@ class _SyntheticC1SourceRecorder:
                 selection_output_binding = _c1_source_binding_digest(
                     {"selection": selection, "pending_selection": pending_selection}
                 )
+            if include_wall:
+                wall = _match_native_tof_retained_wall(copied, wall_before)
+                pending_wall = (
+                    tuple(
+                        _match_native_tof_retained_wall(source, wall_before)
+                        for source in pending_sources
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                _check_native_tof_wall_history(
+                    [wall, *pending_wall], history_before, self._epoch
+                )
+                wall_output_binding = _c1_source_binding_digest(
+                    {"wall": wall, "pending_wall": pending_wall}
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -12630,20 +12677,6 @@ class _SyntheticC1SourceRecorder:
                 pending_after = _match_native_tof_pending_sources(
                     environment, self._tof_history, self._epoch
                 )
-                if (
-                    environment.pending is not pending_before
-                    or self._simulator_pending is not pending_before
-                    or not _native_tof_word_copy_matches(pending_sources, pending_after)
-                    or _c1_source_binding_digest(pending_sources)
-                    != pending_sources_binding
-                    or _c1_source_binding_digest(
-                        _copy_native_tof_pending_queue(environment)
-                    )
-                    != pending_binding
-                ):
-                    raise ValueError(
-                        "native ToF pending context or outgoing sources changed"
-                    )
             if include_timing:
                 _check_native_tof_timing_history(
                     self._tof_timing_history, self._tof_history, self._epoch
@@ -12699,6 +12732,70 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_wall:
+                _check_native_tof_wall_history(
+                    self._tof_wall_history, self._tof_history, self._epoch
+                )
+                wall_after = _match_native_tof_retained_wall(
+                    live_after, self._tof_wall_history
+                )
+                pending_wall_after = (
+                    tuple(
+                        _match_native_tof_retained_wall(source, self._tof_wall_history)
+                        for source in pending_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+            if include_pending_sources:
+                pending_queue_after = _copy_native_tof_pending_queue(environment)
+            if include_timing or include_selection or include_wall:
+                _check_native_tof_history_layout(self._tof_history, template)
+            if include_timing:
+                _check_native_tof_timing_history(
+                    self._tof_timing_history, self._tof_history, self._epoch
+                )
+            if include_selection:
+                _check_native_tof_selection_history(
+                    self._tof_selection_history, self._tof_history, self._epoch
+                )
+            if include_wall:
+                _check_native_tof_wall_history(
+                    self._tof_wall_history, self._tof_history, self._epoch
+                )
+            if include_pending_sources and (
+                environment.pending is not pending_before
+                or self._simulator_pending is not pending_before
+                or not _native_tof_word_copy_matches(pending_sources, pending_after)
+                or _c1_source_binding_digest(pending_sources) != pending_sources_binding
+                or _c1_source_binding_digest(pending_queue_after) != pending_binding
+            ):
+                raise ValueError(
+                    "native ToF pending context or outgoing sources changed"
+                )
+            if include_wall:
+                _check_native_tof_wall_history(
+                    [wall, *pending_wall], self._tof_history, self._epoch
+                )
+                _check_native_tof_wall_history(
+                    [wall_after, *pending_wall_after], self._tof_history, self._epoch
+                )
+                if (
+                    self._tof_wall_history is not wall_before
+                    or not _native_tof_word_copy_matches(wall, wall_after)
+                    or not _native_tof_word_copy_matches(
+                        pending_wall, pending_wall_after
+                    )
+                    or _c1_source_binding_digest(self._tof_wall_history) != wall_binding
+                    or _c1_source_binding_digest(
+                        {"wall": wall, "pending_wall": pending_wall}
+                    )
+                    != wall_output_binding
+                ):
+                    raise ValueError(
+                        "native ToF retained wall or outgoing pairs changed"
+                    )
+            if include_selection:
                 _check_native_tof_selection_history(
                     [selection, *pending_selection], self._tof_history, self._epoch
                 )
@@ -12813,6 +12910,10 @@ class _SyntheticC1SourceRecorder:
             result["selection"] = selection
             if include_pending_sources:
                 result["pending_selection"] = pending_selection
+        if include_wall:
+            result["wall"] = wall
+            if include_pending_sources:
+                result["pending_wall"] = pending_wall
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals
             if include_pending_sources:

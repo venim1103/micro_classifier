@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §236 for bounded optional wall recorder retention and
-the latest source gate; §§231-235 retain arithmetic, trace, acquisition, intake
-and prehash limits.
+Read [REVIEW.md][review] §237 for optional wall delivered/pending correspondence
+and the latest source gate; §§231-236 retain arithmetic, trace, acquisition,
+intake, prehash and recorder limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next advance independently supported native ToF calculation/source prerequisites;
-retained wall words are not yet published with matched delivered/pending sources.
-Retention does not prove arithmetic, geometry or complete coverage.
+Next advance independently supported native ToF wall arithmetic prerequisites
+using the captured operation words; correspondence does not prove arithmetic,
+geometry, complete coverage or a uniform error allowance.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

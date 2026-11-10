@@ -439,6 +439,53 @@ Whole-section byte checks and prior REVIEW/Sources/design/stable AGENTS
 conservation passed; eight changed local targets valid, no stale root261-265
 anchor targets in searched unignored Markdown. Originals/logs retained.
 
+## 273. Matched Retained Cylinder Projection Residuals (2026-11-10)
+
+Checkpoint `48c5ea6` pushed/clean. Existing supplied-word projection helper owns
+unrounded two-term horizontal dot-product discrepancy, not isolated primitive
+rounding. Hypothesis: matched original/closing cylinder records can compose this
+report with original epoch/acquisition/delivery identities under existing closing
+checks. Literal default-off `include_cylinder_projection_residuals` requires
+`include_cylinder=True`; default does no projection arithmetic. <=32 cylinders/
+2304 words/2048 entries/2240 values/8192 binary operations per helper,4096-bit
+ceiling unchanged; <=18 invocations across original/closing delivered/<=8 pending
+records. Nonfinite observation residual stays unknown; nonfinite supplied offsets
+remain unsupported. No uniform error bound/numerical/physical/source proof.
+
+Finite routine plan: reuse23-case offset family in offset/projection modes,46
+controls, preserving offset72 values/48 binary/48 oracle caps. Projection fixtures
+<=1560 values/3072 binary/3072 exact oracle operations; per mode <=4 steps/5 reads/
+3 geometries/3 retentions/6 active-helper/cylinder calls/2 pending matches/64
+digests; optional existing selection helpers and offset helper <=6 calls each.
+No runtime intake/read/retain/step/reset/replay/clock. Empty/one/two fixtures,
+default/held/delivered/dependency/detachment, actual exact residuals/infinite
+observation, malformed/missing/late outputs/sources/owner/budget and bit exhaustion;
+combined projection+offset+selection preserves separate reports and all flags.
+Three pytest positions including failures/aborts: first46/60 seconds, one necessary
+repair reserve, final root/300 seconds; retain `cylinder-273-*` logs. No historical
+refunds/protected studies/task data/dependencies/hardware; all eight flags false,
+no geometry/coverage/source/numerical/physical/clock/one-use/permission/admission or
+usable command. Next matched horizontal-norm arithmetic as an independent report.
+
+First46 passed,3260 deselected,10.23 s. Required root4229 passed,1 known
+transformer QDQ xfailed,71 warnings,180.44 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. Caller query returned no
+sites, not static compatibility proof. AST confines changes to snapshot method/
+existing arithmetic test family, preserving original23 cases and all other nodes/
+existing snapshot parameters. Two of three pytest positions used, no failures/
+aborts; unused reserve is not follow-on authority. Logs `cylinder-273-focused-1.log`/
+`cylinder-273-root-1.log` retained under recovery directory. No additional C/Arm/
+sanitizer/board opt-in gates ran.
+
+Both exact oracles match supplied words, altered observations remain discrepancies,
+nonfinite observation residuals remain unknown and16-bit control exhausts
+conservatively. Default skips projection work; combined offset/projection/selection
+reports preserve separate meanings, original/closing delivery identities and
+tick/frame/RNG. Late changes suppress snapshots, stable mismatch does not qualify
+geometry. All eight flags false, no primitive uniform/numerical/physical/source/
+coverage/clock/one-use/permission/admission evidence or usable command. Next
+independent matched horizontal-norm report; monitor chapter03 size before growth.
+
 ## Sources
 
 Hardware and tools:

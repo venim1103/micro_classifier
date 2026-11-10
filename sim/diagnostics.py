@@ -9770,6 +9770,142 @@ def _native_tof_floor_division_residuals(
     }
 
 
+def _native_tof_wall_minimum_diagnostics(
+    *,
+    floor_candidate_ranges_m,
+    candidate_m_hex,
+    minimum_after_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native wall minimum diagnostics require synthetic_test_only=True"
+        )
+
+    def decoded(words, count):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native wall minimum word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native wall minimum word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native wall minimum words must be canonical"
+                ) from error
+            if value.hex() != word or math.isnan(value) or value == -math.inf:
+                raise ValueError("native wall minimum words must be canonical")
+            values.append(value)
+        return values
+
+    floor = decoded(floor_candidate_ranges_m, 64)
+    arrays = []
+    for words in (candidate_m_hex, minimum_after_m_hex):
+        if type(words) is not tuple or len(words) != 4:
+            raise ValueError("native wall minimum wall count unsupported")
+        arrays.append([decoded(row, 64) for row in words])
+    candidates, minima = arrays
+    entries = []
+    for wall_index, observed_minima in enumerate(minima):
+        previous_values = floor if wall_index == 0 else minima[wall_index - 1]
+        previous_words = (
+            floor_candidate_ranges_m
+            if wall_index == 0
+            else minimum_after_m_hex[wall_index - 1]
+        )
+        for ray_index, observed in enumerate(observed_minima):
+            previous, candidate = (
+                previous_values[ray_index],
+                candidates[wall_index][ray_index],
+            )
+            previous_word, candidate_word = (
+                previous_words[ray_index],
+                candidate_m_hex[wall_index][ray_index],
+            )
+            observed_word = minimum_after_m_hex[wall_index][ray_index]
+            if previous < candidate:
+                expected_word, expected_value, selection = (
+                    previous_word,
+                    previous,
+                    "previous",
+                )
+            elif candidate < previous:
+                expected_word, expected_value, selection = (
+                    candidate_word,
+                    candidate,
+                    "candidate",
+                )
+            elif previous_word == candidate_word:
+                expected_word, expected_value, selection = (
+                    previous_word,
+                    previous,
+                    "equal_identical_words",
+                )
+            else:
+                expected_word, expected_value, selection = (
+                    None,
+                    previous,
+                    "equal_value_word_tie",
+                )
+            value_matches = observed == expected_value
+            word_matches = (
+                observed_word == expected_word
+                if expected_word is not None
+                else None
+                if value_matches
+                else False
+            )
+            entries.append(
+                {
+                    "wall_index": wall_index,
+                    "ray_index": ray_index,
+                    "previous_hex": previous_word,
+                    "candidate_hex": candidate_word,
+                    "observed_minimum_hex": observed_word,
+                    "expected_minimum_hex": expected_word,
+                    "selection": selection,
+                    "minimum_value_matches": value_matches,
+                    "minimum_word_matches": word_matches,
+                    "status": "unknown_equal_value_word_tie"
+                    if word_matches is None
+                    else "matched_stored_wall_minimum_words"
+                    if word_matches
+                    else "mismatched_stored_wall_minimum_words",
+                }
+            )
+    return {
+        "schema": "micro-classifier/native-tof-wall-minimum-diagnostics/1",
+        "allowed_use": "offline_wall_minimum_word_diagnostics_only",
+        "status": "reported_stored_wall_minimum_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "floor_candidate_ranges_m": floor_candidate_ranges_m,
+        "word_mismatch_count": sum(
+            entry["minimum_word_matches"] is False for entry in entries
+        ),
+        "value_mismatch_count": sum(
+            not entry["minimum_value_matches"] for entry in entries
+        ),
+        "unresolved_word_count": sum(
+            entry["minimum_word_matches"] is None for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_wall_mask_candidate_diagnostics(
     *,
     wall_height_m_hex,

@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §243 for stored wall mask/candidate correspondence and
-the latest source gate; §§231-242 retain arithmetic, trace, acquisition, intake,
-prehash, recorder, delivery and matched-diagnostic limits.
+Read [REVIEW.md][review] §244 for conservative wall minimum correspondence and
+the latest source gate; §§231-243 retain arithmetic, trace, acquisition, intake,
+prehash, recorder, delivery and mask/candidate limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next advance per-wall minimum word correspondence, preserving unresolved
-equal-value/different-word ties. A hit bit or matching words do not prove finite
-intersections, geometry, coverage, primitive roundoff or a uniform allowance.
+Next connect mask/candidate/minimum diagnostics to matched wall record IDs,
+preserving unresolved equal-value/different-word ties. A hit bit or matching
+words do not prove finite intersections, geometry, coverage or uniform error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

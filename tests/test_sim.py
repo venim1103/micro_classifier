@@ -21495,6 +21495,295 @@ def test_native_tof_wall_mask_candidate_diagnostics(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "previous_lower",
+        "candidate_lower",
+        "alternating",
+        "equal_word",
+        "both_infinite",
+        "infinite_previous",
+        "infinite_candidate",
+        "signed_zero_previous",
+        "signed_zero_candidate",
+        "tie_wrong_value",
+        "same_value_wrong_word",
+        "upstream_mismatch",
+        "wrong_minimum",
+        "subnormal",
+        "large_finite",
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+        "word_type",
+    ),
+)
+def test_native_tof_wall_minimum_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "wall": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_wall = diagnostics._sample_simulator_native_tof_wall_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def wall_intake(*args, **kwargs):
+        setup["wall"] += 1
+        assert setup["wall"] <= 1
+        return original_wall(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_wall_source", wall_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    arguments = {
+        "floor_candidate_ranges_m": ((2.0).hex(),) * 64,
+        "candidate_m_hex": (((1.0).hex(),) * 64,) * 4,
+        "minimum_after_m_hex": (((1.0).hex(),) * 64,) * 4,
+    }
+    if case == "actual":
+        environment.step(
+            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+        )
+        packet = diagnostics._sample_simulator_native_tof_wall_source(
+            environment, owner._epoch
+        )
+        trace = packet["wall"]
+        arguments = {
+            "floor_candidate_ranges_m": trace["floor_candidate_ranges_m"],
+            "candidate_m_hex": tuple(wall["candidate_m"] for wall in trace["walls"]),
+            "minimum_after_m_hex": tuple(
+                wall["minimum_after_m"] for wall in trace["walls"]
+            ),
+        }
+    elif case in ("previous_lower", "infinite_candidate"):
+        arguments["floor_candidate_ranges_m"] = ((1.0).hex(),) * 64
+        arguments["candidate_m_hex"] = (
+            ("inf" if case == "infinite_candidate" else (2.0).hex(),) * 64,
+        ) * 4
+    elif case == "alternating":
+        arguments["floor_candidate_ranges_m"] = ((4.0).hex(),) * 64
+        arguments["candidate_m_hex"] = tuple(
+            (value.hex(),) * 64 for value in (3.0, 5.0, 2.0, 6.0)
+        )
+        arguments["minimum_after_m_hex"] = tuple(
+            (value.hex(),) * 64 for value in (3.0, 3.0, 2.0, 2.0)
+        )
+    elif case == "equal_word":
+        arguments["floor_candidate_ranges_m"] = ((1.0).hex(),) * 64
+    elif case in ("both_infinite", "infinite_previous"):
+        arguments["floor_candidate_ranges_m"] = ("inf",) * 64
+        if case == "both_infinite":
+            arguments["candidate_m_hex"] = arguments["minimum_after_m_hex"] = (
+                ("inf",) * 64,
+            ) * 4
+    elif case in ("signed_zero_previous", "signed_zero_candidate", "tie_wrong_value"):
+        previous, candidate = (
+            (-0.0, 0.0) if case != "signed_zero_candidate" else (0.0, -0.0)
+        )
+        arguments["floor_candidate_ranges_m"] = (previous.hex(),) * 64
+        arguments["candidate_m_hex"] = ((candidate.hex(),) * 64,) * 4
+        arguments["minimum_after_m_hex"] = (
+            ((1.0 if case == "tie_wrong_value" else previous).hex(),) * 64,
+        ) * 4
+    elif case == "same_value_wrong_word":
+        arguments["floor_candidate_ranges_m"] = ((-0.0).hex(),) * 64
+        arguments["minimum_after_m_hex"] = (((0.0).hex(),) * 64,) * 4
+    elif case == "upstream_mismatch":
+        arguments["minimum_after_m_hex"] = (
+            ((3.0).hex(),) * 64,
+            *arguments["minimum_after_m_hex"][1:],
+        )
+    elif case == "wrong_minimum":
+        arguments["minimum_after_m_hex"] = (((3.0).hex(),) * 64,) * 4
+    elif case in ("subnormal", "large_finite"):
+        maximum = float.fromhex("0x1.fffffffffffffp+1023")
+        target = math.ulp(0.0) if case == "subnormal" else math.nextafter(maximum, 0.0)
+        arguments["floor_candidate_ranges_m"] = (
+            (1.0 if case == "subnormal" else maximum).hex(),
+        ) * 64
+        arguments["candidate_m_hex"] = arguments["minimum_after_m_hex"] = (
+            (target.hex(),) * 64,
+        ) * 4
+    elif case == "shape":
+        arguments["floor_candidate_ranges_m"] = arguments["floor_candidate_ranges_m"][
+            :-1
+        ]
+    elif case == "noncanonical":
+        arguments["candidate_m_hex"] = (("1.0",) * 64,) * 4
+    elif case == "overflow_word":
+        arguments["floor_candidate_ranges_m"] = ("0x1p+99999",) * 64
+    elif case == "nan":
+        arguments["minimum_after_m_hex"] = (("nan",) * 64,) * 4
+    elif case == "negative_infinity":
+        arguments["floor_candidate_ranges_m"] = ("-inf",) * 64
+    elif case == "word_type":
+        arguments["candidate_m_hex"] = ((1,) * 64,) * 4
+    arguments_before = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"comparisons": 0, "forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall minimum diagnostics must not read/retain/step/reset/replay/clock/rational"
+        )
+
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_wall_source",
+        "_sample_simulator_native_tof_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    if case in (
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+        "word_type",
+    ):
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_wall_minimum_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_wall_minimum_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 256
+        assert (
+            result["floor_candidate_ranges_m"] == arguments["floor_candidate_ranges_m"]
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        word_mismatches = value_mismatches = unresolved = 0
+        for index, entry in enumerate(result["entries"]):
+            wall, ray = divmod(index, 64)
+            previous_word = (
+                arguments["floor_candidate_ranges_m"]
+                if wall == 0
+                else arguments["minimum_after_m_hex"][wall - 1]
+            )[ray]
+            candidate_word = arguments["candidate_m_hex"][wall][ray]
+            observed_word = arguments["minimum_after_m_hex"][wall][ray]
+            previous, candidate, observed = map(
+                float.fromhex, (previous_word, candidate_word, observed_word)
+            )
+            work["comparisons"] += 5
+            assert work["comparisons"] <= 1280
+            numeric_minimum = min(previous, candidate)
+            value_matches = observed == numeric_minimum
+            if previous == candidate and previous_word != candidate_word:
+                expected_word, selection = None, "equal_value_word_tie"
+                word_matches = None if value_matches else False
+            else:
+                expected_word = (
+                    previous_word if previous <= candidate else candidate_word
+                )
+                selection = (
+                    "equal_identical_words"
+                    if previous_word == candidate_word
+                    else "previous"
+                    if previous < candidate
+                    else "candidate"
+                )
+                word_matches = observed_word == expected_word
+            assert entry["wall_index"] == wall and entry["ray_index"] == ray
+            assert (
+                entry["previous_hex"] == previous_word
+                and entry["candidate_hex"] == candidate_word
+            )
+            assert entry["observed_minimum_hex"] == observed_word
+            assert (
+                entry["expected_minimum_hex"] == expected_word
+                and entry["selection"] == selection
+            )
+            assert entry["minimum_value_matches"] is value_matches
+            assert entry["minimum_word_matches"] is word_matches
+            assert entry["status"] == (
+                "unknown_equal_value_word_tie"
+                if word_matches is None
+                else "matched_stored_wall_minimum_words"
+                if word_matches
+                else "mismatched_stored_wall_minimum_words"
+            )
+            word_mismatches += word_matches is False
+            value_mismatches += not value_matches
+            unresolved += word_matches is None
+            if case == "upstream_mismatch" and wall == 1:
+                assert entry["previous_hex"] == (3.0).hex()
+        assert result["word_mismatch_count"] == word_mismatches
+        assert result["value_mismatch_count"] == value_mismatches
+        assert result["unresolved_word_count"] == unresolved
+        assert word_mismatches == (
+            256
+            if case in ("wrong_minimum", "tie_wrong_value")
+            else 64
+            if case in ("same_value_wrong_word", "upstream_mismatch")
+            else 0
+        )
+        assert value_mismatches == (
+            256
+            if case in ("wrong_minimum", "tie_wrong_value")
+            else 64
+            if case == "upstream_mismatch"
+            else 0
+        )
+        if case != "actual":
+            assert unresolved == (
+                256 if case in ("signed_zero_previous", "signed_zero_candidate") else 0
+            )
+    assert arguments == arguments_before and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "wall": 1, "native": 2}
+        if case == "actual"
+        else {"geometry": 0, "wall": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

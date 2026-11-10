@@ -1728,6 +1728,22 @@ coverage/numerical/source/clock/permission/admission qualification follows.
 See [mask/candidate controls and limits][native-tof-wall-mask-candidate-review].
 
 
+##### Native ToF Wall Minimum Word Correspondence (2026-11-10)
+
+Private `_native_tof_wall_minimum_diagnostics` checks each wall result against
+its supplied candidate and observed predecessor (floor first, then the previous
+observed wall minimum). Strict selection and identical input words support exact
+word checks. Equal-value/different-word ties remain unresolved; incorrect numeric
+values still mismatch. Separate value/word/unresolved counts preserve signed-zero
+distinctions without adopting host tie semantics or reconstructing predecessors.
+Four walls/64 rays bound576 canonical words/256 records/1280 comparison checks;
+no rational arithmetic, source intake, replay, hashing or RNG/clock occurs.
+
+All eight flags stay false. Per-operation word correspondence is not final
+cylinder/scene coverage, correct geometry, uniform error, physical/source/clock/
+permission/admission qualification. See [minimum controls and limits][native-tof-wall-minimum-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2454,6 +2470,7 @@ figure is not an established minimum.
 [native-tof-wall-projection-review]: ../../REVIEW.md#241-native-tof-wall-projection-expression-residuals-2026-11-10
 [native-tof-wall-projection-match-review]: ../../REVIEW.md#242-matched-native-tof-wall-projection-diagnostics-2026-11-10
 [native-tof-wall-mask-candidate-review]: ../../REVIEW.md#243-native-tof-wall-maskcandidate-word-correspondence-2026-11-10
+[native-tof-wall-minimum-review]: ../../REVIEW.md#244-native-tof-wall-minimum-word-correspondence-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

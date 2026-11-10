@@ -460,6 +460,48 @@ numerical/clock/permission/admission or usable command. Next advance supplied
 per-wall minimum operand/result words, leaving equal-value/different-word ties
 unknown rather than adopting unsupported host-specific tie semantics.
 
+## 244. Native ToF Wall Minimum Word Correspondence (2026-11-10)
+
+Checkpoint `145e134` pushed/clean. Local hypothesis: each wall minimum can be
+checked against its supplied candidate and actual observed predecessor (floor
+for wall0, previous observed wall minimum thereafter). Strict selection and
+equal identical words support word correspondence. Equal-value/different-word
+ties remain unresolved; wrong numeric values still mismatch. Do not adopt host
+signed-zero tie semantics, propagate a reconstructed predecessor or infer final
+cylinder/scene coverage, source/numerical/physical qualification or admission.
+
+Twenty-three bounded controls with unchanged parent fixtures; only actual-word
+case uses one setup acquisition/geometry/closed wall intake with two native
+intakes. One helper call per case,576 canonical words<=32 characters,256 records,
+at most1280 numerical/word comparison checks; fixture oracle same1280 ceiling.
+No source intake/read/retention/step/reset/geometry/replay/clock/RNG or rational
+arithmetic during diagnostics. Three pytest positions counting failures/aborts:
+first23/60 seconds, one necessary repair/control reserve, final root/300 seconds.
+Retain `wall-244-*` logs in existing recovery directory. All eight flags false;
+no old ledger refund or study/task data/model/dependency/download/hardware action.
+
+First23 passed,2560 deselected,2.65 s. Focused Ruff/format/whitespace passed.
+Required root:3506 passed,1 known transformer QDQ xfailed,71 warnings,104.01 s;
+root Ruff, changed-file format check and whitespace passed. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Editor diagnostics clear. AST comparison proves exactly one new helper/test;
+all previous arithmetic/source/delivery/test nodes unchanged. No additional
+C/Arm/sanitizer/board opt-in gates ran; host checks do not qualify hardware or
+firmware. Logs retained, no cleanup/deletion or new dependencies/studies/models.
+
+The actual-word fixture uses one fresh wall packet; other words are declared
+synthetic. Wrong upstream observations remain the next operation's recorded
+operand rather than a reconstructed value. Strict signed-word mismatches and
+unresolved equal-value ties remain distinct. All eight flags false, no adopted
+tie semantics, uniform error, geometry/coverage/physical/source/clock/permission/
+admission or usable command. Next compose mask/candidate/minimum diagnostics
+with matched delivered/pending records and original IDs, preserving unknown ties
+and finishing closing probes before payload comparisons.
+
+Checkpoint administration: piping the diff through `head` under `pipefail`
+stopped before staging. Verified HEAD/index unchanged; resume staging directly,
+without repeating successful code gates or refunding any attempt.
+
 ## Sources
 
 Hardware and tools:

@@ -395,6 +395,20 @@ geometry, coverage, source, numerical/physical/clock/permission/admission proof.
 Eight flags false. See [actual controls and gate][native-tof-cylinder-offset-review].
 
 
+#### Supplied-Word Cylinder Projection Expressions (2026-11-10)
+
+`_native_tof_cylinder_projection_residuals` reports exact unrounded supplied
+offset.x*ray.x + offset.y*ray.y and observed-minus-exact ratios for <=32 cylinders
+and64 rays. Preflight <=2304 canonical words,32 characters each; finite offsets/
+rays, non-NaN observations may be infinite (unknown residual). Existing4096-bit
+rational ceiling, <=2240 value calls/8192 binary operations,2048 entries. No
+intake/read/hash/retention/replay/clock/RNG. Original intermediate product words
+are absent, so discrepancy is combined expression error, not isolated multiply/
+add roundoff, FMA certification, uniform/numerical/physical/source/geometry/
+coverage/clock/permission/admission proof. Standalone, all eight flags false.
+See [actual controls, archive conservation and gate][native-tof-cylinder-projection-review].
+
+
 ### Synthetic Evaluation Tooling (2026-10-16)
 
 The user approved [CPU evaluation tooling][teacher-evaluation] with synthetic
@@ -2462,11 +2476,11 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-wall-offset-review]: ../review/236-240.md#238-native-tof-wall-offset-word-residuals-2026-11-10
 [native-tof-wall-division-review]: ../review/236-240.md#239-native-tof-wall-division-word-residuals-2026-11-10
 [native-tof-wall-arithmetic-review]: ../review/236-240.md#240-matched-native-tof-wall-arithmetic-diagnostics-2026-11-10
-[native-tof-wall-projection-review]: ../../REVIEW.md#241-native-tof-wall-projection-expression-residuals-2026-11-10
-[native-tof-wall-projection-match-review]: ../../REVIEW.md#242-matched-native-tof-wall-projection-diagnostics-2026-11-10
-[native-tof-wall-mask-candidate-review]: ../../REVIEW.md#243-native-tof-wall-maskcandidate-word-correspondence-2026-11-10
-[native-tof-wall-minimum-review]: ../../REVIEW.md#244-native-tof-wall-minimum-word-correspondence-2026-11-10
-[native-tof-wall-selection-match-review]: ../../REVIEW.md#245-matched-native-tof-wall-selection-diagnostics-2026-11-10
+[native-tof-wall-projection-review]: ../review/241-245.md#241-native-tof-wall-projection-expression-residuals-2026-11-10
+[native-tof-wall-projection-match-review]: ../review/241-245.md#242-matched-native-tof-wall-projection-diagnostics-2026-11-10
+[native-tof-wall-mask-candidate-review]: ../review/241-245.md#243-native-tof-wall-maskcandidate-word-correspondence-2026-11-10
+[native-tof-wall-minimum-review]: ../review/241-245.md#244-native-tof-wall-minimum-word-correspondence-2026-11-10
+[native-tof-wall-selection-match-review]: ../review/241-245.md#245-matched-native-tof-wall-selection-diagnostics-2026-11-10
 [native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2475,3 +2489,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-cylinder-retention-review]: ../../REVIEW.md#251-explicit-cylinder-recorder-retention-2026-11-10
 [native-tof-cylinder-delivery-review]: ../../REVIEW.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
 [native-tof-cylinder-offset-review]: ../../REVIEW.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
+[native-tof-cylinder-projection-review]: ../../REVIEW.md#254-supplied-word-cylinder-projection-expressions-2026-11-10

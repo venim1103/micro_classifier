@@ -10037,6 +10037,134 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_projection_residuals(
+    *, offset_m_hex, world_frame_unit_rays, projection_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder projection residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError(
+            "native cylinder projection residual rational budget unsupported"
+        )
+    if (
+        type(offset_m_hex) is not tuple
+        or len(offset_m_hex) > 32
+        or type(projection_m_hex) is not tuple
+        or len(projection_m_hex) != len(offset_m_hex)
+    ):
+        raise ValueError(
+            "native cylinder projection residual obstacle count unsupported"
+        )
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError(
+                "native cylinder projection residual word count unsupported"
+            )
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError(
+                    "native cylinder projection residual word budget exhausted"
+                )
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder projection residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native cylinder projection residual words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    offsets = tuple(decoded(words, 2, True) for words in offset_m_hex)
+    rays = decoded(world_frame_unit_rays, 192, True)
+    observed = tuple(decoded(words, 64, False) for words in projection_m_hex)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        rational_rays = (
+            tuple(
+                (
+                    arithmetic.value(rays[index * 3]),
+                    arithmetic.value(rays[index * 3 + 1]),
+                )
+                for index in range(64)
+            )
+            if offsets
+            else ()
+        )
+        for obstacle_index, offset in enumerate(offsets):
+            rational_offset = tuple(arithmetic.value(value) for value in offset)
+            for ray_index, direction in enumerate(rational_rays):
+                exact = arithmetic.binary(
+                    arithmetic.binary(rational_offset[0], direction[0], "mul"),
+                    arithmetic.binary(rational_offset[1], direction[1], "mul"),
+                    "add",
+                )
+                value = observed[obstacle_index][ray_index]
+                residual = (
+                    arithmetic.binary(arithmetic.value(value), exact, "sub")
+                    if math.isfinite(value)
+                    else None
+                )
+                entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "ray_index": ray_index,
+                        "offset_m_hex": offset_m_hex[obstacle_index],
+                        "horizontal_ray_hex": (
+                            world_frame_unit_rays[ray_index * 3],
+                            world_frame_unit_rays[ray_index * 3 + 1],
+                        ),
+                        "observed_projection_hex": projection_m_hex[obstacle_index][
+                            ray_index
+                        ],
+                        "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                        "signed_residual_ratio": None
+                        if residual is None
+                        else residual.as_integer_ratio(),
+                        "status": "unknown_nonfinite_cylinder_projection"
+                        if residual is None
+                        else "computed_exact_cylinder_projection_expression_residual",
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder projection residual rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-projection-residuals/1",
+        "allowed_use": "offline_cylinder_projection_word_diagnostics_only",
+        "status": "reported_cylinder_projection_expression_residuals",
+        "comparison_basis": "unrounded_supplied_word_two_term_dot_product",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_wall_projection_residuals(
     *,
     mount_height_m_hex,

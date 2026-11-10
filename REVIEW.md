@@ -55,8 +55,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 226-230][chapter-review-10]
 - [Checkpoints 231-235][chapter-review-11]
 - [Checkpoints 236-240][chapter-review-12]
+- [Checkpoints 241-245][chapter-review-13]
 
-Checkpoints 241 onward and the source bibliography remain below.
+Checkpoints 246 onward and the source bibliography remain below.
 ## Recovery and Document Layout (2026-11-09)
 
 Following the user's reported crash, the live review was a 262,527-byte exact
@@ -99,214 +100,6 @@ finite fixture limits, counting the interruption rather than assuming success.
 All qualification/admission flags remain false. Future checkpoints belong here
 briefly, with whole older sections moved through the reading map rather than
 repeated historical handoffs.
-
-## 241. Native ToF Wall Projection Expression Residuals (2026-11-10)
-
-Checkpoint `7450fb2` pushed/clean. Actual wall trace retains altitude/across
-results but not intermediate products. Local hypothesis: diagnose each against
-the exact unrounded supplied-word base+distance*direction expression after the
-native nonfinite-distance zero fallback. This is a combined-expression residual,
-not an isolated multiplication/addition rounding result, FMA claim, uniform
-allowance, independent geometry/coverage/source qualification or admission.
-
-Twenty bounded controls with unchanged parent fixtures; only actual-word case
-uses one setup acquisition/geometry/closed wall intake with two native intakes.
-Each case one helper call,963 canonical words<=32 characters,256 paired entries,
-at most1283 guarded conversions/1536 guarded operations under existing4096-bit
-cap. Independent fixture oracle at most1536 Fraction operations. During helper
-no source intake/read/retention/step/reset/replay/clock/RNG. Three pytest positions
-including failures/aborts: first20/60 seconds, one necessary repair/control
-reserve, final root/300 seconds. Retain `wall-241-*` logs in existing local
-recovery directory. All eight flags false, no old ledger refund or new study/
-task data/model/dependency/download/native/hardware action. Preserve signed/raw
-words; nonfinite observed projections leave residual unknown, not finite bounds.
-
-First20 passed,2499 deselected,3.18 s. Focused Ruff/format/whitespace passed.
-Required root:3442 passed,1 known transformer QDQ xfailed,71 warnings,104.32 s;
-root Ruff, changed-file format check and whitespace passed. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Editor diagnostics clear. AST comparison proves exactly one new helper/test;
-every previous source/test node remains unchanged. No additional C/Arm/sanitizer/
-board opt-in gates ran; host checks do not qualify firmware/hardware. Logs
-retained, no cleanup/deletion or new dependency/download/model/study/hardware.
-
-Actual-word fixture uses one fresh captured wall packet; other inputs are
-declared synthetic. Signed/raw words and explicit nonfinite-distance fallback
-are preserved; discrepancy reporting is not acceptance of changed arithmetic.
-All eight flags false, no primitive roundoff/FMA/uniform-error or independent
-masking/geometry/coverage/physical/source/clock/permission/admission qualification.
-Next compose projection diagnostics with matched delivered/pending wall records
-and original IDs, before independently supported mask/selection prerequisites.
-
-## 242. Matched Native ToF Wall Projection Diagnostics (2026-11-10)
-
-Checkpoint `7b6cc4f` pushed/clean. Local hypothesis: an independent literal
-projection opt-in requiring matched wall publication can reuse the projection
-helper under original epoch/acquisition/delivery IDs, alone or with offset/
-division and other companions. All closing probes precede typed live-history
-and outgoing comparisons. Default skips projection; unknown omits partial data.
-No primitive-product/addition rounding, FMA, uniform allowance or qualification.
-
-Extend the existing snapshot test, not another setup fixture: original18-case
-family keeps4680 conversions/3120 operations/1536 oracle operations; new20-case
-projection family includes dedicated late-projection and projection-only controls
-with at most12378 conversions/12336 guarded operations/6144 Fraction oracle
-operations. Common caps unchanged:4 setup steps,3 geometry/retentions,5 recorder
-reads,6 setup clocks only with companions; at most6 of each diagnostic/matcher,
-2 pending/4 queue/2 frame/64 bindings,4096-bit rational cap. No source intake/
-read/retention/step/reset/replay/clock/RNG during snapshot. Three pytest positions
-counting failures/aborts: first38/60 seconds, one necessary repair/control reserve,
-final root/300 seconds. Retain `wall-242-*` logs in existing recovery directory.
-All eight flags false, no old ledger refund or study/task data/model/dependency/
-download/native/hardware action. New family adds work; old family caps unchanged.
-
-First38 passed,2501 deselected,10.93 s, including all18 original cases with their
-original caps and20 projection cases. Focused Ruff/format/whitespace passed.
-Required root:3462 passed,1 known transformer QDQ xfailed,71 warnings,90.01 s;
-root Ruff, changed-file format check and whitespace passed. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Editor diagnostics clear. AST comparison confines changes to the existing
-delivery snapshot and its existing integration test; all other source/test nodes
-unchanged. No additional C/Arm/sanitizer/board opt-in gates ran; host checks are
-not firmware/hardware capability. Logs retained, no cleanup/deletion.
-
-Projection-only and combined paths use original matched record IDs; default
-skips the new helper and unknown carries no partial data. Deliberate late
-projection/companion/history mutations reject. All eight flags false, no adopted
-primitive rounding/FMA/uniform error or geometry/coverage/physical/source/clock/
-permission/admission qualification. Next independently check stored hit-mask
-comparisons and candidate selection against captured distance/altitude/across
-words and supplied native limits, without claiming physical intersections.
-
-## 243. Native ToF Wall Mask/Candidate Word Correspondence (2026-11-10)
-
-Checkpoint `c579ecc` pushed/clean. Local hypothesis: independently report whether
-stored hit bits match the five native comparisons on supplied distance/altitude/
-across/limit words, and whether candidate words match selection using the
-observed hit bit. Keeping these checks separate distinguishes mask discrepancies
-from candidate-copy discrepancies. `hit=True` plus+inf candidate is possible
-under the native comparisons; it is not a finite physical intersection claim.
-
-Twenty-one bounded controls with unchanged parent fixtures; only actual-word
-case uses one setup acquisition/geometry/closed wall intake with two native
-intakes. One helper call per case,1027 canonical words<=32 characters,256 strict
-builtin hit bits/records,1280 predicate comparisons plus512 consistency checks;
-fixture oracle at most1280 predicates. No source intake/read/retention/step/reset/
-geometry/replay/clock/RNG or rational arithmetic during diagnostics. Three
-pytest positions counting failures/aborts: first21/60 seconds, one necessary
-repair/control reserve, final root/300 seconds. Retain `wall-243-*` logs in
-existing recovery directory. All eight flags false, no adopted physical limits,
-source/geometry/coverage/numerical/clock/permission/admission or usable command;
-no old ledger refund or study/task data/model/dependency/download/hardware action.
-
-First21 passed,2539 deselected,4.03 s. Focused Ruff/format/whitespace passed.
-Required root:3483 passed,1 known transformer QDQ xfailed,71 warnings,113.87 s;
-root Ruff, changed-file format check and whitespace passed. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Editor diagnostics clear. AST comparison proves exactly one new helper/test;
-all previous arithmetic/source/delivery/test nodes unchanged. No additional
-C/Arm/sanitizer/board opt-in gates ran; host checks do not qualify hardware or
-firmware. Logs retained, no cleanup/deletion or new dependencies/studies/models.
-
-Actual-word fixture covers a fresh captured packet; other words are declared
-synthetic. Mask and candidate discrepancies remain separate; signed-zero
-candidate word changes reject correspondence even when numerically equal.
-`hit=True` with+inf candidate is recorded without claiming a finite intersection.
-All eight flags false, no adopted physical limits or source/geometry/coverage/
-numerical/clock/permission/admission or usable command. Next advance supplied
-per-wall minimum operand/result words, leaving equal-value/different-word ties
-unknown rather than adopting unsupported host-specific tie semantics.
-
-## 244. Native ToF Wall Minimum Word Correspondence (2026-11-10)
-
-Checkpoint `145e134` pushed/clean. Local hypothesis: each wall minimum can be
-checked against its supplied candidate and actual observed predecessor (floor
-for wall0, previous observed wall minimum thereafter). Strict selection and
-equal identical words support word correspondence. Equal-value/different-word
-ties remain unresolved; wrong numeric values still mismatch. Do not adopt host
-signed-zero tie semantics, propagate a reconstructed predecessor or infer final
-cylinder/scene coverage, source/numerical/physical qualification or admission.
-
-Twenty-three bounded controls with unchanged parent fixtures; only actual-word
-case uses one setup acquisition/geometry/closed wall intake with two native
-intakes. One helper call per case,576 canonical words<=32 characters,256 records,
-at most1280 numerical/word comparison checks; fixture oracle same1280 ceiling.
-No source intake/read/retention/step/reset/geometry/replay/clock/RNG or rational
-arithmetic during diagnostics. Three pytest positions counting failures/aborts:
-first23/60 seconds, one necessary repair/control reserve, final root/300 seconds.
-Retain `wall-244-*` logs in existing recovery directory. All eight flags false;
-no old ledger refund or study/task data/model/dependency/download/hardware action.
-
-First23 passed,2560 deselected,2.65 s. Focused Ruff/format/whitespace passed.
-Required root:3506 passed,1 known transformer QDQ xfailed,71 warnings,104.01 s;
-root Ruff, changed-file format check and whitespace passed. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Editor diagnostics clear. AST comparison proves exactly one new helper/test;
-all previous arithmetic/source/delivery/test nodes unchanged. No additional
-C/Arm/sanitizer/board opt-in gates ran; host checks do not qualify hardware or
-firmware. Logs retained, no cleanup/deletion or new dependencies/studies/models.
-
-The actual-word fixture uses one fresh wall packet; other words are declared
-synthetic. Wrong upstream observations remain the next operation's recorded
-operand rather than a reconstructed value. Strict signed-word mismatches and
-unresolved equal-value ties remain distinct. All eight flags false, no adopted
-tie semantics, uniform error, geometry/coverage/physical/source/clock/permission/
-admission or usable command. Next compose mask/candidate/minimum diagnostics
-with matched delivered/pending records and original IDs, preserving unknown ties
-and finishing closing probes before payload comparisons.
-
-Checkpoint administration: piping the diff through `head` under `pipefail`
-stopped before staging. Verified HEAD/index unchanged; resume staging directly,
-without repeating successful code gates or refunding any attempt.
-
-## 245. Matched Native ToF Wall Selection Diagnostics (2026-11-10)
-
-Checkpoint `3b6e6e8` pushed/clean. Local hypothesis: a separate literal-bool
-wall-selection diagnostic opt-in can derive mask/candidate/minimum checks from
-each matched delivered/pending wall record, preserving original three IDs and
-unresolved word ties. Requires wall inclusion, skips by default. Collect closing
-probes before typed live-history and outgoing comparisons; unknown omits payload.
-
-Extend the existing38-case matrix without increasing either old family's caps.
-New23-case family uses same setup<=4 steps/5 reads/3 geometry+retentions/6 setup
-clocks when combined; snapshot<=6 each matcher/diagnostic,2 pending matchers,
-4 queue copies/2 frame checks/64 bindings. Existing projection caps12378 rational
-values/12336 operations/6144 oracle operations remain; new mask/minimum helpers
-add no rational work. Each pair <=1603 canonical words,512 entries and existing
-fixed predicate/word checks. All old fixture caps/unknown attempts unchanged.
-Three pytest positions counting failures/aborts: first61 controls/60 seconds,
-one necessary repair reserve, final root/300 seconds. Retain `wall-245-*` logs.
-No read/retention/intake/step/reset/replay/clock/RNG during snapshot, no studies,
-new dependencies/downloads/models/hardware. All eight flags false, no geometry,
-coverage, physical/source/clock/numerical/permission/admission or usable command.
-
-First invocation:18 failed,43 passed,2545 deselected,28.86 s. New probe used
-nonexistent `inputs.bounds_m`; the existing closed packet and mask control use
-`inputs.scenario.bounds`. Repair that lookup only and rerun the same61 controls
-within the reserve. All38 original cases passed; failure/position/log retained,
-no schema/cap/assertion/tolerance change or historical attempt refund.
-
-Same61 passed,2545 deselected,11.58 s. Focused Ruff/format/whitespace passed.
-Required root:3529 passed,1 known transformer QDQ xfailed,71 warnings,91.51 s;
-root Ruff, changed-file format check and whitespace passed. All three pytest
-positions spent including first failure; no abort. Editor diagnostics clear;
-AST proves only owning snapshot and existing integration matrix changed, all
-other source/test nodes intact. Pylance resolved no method call sites: no static
-compatibility claim; runtime controls cover callers. No additional C/Arm/
-sanitizer/board opt-in gates ran; host checks do not qualify firmware/hardware.
-
-Moved all14 complete wall design sections and their14 reference definitions
-byte-for-byte from chapter01 into existing chapter02; source pointer/root map
-now locate them. Immediate conservation check passed, both original chapters
-retained under `wall-245-design-{1,2}-before.md` in the recovery directory.
-Chapter01 was2496 lines; relocation leaves2240 and chapter02 2321 before this
-checkpoint's new section. No old evidence/ledgers/Sources or accepted contracts
-changed; no successful code gate rerun for documentation. Logs/backups retained.
-
-All eight flags false, no adopted uniform/native error, geometry/coverage,
-physical/source/clock/permission/admission or usable command. Wall operation
-correspondence does not cover the final cylinder/scene reduction. Next advance
-actual cylinder arithmetic/source prerequisites without replay or qualification.
 
 ## 246. Actual Native ToF Cylinder Quadratic Trace (2026-11-10)
 
@@ -635,6 +428,49 @@ All eight flags false, no geometry/coverage/source/uniform error/numerical/
 physical/clock/one-use/permission/admission qualification or usable command.
 Next supplied-word cylinder projection-expression discrepancy; intermediate
 product words are not captured, so isolated multiply/add/FMA claims remain absent.
+
+## 254. Supplied-Word Cylinder Projection Expressions (2026-11-10)
+
+Checkpoint `867f44b` pushed/clean. Root review991 lines: archived whole241-245
+byte-for-byte in `docs/review/241-245.md`, rebased5 design references/map. Exact
+conservation passed; root now785 before this record. Originals retained as
+`cylinder-254-{review,design}-before.md` in recovery directory. No old evidence,
+failed checks, ledgers or source bibliography removed, renewed or refunded.
+
+Local hypothesis: bounded exact supplied offset.x*ray.x + offset.y*ray.y and
+observed-minus-unrounded discrepancy can be reported independently. Intermediate
+products are not captured, so no isolated multiply/add/FMA or uniform error
+claim. Canonical preflight <=2304 builtin words,32 characters each, <=32 offset
+pairs/64 rays; finite offsets/rays, non-NaN observations may be infinite (unknown
+residual). Existing4096-bit rational ceiling, <=2240 value calls/8192 binary
+operations,2048 entries. No intake/read/hash/retention/replay/clock/RNG in helper.
+
+22 synthetic cases in existing test file, including actual nonempty source,
+empty/max32, Fraction oracle <=8192 operations and malformed/work budgets. Actual
+setup <=1 geometry/selected intake,2 native intakes; parent ledgers unchanged.
+Three pytest positions including failures/aborts: first22/60 seconds, one
+necessary repair reserve, final root/300 seconds; retain `cylinder-254-*` logs.
+No protected runs/task data/dependencies/hardware. All eight flags false, no
+source/geometry/coverage/numerical/physical/clock/permission/admission or usable
+command. No matched-source composition or clock bound follows.
+
+First22 passed,2756 deselected,3.08 s. Required root3701 passed,1 known
+transformer QDQ xfailed,71 warnings,87.85 s; root Ruff, changed-file format check
+and whitespace passed. Editor diagnostics clear. AST proves only new projection
+helper/test added; all prior source/test nodes intact, no existing signature
+changed. Two of three pytest positions used, no failures/aborts; unused reserve
+is not follow-on authority. Logs `cylinder-254-focused-1.log`/
+`cylinder-254-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty words, rounded/mismatched/signed-zero/subnormal/large/infinite
+observations, empty/max32 and preflight/work-budget rejection agree with
+independent Fraction oracle within caps, leaving input/tick/RNG unchanged. All
+eight flags false, no source/geometry/coverage/isolated primitive/FMA/uniform
+error/numerical/physical/clock/one-use/permission/admission qualification or usable
+command. Next independently bounded quadratic/stage prerequisites; before the
+design topic exceeds2500 lines, losslessly relocate complete cylinder topic into
+an existing adjacent chapter with reading-map/target conservation checks.
 
 ## Sources
 
@@ -989,3 +825,4 @@ Methods and measurements:
 [alif-e8]: https://alifsemi.com/ensemble-e8-series/
 [nxp-rt700]: https://www.nxp.com/products/i.MX-RT700
 [chapter-review-12]: docs/review/236-240.md
+[chapter-review-13]: docs/review/241-245.md

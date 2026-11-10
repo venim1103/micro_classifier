@@ -2396,6 +2396,20 @@ eight flags false, no primitive uniform/numerical/physical/source/geometry/
 coverage/clock/permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-minimum-review].
 
 
+#### Captured Cylinder Stage-Chain Word Correspondence (2026-11-10)
+
+`_native_tof_cylinder_stage_chain_diagnostics` compares post-wall words to first
+side predecessor, each next predecessor to preceding observed result, then final
+cap result to pre-noise words. Empty path compares post-wall/pre-noise directly.
+No corrected-minimum propagation, operation-correctness or tie-resolution claim;
+coherent non-minimal chains can match. Signed-zero word changes remain faults.
+<=32 cylinders/64 rays/12416 canonical finite/+inf words/32 characters,6144 stage
+plus64 final entries/6208 helper word comparisons, aggregate counts separate.
+No rational work/intake/read/hash/retention/replay/clock/RNG or composition. All
+eight flags false; no numerical/physical/geometry/coverage/source/clock/one-use/
+permission/admission or usable command. See [actual controls and gate][native-tof-cylinder-chain-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2419,3 +2433,4 @@ coverage/clock/permission/admission proof. See [actual controls and gate][native
 [native-tof-cylinder-top-radial-review]: ../../REVIEW.md#267-independent-supplied-word-cylinder-cap-square-expressions-2026-11-10
 [native-tof-cylinder-top-mask-review]: ../../REVIEW.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10
 [native-tof-cylinder-top-minimum-review]: ../../REVIEW.md#269-supplied-word-cylinder-cap-minimum-correspondence-2026-11-10
+[native-tof-cylinder-chain-review]: ../../REVIEW.md#270-captured-cylinder-stage-chain-word-correspondence-2026-11-10

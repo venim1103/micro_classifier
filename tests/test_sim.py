@@ -27235,6 +27235,417 @@ def test_native_tof_cylinder_top_minimum_diagnostics(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "actual_empty",
+        "actual_one",
+        "actual_two",
+        "matched",
+        "two_cylinders",
+        "wall_link_fault",
+        "side_link_fault",
+        "top_link_fault",
+        "inter_cylinder_fault",
+        "final_link_fault",
+        "bad_after_propagates_only_once",
+        "coherent_nonminimum",
+        "signed_zero_match",
+        "signed_zero_wall_fault",
+        "signed_zero_internal_fault",
+        "signed_zero_final_fault",
+        "infinite",
+        "subnormal",
+        "large_finite",
+        "negative_finite",
+        "empty",
+        "empty_fault",
+        "max_obstacles",
+        "flag",
+        "budget",
+        "shape",
+        "sides_shape",
+        "ray_shape",
+        "container_type",
+        "word_type",
+        "word_budget",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+        "late_nan",
+    ),
+)
+def test_native_tof_cylinder_stage_chain_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    setup = {"geometry": 0, "cylinder": 0, "native": 0}
+    original_geometry = rover.tof_ranges
+    original_cylinder = diagnostics._sample_simulator_native_tof_cylinder_source
+    original_native = diagnostics._sample_simulator_native_tof_source
+
+    def geometry(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_geometry(*args, **kwargs)
+
+    def cylinder_intake(*args, **kwargs):
+        setup["cylinder"] += 1
+        assert setup["cylinder"] <= 1
+        return original_cylinder(*args, **kwargs)
+
+    def native_intake(*args, **kwargs):
+        setup["native"] += 1
+        assert setup["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_cylinder_source", cylinder_intake
+    )
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_source", native_intake
+    )
+    count = (
+        2
+        if case
+        in ("two_cylinders", "inter_cylinder_fault", "bad_after_propagates_only_once")
+        else 32
+        if case in ("max_obstacles", "late_nan")
+        else 33
+        if case == "budget"
+        else 0
+        if case in ("empty", "empty_fault")
+        else 1
+    )
+
+    def row(value):
+        return (value.hex(),) * 64
+
+    words = [row(float(6 - index)) for index in range(3 * count + 1)]
+    if case in (
+        "signed_zero_match",
+        "signed_zero_wall_fault",
+        "signed_zero_internal_fault",
+        "signed_zero_final_fault",
+        "infinite",
+        "subnormal",
+        "large_finite",
+        "negative_finite",
+    ):
+        value = {
+            "signed_zero_match": -0.0,
+            "signed_zero_wall_fault": -0.0,
+            "signed_zero_internal_fault": -0.0,
+            "signed_zero_final_fault": -0.0,
+            "infinite": math.inf,
+            "subnormal": math.ulp(0.0),
+            "large_finite": float.fromhex("0x1.fffffffffffffp+1023"),
+            "negative_finite": -1.0,
+        }[case]
+        words = [row(value)] * len(words)
+    elif case == "coherent_nonminimum":
+        words = [row(float(index + 6)) for index in range(len(words))]
+    arguments = {
+        "post_wall_ranges_m_hex": words[0],
+        "side_previous_minimum_m_hex": tuple(
+            (words[3 * index], words[3 * index + 1]) for index in range(count)
+        ),
+        "side_minimum_after_m_hex": tuple(
+            (words[3 * index + 1], words[3 * index + 2]) for index in range(count)
+        ),
+        "top_previous_minimum_m_hex": tuple(
+            words[3 * index + 2] for index in range(count)
+        ),
+        "top_minimum_after_m_hex": tuple(
+            words[3 * index + 3] for index in range(count)
+        ),
+        "pre_noise_ranges_m_hex": words[-1],
+    }
+    actual = case.startswith("actual_")
+    if actual:
+        obstacle_count = {"actual_empty": 0, "actual_one": 1, "actual_two": 2}[case]
+        environment.scenario = replace(
+            environment.scenario,
+            obstacles=((3.0, 3.0, 0.25), (4.0, 4.0, 0.5))[:obstacle_count],
+        )
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        trace = diagnostics._sample_simulator_native_tof_cylinder_source(
+            environment, owner._epoch
+        )["cylinder"]
+        assert len(trace["cylinders"]) == obstacle_count
+        arguments = {
+            "post_wall_ranges_m_hex": trace["post_wall_ranges_m"],
+            "side_previous_minimum_m_hex": tuple(
+                tuple(side["previous_minimum_m"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+            "side_minimum_after_m_hex": tuple(
+                tuple(side["minimum_after_m"] for side in entry["sides"])
+                for entry in trace["cylinders"]
+            ),
+            "top_previous_minimum_m_hex": tuple(
+                entry["top"]["previous_minimum_m"] for entry in trace["cylinders"]
+            ),
+            "top_minimum_after_m_hex": tuple(
+                entry["top"]["minimum_after_m"] for entry in trace["cylinders"]
+            ),
+            "pre_noise_ranges_m_hex": trace["pre_noise_ranges_m"],
+        }
+    elif case in ("wall_link_fault", "signed_zero_wall_fault"):
+        arguments["post_wall_ranges_m_hex"] = row(
+            0.0 if case.startswith("signed_zero") else 9.0
+        )
+    elif case in ("side_link_fault", "signed_zero_internal_fault"):
+        arguments["side_previous_minimum_m_hex"] = (
+            (
+                arguments["side_previous_minimum_m_hex"][0][0],
+                row(0.0 if case.startswith("signed_zero") else 9.0),
+            ),
+        )
+    elif case == "top_link_fault":
+        arguments["top_previous_minimum_m_hex"] = (row(9.0),)
+    elif case == "inter_cylinder_fault":
+        arguments["side_previous_minimum_m_hex"] = (
+            arguments["side_previous_minimum_m_hex"][0],
+            (row(9.0), arguments["side_previous_minimum_m_hex"][1][1]),
+        )
+    elif case in ("final_link_fault", "signed_zero_final_fault", "empty_fault"):
+        arguments["pre_noise_ranges_m_hex"] = row(
+            0.0 if case.startswith("signed_zero") else 9.0
+        )
+    elif case == "bad_after_propagates_only_once":
+        arguments["side_minimum_after_m_hex"] = (
+            (row(9.0), arguments["side_minimum_after_m_hex"][0][1]),
+            arguments["side_minimum_after_m_hex"][1],
+        )
+    elif case == "shape":
+        arguments["top_minimum_after_m_hex"] = ()
+    elif case == "sides_shape":
+        arguments["side_minimum_after_m_hex"] = ((words[0],),)
+    elif case == "ray_shape":
+        arguments["top_previous_minimum_m_hex"] = (words[0][:-1],)
+    elif case == "container_type":
+        arguments["side_previous_minimum_m_hex"] = list(
+            arguments["side_previous_minimum_m_hex"]
+        )
+    elif case in (
+        "word_type",
+        "word_budget",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+    ):
+        invalid = {
+            "word_type": 1,
+            "word_budget": "0" * 33,
+            "noncanonical": "6.0",
+            "overflow_word": "0x1p+99999",
+            "nan": "nan",
+            "negative_infinity": "-inf",
+        }[case]
+        arguments["post_wall_ranges_m_hex"] = (invalid,) + words[0][1:]
+    elif case == "late_nan":
+        arguments["top_minimum_after_m_hex"] = arguments["top_minimum_after_m_hex"][
+            :-1
+        ] + (words[-1][:-1] + ("nan",),)
+    before_arguments = deepcopy(arguments)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"comparisons": 0, "forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder stage chain must not intake/read/retain/hash/step/reset/replay/clock/rational"
+        )
+
+    for name in (
+        "_sample_simulator_native_tof_cylinder_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    rejected = {
+        "flag",
+        "budget",
+        "shape",
+        "sides_shape",
+        "ray_shape",
+        "container_type",
+        "word_type",
+        "word_budget",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "negative_infinity",
+        "late_nan",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_cylinder_stage_chain_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_cylinder_stage_chain_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert (
+            result["schema"]
+            == "micro-classifier/native-tof-cylinder-stage-chain-diagnostics/1"
+        )
+        assert (
+            result["allowed_use"]
+            == "offline_cylinder_stage_chain_word_diagnostics_only"
+        )
+        assert (
+            result["status"] == "reported_captured_cylinder_stage_chain_correspondence"
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        count = len(arguments["top_previous_minimum_m_hex"])
+        assert len(result["entries"]) == 192 * count
+        assert len(result["final_entries"]) == 64
+        stage_mismatches = 0
+        for entry_index, entry in enumerate(result["entries"]):
+            obstacle_index, stage_ray = divmod(entry_index, 192)
+            stage_index, ray_index = divmod(stage_ray, 64)
+            if stage_index == 0:
+                expected = (
+                    arguments["post_wall_ranges_m_hex"][ray_index]
+                    if obstacle_index == 0
+                    else arguments["top_minimum_after_m_hex"][obstacle_index - 1][
+                        ray_index
+                    ]
+                )
+                observed = arguments["side_previous_minimum_m_hex"][obstacle_index][0][
+                    ray_index
+                ]
+            elif stage_index == 1:
+                expected = arguments["side_minimum_after_m_hex"][obstacle_index][0][
+                    ray_index
+                ]
+                observed = arguments["side_previous_minimum_m_hex"][obstacle_index][1][
+                    ray_index
+                ]
+            else:
+                expected = arguments["side_minimum_after_m_hex"][obstacle_index][1][
+                    ray_index
+                ]
+                observed = arguments["top_previous_minimum_m_hex"][obstacle_index][
+                    ray_index
+                ]
+            matches = expected == observed
+            work["comparisons"] += 1
+            assert work["comparisons"] <= 6208
+            assert entry == {
+                "obstacle_index": obstacle_index,
+                "stage": ("side_negative", "side_positive", "top")[stage_index],
+                "ray_index": ray_index,
+                "expected_predecessor_hex": expected,
+                "observed_predecessor_hex": observed,
+                "predecessor_word_matches": matches,
+                "status": "matched_captured_cylinder_stage_link"
+                if matches
+                else "mismatched_captured_cylinder_stage_link",
+            }
+            stage_mismatches += not matches
+        final_mismatches = 0
+        for ray_index, entry in enumerate(result["final_entries"]):
+            expected = (
+                arguments["top_minimum_after_m_hex"][-1][ray_index]
+                if count
+                else arguments["post_wall_ranges_m_hex"][ray_index]
+            )
+            observed = arguments["pre_noise_ranges_m_hex"][ray_index]
+            matches = expected == observed
+            work["comparisons"] += 1
+            assert work["comparisons"] <= 6208
+            assert entry == {
+                "ray_index": ray_index,
+                "expected_pre_noise_hex": expected,
+                "observed_pre_noise_hex": observed,
+                "pre_noise_word_matches": matches,
+                "status": "matched_captured_cylinder_final_link"
+                if matches
+                else "mismatched_captured_cylinder_final_link",
+            }
+            final_mismatches += not matches
+        assert (
+            result["stage_mismatch_count"]
+            == stage_mismatches
+            == (
+                64
+                if case
+                in (
+                    "wall_link_fault",
+                    "side_link_fault",
+                    "top_link_fault",
+                    "inter_cylinder_fault",
+                    "bad_after_propagates_only_once",
+                    "signed_zero_wall_fault",
+                    "signed_zero_internal_fault",
+                )
+                else 0
+            )
+        )
+        assert (
+            result["final_mismatch_count"]
+            == final_mismatches
+            == (
+                64
+                if case
+                in ("final_link_fault", "signed_zero_final_fault", "empty_fault")
+                else 0
+            )
+        )
+        if case == "bad_after_propagates_only_once":
+            assert all(
+                entry["predecessor_word_matches"] for entry in result["entries"][128:]
+            )
+        if case == "coherent_nonminimum":
+            assert float.fromhex(
+                arguments["top_minimum_after_m_hex"][0][0]
+            ) > float.fromhex(arguments["post_wall_ranges_m_hex"][0])
+    assert arguments == before_arguments and environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert setup == (
+        {"geometry": 1, "cylinder": 1, "native": 2}
+        if actual
+        else {"geometry": 0, "cylinder": 0, "native": 0}
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

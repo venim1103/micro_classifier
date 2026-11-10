@@ -10037,6 +10037,137 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_stage_chain_diagnostics(
+    *,
+    post_wall_ranges_m_hex,
+    side_previous_minimum_m_hex,
+    side_minimum_after_m_hex,
+    top_previous_minimum_m_hex,
+    top_minimum_after_m_hex,
+    pre_noise_ranges_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder chain diagnostics require synthetic_test_only=True"
+        )
+    if (
+        type(top_previous_minimum_m_hex) is not tuple
+        or len(top_previous_minimum_m_hex) > 32
+    ):
+        raise ValueError("native cylinder chain obstacle count unsupported")
+    count = len(top_previous_minimum_m_hex)
+
+    def checked(words):
+        if type(words) is not tuple or len(words) != 64:
+            raise ValueError("native cylinder chain word count unsupported")
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder chain word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder chain words must be canonical"
+                ) from error
+            if value.hex() != word or math.isnan(value) or value == -math.inf:
+                raise ValueError("native cylinder chain words must be canonical")
+        return words
+
+    previous_words = checked(post_wall_ranges_m_hex)
+    final_words = checked(pre_noise_ranges_m_hex)
+    for rows in (side_previous_minimum_m_hex, side_minimum_after_m_hex):
+        if type(rows) is not tuple or len(rows) != count:
+            raise ValueError("native cylinder chain obstacle count unsupported")
+        for sides in rows:
+            if type(sides) is not tuple or len(sides) != 2:
+                raise ValueError("native cylinder chain side count unsupported")
+            for words in sides:
+                checked(words)
+    for rows in (top_previous_minimum_m_hex, top_minimum_after_m_hex):
+        if type(rows) is not tuple or len(rows) != count:
+            raise ValueError("native cylinder chain obstacle count unsupported")
+        for words in rows:
+            checked(words)
+
+    entries = []
+    for obstacle_index in range(count):
+        predecessors = (
+            *side_previous_minimum_m_hex[obstacle_index],
+            top_previous_minimum_m_hex[obstacle_index],
+        )
+        results = (
+            *side_minimum_after_m_hex[obstacle_index],
+            top_minimum_after_m_hex[obstacle_index],
+        )
+        for stage, observed_words, after_words in zip(
+            ("side_negative", "side_positive", "top"),
+            predecessors,
+            results,
+            strict=True,
+        ):
+            for ray_index, (expected, observed) in enumerate(
+                zip(previous_words, observed_words, strict=True)
+            ):
+                matches = observed == expected
+                entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "stage": stage,
+                        "ray_index": ray_index,
+                        "expected_predecessor_hex": expected,
+                        "observed_predecessor_hex": observed,
+                        "predecessor_word_matches": matches,
+                        "status": "matched_captured_cylinder_stage_link"
+                        if matches
+                        else "mismatched_captured_cylinder_stage_link",
+                    }
+                )
+            previous_words = after_words
+    final_entries = []
+    for ray_index, (expected, observed) in enumerate(
+        zip(previous_words, final_words, strict=True)
+    ):
+        matches = observed == expected
+        final_entries.append(
+            {
+                "ray_index": ray_index,
+                "expected_pre_noise_hex": expected,
+                "observed_pre_noise_hex": observed,
+                "pre_noise_word_matches": matches,
+                "status": "matched_captured_cylinder_final_link"
+                if matches
+                else "mismatched_captured_cylinder_final_link",
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-stage-chain-diagnostics/1",
+        "allowed_use": "offline_cylinder_stage_chain_word_diagnostics_only",
+        "status": "reported_captured_cylinder_stage_chain_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "stage_mismatch_count": sum(
+            not entry["predecessor_word_matches"] for entry in entries
+        ),
+        "final_mismatch_count": sum(
+            not entry["pre_noise_word_matches"] for entry in final_entries
+        ),
+        "entries": entries,
+        "final_entries": final_entries,
+    }
+
+
 def _native_tof_cylinder_top_minimum_diagnostics(
     *,
     top_previous_minimum_m_hex,

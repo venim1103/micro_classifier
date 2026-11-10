@@ -525,6 +525,46 @@ word correspondence: side/top predecessor to preceding observed minimum,
 post-wall start and final pre-noise ranges, without minimum recomputation,
 tie resolution or numerical/geometry/source qualification.
 
+## 270. Captured Cylinder Stage-Chain Word Correspondence (2026-11-10)
+
+Checkpoint `1e2696e` pushed/clean. Native owning path passes post-wall ranges to
+near side, far side, cap, next cylinder and finally pre-noise ranges. Hypothesis:
+each captured predecessor should match preceding observed result words, without
+recomputing or correcting any minimum. Empty path compares post-wall/pre-noise.
+Signed-zero word differences remain faults, not adopted minimum tie semantics.
+Coherent non-minimal chain may match wiring, not operation correctness.
+
+Finite routine plan: 36 synthetic controls, <=32 cylinders/64 rays/12416 canonical
+finite/+inf words/32 characters; <=6144 stage entries plus64 final entries/6208
+helper word comparisons, aggregate counts separate, <=6208 oracle comparisons.
+Actual empty/one/two fixtures each <=1 geometry/selected intake,2 native intakes
+(family <=3/3/6); other controls no setup work. Broken wall/side/top/inter-cylinder/
+final links, one bad after affecting only next link, signed zeros, non-minimal
+coherent/extremes/max32/empty and typed preflight; input/tick/both RNGs unchanged.
+No diagnostic intake/read/hash/retention/replay/clock/rational work or composition.
+Three pytest positions including failures/aborts: first36/60 seconds, one
+necessary repair reserve, final root/300 seconds; retain `cylinder-270-*` logs.
+No historical refunds/protected studies/task data/dependencies/hardware. All eight
+flags false; words do not establish numerical/physical/geometry/coverage/source/
+clock/one-use/permission/admission or usable command. Next supported retained
+cylinder composition without turning matching chain words into qualification.
+
+First36 passed,3196 deselected,3.44 s. Required root4155 passed,1 known
+transformer QDQ xfailed,71 warnings,99.77 s; root Ruff, changed-file format check
+and whitespace passed. Editor/Pylance syntax clear. AST proves only new stage
+chain helper/test added; all prior source/test nodes intact, no existing
+signature changed. Two of three pytest positions used, no failures/aborts;
+unused reserve is not follow-on authority. Logs `cylinder-270-focused-1.log`/
+`cylinder-270-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual empty/one/two chains match; broken boundary words and signed-zero word
+changes report independently. Bad observed after affects next link only;
+coherent non-minimal chain matches wiring without minimum proof. All eight flags
+false, input/tick/RNG preserved. Next bounded matched retained cylinder selection
+reports, retaining original epoch/tick/delivery and closing comparisons; no
+source/numerical/physical/geometry/coverage/clock/one-use/permission/admission.
+
 ## Sources
 
 Hardware and tools:

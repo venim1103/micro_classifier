@@ -10037,6 +10037,132 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_top_mask_candidate_diagnostics(
+    *,
+    radius_squared_m2_hex,
+    top_distance_m_hex,
+    radial_squared_m2_hex,
+    top_hit_masks,
+    top_candidate_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder top mask diagnostics require synthetic_test_only=True"
+        )
+    if type(radius_squared_m2_hex) is not tuple or len(radius_squared_m2_hex) > 32:
+        raise ValueError("native cylinder top mask obstacle count unsupported")
+    count = len(radius_squared_m2_hex)
+    if any(
+        type(rows) is not tuple or len(rows) != count
+        for rows in (
+            top_distance_m_hex,
+            radial_squared_m2_hex,
+            top_hit_masks,
+            top_candidate_m_hex,
+        )
+    ):
+        raise ValueError("native cylinder top mask obstacle count unsupported")
+
+    def decoded(words, size, range_only=False):
+        if type(words) is not tuple or len(words) != size:
+            raise ValueError("native cylinder top mask word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder top mask word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder top mask words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (range_only and value == -math.inf)
+            ):
+                raise ValueError("native cylinder top mask words must be canonical")
+            values.append(value)
+        return values
+
+    radius_squares = decoded(radius_squared_m2_hex, count)
+    distances = tuple(decoded(words, 64) for words in top_distance_m_hex)
+    radial_squares = tuple(decoded(words, 64) for words in radial_squared_m2_hex)
+    for words in top_candidate_m_hex:
+        decoded(words, 64, True)
+    if any(
+        type(words) is not tuple
+        or len(words) != 64
+        or any(type(hit) is not bool for hit in words)
+        for words in top_hit_masks
+    ):
+        raise ValueError("native cylinder top mask requires builtin bool masks")
+    entries = []
+    for obstacle_index, values in enumerate(distances):
+        for ray_index, distance in enumerate(values):
+            comparisons = (
+                distance >= 0,
+                radial_squares[obstacle_index][ray_index]
+                <= radius_squares[obstacle_index],
+            )
+            expected_hit = all(comparisons)
+            observed_hit = top_hit_masks[obstacle_index][ray_index]
+            expected_candidate = (
+                top_distance_m_hex[obstacle_index][ray_index] if observed_hit else "inf"
+            )
+            mask_matches = observed_hit == expected_hit
+            candidate_matches = (
+                top_candidate_m_hex[obstacle_index][ray_index] == expected_candidate
+            )
+            entries.append(
+                {
+                    "obstacle_index": obstacle_index,
+                    "ray_index": ray_index,
+                    "radius_squared_hex": radius_squared_m2_hex[obstacle_index],
+                    "radial_squared_hex": radial_squared_m2_hex[obstacle_index][
+                        ray_index
+                    ],
+                    "distance_hex": top_distance_m_hex[obstacle_index][ray_index],
+                    "comparison_results": comparisons,
+                    "expected_hit": expected_hit,
+                    "observed_hit": observed_hit,
+                    "mask_matches": mask_matches,
+                    "expected_candidate_hex": expected_candidate,
+                    "observed_candidate_hex": top_candidate_m_hex[obstacle_index][
+                        ray_index
+                    ],
+                    "candidate_matches": candidate_matches,
+                    "status": "matched_stored_cylinder_top_mask_candidate_words"
+                    if mask_matches and candidate_matches
+                    else "mismatched_stored_cylinder_top_mask_candidate_words",
+                }
+            )
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-top-mask-candidate-diagnostics/1",
+        "allowed_use": "offline_cylinder_top_mask_candidate_word_diagnostics_only",
+        "status": "reported_stored_cylinder_top_mask_candidate_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "mask_mismatch_count": sum(not entry["mask_matches"] for entry in entries),
+        "candidate_mismatch_count": sum(
+            not entry["candidate_matches"] for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_top_radial_residuals(
     *,
     top_relative_m_hex,

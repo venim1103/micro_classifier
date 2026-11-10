@@ -2367,6 +2367,21 @@ false; no primitive uniform/numerical/physical/source/geometry/coverage/clock/
 permission/admission proof. See [actual controls and gate][native-tof-cylinder-top-radial-review].
 
 
+#### Supplied-Word Cylinder Cap Mask/Candidate Correspondence (2026-11-10)
+
+`_native_tof_cylinder_top_mask_candidate_diagnostics` reports distance>=0 and
+stored radial<=stored radius^2 predicates/hit correspondence separately from
+candidate word selection using observed hit. Non-NaN operands including +/-inf,
+candidates finite/+inf only. Signed-zero candidate word changes remain separate
+mismatches; matching hit=True/+inf, inf<=inf or negative squared operands is not
+finite/geometric intersection or arithmetic qualification. <=32 cylinders/64
+rays/6176 canonical words/32 characters,2048 literal bools/entries,4096 predicates/
+4096 consistency checks. No rational work/intake/read/hash/retention/replay/clock/
+RNG or composition. All eight flags false, no primitive uniform/numerical/
+physical/source/geometry/coverage/clock/permission/admission proof. See
+[actual controls and gate][native-tof-cylinder-top-mask-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2376,11 +2391,11 @@ permission/admission proof. See [actual controls and gate][native-tof-cylinder-t
 [native-tof-cylinder-delivery-review]: ../review/251-255.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
 [native-tof-cylinder-offset-review]: ../review/251-255.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
 [native-tof-cylinder-projection-review]: ../review/251-255.md#254-supplied-word-cylinder-projection-expressions-2026-11-10
-[native-tof-cylinder-horizontal-review]: ../../REVIEW.md#256-supplied-horizontal-squared-ray-expression-2026-11-10
-[native-tof-cylinder-discriminant-review]: ../../REVIEW.md#257-supplied-word-cylinder-discriminant-expression-2026-11-10
-[native-tof-cylinder-root-squared-review]: ../../REVIEW.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10
-[native-tof-cylinder-side-numerator-review]: ../../REVIEW.md#259-supplied-word-cylinder-side-numerator-expressions-2026-11-10
-[native-tof-cylinder-side-division-review]: ../../REVIEW.md#260-supplied-word-cylinder-side-division-residuals-2026-11-10
+[native-tof-cylinder-horizontal-review]: ../review/256-260.md#256-supplied-horizontal-squared-ray-expression-2026-11-10
+[native-tof-cylinder-discriminant-review]: ../review/256-260.md#257-supplied-word-cylinder-discriminant-expression-2026-11-10
+[native-tof-cylinder-root-squared-review]: ../review/256-260.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10
+[native-tof-cylinder-side-numerator-review]: ../review/256-260.md#259-supplied-word-cylinder-side-numerator-expressions-2026-11-10
+[native-tof-cylinder-side-division-review]: ../review/256-260.md#260-supplied-word-cylinder-side-division-residuals-2026-11-10
 [native-tof-cylinder-side-altitude-review]: ../../REVIEW.md#261-supplied-word-cylinder-side-altitude-expression-2026-11-10
 [native-tof-cylinder-side-mask-review]: ../../REVIEW.md#262-supplied-word-cylinder-side-maskcandidate-correspondence-2026-11-10
 [native-tof-cylinder-side-minimum-review]: ../../REVIEW.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10
@@ -2388,3 +2403,4 @@ permission/admission proof. See [actual controls and gate][native-tof-cylinder-t
 [native-tof-cylinder-top-division-review]: ../../REVIEW.md#265-guarded-supplied-word-cylinder-top-division-2026-11-10
 [native-tof-cylinder-top-relative-review]: ../../REVIEW.md#266-supplied-word-cylinder-top-relative-expression-2026-11-10
 [native-tof-cylinder-top-radial-review]: ../../REVIEW.md#267-independent-supplied-word-cylinder-cap-square-expressions-2026-11-10
+[native-tof-cylinder-top-mask-review]: ../../REVIEW.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10

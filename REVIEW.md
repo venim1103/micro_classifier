@@ -551,6 +551,44 @@ physical/source/clock/permission/admission or usable command. Wall operation
 correspondence does not cover the final cylinder/scene reduction. Next advance
 actual cylinder arithmetic/source prerequisites without replay or qualification.
 
+## 246. Actual Native ToF Cylinder Quadratic Trace (2026-11-10)
+
+Checkpoint `938646c` pushed/clean. Local hypothesis: an optional cold trace can
+retain the actual existing horizontal squared norm and per-cylinder offset,
+projection, discriminant and clamped-square-root results without reevaluating
+them or changing first-return words. No acquisition/recorder path is wired yet.
+Require empty separate builtin dict, mounted finite native pose/actual profile
+and existing32-obstacle cap before geometry; detach retained arrays/inputs and
+preserve all eight false flags. Capture post-wall and final pre-noise arrays as
+context, not cylinder side/top arithmetic or final scene geometry proof.
+
+Twenty-one bounded synthetic controls, <=2 geometry/direction evaluations each
+(baseline/traced), <=32 intercepted roots and100 candidate minima for the traced
+call; <=32 fixed64-ray quadratic oracle checks. Max-obstacle case reuses one
+declared cylinder32 times, not independent episodes/task data. No step/reset/
+clock/RNG, source replay, rational arithmetic, dependencies/downloads/models or
+hardware. Three pytest positions including failures/aborts: first21/60 seconds,
+one necessary repair reserve, final root/300 seconds. Retain `cylinder-246-*`
+logs in existing recovery directory; old budgets/unknown attempts unchanged.
+
+First21 passed,2606 deselected,2.50 s. Focused Ruff/format/whitespace passed.
+Required root:3550 passed,1 known transformer QDQ xfailed,71 warnings,89.08 s;
+root Ruff, changed-file format check and whitespace passed. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Editor diagnostics clear; AST proves only `tof_ranges` and one new test changed,
+all other source/test nodes intact. Pylance after formatting reports all24
+resolved `tof_ranges` call sites compatible. No additional C/Arm/sanitizer/board
+opt-in gates ran; host checks do not qualify linked firmware or hardware.
+
+Controls intercept the actual roots and reductions, check copied quadratic
+words against the original expressions, compare baseline/traced first returns,
+and test detachment and bounded preflight rejection. Synthetic degenerate rays
+are unit fixtures, not a sensor domain or task cohort. Logs retained, no cleanup
+or acquisition/recorder changes. All eight flags false, no adopted numerical/
+physical/source/clock/coverage/geometry/permission/admission evidence or usable
+command. Next retain actual side/top calculation stages; a quadratic-only trace
+and matching final words do not establish the missing cylinder reduction chain.
+
 ## Sources
 
 Hardware and tools:

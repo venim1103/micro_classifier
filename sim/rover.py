@@ -807,6 +807,7 @@ def tof_ranges(
     source=None,
     selection_source=None,
     wall_source=None,
+    cylinder_source=None,
 ):
     """Synthetic first returns from a floor, finite walls and capped cylinders."""
     if source is not None and (type(source) is not dict or source):
@@ -825,12 +826,25 @@ def tof_ranges(
             raise ValueError("ToF wall source requires an empty builtin dictionary")
         if wall_source is source or wall_source is selection_source:
             raise ValueError("ToF wall source requires a separate dictionary")
-    if source is not None or selection_source is not None or wall_source is not None:
+    if cylinder_source is not None:
+        if type(cylinder_source) is not dict or cylinder_source:
+            raise ValueError("ToF cylinder source requires an empty builtin dictionary")
+        if any(
+            cylinder_source is other
+            for other in (source, selection_source, wall_source)
+        ):
+            raise ValueError("ToF cylinder source requires a separate dictionary")
+    if any(
+        value is not None
+        for value in (source, selection_source, wall_source, cylinder_source)
+    ):
         _check_native_tof_source_inputs(position, yaw, scenario, config)
     if selection_source is not None and config.tof_mount_height is None:
         raise ValueError("ToF selection source requires mounted rays")
     if wall_source is not None and config.tof_mount_height is None:
         raise ValueError("ToF wall source requires mounted rays")
+    if cylinder_source is not None and config.tof_mount_height is None:
+        raise ValueError("ToF cylinder source requires mounted rays")
     if config.tof_mount_height is None:
         angles = yaw + np.linspace(
             config.field_of_view / 2, -config.field_of_view / 2, 8
@@ -909,6 +923,8 @@ def tof_ranges(
                         "minimum_after_m": ranges.copy(),
                     }
                 )
+    cylinder_entries = [] if cylinder_source is not None else None
+    wall_minimum = ranges.copy() if cylinder_source is not None else None
     horizontal_squared = np.sum(directions**2, axis=-1)
     for index, (centre_x, centre_y, radius) in enumerate(scenario.obstacles):
         top = (
@@ -922,6 +938,19 @@ def tof_ranges(
             offset @ offset - radius**2
         )
         root = np.sqrt(np.maximum(discriminant, 0))
+        if cylinder_source is not None:
+            cylinder_entries.append(
+                {
+                    "obstacle_index": index,
+                    "centre_m": (float(centre_x), float(centre_y)),
+                    "radius_m": float(radius),
+                    "top_m": float(top),
+                    "offset_m": offset.copy(),
+                    "projection_m": projection.copy(),
+                    "discriminant_m2": discriminant.copy(),
+                    "root_m": root.copy(),
+                }
+            )
         for sign in (-1, 1):
             distance = np.divide(
                 -projection + sign * root,
@@ -1023,6 +1052,36 @@ def tof_ranges(
             world_frame_unit_rays=rays.copy(),
             floor_candidate_ranges_m=floor_source.copy(),
             walls=tuple(wall_entries),
+            pre_noise_ranges_m=ranges.copy(),
+        )
+    if cylinder_source is not None:
+        cylinder_source.update(
+            schema="micro-classifier/native-tof-cylinder-source/1",
+            allowed_use="native_tof_cylinder_diagnostics_only",
+            status="recorded_native_cylinder_quadratic_values",
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            inputs={
+                "position_m": tuple(map(float, position)),
+                "yaw_rad": float(yaw),
+                "config": asdict(config),
+                "scenario": asdict(scenario),
+            },
+            world_frame_unit_rays=rays.copy(),
+            horizontal_squared=horizontal_squared.copy(),
+            post_wall_ranges_m=wall_minimum,
+            cylinders=tuple(cylinder_entries),
             pre_noise_ranges_m=ranges.copy(),
         )
     return ranges

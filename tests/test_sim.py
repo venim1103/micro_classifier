@@ -23379,6 +23379,254 @@ def test_native_tof_wall_source(monkeypatch, case):
 @pytest.mark.parametrize(
     "case",
     (
+        "actual",
+        "paired",
+        "all",
+        "empty",
+        "heights",
+        "parallel",
+        "signed_zero",
+        "yaw",
+        "max_obstacles",
+        "legacy",
+        "bad_option",
+        "nonempty",
+        "alias_native",
+        "alias_selection",
+        "alias_wall",
+        "budget",
+        "pose",
+        "config_type",
+        "scenario_type",
+        "position_shape",
+        "bad_yaw",
+    ),
+)
+def test_native_tof_cylinder_source(monkeypatch, case):
+    from dataclasses import asdict
+
+    from sim import rover
+
+    config = Config(noise_std=0, dropout=0, latency_ticks=0)
+    count = (
+        33
+        if case == "budget"
+        else 32
+        if case == "max_obstacles"
+        else 0
+        if case == "empty"
+        else 1
+    )
+    scene = Scenario(
+        obstacles=((3.0, 3.0, 0.5),) * count,
+        obstacle_heights=(0.25,) if case == "heights" else (),
+    )
+    position = np.array(scene.start[:2], dtype=float)
+    yaw = math.pi / 2 if case == "yaw" else math.inf if case == "bad_yaw" else 0.0
+    native = {} if case in ("paired", "all", "alias_native") else None
+    selection = {} if case in ("all", "alias_selection") else None
+    wall = {} if case in ("all", "alias_wall") else None
+    trace = {}
+    valid = case in (
+        "actual",
+        "paired",
+        "all",
+        "empty",
+        "heights",
+        "parallel",
+        "signed_zero",
+        "yaw",
+        "max_obstacles",
+    )
+    if case == "legacy":
+        config = Config(tof_mount_height=None)
+    elif case == "bad_option":
+        trace = True
+    elif case == "nonempty":
+        trace = {"occupied": True}
+    elif case.startswith("alias_"):
+        trace = {
+            "alias_native": native,
+            "alias_selection": selection,
+            "alias_wall": wall,
+        }[case]
+    elif case == "pose":
+        position[0] = math.inf
+    elif case == "config_type":
+        config = asdict(config)
+    elif case == "scenario_type":
+        scene = asdict(scene)
+    elif case == "position_shape":
+        position = np.zeros(3)
+    if case == "signed_zero":
+        position[0] = 3.0
+    position_before = position.copy()
+    original_directions, original_sqrt, original_minimum = (
+        rover.tof_directions,
+        np.sqrt,
+        np.minimum,
+    )
+    work = {"directions": 0, "forbidden": 0, "oracle": 0}
+    roots, minima, direction_words = [], [], []
+
+    def directions(*args, **kwargs):
+        work["directions"] += 1
+        assert work["directions"] <= 2
+        if case in ("parallel", "signed_zero"):
+            result = np.zeros((8, 8, 3), dtype=np.float64)
+            if case == "signed_zero":
+                result[..., 0] = -1.0
+        else:
+            result = original_directions(*args, **kwargs)
+        direction_words.append(result.copy())
+        return result
+
+    def square_root(argument, *args, **kwargs):
+        assert len(roots) < 32
+        result = original_sqrt(argument, *args, **kwargs)
+        roots.append((argument.copy(), result.copy()))
+        return result
+
+    def minimum(*args, **kwargs):
+        assert len(minima) < 100
+        result = original_minimum(*args, **kwargs)
+        minima.append(result.copy())
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder trace must reject before geometry and never step/reset/clock"
+        )
+
+    monkeypatch.setattr(rover, "tof_directions", directions if valid else forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if valid:
+        baseline = tof_ranges(position, yaw, scene, config)
+        with monkeypatch.context() as interception:
+            interception.setattr(np, "sqrt", square_root)
+            interception.setattr(np, "minimum", minimum)
+            actual = tof_ranges(
+                position,
+                yaw,
+                scene,
+                config,
+                source=native,
+                selection_source=selection,
+                wall_source=wall,
+                cylinder_source=trace,
+            )
+        np.testing.assert_array_equal(actual.view(np.uint64), baseline.view(np.uint64))
+        assert len(roots) == len(trace["cylinders"]) == count <= 32
+        assert len(minima) == 4 + 3 * count <= 100
+        assert trace["schema"] == "micro-classifier/native-tof-cylinder-source/1"
+        assert trace["status"] == "recorded_native_cylinder_quadratic_values"
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert trace[flag] is False
+        for name, expected in (
+            ("world_frame_unit_rays", direction_words[1]),
+            ("post_wall_ranges_m", minima[3]),
+            ("pre_noise_ranges_m", actual),
+        ):
+            np.testing.assert_array_equal(
+                trace[name].view(np.uint64), expected.view(np.uint64)
+            )
+            assert not np.shares_memory(trace[name], expected)
+        rays = direction_words[1]
+        squared = np.sum(rays[..., :2] ** 2, axis=-1)
+        np.testing.assert_array_equal(
+            trace["horizontal_squared"].view(np.uint64), squared.view(np.uint64)
+        )
+        for index, entry in enumerate(trace["cylinders"]):
+            work["oracle"] += 1
+            assert work["oracle"] <= 32
+            centre_x, centre_y, radius = scene.obstacles[index]
+            assert entry["obstacle_index"] == index
+            assert (
+                entry["centre_m"] == (centre_x, centre_y)
+                and entry["radius_m"] == radius
+            )
+            assert entry["top_m"] == (
+                scene.obstacle_heights[index]
+                if scene.obstacle_heights
+                else config.obstacle_height
+            )
+            offset = position - [centre_x, centre_y]
+            projection = rays[..., :2] @ offset
+            discriminant = projection**2 - squared * (offset @ offset - radius**2)
+            clamped, root = roots[index]
+            for name, expected, shape in (
+                ("offset_m", offset, (2,)),
+                ("projection_m", projection, (8, 8)),
+                ("discriminant_m2", discriminant, (8, 8)),
+                ("root_m", root, (8, 8)),
+            ):
+                assert entry[name].dtype == np.float64 and entry[name].shape == shape
+                np.testing.assert_array_equal(
+                    entry[name].view(np.uint64), expected.view(np.uint64)
+                )
+                assert not np.shares_memory(entry[name], actual)
+            np.testing.assert_array_equal(
+                clamped.view(np.uint64), np.maximum(discriminant, 0).view(np.uint64)
+            )
+        if wall is not None:
+            np.testing.assert_array_equal(
+                trace["post_wall_ranges_m"].view(np.uint64),
+                wall["walls"][-1]["minimum_after_m"].view(np.uint64),
+            )
+        for companion in (native, selection, wall):
+            if companion is not None:
+                np.testing.assert_array_equal(
+                    companion["pre_noise_ranges_m"].view(np.uint64),
+                    baseline.view(np.uint64),
+                )
+        if case == "parallel":
+            assert (trace["horizontal_squared"] == 0).all()
+        for entry in trace["cylinders"]:
+            for name in ("offset_m", "projection_m", "discriminant_m2", "root_m"):
+                entry[name][:] = -99.0
+        for name in (
+            "world_frame_unit_rays",
+            "horizontal_squared",
+            "post_wall_ranges_m",
+            "pre_noise_ranges_m",
+        ):
+            trace[name][:] = -99.0
+        trace["inputs"]["config"]["wall_height"] = -99.0
+        assert config.wall_height > 0
+        np.testing.assert_array_equal(actual.view(np.uint64), baseline.view(np.uint64))
+    else:
+        before_trace = deepcopy(trace)
+        with pytest.raises((ValueError, TypeError), match="ToF"):
+            tof_ranges(
+                position,
+                yaw,
+                scene,
+                config,
+                source=native,
+                selection_source=selection,
+                wall_source=wall,
+                cylinder_source=trace,
+            )
+        assert trace == before_trace
+    np.testing.assert_array_equal(position, position_before)
+    assert work["directions"] == (2 if valid else 0) and work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "floor",
         "low",
         "tall",

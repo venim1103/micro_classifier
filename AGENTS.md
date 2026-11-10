@@ -31,9 +31,9 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §273 for matched retained cylinder projection residuals;
-§272 records the lossless 261-265 archive, §271 selection reports and §255 the
-design-topic relocation. §§231-272
+Read [REVIEW.md][review] §274 for the lossless cylinder design-topic relocation
+to chapter05 and §273 for matched retained projection residuals; §272 records the
+lossless 261-265 archive and §271 selection reports. §§231-273
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown

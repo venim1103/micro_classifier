@@ -265,7 +265,7 @@ coverage, physical/native error, clocks, permission or admission. Eight flags
 remain false. See [matched selection controls and limits][native-tof-wall-selection-match-review].
 
 
-Cylinder computation prerequisites continue in the [adjacent chapter][native-tof-cylinder-topic].
+Cylinder computation prerequisites continue in the [cylinder topic chapter][native-tof-cylinder-topic].
 
 
 ### Synthetic Evaluation Tooling (2026-10-16)
@@ -2340,4 +2340,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-wall-mask-candidate-review]: ../review/241-245.md#243-native-tof-wall-maskcandidate-word-correspondence-2026-11-10
 [native-tof-wall-minimum-review]: ../review/241-245.md#244-native-tof-wall-minimum-word-correspondence-2026-11-10
 [native-tof-wall-selection-match-review]: ../review/241-245.md#245-matched-native-tof-wall-selection-diagnostics-2026-11-10
-[native-tof-cylinder-topic]: 07-data-and-distillation-design-03.md#native-tof-cylinder-computation-prerequisites-2026-11-10
+[native-tof-cylinder-topic]: 07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10

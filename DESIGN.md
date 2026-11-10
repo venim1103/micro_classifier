@@ -112,4 +112,4 @@ options instead of implying general Jev or Vela compatibility.
 [chapter-design-14]: docs/design/12-implementation-milestones.md
 [chapter-design-15]: docs/design/13-evidence-and-limitations.md
 [native-tof-wall-design]: docs/design/07-data-and-distillation-design-02.md#native-tof-wall-computation-prerequisites-2026-11-10
-[native-tof-cylinder-design]: docs/design/07-data-and-distillation-design-03.md#native-tof-cylinder-computation-prerequisites-2026-11-10
+[native-tof-cylinder-design]: docs/design/07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10

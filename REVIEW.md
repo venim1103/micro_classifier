@@ -486,6 +486,32 @@ geometry. All eight flags false, no primitive uniform/numerical/physical/source/
 coverage/clock/one-use/permission/admission evidence or usable command. Next
 independent matched horizontal-norm report; monitor chapter03 size before growth.
 
+## 274. Lossless Cylinder Design-Topic Relocation (2026-11-10)
+
+Checkpoint `03728a1` pushed/clean. Chapter03 at2486 lines before further contracts;
+existing chapter04 at2196 cannot hold intact435-line cylinder topic within the
+about2500-line organization target. Existing chapter05 at2016 can. One bounded
+10-second guarded migration moved the complete cylinder topic to chapter05
+verbatim, preserving all prior destination text, source prefix, references and
+27 historical heading anchors at the old location. Two incoming targets updated;
+same-directory relative topic references need no rebasing. New chapter03/05 sizes
+2083/2452 lines. No accepted requirements or evidence meanings changed.
+
+Original four documents and successful one-shot `relocate-274.py`/
+`cylinder-274-relocation-1.log` retained under recovery directory; do not rerun
+utility. Immediate written byte checks and whitespace passed. Finite documentation
+scope: one migration and scoped content/anchor/local-target conservation; no
+source edits, project imports, fixtures, arithmetic, root/style tests, downloads,
+dependencies, model/hardware or protected studies. Unchanged successful code gate
+not rerun. All eight flags remain false; historical failures/unknown/spent ledgers
+unchanged. Next independent matched horizontal-norm report using the existing
+bounded helper, no numerical/source/physical/coverage/clock/permission/admission.
+
+Independent conservation passed: whole topic byte-exact, prior chapter03 prefix/
+chapter05 entirety and root REVIEW/Sources/stable AGENTS intact, only intended
+incoming pointer changes. All27 historical heading anchors preserved and30
+moved/changed local targets valid. Whitespace passed; code suite not rerun.
+
 ## Sources
 
 Hardware and tools:

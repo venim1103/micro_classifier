@@ -31,13 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §271 for matched retained cylinder selection reports;
-§268 records the lossless 256-260 archive and §255 the design-topic relocation. §§231-270
+Read [REVIEW.md][review] §272 for matched retained cylinder offset residuals and
+the lossless 261-265 archive; §271 records selection reports and §255 the
+design-topic relocation. §§231-271
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next compose bounded supplied-word offset arithmetic with matched retained
+Next compose bounded supplied-word projection arithmetic with matched retained
 cylinder records, preserving identity/closing checks and unresolved word ties.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.

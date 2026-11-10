@@ -2427,6 +2427,21 @@ geometry/coverage/one-use/permission/admission or usable command. See
 [actual controls, failed first check and repair][native-tof-cylinder-selection-review].
 
 
+#### Matched Retained Cylinder Offset Residuals (2026-11-10)
+
+`snapshot_native_tof_delivery(include_cylinder_offset_residuals=True)` requires
+literal bool and `include_cylinder=True`; default skips arithmetic. Matched
+delivered/pending reports retain epoch/tick/delivery identities and independently
+recompute at closing before publishing. Position/centre/offset supplied words
+feed existing exact-rational diagnostic; infinite observation keeps residual
+unknown. <=32 cylinders/130 words/64 entries/192 values/128 binary operations per
+helper,4096-bit ceiling unchanged; <=18 invocations across original/closing
+delivered/<=8 pending records. No extra source intake/read/retain/replay/clock,
+uniform geometric error bound, numerical/physical/source/coverage/one-use/
+permission/admission or usable command; all eight flags false. See
+[actual controls and archive conservation][native-tof-cylinder-matched-offset-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2441,14 +2456,15 @@ geometry/coverage/one-use/permission/admission or usable command. See
 [native-tof-cylinder-root-squared-review]: ../review/256-260.md#258-supplied-word-cylinder-root-squared-consistency-2026-11-10
 [native-tof-cylinder-side-numerator-review]: ../review/256-260.md#259-supplied-word-cylinder-side-numerator-expressions-2026-11-10
 [native-tof-cylinder-side-division-review]: ../review/256-260.md#260-supplied-word-cylinder-side-division-residuals-2026-11-10
-[native-tof-cylinder-side-altitude-review]: ../../REVIEW.md#261-supplied-word-cylinder-side-altitude-expression-2026-11-10
-[native-tof-cylinder-side-mask-review]: ../../REVIEW.md#262-supplied-word-cylinder-side-maskcandidate-correspondence-2026-11-10
-[native-tof-cylinder-side-minimum-review]: ../../REVIEW.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10
-[native-tof-cylinder-top-offset-review]: ../../REVIEW.md#264-supplied-word-cylinder-top-offset-expression-2026-11-10
-[native-tof-cylinder-top-division-review]: ../../REVIEW.md#265-guarded-supplied-word-cylinder-top-division-2026-11-10
+[native-tof-cylinder-side-altitude-review]: ../review/261-265.md#261-supplied-word-cylinder-side-altitude-expression-2026-11-10
+[native-tof-cylinder-side-mask-review]: ../review/261-265.md#262-supplied-word-cylinder-side-maskcandidate-correspondence-2026-11-10
+[native-tof-cylinder-side-minimum-review]: ../review/261-265.md#263-supplied-word-cylinder-side-minimum-correspondence-2026-11-10
+[native-tof-cylinder-top-offset-review]: ../review/261-265.md#264-supplied-word-cylinder-top-offset-expression-2026-11-10
+[native-tof-cylinder-top-division-review]: ../review/261-265.md#265-guarded-supplied-word-cylinder-top-division-2026-11-10
 [native-tof-cylinder-top-relative-review]: ../../REVIEW.md#266-supplied-word-cylinder-top-relative-expression-2026-11-10
 [native-tof-cylinder-top-radial-review]: ../../REVIEW.md#267-independent-supplied-word-cylinder-cap-square-expressions-2026-11-10
 [native-tof-cylinder-top-mask-review]: ../../REVIEW.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10
 [native-tof-cylinder-top-minimum-review]: ../../REVIEW.md#269-supplied-word-cylinder-cap-minimum-correspondence-2026-11-10
 [native-tof-cylinder-chain-review]: ../../REVIEW.md#270-captured-cylinder-stage-chain-word-correspondence-2026-11-10
 [native-tof-cylinder-selection-review]: ../../REVIEW.md#271-matched-retained-cylinder-selection-reports-2026-11-10
+[native-tof-cylinder-matched-offset-review]: ../../REVIEW.md#272-matched-retained-cylinder-offset-residuals-2026-11-10

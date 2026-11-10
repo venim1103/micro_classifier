@@ -28004,6 +28004,354 @@ def test_native_tof_cylinder_selection_snapshot(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "empty",
+        "two_cylinders",
+        "default",
+        "delivered_only",
+        "held",
+        "flag",
+        "dependency",
+        "missing_delivered",
+        "missing_pending",
+        "residual",
+        "infinite_observation",
+        "late_residual",
+        "late_pending_report",
+        "late_cylinder",
+        "late_owner",
+        "late_budget",
+        "late_native",
+        "late_pending",
+        "work_limit",
+        "output_detached",
+        "malformed",
+        "selection_combined",
+    ),
+)
+def test_native_tof_cylinder_offset_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    obstacles = (
+        ()
+        if case == "empty"
+        else ((3.0, 3.0, 0.25), (4.0, 4.0, 0.5))
+        if case == "two_cylinders"
+        else ((3.0, 3.0, 0.25),)
+    )
+    environment.scenario = replace(environment.scenario, obstacles=obstacles)
+    owner = type(owner)(environment.scenario, synthetic_test_only=True)
+    work = dict.fromkeys(
+        (
+            "geometry",
+            "steps",
+            "reads",
+            "retention",
+            "offset",
+            "cylinder",
+            "pending",
+            "binding",
+            "values",
+            "binary",
+            "oracle",
+            "chain",
+            "late",
+            "forbidden",
+        ),
+        0,
+    )
+    original_geometry = rover.tof_ranges
+
+    def geometry(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        return original_geometry(*args, **kwargs)
+
+    def read():
+        work["reads"] += 1
+        assert work["reads"] <= 5
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    read()
+    for _ in range(4 if case == "held" else 3):
+        work["steps"] += 1
+        assert work["steps"] <= 4
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_cylinder=True,
+        )
+        read()
+        if environment._native_tof_source is not None:
+            work["retention"] += 1
+            assert work["retention"] <= 3
+            owner.record_native_tof_source(
+                environment, synthetic_test_only=True, include_cylinder=True
+            )
+    if case == "missing_delivered":
+        owner._tof_cylinder_history.pop(0)
+    elif case == "missing_pending":
+        owner._tof_cylinder_history.pop()
+    elif case in ("residual", "infinite_observation", "malformed"):
+        entry = owner._tof_cylinder_history[0]["cylinder"]["cylinders"][0]
+        entry["offset_m"] = (
+            (
+                "0.0"
+                if case == "malformed"
+                else "inf"
+                if case == "infinite_observation"
+                else (float.fromhex(entry["offset_m"][0]) + 0.125).hex()
+            ),
+            entry["offset_m"][1],
+        )
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    closing_count = 2 * (
+        1 + (0 if case == "delivered_only" else len(environment.pending))
+    )
+    names = {
+        "offset": "_native_tof_cylinder_offset_residuals",
+        "cylinder": "_match_native_tof_retained_cylinder",
+        "pending": "_match_native_tof_pending_sources",
+        "chain": "_native_tof_cylinder_stage_chain_diagnostics",
+    }
+    originals = {name: getattr(diagnostics, symbol) for name, symbol in names.items()}
+    outgoing = {name: [] for name in names}
+
+    def called(name, *args, **kwargs):
+        work[name] += 1
+        assert work[name] <= (2 if name == "pending" else 6)
+        result = originals[name](*args, **kwargs)
+        outgoing[name].append(result)
+        if name == "offset" and work[name] == closing_count:
+            if case in ("late_residual", "late_pending_report"):
+                target = outgoing["offset"][1 if case == "late_pending_report" else 0][
+                    "entries"
+                ][0]
+                numerator, denominator = target["signed_residual_ratio"]
+                target["signed_residual_ratio"] = (numerator ^ 1, denominator)
+            elif case == "late_cylinder":
+                outgoing["cylinder"][0]["cylinder"]["source_qualified"] = True
+            elif case == "late_owner":
+                owner._binding = {"changed": True}
+            elif case == "late_budget":
+                owner._tof_cylinder_history.extend(owner._tof_cylinder_history * 8)
+                outgoing["bindings_before_late_budget"] = work["binding"]
+            elif case == "late_native":
+                owner._tof_history[0]["native_source"]["source_qualified"] = True
+            elif case == "late_pending":
+                target = outgoing["pending"][0][0]
+                target["sample_words"] = (
+                    target["sample_words"][0] ^ 1,
+                    *target["sample_words"][1:],
+                )
+            else:
+                return result
+            work["late"] += 1
+        return result
+
+    original_binding = diagnostics._c1_source_binding_digest
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 72
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 48
+        return original_binary(instance, left, right, operation)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "cylinder offset snapshot must not read/retain/step/reset/replay/clock"
+        )
+
+    for name, symbol in names.items():
+        monkeypatch.setattr(
+            diagnostics,
+            symbol,
+            lambda *args, _name=name, **kwargs: called(_name, *args, **kwargs),
+        )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case == "work_limit":
+        monkeypatch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 16)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_cylinder_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case in ("flag", "dependency"):
+        with pytest.raises(ValueError, match="include_cylinder_offset_residuals"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True,
+                include_cylinder=case != "dependency",
+                include_cylinder_offset_residuals=1 if case == "flag" else True,
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_cylinder=True,
+            include_cylinder_offset_residuals=case != "default",
+            include_cylinder_selection_diagnostics=case == "selection_combined",
+        )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        assert all(result[flag] is False for flag in flags)
+        accepted = {
+            "copy",
+            "empty",
+            "two_cylinders",
+            "default",
+            "delivered_only",
+            "held",
+            "residual",
+            "infinite_observation",
+            "output_detached",
+            "selection_combined",
+        }
+        if case in accepted:
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert (
+                    "cylinder_offset_residuals" not in result
+                    and "pending_cylinder_offset_residuals" not in result
+                )
+                assert work["offset"] == work["values"] == work["binary"] == 0
+            else:
+                assert work["offset"] == closing_count
+                records = (result["cylinder"], *result.get("pending_cylinder", ()))
+                reports = (
+                    result["cylinder_offset_residuals"],
+                    *result.get("pending_cylinder_offset_residuals", ()),
+                )
+                assert len(records) == len(reports)
+                for record, report in zip(records, reports, strict=True):
+                    assert all(
+                        record[key] == report[key]
+                        for key in ("source_epoch", "tick", "delivery_tick")
+                    )
+                    diagnostic = report["diagnostic"]
+                    assert all(diagnostic[flag] is False for flag in flags)
+                    trace = record["cylinder"]
+                    assert len(diagnostic["entries"]) == 2 * len(trace["cylinders"])
+                    for entry in diagnostic["entries"]:
+                        index, axis = entry["obstacle_index"], entry["axis"]
+                        position = trace["inputs"]["position_m"][axis]
+                        centre = float.fromhex(
+                            trace["cylinders"][index]["centre_m"][axis]
+                        )
+                        offset_word = trace["cylinders"][index]["offset_m"][axis]
+                        offset = float.fromhex(offset_word)
+                        exact = Fraction.from_float(position) - Fraction.from_float(
+                            centre
+                        )
+                        work["oracle"] += 1
+                        assert work["oracle"] <= 48
+                        assert entry["position_axis_hex"] == position.hex()
+                        assert entry["centre_axis_hex"] == centre.hex()
+                        assert entry["observed_offset_hex"] == offset_word
+                        assert (
+                            entry["exact_difference_ratio"] == exact.as_integer_ratio()
+                        )
+                        if math.isfinite(offset):
+                            residual = Fraction.from_float(offset) - exact
+                            work["oracle"] += 1
+                            assert work["oracle"] <= 48
+                            assert (
+                                entry["signed_residual_ratio"]
+                                == residual.as_integer_ratio()
+                            )
+                        else:
+                            assert entry["signed_residual_ratio"] is None
+                if case == "residual":
+                    assert (
+                        reports[0]["diagnostic"]["entries"][0]["signed_residual_ratio"][
+                            0
+                        ]
+                        != 0
+                    )
+                if case == "delivered_only":
+                    assert "pending_cylinder_offset_residuals" not in result
+                if case == "output_detached":
+                    before_history = deepcopy(owner._tof_cylinder_history)
+                    reports[0]["diagnostic"]["entries"][0]["signed_residual_ratio"] = (
+                        99,
+                        1,
+                    )
+                    assert owner._tof_cylinder_history == before_history
+                if case == "selection_combined":
+                    assert work["chain"] == closing_count
+                    assert (
+                        "cylinder_selection_diagnostics" in result
+                        and "pending_cylinder_selection_diagnostics" in result
+                    )
+        else:
+            assert result["snapshot_available"] is False
+            assert (
+                "cylinder_offset_residuals" not in result
+                and "pending_cylinder_offset_residuals" not in result
+            )
+            assert (
+                "cylinder" not in result
+                and "frame" not in result
+                and "source" not in result
+            )
+            if case.startswith("late_"):
+                assert work["late"] == 1
+            if case == "late_budget":
+                assert work["binding"] == outgoing["bindings_before_late_budget"]
+            if case == "work_limit":
+                assert "rational budget exhausted" in result["reason"]
+        if case != "selection_combined":
+            assert work["chain"] == 0
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

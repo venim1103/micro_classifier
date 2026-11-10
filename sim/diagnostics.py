@@ -15740,6 +15740,7 @@ class _SyntheticC1SourceRecorder:
         include_wall_projection_residuals=False,
         include_wall_selection_diagnostics=False,
         include_cylinder_selection_diagnostics=False,
+        include_cylinder_offset_residuals=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -15781,6 +15782,12 @@ class _SyntheticC1SourceRecorder:
         if include_cylinder_selection_diagnostics and not include_cylinder:
             raise ValueError(
                 "include_cylinder_selection_diagnostics requires include_cylinder=True"
+            )
+        if type(include_cylinder_offset_residuals) is not bool:
+            raise ValueError("include_cylinder_offset_residuals must be a literal bool")
+        if include_cylinder_offset_residuals and not include_cylinder:
+            raise ValueError(
+                "include_cylinder_offset_residuals requires include_cylinder=True"
             )
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
@@ -16016,6 +16023,27 @@ class _SyntheticC1SourceRecorder:
                     candidate_m_hex=candidates,
                     minimum_after_m_hex=tuple(
                         wall["minimum_after_m"] for wall in walls
+                    ),
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def cylinder_offset_probe(record):
+            trace = record["cylinder"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_cylinder_offset_residuals(
+                    position_m_hex=tuple(
+                        float(value).hex() for value in trace["inputs"]["position_m"]
+                    ),
+                    centre_m_hex=tuple(
+                        entry["centre_m"] for entry in trace["cylinders"]
+                    ),
+                    offset_m_hex=tuple(
+                        entry["offset_m"] for entry in trace["cylinders"]
                     ),
                     synthetic_test_only=True,
                 ),
@@ -16297,6 +16325,13 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_offset_residuals:
+                cylinder_offset_residuals = cylinder_offset_probe(cylinder)
+                pending_cylinder_offset_residuals = (
+                    tuple(cylinder_offset_probe(record) for record in pending_cylinder)
+                    if include_pending_sources
+                    else ()
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -16439,6 +16474,16 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_offset_residuals:
+                cylinder_offset_residuals_after = cylinder_offset_probe(cylinder_after)
+                pending_cylinder_offset_residuals_after = (
+                    tuple(
+                        cylinder_offset_probe(record)
+                        for record in pending_cylinder_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_timing or include_selection or include_wall or include_cylinder:
@@ -16562,6 +16607,18 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_cylinder_offset_residuals and (
+                not _native_tof_word_copy_matches(
+                    cylinder_offset_residuals, cylinder_offset_residuals_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_cylinder_offset_residuals,
+                    pending_cylinder_offset_residuals_after,
+                )
+            ):
+                raise ValueError(
+                    "native ToF cylinder offset source or outgoing records changed"
+                )
             if include_cylinder_selection_diagnostics and (
                 not _native_tof_word_copy_matches(
                     cylinder_selection_diagnostics, cylinder_selection_diagnostics_after
@@ -16705,6 +16762,12 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_cylinder_selection_diagnostics"] = (
                     pending_cylinder_selection_diagnostics
+                )
+        if include_cylinder_offset_residuals:
+            result["cylinder_offset_residuals"] = cylinder_offset_residuals
+            if include_pending_sources:
+                result["pending_cylinder_offset_residuals"] = (
+                    pending_cylinder_offset_residuals
                 )
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals

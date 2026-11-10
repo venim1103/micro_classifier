@@ -10721,6 +10721,222 @@ def _sample_simulator_native_tof_selection_source(environment, source_epoch):
     }
 
 
+def _sample_simulator_native_tof_wall_source(environment, source_epoch):
+    template = _native_tof_history_template(environment, source_epoch)
+    if environment.config.tof_mount_height is None:
+        raise ValueError("native ToF wall requires mounted rays")
+    captured = environment._native_tof_wall_source
+    native_before = environment._native_tof_source
+    rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+
+    def words(value, shape, mode):
+        if (
+            type(value) is not np.ndarray
+            or value.shape != shape
+            or value.dtype != np.dtype(bool if mode == "mask" else np.float64)
+        ):
+            raise ValueError("unsupported native ToF wall array layout")
+        if mode == "mask":
+            return tuple(map(bool, value.flat))
+        if (
+            np.isnan(value).any()
+            or (mode == "finite" and not np.isfinite(value).all())
+            or (mode == "range" and np.isneginf(value).any())
+        ):
+            raise ValueError("unsupported native ToF wall array words")
+        return tuple(float(word).hex() for word in value.flat)
+
+    def metadata():
+        expected = {
+            "schema": "micro-classifier/native-tof-wall-acquisition/1",
+            "allowed_use": "native_tof_wall_diagnostics_only",
+            "status": "recorded_native_tof_wall_acquisition",
+            **{flag: False for flag in flags},
+        }
+        if (
+            type(captured) is not dict
+            or len(captured) != 17
+            or any(type(key) is not str for key in captured)
+            or set(captured)
+            != {
+                *expected,
+                "rng",
+                "odometry_rng",
+                "tick",
+                "delivery_tick",
+                "source",
+                "wall",
+            }
+            or any(
+                not _native_tof_word_copy_matches(captured[key], value)
+                for key, value in expected.items()
+            )
+            or captured["rng"] is not rng_before
+            or captured["odometry_rng"] is not odometry_rng_before
+            or captured["source"] is not native_before
+            or type(captured["tick"]) is not int
+            or captured["tick"] != environment.tick
+            or type(captured["delivery_tick"]) is not int
+            or not 0 <= captured["delivery_tick"] <= 0xFFFFFFFF // 50000
+            or captured["delivery_tick"]
+            != captured["tick"] + environment.config.latency_ticks
+        ):
+            raise ValueError("unsupported native ToF wall acquisition metadata")
+        trace = captured["wall"]
+        expected = {
+            "schema": "micro-classifier/native-tof-wall-source/1",
+            "allowed_use": "native_tof_wall_diagnostics_only",
+            "status": "recorded_native_wall_calculation_values",
+            **{flag: False for flag in flags},
+        }
+        if (
+            type(trace) is not dict
+            or len(trace) != 16
+            or any(type(key) is not str for key in trace)
+            or set(trace)
+            != {
+                *expected,
+                "inputs",
+                "world_frame_unit_rays",
+                "floor_candidate_ranges_m",
+                "walls",
+                "pre_noise_ranges_m",
+            }
+            or any(
+                not _native_tof_word_copy_matches(trace[key], value)
+                for key, value in expected.items()
+            )
+            or not _native_tof_word_copy_matches(
+                trace["inputs"], template["native_source"]["inputs"], shape_only=True
+            )
+            or type(trace["walls"]) is not tuple
+            or len(trace["walls"]) != 4
+        ):
+            raise ValueError("unsupported native ToF wall trace metadata")
+        copied_walls = []
+        arrays = (
+            "distance_m",
+            "altitude_m",
+            "across_m",
+            "candidate_m",
+            "minimum_after_m",
+        )
+        scalars = ("wall_m", "position_axis_m", "numerator_m")
+        for index, entry in enumerate(trace["walls"]):
+            if (
+                type(entry) is not dict
+                or len(entry) != 12
+                or any(type(key) is not str for key in entry)
+                or set(entry)
+                != {"wall_index", "axis", "side", *scalars, *arrays, "hit"}
+                or any(
+                    type(entry[key]) is not int or entry[key] != value
+                    for key, value in (
+                        ("wall_index", index),
+                        ("axis", index // 2),
+                        ("side", index % 2),
+                    )
+                )
+                or any(
+                    type(entry[key]) is not float or math.isnan(entry[key])
+                    for key in scalars
+                )
+                or not math.isfinite(entry["wall_m"])
+                or not math.isfinite(entry["position_axis_m"])
+            ):
+                raise ValueError("unsupported native ToF wall entry layout")
+            copied_walls.append(
+                {
+                    "wall_index": index,
+                    "axis": index // 2,
+                    "side": index % 2,
+                    **{key: entry[key].hex() for key in scalars},
+                    **{
+                        key: words(
+                            entry[key],
+                            (8, 8),
+                            "range"
+                            if key in ("candidate_m", "minimum_after_m")
+                            else "raw",
+                        )
+                        for key in arrays
+                    },
+                    "hit": words(entry["hit"], (8, 8), "mask"),
+                }
+            )
+        return {
+            **expected,
+            "inputs": deepcopy(trace["inputs"]),
+            "world_frame_unit_rays": words(
+                trace["world_frame_unit_rays"], (8, 8, 3), "finite"
+            ),
+            "floor_candidate_ranges_m": words(
+                trace["floor_candidate_ranges_m"], (8, 8), "range"
+            ),
+            "walls": tuple(copied_walls),
+            "pre_noise_ranges_m": words(trace["pre_noise_ranges_m"], (8, 8), "range"),
+        }
+
+    before = metadata()
+    native = _sample_simulator_native_tof_source(environment, source_epoch)
+    copied = deepcopy(before)
+    closing_native = _sample_simulator_native_tof_source(environment, source_epoch)
+    after = metadata()
+    closing_template = _native_tof_history_template(environment, source_epoch)
+    if (
+        environment._native_tof_wall_source is not captured
+        or environment._native_tof_source is not native_before
+        or environment.rng is not rng_before
+        or environment.odometry_rng is not odometry_rng_before
+        or not _native_tof_word_copy_matches(template, closing_template)
+        or type(environment.position) is not np.ndarray
+        or environment.position.shape != (2,)
+        or tuple(float(word).hex() for word in environment.position)
+        != tuple(word.hex() for word in after["inputs"]["position_m"])
+        or float(environment.yaw).hex() != after["inputs"]["yaw_rad"].hex()
+        or not _native_tof_word_copy_matches(before, after)
+        or not _native_tof_word_copy_matches(copied, after)
+        or not _native_tof_word_copy_matches(native, closing_native)
+        or not _native_tof_word_copy_matches(
+            after["inputs"], closing_native["native_source"]["inputs"]
+        )
+        or any(
+            after[key] != closing_native["native_source"][key]
+            for key in (
+                "world_frame_unit_rays",
+                "floor_candidate_ranges_m",
+                "pre_noise_ranges_m",
+            )
+        )
+        or native["tick"] != captured["tick"]
+        or native["delivery_tick"] != captured["delivery_tick"]
+    ):
+        raise ValueError(
+            "native ToF wall source changed or pairing mismatched during intake"
+        )
+    return {
+        "schema": "micro-classifier/native-tof-wall-intake/1",
+        "allowed_use": "native_tof_wall_diagnostics_only",
+        "status": "copied_native_tof_wall_diagnostics",
+        **{flag: False for flag in flags},
+        "source_epoch": source_epoch,
+        "tick": native["tick"],
+        "delivery_tick": native["delivery_tick"],
+        "wall": copied,
+        "source": native,
+    }
+
+
 def _check_native_tof_timing_history(history, source_history, source_epoch):
     if type(history) is not list or len(history) > 8:
         raise ValueError("native ToF timing history budget exhausted")

@@ -1553,6 +1553,25 @@ admission. Missing intermediate data must not be reconstructed from selection
 labels. See [wall acquisition controls and limits][native-tof-wall-acquisition-review].
 
 
+##### Bounded Native ToF Wall Intake (2026-11-10)
+
+Separate private intake checks the closed actual wall-acquisition cache,
+original native-cache/RNG/tick/delivery identities and a bounded typed trace:
+four axis/side entries,64-element float arrays/masks and scalar native words.
+Two existing read-only native intakes surround a detached canonical-word copy.
+Closing checks compare original native/ray/floor/final words, live profile/pose,
+cache identities and staged output. Invalid/missing/changed evidence rejects,
+without geometry replay, recorder read/retention, clock/RNG activity or hash.
+Raw division/altitude/across infinities are diagnostic words, not finite hits;
+unsupported layouts/NaNs reject. All eight flags remain false.
+
+This establishes bounded point-in-time word correspondence, not an atomic or
+perpetual freshness guarantee, independently correct wall arithmetic/masking/
+geometry, complete coverage/error, physical clearance, clock/source/permission/
+admission qualification or usable commands. Recorder retention and delivery
+publication remain separate. See [wall intake controls and limits][native-tof-wall-intake-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2269,6 +2288,7 @@ figure is not an established minimum.
 [native-tof-wall-word-review]: ../../REVIEW.md#231-selected-native-tof-wall-word-residuals-2026-11-10
 [native-tof-wall-trace-review]: ../../REVIEW.md#232-actual-native-tof-wall-calculation-trace-2026-11-10
 [native-tof-wall-acquisition-review]: ../../REVIEW.md#233-actual-fresh-tof-wall-acquisition-pairing-2026-11-10
+[native-tof-wall-intake-review]: ../../REVIEW.md#234-bounded-native-tof-wall-intake-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

@@ -539,6 +539,60 @@ Prior checkpoint/Sources/design/stable-workflow preservation, new local target/
 anchor, final four-method diff and whitespace passed; no code gate repeated for
 documentation. Only the five scoped source/test/design/workflow/review files.
 
+## 234. Bounded Native ToF Wall Intake (2026-11-10)
+
+Checkpoint `361bfba` pushed/clean. Local hypothesis: closed wall-cache preflight,
+two existing read-only native intakes and closing exact primitive comparisons
+can copy the actual four-wall intermediates without replay, clocks or recorder
+read/retention. Validate root/trace/entry keysets and builtin types, fixed four
+walls, exact64-array shapes/dtypes, flags and original cache/native/RNG/tick/
+delivery IDs before producing detached canonical words. Closing checks include
+live profile/pose, source/cache identities and staged output. This does not
+prove arithmetic/masking/geometry/coverage, source authority or command admission;
+all eight flags false, no physical/numerical bound or accepted requirement change.
+
+Sixteen cloned synthetic cases, one original step/trace each; at most two native
+intakes, zero geometry/step/reset/recorder/source read/retention/RNG/clock/hash
+after setup. Four wall entries: each five64 float arrays/one64 builtin mask,
+three scalar words and fixed indices; ray192/floor64/final64 words. Two bounded
+metadata passes, at most3224 float-hex conversions/512 bool copies plus existing
+bounded input profile copies; existing64/32/4096 source caps unchanged. Three
+pytest positions counting failures/aborts: first16/60 seconds, one necessary
+control/repair reserve, final root/300 seconds. Preserve logs in the existing
+recovery directory starting `wall-234-focused-1.log`; no old ledger refunds,
+studies/data/model/GPU/dependencies/downloads/firmware/Arm/board/hardware work.
+
+First sixteen passed,2372 deselected,2.25 s. Control review found late-mutation
+cases did not explicitly require their injected mutation to execute. Add an
+exact mutation count without changing cases/source/work caps, then use the
+reserved focused position for the necessary strengthened check. Retain first
+output and `wall-234-focused-2.log`; root position remains unused, no failure
+or abort so far. Old successful gates/standalone budgets are not renewed.
+
+Strengthened same sixteen passed,2372 deselected,2.59 s. Every late source,
+trace, profile, cache and outgoing-copy mutation was explicitly counted and
+rejected. Fixed-array/index/mask/budget/flag/missing/epoch/native-identity
+preflight controls require zero native intakes; actual copies retain original
+hex/mask words and detached inputs/native output. Both RNG states and tick
+unchanged; no forbidden operation or parent-fixture counter used. Style/format
+and editor diagnostics passed. Required root3311 passed/known transformer QDQ
+one xfailed/71 warnings,75.58 s; root Ruff/diff and changed-file format passed,
+no reported skip. All three pytest positions used, no failure/abort. Raw logs
+retained locally; no extra opt-in C/Arm/sanitizer/board/model/study gate or task
+artifact. This Python diagnostic does not establish linked firmware/board fit.
+
+AST ownership proves exactly one new intake helper/test, all previous nodes
+unchanged. No existing signature/schema/default or accepted bound changed.
+All eight flags remain false. Metadata/word correspondence does not prove that
+the original wall computations were numerically/geometrically correct, adopt
+physical/source/clock/permission/admission evidence or admit a command. Next
+bounded optional recorder retention may pair these copied wall diagnostics with
+already retained original native acquisition IDs, preserving owner/read/context
+checks and no replay, before any separate delivery publication.
+Prior checkpoint/Sources/design/stable-workflow preservation, new local target/
+anchor, final helper diff and whitespace passed. Root942 lines; no code gate
+repeated for documentation. Only the five scoped checkpoint files are staged.
+
 ## Sources
 
 Hardware and tools:

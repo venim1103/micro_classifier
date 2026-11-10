@@ -11744,6 +11744,182 @@ def test_native_tof_selection_intake(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "missing",
+        "epoch",
+        "source_identity",
+        "inputs",
+        "words",
+        "shape",
+        "index",
+        "mask",
+        "budget",
+        "flag",
+        "late_profile",
+        "late_trace",
+        "late_source",
+        "late_cache",
+        "outgoing",
+    ),
+)
+def test_native_tof_wall_intake(monkeypatch, c1_motion_receipt_source_fixture, case):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step(
+        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+    )
+    captured = environment._native_tof_wall_source
+    trace = captured["wall"]
+    if case == "missing":
+        environment._native_tof_wall_source = None
+    elif case == "source_identity":
+        environment._native_tof_source = dict(environment._native_tof_source)
+    elif case == "inputs":
+        trace["inputs"]["yaw_rad"] += 0.25
+    elif case == "words":
+        trace["pre_noise_ranges_m"].view(np.uint64)[0, 0] ^= np.uint64(1)
+    elif case == "shape":
+        trace["world_frame_unit_rays"] = np.zeros((8, 8, 2))
+    elif case == "index":
+        trace["walls"][0]["wall_index"] = False
+    elif case == "mask":
+        trace["walls"][0]["hit"] = trace["walls"][0]["hit"].astype(np.uint8)
+    elif case == "budget":
+        trace["walls"] *= 2
+    elif case == "flag":
+        captured["source_qualified"] = True
+    original_intake, original_copy = (
+        diagnostics._sample_simulator_native_tof_source,
+        diagnostics.deepcopy,
+    )
+    work = {"intake": 0, "forbidden": 0, "mutations": 0}
+    outgoing = {}
+
+    def copied(value, *args, **kwargs):
+        actual = original_copy(value, *args, **kwargs)
+        if (
+            type(value) is dict
+            and value.get("schema") == "micro-classifier/native-tof-wall-source/1"
+        ):
+            outgoing["wall"] = actual
+        return actual
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 2
+        actual = original_intake(*args, **kwargs)
+        if case == "late_source" and work["intake"] == 1:
+            environment._native_tof_source["source"]["world_frame_unit_rays"][
+                0, 0, 0
+            ] += 0.01
+            work["mutations"] += 1
+        elif work["intake"] == 2:
+            if case == "late_trace":
+                entry = trace["walls"][0]
+                entry["numerator_m"] = math.nextafter(entry["numerator_m"], math.inf)
+            elif case == "late_cache":
+                environment._native_tof_wall_source = dict(captured)
+            elif case == "late_profile":
+                from dataclasses import replace
+
+                environment.config = replace(environment.config, max_range=3.0)
+            elif case == "outgoing":
+                outgoing["wall"]["source_qualified"] = True
+            if case in ("late_trace", "late_cache", "late_profile", "outgoing"):
+                work["mutations"] += 1
+        return actual
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall intake must not read/retain/replay/step/reset/clock/hash"
+        )
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    epoch = "x" * 33 if case == "epoch" else owner._epoch
+    if case == "copy":
+        actual = diagnostics._sample_simulator_native_tof_wall_source(
+            environment, epoch
+        )
+        assert actual["source_epoch"] == owner._epoch and actual["tick"] == 4
+        assert actual["delivery_tick"] == actual["source"]["delivery_tick"] == 6
+        for name in (
+            "pre_noise_ranges_m",
+            "world_frame_unit_rays",
+            "floor_candidate_ranges_m",
+        ):
+            assert actual["wall"][name] == actual["source"]["native_source"][name]
+        assert len(actual["wall"]["walls"]) == 4
+        for index, entry in enumerate(actual["wall"]["walls"]):
+            assert entry["wall_index"] == index
+            assert entry["numerator_m"] == trace["walls"][index]["numerator_m"].hex()
+            for name in (
+                "distance_m",
+                "altitude_m",
+                "across_m",
+                "candidate_m",
+                "minimum_after_m",
+            ):
+                assert entry[name] == tuple(
+                    float(word).hex() for word in trace["walls"][index][name].flat
+                )
+            assert entry["hit"] == tuple(map(bool, trace["walls"][index]["hit"].flat))
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert actual[flag] is False and actual["wall"][flag] is False
+        actual["wall"]["inputs"]["config"]["max_range"] = -99.0
+        actual["wall"]["walls"][0]["numerator_m"] = "changed"
+        assert trace["inputs"]["config"]["max_range"] > 0
+        assert type(trace["walls"][0]["numerator_m"]) is float
+        actual["source"]["native_source"]["inputs"]["yaw_rad"] = -99.0
+        assert environment._native_tof_source["source"]["inputs"]["yaw_rad"] != -99.0
+        assert work["intake"] == 2
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._sample_simulator_native_tof_wall_source(environment, epoch)
+    if case in (
+        "missing",
+        "epoch",
+        "source_identity",
+        "shape",
+        "index",
+        "mask",
+        "budget",
+        "flag",
+    ):
+        assert work["intake"] == 0
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert work["mutations"] == int(
+        case in ("late_source", "late_trace", "late_cache", "late_profile", "outgoing")
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "retain",
         "default",
         "flag",

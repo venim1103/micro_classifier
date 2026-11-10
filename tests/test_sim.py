@@ -11156,14 +11156,22 @@ def test_actual_native_tof_selection_acquisition(
         "timed_selection",
     ),
 )
+@pytest.mark.parametrize("cylinder", (False, True))
 def test_actual_native_tof_wall_acquisition(
-    monkeypatch, c1_motion_receipt_source_fixture, case
+    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
 ):
     from dataclasses import replace
 
     from sim import rover
 
+    kind = "cylinder" if cylinder else "wall"
+    capture_option = f"capture_native_tof_{kind}"
+    cache_name = f"_native_tof_{kind}_source"
     environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    if cylinder:
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
     if case == "noise_rng":
         environment.config = replace(environment.config, noise_std=0.01, dropout=0.2)
     elif case == "legacy":
@@ -11176,7 +11184,7 @@ def test_actual_native_tof_wall_acquisition(
     def ranges(*args, **kwargs):
         work["geometry"] += 1
         assert work["geometry"] <= 3
-        wall = kwargs.get("wall_source")
+        wall = kwargs.get(f"{kind}_source")
         if wall is not None:
             work["wall"] += 1
             assert work["wall"] <= 1 and kwargs.get("source") is not None
@@ -11195,7 +11203,7 @@ def test_actual_native_tof_wall_acquisition(
     monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
     if case == "preflight_preserves":
         environment.step(
-            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+            [0.125, 0.3], capture_native_tof_source=True, **{capture_option: True}
         )
         baseline.step([0.125, 0.3])
     if case in (
@@ -11220,13 +11228,14 @@ def test_actual_native_tof_wall_acquisition(
                 "_native_tof_timing_source",
                 "_native_tof_selection_source",
                 "_native_tof_wall_source",
+                "_native_tof_cylinder_source",
             )
         )
         with pytest.raises(ValueError):
             environment.step(
                 [0.125, 0.3],
                 capture_native_tof_source=case != "missing_native",
-                capture_native_tof_wall=1 if case == "flag" else True,
+                **{capture_option: 1 if case == "flag" else True},
             )
         np.testing.assert_equal(environment.position, before_position)
         assert environment.tick == baseline.tick
@@ -11240,6 +11249,7 @@ def test_actual_native_tof_wall_acquisition(
                     environment._native_tof_timing_source,
                     environment._native_tof_selection_source,
                     environment._native_tof_wall_source,
+                    environment._native_tof_cylinder_source,
                 ),
                 previous,
                 strict=True,
@@ -11253,7 +11263,12 @@ def test_actual_native_tof_wall_acquisition(
     actual = environment.step(
         [0.125, 0.3],
         capture_native_tof_source=case != "default",
-        capture_native_tof_wall=case not in ("default", "source_only"),
+        **{capture_option: case not in ("default", "source_only")},
+        **(
+            {"capture_native_tof_wall": True}
+            if cylinder and case in ("selection", "timed_selection")
+            else {}
+        ),
         capture_native_tof_selection=case in ("selection", "timed_selection"),
         capture_native_tof_timing=case in ("timed", "timed_selection"),
     )
@@ -11267,30 +11282,43 @@ def test_actual_native_tof_wall_acquisition(
         == baseline.odometry_rng.bit_generator.state
     )
     if case in ("default", "source_only"):
-        assert environment._native_tof_wall_source is None
+        assert getattr(environment, cache_name) is None
         assert work["wall"] == work["clock"] == work["selection"] == 0
         return
-    captured = environment._native_tof_wall_source
+    captured = getattr(environment, cache_name)
     assert captured["source"] is environment._native_tof_source
     assert (
         captured["rng"] is environment.rng
         and captured["odometry_rng"] is environment.odometry_rng
     )
     assert captured["tick"] == 4 and captured["delivery_tick"] == 6
-    wall = captured["wall"]
+    wall = captured[kind]
     assert len(originals) == 1 and originals[0] is wall
     native = environment._native_tof_source["source"]
     assert wall["inputs"] == native["inputs"]
     for name in (
         "pre_noise_ranges_m",
         "world_frame_unit_rays",
-        "floor_candidate_ranges_m",
+        *(("floor_candidate_ranges_m",) if not cylinder else ()),
     ):
         np.testing.assert_equal(
             wall[name].view(np.uint64), native[name].view(np.uint64)
         )
         assert not np.shares_memory(wall[name], native[name])
-    assert len(wall["walls"]) == 4
+    if cylinder:
+        assert len(wall["cylinders"]) == len(environment.scenario.obstacles) == 1
+        for entry in wall["cylinders"]:
+            assert len(entry["sides"]) == 2 and "top" in entry
+        if case in ("selection", "timed_selection"):
+            assert environment._native_tof_wall_source["source"] is captured["source"]
+            np.testing.assert_equal(
+                wall["post_wall_ranges_m"].view(np.uint64),
+                environment._native_tof_wall_source["wall"]["walls"][-1][
+                    "minimum_after_m"
+                ].view(np.uint64),
+            )
+    else:
+        assert len(wall["walls"]) == 4
     assert work["wall"] == 1
     for flag in (
         "fixture_permission_granted",
@@ -11323,24 +11351,28 @@ def test_actual_native_tof_wall_acquisition(
     if case == "sample_detach":
         held = native["pre_noise_ranges_m"].copy()
         wall["pre_noise_ranges_m"][:] = -99.0
-        wall["walls"][0]["distance_m"][:] = -99.0
+        if not cylinder:
+            wall["walls"][0]["distance_m"][:] = -99.0
+        else:
+            wall["post_wall_ranges_m"][:] = -99.0
+            wall["cylinders"][0]["sides"][0]["distance_m"][:] = -99.0
         np.testing.assert_equal(
             native["pre_noise_ranges_m"].view(np.uint64), held.view(np.uint64)
         )
     elif case == "held":
         environment.step(
-            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+            [0.125, 0.3], capture_native_tof_source=True, **{capture_option: True}
         )
         assert environment.tick == 5
         assert (
-            environment._native_tof_wall_source is None
+            getattr(environment, cache_name) is None
             and environment._native_tof_source is None
         )
         assert work["wall"] == 1 and work["geometry"] == 2
     elif case == "reset":
         environment.reset()
         assert (
-            environment._native_tof_wall_source is None
+            getattr(environment, cache_name) is None
             and environment._native_tof_source is None
         )
         assert work["wall"] == 1 and work["geometry"] == 3

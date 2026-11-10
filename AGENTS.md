@@ -31,13 +31,13 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §247 for the cold cylinder side/top trace and
-the latest source gate; §§231-246 retain wall correspondence and the cylinder
-quadratic trace with their arithmetic/acquisition/intake/ownership limits.
+Read [REVIEW.md][review] §248 for fresh cylinder acquisition pairing and
+the latest source gate; §§231-247 retain wall correspondence and the complete
+cold cylinder trace with their arithmetic/intake/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next pair the complete cylinder trace with actual fresh native acquisition,
-then bounded intake/retention. Preserve unresolved equal-value/different-word
+Next implement bounded closed cylinder intake, then typed history/retention.
+Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.

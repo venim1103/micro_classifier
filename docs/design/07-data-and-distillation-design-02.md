@@ -274,7 +274,8 @@ from native/selection/wall outputs; actual finite mounted source inputs and the
 existing32-obstacle cap are checked before geometry. Detached inputs/rays,
 post-wall minimum and final pre-noise arrays retain calculation context.
 Default evaluation order and first-return words remain unchanged; no replay,
-clock or RNG is introduced. Acquisition/recorder wiring remains separate work.
+clock or RNG is introduced. Fresh-acquisition pairing is documented below;
+recorder wiring remains separate work.
 
 This describes the quadratic portion; side/top stages are documented below.
 Matching raw words is not correct
@@ -294,10 +295,24 @@ links the actual post-wall result to final pre-noise ranges, without replay or
 host-specific word-tie adoption. All arrays/inputs are detached; default output
 words and existing32-obstacle/64-ray/preflight limits remain unchanged.
 
-Acquisition/cache pairing, closed intake and recorder retention are not yet
-wired. Observed-stage correspondence is not geometry, coverage, primitive or
+Closed intake and recorder retention are not yet wired; acquisition pairing
+is documented below. Observed-stage correspondence is not geometry, coverage, primitive or
 uniform error, physical/source/clock/native/permission/admission qualification;
 all eight flags remain false. See [side/top controls and limits][native-tof-cylinder-stages-review].
+
+
+#### Actual Fresh Cylinder Acquisition Pairing (2026-11-10)
+
+`RoverEnv.step(capture_native_tof_cylinder=False)` is a separate literal-bool
+opt-in requiring native source capture and mounted rays. Preflight precedes
+mutation and clocks. Only fresh sampling forwards the original trace dict,
+pairing native cache/RNG identities and acquisition/delivery ticks; held/default/
+reset clears it and rejected preflight preserves previous caches. The old default
+forwarding path is unchanged. Wall/selection/timing can accompany the same sample
+without extra geometry, RNG or clock reads. Closed intake and retention remain
+separate work; nominal IDs/timing and matching words do not qualify source,
+geometry, coverage, numerical/physical error, clocks, permission or admission.
+Eight flags remain false. See [acquisition controls and limits][native-tof-cylinder-acquisition-review].
 
 
 ### Synthetic Evaluation Tooling (2026-10-16)
@@ -2362,11 +2377,11 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-wall-acquisition-review]: ../review/231-235.md#233-actual-fresh-tof-wall-acquisition-pairing-2026-11-10
 [native-tof-wall-intake-review]: ../review/231-235.md#234-bounded-native-tof-wall-intake-2026-11-10
 [native-tof-wall-history-review]: ../review/231-235.md#235-bounded-native-tof-wall-history-preflight-2026-11-10
-[native-tof-wall-retention-review]: ../../REVIEW.md#236-bounded-native-tof-wall-recorder-retention-2026-11-10
-[native-tof-wall-delivery-review]: ../../REVIEW.md#237-native-tof-wall-deliveredpending-correspondence-2026-11-10
-[native-tof-wall-offset-review]: ../../REVIEW.md#238-native-tof-wall-offset-word-residuals-2026-11-10
-[native-tof-wall-division-review]: ../../REVIEW.md#239-native-tof-wall-division-word-residuals-2026-11-10
-[native-tof-wall-arithmetic-review]: ../../REVIEW.md#240-matched-native-tof-wall-arithmetic-diagnostics-2026-11-10
+[native-tof-wall-retention-review]: ../review/236-240.md#236-bounded-native-tof-wall-recorder-retention-2026-11-10
+[native-tof-wall-delivery-review]: ../review/236-240.md#237-native-tof-wall-deliveredpending-correspondence-2026-11-10
+[native-tof-wall-offset-review]: ../review/236-240.md#238-native-tof-wall-offset-word-residuals-2026-11-10
+[native-tof-wall-division-review]: ../review/236-240.md#239-native-tof-wall-division-word-residuals-2026-11-10
+[native-tof-wall-arithmetic-review]: ../review/236-240.md#240-matched-native-tof-wall-arithmetic-diagnostics-2026-11-10
 [native-tof-wall-projection-review]: ../../REVIEW.md#241-native-tof-wall-projection-expression-residuals-2026-11-10
 [native-tof-wall-projection-match-review]: ../../REVIEW.md#242-matched-native-tof-wall-projection-diagnostics-2026-11-10
 [native-tof-wall-mask-candidate-review]: ../../REVIEW.md#243-native-tof-wall-maskcandidate-word-correspondence-2026-11-10
@@ -2374,3 +2389,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-wall-selection-match-review]: ../../REVIEW.md#245-matched-native-tof-wall-selection-diagnostics-2026-11-10
 [native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
+[native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10

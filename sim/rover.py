@@ -189,6 +189,7 @@ class RoverEnv:
         self._native_tof_timing_source = None
         self._native_tof_selection_source = None
         self._native_tof_wall_source = None
+        self._native_tof_cylinder_source = None
         self.pending = deque()
         self.pending_ego = deque()
         self.ego_sample_tick = None
@@ -214,6 +215,7 @@ class RoverEnv:
         capture_clock=False,
         selection_source=None,
         wall_source=None,
+        cylinder_source=None,
     ):
         """Quantize acquisitions to decision ticks; deliver pending frames every tick."""
         phase = (
@@ -222,7 +224,20 @@ class RoverEnv:
             else self.tick // self.sensor_period_ticks
         )
         if phase != self.sensor_phase:
-            if wall_source is not None:
+            if cylinder_source is not None:
+                options = {
+                    "native_source": native_source,
+                    "capture_clock": capture_clock,
+                    "cylinder_source": cylinder_source,
+                }
+                for name, value in (
+                    ("selection_source", selection_source),
+                    ("wall_source", wall_source),
+                ):
+                    if value is not None:
+                        options[name] = value
+                self._sample(**options)
+            elif wall_source is not None:
                 options = {
                     "native_source": native_source,
                     "capture_clock": capture_clock,
@@ -252,14 +267,26 @@ class RoverEnv:
         capture_clock=False,
         selection_source=None,
         wall_source=None,
+        cylinder_source=None,
     ):
         if selection_source is not None and native_source is None:
             raise ValueError("native ToF selection requires native ToF source capture")
         if wall_source is not None and native_source is None:
             raise ValueError("native ToF wall requires native ToF source capture")
+        if cylinder_source is not None and native_source is None:
+            raise ValueError("native ToF cylinder requires native ToF source capture")
         config = self.config
         begin_ns = _motion_receipt_clock_ns() if capture_clock else None
-        if wall_source is not None:
+        if cylinder_source is not None:
+            options = {"source": native_source, "cylinder_source": cylinder_source}
+            for name, value in (
+                ("selection_source", selection_source),
+                ("wall_source", wall_source),
+            ):
+                if value is not None:
+                    options[name] = value
+            grid = tof_ranges(self.position, self.yaw, self.scenario, config, **options)
+        elif wall_source is not None:
             options = {"source": native_source, "wall_source": wall_source}
             if selection_source is not None:
                 options["selection_source"] = selection_source
@@ -347,6 +374,31 @@ class RoverEnv:
                 "delivery_tick": self.tick + config.latency_ticks,
                 "source": self._native_tof_source,
                 "wall": wall_source,
+            }
+        if cylinder_source is not None:
+            self._native_tof_cylinder_source = {
+                "schema": "micro-classifier/native-tof-cylinder-acquisition/1",
+                "allowed_use": "native_tof_cylinder_diagnostics_only",
+                "status": "recorded_native_tof_cylinder_acquisition",
+                **{
+                    flag: False
+                    for flag in (
+                        "fixture_permission_granted",
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                        "numerically_certified",
+                        "source_qualified",
+                        "native_execution_qualified",
+                        "command_admission_qualified",
+                    )
+                },
+                "rng": self.rng,
+                "odometry_rng": self.odometry_rng,
+                "tick": self.tick,
+                "delivery_tick": self.tick + config.latency_ticks,
+                "source": self._native_tof_source,
+                "cylinder": cylinder_source,
             }
         if capture_clock:
             end_ns = _motion_receipt_clock_ns()
@@ -483,6 +535,7 @@ class RoverEnv:
         capture_native_tof_timing=False,
         capture_native_tof_selection=False,
         capture_native_tof_wall=False,
+        capture_native_tof_cylinder=False,
     ):
         if type(capture_motion_receipt) is not bool:
             raise ValueError("capture_motion_receipt must be a literal boolean")
@@ -494,12 +547,16 @@ class RoverEnv:
             raise ValueError("capture_native_tof_selection must be a literal boolean")
         if type(capture_native_tof_wall) is not bool:
             raise ValueError("capture_native_tof_wall must be a literal boolean")
+        if type(capture_native_tof_cylinder) is not bool:
+            raise ValueError("capture_native_tof_cylinder must be a literal boolean")
         if capture_native_tof_timing and not capture_native_tof_source:
             raise ValueError("native ToF timing requires native ToF source capture")
         if capture_native_tof_selection and not capture_native_tof_source:
             raise ValueError("native ToF selection requires native ToF source capture")
         if capture_native_tof_wall and not capture_native_tof_source:
             raise ValueError("native ToF wall requires native ToF source capture")
+        if capture_native_tof_cylinder and not capture_native_tof_source:
+            raise ValueError("native ToF cylinder requires native ToF source capture")
         if self.done:
             raise RuntimeError("episode ended; call reset before step")
         action = np.asarray(action, dtype=np.float64)
@@ -514,6 +571,8 @@ class RoverEnv:
             raise ValueError("native ToF selection requires mounted rays")
         if capture_native_tof_wall and config.tof_mount_height is None:
             raise ValueError("native ToF wall requires mounted rays")
+        if capture_native_tof_cylinder and config.tof_mount_height is None:
+            raise ValueError("native ToF cylinder requires mounted rays")
         receipt = None
         integration_sources = None
         begin_ns = None
@@ -557,6 +616,7 @@ class RoverEnv:
         self._native_tof_timing_source = None
         self._native_tof_selection_source = None
         self._native_tof_wall_source = None
+        self._native_tof_cylinder_source = None
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -630,7 +690,18 @@ class RoverEnv:
                 break
             self.position, self.yaw = position, yaw
         self.tick += 1
-        if capture_native_tof_wall:
+        if capture_native_tof_cylinder:
+            options = {
+                "native_source": {},
+                "capture_clock": capture_native_tof_timing,
+                "cylinder_source": {},
+            }
+            if capture_native_tof_wall:
+                options["wall_source"] = {}
+            if capture_native_tof_selection:
+                options["selection_source"] = {}
+            self._update_sensor(**options)
+        elif capture_native_tof_wall:
             options = {
                 "native_source": {},
                 "capture_clock": capture_native_tof_timing,

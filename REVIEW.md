@@ -506,6 +506,59 @@ no source/geometry/coverage/uniform error/numerical/physical/clock/permission/
 admission qualification and no usable command. Next explicit cylinder retention
 using this guard before history hash, then delivery correspondence.
 
+## 251. Explicit Cylinder Recorder Retention (2026-11-10)
+
+Checkpoint `5c54dc7` pushed/clean. Local hypothesis: mirror existing explicit
+wall retention with literal `include_cylinder=False`, typed cylinder guards
+before every history hash, original cache/history identities and closing source/
+entry/producer/owner checks, then commit all staged histories together. Cylinder
+history follows native retained ticks (<=8); default ignores cold cylinder cache
+and no source read/step/replay/clock occurs inside retention. Delivery remains
+separate work. Reuse original17 wall cases unchanged in scope and caps, add17
+cylinder cases on a cloned one-cylinder scene with a new standard recorder.
+
+Per case <=13 setup geometries,14 setup reads,10 retention calls,20 selected
+intakes,40 native intakes (combined originalwall10/newcylinder14 with wall/
+selection/timing),256 binding checks and only2 setup clocks in combined cases.
+Each cylinder intake retains <=32/fixed64-ray bounds; each typed guard <=8x32
+retained entries, at most6 guards per successful retention. No relaxation of
+old caps or numerical assertions. Three pytest positions including failures/
+aborts: first34/60 seconds, one necessary repair reserve, final root/300 seconds;
+retain `cylinder-251-*` logs. No old refunds, protected runs, data, dependencies
+or hardware. All eight flags false, no qualification/admission or usable command.
+
+First34 passed,2677 deselected,6.59 s. Focused Ruff/format/whitespace and editor
+diagnostics passed; AST proves only recorder constructor/retention and existing
+retention matrix changed. Pylance resolved no callers at formatted retention
+position13027:8 (zero-based), so no static compatibility evidence is claimed.
+
+First required root failed:1 failed,3633 passed,1 known transformer QDQ xfailed,
+71 warnings,94.83 s. Unchanged interface timeout descendant test raced between
+`/proc/89124/stat` `exists()` and `read_text()`; FileNotFoundError at test1923,
+not a retention assertion. No source/test repair or assertion/limit relaxation.
+Root Ruff/format/whitespace after `&&` did not run in that invocation. Preserve
+`cylinder-251-root-1.log` and the spent position. Narrow revised routine plan:
+use the one remaining third pytest position for required-root revalidation once
+with the same300-second cap; no separate isolated rerun, no new protected work.
+If the unchanged failure recurs, retain it as a root-checkpoint blocker rather
+than repeat it or modify unrelated code. Earlier successful focused gate is not
+rerun for reassurance.
+
+Required root revalidation passed:3634 passed,1 known transformer QDQ xfailed,
+71 warnings,91.18 s; root Ruff, changed-file format check and whitespace passed.
+All three pytest positions spent: first focused pass, root failure, root pass;
+no aborts. `cylinder-251-focused-1.log`/`cylinder-251-root-{1,2}.log` retained
+under recovery directory. Successful revalidation does not fix or erase the
+unchanged `/proc` test race. No additional C/Arm/sanitizer/board opt-in gates ran.
+
+Nonempty cylinder retention, defaults, duplicate equality/changed-word rejection,
+tick trimming/gaps, prehash canonical failures, late/cache/history/output/owner
+mutations and wall/selection/timing coexistence pass within stated caps. Parent
+ledgers unchanged. All eight flags false, no source/geometry/coverage/uniform
+error/numerical/physical/clock/one-use/permission/admission qualification and no
+usable command. Next detached delivered/pending cylinder matching with closing
+retained-history/cache/output checks; no publication is implied by retention.
+
 ## Sources
 
 Hardware and tools:

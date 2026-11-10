@@ -295,7 +295,7 @@ links the actual post-wall result to final pre-noise ranges, without replay or
 host-specific word-tie adoption. All arrays/inputs are detached; default output
 words and existing32-obstacle/64-ray/preflight limits remain unchanged.
 
-Recorder retention is not yet wired; acquisition pairing and closed intake
+Recorder retention, acquisition pairing and closed intake
 are documented below. Observed-stage correspondence is not geometry, coverage, primitive or
 uniform error, physical/source/clock/native/permission/admission qualification;
 all eight flags remain false. See [side/top controls and limits][native-tof-cylinder-stages-review].
@@ -309,7 +309,7 @@ mutation and clocks. Only fresh sampling forwards the original trace dict,
 pairing native cache/RNG identities and acquisition/delivery ticks; held/default/
 reset clears it and rejected preflight preserves previous caches. The old default
 forwarding path is unchanged. Wall/selection/timing can accompany the same sample
-without extra geometry, RNG or clock reads. Recorder retention remains
+without extra geometry, RNG or clock reads. Delivery correspondence remains
 separate work; nominal IDs/timing and matching words do not qualify source,
 geometry, coverage, numerical/physical error, clocks, permission or admission.
 Eight flags remain false. See [acquisition controls and limits][native-tof-cylinder-acquisition-review].
@@ -328,7 +328,7 @@ copied content, ticks and declared centre/radius/top operands. Per metadata pass
 <=45696 float words plus6144 mask booleans; no new arithmetic/replay/hash/clock/
 RNG/recorder read. This is diagnostic ownership/copy validation, not arithmetic,
 geometry, coverage, source, clock, permission or admission qualification. All eight
-flags false. Recorder retention remains a separate prerequisite. See
+flags false. Delivery correspondence remains a separate prerequisite. See
 [actual controls and gate][native-tof-cylinder-intake-review].
 
 
@@ -345,7 +345,23 @@ range slots exclude negative infinity. At max8x32, <=365568 float-word parses
 and49152 mask booleans. The guard does not intake/copy/hash/read/retain/replay or
 use clocks/RNG, and does not qualify source/geometry/coverage/error/clock/
 permission/admission. All eight flags false, including when it returns `None`.
-Recorder wiring remains separate. See [controls and limits][native-tof-cylinder-history-review].
+Recorder wiring is documented below. See [controls and limits][native-tof-cylinder-history-review].
+
+
+#### Explicit Cylinder Recorder Retention (2026-11-10)
+
+`record_native_tof_source(include_cylinder=False)` is a separate literal-bool
+opt-in, retaining detached closed-intake words with original epoch/tick/delivery
+IDs. Typed guards precede history hashing; staged cylinder entries are limited
+to the native history's at most eight retained ticks. Equal repeated words are
+idempotent, changed repeats reject. Closing checks cover original cache/history
+identities and entry/native/producer/owner words before any staged commit.
+The default skips cold cylinder intake and all companions can coexist without
+additional geometry, recorder read or clock. At most six typed-cylinder guards
+per successful retention; each has the existing8x32 word/mask budgets. Delivery
+publication remains separate. This does not certify source/geometry/coverage/
+roundoff/uniform error/clocks/one-use execution/permission/admission; eight flags
+remain false. See [actual checks, failure and limits][native-tof-cylinder-retention-review].
 
 
 ### Synthetic Evaluation Tooling (2026-10-16)
@@ -2425,3 +2441,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
 [native-tof-cylinder-intake-review]: ../../REVIEW.md#249-bounded-native-tof-cylinder-intake-2026-11-10
 [native-tof-cylinder-history-review]: ../../REVIEW.md#250-typed-cylinder-history-prehash-guard-2026-11-10
+[native-tof-cylinder-retention-review]: ../../REVIEW.md#251-explicit-cylinder-recorder-retention-2026-11-10

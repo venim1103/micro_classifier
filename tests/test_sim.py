@@ -12078,6 +12078,263 @@ def test_native_tof_timing_snapshot(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "default",
+        "flag",
+        "missing_delivered",
+        "missing_pending",
+        "held",
+        "epoch",
+        "type",
+        "budget",
+        "history_identity",
+        "late_selection",
+        "outgoing",
+        "late_owner",
+        "late_probe",
+        "delivered_only",
+        "timed",
+    ),
+)
+def test_native_tof_selection_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    work = dict.fromkeys(
+        (
+            "steps",
+            "reads",
+            "retention",
+            "geometry",
+            "clock",
+            "match",
+            "timing",
+            "frame",
+            "binding",
+            "forbidden",
+            "late_probe",
+        ),
+        0,
+    )
+    timed = case in ("timed", "late_probe")
+    original_ranges = rover.tof_ranges
+
+    def ranges(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        return original_ranges(*args, **kwargs)
+
+    def clock():
+        work["clock"] += 1
+        assert timed and work["clock"] <= 6
+        return 100 + work["clock"] * 10
+
+    def read():
+        work["reads"] += 1
+        assert work["reads"] <= 5
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    read()
+    for _ in range(4 if case == "held" else 3):
+        work["steps"] += 1
+        assert work["steps"] <= 4
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_selection=True,
+            capture_native_tof_timing=timed,
+        )
+        read()
+        if environment._native_tof_source is not None:
+            work["retention"] += 1
+            assert work["retention"] <= 3
+            owner.record_native_tof_source(
+                environment,
+                synthetic_test_only=True,
+                include_selection=True,
+                include_timing=timed,
+            )
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    closing_match_count = 2 * (1 + len(environment.pending))
+    if case == "default":
+        owner._tof_selection_history = None
+    elif case == "missing_delivered":
+        owner._tof_selection_history.pop(0)
+    elif case == "missing_pending":
+        owner._tof_selection_history.pop()
+    elif case == "epoch":
+        owner._tof_selection_history[0]["source_epoch"] = "0" * 32
+    elif case == "type":
+        selected = owner._tof_selection_history[0]["selection"]
+        selected["last_matching_candidate_index"] = (
+            True,
+            *selected["last_matching_candidate_index"][1:],
+        )
+    elif case == "budget":
+        owner._tof_selection_history *= 9
+    original_match = diagnostics._match_native_tof_retained_selection
+    original_timing = diagnostics._match_native_tof_retained_timing
+    original_frame = diagnostics._check_native_tof_delivery_frame
+    original_binding = diagnostics._c1_source_binding_digest
+    outgoing = {}
+
+    def matched(*args, **kwargs):
+        work["match"] += 1
+        assert work["match"] <= 6
+        actual = original_match(*args, **kwargs)
+        outgoing.setdefault("selection", actual)
+        if case == "late_probe" and work["match"] == closing_match_count:
+            outgoing["timing"]["clock"]["begin_ns"] += 1
+            outgoing["timing"]["clock"]["end_ns"] += 1
+            work["late_probe"] += 1
+        return actual
+
+    def timing(*args, **kwargs):
+        work["timing"] += 1
+        assert work["timing"] <= 6
+        actual = original_timing(*args, **kwargs)
+        outgoing.setdefault("timing", actual)
+        return actual
+
+    def checked(*args, **kwargs):
+        work["frame"] += 1
+        assert work["frame"] <= 2
+        actual = original_frame(*args, **kwargs)
+        if work["frame"] == 2:
+            if case == "history_identity":
+                owner._tof_selection_history = list(owner._tof_selection_history)
+            elif case == "late_selection":
+                selected = owner._tof_selection_history[0]["selection"]
+                selected["equal_minimum_observed"] = (
+                    not selected["equal_minimum_observed"][0],
+                    *selected["equal_minimum_observed"][1:],
+                )
+            elif case == "outgoing":
+                outgoing["selection"]["selection"]["source_qualified"] = True
+            elif case == "late_owner":
+                owner._binding = {"changed": True}
+        return actual
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "selection snapshot must not read/retain/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_selection", matched)
+    monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timing)
+    monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_tof_selection_source", forbidden
+    )
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "flag":
+        with pytest.raises(ValueError, match="include_selection"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True, include_selection=1
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_timing=timed,
+            include_selection=case != "default",
+        )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        assert all(result[flag] is False for flag in flags)
+        if case in ("copy", "default", "held", "delivered_only", "timed"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert "selection" not in result and "pending_selection" not in result
+                assert work["match"] == 0
+            else:
+                selected = result["selection"]
+                for key in ("source_epoch", "tick", "delivery_tick"):
+                    assert selected[key] == result["source"][key]
+                assert (
+                    selected["selection"]["pre_noise_ranges_m"]
+                    == result["source"]["native_source"]["pre_noise_ranges_m"]
+                )
+                assert all(selected["selection"][flag] is False for flag in flags)
+                if case == "held":
+                    assert result["sensor_tick"] == 4 and result["tick"] == 7
+                if case != "delivered_only":
+                    for entry, source in zip(
+                        result["pending_selection"],
+                        result["pending_sources"],
+                        strict=True,
+                    ):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert entry[key] == source[key]
+                        assert all(entry["selection"][flag] is False for flag in flags)
+                else:
+                    assert "pending_selection" not in result
+                if timed:
+                    assert result["timing"]["clock"]["qualified"] is False
+                selected["selection"]["source_qualified"] = True
+                assert (
+                    owner._tof_selection_history[0]["selection"]["source_qualified"]
+                    is False
+                )
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert not (
+                {
+                    "source",
+                    "frame",
+                    "selection",
+                    "pending_selection",
+                    "timing",
+                    "pending_timing",
+                    "pending_sources",
+                }
+                & result.keys()
+            )
+            if case == "budget":
+                assert work["binding"] == 0
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert work["late_probe"] == int(case == "late_probe")
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "rounded",

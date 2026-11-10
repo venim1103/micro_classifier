@@ -556,6 +556,59 @@ Next compose retained selection with matched delivered/pending acquisition IDs,
 collect all closing probes before comparing derived outputs, and fail unknown
 without partial payloads when lineage is absent or changes.
 
+## 230. Current-Delivery Native ToF Selection Correspondence (2026-11-10)
+
+Verified retention checkpoint `9cfa8d7` normally pushed/clean. Local hypothesis:
+a separate literal `include_selection` opt-in can pair already retained selection
+diagnostics with matched delivered/pending native acquisitions without fresh
+geometry/intake/clock work. Preflight bounded selection history before hashing;
+check owner/history identity and detached output again after all closing probes.
+Defaults must not inspect selection history. Missing/changed lineage stays unknown
+with no partial payload; nominal IDs and equal words do not qualify source/coverage.
+
+Finite sixteen cloned controls, at most four setup steps/five recorder reads/
+three retentions/three geometry calls per case; timed cases at most six controlled
+clock reads. Parent-fixture caps remain unchanged. Snapshot at most six selection
+matches/six timing matches/two frame checks/64 bindings; zero recorder/source read,
+retention, step/reset, geometry/RNG/clock work. Existing 64-ray/32-obstacle/
+101-candidate/eight-history limits retained; no numerical or physical bound adopted.
+Three initial pytest positions counting failures/aborts: focused sixteen at most
+60 seconds, one repair reserve, final root at most 300 seconds. No study/model/GPU/
+data/dependency/download/firmware/Arm/sanitizer/board/hardware action, all flags false.
+
+Attempt 1 now launches `test_native_tof_selection_snapshot`, the same sixteen-case
+matrix with a 60-second timeout; raw output retained at
+`.git/recovery-20261109-PmbQpU/selection-230-focused-1.log`. No further edit precedes
+that behavior check. Failures are retained and diagnosed before a bounded repair.
+Attempt 1 passed sixteen cases in 3.11 seconds, exit 0; old fixture counters zero.
+Strengthened those same controls to require the late-probe mutation actually ran,
+held tick 7 still delivers acquisition 4, and all three pending acquisition IDs
+match. No new case/query/work limit; attempt 2 launches the same matrix/60-second
+limit with log `.git/recovery-20261109-PmbQpU/selection-230-focused-2.log`.
+Attempt 2 passed sixteen cases in 2.82 seconds, exit 0; old fixture counters zero.
+Static AST ownership check found all previous tests/imports/fixtures unchanged.
+Changed-file Ruff lint passed; only the edited test needed formatting, then
+changed-file format/lint and whitespace checks passed.
+
+Attempt 3 now launches the planned final `timeout 300s python -m pytest -q`,
+followed on success by root Ruff/diff and changed-file format checks; raw output
+`.git/recovery-20261109-PmbQpU/selection-230-root-1.log`. This uses the final
+initial pytest position; no old standalone budget or successful gate is renewed.
+Attempt 3 passed: 3,247 tests, known transformer QDQ xfail and 71 warnings in
+73.47 seconds, exit 0; no skips reported. Root Ruff/diff, changed-file format and
+editor diagnostics passed. All three initial positions used, no failure/abort.
+Late selection-probe mutation of previously copied timing, held acquisition IDs,
+strict opt-in, default history avoidance, missing/changed histories and detached
+outputs passed with all per-case caps held and zero forbidden work.
+
+This composes actual retained minimum correspondence with delivered/pending native
+acquisition records only. No uniquely identified physical hit, complete geometry,
+numerical/physical/source/clock/coverage/permission/admission qualification or
+usable command follows; all eight flags remain false. Raw logs/backups retained,
+no task artifacts/cleanup or extra C/Arm/sanitizer/board/model/study gate. Next
+inspect actual native wall calculation operands for independently supported source
+or error prerequisites, not more metadata as a substitute for missing evidence.
+
 ## Sources
 
 Hardware and tools:

@@ -10709,6 +10709,20 @@ def _check_native_tof_selection_history(history, source_history, source_epoch):
                 )
 
 
+def _match_native_tof_retained_selection(source, selection_history):
+    matches = [
+        entry
+        for entry in selection_history
+        if all(
+            entry[key] == source[key]
+            for key in ("source_epoch", "tick", "delivery_tick")
+        )
+    ]
+    if len(matches) != 1:
+        raise ValueError("native ToF retained selection pair missing or ambiguous")
+    return deepcopy(matches[0])
+
+
 def _match_native_tof_retained_timing(source, timing_history):
     matches = [
         entry
@@ -11781,6 +11795,7 @@ class _SyntheticC1SourceRecorder:
         synthetic_test_only=False,
         include_pending_sources=False,
         include_timing=False,
+        include_selection=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -11791,6 +11806,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_pending_sources must be a literal bool")
         if type(include_timing) is not bool:
             raise ValueError("include_timing must be a literal bool")
+        if type(include_selection) is not bool:
+            raise ValueError("include_selection must be a literal bool")
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
         if type(include_sampling_residuals) is not bool:
@@ -11819,6 +11836,7 @@ class _SyntheticC1SourceRecorder:
         }
         environment, history_before = self._simulator, self._tof_history
         timing_before = self._tof_timing_history if include_timing else None
+        selection_before = self._tof_selection_history if include_selection else None
         current_before, dynamics_before = self._current, self._dynamics_sample
         if environment is None or current_before is None or dynamics_before is None:
             return result
@@ -11842,10 +11860,15 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
-            if include_timing:
+            if include_timing or include_selection:
                 _check_native_tof_history_layout(self._tof_history, template)
+            if include_timing:
                 _check_native_tof_timing_history(
                     self._tof_timing_history, self._tof_history, self._epoch
+                )
+            if include_selection:
+                _check_native_tof_selection_history(
+                    self._tof_selection_history, self._tof_history, self._epoch
                 )
             return _c1_source_binding_digest(
                 {
@@ -11863,6 +11886,11 @@ class _SyntheticC1SourceRecorder:
                     **(
                         {"tof_timing_history": self._tof_timing_history}
                         if include_timing
+                        else {}
+                    ),
+                    **(
+                        {"tof_selection_history": self._tof_selection_history}
+                        if include_selection
                         else {}
                     ),
                     "binding": self._binding,
@@ -11925,6 +11953,10 @@ class _SyntheticC1SourceRecorder:
                 _check_native_tof_timing_history(
                     timing_before, history_before, self._epoch
                 )
+            if include_selection:
+                _check_native_tof_selection_history(
+                    selection_before, history_before, self._epoch
+                )
             if any(
                 not 0 <= word <= 0xFFFFFFFF
                 for entry in history_before
@@ -11958,6 +11990,8 @@ class _SyntheticC1SourceRecorder:
             history_binding = _c1_source_binding_digest(history_before)
             if include_timing:
                 timing_binding = _c1_source_binding_digest(timing_before)
+            if include_selection:
+                selection_binding = _c1_source_binding_digest(selection_before)
             if include_pending_sources:
                 pending_before = environment.pending
                 pending_copy = _copy_native_tof_pending_queue(environment)
@@ -12011,6 +12045,24 @@ class _SyntheticC1SourceRecorder:
                 )
                 timing_output_binding = _c1_source_binding_digest(
                     {"timing": timing, "pending_timing": pending_timing}
+                )
+            if include_selection:
+                selection = _match_native_tof_retained_selection(
+                    copied, selection_before
+                )
+                pending_selection = (
+                    tuple(
+                        _match_native_tof_retained_selection(source, selection_before)
+                        for source in pending_sources
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                _check_native_tof_selection_history(
+                    [selection, *pending_selection], history_before, self._epoch
+                )
+                selection_output_binding = _c1_source_binding_digest(
+                    {"selection": selection, "pending_selection": pending_selection}
                 )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
@@ -12084,6 +12136,47 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_selection:
+                _check_native_tof_selection_history(
+                    self._tof_selection_history, self._tof_history, self._epoch
+                )
+                selection_after = _match_native_tof_retained_selection(
+                    live_after, self._tof_selection_history
+                )
+                pending_selection_after = (
+                    tuple(
+                        _match_native_tof_retained_selection(
+                            source, self._tof_selection_history
+                        )
+                        for source in pending_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                _check_native_tof_selection_history(
+                    [selection, *pending_selection], self._tof_history, self._epoch
+                )
+                _check_native_tof_selection_history(
+                    [selection_after, *pending_selection_after],
+                    self._tof_history,
+                    self._epoch,
+                )
+                if (
+                    self._tof_selection_history is not selection_before
+                    or not _native_tof_word_copy_matches(selection, selection_after)
+                    or not _native_tof_word_copy_matches(
+                        pending_selection, pending_selection_after
+                    )
+                    or _c1_source_binding_digest(self._tof_selection_history)
+                    != selection_binding
+                    or _c1_source_binding_digest(
+                        {"selection": selection, "pending_selection": pending_selection}
+                    )
+                    != selection_output_binding
+                ):
+                    raise ValueError(
+                        "native ToF retained selection or outgoing pairs changed"
+                    )
             if include_timing:
                 _check_native_tof_history_layout(self._tof_history, template)
                 _check_native_tof_timing_history(
@@ -12170,6 +12263,10 @@ class _SyntheticC1SourceRecorder:
             result["timing"] = timing
             if include_pending_sources:
                 result["pending_timing"] = pending_timing
+        if include_selection:
+            result["selection"] = selection
+            if include_pending_sources:
+                result["pending_selection"] = pending_selection
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals
             if include_pending_sources:

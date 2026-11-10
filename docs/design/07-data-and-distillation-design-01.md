@@ -1659,6 +1659,24 @@ certify correct rounding, adopt a combined/uniform error allowance or establish
 masking/geometry/coverage/physical/permission/admission. See [division controls and limits][native-tof-wall-division-review].
 
 
+##### Matched Native ToF Wall Arithmetic Diagnostics (2026-11-10)
+
+Separate `snapshot_native_tof_delivery(include_wall_residuals=True)` requires
+`include_wall=True` and composes the existing offset/division helpers from each
+matched delivered/pending wall record. Both diagnostics retain original epoch/
+acquisition/delivery IDs; subtraction and division residuals remain distinct.
+All closing arithmetic/companion/queue probes precede outgoing comparisons and
+typed live-history preflight. Missing/changed evidence yields unknown without
+partial source/frame/companion data. Default snapshots skip these diagnostics.
+
+No source intake, replay, recorder read/retention, RNG or clocks are added.
+Existing four-wall/64-ray/canonical-word/rational caps remain. All eight flags
+stay false: point-in-time correspondence and per-word arithmetic do not certify
+correct rounding, adopt a combined/uniform error allowance or establish full
+altitude/across/masking/geometry/coverage/physical/source/clock/permission/
+admission qualification. See [matched arithmetic controls and limits][native-tof-wall-arithmetic-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2372,15 +2390,16 @@ figure is not an established minimum.
 [native-tof-selection-review]: ../review/221-225.md#223-native-tof-minimum-candidate-correspondence-2026-11-09
 [native-tof-selection-acquisition-review]: ../review/221-225.md#224-actual-fresh-tof-selection-acquisition-pairing-2026-11-09
 [native-tof-selection-intake-review]: ../review/221-225.md#225-bounded-native-tof-selection-intake-2026-11-09
-[native-tof-wall-word-review]: ../../REVIEW.md#231-selected-native-tof-wall-word-residuals-2026-11-10
-[native-tof-wall-trace-review]: ../../REVIEW.md#232-actual-native-tof-wall-calculation-trace-2026-11-10
-[native-tof-wall-acquisition-review]: ../../REVIEW.md#233-actual-fresh-tof-wall-acquisition-pairing-2026-11-10
-[native-tof-wall-intake-review]: ../../REVIEW.md#234-bounded-native-tof-wall-intake-2026-11-10
-[native-tof-wall-history-review]: ../../REVIEW.md#235-bounded-native-tof-wall-history-preflight-2026-11-10
+[native-tof-wall-word-review]: ../review/231-235.md#231-selected-native-tof-wall-word-residuals-2026-11-10
+[native-tof-wall-trace-review]: ../review/231-235.md#232-actual-native-tof-wall-calculation-trace-2026-11-10
+[native-tof-wall-acquisition-review]: ../review/231-235.md#233-actual-fresh-tof-wall-acquisition-pairing-2026-11-10
+[native-tof-wall-intake-review]: ../review/231-235.md#234-bounded-native-tof-wall-intake-2026-11-10
+[native-tof-wall-history-review]: ../review/231-235.md#235-bounded-native-tof-wall-history-preflight-2026-11-10
 [native-tof-wall-retention-review]: ../../REVIEW.md#236-bounded-native-tof-wall-recorder-retention-2026-11-10
 [native-tof-wall-delivery-review]: ../../REVIEW.md#237-native-tof-wall-deliveredpending-correspondence-2026-11-10
 [native-tof-wall-offset-review]: ../../REVIEW.md#238-native-tof-wall-offset-word-residuals-2026-11-10
 [native-tof-wall-division-review]: ../../REVIEW.md#239-native-tof-wall-division-word-residuals-2026-11-10
+[native-tof-wall-arithmetic-review]: ../../REVIEW.md#240-matched-native-tof-wall-arithmetic-diagnostics-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

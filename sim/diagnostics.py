@@ -12562,6 +12562,7 @@ class _SyntheticC1SourceRecorder:
         include_timing=False,
         include_selection=False,
         include_wall=False,
+        include_wall_residuals=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -12576,6 +12577,10 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_selection must be a literal bool")
         if type(include_wall) is not bool:
             raise ValueError("include_wall must be a literal bool")
+        if type(include_wall_residuals) is not bool:
+            raise ValueError("include_wall_residuals must be a literal bool")
+        if include_wall_residuals and not include_wall:
+            raise ValueError("include_wall_residuals requires include_wall=True")
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
         if type(include_sampling_residuals) is not bool:
@@ -12724,6 +12729,31 @@ class _SyntheticC1SourceRecorder:
                 ),
             }
 
+        def wall_residual_probe(record):
+            trace = record["wall"]
+            walls = trace["walls"]
+            numerators = tuple(wall["numerator_m"] for wall in walls)
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "offset": _native_tof_wall_offset_residuals(
+                    wall_m_hex=tuple(wall["wall_m"] for wall in walls),
+                    position_axis_m_hex=tuple(
+                        wall["position_axis_m"] for wall in walls
+                    ),
+                    numerator_m_hex=numerators,
+                    synthetic_test_only=True,
+                ),
+                "division": _native_tof_wall_division_residuals(
+                    numerator_m_hex=numerators,
+                    world_frame_unit_rays=trace["world_frame_unit_rays"],
+                    distance_m_hex=tuple(wall["distance_m"] for wall in walls),
+                    synthetic_test_only=True,
+                ),
+            }
+
         try:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
@@ -12862,6 +12892,13 @@ class _SyntheticC1SourceRecorder:
                 wall_output_binding = _c1_source_binding_digest(
                     {"wall": wall, "pending_wall": pending_wall}
                 )
+            if include_wall_residuals:
+                wall_residuals = wall_residual_probe(wall)
+                pending_wall_residuals = (
+                    tuple(wall_residual_probe(record) for record in pending_wall)
+                    if include_pending_sources
+                    else ()
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -12949,6 +12986,13 @@ class _SyntheticC1SourceRecorder:
                         _match_native_tof_retained_wall(source, self._tof_wall_history)
                         for source in pending_after
                     )
+                    if include_pending_sources
+                    else ()
+                )
+            if include_wall_residuals:
+                wall_residuals_after = wall_residual_probe(wall_after)
+                pending_wall_residuals_after = (
+                    tuple(wall_residual_probe(record) for record in pending_wall_after)
                     if include_pending_sources
                     else ()
                 )
@@ -13046,6 +13090,15 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_wall_residuals and (
+                not _native_tof_word_copy_matches(wall_residuals, wall_residuals_after)
+                or not _native_tof_word_copy_matches(
+                    pending_wall_residuals, pending_wall_residuals_after
+                )
+            ):
+                raise ValueError(
+                    "native ToF wall residual source or outgoing records changed"
+                )
             if include_floor_residuals and (
                 not _native_tof_word_copy_matches(floor_residuals, floor_after)
                 or not _native_tof_word_copy_matches(
@@ -13119,6 +13172,10 @@ class _SyntheticC1SourceRecorder:
             result["wall"] = wall
             if include_pending_sources:
                 result["pending_wall"] = pending_wall
+        if include_wall_residuals:
+            result["wall_residuals"] = wall_residuals
+            if include_pending_sources:
+                result["pending_wall_residuals"] = pending_wall_residuals
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals
             if include_pending_sources:

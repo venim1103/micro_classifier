@@ -20413,6 +20413,372 @@ def test_native_tof_wall_division_residuals(
 
 
 @pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default",
+        "flag",
+        "dependency",
+        "missing",
+        "delivered_only",
+        "held",
+        "late_offset",
+        "late_division",
+        "late_timing",
+        "late_selection",
+        "late_pending",
+        "late_wall",
+        "late_owner",
+        "late_budget",
+        "work_limit",
+        "combined",
+        "late_norm",
+    ),
+)
+def test_native_tof_wall_residual_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    work = dict.fromkeys(
+        (
+            "steps",
+            "reads",
+            "retention",
+            "geometry",
+            "clock",
+            "offset",
+            "division",
+            "wall",
+            "selection",
+            "timing",
+            "norm",
+            "pending",
+            "queue",
+            "frame",
+            "binding",
+            "values",
+            "binary",
+            "oracle",
+            "late",
+            "forbidden",
+        ),
+        0,
+    )
+    combined = case in (
+        "combined",
+        "late_timing",
+        "late_selection",
+        "late_pending",
+        "late_wall",
+        "late_norm",
+    )
+    original_geometry = rover.tof_ranges
+
+    def geometry(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        return original_geometry(*args, **kwargs)
+
+    def clock():
+        work["clock"] += 1
+        assert combined and work["clock"] <= 6
+        return 100 + work["clock"] * 10
+
+    def read():
+        work["reads"] += 1
+        assert work["reads"] <= 5
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    read()
+    for _ in range(4 if case == "held" else 3):
+        work["steps"] += 1
+        assert work["steps"] <= 4
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_wall=True,
+            capture_native_tof_selection=combined,
+            capture_native_tof_timing=combined,
+        )
+        read()
+        if environment._native_tof_source is not None:
+            work["retention"] += 1
+            assert work["retention"] <= 3
+            owner.record_native_tof_source(
+                environment,
+                synthetic_test_only=True,
+                include_wall=True,
+                include_selection=combined,
+                include_timing=combined,
+            )
+    if case == "missing":
+        owner._tof_wall_history.pop(0)
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    closing_count = 2 * (1 + len(environment.pending))
+    originals = {
+        "offset": diagnostics._native_tof_wall_offset_residuals,
+        "division": diagnostics._native_tof_wall_division_residuals,
+        "wall": diagnostics._match_native_tof_retained_wall,
+        "selection": diagnostics._match_native_tof_retained_selection,
+        "timing": diagnostics._match_native_tof_retained_timing,
+        "norm": diagnostics._native_tof_direction_norm_residuals,
+        "pending": diagnostics._match_native_tof_pending_sources,
+        "queue": diagnostics._copy_native_tof_pending_queue,
+        "frame": diagnostics._check_native_tof_delivery_frame,
+    }
+    outgoing = {}
+
+    def called(name, *args, **kwargs):
+        work[name] += 1
+        assert work[name] <= (
+            2 if name in ("pending", "frame") else 4 if name == "queue" else 6
+        )
+        actual = originals[name](*args, **kwargs)
+        outgoing.setdefault(name, actual)
+        if name == "division" and work[name] == closing_count:
+            if case in ("late_offset", "late_division"):
+                target = outgoing[case.removeprefix("late_")]["entries"][0]
+                numerator, denominator = target["signed_residual_ratio"]
+                target["signed_residual_ratio"] = (numerator ^ 1, denominator)
+            elif case == "late_timing":
+                outgoing["timing"]["clock"]["begin_ns"] += 1
+                outgoing["timing"]["clock"]["end_ns"] += 1
+            elif case == "late_selection":
+                outgoing["selection"]["selection"]["source_qualified"] = True
+            elif case == "late_pending":
+                target = outgoing["pending"][0]
+                target["sample_words"] = (
+                    target["sample_words"][0] ^ 1,
+                    *target["sample_words"][1:],
+                )
+            elif case == "late_wall":
+                outgoing["wall"]["wall"]["source_qualified"] = True
+            elif case == "late_norm":
+                outgoing["norm"]["source_qualified"] = True
+            elif case == "late_owner":
+                owner._binding = {"changed": True}
+            elif case == "late_budget":
+                owner._tof_wall_history.extend(owner._tof_wall_history * 8)
+                outgoing["bindings_before_late_budget"] = work["binding"]
+            else:
+                return actual
+            work["late"] += 1
+        return actual
+
+    original_binding = diagnostics._c1_source_binding_digest
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 4680
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 3120
+        return original_binary(instance, left, right, operation)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "wall residual snapshot must not read/retain/step/reset/replay/clock"
+        )
+
+    for name, symbol in (
+        ("offset", "_native_tof_wall_offset_residuals"),
+        ("division", "_native_tof_wall_division_residuals"),
+        ("wall", "_match_native_tof_retained_wall"),
+        ("selection", "_match_native_tof_retained_selection"),
+        ("timing", "_match_native_tof_retained_timing"),
+        ("norm", "_native_tof_direction_norm_residuals"),
+        ("pending", "_match_native_tof_pending_sources"),
+        ("queue", "_copy_native_tof_pending_queue"),
+        ("frame", "_check_native_tof_delivery_frame"),
+    ):
+        monkeypatch.setattr(
+            diagnostics,
+            symbol,
+            lambda *args, _name=name, **kwargs: called(_name, *args, **kwargs),
+        )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case == "work_limit":
+        monkeypatch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 16)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_wall_source",
+        "_sample_simulator_native_tof_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case in ("flag", "dependency"):
+        with pytest.raises(ValueError, match="include_wall_residuals"):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True,
+                include_wall=case != "dependency",
+                include_wall_residuals=1 if case == "flag" else True,
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=case != "delivered_only",
+            include_wall=True,
+            include_wall_residuals=case != "default",
+            include_timing=combined,
+            include_selection=combined,
+            include_direction_norm_residuals=combined,
+        )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        assert all(result[flag] is False for flag in flags)
+        if case in ("copy", "default", "delivered_only", "held", "combined"):
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == before_frame
+            if case == "default":
+                assert (
+                    "wall_residuals" not in result
+                    and "pending_wall_residuals" not in result
+                )
+                assert work["offset"] == work["division"] == 0
+            else:
+                pairs = [(result["wall_residuals"], result["wall"], result["source"])]
+                if case != "delivered_only":
+                    assert result["pending_wall_residuals"]
+                    pairs.extend(
+                        zip(
+                            result["pending_wall_residuals"],
+                            result["pending_wall"],
+                            result["pending_sources"],
+                            strict=True,
+                        )
+                    )
+                else:
+                    assert "pending_wall_residuals" not in result
+                for diagnostic, record, source in pairs:
+                    for key in ("source_epoch", "tick", "delivery_tick"):
+                        assert diagnostic[key] == record[key] == source[key]
+                    assert all(
+                        diagnostic[kind][flag] is False
+                        for kind in ("offset", "division")
+                        for flag in flags
+                    )
+                    walls = record["wall"]["walls"]
+                    for index, entry in enumerate(diagnostic["offset"]["entries"]):
+                        assert (
+                            entry["observed_numerator_hex"]
+                            == walls[index]["numerator_m"]
+                        )
+                    for entry in diagnostic["division"]["entries"]:
+                        index, ray = entry["wall_index"], entry["ray_index"]
+                        direction_word = record["wall"]["world_frame_unit_rays"][
+                            ray * 3 + index // 2
+                        ]
+                        assert entry["numerator_hex"] == walls[index]["numerator_m"]
+                        assert entry["direction_axis_hex"] == direction_word
+                        assert (
+                            entry["observed_distance_hex"]
+                            == walls[index]["distance_m"][ray]
+                        )
+                        direction = float.fromhex(direction_word)
+                        if direction != 0:
+                            work["oracle"] += 2
+                            assert work["oracle"] <= 1536
+                            exact = Fraction.from_float(
+                                float.fromhex(entry["numerator_hex"])
+                            ) / Fraction.from_float(direction)
+                            observed = float.fromhex(entry["observed_distance_hex"])
+                            assert (
+                                entry["exact_quotient_ratio"]
+                                == exact.as_integer_ratio()
+                            )
+                            if math.isfinite(observed):
+                                assert (
+                                    entry["signed_residual_ratio"]
+                                    == (
+                                        Fraction.from_float(observed) - exact
+                                    ).as_integer_ratio()
+                                )
+                if case == "held":
+                    assert result["sensor_tick"] == 4 and result["tick"] == 7
+                if combined:
+                    assert result["timing"]["clock"]["qualified"] is False
+                    assert result["selection"]["selection"]["source_qualified"] is False
+                    assert (
+                        result["direction_norm_residuals"]["diagnostic"][
+                            "source_qualified"
+                        ]
+                        is False
+                    )
+                result["wall_residuals"]["offset"]["entries"][0][
+                    "observed_numerator_hex"
+                ] = "changed"
+                assert (
+                    owner._tof_wall_history[0]["wall"]["walls"][0]["numerator_m"]
+                    != "changed"
+                )
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert not (
+                {
+                    "source",
+                    "frame",
+                    "wall",
+                    "pending_wall",
+                    "wall_residuals",
+                    "pending_wall_residuals",
+                    "pending_sources",
+                    "selection",
+                    "pending_selection",
+                    "timing",
+                    "pending_timing",
+                    "direction_norm_residuals",
+                    "pending_direction_norm_residuals",
+                }
+                & result.keys()
+            )
+            if case == "late_budget":
+                assert work["binding"] == outgoing["bindings_before_late_budget"]
+    assert work["late"] == int(case.startswith("late_"))
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
     "pose",
     [(5.7, 2, 0), (2, 5.7, math.pi / 2), (0.3, 2, math.pi), (2, 0.3, -math.pi / 2)],
 )

@@ -381,6 +381,20 @@ coverage, roundoff, physical error, clock, one-use execution, permission or
 admission. Eight flags remain false. See [actual controls and gate][native-tof-cylinder-delivery-review].
 
 
+#### Supplied-Word Cylinder Offset Discrepancies (2026-11-10)
+
+`_native_tof_cylinder_offset_residuals` reports exact supplied position-minus-centre
+ratios and observed-minus-exact residuals for both axes of <=32 cylinders. Builtin
+canonical word preflight <=130 strings,32 characters each; position/centre are
+finite and non-NaN observations may be infinite (unknown residual, exact operand
+difference retained). Existing4096-bit rational ceiling, <=192 value calls and128
+binary operations,64 entries; no source/recorder read, hash, replay, clock or RNG.
+Signed-zero words retained without inferring tie semantics. Report remains
+standalone: no matched-source composition, isolated primitive/uniform error bound,
+geometry, coverage, source, numerical/physical/clock/permission/admission proof.
+Eight flags false. See [actual controls and gate][native-tof-cylinder-offset-review].
+
+
 ### Synthetic Evaluation Tooling (2026-10-16)
 
 The user approved [CPU evaluation tooling][teacher-evaluation] with synthetic
@@ -2460,3 +2474,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-cylinder-history-review]: ../../REVIEW.md#250-typed-cylinder-history-prehash-guard-2026-11-10
 [native-tof-cylinder-retention-review]: ../../REVIEW.md#251-explicit-cylinder-recorder-retention-2026-11-10
 [native-tof-cylinder-delivery-review]: ../../REVIEW.md#252-delivered-and-pending-cylinder-correspondence-2026-11-10
+[native-tof-cylinder-offset-review]: ../../REVIEW.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10

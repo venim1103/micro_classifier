@@ -31,13 +31,13 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §252 for delivered/pending cylinder correspondence and
-the latest source gate; §§231-251 retain wall correspondence and the complete
+Read [REVIEW.md][review] §253 for supplied-word cylinder offset discrepancies and
+the latest source gate; §§231-252 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement independent supplied-word cylinder offset diagnostics, then
-quadratic/stage prerequisites without adopting numerical bounds.
+Next implement independent supplied-word cylinder projection-expression
+diagnostics, then quadratic/stage prerequisites without adopting numerical bounds.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

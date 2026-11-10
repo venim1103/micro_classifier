@@ -10297,6 +10297,111 @@ def _native_tof_wall_division_residuals(
     }
 
 
+def _native_tof_cylinder_offset_residuals(
+    *, position_m_hex, centre_m_hex, offset_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder offset residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder offset residual rational budget unsupported")
+    if (
+        type(centre_m_hex) is not tuple
+        or len(centre_m_hex) > 32
+        or type(offset_m_hex) is not tuple
+        or len(offset_m_hex) != len(centre_m_hex)
+    ):
+        raise ValueError("native cylinder offset residual obstacle count unsupported")
+
+    def decoded(words, finite_only):
+        if type(words) is not tuple or len(words) != 2:
+            raise ValueError("native cylinder offset residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError(
+                    "native cylinder offset residual word budget exhausted"
+                )
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder offset residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native cylinder offset residual words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    position = decoded(position_m_hex, True)
+    centres = tuple(decoded(words, True) for words in centre_m_hex)
+    offsets = tuple(decoded(words, False) for words in offset_m_hex)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    for obstacle_index, (centre, offset) in enumerate(
+        zip(centres, offsets, strict=True)
+    ):
+        for axis in range(2):
+            try:
+                exact = arithmetic.binary(
+                    arithmetic.value(position[axis]),
+                    arithmetic.value(centre[axis]),
+                    "sub",
+                )
+                residual = (
+                    arithmetic.binary(arithmetic.value(offset[axis]), exact, "sub")
+                    if math.isfinite(offset[axis])
+                    else None
+                )
+            except ArithmeticError as error:
+                raise ValueError(
+                    "native cylinder offset residual rational budget exhausted"
+                ) from error
+            entries.append(
+                {
+                    "obstacle_index": obstacle_index,
+                    "axis": axis,
+                    "position_axis_hex": position_m_hex[axis],
+                    "centre_axis_hex": centre_m_hex[obstacle_index][axis],
+                    "observed_offset_hex": offset_m_hex[obstacle_index][axis],
+                    "exact_difference_ratio": exact.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": "unknown_nonfinite_cylinder_offset"
+                    if residual is None
+                    else "computed_exact_cylinder_offset_word_residual",
+                }
+            )
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-offset-residuals/1",
+        "allowed_use": "offline_cylinder_offset_word_diagnostics_only",
+        "status": "reported_cylinder_offset_word_residuals",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_wall_offset_residuals(
     *, wall_m_hex, position_axis_m_hex, numerator_m_hex, synthetic_test_only=False
 ):

@@ -598,6 +598,44 @@ coverage/numerical/physical/uniform error/clock/one-use/permission/admission
 qualification and no usable command. Next independent supplied-word cylinder
 offset discrepancies; no fresh sampling or uniform error bound follows.
 
+## 253. Supplied-Word Cylinder Offset Discrepancies (2026-11-10)
+
+Checkpoint `37aa5b0` pushed/clean. Local hypothesis: exact supplied position-minus-
+centre differences and observed-minus-exact residuals can be reported per axis
+without source intake/replay or adopting primitive/uniform error bounds. Canonical
+word preflight <=130 builtin strings (each <=32 characters), two finite position
+words and <=32 finite centre/observed-offset pairs. Observed infinities retain
+exact operand difference but unknown residual; signed-zero words retained, no
+tie semantics inferred. Existing4096-bit rational ceiling, <=192 value calls and
+128 binary operations,64 entries; no source/recorder read/hash/geometry/clock/RNG.
+
+Reuse original16 wall offset controls/caps, add21 cylinder cases including actual
+nonempty intake, empty/max32, word/count/type budgets and matching Fraction oracle.
+Only actual case has <=1 setup geometry/selected intake,2 native intakes; parent
+ledgers unchanged. Oldwall12value/8binary caps stay; newcyl192/128 plus <=128
+independent oracle operations. Three pytest positions including failures/aborts:
+first37/60 seconds, one necessary repair reserve, final root/300 seconds; retain
+`cylinder-253-*` logs. No old refunds/protected runs/task data/dependencies/hardware.
+All eight flags false, no geometry/coverage/numerical/physical/source/clock/
+permission/admission qualification and no usable command. No composition yet.
+
+First37 passed,2719 deselected,3.26 s. Required root3679 passed,1 known
+transformer QDQ xfailed,71 warnings,92.42 s; root Ruff, changed-file format check
+and whitespace passed. Editor diagnostics clear. AST proves one added offset
+helper and only existing offset matrix changed; all prior source/test nodes
+intact, no existing signature changed. Two of three pytest positions used, no
+failures/aborts; unused reserve is not follow-on authority. Logs
+`cylinder-253-focused-1.log`/`cylinder-253-root-1.log` retained under recovery
+directory. No additional C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty words, exact/rounded/mismatched/signed-zero/subnormal/large/
+infinite cases, empty/max32 and preflight/work-budget rejection agree with
+independent Fraction oracle within stated caps, leaving inputs/tick/RNG unchanged.
+All eight flags false, no geometry/coverage/source/uniform error/numerical/
+physical/clock/one-use/permission/admission qualification or usable command.
+Next supplied-word cylinder projection-expression discrepancy; intermediate
+product words are not captured, so isolated multiply/add/FMA claims remain absent.
+
 ## Sources
 
 Hardware and tools:

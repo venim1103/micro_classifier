@@ -20184,37 +20184,53 @@ def test_synthetic_c1_straight_capsule_rejects_malformed_turns(c1_history, turn)
 
 
 @pytest.mark.parametrize(
-    "case",
-    (
-        "actual",
-        "exact",
-        "rounded",
-        "mismatch",
-        "signed_zero",
-        "subnormal",
-        "large_finite",
-        "infinite_positive",
-        "infinite_negative",
-        "flag",
-        "shape",
-        "noncanonical",
-        "overflow_word",
-        "nan",
-        "finite_operand",
-        "work_limit",
-    ),
+    ("cylinder", "case"),
+    [
+        (cylinder, case)
+        for cylinder in (False, True)
+        for case in (
+            "actual",
+            "exact",
+            "rounded",
+            "mismatch",
+            "signed_zero",
+            "subnormal",
+            "large_finite",
+            "infinite_positive",
+            "infinite_negative",
+            "flag",
+            "shape",
+            "noncanonical",
+            "overflow_word",
+            "nan",
+            "finite_operand",
+            "work_limit",
+        )
+    ]
+    + [
+        (True, case)
+        for case in ("empty", "max_obstacles", "budget", "word_budget", "word_type")
+    ],
 )
 def test_native_tof_wall_offset_residuals(
-    monkeypatch, c1_motion_receipt_source_fixture, case
+    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
 ):
+    from dataclasses import replace
     from fractions import Fraction
 
     from sim import diagnostics, rover
 
+    kind = "cylinder" if cylinder else "wall"
+    intake_name = f"_sample_simulator_native_tof_{kind}_source"
+    diagnostic = getattr(diagnostics, f"_native_tof_{kind}_offset_residuals")
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if cylinder:
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
     setup = {"geometry": 0, "wall": 0, "native": 0}
     original_geometry = rover.tof_ranges
-    original_wall = diagnostics._sample_simulator_native_tof_wall_source
+    original_wall = getattr(diagnostics, intake_name)
     original_native = diagnostics._sample_simulator_native_tof_source
 
     def geometry(*args, **kwargs):
@@ -20233,9 +20249,7 @@ def test_native_tof_wall_offset_residuals(
         return original_native(*args, **kwargs)
 
     monkeypatch.setattr(rover, "tof_ranges", geometry)
-    monkeypatch.setattr(
-        diagnostics, "_sample_simulator_native_tof_wall_source", wall_intake
-    )
+    monkeypatch.setattr(diagnostics, intake_name, wall_intake)
     monkeypatch.setattr(
         diagnostics, "_sample_simulator_native_tof_source", native_intake
     )
@@ -20246,17 +20260,31 @@ def test_native_tof_wall_offset_residuals(
     }
     if case == "actual":
         environment.step(
-            [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_wall=True
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            **{f"capture_native_tof_{kind}": True},
         )
-        packet = diagnostics._sample_simulator_native_tof_wall_source(
-            environment, owner._epoch
-        )
-        walls = packet["wall"]["walls"]
-        arguments = {
-            "wall_m_hex": tuple(wall["wall_m"] for wall in walls),
-            "position_axis_m_hex": tuple(wall["position_axis_m"] for wall in walls),
-            "numerator_m_hex": tuple(wall["numerator_m"] for wall in walls),
-        }
+        packet = getattr(diagnostics, intake_name)(environment, owner._epoch)
+        if cylinder:
+            trace = packet[kind]
+            arguments = {
+                "position_m_hex": tuple(
+                    value.hex() for value in trace["inputs"]["position_m"]
+                ),
+                "centre_m_hex": tuple(
+                    entry["centre_m"] for entry in trace["cylinders"]
+                ),
+                "offset_m_hex": tuple(
+                    entry["offset_m"] for entry in trace["cylinders"]
+                ),
+            }
+        else:
+            walls = packet["wall"]["walls"]
+            arguments = {
+                "wall_m_hex": tuple(wall["wall_m"] for wall in walls),
+                "position_axis_m_hex": tuple(wall["position_axis_m"] for wall in walls),
+                "numerator_m_hex": tuple(wall["numerator_m"] for wall in walls),
+            }
     elif case == "rounded":
         arguments["position_axis_m_hex"] = ((2.0**-54).hex(),) * 4
     elif case == "mismatch":
@@ -20290,6 +20318,29 @@ def test_native_tof_wall_offset_residuals(
         arguments["numerator_m_hex"] = ("nan",) * 4
     elif case == "finite_operand":
         arguments["wall_m_hex"] = ("inf",) * 4
+    if cylinder and case != "actual":
+        arguments = {
+            "position_m_hex": arguments["wall_m_hex"][:2],
+            "centre_m_hex": tuple(
+                arguments["position_axis_m_hex"][index : index + 2]
+                for index in range(0, len(arguments["position_axis_m_hex"]), 2)
+            ),
+            "offset_m_hex": tuple(
+                arguments["numerator_m_hex"][index : index + 2]
+                for index in range(0, len(arguments["numerator_m_hex"]), 2)
+            ),
+        }
+        if case in ("empty", "max_obstacles"):
+            for name in ("centre_m_hex", "offset_m_hex"):
+                arguments[name] = arguments[name][:1] * (
+                    32 if case == "max_obstacles" else 0
+                )
+        elif case == "budget":
+            arguments["centre_m_hex"] *= 17
+        elif case in ("word_budget", "word_type"):
+            arguments["offset_m_hex"] = (
+                ("0" * 33 if case == "word_budget" else False, (1.0).hex()),
+            ) * 2
     arguments_before = deepcopy(arguments)
     before_tick = environment.tick
     rng_before = deepcopy(environment.rng.bit_generator.state)
@@ -20300,12 +20351,12 @@ def test_native_tof_wall_offset_residuals(
 
     def value(instance, argument):
         work["values"] += 1
-        assert work["values"] <= 12
+        assert work["values"] <= (192 if cylinder else 12)
         return original_value(instance, argument)
 
     def binary(instance, left, right, operation):
         work["binary"] += 1
-        assert work["binary"] <= 8
+        assert work["binary"] <= (128 if cylinder else 8)
         return original_binary(instance, left, right, operation)
 
     def forbidden(*args, **kwargs):
@@ -20327,6 +20378,7 @@ def test_native_tof_wall_offset_residuals(
     for name in (
         "_sample_simulator_native_tof_wall_source",
         "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_cylinder_source",
     ):
         monkeypatch.setattr(diagnostics, name, forbidden)
     if case in (
@@ -20337,18 +20389,19 @@ def test_native_tof_wall_offset_residuals(
         "nan",
         "finite_operand",
         "work_limit",
+        "budget",
+        "word_budget",
+        "word_type",
     ):
         with pytest.raises(ValueError):
-            diagnostics._native_tof_wall_offset_residuals(
-                **arguments, synthetic_test_only=1 if case == "flag" else True
-            )
+            diagnostic(**arguments, synthetic_test_only=1 if case == "flag" else True)
         if case != "work_limit":
             assert work["values"] == work["binary"] == 0
     else:
-        result = diagnostics._native_tof_wall_offset_residuals(
-            **arguments, synthetic_test_only=True
+        result = diagnostic(**arguments, synthetic_test_only=True)
+        assert len(result["entries"]) == (
+            2 * len(arguments["centre_m_hex"]) if cylinder else 4
         )
-        assert len(result["entries"]) == 4
         for flag in (
             "fixture_permission_granted",
             "training_approved",
@@ -20361,25 +20414,38 @@ def test_native_tof_wall_offset_residuals(
         ):
             assert result[flag] is False
         for index, entry in enumerate(result["entries"]):
-            wall = float.fromhex(arguments["wall_m_hex"][index])
-            position = float.fromhex(arguments["position_axis_m_hex"][index])
-            observed = float.fromhex(arguments["numerator_m_hex"][index])
+            if cylinder:
+                obstacle_index, axis = divmod(index, 2)
+                wall_word = arguments["position_m_hex"][axis]
+                position_word = arguments["centre_m_hex"][obstacle_index][axis]
+                observed_word = arguments["offset_m_hex"][obstacle_index][axis]
+                assert (
+                    entry["obstacle_index"] == obstacle_index and entry["axis"] == axis
+                )
+                assert entry["position_axis_hex"] == wall_word
+                assert entry["centre_axis_hex"] == position_word
+                assert entry["observed_offset_hex"] == observed_word
+            else:
+                wall_word = arguments["wall_m_hex"][index]
+                position_word = arguments["position_axis_m_hex"][index]
+                observed_word = arguments["numerator_m_hex"][index]
+                assert entry["wall_index"] == index
+                assert entry["wall_hex"] == wall_word
+                assert entry["position_axis_hex"] == position_word
+                assert entry["observed_numerator_hex"] == observed_word
+            wall = float.fromhex(wall_word)
+            position = float.fromhex(position_word)
+            observed = float.fromhex(observed_word)
             exact = Fraction.from_float(wall) - Fraction.from_float(position)
-            assert entry["wall_index"] == index
-            assert entry["wall_hex"] == arguments["wall_m_hex"][index]
-            assert entry["position_axis_hex"] == arguments["position_axis_m_hex"][index]
-            assert (
-                entry["observed_numerator_hex"] == arguments["numerator_m_hex"][index]
-            )
             assert entry["exact_difference_ratio"] == exact.as_integer_ratio()
             if math.isfinite(observed):
                 residual = Fraction.from_float(observed) - exact
                 assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
-                assert entry["status"] == "computed_exact_wall_offset_word_residual"
+                assert entry["status"] == f"computed_exact_{kind}_offset_word_residual"
                 if case in ("rounded", "mismatch"):
                     assert residual > 0
             else:
-                assert entry["status"] == "unknown_nonfinite_wall_offset"
+                assert entry["status"] == f"unknown_nonfinite_{kind}_offset"
                 assert entry["signed_residual_ratio"] is None
     assert arguments == arguments_before and environment.tick == before_tick
     assert environment.rng.bit_generator.state == rng_before

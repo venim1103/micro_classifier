@@ -9770,6 +9770,121 @@ def _native_tof_floor_division_residuals(
     }
 
 
+def _native_tof_wall_division_residuals(
+    *, numerator_m_hex, world_frame_unit_rays, distance_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native wall division residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native wall division residual rational budget unsupported")
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native wall division residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native wall division residual word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native wall division residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native wall division residual words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    if type(distance_m_hex) is not tuple or len(distance_m_hex) != 4:
+        raise ValueError("native wall division residual wall count unsupported")
+    numerators = decoded(numerator_m_hex, 4, False)
+    rays = decoded(world_frame_unit_rays, 192, True)
+    distances = [decoded(words, 64, False) for words in distance_m_hex]
+    for wall_index, observed in enumerate(distances):
+        axis = wall_index // 2
+        if any(
+            rays[index * 3 + axis] == 0 and value != math.inf
+            for index, value in enumerate(observed)
+        ):
+            raise ValueError("native wall division branch correspondence mismatch")
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    for wall_index, observed in enumerate(distances):
+        axis = wall_index // 2
+        numerator = numerators[wall_index]
+        for ray_index, distance in enumerate(observed):
+            direction = rays[ray_index * 3 + axis]
+            quotient = residual = None
+            if direction == 0:
+                status = "not_divided_zero_direction"
+            elif not math.isfinite(numerator):
+                status = "unknown_nonfinite_wall_numerator"
+            else:
+                try:
+                    quotient = arithmetic.binary(
+                        arithmetic.value(numerator), arithmetic.value(direction), "div"
+                    )
+                    residual = (
+                        arithmetic.binary(arithmetic.value(distance), quotient, "sub")
+                        if math.isfinite(distance)
+                        else None
+                    )
+                except ArithmeticError as error:
+                    raise ValueError(
+                        "native wall division residual rational budget exhausted"
+                    ) from error
+                status = (
+                    "unknown_nonfinite_wall_distance"
+                    if residual is None
+                    else "computed_exact_wall_division_word_residual"
+                )
+            entries.append(
+                {
+                    "wall_index": wall_index,
+                    "ray_index": ray_index,
+                    "numerator_hex": numerator_m_hex[wall_index],
+                    "direction_axis_hex": world_frame_unit_rays[ray_index * 3 + axis],
+                    "observed_distance_hex": distance_m_hex[wall_index][ray_index],
+                    "exact_quotient_ratio": None
+                    if quotient is None
+                    else quotient.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": status,
+                }
+            )
+    return {
+        "schema": "micro-classifier/native-tof-wall-division-residuals/1",
+        "allowed_use": "offline_wall_division_word_diagnostics_only",
+        "status": "reported_wall_division_word_residuals",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_wall_offset_residuals(
     *, wall_m_hex, position_axis_m_hex, numerator_m_hex, synthetic_test_only=False
 ):

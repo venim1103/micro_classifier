@@ -31,14 +31,14 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §238 for wall-offset word residuals and the latest
-source gate; §§231-237 retain selection arithmetic, trace, acquisition, intake,
-prehash, recorder and delivery limits.
+Read [REVIEW.md][review] §239 for wall-division word residuals and the latest
+source gate; §§231-238 retain selection/offset arithmetic, trace, acquisition,
+intake, prehash, recorder and delivery limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next advance native ToF wall division prerequisites using the separately
-captured numerator/result words. Offset residuals do not qualify source binding,
-correct rounding, geometry, complete coverage or a uniform error allowance.
+Next connect separate offset/division diagnostics to matched actual retained
+wall records. Supplied-word residuals do not qualify source binding, correct
+rounding, geometry, complete coverage or a uniform error allowance.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.

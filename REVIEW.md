@@ -562,6 +562,45 @@ command. Next independently check the captured numerator-to-distance division
 operation, preserving zero-denominator branch and nonfinite-result unknowns;
 do not fold subtraction and division into an unsupported single rounding claim.
 
+## 239. Native ToF Wall Division Word Residuals (2026-11-10)
+
+Checkpoint `c68a098` pushed/clean. Local hypothesis: use the actual separately
+captured numerator, matching ray-axis and raw distance words to diagnose the
+division independently of subtraction and hit selection. Four walls/64 rays
+produce256 supplied-word records. Zero direction requires initialized+inf and
+has no quotient; nonfinite numerator/distance leaves residual unknown, while
+finite operands permit an exact rational quotient. No combined-rounding claim,
+accepted error bound, source/geometry/coverage/physical/clock/admission follows.
+
+Twenty bounded controls with unchanged parent fixtures; only actual-word case
+uses one setup acquisition/geometry/closed wall intake with two native intakes.
+Each case one helper call,452 canonical words<=32 characters,256 records,
+at most768 guarded conversions/512 operations under existing4096-bit cap. No
+source intake/read/retention/step/reset/replay/clock/RNG during diagnostics.
+Three pytest positions counting failures/aborts: first20/60 seconds, one necessary
+repair/control reserve, final root/300 seconds. Retain `wall-239-focused-1.log`,
+reserve/root in existing local recovery directory. All eight flags false, no
+old ledger refund or study/task-data/model/dependency/download/native/hardware
+work. Use a unique complete original test header as insertion anchor after238.
+
+First20 passed,2461 deselected,3.27 s. Focused Ruff/format/whitespace passed.
+Required root:3404 passed,1 known transformer QDQ xfailed,71 warnings,75.87 s;
+root Ruff, changed-file format check and whitespace passed. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Editor diagnostics clear. AST comparison proves exactly one new helper/test;
+all previous nodes unchanged. No additional C/Arm/sanitizer/board opt-in gates
+ran; host controls do not establish firmware/hardware capability. Logs retained,
+no cleanup/deletion or new dependency/download/model/study/hardware activity.
+
+Actual-word fixture covers a fresh captured numerator/ray/raw-distance packet;
+other inputs are declared synthetic. Unknown nonfinite outcomes and zero-
+direction non-divisions remain distinct. All eight flags false, no adopted
+correct-rounding/combined/uniform error claim or source/geometry/coverage/
+physical/clock/permission/admission qualification. Next compose both separate
+offset/division diagnostics with matched delivered/pending wall records and
+original IDs, closing all companion probes before comparisons; do not infer
+source qualification or correct scene geometry from word correspondence.
+
 ## Sources
 
 Hardware and tools:

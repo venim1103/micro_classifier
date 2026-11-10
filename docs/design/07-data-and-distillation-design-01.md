@@ -1642,6 +1642,23 @@ correct-rounding certification, uniform error allowance, wall-division/masking/
 geometry/coverage/physical proof or permission/admission. See [offset controls and limits][native-tof-wall-offset-review].
 
 
+##### Native ToF Wall Division Word Residuals (2026-11-10)
+
+Private `_native_tof_wall_division_residuals` takes four supplied numerator
+words,192 ray-component words and four64-word raw distance arrays. For each
+declared wall/ray axis, finite operands yield an exact rational quotient; finite
+observations yield a separate signed observed-minus-quotient residual. Signed
+input words are preserved. Zero directions require initialized+inf and are not
+divisions. Nonfinite numerators/results remain unknown rather than finite
+residuals.452 canonical words<=32 characters,256 entries and existing4096-bit
+rational guards bound the path to at most768 value conversions/512 operations.
+
+No source intake, replay, hashing or RNG/clock occurs. All eight flags stay false;
+this isolates division from subtraction but does not bind source ownership,
+certify correct rounding, adopt a combined/uniform error allowance or establish
+masking/geometry/coverage/physical/permission/admission. See [division controls and limits][native-tof-wall-division-review].
+
+
 ##### Conditional Discrete Motion Core (2026-11-06)
 
 **Implemented and fixture-tested under separate bounded approval; not source
@@ -2363,6 +2380,7 @@ figure is not an established minimum.
 [native-tof-wall-retention-review]: ../../REVIEW.md#236-bounded-native-tof-wall-recorder-retention-2026-11-10
 [native-tof-wall-delivery-review]: ../../REVIEW.md#237-native-tof-wall-deliveredpending-correspondence-2026-11-10
 [native-tof-wall-offset-review]: ../../REVIEW.md#238-native-tof-wall-offset-word-residuals-2026-11-10
+[native-tof-wall-division-review]: ../../REVIEW.md#239-native-tof-wall-division-word-residuals-2026-11-10
 [admission-motion-core-review]: ../../REVIEW.md
 [path-cell-review]: ../../REVIEW.md
 [path-source-review]: ../../REVIEW.md

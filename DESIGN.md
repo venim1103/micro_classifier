@@ -104,7 +104,7 @@ options instead of implying general Jev or Vela compatibility.
 [chapter-design-06]: docs/design/07-data-and-distillation-design-02.md
 [chapter-design-07]: docs/design/07-data-and-distillation-design-03.md
 [chapter-design-08]: docs/design/07-data-and-distillation-design-04.md
-[chapter-design-09]: docs/design/07-data-and-distillation-design-05.md
+[chapter-design-09]: docs/design/07-data-and-distillation-design-04.md#nf1-process-local-binding-identity-evidence-boundary-2026-11-05
 [chapter-design-10]: docs/design/08-deployment-budget-and-validation-gates.md
 [chapter-design-11]: docs/design/09-toolchain-and-component-ownership.md
 [chapter-design-12]: docs/design/10-safety-security-and-reproducibility.md

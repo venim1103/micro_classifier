@@ -451,6 +451,54 @@ All eight flags false; no sqrt-rounding certification, uniform/numerical/physica
 source/geometry/coverage/clock/one-use/permission/admission or usable command.
 Next independent matched side-numerator arithmetic, not corrected upstream words.
 
+## 278. Matched Retained Cylinder Side-Numerator Residuals (2026-11-10)
+
+Whole historical NF1 identity/digest/proposed-protocol scopes (186 lines) moved
+unchanged from chapter05 to adjacent chapter04; three old heading anchors retained,
+three review references carried unchanged and reading-map pointer updated. Prior
+chapter04/source remainder/map conserved, seven local targets and whitespace
+passed; chapter04 2387/chapter05 2331 lines. One guarded migration/check,30 s cap,
+no failure/abort; originals/script/log retained under recovery directory. No code
+suite for docs-only move, no historical NF1/SC18 imports or runs/claim adoption.
+
+Hypothesis: default-off literal `include_cylinder_side_numerator_residuals`
+requiring `include_cylinder=True` composes captured projection/root and ordered
+near/far numerator words through the unchanged supplied-word helper. Matched
+delivered/pending identities and independent closing checks remain; no corrected
+upstream words. Cheapest discriminator: existing23-case snapshot family in six
+modes,138 cases; independent exact `-projection +/- root` oracle for both sides.
+
+Fresh bounded routine ledger under standing authority: <=3 pytest invocations,
+focused then required root plus one diagnosed-repair reserve,300 s each. Root
+`python -m pytest -q && ruff check . && git diff --check`, changed Python format
+check. Fixture <=4steps/5reads/3geometries/3retentions/6active-helper+cylinder
+matches/2pending matches/64digests. New mode <=5832 values/7350 binary operations/
+2304 oracle operations; prior five caps unchanged. Combined control adds previous
+five arithmetic helpers and chain <=6each. No snapshot intake/read/retain/step/
+reset/replay/clock; tick/frame/RNG preserved. Existing helper <=32 cylinders/8192
+words/4096 entries/8193 values/10240 binary operations,4096-bit ceiling unchanged;
+<=18 original/closing invocations across delivered/<=8 pending records. Explicit
+21-bit observed numerator in16-bit work-limit control; do not assume scene alone
+exhausts reduced arithmetic. Preserve failures/unknown historical attempts; diagnose
+before rerun, no protected experiment or old refund. No additional C/Arm/sanitizer/
+board opt-ins, dependencies, models or task data.
+
+Focused138 passed/3260 deselected,32.67 s. Required root4321 passed,1 known
+transformer QDQ xfailed,71 warnings,185.20 s; root Ruff, changed-file format and
+whitespace passed. Editor/Pylance syntax clean; AST confirms only snapshot and
+existing arithmetic family changed, prior defaults/23 cases conserved. Pylance
+signature query found no call sites, not compatibility proof. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Logs `cylinder-278-focused-1.log`/`cylinder-278-root-1.log` and relocation script/
+originals/log retained under recovery directory; no additional C/Arm/sanitizer/
+board opt-in gates ran.
+
+Both side signs/ordered observed words and exact oracle, nonzero/unknown residuals,
+default skipped work, detached output, identity/closing suppression and forced bit
+exhaustion verified. Prior five caps unchanged. All eight flags false; no isolated
+primitive/FMA or uniform error, geometry/physical/source/coverage/clock/one-use/
+permission/admission or usable command. Next matched guarded side-division arithmetic.
+
 ## Sources
 
 Hardware and tools:

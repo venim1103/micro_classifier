@@ -2173,6 +2173,194 @@ an unchanged gate. Native/source/work/resources/consumer and Task 6/9/physical/
 task-quality/teacher assets/ST-board stay blocked; no data, runtime, teacher,
 dependency, hardware or acquisition authority follows from the worksheet.
 
+
+#### NF1 Process-Local Binding Identity Evidence Boundary (2026-11-05)
+
+The user kept claims unaccepted and separately approved a bounded U4 identity-only
+audit: one process importing diagnostics to record four checker/Fraction bindings
+and source hashes, no checker calls/fixtures/numerical comparison or claim adoption.
+A second, corrective identity-only process was separately approved after the first
+probe's metaclass assertion failed. [Review §141][sinc-binding-identity-review]
+records both attempts and the successful metadata, not a renewed source gate.
+
+The evidence boundary is an identified process's module namespace, function/code
+metadata, source-file and marshalled-code-object digests, Fraction module binding
+and metaclass, plus repeated binding/file-hash checks across its metadata span.
+These distinct observations are not interchangeable: a source hash identifies
+file bytes, a code-object digest identifies a Python-version/path-sensitive
+serialization, and object IDs distinguish references within that process only.
+Reported filename/origin/loader and absent __wrapped__ attribute do not establish
+source-to-loaded-code correspondence or absence of arbitrary interception.
+
+Canonical class identity is not an exact-metaclass requirement: the observed
+Fraction binding is fractions.Fraction with abc.ABCMeta. A probe must report its
+metaclass rather than assume builtin type; this is an audit correction, not a
+change to any checker guard or arithmetic contract. No Fraction constructor or
+checker is explicitly invoked by the metadata snippets. Imports execute normal
+module/dependency initialization; that is not an all-transitive-call work audit.
+
+Matching references/hashes at two observation points do not detect every transient
+mutation, enforce serialized ownership, guarantee future stability or authenticate
+runtime selection. They do not prove integer/Fraction/GCD semantics, compiled/native
+paths, arithmetic/tie/target correctness, source authority/completeness, termination,
+resource fit, physical inputs or consumer eligibility. The join's own binding was
+not one of the four inspected function rows. U4 and all JO/upstream verdicts remain
+undecided; five flags false and unresolved/ineligible statuses are unchanged.
+
+Both explicitly allowed identity attempts are spent. No further import/snapshot,
+source-to-code comparison, numerical/checker/fixture run, source acquisition or
+integration follows automatically. The next input is a named premise/evidence/claim
+decision or separately approved concrete evidence action; isolation remains default.
+Existing task/data/teacher/dependency/hardware gates and §138's source gate stay.
+
+
+#### NF1 Historical Code-Object Digest Comparison Boundary (2026-11-05)
+
+Following §141, the user separately approved one compile-only process and four
+comparisons against its historical code-object digests. The scope is compilation
+of the unchanged, pinned diagnostics bytes, not execution of that module or a new
+live-binding snapshot. [Review §142][sinc-compile-comparison-review] records the
+settings and all four unequal digests; the one-process approval is spent.
+
+The local correspondence hypothesis was that compiling the same source bytes
+with the recorded filename under the same reported Python version would reproduce
+the four historical serializations. It did not under this attempt's explicit
+flags=0, dont_inherit=True and optimize=0 settings. Source/version/filename/first-line
+agreement does not substitute for digest equality; no digest-match correspondence
+claim is available from this result. A completed comparison is not a passed match.
+
+Unequal marshalled-code-object digests alone do not identify a semantic difference,
+wrong source, substitution, corruption or a specific serialization cause. §141 did
+not record the full compilation/load/serialization conditions needed to establish
+cross-process comparability. No historical code-object bytes or structural fields
+were reconstructed, and no new live object was imported or compared. A hypothesis
+about serialization, interning, compiler conditions or loading remains unverified.
+
+Any disambiguation must have a separately approved scope, comparison representation,
+attempt budget and explicit outcome/stop conditions. It must distinguish structural
+code comparison from runtime authority and mathematical correctness; neither can be
+adopted through a changed digest method or a successful metadata comparison alone.
+No automatic retry, normalization, source change, renewed source gate or claim
+adoption follows. All fifteen verdicts remain undecided, the five flags false,
+consumer ineligible and broader native/source/work/task/data/hardware gates unchanged.
+
+
+#### NF1 Proposed Same-Process Structural Comparison Protocol (2026-11-05)
+
+After §142's four unequal historical digests, the user approved **design-only
+protocol preparation**, using existing project records. No import, compilation,
+fixture, installed-source refresh, method execution or claim adoption is approved.
+[Review §143][sinc-structural-protocol-review] records this preparation. The proposed
+SC18-v0 representation and future budgets below are not adopted acceptance criteria.
+
+**Question and distinct outcomes.** In a separately approved future process, do the
+four fixed §141 checker bindings and corresponding freshly compiled code objects
+agree in every declared SC18-v0 field and typed constant? A complete equality result
+would establish only agreement in that representation at the observed points.
+It would not identify why §141/§142 marshal digests differ, reconstruct historical
+objects, establish full interpreter-object equality, prove source authority or
+mathematical semantics, or qualify U4. A difference identifies a bounded field path,
+not automatically a runtime defect. Unsupported, incomplete or unstable evidence
+is a separate unresolved outcome, never equality. Historical unequal digests stay.
+
+**Fixed objects and process plan, not permission.** Propose one explicit diagnostics
+import and one compilation in one CPU-only `/opt/venv/bin/python` process; no checker
+calls or deliberate Fraction construction. Normal module/dependency initialization
+executes on import and is not zero work or an all-transitive no-constructor claim.
+Retain only the four exact FunctionType bindings from §141: target content,
+composition, declared binding and pure-cell certificate; the join is outside scope.
+Require their module namespace and code references, source file and filename, and
+first lines 669/1057/1487/1873 to match the declared profile. The source profile stays
+271,168 bytes/SHA256 be7f30a1559ef0c49d3992c923788c12a1c9e9d56718a44c1190837649aa5057,
+reported Python3.12.3/GCC13.3.0, source filename from §142; no new provenance claim.
+Record launch/load settings and compile with flags0/dont_inherit=True/optimize0.
+Compile the pinned bytes but never execute that compiled module; select exactly
+one top-level code constant for each fixed name. No extra root, fixture or retry.
+
+**SC18-v0 field set.** Check exactly these eighteen proposed public CodeType fields
+in this order, including nested code constants. Field availability and exact types
+must be checked in the future process; they were not all inspected in §§141-142.
+
+| Field Group | Required Fields | Required Types |
+| --- | --- | --- |
+| Counts/Flags | co_argcount, co_posonlyargcount, co_kwonlyargcount, co_nlocals, co_stacksize, co_flags | Exact nonboolean integers |
+| Instructions/Constants | co_code, co_consts | Exact bytes; exact tuple of supported typed constants |
+| Names/Locals | co_names, co_varnames | Exact tuples of exact strings |
+| Location/Identity | co_filename, co_name, co_qualname, co_firstlineno | Exact strings; exact nonboolean integer |
+| Location/Exception Tables | co_linetable, co_exceptiontable | Exact bytes |
+| Closure Names | co_freevars, co_cellvars | Exact tuples of exact strings |
+
+Private/adaptive VM storage, object addresses, reference counts, interning state,
+globals/closure values, derived position iterators and execution behaviour are not
+represented. Excluding them limits the claim; it does not prove them irrelevant.
+No CodeType equality, function evaluation, disassembly or marshal digest is used
+as a substitute for the eighteen fields. Missing/type-invalid fields stop; no
+field dropping, alternate representation or inferred default to obtain equality.
+
+**Typed constant representation.** Propose exact-builtin None/Ellipsis/bool/int/
+float/complex/str/bytes/tuple/frozenset plus exact CodeType only. Each has a distinct
+type tag and length-delimited payload; bool never aliases int. Integers use sign
+and bounded magnitude bytes, floats their binary64 bits including signed zero/NaN
+payload, complex two such components, strings UTF-8 with surrogatepass, and bytes
+their literal payload. None/Ellipsis have distinct singleton tags. Tuples preserve
+order and every occurrence; frozensets sort the complete tagged child encodings
+lexicographically, retaining multiplicity/cardinality of encoded elements rather
+than merging equal encodings. Code constants recurse through the same eighteen
+fields. Fixed field order and explicit container lengths prevent ambiguity.
+Propose one-byte tags and eight-byte payload lengths; container payloads are
+successive complete child encodings, with cardinality derived by parsing to the
+declared payload end. Code payloads have exactly eighteen ordered field encodings.
+No additional uncharged field-name, count or framing bytes are permitted. Integer
+payload charges include its sign byte; bool, float and complex charges include
+their complete one/eight/sixteen-byte payloads, respectively.
+Unsupported constants, cycles or incomplete encoding stop without repr/str fallback,
+numeric conversion, approximate comparison, pointer-based equality or normalization.
+Repeated aliases are charged per occurrence; their alias graph is not represented.
+
+**Proposed attempted-work ledger and guards.** One nonrefundable process/import
+position, one compile attempt, eight root-snapshot attempts (four loaded/four
+compiled) and at most four pair-comparison entries. Reserve each before its phase;
+failure/interruption consumes it, with no second process/compile or fallback.
+Use one combined 8,192 node-visit budget across snapshots and comparisons, depth64,
+65,536 bits per integer, 1,048,576 charged leaf-payload bytes, 64 retained difference
+paths and 65,536 retained-report bytes. These are proposed stop limits, not measured
+fit, deadlines or proof of bounded compiler/import/GCD/allocator/native work.
+Source bytes and compiler storage are outside the leaf-payload count, explicitly.
+
+Charge each visit before recursion. Guard integer bit length before magnitude
+conversion; bytes length before copying; a conservative four-bytes-per-character
+string allowance before encoding. Charge complex's two float payloads and every
+container occurrence. Permit tag/length overhead only within an additional
+9-bytes-per-visited-node encoding allowance; the combined visit cap also covers
+field-value encoding. Reserve complete child encodings before frozenset sorting
+or concatenation. Compare typed payload bytes exactly, not Python hashes/digests.
+Report paths as fixed field names and bounded indices, not unbounded constants.
+If difference/report capacity is exhausted, stop unresolved rather than silently
+truncate a complete-comparison claim. No partial positive certificate is published.
+
+**Publication, acceptance and stops.** Capture all eight supported root snapshots
+before comparison. Retain original live bindings/code references and source bytes;
+recheck bindings/code references/file hash after snapshots and before publication.
+Only after complete comparisons and final guards may a fresh report say equal or
+different for each pair, with full declared field/type coverage and attempted ledger.
+Two-point identity checks still cannot detect transient mutation, enforce ownership
+or future stability. Unexpected errors/MemoryError/interruption stop without a
+successful report; no automatic repair run. Malformed profiles, source/version drift,
+missing/duplicate roots, unsupported types/cycles, cap exhaustion or observed binding/
+code/source change stop unresolved. Preserve bounded failure/outcome history.
+
+Future review must separately approve this representation, limits, runner and one
+process/import/compile position before execution. An equality report would accept
+neither U4 nor any mathematical/native/source/resource/consumer claim; a difference
+would authorize no code repair by itself. Keep all fifteen verdicts undecided, five
+flags false, consumer ineligible and existing task/physical/data/hardware gates.
+Propose ordinary session output plus existing evidence documents, no persistent
+probe/cache artifact or raw constant dump, no download or cleanup. Preparation and
+documentation validation do not renew any exhausted evidence or source-test budget.
+
+
+
+
 [sinc-cell-review]: ../../REVIEW.md
 [sinc-word-review]: ../../REVIEW.md
 [sinc-word-proof-review]: ../../REVIEW.md
@@ -2194,3 +2382,6 @@ dependency, hardware or acquisition authority follows from the worksheet.
 [sinc-target-join-paper-review]: ../../REVIEW.md
 [sinc-join-worksheet-review]: ../../REVIEW.md
 [c1-prototype-source]: ../../sim/diagnostics.py
+[sinc-binding-identity-review]: ../../REVIEW.md
+[sinc-compile-comparison-review]: ../../REVIEW.md
+[sinc-structural-protocol-review]: ../../REVIEW.md

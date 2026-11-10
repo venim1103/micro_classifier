@@ -15745,6 +15745,7 @@ class _SyntheticC1SourceRecorder:
         include_cylinder_horizontal_norm_residuals=False,
         include_cylinder_discriminant_residuals=False,
         include_cylinder_root_squared_residuals=False,
+        include_cylinder_side_numerator_residuals=False,
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
@@ -15824,6 +15825,14 @@ class _SyntheticC1SourceRecorder:
         if include_cylinder_root_squared_residuals and not include_cylinder:
             raise ValueError(
                 "include_cylinder_root_squared_residuals requires include_cylinder=True"
+            )
+        if type(include_cylinder_side_numerator_residuals) is not bool:
+            raise ValueError(
+                "include_cylinder_side_numerator_residuals must be a literal bool"
+            )
+        if include_cylinder_side_numerator_residuals and not include_cylinder:
+            raise ValueError(
+                "include_cylinder_side_numerator_residuals requires include_cylinder=True"
             )
         if type(include_floor_residuals) is not bool:
             raise ValueError("include_floor_residuals must be a literal bool")
@@ -16159,6 +16168,26 @@ class _SyntheticC1SourceRecorder:
                 ),
             }
 
+        def cylinder_side_numerator_probe(record):
+            trace = record["cylinder"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_cylinder_side_numerator_residuals(
+                    projection_m_hex=tuple(
+                        entry["projection_m"] for entry in trace["cylinders"]
+                    ),
+                    root_m_hex=tuple(entry["root_m"] for entry in trace["cylinders"]),
+                    side_numerator_m_hex=tuple(
+                        tuple(side["numerator_m"] for side in entry["sides"])
+                        for entry in trace["cylinders"]
+                    ),
+                    synthetic_test_only=True,
+                ),
+            }
+
         def cylinder_selection_probe(record):
             trace = record["cylinder"]
             cylinders = trace["cylinders"]
@@ -16483,6 +16512,18 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_side_numerator_residuals:
+                cylinder_side_numerator_residuals = cylinder_side_numerator_probe(
+                    cylinder
+                )
+                pending_cylinder_side_numerator_residuals = (
+                    tuple(
+                        cylinder_side_numerator_probe(record)
+                        for record in pending_cylinder
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
             producer_binding = _c1_source_binding_digest(observed)
@@ -16683,6 +16724,18 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_cylinder_side_numerator_residuals:
+                cylinder_side_numerator_residuals_after = cylinder_side_numerator_probe(
+                    cylinder_after
+                )
+                pending_cylinder_side_numerator_residuals_after = (
+                    tuple(
+                        cylinder_side_numerator_probe(record)
+                        for record in pending_cylinder_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_timing or include_selection or include_wall or include_cylinder:
@@ -16806,6 +16859,19 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_cylinder_side_numerator_residuals and (
+                not _native_tof_word_copy_matches(
+                    cylinder_side_numerator_residuals,
+                    cylinder_side_numerator_residuals_after,
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_cylinder_side_numerator_residuals,
+                    pending_cylinder_side_numerator_residuals_after,
+                )
+            ):
+                raise ValueError(
+                    "native ToF cylinder side numerator source or outgoing records changed"
+                )
             if include_cylinder_root_squared_residuals and (
                 not _native_tof_word_copy_matches(
                     cylinder_root_squared_residuals,
@@ -17044,6 +17110,14 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_cylinder_root_squared_residuals"] = (
                     pending_cylinder_root_squared_residuals
+                )
+        if include_cylinder_side_numerator_residuals:
+            result["cylinder_side_numerator_residuals"] = (
+                cylinder_side_numerator_residuals
+            )
+            if include_pending_sources:
+                result["pending_cylinder_side_numerator_residuals"] = (
+                    pending_cylinder_side_numerator_residuals
                 )
         if include_floor_residuals:
             result["floor_residuals"] = floor_residuals

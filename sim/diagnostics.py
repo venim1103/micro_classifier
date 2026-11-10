@@ -10037,6 +10037,135 @@ def _native_tof_wall_mask_candidate_diagnostics(
     }
 
 
+def _native_tof_cylinder_discriminant_residuals(
+    *,
+    offset_m_hex,
+    radius_m_hex,
+    projection_m_hex,
+    horizontal_squared_hex,
+    discriminant_m2_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native cylinder discriminant residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native cylinder discriminant rational budget unsupported")
+    if type(offset_m_hex) is not tuple or len(offset_m_hex) > 32:
+        raise ValueError("native cylinder discriminant obstacle count unsupported")
+    count = len(offset_m_hex)
+    if any(
+        type(words) is not tuple or len(words) != count
+        for words in (radius_m_hex, projection_m_hex, discriminant_m2_hex)
+    ):
+        raise ValueError("native cylinder discriminant obstacle count unsupported")
+
+    def decoded(words, size, finite_only):
+        if type(words) is not tuple or len(words) != size:
+            raise ValueError("native cylinder discriminant word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native cylinder discriminant word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native cylinder discriminant words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native cylinder discriminant words must be canonical")
+            values.append(value)
+        return values
+
+    offsets = tuple(decoded(words, 2, True) for words in offset_m_hex)
+    radii = decoded(radius_m_hex, count, True)
+    projections = tuple(decoded(words, 64, True) for words in projection_m_hex)
+    horizontal = decoded(horizontal_squared_hex, 64, True)
+    observed = tuple(decoded(words, 64, False) for words in discriminant_m2_hex)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        rational_horizontal = (
+            tuple(arithmetic.value(value) for value in horizontal) if count else ()
+        )
+        for obstacle_index, offset in enumerate(offsets):
+            rational_offset = tuple(arithmetic.value(value) for value in offset)
+            radius = arithmetic.value(radii[obstacle_index])
+            base = arithmetic.binary(
+                arithmetic.binary(
+                    arithmetic.binary(rational_offset[0], rational_offset[0], "mul"),
+                    arithmetic.binary(rational_offset[1], rational_offset[1], "mul"),
+                    "add",
+                ),
+                arithmetic.binary(radius, radius, "mul"),
+                "sub",
+            )
+            for ray_index, horizontal_value in enumerate(rational_horizontal):
+                projection = arithmetic.value(projections[obstacle_index][ray_index])
+                exact = arithmetic.binary(
+                    arithmetic.binary(projection, projection, "mul"),
+                    arithmetic.binary(horizontal_value, base, "mul"),
+                    "sub",
+                )
+                value = observed[obstacle_index][ray_index]
+                residual = (
+                    arithmetic.binary(arithmetic.value(value), exact, "sub")
+                    if math.isfinite(value)
+                    else None
+                )
+                entries.append(
+                    {
+                        "obstacle_index": obstacle_index,
+                        "ray_index": ray_index,
+                        "offset_m_hex": offset_m_hex[obstacle_index],
+                        "radius_hex": radius_m_hex[obstacle_index],
+                        "projection_hex": projection_m_hex[obstacle_index][ray_index],
+                        "horizontal_squared_hex": horizontal_squared_hex[ray_index],
+                        "observed_discriminant_hex": discriminant_m2_hex[
+                            obstacle_index
+                        ][ray_index],
+                        "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                        "signed_residual_ratio": None
+                        if residual is None
+                        else residual.as_integer_ratio(),
+                        "status": "unknown_nonfinite_cylinder_discriminant"
+                        if residual is None
+                        else "computed_exact_cylinder_discriminant_expression_residual",
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native cylinder discriminant rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-cylinder-discriminant-residuals/1",
+        "allowed_use": "offline_cylinder_discriminant_word_diagnostics_only",
+        "status": "reported_cylinder_discriminant_expression_residuals",
+        "comparison_basis": "unrounded_supplied_word_projection_squared_minus_horizontal_squared_times_offset_norm_minus_radius_squared",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_horizontal_norm_residuals(
     *, world_frame_unit_rays, horizontal_squared_hex, synthetic_test_only=False
 ):

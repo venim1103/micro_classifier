@@ -535,6 +535,44 @@ FMA/uniform error/numerical/physical/clock/one-use/permission/admission or usabl
 command. Next bounded combined supplied-word discriminant expression; inner
 products/subexpressions remain uncaptured, not qualified by matching words.
 
+## 257. Supplied-Word Cylinder Discriminant Expression (2026-11-10)
+
+Checkpoint `acfcbfd` pushed/clean. Native owning expression is projection² minus
+horizontal_squared*(offset·offset-radius²). Local hypothesis: bounded exact
+evaluation on supplied finite operands and observed-minus-exact discrepancy,
+without reconstructing uncaptured intermediate rounding or qualifying root/mask.
+Canonical preflight <=4256 words/32 characters, <=32 offset/radius/projection/
+discriminant records and64 horizontal words. Observed infinities unknown residual;
+existing4096-bit rational ceiling, <=4256 value calls/8352 binary operations,
+2048 entries. No intake/read/hash/retention/replay/clock/RNG or composition.
+
+23 synthetic controls in existing test file, actual nonempty words, max32/
+empty, negative discriminant/signed-zero/subnormal/large/rounded/infinite cases,
+Fraction oracle <=8352 operations and malformed/work budgets. Actual setup
+<=1 geometry/selected intake,2 native intakes; parent ledgers unchanged. Three
+pytest positions including failures/aborts: first23/60 seconds, one necessary
+repair reserve, final root/300 seconds; retain `cylinder-257-*` logs. No old
+refunds/protected runs/task data/dependencies/hardware. All eight flags false;
+no primitive/FMA/uniform/numerical/physical/source/geometry/coverage/clock/
+permission/admission or usable command. Square-root/stage evidence remains next.
+
+First23 passed,2798 deselected,2.87 s. Required root3744 passed,1 known
+transformer QDQ xfailed,71 warnings,88.05 s; root Ruff, changed-file format check
+and whitespace passed. Editor diagnostics clear. AST proves only new discriminant
+helper/test added; all prior source/test nodes intact, no existing signature
+changed. Two of three pytest positions used, no failures/aborts; unused reserve
+is not follow-on authority. Logs `cylinder-257-focused-1.log`/
+`cylinder-257-root-1.log` retained under recovery directory. No additional
+C/Arm/sanitizer/board opt-in gates ran.
+
+Actual nonempty and max32/empty controls, supplied-word negative discriminant,
+rounded/mismatch/signed-zero/subnormal/large/infinite observations and preflight/
+work-budget rejection agree with independent Fraction oracle within caps,
+leaving input/tick/RNG unchanged. All eight flags false, no isolated primitive/
+FMA/uniform error/numerical/physical/source/geometry/coverage/clock/one-use/
+permission/admission or usable command. Next root-squared consistency against
+supplied nonnegative discriminant, not square-root rounding/error certification.
+
 ## Sources
 
 Hardware and tools:

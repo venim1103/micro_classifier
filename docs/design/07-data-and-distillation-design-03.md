@@ -2206,6 +2206,20 @@ uniform/numerical/physical/source/geometry/coverage/clock/permission/admission
 qualification. Standalone, all eight flags false. See [actual controls and gate][native-tof-cylinder-horizontal-review].
 
 
+#### Supplied-Word Cylinder Discriminant Expression (2026-11-10)
+
+`_native_tof_cylinder_discriminant_residuals` reports exact unrounded supplied
+projection²-horizontal_squared*(offset·offset-radius²) and observed-minus-exact
+ratios for <=32 cylinders/64 rays. Canonical preflight <=4256 words,32 characters;
+finite operands, non-NaN observed infinities produce unknown residuals. Existing
+4096-bit rational ceiling, <=4256 value calls/8352 binary operations,2048 entries.
+No intake/read/hash/retention/replay/clock/RNG or matched-source composition.
+Uncaptured inner products/subexpressions remain uncaptured; this is combined
+expression discrepancy, not isolated primitive/FMA, root/mask, uniform error,
+numerical/physical/source/geometry/coverage/clock/permission/admission proof.
+All eight flags false. See [actual controls and gate][native-tof-cylinder-discriminant-review].
+
+
 [native-tof-cylinder-trace-review]: ../../REVIEW.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../../REVIEW.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../../REVIEW.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2216,3 +2230,4 @@ qualification. Standalone, all eight flags false. See [actual controls and gate]
 [native-tof-cylinder-offset-review]: ../../REVIEW.md#253-supplied-word-cylinder-offset-discrepancies-2026-11-10
 [native-tof-cylinder-projection-review]: ../../REVIEW.md#254-supplied-word-cylinder-projection-expressions-2026-11-10
 [native-tof-cylinder-horizontal-review]: ../../REVIEW.md#256-supplied-horizontal-squared-ray-expression-2026-11-10
+[native-tof-cylinder-discriminant-review]: ../../REVIEW.md#257-supplied-word-cylinder-discriminant-expression-2026-11-10

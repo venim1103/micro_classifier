@@ -15,7 +15,9 @@ required tests, documentation, checkpoint commits and periodic normal upstream
 pushes within the agreed plan. Choose recommended defaults and record rationale;
 do not ask for routine planning/testing approval or a finish/continue vote.
 This supersedes historical routine approval wording, not protected limits,
-exhausted experiments or missing qualification evidence.
+exhausted experiments or missing qualification evidence. Fresh bounded local
+source-recovery and unit/regression checks are delegated even when historical
+routine test accounting is missing; preserve unknown attempts, not approval gates.
 
 ## Project
 
@@ -30,10 +32,10 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 ## Current Work
 
 Read [REVIEW.md][review] §225 for bounded native ToF selection intake
-and the latest verified source gate; §226 records the unverified selection-retention
-WIP's missing attempt ledger. Recover it or obtain explicit bounded execution
-authority before focused/root runs; count interrupted/unknown attempts as spent.
-§227 prepares an additional two-focused/one-root revalidation proposal, not approval.
+and the latest verified source gate. §§226-227 preserve the unverified selection-
+retention WIP's missing ledger and initial finite revalidation plan; §228 supersedes
+their routine approval blocker. Revalidate under standing authority using that
+initial plan, recording each actual attempt and retaining historical unknowns.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5
 source/named-consumer qualification packet (§180) is prepared, not adopted.
 All qualification/admission flags remain false; no usable command is admitted.
@@ -107,6 +109,10 @@ dated [REVIEW.md][review] sections, not here. Replace this short state as it cha
   finite scope/resource budget and exit condition, implement, verify, checkpoint,
   then start the next useful authorized action in the same turn. Missing routine
   planning/testing approval is not a blocker.
+- Assistant-written proposals and test plans are not permission gates for work
+  already delegated. Do not replace implementation with repeated documentation-
+  only budget proposals, approval requests or checkpoint reports. Record the
+  bounded routine plan and execute it within the same work slice.
 - At material checkpoints or new evidence, reassess the plan and priority queue;
   update compatible choices independently. Apply delivered user corrections
   promptly. Reviews are not new permission gates or reasons for repeated audits.
@@ -124,6 +130,9 @@ dated [REVIEW.md][review] sections, not here. Replace this short state as it cha
 - Treat an open-ended continuation as active across checkpoints, commits,
   pushes, progress reports, tool notifications, reloads and context compaction.
   Completing one task does not complete the session or require another continue.
+- Do not end active work with a routine permission/finish vote. An assistant-
+  imposed planning gate or missing routine test ledger is not an all-path blocker;
+  use the recovery rules below and take the next useful authorized action.
 - During open-ended work, process new user messages delivered by the platform
   before the next slice; apply the newest compatible instructions. Do not claim
   inbox polling or message checks with unavailable tools.
@@ -187,12 +196,24 @@ not a guarantee of unlimited execution or background message monitoring.
   Record finite fixture/query counts, attempt/resource caps and failure/cleanup
   plans before execution. Count failures/aborts; retain tolerances, hard work
   limits and per-family controls.
+- If historical routine test accounting is missing, mark interrupted/unknown
+  attempts as spent/unknown and start a fresh bounded revalidation ledger under
+  standing authority. Run the necessary focused and root checks without another
+  approval request; never infer a past pass, refund old attempts or treat a new
+  ledger as qualification evidence. This does not reopen protected experiments
+  or override an explicit user-imposed execution ceiling.
+- Distinguish explicit user-imposed hard caps and protected experiment budgets
+  from assistant-selected routine test plans. For the latter, diagnose a failure
+  before any rerun and document a narrowly revised finite plan when a necessary
+  repair or required verification needs it. Do not repeatedly reset budgets for
+  unchanged failures, rerun unchanged successful gates, relax fixture/work/safety
+  limits or manufacture a new scope to evade a protected cap.
 - Old spent experiment ledgers remain historical and are not refunded. Existing
   fixtures may run as unchanged controls in the required regression gate for a
   new source change; this does not authorize standalone old experiments, extra
   study runs or deferred audits. A substantive repair permits another necessary
-  check within the recorded scope. A hard-cap increase or protected experiment
-  still needs explicit authority; do not manufacture a new scope to evade it.
+  check within the recorded scope. Increasing an explicit user-imposed hard cap
+  or protected experiment budget still needs explicit authority.
 - After a substantive edit, run the cheapest behavior-scoped check first. Before
   each source checkpoint commit, run focused checks for the changed behavior and
   the default gate from the repository root:
@@ -242,7 +263,7 @@ without an approval questionnaire, and continue other useful in-scope work:
   requirement is not silently adopted by choosing a convenient default.
 - New study episodes, task labels/imports, dataset/cohort/split acceptance,
   teacher labeling, training, outcome-driven tuning, or uncertainty/risk-policy
-  adoption not covered by a current explicit authorization. Exhausted bounded
+  adoption not covered by a current explicit authorization. Exhausted protected
   run approvals stay exhausted; synthetic unit fixtures are not task data.
 - Running third-party model code at a revision the user has not approved; new
   model experiments beyond the exact approved runtime/resource/run scope; new

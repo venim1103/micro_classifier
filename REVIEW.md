@@ -462,6 +462,42 @@ test AST, WIP source/test bytes unchanged, installed `timeout` present and edito
 diagnostics clear. No project import or behavioral test was executed. No new
 physical/source/clock/coverage/error/setup evidence or source gate is claimed.
 
+## 228. Autonomous Routine Recovery and Continuation Correction (2026-11-10)
+
+The user explicitly reiterated autonomous work authority and requested correction
+of AGENTS.md, then stopping after this instruction-update task. Review found a
+workflow defect: §§226-227 turned missing routine synthetic-test accounting and
+an assistant-written revalidation plan into repeated permission gates despite
+standing authority. Their recorded unknown attempts and unverified source state
+remain historical facts, but their routine approval blocker is superseded.
+
+Updated standing authority, Current Work, continuation and verification rules:
+fresh bounded source-recovery/unit/regression checks are delegated; record actual
+attempts before execution and preserve unknown historical attempts without
+inferring success or refunding them. Assistant-selected routine budgets may be
+revised narrowly after diagnosis for necessary repair/verification; explicit
+user-imposed hard caps and protected study/model budgets cannot be overridden.
+Preserve fixture/work/safety limits, failure records and the prohibition on
+unchanged successful reruns or manufactured scopes. Do not turn routine planning
+into a documentation-only approval loop or end an active continuation at a green
+gate, checkpoint, commit, push or permission vote.
+
+The final-answer gate retains explicit stops, completed standalone bounded tasks,
+genuine all-path blockers and actual higher-priority/platform limits. Instructions
+cannot guarantee unlimited turns or background monitoring. The user's current
+stop-after-update request limits this task: no source/test edits, fixture/style/
+root execution, studies, dependencies or hardware action. A future continuation
+can execute the initial §227 revalidation plan under the corrected standing
+authority without another approval request. No physical bound, qualification or
+admission flag is adopted; `c226192` remains the last verified source checkpoint.
+
+Instruction/content checks passed: delegated routine recovery, bounded replanning,
+no approval/checkpoint stopping loop, retained hard caps and current bounded-task
+stop. The final-answer gate is byte-identical; protected boundaries differ only
+in clarifying protected versus routine runs. Earlier review/Sources and all other
+tracked files remain unchanged; local reference targets, document sizes and editor
+diagnostics passed. The code suite was not rerun for this instruction-only update.
+
 ## Sources
 
 Hardware and tools:

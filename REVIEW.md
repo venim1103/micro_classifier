@@ -474,6 +474,57 @@ coverage/clock/one-use/physical/permission/admission proof or usable command,
 all8 flags false. Next original+closing retained delivered/pending final-up
 word-copy composition with default-off include_direction dependency.
 
+## 305. Matched Native Direction Up-Copy Reports (2026-11-11)
+
+Begin clean746fd94. Hypothesis: append-only literal default-off final-up copy
+option requires include_direction=True; original+closing typed retained
+delivered/pending pitched_up/world-z words and IDs to existing helper, final
+history/input/frame/queue/owner/copied-report binding before publication.
+Same unknown/nonfinite/equal-value-different-word limits/all8 false, no
+trig/geometry/error/source/coverage/clock/one-use/physical/permission/admission.
+Preserve old144snapshot+9dependency controls; new up24+3=180, combined all
+product/pitch/yaw/up/norm with old independent arithmetic counters/caps.
+Same4steps/5reads/3retentions/3geometries/6matches/2pending/4queue/2frame/
+64bindings/one late mutation; <=6up helpers/384strict comparisons/768decodes,
+no up rational work, old1..4096bit guard unchanged for arithmetic families.
+Late pitched-up/final-z/outgoing-up mutations, default keys absent/unknown
+omits every payload/detached copies. Pylance no resolved method callers NOT
+static compatibility proof. Fresh3 pytest positions first180/60s, sole
+necessary repair180/60s, root360s; count failed/aborted/unknown spent, no
+refund/protected renewal. Retain rays-305-* original recovery directory,
+serial no source/formatter/editor tools during tests. Exit matched word-copy
+only; reassess supported ray-to-ToF source prerequisites, all qualification false.
+
+First180 FAILED5/175passed/3731deselected/24.96s: new test mode flag named up
+was shadowed by the pre-existing pitch oracle's Fraction local up, triggering
+up payload assertions in pitch copy/held/delivered-only/combined and yaw combined
+modes. New up mode itself and source implementation were not failing. Repair
+ONLY introduced bool flag to up_copy, retaining every old oracle/case/assertion/
+helper/recorder/counter/cap. Failed pipeline did not reach closing hashes; failed
+log retained, first position spent not refunded. Same reserved180/60s check next,
+no scope or protected-budget change.
+
+Repaired180 passed/3731deselected/21.33s, four hashes stable. Old144 modes/
+24names/nine dependencies and every old oracle/cap preserved; new up24+3 and
+combined product/pitch/yaw/up/norm validated with separate counters, actual
+up/z words/IDs/zero mismatch+unknown counts, delivered-only/held/default,
+late pitched-up/final-z/outgoing flags and detached/unknown-no-payload checks.
+AST all old imports/definitions/methods/default keyword prefix/case decorators/
+mode/dependency prefixes conserved except planned snapshot/two matrices;
+touched format/lint/whitespace/editor clear. Required root
+`python -m pytest -q && ruff check . && git diff --check` passed4834/known QDQ
+xfail/71warnings/156.02s; four hashes stable, touched format-check passed.
+All3 pytest positions spent, first5-failure log retained, no abort/refund/
+source/guard/tolerance/cap repair, only new test bool rename. Logs rays-305-
+{focused-1,focused-2,root-1} retained original recovery directory. All8 false;
+no data/studies/models/dependencies/hardware/additional native/Arm/sanitizer/
+board opt-in/audit, no corrected values/trig/geometry/uniform-error/source/
+coverage/clock/one-use/physical/permission/admission proof or usable command.
+Reassessment: floor guarded division already has standalone+matched reports,
+do not duplicate. Next bounded cold return-postprocessing capture at actual
+_sample owner: noise/dropout draws, masks, clip/select/store words with no extra
+RNG calls/replay or noise-law/error/coverage/timing adoption; source-only first.
+
 ## Sources
 
 Hardware and tools:

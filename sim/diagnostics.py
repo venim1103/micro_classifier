@@ -16743,6 +16743,7 @@ class _SyntheticC1SourceRecorder:
         include_direction_product_residuals=False,
         include_direction_pitch_residuals=False,
         include_direction_yaw_residuals=False,
+        include_direction_up_copy_diagnostics=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -16777,6 +16778,14 @@ class _SyntheticC1SourceRecorder:
         if include_direction_yaw_residuals and not include_direction:
             raise ValueError(
                 "include_direction_yaw_residuals requires include_direction=True"
+            )
+        if type(include_direction_up_copy_diagnostics) is not bool:
+            raise ValueError(
+                "include_direction_up_copy_diagnostics must be a literal bool"
+            )
+        if include_direction_up_copy_diagnostics and not include_direction:
+            raise ValueError(
+                "include_direction_up_copy_diagnostics requires include_direction=True"
             )
         if type(include_wall_cylinder_boundary_diagnostics) is not bool:
             raise ValueError(
@@ -17133,6 +17142,20 @@ class _SyntheticC1SourceRecorder:
                     },
                     world_x_hex=generation["world_frame_unit_rays"][0::3],
                     world_y_hex=generation["world_frame_unit_rays"][1::3],
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def direction_up_copy_probe(record):
+            generation = record["direction"]["direction_generation"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_direction_up_copy_diagnostics(
+                    pitched_up_hex=generation["pitched_up"],
+                    world_z_hex=generation["world_frame_unit_rays"][2::3],
                     synthetic_test_only=True,
                 ),
             }
@@ -17788,6 +17811,17 @@ class _SyntheticC1SourceRecorder:
                 direction_yaw_binding = _c1_source_binding_digest(
                     {"yaw": direction_yaw, "pending_yaw": pending_direction_yaw}
                 )
+            if include_direction_up_copy_diagnostics:
+                direction_up_copy = direction_up_copy_probe(direction)
+                pending_direction_up_copy = tuple(
+                    direction_up_copy_probe(record) for record in pending_direction
+                )
+                direction_up_copy_binding = _c1_source_binding_digest(
+                    {
+                        "up_copy": direction_up_copy,
+                        "pending_up_copy": pending_direction_up_copy,
+                    }
+                )
             if include_wall_cylinder_boundary_diagnostics:
                 wall_cylinder_boundary = wall_cylinder_boundary_probe(wall, cylinder)
                 pending_wall_cylinder_boundary = (
@@ -18302,6 +18336,7 @@ class _SyntheticC1SourceRecorder:
                 include_direction_product_residuals
                 or include_direction_pitch_residuals
                 or include_direction_yaw_residuals
+                or include_direction_up_copy_diagnostics
             ):
                 _check_native_tof_direction_history(
                     [direction_after, *pending_direction_after],
@@ -18323,6 +18358,12 @@ class _SyntheticC1SourceRecorder:
                 direction_yaw_after = direction_yaw_probe(direction_after)
                 pending_direction_yaw_after = tuple(
                     direction_yaw_probe(record) for record in pending_direction_after
+                )
+            if include_direction_up_copy_diagnostics:
+                direction_up_copy_after = direction_up_copy_probe(direction_after)
+                pending_direction_up_copy_after = tuple(
+                    direction_up_copy_probe(record)
+                    for record in pending_direction_after
                 )
             if include_pending_sources and (
                 environment.pending is not pending_before
@@ -18726,6 +18767,24 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF direction yaw source or outgoing records changed"
                 )
+            if include_direction_up_copy_diagnostics and (
+                not _native_tof_word_copy_matches(
+                    direction_up_copy, direction_up_copy_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_direction_up_copy, pending_direction_up_copy_after
+                )
+                or _c1_source_binding_digest(
+                    {
+                        "up_copy": direction_up_copy,
+                        "pending_up_copy": pending_direction_up_copy,
+                    }
+                )
+                != direction_up_copy_binding
+            ):
+                raise ValueError(
+                    "native ToF direction up copy source or outgoing records changed"
+                )
             if include_direction_norm_residuals and (
                 not _native_tof_word_copy_matches(
                     direction_norm_residuals, direction_norm_after
@@ -18919,6 +18978,12 @@ class _SyntheticC1SourceRecorder:
             result["direction_yaw_residuals"] = direction_yaw
             if include_pending_sources:
                 result["pending_direction_yaw_residuals"] = pending_direction_yaw
+        if include_direction_up_copy_diagnostics:
+            result["direction_up_copy_diagnostics"] = direction_up_copy
+            if include_pending_sources:
+                result["pending_direction_up_copy_diagnostics"] = (
+                    pending_direction_up_copy
+                )
         if include_direction_norm_residuals:
             result["direction_norm_residuals"] = direction_norm_residuals
             if include_pending_sources:

@@ -14076,6 +14076,7 @@ def test_native_tof_selection_snapshot(
         (None, True),
         (None, "pitch"),
         (None, "yaw"),
+        (None, "up"),
     ),
 )
 def test_native_tof_wall_snapshot(
@@ -14088,9 +14089,11 @@ def test_native_tof_wall_snapshot(
 
     pitch = products == "pitch"
     yaw = products == "yaw"
+    up_copy = products == "up"
     products = products is True
-    include_products = products or ((pitch or yaw) and case == "combined")
-    include_pitch = pitch or (yaw and case == "combined")
+    include_products = products or ((pitch or yaw or up_copy) and case == "combined")
+    include_pitch = pitch or ((yaw or up_copy) and case == "combined")
+    include_yaw = yaw or (up_copy and case == "combined")
     direction = cylinder is None
     kind = "direction" if direction else "cylinder" if cylinder else "wall"
     history_name = f"_tof_{kind}_history"
@@ -14134,6 +14137,9 @@ def test_native_tof_wall_snapshot(
             "yaw_values",
             "yaw_binary",
             "yaw_oracle",
+            "up",
+            "up_active",
+            "up_comparisons",
         ),
         0,
     )
@@ -14251,6 +14257,8 @@ def test_native_tof_wall_snapshot(
     original_product = diagnostics._native_tof_direction_product_residuals
     original_pitch = diagnostics._native_tof_direction_pitch_residuals
     original_yaw = diagnostics._native_tof_direction_yaw_residuals
+    original_up = diagnostics._native_tof_direction_up_copy_diagnostics
+    original_word_match = diagnostics._native_tof_word_copy_matches
     original_value = diagnostics._C1CommandArithmetic.value
     original_binary = diagnostics._C1CommandArithmetic.binary
     outgoing = {}
@@ -14268,7 +14276,9 @@ def test_native_tof_wall_snapshot(
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
                 outgoing[
-                    "yaw"
+                    "up"
+                    if up_copy
+                    else "yaw"
                     if yaw
                     else "pitch"
                     if pitch
@@ -14357,6 +14367,23 @@ def test_native_tof_wall_snapshot(
         outgoing.setdefault("yaw", actual)
         return actual
 
+    def up_probe(*args, **kwargs):
+        work["up"] += 1
+        assert work["up"] <= 6
+        work["up_active"] = True
+        try:
+            actual = original_up(*args, **kwargs)
+        finally:
+            work["up_active"] = False
+        outgoing.setdefault("up", actual)
+        return actual
+
+    def word_match(*args, **kwargs):
+        if work["up_active"]:
+            work["up_comparisons"] += 1
+            assert work["up_comparisons"] <= 384
+        return original_word_match(*args, **kwargs)
+
     def value(instance, argument):
         if work["product_active"]:
             work["values"] += 1
@@ -14430,7 +14457,9 @@ def test_native_tof_wall_snapshot(
                 )
                 if direction:
                     name = (
-                        "world_frame_unit_rays"
+                        "pitched_up"
+                        if up_copy
+                        else "world_frame_unit_rays"
                         if yaw
                         else "pitched_up"
                         if pitch
@@ -14449,7 +14478,17 @@ def test_native_tof_wall_snapshot(
             elif case == "outgoing":
                 outgoing["wall"][kind]["source_qualified"] = True
             elif case == "late_owner":
-                if pitch or yaw:
+                if up_copy:
+                    generation = getattr(owner, history_name)[0][kind][
+                        "direction_generation"
+                    ]
+                    words = generation["world_frame_unit_rays"]
+                    generation["world_frame_unit_rays"] = (
+                        *words[:2],
+                        math.nextafter(float.fromhex(words[2]), math.inf).hex(),
+                        *words[3:],
+                    )
+                elif pitch or yaw:
                     generation = getattr(owner, history_name)[0][kind][
                         "direction_generation"
                     ]
@@ -14488,6 +14527,10 @@ def test_native_tof_wall_snapshot(
         diagnostics, "_native_tof_direction_pitch_residuals", pitch_probe
     )
     monkeypatch.setattr(diagnostics, "_native_tof_direction_yaw_residuals", yaw_probe)
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_direction_up_copy_diagnostics", up_probe
+    )
+    monkeypatch.setattr(diagnostics, "_native_tof_word_copy_matches", word_match)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
     monkeypatch.setattr(diagnostics, "_match_native_tof_pending_sources", pending)
@@ -14519,7 +14562,8 @@ def test_native_tof_wall_snapshot(
             include_direction_norm_residuals=combined,
             include_direction_product_residuals=include_products and case != "default",
             include_direction_pitch_residuals=include_pitch and case != "default",
-            include_direction_yaw_residuals=yaw and case != "default",
+            include_direction_yaw_residuals=include_yaw and case != "default",
+            include_direction_up_copy_diagnostics=up_copy and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -14535,9 +14579,12 @@ def test_native_tof_wall_snapshot(
         if not include_pitch or case == "default":
             assert "direction_pitch_residuals" not in result
             assert "pending_direction_pitch_residuals" not in result
-        if not yaw or case == "default":
+        if not include_yaw or case == "default":
             assert "direction_yaw_residuals" not in result
             assert "pending_direction_yaw_residuals" not in result
+        if not up_copy or case == "default":
+            assert "direction_up_copy_diagnostics" not in result
+            assert "pending_direction_up_copy_diagnostics" not in result
         if case in ("copy", "default", "held", "delivered_only", "combined"):
             assert result["snapshot_available"] is True, result["reason"]
             assert result["frame"] == before_frame
@@ -14698,7 +14745,7 @@ def test_native_tof_wall_snapshot(
                         ][0]
                         != "changed"
                     )
-                if yaw:
+                if include_yaw:
                     reports = (
                         result["direction_yaw_residuals"],
                         *result.get("pending_direction_yaw_residuals", ()),
@@ -14760,6 +14807,51 @@ def test_native_tof_wall_snapshot(
                         ][0]
                         != "changed"
                     )
+                if up_copy:
+                    reports = (
+                        result["direction_up_copy_diagnostics"],
+                        *result.get("pending_direction_up_copy_diagnostics", ()),
+                    )
+                    records = (selected, *result.get("pending_direction", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert len(diagnostic["entries"]) == 64
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        assert (
+                            diagnostic["word_mismatch_count"]
+                            == diagnostic["copy_mismatch_count"]
+                            == diagnostic["unknown_copy_count"]
+                            == 0
+                        )
+                        generation = record["direction"]["direction_generation"]
+                        for entry in diagnostic["entries"]:
+                            index = entry["ray_index"]
+                            assert (
+                                entry["pitched_up_hex"]
+                                == generation["pitched_up"][index]
+                            )
+                            assert (
+                                entry["world_z_hex"]
+                                == generation["world_frame_unit_rays"][index * 3 + 2]
+                            )
+                            assert entry["pitched_up_hex"] == entry["world_z_hex"]
+                            assert (
+                                entry["words_match"]
+                                is entry["finite_values_equal"]
+                                is entry["copy_corresponds"]
+                                is True
+                            )
+                    result["direction_up_copy_diagnostics"]["diagnostic"]["entries"][0][
+                        "world_z_hex"
+                    ] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["direction_generation"][
+                            "world_frame_unit_rays"
+                        ][2]
+                        != "changed"
+                    )
                 if combined:
                     if cylinder:
                         assert result["wall"]["tick"] == selected["tick"]
@@ -14818,6 +14910,8 @@ def test_native_tof_wall_snapshot(
                     "pending_direction_pitch_residuals",
                     "direction_yaw_residuals",
                     "pending_direction_yaw_residuals",
+                    "direction_up_copy_diagnostics",
+                    "pending_direction_up_copy_diagnostics",
                 }
                 & result.keys()
             )
@@ -14852,13 +14946,15 @@ def test_native_tof_wall_snapshot(
 
 
 @pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_direction"))
-@pytest.mark.parametrize("pitch", (False, True, "yaw"))
+@pytest.mark.parametrize("pitch", (False, True, "yaw", "up"))
 def test_native_tof_direction_product_dependency(
     c1_motion_receipt_source_fixture, case, pitch
 ):
     owner = deepcopy(c1_motion_receipt_source_fixture[1])
     name = (
-        "include_direction_yaw_residuals"
+        "include_direction_up_copy_diagnostics"
+        if pitch == "up"
+        else "include_direction_yaw_residuals"
         if pitch == "yaw"
         else "include_direction_pitch_residuals"
         if pitch

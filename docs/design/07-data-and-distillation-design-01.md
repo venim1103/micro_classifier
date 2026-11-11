@@ -2482,3 +2482,19 @@ permission/admission proof. See
 [actual copy controls and gates][native-tof-direction-up-copy-review].
 
 [native-tof-direction-up-copy-review]: ../../REVIEW.md#304-supplied-word-native-direction-up-copies-2026-11-11
+
+#### Matched Native Direction Up Copies (2026-11-11)
+
+Literal default-off `include_direction_up_copy_diagnostics` requires
+`include_direction=True`; original+closing typed retained delivered/pending
+pitched-up/world-z words and IDs to the existing three-valued copy helper.
+Final native/history/input/frame/queue/owner/copy/report bindings precede
+publication; default keys unchanged, unknown omits all payloads, detached copies.
+Combined product/pitch/yaw/up/norm keeps separate old arithmetic counters;
+<=6up helpers/384strict comparisons/768decodes, no up rational work.
+Raw unsupported/nonfinite source and equal-value/different-word ties unresolved,
+all eight qualification flags false, no trig/geometry/error/source/coverage/
+clock/one-use/physical/permission/admission proof. See
+[actual matched copy controls and gates][native-tof-direction-owned-up-copy-review].
+
+[native-tof-direction-owned-up-copy-review]: ../../REVIEW.md#305-matched-native-direction-up-copy-reports-2026-11-11

@@ -2401,8 +2401,8 @@ See [actual matched controls, preflight and gates][native-tof-direction-owned-pr
 [native-tof-direction-retention-review]: ../review/291-295.md#293-recorder-owned-native-direction-history-2026-11-11
 [native-tof-direction-match-review]: ../review/291-295.md#294-bounded-retained-native-direction-join-2026-11-11
 [native-tof-direction-snapshot-review]: ../review/291-295.md#295-deliveredpending-native-direction-snapshot-2026-11-11
-[native-tof-direction-product-review]: ../../REVIEW.md#296-supplied-word-native-direction-products-2026-11-11
-[native-tof-direction-owned-product-review]: ../../REVIEW.md#297-matched-native-direction-product-reports-2026-11-11
+[native-tof-direction-product-review]: ../review/296-300.md#296-supplied-word-native-direction-products-2026-11-11
+[native-tof-direction-owned-product-review]: ../review/296-300.md#297-matched-native-direction-product-reports-2026-11-11
 
 #### Supplied-Word Direction Pitch Expressions (2026-11-11)
 
@@ -2416,7 +2416,7 @@ geometry/source/coverage/clock/one-use/physical/permission/admission qualificati
 Not yet matched to delivered/pending retained traces; see
 [actual controls, failures and stable-source gates][native-tof-direction-pitch-review].
 
-[native-tof-direction-pitch-review]: ../../REVIEW.md#298-supplied-word-native-direction-pitch-expressions-2026-11-11
+[native-tof-direction-pitch-review]: ../review/296-300.md#298-supplied-word-native-direction-pitch-expressions-2026-11-11
 
 #### Matched Native Direction Pitch Expressions (2026-11-11)
 
@@ -2432,7 +2432,7 @@ geometry/source/coverage/clock/one-use/physical/permission/admission qualificati
 all eight flags false and equal-value/different-word ties unresolved. See
 [actual matched controls and gates][native-tof-direction-owned-pitch-review].
 
-[native-tof-direction-owned-pitch-review]: ../../REVIEW.md#300-matched-native-direction-pitch-reports-2026-11-11
+[native-tof-direction-owned-pitch-review]: ../review/296-300.md#300-matched-native-direction-pitch-reports-2026-11-11
 
 #### Supplied-Word Native Direction Yaw Expressions (2026-11-11)
 

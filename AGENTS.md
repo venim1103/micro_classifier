@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §307 for fresh native postprocessing acquisition
+Read [REVIEW.md][review] §308 for intact product/pitch checkpoint archival;
+§307 covers fresh native postprocessing acquisition
 pairing; §306 covers cold return-postprocessing capture and distinct receivers;
 §305 covers matched native final-up copy reports;
 §304 covers supplied-word native final-up copies;

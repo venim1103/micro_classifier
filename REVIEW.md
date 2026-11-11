@@ -66,8 +66,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 281-285][chapter-review-21]
 - [Checkpoints 286-290][chapter-review-22]
 - [Checkpoints 291-295][chapter-review-23]
+- [Checkpoints 296-300][chapter-review-24]
 
-Checkpoints 296 onward and the source bibliography remain below.
+Checkpoints 301 onward and the source bibliography remain below.
 ## Recovery and Document Layout (2026-11-09)
 
 Following the user's reported crash, the live review was a 262,527-byte exact
@@ -110,213 +111,6 @@ finite fixture limits, counting the interruption rather than assuming success.
 All qualification/admission flags remain false. Future checkpoints belong here
 briefly, with whole older sections moved through the reading map rather than
 repeated historical handoffs.
-
-## 296. Supplied-Word Native Direction Products (2026-11-11)
-
-Begin clean5037cd3. Existing projection residual helper establishes canonical
-word/finite-operand/unknown-nonfinite-observation/exact-rational pattern. Direction
-helper reports observed forward/left minus supplied elevation cosine*azimuth
-cosine/sine, six64-word builtin tuples/384 decodes,128 entries, <=384 value
-conversions/256 binary operations/256 independent oracle operations, <=32char
-canonical words/unchanged1..4096bit ceiling. One actual cold generation only in
-actual fixture, no geometry/intake/read/retention/replay/trig/clock/hash in helper.
-Raw +/-inf observations remain unknown/unchanged, NaN/unsupported operands reject;
-signed words retained, exact value ratios do NOT resolve different-word zero ties.
-22 synthetic controls, existing helper/tests/defaults unchanged; no primitive/FMA/
-trig/uniform-error/source/geometry/coverage/clock/physical/permission/admission
-qualification, all8 flags false. Three routine pytest positions first22/60s,
-sole necessary repair22/60s, required root/360s. Count failures/aborts/unknown,
-retain rays-296-* logs, no refund/protected data/studies/dependencies/hardware.
-Next compose supported product reports against original+closing retained traces,
-without correcting observed words or adopting numerical/physical bounds.
-
-First22 passed/3702deselected/0.52s, four source/test hashes stable. Ruff formatted
-only two touched Python files then I001 rejected missing standard/local import
-blank line in new test. Repair ONLY import separation, no assertion/source change;
-lint pipeline stopped before format/whitespace/AST commands, no pytest consumed
-or successful AST check inferred. Same scoped style/conservation checks next.
-
-Import-only repair passed scoped lint/format/whitespace/AST; all prior source/test
-definitions/defaults/cases conserved, sole product helper/new22-control function
-added. Editor diagnostics clear. Actual cold generation, rounded mismatch,
-underflow/subnormal/large finite, signed-zero words, +/-inf unknown observations,
-canonical/builtin/shape/word/bit rejection and16bit work-limit controls exercised;
-<=384 value/256 binary/256 oracle caps, no forbidden operations. Required root
-`python -m pytest -q && ruff check . && git diff --check` passed4647/known QDQ
-xfail/71warnings/153.99s, four source/test hashes stable, touched format passed.
-Two of3 pytest positions spent, no test failure/abort/refund; failed I001 style
-pipeline retained above, unused test reserve NOT follow-on authority. Logs
-rays-296-{focused-1,root-1} retained in original recovery directory, no new data/
-downloads/dependencies/studies/hardware/additional native/Arm/sanitizer/board
-opt-in commands. Supplied operands/observations remain unchanged; NaN/unsupported
-reject, +/-inf observation raw/unknown, equal-value/different-word ties unresolved.
-All8 flags false, no geometry/trig/primitive/FMA/uniform-error/source/coverage/
-clock/one-use/physical/permission/admission qualification. Standalone product
-diagnostic NOT yet paired to retained delivery; next original+closing delivered/
-pending composition without correcting words or adopting numerical/physical bounds.
-
-## 297. Matched Native Direction Product Reports (2026-11-11)
-
-Begin clean719cc90. Hypothesis: append-only literal product-report option requiring
-include_direction=True composes the standalone bounded product helper from original
-and closing retained generation words, with typed copies/input/history/ID/binding
-checks and no corrected upstream values. Strengthen native-history prevalidation
-before closing direction parse and final companion checks; missing native inputs
-after closing frame callback must be unknown, not unchecked lookup. All8 false,
-no geometry/trig/primitive/FMA/uniform-error/source/coverage/clock/physical/
-permission/admission adoption. Existing24-case matrix72 controls conserved plus
-new direction-products24=96, three option/dependency controls=99. Old per-case
-4steps/5reads/3retentions/3geometries/6matches/2pending/4queue/2frame/64bindings/
-one late-mutation caps unchanged; product<=6calls/2304value/1536binary and independent
-oracle<=768ops, 4096bit ceiling unchanged. Count product arithmetic only while
-helper active; existing norm controls/caps remain. Original/closing reports have
-<=128 entries/source; no intake/replay/trig/geometry/clock during snapshot.
-Three routine pytest positions first99/60s, sole necessary repair99/60s, root/360s;
-retain rays-297-* logs, count failed/aborted/unknown attempts, no refunds/protected
-data/studies/dependencies/hardware. Next source-word prerequisites only, no bounds.
-
-First99 passed/3652deselected/13.26s with four hashes stable: existing72 modes
-and24 names/caps conserved, new product mode reports original+closing delivered/
-pending128-entry observations with exact independent oracles, mutated sensor
-product/outgoing diagnostic/late missing native input rejected. Append-only literal
-product flag/dependency three controls passed; old modes leave product keys absent.
-Product<=6calls/2304values/1536binary, oracle<=768 operations; old matching/digest/
-frame/queue/norm counters unchanged, no forbidden replay/intake/clock. Ruff formatted
-only two touched Python files; lint/format/whitespace/editor clear. AST all prior
-source methods except snapshot_native_tof_delivery and old test definitions except
-existing snapshot matrix conserved; old defaults/case names/modes unchanged.
-Required root `python -m pytest -q && ruff check . && git diff --check` passed4674/
-known QDQ xfail/71warnings/162.51s, four source/test hashes stable; touched format
-passed. Two of3 pytest positions spent, no failure/abort/refund; unused repair
-reserve NOT follow-on authority. Logs rays-297-{focused-1,root-1} retained in
-original recovery directory, no data/downloads/dependencies/studies/hardware or
-additional native/Arm/sanitizer/board opt-in commands. Product reports paired to
-actual retained generation words, source identities and closing trace checks, not
-corrected or qualified. Unsupported/nonfinite raw source stays unknown, all8 flags
-false; equal-value/different-word ties unresolved. No trig/geometry/primitive/FMA/
-uniform-error/source/coverage/clock/one-use/physical/permission/admission proof.
-Next bounded supplied-word pitch-rotation combined-expression discrepancies, then
-matched composition only as supported; no numerical/physical bounds adopted.
-
-## 298. Supplied-Word Native Direction Pitch Expressions (2026-11-11)
-
-Begin clean acce2c9. Local hypothesis: captured pitch cosine/sine and sensor
-forward/up words suffice for exact combined forward=c*f+s*u and up=c*u-s*f
-discrepancies against observed pitched words, not isolated multiply/add/FMA/trig
-or geometry proof. Reuse bounded rational owner and canonical word guards;
-two scalar/four64-word tuples=258 decodes/values, <=512binary/128entries,
-4096bit ceiling unchanged. First cheap check27 synthetic controls incl one cold
-generation capture before poison, exact Fraction oracle<=512ops, cancellation/
-rounded/subnormal/signedzero/largefinite/raw +/-inf unknown and preflight/type/
-shape/canonical/budget guards. No replay/intake/hash/recorder/step/reset/trig/clock
-in helper; all8 flags false, supplied words retained, no corrected outputs.
-Three routine pytest positions first27/60s, sole necessary repair27/60s, root/360s;
-failures/aborts/unknowns spent, no refund/protected experiment renewal. Retain
-rays-298-* in original recovery directory; no dependencies/data/studies/hardware.
-Exit verified standalone report only, then compatible matched composition;
-raw unsupported/nonfinite source unknown, no bounds or word-tie resolution.
-
-First focused collection failed0.41s with IndentationError: a function jump plus
-repeated decorator replacement landed at old cylinder-selection parameter block,
-not the intended projection boundary; no cases ran, after-hash pipeline not reached.
-Diff diagnosed exact displaced old names; restore only original selection decorator,
-keep additive pitch test at that boundary, source helper unchanged. First position
-spent; sole reserved same27 focused repair next, no refund or cap relaxation.
-
-Same27 passed/3751deselected/0.55s, four hashes stable. Scoped Ruff format/lint/
-format-check/whitespace/editor clear; AST exact conservation of every previous
-source/test top-level node, including all old selection names/decorators. First
-root failed6/4695passed/known QDQ xfail/71warnings/307.06s: unchanged cylinder
-selection missing_pending/flag/dependency/late_side_mask/late_side_minimum/
-late_top_mask failed during setup retention/read with producer/recorder/source-
-file changes; pitch controls passed. One explicit source-files mismatch guard,
-others compound original/closing identity/binding guards; not pitch arithmetic
-failure. Failed && pipeline did NOT run closing hash/lint/format/whitespace.
-Post-failure source/test intact and old ASTs still exact; diagnostic/test mtimes
-12:01:31.849763/12:01:32.087415 lie within log birth11:58:55.667651 to
-modify12:04:03.025048 UTC interval. Supports overlapping writes, NOT writer,
-precise cause or qualified clock evidence. No source/old assertion repair or
-tolerance/work/fixture/safety relaxation. Background terminal notification exit1
-recovered; one output retrieval found already-cleaned ID, no live job or retry.
-All original3 pytest positions spent incl collection/root failures, no refunds.
-Fresh necessary stable-source revalidation under standing routine authority:
-exact six failed controls<=60s once, then required root<=360s once, two added
-positions only, same source/test unchanged, serial/no concurrent editor/format/
-source tools while pytest. Retain rays-298-failed-controls-1/root-2 logs and
-original failures; no protected study/audit/model/dependency/hardware renewal.
-
-Stable-source six setup controls passed/3772deselected/1.40s, then required root
-`python -m pytest -q && ruff check . && git diff --check` passed4701/known QDQ
-xfail/71warnings/183.06s; four hashes stable and touched format-check passed.
-All five pytest positions spent, both failures retained, no abort/refund/cap or
-old-definition/assertion change. Logs rays-298-{focused-1,focused-2,root-1,
-failed-controls-1,root-2} kept in original recovery directory, no new data/study/
-dependency/hardware/additional native/Arm/sanitizer/board opt-in commands.
-Standalone128-entry pitch report only; all8 false, raw +/-inf unknown, no corrected
-words/trig/primitive/FMA/uniform-error/geometry/source/coverage/clock/one-use/
-physical/permission/admission proof. Next archive intact286-290 before further
-root growth, then original+closing retained delivered/pending pitch composition.
-
-## 299. Intact Ray Checkpoint Archival (2026-11-11)
-
-Begin clean167bf77/root998lines. One guarded mechanical move: complete286-290
-sections to linked199-line archive, four chapter01 references rebased and one
-root-owned ray-design definition copied/rebased for289; root map now291 onward.
-Pre-execution utility syntax passed; literal reading-map spaces tightened before
-execution, same syntax/move/conservation/whitespace passed, no migration failure.
-Complete headings/bodies/failures/approvals/spent ledgers conserved, only separator
-EOF whitespace normalized. Root806/chapter01=2419 before this note. Original
-rays-299-review-before.md/design-1-before.md and one-shot archive-review-299.pl
-retained in original recovery directory; relocation DONE, do not rerun.
-No source/test/default/qualification/threshold change or code-suite rerun;
-independent exact five bodies/remaining review/Sources/design bytes, four inbound
-anchors/copied ray target and unchanged source/test bytes passed; whitespace clear.
-last4701-pass gate remains source evidence only. Next bounded original+closing
-retained delivered/pending pitch-expression composition, all8 false/no bounds.
-
-## 300. Matched Native Direction Pitch Reports (2026-11-11)
-
-Begin cleanf780917. Hypothesis: append-only literal default-off pitch option,
-requiring include_direction=True, composes standalone supplied-word pitch helper
-on original+closing retained delivered/pending generation words and IDs; closing
-reports/history/input/frame/queue/owner/output checks precede publication. All8
-false, no trig/FMA/uniform-error/geometry/source/coverage/clock/physical/admission.
-Existing24names/96snapshot+3dependency controls conserved, new pitch24+3=126;
-combined new mode also selects product report. Old caps/defaults preserved:
-4steps/5reads/3retentions/3geometries/6matches/2pending/4queue/2frame/64bindings,
-one late mutation. Separate pitch<=6helpers/1548values/3072binary/1536oracle;
-product old6/2304/1536/768 unchanged, norm forwarded separately, 4096bits unchanged.
-New mutations target observed pitched_up, scalar pitch_cosine and outgoing report;
-no replay/intake/trig/recorder/step/reset/clock in snapshot. Pylance no resolved
-method callers, not static compatibility proof; runtime controls/default-prefix
-conservation discriminate. Fresh3 routine pytest positions first126/60s, sole
-necessary repair126/60s, required root/360s; failures/aborts/unknown spent, no
-refund/protected study/model/dependency/hardware/audit renewal. Retain rays-300-*
-logs, serial pytest/no simultaneous source/formatter/editor tools. Exit matched
-pitch diagnostics only, then remaining supported supplied-word yaw prerequisites.
-
-First126 passed/3679deselected/18.89s, four hashes stable; old96 modes/24 names/
-three dependencies preserved, new pitch24/three dependency controls and combined
-product+pitch report validated by independent exact oracles. Delivered/pending/
-held/default word identities, detached outputs, scalar cosine/observed pitched_up/
-outgoing-report mutations and unknown/no-payload rejection exercised, no extra
-source reads/trig/recorder/clocks. Separate pitch1548values/3072binary/1536oracle
-and old product/norm/call/binding/queue/frame caps unchanged. Ruff formatted only
-two touched Python files; lint/format/whitespace/editor/AST old definitions and
-methods/default-prefix/decorators/caps conserved. Required root
-`python -m pytest -q && ruff check . && git diff --check` passed4728/known QDQ
-xfail/71warnings/186.11s; four hashes stable, touched format-check passed. Twoof3
-pytest positions spent/no failure/abort/refund, unused repair NOT follow-on
-authority. Logs rays-300-{focused-1,root-1} retained in original recovery directory.
-No data/studies/models/dependencies/hardware/additional native/Arm/sanitizer/board
-opt-in commands; all8 false, unsupported/nonfinite raw source unknown, supplied
-word ties unresolved, no corrected values or geometry/trig/primitive/FMA/uniform-
-error/source/coverage/clock/one-use/physical/permission/admission proof. Scoped
-documentation checker first rejected recorded "126 passed" through its own
-contradictory literal matcher; corrected checker requires actual count/time
-strings, same scoped history/reference/byte/whitespace check passed, no
-source/assertion/cap change or pytest position spent. Next
-bounded supplied-word yaw-expression discrepancies, then matched composition.
 
 ## 301. Supplied-Word Native Direction Yaw Expressions (2026-11-11)
 
@@ -621,6 +415,29 @@ Documentation checker FAILED literal "no extra work" while record states
 "without extra work". Correct matcher only to actual wording; same strict
 history/contracts/stable-workflow/reference/anchor/ledger check next. No source,
 assertion/resource change or pytest position spent; code gate not rerun.
+
+## 308. Intact Direction Product/Pitch Checkpoint Archival (2026-11-11)
+
+Begin cleancd89b2a/root989. Finite documentation-only plan: one guarded move of
+whole296-300 to five-section archive, four chapter01 inbound links and root map
+rebased; preserve exact headings/bodies/failures/approvals/spent ledgers/limits.
+Reuse prior guarded archival utility pattern, syntax check before sole migration;
+retain before snapshots and new one-shot utility in original recovery directory.
+Independent byte/heading/local-reference/anchor/remaining-map/Sources/source-test
+conservation and whitespace checks, no code-suite rerun or source/qualification/
+budget renewal. Next bounded closed postprocessing intake, not floor-division
+duplication, numerical/noise-law/source/clock/admission adoption or protected work.
+
+Syntax/sole guarded migration/independent exact archive and remaining root/Sources/
+chapter01 bytes PASS; all5 historical headings/anchors and4 inbound links retained,
+only separator EOF normalization. Root796/archive208 before result note;
+chapter01 stays2500, stable AGENTS/DESIGN/chapter02/source/test bytes unchanged.
+Whitespace PASS; no failure, code-suite rerun, source/default/threshold/flag change
+or attempt/protected qualification renewal. Original returns-308-review-before/
+design-1-before snapshots and archive-review-308.pl kept in recovery directory;
+migration DONE, never rerun. No artifacts deleted or new data/model/dependency/
+hardware work. Last4879-pass source gate remains prior source evidence, all8false.
+Next bounded closed postprocessing intake and original/closing ownership joins.
 
 ## Sources
 
@@ -986,4 +803,5 @@ Methods and measurements:
 [chapter-review-21]: docs/review/281-285.md
 [chapter-review-22]: docs/review/286-290.md
 [chapter-review-23]: docs/review/291-295.md
+[chapter-review-24]: docs/review/296-300.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11

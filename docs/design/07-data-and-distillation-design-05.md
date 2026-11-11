@@ -2354,6 +2354,20 @@ false, no geometry/source/coverage/error/clock/one-use/permission/admission or
 usable command. See [actual scalar controls and limits][native-tof-cylinder-matched-top-offset-review].
 
 
+#### Matched Retained Cylinder Top-Division Residuals (2026-11-11)
+
+Default-off literal `include_cylinder_top_division_residuals` requires
+`include_cylinder=True`. Matched delivered/pending identities and independent
+closing checks compose captured up-ray/scalar cap numerator/distance words through
+the unchanged guarded helper. Zero up, including signed zero, requires observed
++inf/no quotient; nonfinite numerator/distance residual stays unknown. <=32
+cylinders/2272 words/2048 entries/2144 values/4096 binary operations per helper,
+4096-bit ceiling unchanged; <=18 original/closing invocations across delivered/
+<=8 pending records. No corrected upstream words; all eight flags false, no
+geometry/source/coverage/error/clock/one-use/permission/admission or usable command.
+See [actual controls, rejected fixture and evidence limits][native-tof-cylinder-matched-top-division-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2378,13 +2392,14 @@ usable command. See [actual scalar controls and limits][native-tof-cylinder-matc
 [native-tof-cylinder-top-mask-review]: ../review/266-270.md#268-supplied-word-cylinder-cap-maskcandidate-correspondence-2026-11-10
 [native-tof-cylinder-top-minimum-review]: ../review/266-270.md#269-supplied-word-cylinder-cap-minimum-correspondence-2026-11-10
 [native-tof-cylinder-chain-review]: ../review/266-270.md#270-captured-cylinder-stage-chain-word-correspondence-2026-11-10
-[native-tof-cylinder-selection-review]: ../../REVIEW.md#271-matched-retained-cylinder-selection-reports-2026-11-10
-[native-tof-cylinder-matched-offset-review]: ../../REVIEW.md#272-matched-retained-cylinder-offset-residuals-2026-11-10
-[native-tof-cylinder-matched-projection-review]: ../../REVIEW.md#273-matched-retained-cylinder-projection-residuals-2026-11-10
-[native-tof-cylinder-matched-horizontal-review]: ../../REVIEW.md#275-matched-retained-cylinder-horizontal-norm-residuals-2026-11-10
+[native-tof-cylinder-selection-review]: ../review/271-275.md#271-matched-retained-cylinder-selection-reports-2026-11-10
+[native-tof-cylinder-matched-offset-review]: ../review/271-275.md#272-matched-retained-cylinder-offset-residuals-2026-11-10
+[native-tof-cylinder-matched-projection-review]: ../review/271-275.md#273-matched-retained-cylinder-projection-residuals-2026-11-10
+[native-tof-cylinder-matched-horizontal-review]: ../review/271-275.md#275-matched-retained-cylinder-horizontal-norm-residuals-2026-11-10
 [native-tof-cylinder-matched-discriminant-review]: ../../REVIEW.md#276-matched-retained-cylinder-discriminant-residuals-2026-11-10
 [native-tof-cylinder-matched-root-review]: ../../REVIEW.md#277-matched-retained-cylinder-root-squared-consistency-2026-11-10
 [native-tof-cylinder-matched-numerator-review]: ../../REVIEW.md#278-matched-retained-cylinder-side-numerator-residuals-2026-11-10
 [native-tof-cylinder-matched-division-review]: ../../REVIEW.md#279-matched-retained-cylinder-side-division-residuals-2026-11-10
 [native-tof-cylinder-matched-altitude-review]: ../../REVIEW.md#280-matched-retained-cylinder-side-altitude-residuals-2026-11-10
 [native-tof-cylinder-matched-top-offset-review]: ../../REVIEW.md#281-matched-retained-cylinder-top-offset-residuals-2026-11-11
+[native-tof-cylinder-matched-top-division-review]: ../../REVIEW.md#282-matched-retained-cylinder-top-division-residuals-2026-11-11

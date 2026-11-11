@@ -28043,6 +28043,7 @@ def test_native_tof_cylinder_selection_snapshot(
         "side_division",
         "side_altitude",
         "top_offset",
+        "top_division",
     ),
 )
 def test_native_tof_cylinder_offset_snapshot(
@@ -28061,6 +28062,8 @@ def test_native_tof_cylinder_offset_snapshot(
     side_division = kind == "side_division"
     side_altitude = kind == "side_altitude"
     top_offset = kind == "top_offset"
+    top_division = kind == "top_division"
+    top_controls = top_offset or top_division
     residual_key = (
         "signed_squared_residual_ratio" if root_squared else "signed_residual_ratio"
     )
@@ -28074,6 +28077,7 @@ def test_native_tof_cylinder_offset_snapshot(
         "side_division": (7752, 8886, 1536),
         "side_altitude": (9678, 11190, 2304),
         "top_offset": (9696, 11202, 12),
+        "top_division": (10470, 11970, 768),
     }[kind]
     field = f"cylinder_{kind}_residuals"
     option = f"include_{field}"
@@ -28109,6 +28113,7 @@ def test_native_tof_cylinder_offset_snapshot(
             "combined_numerator",
             "combined_division",
             "combined_altitude",
+            "combined_top_offset",
             "late",
             "forbidden",
         ),
@@ -28151,6 +28156,15 @@ def test_native_tof_cylinder_offset_snapshot(
         owner._tof_cylinder_history.pop(0)
     elif case == "missing_pending":
         owner._tof_cylinder_history.pop()
+    elif top_division and case == "copy":
+        trace = owner._tof_cylinder_history[0]["cylinder"]
+        rays = trace["world_frame_unit_rays"]
+        trace["world_frame_unit_rays"] = (rays[0], rays[1], (-0.0).hex(), *rays[3:])
+        owner._tof_history[0]["native_source"]["world_frame_unit_rays"] = trace[
+            "world_frame_unit_rays"
+        ]
+        top = trace["cylinders"][0]["top"]
+        top["distance_m"] = ("inf", *top["distance_m"][1:])
     elif side_division and case == "copy":
         trace = owner._tof_cylinder_history[0]["cylinder"]
         trace["horizontal_squared"] = ((0.0).hex(), *trace["horizontal_squared"][1:])
@@ -28163,17 +28177,19 @@ def test_native_tof_cylinder_offset_snapshot(
             side["distance_m"] = ("inf", *side["distance_m"][1:])
             side["altitude_m"] = (height_word, *side["altitude_m"][1:])
     elif case in ("residual", "infinite_observation", "malformed") or (
-        (root_squared or side_numerator or top_offset) and case == "work_limit"
+        (root_squared or side_numerator or top_controls) and case == "work_limit"
     ):
         trace = owner._tof_cylinder_history[0]["cylinder"]
         entry = trace if horizontal_norm else trace["cylinders"][0]
-        if top_offset:
+        if top_controls:
             entry = entry["top"]
         elif side_numerator:
             entry = entry["sides"][0]
         key = (
             "horizontal_squared"
             if horizontal_norm
+            else "distance_m"
+            if top_division
             else "altitude_m"
             if side_altitude
             else "distance_m"
@@ -28241,9 +28257,11 @@ def test_native_tof_cylinder_offset_snapshot(
             "combined_division": "side_division",
             "combined_altitude": "side_altitude",
         }
-        if top_offset
+        if top_controls
         else {}
     )
+    if top_division:
+        prior_top_reports["combined_top_offset"] = "top_offset"
     names.update(
         {
             name: f"_native_tof_cylinder_{suffix}_residuals"
@@ -28447,6 +28465,8 @@ def test_native_tof_cylinder_offset_snapshot(
                     assert len(diagnostic["entries"]) == (
                         len(trace["cylinders"])
                         if top_offset
+                        else 64 * len(trace["cylinders"])
+                        if top_division
                         else 64
                         if horizontal_norm
                         else 128 * len(trace["cylinders"])
@@ -28493,6 +28513,32 @@ def test_native_tof_cylinder_offset_snapshot(
                                 entry["exact_difference_ratio"]
                                 == exact.as_integer_ratio()
                             )
+                        elif top_division:
+                            index, ray = entry["obstacle_index"], entry["ray_index"]
+                            cylinder = trace["cylinders"][index]
+                            numerator_word = cylinder["top"]["numerator_m"]
+                            up_word = trace["world_frame_unit_rays"][ray * 3 + 2]
+                            numerator = float.fromhex(numerator_word)
+                            denominator = float.fromhex(up_word)
+                            observed_word = cylinder["top"]["distance_m"][ray]
+                            exact = None
+                            if denominator != 0 and math.isfinite(numerator):
+                                exact = Fraction.from_float(
+                                    numerator
+                                ) / Fraction.from_float(denominator)
+                                work["oracle"] += 1
+                            assert (
+                                diagnostic["comparison_basis"]
+                                == "supplied_top_numerator_divided_by_nonzero_up"
+                            )
+                            assert entry["numerator_hex"] == numerator_word
+                            assert entry["up_hex"] == up_word
+                            assert entry["observed_distance_hex"] == observed_word
+                            assert entry["exact_quotient_ratio"] == (
+                                None if exact is None else exact.as_integer_ratio()
+                            )
+                            if denominator == 0:
+                                assert observed_word == "inf"
                         elif horizontal_norm:
                             ray = entry["ray_index"]
                             ray_words = trace["world_frame_unit_rays"][
@@ -28741,12 +28787,24 @@ def test_native_tof_cylinder_offset_snapshot(
                                 assert entry["status"] == (
                                     "computed_exact_cylinder_side_division_word_residual"
                                 )
+                            if top_division:
+                                assert entry["status"] == (
+                                    "computed_exact_cylinder_top_division_word_residual"
+                                )
                             residual = observed_value - exact
                             work["oracle"] += 1
                             assert work["oracle"] <= oracle_cap
                             assert entry[residual_key] == residual.as_integer_ratio()
                         else:
                             assert entry[residual_key] is None
+                            if top_division:
+                                assert entry["status"] == (
+                                    "not_divided_zero_up"
+                                    if denominator == 0
+                                    else "unknown_nonfinite_cylinder_top_numerator"
+                                    if not math.isfinite(numerator)
+                                    else "unknown_nonfinite_cylinder_top_distance"
+                                )
                             if side_division:
                                 assert entry["status"] == (
                                     "not_divided_nonpositive_horizontal"
@@ -28881,6 +28939,7 @@ def test_native_tof_cylinder_offset_snapshot(
             assert work["combined_numerator"] == 0
             assert work["combined_division"] == 0
             assert work["combined_altitude"] == 0
+            assert work["combined_top_offset"] == 0
     assert environment.tick == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry

@@ -2284,6 +2284,26 @@ qualification or one-use execution. All eight flags false; no permission/admissi
 See [actual controls, checks and limits][native-tof-direction-acquisition-review].
 
 
+#### Closed Native Direction-Source Intake (2026-11-11)
+
+`_sample_simulator_native_tof_direction_source` accepts only the original fresh
+mounted acquisition, exact closed builtin acquisition/trace/generation metadata,
+false flags, fixed float64 array shapes and finite observed generation words.
+Copies 13 generation arrays/904 words plus5 result/four input scalars and3 paired
+range arrays/320 words; existing bounded native context, no arithmetic replay.
+Two native intakes and two metadata copies check original/closing cache, native
+source, RNG, profile/template, actual pose and nominal acquisition/delivery IDs.
+Generation inputs/effective pitch match supplied native inputs; final rays/floor/
+pre-noise words match the paired native source, outgoing detached copy rechecked.
+Unsupported/nonfinite generation stays unknown via rejection, without correction
+or trig recomputation. Raw nonfinite cold sources remain raw and are not admitted.
+This is NOT typed retained history, recorder/delivery lineage, numerical/geometry/
+source/coverage/error/clock/one-use/physical clearance or permission qualification;
+all eight flags false, no usable command/admission. See
+[actual bounded controls, collection failure and checks][native-tof-direction-intake-review].
+
+
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
+[native-tof-direction-intake-review]: ../../REVIEW.md#290-bounded-closed-native-direction-source-intake-2026-11-11

@@ -12280,6 +12280,33 @@ def test_native_tof_selection_intake(
             "max_obstacles",
             "dtype",
         )
+    ]
+    + [
+        (None, case)
+        for case in (
+            "copy",
+            "missing",
+            "epoch",
+            "source_identity",
+            "inputs",
+            "words",
+            "shape",
+            "flag",
+            "late_profile",
+            "late_trace",
+            "late_source",
+            "late_cache",
+            "outgoing",
+            "generation_shape",
+            "generation_scalar",
+            "generation_nonfinite",
+            "generation_inputs",
+            "generation_words",
+            "generation_budget",
+            "generation_flag",
+            "late_generation",
+            "outgoing_generation",
+        )
     ],
 )
 def test_native_tof_wall_intake(
@@ -12289,11 +12316,12 @@ def test_native_tof_wall_intake(
 
     from sim import diagnostics, rover
 
-    kind = "cylinder" if cylinder else "wall"
+    direction = cylinder is None
+    kind = "direction" if direction else "cylinder" if cylinder else "wall"
     cache_name = f"_native_tof_{kind}_source"
     sample = getattr(diagnostics, f"_sample_simulator_native_tof_{kind}_source")
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    if cylinder:
+    if cylinder or direction:
         environment.scenario = replace(
             environment.scenario,
             obstacles=((3.0, 3.0, 0.25),) * (32 if case == "max_obstacles" else 1),
@@ -12305,7 +12333,11 @@ def test_native_tof_wall_intake(
     )
     captured = getattr(environment, cache_name)
     trace = captured[kind]
-    entries = trace["cylinders" if cylinder else "walls"]
+    entries = (
+        trace["direction_generation"]
+        if direction
+        else trace["cylinders" if cylinder else "walls"]
+    )
     if case == "missing":
         setattr(environment, cache_name, None)
     elif case == "source_identity":
@@ -12339,6 +12371,20 @@ def test_native_tof_wall_intake(
         entries[0]["sides"][0]["distance_m"] = entries[0]["sides"][0][
             "distance_m"
         ].astype(np.float32)
+    elif case == "generation_shape":
+        entries["angles_rad"] = np.zeros((9,), dtype=np.float64)
+    elif case == "generation_scalar":
+        entries["pitch_cosine"] = True
+    elif case == "generation_nonfinite":
+        entries["sensor_up"][0, 0] = math.inf
+    elif case == "generation_inputs":
+        entries["inputs"]["field_of_view_rad"] += 0.25
+    elif case == "generation_words":
+        entries["world_frame_unit_rays"].view(np.uint64)[0, 0, 0] ^= np.uint64(1)
+    elif case == "generation_budget":
+        entries["extra"] = np.zeros((8, 8), dtype=np.float64)
+    elif case == "generation_flag":
+        entries["numerically_certified"] = True
     original_intake, original_copy = (
         diagnostics._sample_simulator_native_tof_source,
         diagnostics.deepcopy,
@@ -12348,9 +12394,10 @@ def test_native_tof_wall_intake(
 
     def copied(value, *args, **kwargs):
         actual = original_copy(value, *args, **kwargs)
-        if (
-            type(value) is dict
-            and value.get("schema") == f"micro-classifier/native-tof-{kind}-source/1"
+        if type(value) is dict and value.get("schema") == (
+            "micro-classifier/native-tof-direction-trace/1"
+            if direction
+            else f"micro-classifier/native-tof-{kind}-source/1"
         ):
             outgoing["wall"] = actual
         return actual
@@ -12366,7 +12413,9 @@ def test_native_tof_wall_intake(
             work["mutations"] += 1
         elif work["intake"] == 2:
             if case == "late_trace":
-                if cylinder:
+                if direction:
+                    trace["pre_noise_ranges_m"].view(np.uint64)[0, 0] ^= np.uint64(1)
+                elif cylinder:
                     entries[0]["projection_m"][0, 0] = math.nextafter(
                         entries[0]["projection_m"][0, 0], math.inf
                     )
@@ -12383,7 +12432,20 @@ def test_native_tof_wall_intake(
                 environment.config = replace(environment.config, max_range=3.0)
             elif case == "outgoing":
                 outgoing["wall"]["source_qualified"] = True
-            if case in ("late_trace", "late_cache", "late_profile", "outgoing"):
+            elif case == "late_generation":
+                entries["sensor_forward"][0, 0] = math.nextafter(
+                    entries["sensor_forward"][0, 0], math.inf
+                )
+            elif case == "outgoing_generation":
+                outgoing["wall"]["direction_generation"]["pitch_sine"] = "changed"
+            if case in (
+                "late_trace",
+                "late_cache",
+                "late_profile",
+                "outgoing",
+                "late_generation",
+                "outgoing_generation",
+            ):
                 work["mutations"] += 1
         return actual
 
@@ -12451,6 +12513,21 @@ def test_native_tof_wall_intake(
                         else:
                             expected = value.hex() if type(value) is float else value
                         assert copied_stage[name] == expected
+        elif direction:
+            generation = actual["direction"]["direction_generation"]
+            for key, value in entries.items():
+                expected = (
+                    tuple(float(word).hex() for word in value.flat)
+                    if type(value) is np.ndarray
+                    else value.hex()
+                    if type(value) is float
+                    else value
+                )
+                assert generation[key] == expected
+            assert (
+                generation["world_frame_unit_rays"]
+                == actual["direction"]["world_frame_unit_rays"]
+            )
         else:
             assert len(actual["wall"]["walls"]) == 4
         for index, entry in enumerate(actual.get("wall", {}).get("walls", ())):
@@ -12479,7 +12556,10 @@ def test_native_tof_wall_intake(
         ):
             assert actual[flag] is False and actual[kind][flag] is False
         actual[kind]["inputs"]["config"]["max_range"] = -99.0
-        if cylinder:
+        if direction:
+            actual[kind]["direction_generation"]["pitch_sine"] = "changed"
+            assert type(entries["pitch_sine"]) is float
+        elif cylinder:
             actual[kind]["cylinders"][0]["sides"][0]["distance_m"] = ("changed",) * 64
             assert type(entries[0]["sides"][0]["distance_m"]) is np.ndarray
         else:
@@ -12507,13 +12587,29 @@ def test_native_tof_wall_intake(
         "entry_scalar",
         "nonfinite",
         "dtype",
+        "generation_shape",
+        "generation_scalar",
+        "generation_nonfinite",
+        "generation_inputs",
+        "generation_words",
+        "generation_budget",
+        "generation_flag",
     ):
         assert work["intake"] == 0
     assert environment.tick == before_tick
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry_rng
     assert work["mutations"] == int(
-        case in ("late_source", "late_trace", "late_cache", "late_profile", "outgoing")
+        case
+        in (
+            "late_source",
+            "late_trace",
+            "late_cache",
+            "late_profile",
+            "outgoing",
+            "late_generation",
+            "outgoing_generation",
+        )
     )
     assert work["forbidden"] == 0
 

@@ -532,6 +532,48 @@ native acquisition/cache/RNG pairing; raw unsupported/nonfinite remains unknown.
 Final six local targets/anchors, three old aliases, complete topic/ref/prior
 chapter/review/Sources/stable workflow and unchanged source/test bytes passed.
 
+## 290. Bounded Closed Native Direction-Source Intake (2026-11-11)
+
+Resumed clean ee37df3, Python3.12.3/opt/venv/Ruff verified, selected editor same.
+Hypothesis: existing two-native-intake/original+closing cache checks can copy closed
+direction acquisition/trace/generation while rejecting unsupported/nonfinite raw
+generation before native intake. Fixed17/16/30 root fields, 13 generation arrays/
+904 words+5 result scalars+4 input scalars plus3 range arrays/320 words; two
+metadata copies, canonical binary64 hex<=32chars, existing bounded native context.
+No arithmetic, hash, replay, recorder, step/reset, geometry or clock in intake;
+all eight flags false, no trig/geometry/source/coverage/error/one-use/admission.
+Reuse existing39 wall/cylinder controls plus22 direction controls=61, one existing
+fixture acquisition per case, <=2 native intakes/one late mutation, old caps unchanged.
+<=3 routine pytest positions: first61/60 s, one necessary repair61/60 s, required
+root/300 s; count failure/abort/unknown, retain rays-290-* logs in existing recovery
+directory, no spent/protected budgets refunded. Retention/delivery remain next.
+
+First focused invocation failed collection0.81 s: appended direction case-list
+had a separating comma, creating unsupported unary +list. Repair ONLY decorator
+concatenation; source unchanged, no cases ran. rays-290-focused-1.log retained,
+attempt spent, failed-run after-hash comparison not reached. Same61 next under
+sole repair position; no cap/assertion changes or protected-budget renewal.
+
+Same61 passed/3566deselected/4.61 s, original39 case expressions conserved;
+two native intakes and poisoned hash/recorder/replay/step/reset/geometry/clock
+paths bounded, late generation/cache/profile/source/outgoing mutations exercised.
+Four source/test hashes stable for pass. Ruff formatted ONLY two touched Python
+files; scoped lint/format/whitespace/editor checks clear, AST all prior source/
+test definitions and old39 decorator controls conserved. Sole new helper plus
+existing matrix changes; no prior defaults/schema changes. Required root
+`python -m pytest -q && ruff check . && git diff --check` passed4550/known QDQ
+xfail/71warnings/246.39 s, four source/test hashes stable; touched format check
+also passed. All3 pytest positions spent, first collection failure retained;
+no aborted/refunded/qualified attempt, logs rays-290-{focused-1,focused-2,root-1}
+in original recovery directory, no new data/download/dependency/study/hardware.
+No C/Arm/sanitizer/board opt-in gates ran for this simulator-only change.
+Closed copies reject unsupported/nonfinite observations rather than rewriting
+them, retain supplied finite word identities and all eight flags false. This is
+NOT trig/geometry/numerical-error/source/coverage/clock/one-use/physical/permission/
+admission evidence. Recorder retention and delivery remain absent for direction.
+Next fixed-shape typed direction-history validation, then opt-in recorder and
+delivered/pending original+closing correspondence; unresolved word ties remain.
+
 ## Sources
 
 Hardware and tools:

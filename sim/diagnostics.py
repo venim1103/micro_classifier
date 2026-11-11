@@ -13754,6 +13754,239 @@ def _sample_simulator_native_tof_wall_source(environment, source_epoch):
     }
 
 
+def _sample_simulator_native_tof_direction_source(environment, source_epoch):
+    template = _native_tof_history_template(environment, source_epoch)
+    if environment.config.tof_mount_height is None:
+        raise ValueError("native ToF direction requires mounted rays")
+    captured = environment._native_tof_direction_source
+    native_before = environment._native_tof_source
+    rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+    generation_arrays = (
+        "angles_rad",
+        "elevation_rad",
+        "azimuth_rad",
+        "elevation_cosine_forward",
+        "azimuth_cosine",
+        "elevation_cosine_left",
+        "azimuth_sine",
+        "sensor_forward",
+        "sensor_left",
+        "sensor_up",
+        "pitched_forward",
+        "pitched_up",
+        "world_frame_unit_rays",
+    )
+    generation_scalars = (
+        "effective_pitch_rad",
+        "pitch_cosine",
+        "pitch_sine",
+        "yaw_cosine",
+        "yaw_sine",
+    )
+    range_arrays = (
+        "world_frame_unit_rays",
+        "floor_candidate_ranges_m",
+        "pre_noise_ranges_m",
+    )
+
+    def check_mapping(value, expected, extra):
+        if (
+            type(value) is not dict
+            or len(value) != len(expected) + len(extra)
+            or any(type(key) is not str for key in value)
+            or set(value) != {*expected, *extra}
+            or any(
+                not _native_tof_word_copy_matches(value[key], item)
+                for key, item in expected.items()
+            )
+        ):
+            raise ValueError("unsupported native ToF direction metadata")
+
+    def words(value, shape, finite):
+        if (
+            type(value) is not np.ndarray
+            or value.shape != shape
+            or value.dtype != np.dtype(np.float64)
+            or np.isnan(value).any()
+            or (finite and not np.isfinite(value).all())
+            or (not finite and np.isneginf(value).any())
+        ):
+            raise ValueError("unsupported native ToF direction array words or layout")
+        return tuple(float(word).hex() for word in value.flat)
+
+    def metadata():
+        expected = {
+            "schema": "micro-classifier/native-tof-direction-acquisition/1",
+            "allowed_use": "native_tof_direction_diagnostics_only",
+            "status": "recorded_native_tof_direction_acquisition",
+            **{flag: False for flag in flags},
+        }
+        check_mapping(
+            captured,
+            expected,
+            ("rng", "odometry_rng", "tick", "delivery_tick", "source", "direction"),
+        )
+        if (
+            captured["rng"] is not rng_before
+            or captured["odometry_rng"] is not odometry_rng_before
+            or captured["source"] is not native_before
+            or type(captured["tick"]) is not int
+            or captured["tick"] != environment.tick
+            or type(captured["delivery_tick"]) is not int
+            or not 0 <= captured["delivery_tick"] <= 0xFFFFFFFF // 50000
+            or captured["delivery_tick"]
+            != captured["tick"] + environment.config.latency_ticks
+        ):
+            raise ValueError("unsupported native ToF direction acquisition pairing")
+        trace = captured["direction"]
+        expected = {
+            "schema": "micro-classifier/native-tof-direction-trace/1",
+            "allowed_use": "native_tof_direction_diagnostics_only",
+            "status": "recorded_native_tof_direction_and_range_values",
+            **{flag: False for flag in flags},
+        }
+        check_mapping(
+            trace, expected, ("inputs", *range_arrays, "direction_generation")
+        )
+        if not _native_tof_word_copy_matches(
+            trace["inputs"], template["native_source"]["inputs"], shape_only=True
+        ):
+            raise ValueError("unsupported native ToF direction input layout")
+        generation = trace["direction_generation"]
+        generation_expected = {
+            "schema": "micro-classifier/native-tof-direction-source/1",
+            "allowed_use": "native_tof_direction_diagnostics_only",
+            "status": "recorded_native_tof_direction_values",
+            **{flag: False for flag in flags},
+        }
+        check_mapping(
+            generation,
+            generation_expected,
+            ("inputs", *generation_scalars, *generation_arrays),
+        )
+        input_keys = (
+            "yaw_rad",
+            "field_of_view_rad",
+            "mount_height_m",
+            "mount_pitch_rad",
+        )
+        check_mapping(generation["inputs"], {}, input_keys)
+        if any(
+            type(generation["inputs"][key]) is not float
+            or not math.isfinite(generation["inputs"][key])
+            for key in input_keys
+        ):
+            raise ValueError("unsupported native ToF direction generation inputs")
+        if any(
+            type(generation[key]) is not float or not math.isfinite(generation[key])
+            for key in generation_scalars
+        ):
+            raise ValueError("unsupported native ToF direction generation scalars")
+        config = trace["inputs"]["config"]
+        input_expected = {
+            "yaw_rad": float(trace["inputs"]["yaw_rad"]),
+            "field_of_view_rad": float(config["field_of_view"]),
+            "mount_height_m": float(config["tof_mount_height"]),
+            "mount_pitch_rad": float(config["tof_mount_pitch"]),
+        }
+        if (
+            not _native_tof_word_copy_matches(generation["inputs"], input_expected)
+            or generation["effective_pitch_rad"].hex()
+            != input_expected["mount_pitch_rad"].hex()
+        ):
+            raise ValueError("native ToF direction generation input pairing mismatched")
+        copied_generation = {
+            **generation_expected,
+            "inputs": deepcopy(generation["inputs"]),
+            **{key: generation[key].hex() for key in generation_scalars},
+            **{
+                key: words(
+                    generation[key],
+                    (8,)
+                    if key == "angles_rad"
+                    else (8, 8, 3)
+                    if key == "world_frame_unit_rays"
+                    else (8, 8),
+                    True,
+                )
+                for key in generation_arrays
+            },
+        }
+        copied = {
+            **expected,
+            "inputs": deepcopy(trace["inputs"]),
+            "direction_generation": copied_generation,
+            **{
+                key: words(
+                    trace[key],
+                    (8, 8, 3) if key == "world_frame_unit_rays" else (8, 8),
+                    key == "world_frame_unit_rays",
+                )
+                for key in range_arrays
+            },
+        }
+        if (
+            copied["world_frame_unit_rays"]
+            != copied_generation["world_frame_unit_rays"]
+        ):
+            raise ValueError("native ToF direction generation ray words mismatched")
+        return copied
+
+    before = metadata()
+    native = _sample_simulator_native_tof_source(environment, source_epoch)
+    copied = deepcopy(before)
+    closing_native = _sample_simulator_native_tof_source(environment, source_epoch)
+    after = metadata()
+    closing_template = _native_tof_history_template(environment, source_epoch)
+    if (
+        environment._native_tof_direction_source is not captured
+        or environment._native_tof_source is not native_before
+        or environment.rng is not rng_before
+        or environment.odometry_rng is not odometry_rng_before
+        or not _native_tof_word_copy_matches(template, closing_template)
+        or type(environment.position) is not np.ndarray
+        or environment.position.shape != (2,)
+        or tuple(float(word).hex() for word in environment.position)
+        != tuple(word.hex() for word in after["inputs"]["position_m"])
+        or float(environment.yaw).hex() != after["inputs"]["yaw_rad"].hex()
+        or not _native_tof_word_copy_matches(before, after)
+        or not _native_tof_word_copy_matches(copied, after)
+        or not _native_tof_word_copy_matches(native, closing_native)
+        or not _native_tof_word_copy_matches(
+            after["inputs"], closing_native["native_source"]["inputs"]
+        )
+        or any(
+            after[key] != closing_native["native_source"][key] for key in range_arrays
+        )
+        or native["tick"] != captured["tick"]
+        or native["delivery_tick"] != captured["delivery_tick"]
+    ):
+        raise ValueError(
+            "native ToF direction source changed or pairing mismatched during intake"
+        )
+    return {
+        "schema": "micro-classifier/native-tof-direction-intake/1",
+        "allowed_use": "native_tof_direction_diagnostics_only",
+        "status": "copied_native_tof_direction_diagnostics",
+        **{flag: False for flag in flags},
+        "source_epoch": source_epoch,
+        "tick": native["tick"],
+        "delivery_tick": native["delivery_tick"],
+        "direction": copied,
+        "source": native,
+    }
+
+
 def _sample_simulator_native_tof_cylinder_source(environment, source_epoch):
     template = _native_tof_history_template(environment, source_epoch)
     if environment.config.tof_mount_height is None:

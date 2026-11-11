@@ -8254,6 +8254,228 @@ def test_native_tof_direction_source(monkeypatch, case):
 
 @pytest.mark.parametrize(
     "case",
+    (
+        "copy",
+        "rotated",
+        "pitch",
+        "default",
+        "none",
+        "occupied",
+        "subclass",
+        "alias_native",
+        "alias_selection",
+        "alias_wall",
+        "alias_cylinder",
+        "unmounted",
+        "wrong_config",
+        "invalid_pose",
+        "detached",
+        "combined",
+        "raw_nonfinite",
+    ),
+)
+def test_native_tof_direction_range_source(monkeypatch, case):
+    from dataclasses import asdict, replace
+
+    from sim import rover
+
+    config = Config(noise_std=0, dropout=0)
+    scenario = Scenario(obstacles=((3.0, 3.0, 0.25),))
+    position = np.array(scenario.start[:2], dtype=np.float64)
+    yaw = math.pi / 2 if case == "rotated" else 0.0
+    if case == "pitch":
+        config = replace(config, tof_mount_pitch=math.pi / 4)
+    elif case == "unmounted":
+        config = replace(config, tof_mount_height=None)
+    elif case == "wrong_config":
+        config = None
+    elif case == "invalid_pose":
+        position[0] = math.nan
+    source, native = {}, {}
+    options = {"source": native}
+    if case == "occupied":
+        source["retained"] = True
+    elif case == "subclass":
+
+        class Source(dict):
+            pass
+
+        source = Source()
+    elif case.startswith("alias_"):
+        name = {
+            "alias_native": "source",
+            "alias_selection": "selection_source",
+            "alias_wall": "wall_source",
+            "alias_cylinder": "cylinder_source",
+        }[case]
+        options[name] = source
+    elif case == "combined":
+        options.update(selection_source={}, wall_source={}, cylinder_source={})
+    invalid = case in (
+        "occupied",
+        "subclass",
+        "unmounted",
+        "wrong_config",
+        "invalid_pose",
+    ) or case.startswith("alias_")
+    work = {"geometry": 0, "rays": 0, "roots": 0, "forbidden": 0}
+    original_directions = rover.tof_directions
+    original_root = rover.np.sqrt
+    ray_results = []
+    ray_sources = []
+
+    def directions(*args, **kwargs):
+        work["rays"] += 1
+        assert work["rays"] <= 2 and not invalid
+        result = original_directions(*args, **kwargs)
+        ray_results.append(result.copy())
+        ray_sources.append(deepcopy(kwargs.get("source")))
+        return result
+
+    def root(*args, **kwargs):
+        work["roots"] += 1
+        assert work["roots"] <= 2 and not invalid
+        return original_root(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("cold paired ray source must not sample/step/clock/RNG")
+
+    monkeypatch.setattr(rover, "tof_directions", directions)
+    monkeypatch.setattr(rover.np, "sqrt", root)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if case == "raw_nonfinite":
+        original_sine = rover.np.sin
+
+        def sine(value):
+            actual = original_sine(value)
+            return np.full_like(actual, math.nan)
+
+        monkeypatch.setattr(rover.np, "sin", sine)
+
+    def generate(**kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 2
+        return rover.tof_ranges(position, yaw, scenario, config, **kwargs)
+
+    if invalid:
+        before = deepcopy((source, options))
+        message = (
+            "actual Config and Scenario"
+            if case == "wrong_config"
+            else "finite native pose"
+            if case == "invalid_pose"
+            else "mounted rays"
+            if case == "unmounted"
+            else "ToF direction source"
+        )
+        with pytest.raises(
+            TypeError if case == "wrong_config" else ValueError, match=message
+        ):
+            generate(direction_source=source, **options)
+        assert (source, options) == before
+        assert work["rays"] == work["roots"] == 0
+    else:
+        prior_native = {}
+        baseline = generate(source=prior_native)
+        captured = generate(
+            **options,
+            **(
+                {}
+                if case == "default"
+                else {"direction_source": None if case == "none" else source}
+            ),
+        )
+        np.testing.assert_array_equal(
+            baseline.view(np.uint64), captured.view(np.uint64)
+        )
+        for key, value in native.items():
+            if isinstance(value, np.ndarray):
+                np.testing.assert_array_equal(
+                    value.view(np.uint64), prior_native[key].view(np.uint64)
+                )
+            else:
+                assert value == prior_native[key]
+        if case in ("default", "none"):
+            assert source == {} and ray_sources == [None, None]
+        else:
+            assert source["schema"] == "micro-classifier/native-tof-direction-trace/1"
+            flags = (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+            generation = source["direction_generation"]
+            assert all(source[flag] is generation[flag] is False for flag in flags)
+            assert source["inputs"] == {
+                "position_m": tuple(map(float, position)),
+                "yaw_rad": float(yaw),
+                "config": asdict(config),
+                "scenario": asdict(scenario),
+            }
+            assert ray_sources[0] is None and ray_sources[1] is not None
+            for key, value in generation.items():
+                if isinstance(value, np.ndarray):
+                    np.testing.assert_array_equal(
+                        value.view(np.uint64), ray_sources[1][key].view(np.uint64)
+                    )
+                else:
+                    assert value == ray_sources[1][key]
+            for value in (
+                generation["world_frame_unit_rays"],
+                source["world_frame_unit_rays"],
+            ):
+                np.testing.assert_array_equal(
+                    value.view(np.uint64), ray_results[1].view(np.uint64)
+                )
+            for key in (
+                "world_frame_unit_rays",
+                "floor_candidate_ranges_m",
+                "pre_noise_ranges_m",
+            ):
+                np.testing.assert_array_equal(
+                    source[key].view(np.uint64), native[key].view(np.uint64)
+                )
+                assert not np.shares_memory(source[key], native[key])
+            np.testing.assert_array_equal(
+                source["pre_noise_ranges_m"].view(np.uint64), captured.view(np.uint64)
+            )
+            assert not np.shares_memory(source["pre_noise_ranges_m"], captured)
+            assert not np.shares_memory(
+                source["world_frame_unit_rays"], generation["world_frame_unit_rays"]
+            )
+            if case == "raw_nonfinite":
+                assert np.isnan(generation["sensor_up"]).all()
+                assert np.isnan(source["world_frame_unit_rays"]).all()
+                assert np.isposinf(source["floor_candidate_ranges_m"]).all()
+                assert np.isposinf(source["pre_noise_ranges_m"]).all()
+            if case == "combined":
+                for name in ("wall_source", "cylinder_source"):
+                    np.testing.assert_array_equal(
+                        options[name]["world_frame_unit_rays"].view(np.uint64),
+                        source["world_frame_unit_rays"].view(np.uint64),
+                    )
+                    np.testing.assert_array_equal(
+                        options[name]["pre_noise_ranges_m"].view(np.uint64),
+                        captured.view(np.uint64),
+                    )
+                assert len(options["cylinder_source"]["cylinders"]) == 1
+            if case == "detached":
+                retained = source["pre_noise_ranges_m"].copy()
+                captured[:] = 9.0
+                np.testing.assert_array_equal(source["pre_noise_ranges_m"], retained)
+                generation["world_frame_unit_rays"][:] = 9.0
+                assert not (source["world_frame_unit_rays"] == 9.0).any()
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
     [
         "stationary",
         "rotated",

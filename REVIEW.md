@@ -421,6 +421,68 @@ geometry/coverage/error/source/clock/one-use/permission/admission or usable comm
 No additional C/Arm/sanitizer/board opt-ins ran. Next pair cold direction source
 with actual tof_ranges rays before fresh acquisition; no reconstructed trig.
 
+## 287. Cold Native Ray-to-ToF Source Pairing (2026-11-11)
+
+Checkpointc5ea09e pushed/clean. Hypothesis: same actual tof_ranges ray evaluation
+can populate separate cold direction trace with generation, original native
+context, floor and final pre-noise words, preserving default calls and all four
+existing source schemas. Pylance all25 original callers compatible. Opt-in empty
+distinct builtin direction_source requires mounted rays; no reconstructed trig.
+17 synthetic cold controls, <=2 geometry/2 ray/2 one-cylinder root calls per case,
+16 copied arrays/1224 words plus<=9 ray scalars and existing bounded native input
+context; <=32 cylinders/64 rays unchanged, no clock/RNG/acquisition/recorder work.
+<=3 routine pytest positions: first17/60 s, one necessary repair17/60 s, required
+root/300 s; count failures/aborts, retain rays-287-* logs, no old refund/protected
+study/dependency/hardware. All eight flags false; no geometry/trig-error/source/
+coverage/clock/one-use/permission/admission or usable command. Fresh acquisition
+and bounded intake/retention/delivery pairing still separate prerequisites.
+
+First focused invocation failed collection,0.40 s: insertion patch accidentally
+removed existing test_native_tof_direction_source header, leaving body intact.
+Restore only that exact original header; no old fixture/body/source change.
+Failure retained rays-287-focused-1.log; after-hash comparison not reached, no
+stable-hash claim for that invocation. Use sole same17 repair position next,
+then required root only after success; first collection failure remains spent.
+
+Repaired-header invocation9 passed/8 failed,3572 deselected,11.59 s. Scenario.start
+is (x,y,yaw), while existing native ToF guard requires position shape(2,); new
+fixture supplied all three. Repair ONLY fixture start[:2] and assert invalid-case
+rejection reasons so unmounted control cannot pass at the wrong guard. Both
+failures retained; source guard unchanged, no stable-hash claim for failed runs.
+Narrowly revised assistant-selected routine ledger: original last/root position
+reassigned to same17 repaired focus/60 s; one additional required-root/300 s,
+total4 positions. Original two remain spent; no unchanged failed rerun, protected
+budget/cap renewal, new controls or relaxed work limits. Root after focus success.
+
+Native-position-repaired invocation16 passed/1 failed,3572 deselected,8.14 s:
+raw_nonfinite fixture incorrectly expected NaN final ranges. Actual retained
+rays NaN make floor downward/hit predicates false; wall/cylinder candidates and
+final ranges remain +inf through existing guarded selection. Nearby native wall
+predicate/np.where owner confirms this. Repair ONLY expectation to require raw
+NaN rays AND +inf floor/final words; all prior word parity assertions preserved,
+no producer/mask/tolerance changes or finite-intersection claim. Third failure
+retained, failed-run after-hash not reached. Narrow diagnosed routine revision:
+existing fourth position becomes same17 repaired focus/60 s; sole additional
+required-root/300 s is position5. All three prior positions remain spent; no
+unchanged failed rerun, new cases/work-limit increase or protected renewal.
+
+Fourth focused17 passed,3572 deselected,7.03 s, source/test hashes stable. Formatter
+changed only touched Python files; focused Ruff failed PLC0206 in new fixture
+native dictionary loop. Mechanical fixture-only .items()/value repair, no assertion
+or source change. Chained AST/root had not run; same scoped lint/AST next, no
+extra standalone pytest or spent-position refund. Style failure retained here.
+
+Same scoped lint/changed format/AST/editor passed after style repair; all old
+source/test nodes/defaults including restored old header conserved. Pylance
+all26 resolved callers compatible. Required root4512 passed,known transformer
+QDQ xfail/71 warnings,159.61 s; all four hashes stable, root lint/format/whitespace
+passed. All5 pytest positions spent including three failures; no abort/refund.
+Logs rays-287-focused-{1,2,3,4}.log and rays-287-root-1.log retained in existing
+recovery directory, no cleanup required. All eight flags false; raw NaN ray/+inf
+range correspondence is not finite geometry/trig-error/source/coverage/clock/
+one-use/permission/admission. No extra C/Arm/sanitizer/board opt-ins. Next fresh
+acquisition pairing through existing native cache; held output is not new source.
+
 ## Sources
 
 Hardware and tools:

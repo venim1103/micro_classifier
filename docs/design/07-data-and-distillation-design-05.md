@@ -2427,6 +2427,20 @@ no geometry/coverage/source/clock/one-use/permission/admission. See
 [actual controls, fixture repair, archive and limits][native-tof-direction-source-review].
 
 
+#### Cold Native Ray-to-ToF Pairing (2026-11-11)
+
+Default-off `tof_ranges(..., direction_source=None)` requires separate empty
+builtin sink and mounted native rays. Reuses original generator once with private
+source, pairs its copied trace with original native pose/config/scenario and
+actual floor/final pre-noise words; all four prior sinks/default call paths stay
+unchanged. <=16 copied arrays/1224 words plus<=9 ray scalars and existing bounded
+native context, no extra geometry/trig/clock/RNG. Raw NaN rays can produce guarded
++inf candidates/ranges, not finite geometry. Cold pairing is not fresh acquisition,
+intake/retention/delivery provenance, numerical/coverage/physical evidence or
+qualification. All eight flags false; no permission/admission. See
+[actual failures, fixture-only repairs and limits][native-tof-direction-range-source-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2466,3 +2480,4 @@ no geometry/coverage/source/clock/one-use/permission/admission. See
 [native-tof-cylinder-matched-cap-square-review]: ../../REVIEW.md#284-matched-retained-cylinder-cap-square-residuals-2026-11-11
 [native-tof-wall-cylinder-boundary-review]: ../../REVIEW.md#285-matched-native-wall-to-cylinder-boundary-prerequisite-2026-11-11
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
+[native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11

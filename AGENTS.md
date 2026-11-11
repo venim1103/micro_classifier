@@ -31,19 +31,20 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §286 for cold native ray-generation source, fixture repair
-and lossless 276-280 archive; §285 covers wall/cylinder boundary words and
+Read [REVIEW.md][review] §287 for cold ray-to-ToF pairing and fixture-only repairs;
+§286 covers native ray generation and lossless 276-280 archive,
+§285 wall/cylinder boundary words and
 closing-order repair, §284 cap-square residuals and stable-source
 revalidation, §283 cap-relative,
 §282 covers guarded top division and the lossless 271-275 archive, §281 scalar offset,
 §278 the NF1 relocation to chapter04 and §274 the cylinder topic in chapter05.
-§§231-285
+§§231-286
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next pair cold ray-generation source with actual tof_ranges rays before fresh
-acquisition, preserving supplied
+Next pair cold ray source with fresh native acquisition through the existing
+cache path; held output is not new source. Preserve supplied
 operands, raw nonfinite unknowns, identity/closing checks and unresolved word ties.
 Squared-norm correspondence alone is not ray geometry or numerical qualification.
 Preserve unresolved equal-value/different-word

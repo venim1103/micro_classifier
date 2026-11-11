@@ -954,6 +954,7 @@ def tof_ranges(
     selection_source=None,
     wall_source=None,
     cylinder_source=None,
+    direction_source=None,
 ):
     """Synthetic first returns from a floor, finite walls and capped cylinders."""
     if source is not None and (type(source) is not dict or source):
@@ -980,9 +981,25 @@ def tof_ranges(
             for other in (source, selection_source, wall_source)
         ):
             raise ValueError("ToF cylinder source requires a separate dictionary")
+    if direction_source is not None:
+        if type(direction_source) is not dict or direction_source:
+            raise ValueError(
+                "ToF direction source requires an empty builtin dictionary"
+            )
+        if any(
+            direction_source is other
+            for other in (source, selection_source, wall_source, cylinder_source)
+        ):
+            raise ValueError("ToF direction source requires a separate dictionary")
     if any(
         value is not None
-        for value in (source, selection_source, wall_source, cylinder_source)
+        for value in (
+            source,
+            selection_source,
+            wall_source,
+            cylinder_source,
+            direction_source,
+        )
     ):
         _check_native_tof_source_inputs(position, yaw, scenario, config)
     if selection_source is not None and config.tof_mount_height is None:
@@ -991,6 +1008,8 @@ def tof_ranges(
         raise ValueError("ToF wall source requires mounted rays")
     if cylinder_source is not None and config.tof_mount_height is None:
         raise ValueError("ToF cylinder source requires mounted rays")
+    if direction_source is not None and config.tof_mount_height is None:
+        raise ValueError("ToF direction source requires mounted rays")
     if config.tof_mount_height is None:
         angles = yaw + np.linspace(
             config.field_of_view / 2, -config.field_of_view / 2, 8
@@ -1002,12 +1021,19 @@ def tof_ranges(
         if source is not None:
             _retain_native_tof_source(source, position, yaw, scenario, config, ranges)
         return ranges
-    rays = tof_directions(yaw, config)
+    direction_generation = {} if direction_source is not None else None
+    rays = (
+        tof_directions(yaw, config, source=direction_generation)
+        if direction_source is not None
+        else tof_directions(yaw, config)
+    )
     directions, up = rays[..., :2], rays[..., 2]
     height = config.tof_mount_height
     ranges = np.divide(-height, up, out=np.full((8, 8), np.inf), where=up < 0)
     floor_source = (
-        ranges.copy() if source is not None or wall_source is not None else None
+        ranges.copy()
+        if source is not None or wall_source is not None or direction_source is not None
+        else None
     )
     wall_entries = [] if wall_source is not None else None
     if selection_source is not None:
@@ -1260,6 +1286,23 @@ def tof_ranges(
             post_wall_ranges_m=wall_minimum,
             cylinders=tuple(cylinder_entries),
             pre_noise_ranges_m=ranges.copy(),
+        )
+    if direction_source is not None:
+        _retain_native_tof_source(
+            direction_source,
+            position,
+            yaw,
+            scenario,
+            config,
+            ranges,
+            rays,
+            floor_source,
+        )
+        direction_source.update(
+            schema="micro-classifier/native-tof-direction-trace/1",
+            allowed_use="native_tof_direction_diagnostics_only",
+            status="recorded_native_tof_direction_and_range_values",
+            direction_generation=direction_generation,
         )
     return ranges
 

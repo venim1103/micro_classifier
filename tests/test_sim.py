@@ -12640,6 +12640,37 @@ def test_native_tof_selection_intake(
             "late_generation",
             "outgoing_generation",
         )
+    ]
+    + [
+        ("postprocessing", case)
+        for case in (
+            "copy",
+            "noise_rng",
+            "legacy",
+            "missing",
+            "epoch",
+            "source_identity",
+            "inputs",
+            "words",
+            "shape",
+            "flag",
+            "late_profile",
+            "late_trace",
+            "late_source",
+            "late_cache",
+            "outgoing",
+            "noise_dtype",
+            "store_words",
+            "dropout_shape",
+            "mask_words",
+            "mask_dtype",
+            "raw_nonfinite",
+            "extra",
+            "late_rng",
+            "late_store",
+            "late_pose",
+            "late_mask",
+        )
     ],
 )
 def test_native_tof_wall_intake(
@@ -12649,11 +12680,25 @@ def test_native_tof_wall_intake(
 
     from sim import diagnostics, rover
 
+    postprocessing = cylinder == "postprocessing"
     direction = cylinder is None
-    kind = "direction" if direction else "cylinder" if cylinder else "wall"
+    cylinder = False if postprocessing else cylinder
+    kind = (
+        "postprocessing"
+        if postprocessing
+        else "direction"
+        if direction
+        else "cylinder"
+        if cylinder
+        else "wall"
+    )
     cache_name = f"_native_tof_{kind}_source"
     sample = getattr(diagnostics, f"_sample_simulator_native_tof_{kind}_source")
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if postprocessing and case == "noise_rng":
+        environment.config = replace(environment.config, noise_std=0.01, dropout=0.2)
+    elif postprocessing and case == "legacy":
+        environment.config = replace(environment.config, tof_mount_height=None)
     if cylinder or direction:
         environment.scenario = replace(
             environment.scenario,
@@ -12667,7 +12712,9 @@ def test_native_tof_wall_intake(
     captured = getattr(environment, cache_name)
     trace = captured[kind]
     entries = (
-        trace["direction_generation"]
+        trace
+        if postprocessing
+        else trace["direction_generation"]
         if direction
         else trace["cylinders" if cylinder else "walls"]
     )
@@ -12676,11 +12723,13 @@ def test_native_tof_wall_intake(
     elif case == "source_identity":
         environment._native_tof_source = dict(environment._native_tof_source)
     elif case == "inputs":
-        trace["inputs"]["yaw_rad"] += 0.25
+        trace["inputs"]["max_range_m" if postprocessing else "yaw_rad"] += 0.25
     elif case == "words":
         trace["pre_noise_ranges_m"].view(np.uint64)[0, 0] ^= np.uint64(1)
     elif case == "shape":
-        trace["world_frame_unit_rays"] = np.zeros((8, 8, 2))
+        trace["noise_draw_m" if postprocessing else "world_frame_unit_rays"] = np.zeros(
+            (8, 8, 2)
+        )
     elif case == "index":
         entries[0]["obstacle_index" if cylinder else "wall_index"] = False
     elif case == "mask":
@@ -12718,6 +12767,20 @@ def test_native_tof_wall_intake(
         entries["extra"] = np.zeros((8, 8), dtype=np.float64)
     elif case == "generation_flag":
         entries["numerically_certified"] = True
+    elif case == "noise_dtype":
+        trace["noise_draw_m"] = trace["noise_draw_m"].astype(np.float32)
+    elif case == "store_words":
+        trace["stored_ranges_m"].view(np.uint32)[0, 0] ^= np.uint32(1)
+    elif case == "dropout_shape":
+        trace["dropout_draw"] = np.zeros((9, 8))
+    elif case == "mask_words":
+        trace["valid_after_dropout"][0, 0] = ~trace["valid_after_dropout"][0, 0]
+    elif case == "mask_dtype":
+        trace["valid_before_dropout"] = trace["valid_before_dropout"].astype(np.uint8)
+    elif case == "raw_nonfinite":
+        trace["noise_draw_m"][0, 0] = math.inf
+    elif case == "extra":
+        trace["extra"] = True
     original_intake, original_copy = (
         diagnostics._sample_simulator_native_tof_source,
         diagnostics.deepcopy,
@@ -12746,7 +12809,9 @@ def test_native_tof_wall_intake(
             work["mutations"] += 1
         elif work["intake"] == 2:
             if case == "late_trace":
-                if direction:
+                if postprocessing:
+                    trace["noise_draw_m"].view(np.uint64)[0, 0] ^= np.uint64(1)
+                elif direction:
                     trace["pre_noise_ranges_m"].view(np.uint64)[0, 0] ^= np.uint64(1)
                 elif cylinder:
                     entries[0]["projection_m"][0, 0] = math.nextafter(
@@ -12771,6 +12836,16 @@ def test_native_tof_wall_intake(
                 )
             elif case == "outgoing_generation":
                 outgoing["wall"]["direction_generation"]["pitch_sine"] = "changed"
+            elif case == "late_rng":
+                environment.rng = object()
+            elif case == "late_store":
+                trace["stored_ranges_m"].view(np.uint32)[0, 0] ^= np.uint32(1)
+            elif case == "late_pose":
+                environment.position[0] = math.nextafter(
+                    environment.position[0], math.inf
+                )
+            elif case == "late_mask":
+                trace["valid_after_dropout"][0, 0] = ~trace["valid_after_dropout"][0, 0]
             if case in (
                 "late_trace",
                 "late_cache",
@@ -12778,6 +12853,10 @@ def test_native_tof_wall_intake(
                 "outgoing",
                 "late_generation",
                 "outgoing_generation",
+                "late_rng",
+                "late_store",
+                "late_pose",
+                "late_mask",
             ):
                 work["mutations"] += 1
         return actual
@@ -12798,20 +12877,39 @@ def test_native_tof_wall_intake(
     for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
         monkeypatch.setattr(rover, name, forbidden)
     before_tick = environment.tick
-    before_rng = deepcopy(environment.rng.bit_generator.state)
+    retained_rng = environment.rng
+    before_rng = deepcopy(retained_rng.bit_generator.state)
     before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
     epoch = "x" * 33 if case == "epoch" else owner._epoch
-    if case in ("copy", "max_obstacles"):
+    if case in ("copy", "max_obstacles", "noise_rng", "legacy"):
         actual = sample(environment, epoch)
         assert actual["source_epoch"] == owner._epoch and actual["tick"] == 4
         assert actual["delivery_tick"] == actual["source"]["delivery_tick"] == 6
         for name in (
             "pre_noise_ranges_m",
-            "world_frame_unit_rays",
-            *(("floor_candidate_ranges_m",) if not cylinder else ()),
+            *(("world_frame_unit_rays",) if not postprocessing else ()),
+            *(
+                ("floor_candidate_ranges_m",)
+                if not cylinder and not postprocessing
+                else ()
+            ),
         ):
             assert actual[kind][name] == actual["source"]["native_source"][name]
-        if cylinder:
+        if postprocessing:
+            for key, value in trace.items():
+                if type(value) is not np.ndarray:
+                    continue
+                expected = (
+                    tuple(map(bool, value.flat))
+                    if value.dtype == bool
+                    else tuple(map(int, value.view(np.uint32).flat))
+                    if value.dtype == np.float32
+                    else tuple(float(word).hex() for word in value.flat)
+                )
+                assert actual[kind][key] == expected
+            assert actual[kind]["stored_ranges_m"] == actual["source"]["sample_words"]
+            assert actual[kind]["valid_after_dropout"] == actual["source"]["valid_mask"]
+        elif cylinder:
             assert (
                 len(actual[kind]["cylinders"])
                 == len(entries)
@@ -12888,17 +12986,24 @@ def test_native_tof_wall_intake(
             "command_admission_qualified",
         ):
             assert actual[flag] is False and actual[kind][flag] is False
-        actual[kind]["inputs"]["config"]["max_range"] = -99.0
+        if postprocessing:
+            actual[kind]["inputs"]["max_range_m"] = -99.0
+            actual[kind]["noise_draw_m"] = ("changed",) * 64
+            assert trace["inputs"]["max_range_m"] > 0
+            assert type(trace["noise_draw_m"]) is np.ndarray
+        else:
+            actual[kind]["inputs"]["config"]["max_range"] = -99.0
         if direction:
             actual[kind]["direction_generation"]["pitch_sine"] = "changed"
             assert type(entries["pitch_sine"]) is float
         elif cylinder:
             actual[kind]["cylinders"][0]["sides"][0]["distance_m"] = ("changed",) * 64
             assert type(entries[0]["sides"][0]["distance_m"]) is np.ndarray
-        else:
+        elif not postprocessing:
             actual["wall"]["walls"][0]["numerator_m"] = "changed"
             assert type(trace["walls"][0]["numerator_m"]) is float
-        assert trace["inputs"]["config"]["max_range"] > 0
+        if not postprocessing:
+            assert trace["inputs"]["config"]["max_range"] > 0
         actual["source"]["native_source"]["inputs"]["yaw_rad"] = -99.0
         assert environment._native_tof_source["source"]["inputs"]["yaw_rad"] != -99.0
         assert work["intake"] == 2
@@ -12930,7 +13035,8 @@ def test_native_tof_wall_intake(
     ):
         assert work["intake"] == 0
     assert environment.tick == before_tick
-    assert environment.rng.bit_generator.state == before_rng
+    assert retained_rng.bit_generator.state == before_rng
+    assert (environment.rng is retained_rng) is (case != "late_rng")
     assert environment.odometry_rng.bit_generator.state == before_odometry_rng
     assert work["mutations"] == int(
         case
@@ -12942,6 +13048,10 @@ def test_native_tof_wall_intake(
             "outgoing",
             "late_generation",
             "outgoing_generation",
+            "late_rng",
+            "late_store",
+            "late_pose",
+            "late_mask",
         )
     )
     assert work["forbidden"] == 0

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §308 for intact product/pitch checkpoint archival;
+Read [REVIEW.md][review] §309 for bounded closed postprocessing intake;
+§308 covers intact product/pitch checkpoint archival;
 §307 covers fresh native postprocessing acquisition
 pairing; §306 covers cold return-postprocessing capture and distinct receivers;
 §305 covers matched native final-up copy reports;
@@ -64,8 +65,8 @@ retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next bounded closed postprocessing intake with original/closing native cache,
-RNG/profile/pose/input/stored-word/mask joins, no replay or extra draws; retain
+Next typed <=8-record postprocessing history, then recorder retention/delivery
+with original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already
 exist and are not a new task;

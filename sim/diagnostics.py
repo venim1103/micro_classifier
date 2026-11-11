@@ -14118,6 +14118,197 @@ def _sample_simulator_native_tof_wall_source(environment, source_epoch):
     }
 
 
+def _sample_simulator_native_tof_postprocessing_source(environment, source_epoch):
+    template = _native_tof_history_template(environment, source_epoch)
+    captured = environment._native_tof_postprocessing_source
+    native_before = environment._native_tof_source
+    rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+    float_arrays = (
+        "pre_noise_ranges_m",
+        "noise_draw_m",
+        "noisy_ranges_m",
+        "dropout_draw",
+        "clipped_ranges_m",
+        "selected_ranges_m",
+    )
+    mask_arrays = ("valid_before_dropout", "valid_after_dropout")
+    input_keys = ("max_range_m", "noise_std_m", "dropout", "mount_height_m")
+
+    def check_mapping(value, expected, extra):
+        if (
+            type(value) is not dict
+            or len(value) != len(expected) + len(extra)
+            or any(type(key) is not str for key in value)
+            or set(value) != {*expected, *extra}
+            or any(
+                not _native_tof_word_copy_matches(value[key], item)
+                for key, item in expected.items()
+            )
+        ):
+            raise ValueError("unsupported native ToF postprocessing metadata")
+
+    def array(value, dtype):
+        if (
+            type(value) is not np.ndarray
+            or value.shape != (8, 8)
+            or value.dtype != np.dtype(dtype)
+            or (dtype is not bool and not np.isfinite(value).all())
+        ):
+            raise ValueError(
+                "unsupported native ToF postprocessing array words or layout"
+            )
+        return value
+
+    def metadata():
+        expected = {
+            "schema": "micro-classifier/native-tof-postprocessing-acquisition/1",
+            "allowed_use": "native_tof_postprocessing_diagnostics_only",
+            "status": "recorded_native_tof_postprocessing_acquisition",
+            **{flag: False for flag in flags},
+        }
+        check_mapping(
+            captured,
+            expected,
+            (
+                "rng",
+                "odometry_rng",
+                "tick",
+                "delivery_tick",
+                "source",
+                "postprocessing",
+            ),
+        )
+        if (
+            captured["rng"] is not rng_before
+            or captured["odometry_rng"] is not odometry_rng_before
+            or captured["source"] is not native_before
+            or type(captured["tick"]) is not int
+            or captured["tick"] != environment.tick
+            or type(captured["delivery_tick"]) is not int
+            or not 0 <= captured["delivery_tick"] <= 0xFFFFFFFF // 50000
+            or captured["delivery_tick"]
+            != captured["tick"] + environment.config.latency_ticks
+        ):
+            raise ValueError(
+                "unsupported native ToF postprocessing acquisition pairing"
+            )
+        trace = captured["postprocessing"]
+        expected = {
+            "schema": "micro-classifier/native-tof-postprocessing-source/1",
+            "allowed_use": "native_tof_postprocessing_diagnostics_only",
+            "status": "recorded_native_tof_postprocessing_values",
+            **{flag: False for flag in flags},
+        }
+        check_mapping(
+            trace, expected, ("inputs", *float_arrays, *mask_arrays, "stored_ranges_m")
+        )
+        inputs = trace["inputs"]
+        check_mapping(inputs, {}, input_keys)
+        if any(
+            type(inputs[key]) is not float or not math.isfinite(inputs[key])
+            for key in input_keys[:-1]
+        ) or (
+            inputs["mount_height_m"] is not None
+            and (
+                type(inputs["mount_height_m"]) is not float
+                or not math.isfinite(inputs["mount_height_m"])
+            )
+        ):
+            raise ValueError("unsupported native ToF postprocessing sampling inputs")
+        config = template["native_source"]["inputs"]["config"]
+        input_expected = {
+            "max_range_m": float(config["max_range"]),
+            "noise_std_m": float(config["noise_std"]),
+            "dropout": float(config["dropout"]),
+            "mount_height_m": None
+            if config["tof_mount_height"] is None
+            else float(config["tof_mount_height"]),
+        }
+        if (
+            inputs["max_range_m"] <= 0
+            or inputs["noise_std_m"] < 0
+            or not 0 <= inputs["dropout"] <= 1
+            or not _native_tof_word_copy_matches(inputs, input_expected)
+        ):
+            raise ValueError("native ToF postprocessing input pairing mismatched")
+        return {
+            **expected,
+            "inputs": deepcopy(inputs),
+            **{
+                key: tuple(
+                    float(word).hex() for word in array(trace[key], np.float64).flat
+                )
+                for key in float_arrays
+            },
+            **{
+                key: tuple(map(bool, array(trace[key], bool).flat))
+                for key in mask_arrays
+            },
+            "stored_ranges_m": tuple(
+                map(
+                    int,
+                    array(trace["stored_ranges_m"], np.float32).view(np.uint32).flat,
+                )
+            ),
+        }
+
+    before = metadata()
+    native = _sample_simulator_native_tof_source(environment, source_epoch)
+    copied = deepcopy(before)
+    closing_native = _sample_simulator_native_tof_source(environment, source_epoch)
+    after = metadata()
+    closing_template = _native_tof_history_template(environment, source_epoch)
+    if (
+        environment._native_tof_postprocessing_source is not captured
+        or environment._native_tof_source is not native_before
+        or environment.rng is not rng_before
+        or environment.odometry_rng is not odometry_rng_before
+        or not _native_tof_word_copy_matches(template, closing_template)
+        or type(environment.position) is not np.ndarray
+        or environment.position.shape != (2,)
+        or tuple(float(word).hex() for word in environment.position)
+        != tuple(
+            word.hex()
+            for word in closing_native["native_source"]["inputs"]["position_m"]
+        )
+        or float(environment.yaw).hex()
+        != closing_native["native_source"]["inputs"]["yaw_rad"].hex()
+        or not _native_tof_word_copy_matches(before, after)
+        or not _native_tof_word_copy_matches(copied, after)
+        or not _native_tof_word_copy_matches(native, closing_native)
+        or after["pre_noise_ranges_m"]
+        != closing_native["native_source"]["pre_noise_ranges_m"]
+        or after["stored_ranges_m"] != closing_native["sample_words"]
+        or after["valid_after_dropout"] != closing_native["valid_mask"]
+        or native["tick"] != captured["tick"]
+        or native["delivery_tick"] != captured["delivery_tick"]
+    ):
+        raise ValueError(
+            "native ToF postprocessing source changed or pairing mismatched during intake"
+        )
+    return {
+        "schema": "micro-classifier/native-tof-postprocessing-intake/1",
+        "allowed_use": "native_tof_postprocessing_diagnostics_only",
+        "status": "copied_native_tof_postprocessing_diagnostics",
+        **{flag: False for flag in flags},
+        "source_epoch": source_epoch,
+        "tick": native["tick"],
+        "delivery_tick": native["delivery_tick"],
+        "postprocessing": copied,
+        "source": native,
+    }
+
+
 def _sample_simulator_native_tof_direction_source(environment, source_epoch):
     template = _native_tof_history_template(environment, source_epoch)
     if environment.config.tof_mount_height is None:

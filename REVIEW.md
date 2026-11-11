@@ -439,6 +439,48 @@ migration DONE, never rerun. No artifacts deleted or new data/model/dependency/
 hardware work. Last4879-pass source gate remains prior source evidence, all8false.
 Next bounded closed postprocessing intake and original/closing ownership joins.
 
+## 309. Bounded Closed Native ToF Postprocessing Intake (2026-11-11)
+
+Begin cleanbfc50e7. Hypothesis: closed17-key acquisition/21-key trace/4-key inputs,
+two metadata snapshots around two existing native intakes and detached outgoing
+copy suffice for typed source prerequisites, not noise-law/numerical qualification.
+Six64 finite float64 arrays encode canonical hex, stored64 float32 values retain
+uint32 words, two64 literal boolean masks; original/closing cache/native/RNG/
+profile/pose/input/pre-noise/stored-word/mask joins, no replay/extra draws/clock/
+hash/read/retention. Raw unsupported/nonfinite raises unknown-path ValueError;
+all8 flags false, no internal mask/arithmetic/noise-law/physical/coverage/clock/
+one-use/admission adoption. Extend existing61 intake controls with26 postprocessing
+cases including noisy/legacy positives, detached words and early/late mutation
+rejection; old family names/caps unchanged. Per new fixture1 existing fresh step/
+geometry before poison, <=2 native intakes/two metadata snapshots (768float-word
+encodes/128store words/256mask bools), no source/recorder/RNG/clock work in intake.
+Fresh3 routine pytest positions first26/60s, sole necessary repair26/60s,
+root360s; failures/aborts/unknown spent, no old/protected refund/renewal.
+Retain returns-309-* original recovery directory; serialize tests from source/
+editor/formatter tools. Exit intake only, then typed bounded history/retention/
+delivery as supported, no usable command or protected work.
+
+First26 FAILED4/PASS22/12.48s: late_rng/late_store/late_pose/late_mask all reached
+expected intake rejection, then old fixture assertion followed deliberately
+replaced RNG reference or expected old mutation-count set (1 != 0). Retain
+original RNG object/state and include ONLY four new mutation names in exact
+counter assertion; source/helper/old cases/limits unchanged. Failed pipeline
+did not reach closing hashes; first position spent/log retained, no refund.
+Same reserved26/60s next, no source/tolerance/assertion/resource cap relaxation.
+
+Same26 PASS4.99s; root4905 PASS/knownQDQxfail/71 warnings/180.98s. Successful
+focused/root runs retained all four before/after source/test hashes; Ruff root,
+changed-file format, whitespace and editor diagnostics PASS. AST conservation
+checks retain every old source definition/import/default and exact old61-case
+intake expression; only one helper and26 additive controls. Pylance signature
+query resolved no callers for new private helper (dynamic fixture lookup), not
+static compatibility proof. All3 fresh pytest positions spent; initial failure
+and both successful logs retained, no aborted/unknown attempts refunded and no
+protected experiment renewed. No additional opt-in C/Arm/sanitizer/board/model/
+study/dependency commands; unchanged default interface controls ran in root.
+All8 flags false, source correspondence only. Next typed <=8-record postprocessing
+history, then recorder retention and delivered/pending composition as supported.
+
 ## Sources
 
 Hardware and tools:

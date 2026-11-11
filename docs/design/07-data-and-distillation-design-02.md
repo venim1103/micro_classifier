@@ -2361,6 +2361,25 @@ numerical/noise-law/coverage/physical/clock/one-use/admission qualification. All
 eight flags remain false; [the acquisition checkpoint][native-tof-postprocessing-acquisition-review]
 retains finite controls, measured check outcomes and outstanding evidence.
 
+#### Closed Native ToF Postprocessing Intake (2026-11-11)
+
+The separate [offline intake][c1-prototype-source] validates the closed acquisition,
+trace and input layouts before copying six finite float64 8x8 arrays as canonical
+hex words, two literal boolean masks and the stored float32 uint32 words. Two
+metadata snapshots bracket two existing native intakes; original/closing cache,
+RNG identities, profile, pose, inputs and detached outgoing words must match.
+Pre-noise ranges join the native geometry output, and stored words/final mask join
+the same pending native sample. Legacy and noisy profiles remain observations.
+Unsupported/nonfinite raw source raises the unknown-path rejection, not corrected
+values or an adopted noise distribution. No replay, extra draws, clock, digest,
+recorder retention or numerical evaluation is introduced.
+
+This closed correspondence is not internal noise-addition/dropout/clip arithmetic
+proof, probability, numerical/geometry/coverage/source/physical/clock/one-use or
+admission qualification. All eight flags remain false. Typed bounded history and
+recorder/delivery joins are still separate prerequisites; [the intake checkpoint][native-tof-postprocessing-intake-review]
+retains actual failed checks, finite accounting and next action.
+
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
 [floor-rules]: ../../sim/rules.py
@@ -2388,3 +2407,4 @@ retains finite controls, measured check outcomes and outstanding evidence.
 [native-tof-cylinder-topic]: 07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10
 [native-tof-postprocessing-review]: ../../REVIEW.md#306-cold-native-tof-return-postprocessing-capture-2026-11-11
 [native-tof-postprocessing-acquisition-review]: ../../REVIEW.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
+[native-tof-postprocessing-intake-review]: ../../REVIEW.md#309-bounded-closed-native-tof-postprocessing-intake-2026-11-11

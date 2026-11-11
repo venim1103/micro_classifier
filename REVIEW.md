@@ -62,8 +62,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 261-265][chapter-review-17]
 - [Checkpoints 266-270][chapter-review-18]
 - [Checkpoints 271-275][chapter-review-19]
+- [Checkpoints 276-280][chapter-review-20]
 
-Checkpoints 276 onward and the source bibliography remain below.
+Checkpoints 281 onward and the source bibliography remain below.
 ## Recovery and Document Layout (2026-11-09)
 
 Following the user's reported crash, the live review was a 262,527-byte exact
@@ -106,262 +107,6 @@ finite fixture limits, counting the interruption rather than assuming success.
 All qualification/admission flags remain false. Future checkpoints belong here
 briefly, with whole older sections moved through the reading map rather than
 repeated historical handoffs.
-
-## 276. Matched Retained Cylinder Discriminant Residuals (2026-11-10)
-
-Checkpoint `d74dbd5` pushed/clean. Existing supplied-word helper owns unrounded
-projection^2-horizontal_squared*(offset norm-radius^2) discrepancy, not isolated
-primitive or geometry qualification. Hypothesis: matched original/closing cylinder
-records can compose that report with original epoch/acquisition/delivery identities
-and all existing closing checks. Literal default-off
-`include_cylinder_discriminant_residuals` requires `include_cylinder=True`.
-Existing <=32 cylinders/4256 words/2048 entries/4256 values/8352 binary operations
-per helper,4096-bit ceiling unchanged; <=18 invocations across original/closing
-delivered/<=8 pending records. Nonfinite observation residual stays unknown;
-unsupported nonfinite supplied operands still reject conservatively.
-
-Finite routine plan: reuse23-case arithmetic family in four modes,92 controls;
-prior mode caps unchanged. New discriminant fixtures <=3522 values/4662 binary/
-3132 exact oracle operations including combined existing norm/projection/offset/
-selection reports, <=6 calls each included helper. Per mode <=4 steps/5 reads/3
-geometries/3 retentions/6 cylinder matches/2 pending matches/64 digests, no runtime
-intake/read/retain/step/reset/replay/clock. Empty/one/two fixtures, exact base/dot/
-discriminant oracles, default/dependency/held/delivered/detachment, nonzero or
-unknown observed residual, missing/malformed/late output/pending/native/cylinder/
-owner/budget and bit exhaustion; preserve tick/frame/both RNGs. Three pytest
-positions including failures/aborts: first92/60 seconds, one necessary repair
-reserve, final root/300 seconds; retain `cylinder-276-*` logs. No historical refunds/
-protected studies/task data/dependencies/hardware; all eight flags false, no
-uniform/numerical/physical/source/geometry/coverage/clock/one-use/permission/
-admission or usable command. Next independent matched root-squared consistency.
-
-First92 passed,3260 deselected,26.53 s. Initial required root1 failed,4274
-passed,1 known transformer QDQ xfailed,71 warnings,138.56 s. Failure is unchanged
-`test_build_audit_timeout_terminates_descendants[timeout]`, test line1923:
-`status.exists()` then `/proc/171341/stat` read raised `ProcessLookupError` as
-the descendant disappeared. Primary log retains the traceback; this is the same
-exists/read race family retained in §251, not a discriminant failure or proof of
-a fixed cleanup test. No unrelated source/test edit, tolerance/assertion change
-or old-budget refund. Root Ruff/format/diff tail did not execute after failure;
-narrow style and editor/Pylance syntax already passed. Caller query returned no
-sites, not compatibility proof; AST preserves original23 cases and all nodes/
-parameters outside the changed snapshot method and arithmetic family.
-
-Narrow routine-plan revision: use the one unused necessary-repair reserve for
-one required root revalidation/300 seconds plus original style/diff gates. Three
-pytest positions total unchanged, first focus and failed root spent, no extra
-focused invocation or retry beyond this remaining position. Retain both root
-logs, diagnose any new failure; no protected experiments or additional opt-ins.
-
-Single remaining root revalidation4275 passed,1 known transformer QDQ xfailed,
-71 warnings,123.90 s; root Ruff, changed-file format check and whitespace passed.
-Unrelated audit source/test confirmed unchanged. All three pytest positions
-spent including failed root, no aborts; no further check position or historical
-refund. Logs `cylinder-276-focused-1.log`/`cylinder-276-root-1.log`/
-`cylinder-276-root-2.log` retained under recovery directory. Successful
-revalidation does not fix or erase the race. No additional C/Arm/sanitizer/board
-opt-in gates ran.
-
-Exact supplied-word discriminant oracle, nonzero/unknown observed residuals,
-unchanged prior mode caps, combined independent reports, default skipped work,
-late-change suppression, conservative bit exhaustion and tick/frame/RNG preserved.
-All eight flags false; no uniform/numerical/physical/source/geometry/coverage/
-clock/one-use/permission/admission or usable command. Next independent matched
-root-squared consistency; archive whole266-270 before further root-review growth.
-
-## 277. Matched Retained Cylinder Root-Squared Consistency (2026-11-10)
-
-Whole266-270 archive moved verbatim (234 lines), root752 lines, five chapter05
-references rebased; exact previous sections/bibliography and eight local targets
-passed, whitespace passed. One guarded migration/check invocation,30 s cap,
-no failure/abort; originals/script/log retained under recovery directory.
-Code suite not rerun for the archive. Do not rerun successful migration utility.
-
-Hypothesis: default-off literal `include_cylinder_root_squared_residuals` requiring
-`include_cylinder=True` composes the existing supplied-root-squared minus clamped
-supplied-discriminant helper with matched delivered/pending identities and closing
-checks. Negative-root status is separate from squared residual; matching squares
-do not certify sqrt rounding or geometry. Cheapest discriminator: same23-case
-snapshot family expanded to fifth mode,115 cases, exact independent oracle.
-
-Fresh bounded routine ledger under standing authority: <=3 pytest invocations,
-focused then root plus one diagnosed-repair reserve,300 s each; default root
-`python -m pytest -q && ruff check . && git diff --check`, changed Python format
-check. Fixture <=4steps/5reads/3geometries/3retentions/6active-helper+cylinder
-matches/2pending matches/64digests. Root mode <=4290 values/5430 binary operations/
-768 oracle operations; prior four caps unchanged. Combined control additionally
-calls offset/projection/norm/discriminant/chain <=6each. No snapshot intake/read/
-retain/step/reset/replay/clock; tick/frame/RNG preserved. Existing helper <=32
-cylinders/4096 words/2048 entries/4096 values/4096 binary operations,4096-bit
-ceiling unchanged; <=18 helper calls per API bound. Preserve failures and unknown
-historical attempts; diagnose before any rerun, no protected run or old refund.
-No additional C/Arm/sanitizer/board opt-ins, dependencies, models or task data.
-
-First focused114 passed/1 failed/3260 deselected,40.68 s: root `work_limit`
-expected unknown, but unchanged scene arithmetic fit the reduced16-bit budget.
-This invalid test expectation is not production budget enforcement failure.
-Repair only root-mode work-limit fixture: explicit21-bit supplied root `2**20`
-before applying16-bit monkeypatch, without changing production4096-bit ceiling,
-prior mode caps or tolerances. Same115 controls rerun using the diagnosed-repair
-reserve; one required root invocation then exhausts the original three positions.
-First failure log retained; no failure erased/refunded, no abort.
-
-Repaired focused115 passed/3260 deselected,21.07 s. Changed Python formatted/
-lint passed; editor/Pylance syntax clean. Auxiliary AST check first stopped at
-incorrect public class-name lookup (`StopIteration`); corrected only checker
-to actual `_SyntheticC1SourceRecorder` owner. AST then confirms only snapshot
-and existing arithmetic test family changed, previous keyword defaults and23
-cases preserved. Pylance signature query found no call sites, not compatibility
-proof. Selected editor and terminal interpreter both `/opt/venv/bin/python`,
-Python3.12.3 terminal. Required root invocation remains within original ledger.
-
-Required root4298 passed,1 known transformer QDQ xfailed,71 warnings,136.19 s;
-root Ruff, whitespace and changed-file format checks passed. All three pytest
-positions spent including first focused failure, no abort. Logs
-`cylinder-277-focused-1.log`/`cylinder-277-focused-2.log`/
-`cylinder-277-root-1.log` and archive log/script/originals retained under recovery
-directory. No additional C/Arm/sanitizer/board opt-in gates ran.
-
-Default skipped work, delivered-only/pending/empty/two-cylinder identity, exact
-squared oracle, negative-root/nonfinite statuses, detached outputs, late change
-suppression and forced bit exhaustion verified; prior four modes/caps preserved.
-All eight flags false; no sqrt-rounding certification, uniform/numerical/physical/
-source/geometry/coverage/clock/one-use/permission/admission or usable command.
-Next independent matched side-numerator arithmetic, not corrected upstream words.
-
-## 278. Matched Retained Cylinder Side-Numerator Residuals (2026-11-10)
-
-Whole historical NF1 identity/digest/proposed-protocol scopes (186 lines) moved
-unchanged from chapter05 to adjacent chapter04; three old heading anchors retained,
-three review references carried unchanged and reading-map pointer updated. Prior
-chapter04/source remainder/map conserved, seven local targets and whitespace
-passed; chapter04 2387/chapter05 2331 lines. One guarded migration/check,30 s cap,
-no failure/abort; originals/script/log retained under recovery directory. No code
-suite for docs-only move, no historical NF1/SC18 imports or runs/claim adoption.
-
-Hypothesis: default-off literal `include_cylinder_side_numerator_residuals`
-requiring `include_cylinder=True` composes captured projection/root and ordered
-near/far numerator words through the unchanged supplied-word helper. Matched
-delivered/pending identities and independent closing checks remain; no corrected
-upstream words. Cheapest discriminator: existing23-case snapshot family in six
-modes,138 cases; independent exact `-projection +/- root` oracle for both sides.
-
-Fresh bounded routine ledger under standing authority: <=3 pytest invocations,
-focused then required root plus one diagnosed-repair reserve,300 s each. Root
-`python -m pytest -q && ruff check . && git diff --check`, changed Python format
-check. Fixture <=4steps/5reads/3geometries/3retentions/6active-helper+cylinder
-matches/2pending matches/64digests. New mode <=5832 values/7350 binary operations/
-2304 oracle operations; prior five caps unchanged. Combined control adds previous
-five arithmetic helpers and chain <=6each. No snapshot intake/read/retain/step/
-reset/replay/clock; tick/frame/RNG preserved. Existing helper <=32 cylinders/8192
-words/4096 entries/8193 values/10240 binary operations,4096-bit ceiling unchanged;
-<=18 original/closing invocations across delivered/<=8 pending records. Explicit
-21-bit observed numerator in16-bit work-limit control; do not assume scene alone
-exhausts reduced arithmetic. Preserve failures/unknown historical attempts; diagnose
-before rerun, no protected experiment or old refund. No additional C/Arm/sanitizer/
-board opt-ins, dependencies, models or task data.
-
-Focused138 passed/3260 deselected,32.67 s. Required root4321 passed,1 known
-transformer QDQ xfailed,71 warnings,185.20 s; root Ruff, changed-file format and
-whitespace passed. Editor/Pylance syntax clean; AST confirms only snapshot and
-existing arithmetic family changed, prior defaults/23 cases conserved. Pylance
-signature query found no call sites, not compatibility proof. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Logs `cylinder-278-focused-1.log`/`cylinder-278-root-1.log` and relocation script/
-originals/log retained under recovery directory; no additional C/Arm/sanitizer/
-board opt-in gates ran.
-
-Both side signs/ordered observed words and exact oracle, nonzero/unknown residuals,
-default skipped work, detached output, identity/closing suppression and forced bit
-exhaustion verified. Prior five caps unchanged. All eight flags false; no isolated
-primitive/FMA or uniform error, geometry/physical/source/coverage/clock/one-use/
-permission/admission or usable command. Next matched guarded side-division arithmetic.
-
-## 279. Matched Retained Cylinder Side-Division Residuals (2026-11-10)
-
-Hypothesis: default-off literal `include_cylinder_side_division_residuals`
-requiring `include_cylinder=True` composes captured horizontal-squared, ordered
-side-numerator and side-distance words through the unchanged guarded helper.
-Matched delivered/pending identities and independent closing checks remain.
-Nonpositive horizontal requires observed +inf and no quotient; this is word
-correspondence, not geometric clearance. Cheapest discriminator: existing23-case
-snapshot family expanded to seventh mode,161 cases, exact quotient oracle and
-root-mode controls unchanged. New copy control supplies a zero horizontal word
-and +inf distance on both sides in one retained synthetic trace; no geometry claim.
-
-Fresh bounded routine ledger under standing authority: <=3 pytest invocations,
-focused then required root plus one diagnosed-repair reserve,300 s each. Root
-`python -m pytest -q && ruff check . && git diff --check`, changed Python format
-check. Fixture <=4steps/5reads/3geometries/3retentions/6active-helper+cylinder
-matches/2pending matches/64digests. New mode <=7752 values/8886 binary operations/
-1536 oracle operations; prior six caps unchanged. Combined control adds previous
-six arithmetic helpers and chain <=6each. No snapshot intake/read/retain/step/
-reset/replay/clock; tick/frame/RNG preserved. Existing helper <=32 cylinders/8256
-words/4096 entries/8256 values/8192 binary operations,4096-bit ceiling unchanged;
-<=18 original/closing invocations across delivered/<=8 pending records. Explicit
-21-bit observed distance in16-bit work-limit control. Preserve failures and unknown
-historical attempts; diagnose before rerun, no protected experiment or old refund.
-No additional C/Arm/sanitizer/board opt-ins, dependencies, models or task data.
-First multi-file patch rejected out-of-order test context; worktree verified clean
-before corrected patch, no source/check execution or pytest position consumed.
-
-Focused161 passed/3260 deselected,42.97 s. Required root4344 passed,1 known
-transformer QDQ xfailed,71 warnings,190.04 s; root Ruff, changed-file format and
-whitespace passed. Editor/Pylance syntax clean; AST confirms only snapshot and
-existing arithmetic family changed, previous defaults/23 cases conserved. Pylance
-signature query found no call sites, not compatibility proof. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Logs `cylinder-279-focused-1.log`/`cylinder-279-root-1.log` retained under recovery
-directory; no additional C/Arm/sanitizer/board opt-in gates ran.
-
-Exact quotient/near-far order, nonpositive-horizontal +inf/no-quotient branch,
-unknown nonfinite observation, default skipped work, detached output, identity/
-closing suppression and forced bit exhaustion verified. Prior six caps unchanged.
-All eight flags false; no uniform/numerical/physical/source/geometry/coverage/
-clock/one-use/permission/admission or usable command. Next matched side-altitude
-combined expression, preserving the captured nonfinite-distance fallback.
-
-## 280. Matched Retained Cylinder Side-Altitude Residuals (2026-11-10)
-
-Hypothesis: default-off literal `include_cylinder_side_altitude_residuals`
-requiring `include_cylinder=True` composes captured mount height/up-ray/ordered
-distance/altitude words through the unchanged combined-expression helper.
-Matched delivered/pending identities and independent closing checks remain.
-Raw nonfinite distance retains its word and explicit +0 effective fallback, not
-an inferred geometric hit. Cheapest discriminator: existing23-case snapshot family
-expanded to eighth mode,184 cases, exact height+effective-distance*up oracle.
-New copy control supplies +inf distance and height altitude on both sides at one
-ray of a retained synthetic trace; no corrected upstream source or geometry claim.
-
-Fresh bounded routine ledger under standing authority: <=3 pytest invocations,
-focused then required root plus one diagnosed-repair reserve,300 s each. Root
-`python -m pytest -q && ruff check . && git diff --check`, changed Python format
-check. Fixture <=4steps/5reads/3geometries/3retentions/6active-helper+cylinder
-matches/2pending matches/64digests. New mode <=9678 values/11190 binary operations/
-2304 oracle operations; prior seven caps unchanged. Combined control adds previous
-seven arithmetic helpers and chain <=6each. No snapshot intake/read/retain/step/
-reset/replay/clock; tick/frame/RNG preserved. Existing helper <=32 cylinders/8385
-words/4096 entries/8257 values/12288 binary operations,4096-bit ceiling unchanged;
-<=18 original/closing invocations across delivered/<=8 pending records. Explicit
-21-bit observed altitude in16-bit work-limit control. Preserve failures and unknown
-historical attempts; diagnose before rerun, no protected experiment or old refund.
-No additional C/Arm/sanitizer/board opt-ins, dependencies, models or task data.
-
-Focused184 passed/3260 deselected,35.84 s. Required root4367 passed,1 known
-transformer QDQ xfailed,71 warnings,136.31 s; root Ruff, changed-file format and
-whitespace passed. Editor/Pylance syntax clean; AST confirms only snapshot and
-existing arithmetic family changed, prior defaults/23 cases conserved. Pylance
-signature query found no call sites, not compatibility proof. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Logs `cylinder-280-focused-1.log`/`cylinder-280-root-1.log` retained under recovery
-directory; no additional C/Arm/sanitizer/board opt-in gates ran.
-
-Exact combined-expression/ordered sides, raw nonfinite/+0 fallback, unknown
-nonfinite observation, default skipped work, detached output, identity/closing
-suppression and forced bit exhaustion verified. Prior seven caps unchanged.
-All eight flags false; no isolated primitive/FMA or uniform error, numerical/
-physical/source/geometry/coverage/clock/one-use/permission/admission or usable
-command. Next matched top-offset arithmetic, not corrected upstream words.
 
 ## 281. Matched Retained Cylinder Top-Offset Residuals (2026-11-11)
 
@@ -634,6 +379,47 @@ All eight flags false, no geometry/error/coverage/source/clock/permission/admiss
 or usable command; no additional C/Arm/sanitizer/board opt-ins ran. Next examine
 actual native ray-generation source prerequisites; squared-norm correspondence
 alone is not ray geometry or a numerical allowance. No cleanup required.
+
+## 286. Native Ray-Generation Source Prerequisite (2026-11-11)
+
+Checkpoint48e95ad pushed/clean. Existing tof_directions computes linspace/grid,
+three NumPy cosine/two sine evaluations, pitch/yaw libm pairs and combined
+rotations. Hypothesis: cold empty-dictionary source can retain original results
+without extra trig/geometry/clock/RNG work or changing default output words/order.
+Pylance all11 existing callers compatible; selected interpreter /opt/venv/bin/python.
+16 bounded synthetic controls plus existing direction/norm control; <=2 generator
+calls/24 named array-trig-stack calls per case, preflight failures before those
+calls. <=13 copied arrays/904 words plus9 finite-input/effective/trig scalar words
+per cold source; no primitive-product or numerical/physical bound adoption.
+<=3 routine pytest positions: first17 focused/60 s, one necessary repair/60 s,
+required root/300 s. Count failures/aborts, retain rays-286-* logs, no old refund
+or protected study/dependency/hardware work; all eight flags remain false.
+
+Before further root growth, whole276-280 sections moved mechanically to archive,
+five design references rebased. Exact prior section/Sources/design conservation
+and whitespace passed, no code gate rerun for migration. Root743/archive257 lines.
+Originals rays-286-{review,design}-before.md retained in existing recovery directory.
+
+First17 controls passed,3555 deselected,0.39 s with stable source/test hashes.
+Fixture review found raw_nonfinite hook targeted call7 but actual NumPy up sine
+is call6 (12 named calls per generation); fixture-only repair uses index6 modulo12
+and asserts actual NaNs in retained sine/rays. Add grid/sensor/pitch word oracles
+from captured original calls, <=6 arrays/384 word comparisons per valid case,
+without new generator/trig calls. Use sole reserved same17 focused position;
+original pass retained, not nonfinite-coverage evidence. Producer unchanged.
+
+Strengthened17 controls passed,3555 deselected,4.98 s; root4495 passed,known
+transformer QDQ xfail/71 warnings,181.77 s. All four source/test hashes stable
+across both; root Ruff lint/changed format/whitespace/editor passed. AST only
+tof_directions plus one new16-case test changed; all other source/test nodes
+conserved. Pylance all12 resolved callers compatible after change. All3 routine
+positions spent, no failure/abort/refund. Log rays-286-focused-{1,2}.log and
+rays-286-root-1.log retained in existing recovery directory; no cleanup required.
+Archive body text conserved with single EOF newline; five moved design targets
+and root map checked before checkpoint. All eight flags false; no trig accuracy,
+geometry/coverage/error/source/clock/one-use/permission/admission or usable command.
+No additional C/Arm/sanitizer/board opt-ins ran. Next pair cold direction source
+with actual tof_ranges rays before fresh acquisition; no reconstructed trig.
 
 ## Sources
 
@@ -995,3 +781,4 @@ Methods and measurements:
 [chapter-review-17]: docs/review/261-265.md
 [chapter-review-18]: docs/review/266-270.md
 [chapter-review-19]: docs/review/271-275.md
+[chapter-review-20]: docs/review/276-280.md

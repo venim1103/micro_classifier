@@ -8026,6 +8026,234 @@ def test_tof_synthetic_rays_are_unit_length_and_pitch_is_positive_down():
 
 @pytest.mark.parametrize(
     "case",
+    (
+        "copy",
+        "rotated",
+        "pitch",
+        "unmounted",
+        "default",
+        "none",
+        "occupied",
+        "subclass",
+        "wrong_config",
+        "nan_yaw",
+        "inf_yaw",
+        "invalid_fov",
+        "invalid_pitch",
+        "invalid_height",
+        "detached",
+        "raw_nonfinite",
+    ),
+)
+def test_native_tof_direction_source(monkeypatch, case):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from sim import rover
+
+    config = Config(noise_std=0, dropout=0)
+    yaw = math.pi / 2 if case == "rotated" else 0.0
+    if case == "pitch":
+        config = replace(config, tof_mount_pitch=math.pi / 4)
+    elif case == "unmounted":
+        config = replace(config, tof_mount_height=None)
+    source = {}
+    invalid = case in (
+        "occupied",
+        "subclass",
+        "wrong_config",
+        "nan_yaw",
+        "inf_yaw",
+        "invalid_fov",
+        "invalid_pitch",
+        "invalid_height",
+    )
+    if case == "occupied":
+        source["retained"] = True
+    elif case == "subclass":
+
+        class Source(dict):
+            pass
+
+        source = Source()
+    elif case == "wrong_config":
+        config = SimpleNamespace()
+    elif case in ("nan_yaw", "inf_yaw"):
+        yaw = math.nan if case == "nan_yaw" else math.inf
+    elif case.startswith("invalid_"):
+        field = {
+            "invalid_fov": "field_of_view",
+            "invalid_pitch": "tof_mount_pitch",
+            "invalid_height": "tof_mount_height",
+        }[case]
+        object.__setattr__(config, field, math.inf)
+    calls = []
+    work = {"generations": 0, "forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "direction source must not use geometry/clock/RNG/recorder"
+        )
+
+    for name in ("tof_ranges", "ray_ranges", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for module, name in (
+        (rover.np, "linspace"),
+        (rover.np, "meshgrid"),
+        (rover.np, "cos"),
+        (rover.np, "sin"),
+        (rover.np, "stack"),
+        (rover.math, "cos"),
+        (rover.math, "sin"),
+    ):
+        original = getattr(module, name)
+
+        def called(*args, _original=original, _name=name, _module=module, **kwargs):
+            assert len(calls) < 24
+            assert not invalid
+            actual = _original(*args, **kwargs)
+            if (
+                case == "raw_nonfinite"
+                and _module is rover.np
+                and _name == "sin"
+                and len(calls) % 12 == 6
+            ):
+                actual = np.full((8, 8), math.nan)
+            calls.append((_name, deepcopy(args), deepcopy(actual)))
+            return actual
+
+        monkeypatch.setattr(module, name, called)
+
+    def generate(**kwargs):
+        work["generations"] += 1
+        assert work["generations"] <= 2
+        return rover.tof_directions(yaw, config, **kwargs)
+
+    if invalid:
+        before = deepcopy(source)
+        with pytest.raises(
+            TypeError if case == "wrong_config" else ValueError,
+            match="ToF direction source",
+        ):
+            generate(source=source)
+        assert source == before and not calls
+    else:
+        baseline = generate()
+        first_calls = deepcopy(calls)
+        captured = generate(
+            **(
+                {}
+                if case == "default"
+                else {"source": None if case == "none" else source}
+            )
+        )
+        assert [item[0] for item in calls] == [item[0] for item in first_calls] * 2
+        np.testing.assert_array_equal(
+            baseline.view(np.uint64), captured.view(np.uint64)
+        )
+        for first, second in zip(first_calls, calls[len(first_calls) :], strict=True):
+            for first_value, second_value in zip(
+                (*first[1], first[2]), (*second[1], second[2]), strict=True
+            ):
+                if isinstance(first_value, np.ndarray):
+                    np.testing.assert_array_equal(
+                        first_value.view(np.uint64), second_value.view(np.uint64)
+                    )
+                elif isinstance(first_value, float):
+                    assert first_value.hex() == second_value.hex()
+        if case in ("default", "none"):
+            assert source == {}
+        else:
+            assert source["schema"] == "micro-classifier/native-tof-direction-source/1"
+            flags = (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+            assert all(source[flag] is False for flag in flags)
+            assert source["inputs"]["yaw_rad"].hex() == float(yaw).hex()
+            assert source["effective_pitch_rad"] == (
+                0 if config.tof_mount_height is None else config.tof_mount_pitch
+            )
+            mapping = {
+                "angles_rad": 0,
+                "elevation_cosine_forward": 2,
+                "azimuth_cosine": 3,
+                "elevation_cosine_left": 4,
+                "azimuth_sine": 5,
+                "sensor_up": 6,
+            }
+            for key, index in mapping.items():
+                np.testing.assert_array_equal(
+                    source[key].view(np.uint64), first_calls[index][2].view(np.uint64)
+                )
+            for key, index in (("elevation_rad", 0), ("azimuth_rad", 1)):
+                expected = first_calls[1][2][index]
+                if key == "elevation_rad" and config.tof_mount_height is None:
+                    expected = np.zeros((8, 8))
+                np.testing.assert_array_equal(
+                    source[key].view(np.uint64), expected.view(np.uint64)
+                )
+            if case == "raw_nonfinite":
+                assert np.isnan(source["sensor_up"]).all()
+                assert np.isnan(source["world_frame_unit_rays"]).any()
+                assert np.isnan(first_calls[6][2]).all()
+            expected_forward = first_calls[2][2] * first_calls[3][2]
+            expected_left = first_calls[4][2] * first_calls[5][2]
+            expected_up = first_calls[6][2]
+            pitch_cosine, pitch_sine = first_calls[7][2], first_calls[8][2]
+            for key, expected in (
+                ("sensor_forward", expected_forward),
+                ("sensor_left", expected_left),
+                (
+                    "pitched_forward",
+                    pitch_cosine * expected_forward + pitch_sine * expected_up,
+                ),
+                (
+                    "pitched_up",
+                    -pitch_sine * expected_forward + pitch_cosine * expected_up,
+                ),
+            ):
+                np.testing.assert_array_equal(
+                    source[key].view(np.uint64), expected.view(np.uint64)
+                )
+            for key, index in (
+                ("pitch_cosine", 7),
+                ("pitch_sine", 8),
+                ("yaw_cosine", 9),
+                ("yaw_sine", 10),
+            ):
+                assert source[key].hex() == first_calls[index][2].hex()
+            np.testing.assert_array_equal(
+                source["world_frame_unit_rays"].view(np.uint64),
+                captured.view(np.uint64),
+            )
+            arrays = [
+                value for value in source.values() if isinstance(value, np.ndarray)
+            ]
+            assert len(arrays) == 13 and sum(value.size for value in arrays) == 904
+            assert all(value.dtype == np.dtype(np.float64) for value in arrays)
+            assert source["world_frame_unit_rays"].shape == (8, 8, 3)
+            assert source["angles_rad"].shape == (8,)
+            assert all(value.shape in ((8,), (8, 8), (8, 8, 3)) for value in arrays)
+            assert not any(np.shares_memory(value, captured) for value in arrays)
+            if case == "detached":
+                retained = source["world_frame_unit_rays"].copy()
+                captured[:] = 9.0
+                np.testing.assert_array_equal(source["world_frame_unit_rays"], retained)
+                source["sensor_forward"][:] = 9.0
+                assert not (source["pitched_forward"] == 9.0).any()
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
     [
         "stationary",
         "rotated",

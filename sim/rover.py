@@ -805,22 +805,97 @@ def ray_ranges(position, angles, obstacles, bounds, maximum):
     return ranges
 
 
-def tof_directions(yaw, config):
+def tof_directions(yaw, config, *, source=None):
     """World-frame unit rays, upper-to-lower rows and left-to-right columns."""
+    if source is not None:
+        if type(source) is not dict or source:
+            raise ValueError(
+                "ToF direction source requires an empty builtin dictionary"
+            )
+        if type(config) is not Config:
+            raise TypeError("ToF direction source requires the actual Config")
+        if not all(
+            math.isfinite(value)
+            for value in (
+                yaw,
+                config.field_of_view,
+                config.tof_mount_pitch,
+                0 if config.tof_mount_height is None else config.tof_mount_height,
+            )
+        ):
+            raise ValueError("ToF direction source requires finite native inputs")
     angles = np.linspace(config.field_of_view / 2, -config.field_of_view / 2, 8)
     elevation, azimuth = np.meshgrid(angles, angles, indexing="ij")
     if config.tof_mount_height is None:
         elevation = np.zeros((8, 8))
-    forward = np.cos(elevation) * np.cos(azimuth)
-    left = np.cos(elevation) * np.sin(azimuth)
+    elevation_cosine_forward = np.cos(elevation)
+    azimuth_cosine = np.cos(azimuth)
+    forward = elevation_cosine_forward * azimuth_cosine
+    elevation_cosine_left = np.cos(elevation)
+    azimuth_sine = np.sin(azimuth)
+    left = elevation_cosine_left * azimuth_sine
     up = np.sin(elevation)
+    sensor_forward, sensor_left, sensor_up = forward, left, up
     pitch = 0 if config.tof_mount_height is None else config.tof_mount_pitch
     cosine, sine = math.cos(pitch), math.sin(pitch)
+    pitch_cosine, pitch_sine = cosine, sine
     forward, up = cosine * forward + sine * up, -sine * forward + cosine * up
+    pitched_forward, pitched_up = forward, up
     cosine, sine = math.cos(yaw), math.sin(yaw)
-    return np.stack(
+    rays = np.stack(
         (cosine * forward - sine * left, sine * forward + cosine * left, up), axis=-1
     )
+    if source is not None:
+        source.update(
+            schema="micro-classifier/native-tof-direction-source/1",
+            allowed_use="native_tof_direction_diagnostics_only",
+            status="recorded_native_tof_direction_values",
+            **{
+                flag: False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            },
+            inputs={
+                "yaw_rad": float(yaw),
+                "field_of_view_rad": float(config.field_of_view),
+                "mount_height_m": None
+                if config.tof_mount_height is None
+                else float(config.tof_mount_height),
+                "mount_pitch_rad": float(config.tof_mount_pitch),
+            },
+            effective_pitch_rad=float(pitch),
+            pitch_cosine=pitch_cosine,
+            pitch_sine=pitch_sine,
+            yaw_cosine=cosine,
+            yaw_sine=sine,
+            **{
+                key: value.copy()
+                for key, value in (
+                    ("angles_rad", angles),
+                    ("elevation_rad", elevation),
+                    ("azimuth_rad", azimuth),
+                    ("elevation_cosine_forward", elevation_cosine_forward),
+                    ("azimuth_cosine", azimuth_cosine),
+                    ("elevation_cosine_left", elevation_cosine_left),
+                    ("azimuth_sine", azimuth_sine),
+                    ("sensor_forward", sensor_forward),
+                    ("sensor_left", sensor_left),
+                    ("sensor_up", sensor_up),
+                    ("pitched_forward", pitched_forward),
+                    ("pitched_up", pitched_up),
+                    ("world_frame_unit_rays", rays),
+                )
+            },
+        )
+    return rays
 
 
 def _check_native_tof_source_inputs(position, yaw, scenario, config):

@@ -2412,6 +2412,21 @@ one-use/permission/admission or usable command. See
 [actual controls, closing-order repair and limits][native-tof-wall-cylinder-boundary-review].
 
 
+#### Cold Native Ray-Generation Source (2026-11-11)
+
+`tof_directions(..., source=None)` preserves original trig calls/order and return
+words. Opt-in empty builtin dictionary/exact Config/finite native-input preflight
+retains copied angles/grid, separate original elevation cosine calls, azimuth
+trig, sensor/pitched components, actual pitch/yaw libm pairs and final rays.
+<=13 arrays/904 binary64 words plus<=9 scalar words, no extra trig/geometry/
+clock/RNG/recorder calls. Raw nonfinite observed trig/results remain raw, not
+corrected or qualified. Source trace is cold only, not yet paired to ToF returns,
+fresh acquisition or retained delivery. Products/combined rotation intermediates
+are not isolated primitive/FMA or uniform error evidence. All eight flags false;
+no geometry/coverage/source/clock/one-use/permission/admission. See
+[actual controls, fixture repair, archive and limits][native-tof-direction-source-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2440,13 +2455,14 @@ one-use/permission/admission or usable command. See
 [native-tof-cylinder-matched-offset-review]: ../review/271-275.md#272-matched-retained-cylinder-offset-residuals-2026-11-10
 [native-tof-cylinder-matched-projection-review]: ../review/271-275.md#273-matched-retained-cylinder-projection-residuals-2026-11-10
 [native-tof-cylinder-matched-horizontal-review]: ../review/271-275.md#275-matched-retained-cylinder-horizontal-norm-residuals-2026-11-10
-[native-tof-cylinder-matched-discriminant-review]: ../../REVIEW.md#276-matched-retained-cylinder-discriminant-residuals-2026-11-10
-[native-tof-cylinder-matched-root-review]: ../../REVIEW.md#277-matched-retained-cylinder-root-squared-consistency-2026-11-10
-[native-tof-cylinder-matched-numerator-review]: ../../REVIEW.md#278-matched-retained-cylinder-side-numerator-residuals-2026-11-10
-[native-tof-cylinder-matched-division-review]: ../../REVIEW.md#279-matched-retained-cylinder-side-division-residuals-2026-11-10
-[native-tof-cylinder-matched-altitude-review]: ../../REVIEW.md#280-matched-retained-cylinder-side-altitude-residuals-2026-11-10
+[native-tof-cylinder-matched-discriminant-review]: ../review/276-280.md#276-matched-retained-cylinder-discriminant-residuals-2026-11-10
+[native-tof-cylinder-matched-root-review]: ../review/276-280.md#277-matched-retained-cylinder-root-squared-consistency-2026-11-10
+[native-tof-cylinder-matched-numerator-review]: ../review/276-280.md#278-matched-retained-cylinder-side-numerator-residuals-2026-11-10
+[native-tof-cylinder-matched-division-review]: ../review/276-280.md#279-matched-retained-cylinder-side-division-residuals-2026-11-10
+[native-tof-cylinder-matched-altitude-review]: ../review/276-280.md#280-matched-retained-cylinder-side-altitude-residuals-2026-11-10
 [native-tof-cylinder-matched-top-offset-review]: ../../REVIEW.md#281-matched-retained-cylinder-top-offset-residuals-2026-11-11
 [native-tof-cylinder-matched-top-division-review]: ../../REVIEW.md#282-matched-retained-cylinder-top-division-residuals-2026-11-11
 [native-tof-cylinder-matched-top-relative-review]: ../../REVIEW.md#283-matched-retained-cylinder-top-relative-residuals-2026-11-11
 [native-tof-cylinder-matched-cap-square-review]: ../../REVIEW.md#284-matched-retained-cylinder-cap-square-residuals-2026-11-11
 [native-tof-wall-cylinder-boundary-review]: ../../REVIEW.md#285-matched-native-wall-to-cylinder-boundary-prerequisite-2026-11-11
+[native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11

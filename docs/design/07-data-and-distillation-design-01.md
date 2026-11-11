@@ -2335,9 +2335,22 @@ No delivered/pending direction matching/publication follows from this retention.
 See [actual controls, default/cap conservation and gates][native-tof-direction-retention-review].
 
 
+#### Retained Native Direction Join (2026-11-11)
+
+`_match_native_tof_retained_direction` selects exactly one independently validated
+record by exact typed source epoch/acquisition/delivery identifiers. Builtin list
+<=8, <=24 identity inspections, one detached trace copy; missing/ambiguous pair
+rejects. Native source/history validation remains the caller's separate duty.
+This is NOT delivered/pending publication, source provenance/geometry/trig/
+numerical/error/coverage/clock/one-use/physical/permission/admission qualification;
+all eight flags false. No intake/recorder/hash/geometry/clock calls in matching.
+See [actual bounded join controls and gates][native-tof-direction-match-review].
+
+
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
 [native-tof-direction-intake-review]: ../../REVIEW.md#290-bounded-closed-native-direction-source-intake-2026-11-11
 [native-tof-direction-history-review]: ../../REVIEW.md#291-typed-native-direction-history-validation-2026-11-11
 [native-tof-direction-retention-review]: ../../REVIEW.md#293-recorder-owned-native-direction-history-2026-11-11
+[native-tof-direction-match-review]: ../../REVIEW.md#294-bounded-retained-native-direction-join-2026-11-11

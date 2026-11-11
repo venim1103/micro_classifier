@@ -407,6 +407,42 @@ geometry/source/coverage/numerical/error/clock/one-use/physical/permission/admis
 qualification, no usable command. Next retained direction delivered/pending joins
 and opt-in original+closing publication; current snapshots do not expose direction.
 
+Clarification: the preceding native-control limit means no ADDITIONAL C/Arm/
+sanitizer/board opt-in commands beyond the required root gate; it does not claim
+default interface/native controls were omitted from that gate.
+
+## 294. Bounded Retained Native Direction Join (2026-11-11)
+
+Begin clean e9666ed. Nearby wall matcher selects one prevalidated record by
+epoch/acquisition/delivery identifiers then deep-copies it. Direction join keeps
+that precondition (independently validated source/history), explicitly caps the
+builtin history at8 and compares exact typed identity words, <=24 inspections.
+One detached selected trace; no revalidation/replay/intake/recorder/hash/geometry/
+clocks or geometry/source/numerical/physical/permission/admission qualification.
+Nine bounded synthetic controls, per fixture one fresh step/two producer reads/
+one retention/two direction intakes/four native intakes before poison hooks;
+native context/canonical generation prevalidated, negative identity/cap mutations
+are join controls ONLY, not accepted source history. Existing fixtures/caps stay.
+Three routine pytest positions: first9/60s, sole necessary repair9/60s, root/300s;
+retain rays-294-* logs in original recovery directory, count failure/abort/unknown,
+no refunds/protected studies/data/dependencies/hardware. All8 flags false, no
+usable command. Next opt-in original+closing delivered/pending publication.
+
+Nine passed/3669deselected/0.87s, four source/test hashes stable; nested detachment,
+missing/ambiguous/identity/type/cap controls exercised, poison hooks zero. Ruff
+formatted only touched test file, both touched Python format/lint/whitespace/
+editor checks clear; AST all prior source/test definitions/defaults/cases unchanged.
+Required root `python -m pytest -q && ruff check . && git diff --check` passed4601/
+known QDQ xfail/71warnings/264.42s, four hashes stable, touched format check passed.
+Two of3 pytest positions spent, unused repair reserve NOT follow-on authority;
+no failure/abort/refund. Logs rays-294-{focused-1,root-1} retained in existing
+recovery directory; no data/downloads/dependencies/studies/hardware or additional
+C/Arm/sanitizer/board opt-in commands. Matcher selects prevalidated records only,
+not a standalone source/history validator. No sensor/geometry/numerical/coverage/
+error/clock/one-use/physical/permission/admission evidence, all8 flags remain false.
+Delivered/pending snapshots still lack direction publication; compose original/
+closing history and input checks next without treating hash/word joins as proof.
+
 ## Sources
 
 Hardware and tools:

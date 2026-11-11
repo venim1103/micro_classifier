@@ -13372,6 +13372,86 @@ def test_native_tof_wall_retention(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "missing",
+        "duplicate",
+        "epoch",
+        "tick",
+        "delivery",
+        "typed_tick",
+        "budget",
+        "tuple",
+    ),
+)
+def test_native_tof_direction_retained_match(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step(
+        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_direction=True
+    )
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(
+        environment, synthetic_test_only=True, include_direction=True
+    )
+    source, history = deepcopy((owner._tof_history[0], owner._tof_direction_history))
+    diagnostics._check_native_tof_direction_history(history, [source], owner._epoch)
+    if case == "missing":
+        history = []
+    elif case == "duplicate":
+        history *= 2
+    elif case == "epoch":
+        history[0]["source_epoch"] = "changed"
+    elif case == "tick":
+        history[0]["tick"] += 1
+    elif case == "delivery":
+        history[0]["delivery_tick"] += 1
+    elif case == "typed_tick":
+        source["tick"], history[0]["tick"] = 1, True
+    elif case == "budget":
+        history *= 9
+    elif case == "tuple":
+        history = tuple(history)
+    before = deepcopy((source, history))
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "direction match must not intake/read/retain/replay/clock/hash"
+        )
+
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_direction_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if case == "copy":
+        actual = diagnostics._match_native_tof_retained_direction(source, history)
+        assert actual == history[0] and actual is not history[0]
+        actual["direction"]["direction_generation"]["pitch_sine"] = "changed"
+        assert (
+            history[0]["direction"]["direction_generation"]["pitch_sine"] != "changed"
+        )
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._match_native_tof_retained_direction(source, history)
+    assert (source, history) == before and work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "retain",
         "default",
         "flag",

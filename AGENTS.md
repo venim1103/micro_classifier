@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §293 for recorder-owned native direction history;
+Read [REVIEW.md][review] §294 for bounded retained native direction joins;
+§293 covers recorder-owned native direction history;
 §292 covers the lossless 281-285 checkpoint archive;
 §291 covers typed direction-history validation;
 §290 covers bounded closed direction-source intake;
@@ -49,7 +50,7 @@ retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement retained direction delivered/pending matching and opt-in publication;
+Next compose retained direction delivered/pending joins into opt-in publication;
 raw unsupported/nonfinite source stays unknown. Preserve supplied
 operands, raw nonfinite unknowns, identity/closing checks and unresolved word ties.
 Squared-norm correspondence alone is not ray geometry or numerical qualification.

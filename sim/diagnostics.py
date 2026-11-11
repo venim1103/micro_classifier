@@ -14979,6 +14979,22 @@ def _match_native_tof_retained_wall(source, wall_history):
     return deepcopy(matches[0])
 
 
+def _match_native_tof_retained_direction(source, direction_history):
+    if type(direction_history) is not list or len(direction_history) > 8:
+        raise ValueError("native ToF retained direction history budget exhausted")
+    matches = [
+        entry
+        for entry in direction_history
+        if all(
+            _native_tof_word_copy_matches(entry[key], source[key])
+            for key in ("source_epoch", "tick", "delivery_tick")
+        )
+    ]
+    if len(matches) != 1:
+        raise ValueError("native ToF retained direction pair missing or ambiguous")
+    return deepcopy(matches[0])
+
+
 def _match_native_tof_retained_selection(source, selection_history):
     matches = [
         entry

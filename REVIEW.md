@@ -585,6 +585,50 @@ All eight flags false; no isolated primitive/FMA or uniform error, numerical/
 physical/source/geometry/coverage/clock/one-use/permission/admission or usable
 command. Next matched top-offset arithmetic, not corrected upstream words.
 
+## 281. Matched Retained Cylinder Top-Offset Residuals (2026-11-11)
+
+Resumed clean/synchronized `08b7559`; selected editor/terminal interpreter
+`/opt/venv/bin/python`, terminal Python3.12.3. Prior top-offset patch rejection
+and interrupted outcome were verified clean before the user's pause; no retained
+281 test log or successful source/test execution inferred. Historical spent and
+unknown attempts remain unchanged. Fresh routine checks below use standing authority.
+
+Hypothesis: default-off literal `include_cylinder_top_offset_residuals` requiring
+`include_cylinder=True` composes captured mount height/top/scalar cap numerator
+through the unchanged supplied-word difference helper. Matched delivered/pending
+identities and independent closing checks remain, no corrected upstream values.
+Cheapest discriminator: existing23-case snapshot family expanded to ninth mode,
+207 cases, exact top-minus-height oracle with scalar observation handling.
+
+Fresh bounded routine ledger: <=3 pytest invocations, focused then required root
+plus one diagnosed-repair reserve,300 s each. Root `python -m pytest -q && ruff
+check . && git diff --check`, changed Python format check. Fixture <=4steps/5reads/
+3geometries/3retentions/6active-helper+cylinder matches/2pending matches/64digests.
+New mode <=9696 values/11202 binary operations/12 oracle operations; prior eight
+caps unchanged. Combined control adds previous eight arithmetic helpers and chain
+<=6each. No snapshot intake/read/retain/step/reset/replay/clock; tick/frame/RNG
+preserved. Existing helper <=32 cylinders/65 words/32 entries/65 values/64 binary
+operations,4096-bit ceiling unchanged; <=18 original/closing invocations across
+delivered/<=8 pending records. Explicit21-bit observed scalar numerator in16-bit
+work-limit control. Preserve failures/unknown attempts; diagnose before rerun,
+no protected experiment or old refund. No additional C/Arm/sanitizer/board opt-ins,
+dependencies, models or task data.
+
+Focused207 passed/3260 deselected,32.22 s. Required root4390 passed,1 known
+transformer QDQ xfailed,71 warnings,156.50 s; root Ruff, changed-file format and
+whitespace passed. Editor/Pylance syntax clean; AST confirms only snapshot and
+existing arithmetic family changed, previous defaults/23 cases conserved. Pylance
+signature query found no call sites, not compatibility proof. Two of three pytest
+positions used, no failure/abort; unused reserve is not follow-on authority.
+Logs `cylinder-281-focused-1.log`/`cylinder-281-root-1.log` retained under recovery
+directory; no additional C/Arm/sanitizer/board opt-in gates ran.
+
+Exact scalar difference, nonzero/unknown residual, default skipped work, detached
+output, matched delivered/pending identity, closing suppression and forced bit
+exhaustion verified. Prior eight caps unchanged. All eight flags false; no uniform/
+numerical/physical/source/geometry/coverage/clock/one-use/permission/admission or
+usable command. Next whole271-275 archive then matched guarded top division.
+
 ## Sources
 
 Hardware and tools:

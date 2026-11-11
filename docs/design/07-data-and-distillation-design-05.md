@@ -2341,6 +2341,19 @@ FMA claim; all eight flags false, no geometry/source/coverage/error/clock/one-us
 permission/admission or usable command. See [actual controls and limits][native-tof-cylinder-matched-altitude-review].
 
 
+#### Matched Retained Cylinder Top-Offset Residuals (2026-11-11)
+
+Default-off literal `include_cylinder_top_offset_residuals` requires
+`include_cylinder=True`. Matched delivered/pending identities and independent
+closing checks compose captured mount height/top/scalar cap numerator through
+the unchanged supplied-word difference helper. <=32 cylinders/65 words/32 entries/
+65 values/64 binary operations per helper,4096-bit ceiling unchanged; <=18
+original/closing invocations across delivered/<=8 pending records. Nonfinite
+observation residual stays unknown; no corrected upstream values. All eight flags
+false, no geometry/source/coverage/error/clock/one-use/permission/admission or
+usable command. See [actual scalar controls and limits][native-tof-cylinder-matched-top-offset-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2374,3 +2387,4 @@ permission/admission or usable command. See [actual controls and limits][native-
 [native-tof-cylinder-matched-numerator-review]: ../../REVIEW.md#278-matched-retained-cylinder-side-numerator-residuals-2026-11-10
 [native-tof-cylinder-matched-division-review]: ../../REVIEW.md#279-matched-retained-cylinder-side-division-residuals-2026-11-10
 [native-tof-cylinder-matched-altitude-review]: ../../REVIEW.md#280-matched-retained-cylinder-side-altitude-residuals-2026-11-10
+[native-tof-cylinder-matched-top-offset-review]: ../../REVIEW.md#281-matched-retained-cylinder-top-offset-residuals-2026-11-11

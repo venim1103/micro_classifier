@@ -15329,6 +15329,87 @@ def _native_tof_wall_cylinder_boundary_diagnostics(
     }
 
 
+def _native_tof_direction_up_copy_diagnostics(
+    *, pitched_up_hex, world_z_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native direction up copy requires synthetic_test_only=True")
+    decoded = []
+    for words in (pitched_up_hex, world_z_hex):
+        if type(words) is not tuple or len(words) != 64:
+            raise ValueError("native direction up copy word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native direction up copy word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError("native direction up copy word unsupported") from error
+            if value.hex() != word or math.isnan(value):
+                raise ValueError("native direction up copy word unsupported")
+            values.append(value)
+        decoded.append(values)
+    entries = []
+    for index in range(64):
+        words_match = _native_tof_word_copy_matches(
+            pitched_up_hex[index], world_z_hex[index]
+        )
+        values_equal = (
+            decoded[0][index] == decoded[1][index]
+            if math.isfinite(decoded[0][index]) and math.isfinite(decoded[1][index])
+            else None
+        )
+        copy_corresponds = (
+            None
+            if values_equal is None or (values_equal and not words_match)
+            else words_match
+        )
+        entries.append(
+            {
+                "ray_index": index,
+                "pitched_up_hex": pitched_up_hex[index],
+                "world_z_hex": world_z_hex[index],
+                "words_match": words_match,
+                "finite_values_equal": values_equal,
+                "copy_corresponds": copy_corresponds,
+                "status": "unknown_nonfinite_direction_up_copy"
+                if values_equal is None
+                else "unknown_equal_value_direction_up_word_tie"
+                if copy_corresponds is None
+                else "matched_direction_up_copy_words"
+                if copy_corresponds
+                else "mismatched_direction_up_copy_words",
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-tof-direction-up-copy/1",
+        "allowed_use": "offline_direction_component_word_diagnostics_only",
+        "status": "reported_direction_up_copy_word_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "word_mismatch_count": sum(not entry["words_match"] for entry in entries),
+        "copy_mismatch_count": sum(
+            entry["copy_corresponds"] is False for entry in entries
+        ),
+        "unknown_copy_count": sum(
+            entry["copy_corresponds"] is None for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _match_native_tof_retained_wall(source, wall_history):
     matches = [
         entry

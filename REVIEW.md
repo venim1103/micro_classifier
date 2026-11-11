@@ -434,6 +434,46 @@ Migration DONE, do not repeat. Next bounded final-up supplied-word copy
 correspondence, then matched original+closing retained composition as supported,
 not ray geometry/trig/uniform-error/source/clock/one-use/physical qualification.
 
+## 304. Supplied-Word Native Direction Up Copies (2026-11-11)
+
+Begin cleanf0a88eb. Hypothesis from actual stack producer: pitched_up copied to
+world z; standalone canonical two64-word builtin tuple checker, <=128decodes/
+64strict word comparisons/64finite value comparisons, <=32chars, no rational.
+Report raw exact words separately from three-valued copy correspondence: finite
+identical words match, finite differing values mismatch, equal-value/different-
+word signed-zero ties and any +/-inf operands/observations unknown even when raw
+words match. Unsupported/NaN/overbudget preflight rejects before comparisons.
+All8 flags false/no trig/geometry/error/source/coverage/clock/one-use/physical/
+permission/admission claim. New25 bounded controls in existing test file with
+existing fixture, one actual generation per actual case then poison intake/read/
+hash/recorder/step/reset/trig/replay/clock/rational; old tests/defaults untouched.
+Fresh3 routine pytest positions first25/60s, sole necessary repair25/60s, root/
+360s; count failure/abort/unknown spent, no refund/protected renewal. Retain
+rays-304-* in original recovery directory, serial no source/formatter/editor
+tools during tests. Exit standalone word-copy only, next retained original+
+closing delivered/pending binding as supported, not qualified ray geometry.
+
+First25 passed/3859deselected/3.67s, four hashes stable. Actual captured up/z,
+finite matches/mismatches, both signed-zero tie orders, matching negative zero,
+subnormal/negative/maxfinite and source/observed/same/opposed infinities exercised;
+raw identical inf still unknown. Canonical/type/shape/NaN/word-budget preflight
+rejected before comparisons; <=64 strict comparisons and forbidden calls zero,
+inputs/output detached. Every old definition/import/default/decorator/test/case
+conserved in AST, only helper+new test added; touched format/lint/whitespace/
+editor clear. Pylance two helper callers, normal True compatible and intentional
+literal1 negative opt-in incompatible at test line29868, expected guard fixture
+not a compatibility repair or static all-caller pass.
+Required root `python -m pytest -q && ruff check . && git diff --check`
+passed4807/known QDQ xfail/71warnings/153.07s; four hashes stable, touched
+format-check passed. Twoof3 pytest positions spent/no failure/abort/refund,
+unused repair NOT follow-on authority; logs rays-304-{focused-1,root-1} retained
+in original recovery directory. No source/guard/tolerance/cap relaxation/data/
+study/model/dependency/hardware/additional native/Arm/sanitizer/board opt-in/
+general audit, no corrected upstream values/trig/geometry/uniform-error/source/
+coverage/clock/one-use/physical/permission/admission proof or usable command,
+all8 flags false. Next original+closing retained delivered/pending final-up
+word-copy composition with default-off include_direction dependency.
+
 ## Sources
 
 Hardware and tools:

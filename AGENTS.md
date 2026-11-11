@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §303 for intact direction checkpoint archival;
+Read [REVIEW.md][review] §304 for supplied-word native final-up copies;
+§303 covers intact direction checkpoint archival;
 §302 covers matched native yaw-expression reports;
 §301 covers supplied-word native yaw expressions;
 §300 covers matched native pitch-expression reports;
@@ -59,8 +60,8 @@ retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next bounded final-up supplied-word copy correspondence, then matched retained
-original/closing composition;
+Next default-off final-up copy composition against matched retained original/
+closing delivered/pending words and typed identities;
 raw unsupported/nonfinite source stays unknown. Preserve supplied
 operands, raw nonfinite unknowns, identity/closing checks and unresolved word ties.
 Squared-norm correspondence alone is not ray geometry or numerical qualification.

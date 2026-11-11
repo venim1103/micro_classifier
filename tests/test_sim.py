@@ -29701,6 +29701,265 @@ def test_native_tof_direction_pitch_residuals(
 @pytest.mark.parametrize(
     "case",
     (
+        "actual",
+        "exact",
+        "mismatch",
+        "signed_zero_tie",
+        "signed_zero_match",
+        "reverse_zero_tie",
+        "subnormal",
+        "negative_finite",
+        "large_finite",
+        "positive_inf",
+        "negative_inf",
+        "opposed_inf",
+        "source_inf",
+        "same_inf",
+        "flag",
+        "shape",
+        "source_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "nan_source",
+        "word_type",
+        "word_budget",
+        "list_source",
+        "tuple_subclass",
+    ),
+)
+def test_native_tof_direction_up_copy_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    arguments = {
+        "pitched_up_hex": ((0.0).hex(),) * 64,
+        "world_z_hex": ((0.0).hex(),) * 64,
+    }
+    setup = {"direction": 0}
+    original_direction = rover.tof_directions
+
+    def direction(*args, **kwargs):
+        setup["direction"] += 1
+        assert setup["direction"] <= 1
+        return original_direction(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_directions", direction)
+    if case == "actual":
+        captured = {}
+        rover.tof_directions(environment.yaw, environment.config, source=captured)
+        arguments = {
+            "pitched_up_hex": tuple(
+                float(value).hex() for value in captured["pitched_up"].flat
+            ),
+            "world_z_hex": tuple(
+                float(value).hex()
+                for value in captured["world_frame_unit_rays"][..., 2].flat
+            ),
+        }
+    elif case in ("signed_zero_tie", "signed_zero_match", "reverse_zero_tie"):
+        arguments["pitched_up_hex"] = (
+            ((-0.0).hex() if case != "signed_zero_tie" else (0.0).hex()),
+        ) * 64
+        arguments["world_z_hex"] = (
+            ((0.0).hex() if case == "reverse_zero_tie" else (-0.0).hex()),
+        ) * 64
+    elif case in ("subnormal", "negative_finite", "large_finite"):
+        value = {
+            "subnormal": math.ulp(0.0),
+            "negative_finite": -0.5,
+            "large_finite": float.fromhex("0x1.fffffffffffffp+1023"),
+        }[case]
+        arguments = {key: (value.hex(),) * 64 for key in arguments}
+    elif case in (
+        "mismatch",
+        "positive_inf",
+        "negative_inf",
+        "nan",
+        "word_type",
+        "word_budget",
+        "noncanonical",
+        "overflow_word",
+    ):
+        arguments["world_z_hex"] = (
+            {
+                "mismatch": (1.0).hex(),
+                "positive_inf": "inf",
+                "negative_inf": "-inf",
+                "nan": "nan",
+                "word_type": False,
+                "word_budget": "0" * 33,
+                "noncanonical": "1.0",
+                "overflow_word": "0x1p+999999",
+            }[case],
+        ) * 64
+    elif case in ("opposed_inf", "source_inf", "same_inf", "nan_source"):
+        arguments["pitched_up_hex"] = (("nan" if case == "nan_source" else "inf"),) * 64
+        if case != "nan_source":
+            arguments["world_z_hex"] = (
+                (
+                    "-inf"
+                    if case == "opposed_inf"
+                    else "inf"
+                    if case == "same_inf"
+                    else (0.0).hex()
+                ),
+            ) * 64
+    elif case in ("shape", "source_shape"):
+        arguments["pitched_up_hex" if case == "source_shape" else "world_z_hex"] *= 2
+    elif case == "list_source":
+        arguments["world_z_hex"] = list(arguments["world_z_hex"])
+    elif case == "tuple_subclass":
+
+        class Words(tuple):
+            pass
+
+        arguments["world_z_hex"] = Words(arguments["world_z_hex"])
+    before = deepcopy(arguments)
+    work = {"comparisons": 0, "forbidden": 0}
+    original_match = diagnostics._native_tof_word_copy_matches
+
+    def match(*args, **kwargs):
+        work["comparisons"] += 1
+        assert work["comparisons"] <= 64
+        return original_match(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "direction up copy must not intake/read/hash/retain/step/reset/trig/replay/clock/rational"
+        )
+
+    monkeypatch.setattr(diagnostics, "_native_tof_word_copy_matches", match)
+    for name in (
+        "_sample_simulator_native_tof_direction_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for module in (math, np):
+        for name in ("sin", "cos"):
+            monkeypatch.setattr(module, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "source_shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "nan_source",
+        "word_type",
+        "word_budget",
+        "list_source",
+        "tuple_subclass",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_direction_up_copy_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        assert work["comparisons"] == 0
+    else:
+        result = diagnostics._native_tof_direction_up_copy_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == work["comparisons"] == 64
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for entry in result["entries"]:
+            index = entry["ray_index"]
+            source, observed = (
+                arguments["pitched_up_hex"][index],
+                arguments["world_z_hex"][index],
+            )
+            assert (
+                entry["pitched_up_hex"] == source and entry["world_z_hex"] == observed
+            )
+            assert entry["words_match"] is (source == observed)
+            finite = math.isfinite(float.fromhex(source)) and math.isfinite(
+                float.fromhex(observed)
+            )
+            equal = (
+                (float.fromhex(source) == float.fromhex(observed)) if finite else None
+            )
+            expected = (
+                None
+                if equal is None or (equal and source != observed)
+                else source == observed
+            )
+            assert entry["finite_values_equal"] is equal
+            assert entry["copy_corresponds"] is expected
+        assert result["word_mismatch_count"] == (
+            0
+            if case
+            in (
+                "actual",
+                "exact",
+                "signed_zero_match",
+                "subnormal",
+                "negative_finite",
+                "large_finite",
+                "same_inf",
+            )
+            else 64
+        )
+        assert result["copy_mismatch_count"] == (64 if case == "mismatch" else 0)
+        assert result["unknown_copy_count"] == (
+            64
+            if case
+            in (
+                "signed_zero_tie",
+                "reverse_zero_tie",
+                "positive_inf",
+                "negative_inf",
+                "opposed_inf",
+                "source_inf",
+                "same_inf",
+            )
+            else 0
+        )
+        if case in ("signed_zero_tie", "reverse_zero_tie"):
+            assert (
+                result["entries"][0]["status"]
+                == "unknown_equal_value_direction_up_word_tie"
+            )
+        elif case in (
+            "positive_inf",
+            "negative_inf",
+            "opposed_inf",
+            "source_inf",
+            "same_inf",
+        ):
+            assert (
+                result["entries"][0]["status"] == "unknown_nonfinite_direction_up_copy"
+            )
+        result["entries"][0]["world_z_hex"] = "changed"
+    assert arguments == before and work["forbidden"] == 0
+    assert setup["direction"] == int(case == "actual")
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "copy",
         "empty",
         "two_cylinders",

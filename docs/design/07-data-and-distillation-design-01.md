@@ -2466,3 +2466,19 @@ physical/permission/admission qualification. See
 [actual matched controls and gates][native-tof-direction-owned-yaw-review].
 
 [native-tof-direction-owned-yaw-review]: ../../REVIEW.md#302-matched-native-direction-yaw-reports-2026-11-11
+
+#### Supplied-Word Native Direction Up Copies (2026-11-11)
+
+Standalone `_native_tof_direction_up_copy_diagnostics` retains pitched-up/world-z
+canonical words and separates strict word equality from three-valued copy
+correspondence: finite identical words match, differing finite values mismatch,
+equal-value/different-word signed-zero ties and any raw +/-inf are unknown even
+when words match. Two64-word builtin tuples <=32chars/128decodes/64strict word
+comparisons/64finite value comparisons, early unsupported/NaN/shape/type/word-
+budget preflight, no rational/read/hash/recorder/trig/replay/clock. Literal
+synthetic opt-in, detached entries, all eight qualification flags false; no
+corrected values/numerical/trig/geometry/source/coverage/clock/one-use/physical/
+permission/admission proof. See
+[actual copy controls and gates][native-tof-direction-up-copy-review].
+
+[native-tof-direction-up-copy-review]: ../../REVIEW.md#304-supplied-word-native-direction-up-copies-2026-11-11

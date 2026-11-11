@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §291 for typed direction-history validation;
+Read [REVIEW.md][review] §292 for the lossless 281-285 checkpoint archive;
+§291 covers typed direction-history validation;
 §290 covers bounded closed direction-source intake;
 §289 covers intact ray-source design relocation to chapter01;
 §288 covers fresh ray-to-ToF acquisition pairing,

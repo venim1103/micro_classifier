@@ -63,8 +63,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 266-270][chapter-review-18]
 - [Checkpoints 271-275][chapter-review-19]
 - [Checkpoints 276-280][chapter-review-20]
+- [Checkpoints 281-285][chapter-review-21]
 
-Checkpoints 281 onward and the source bibliography remain below.
+Checkpoints 286 onward and the source bibliography remain below.
 ## Recovery and Document Layout (2026-11-09)
 
 Following the user's reported crash, the live review was a 262,527-byte exact
@@ -107,278 +108,6 @@ finite fixture limits, counting the interruption rather than assuming success.
 All qualification/admission flags remain false. Future checkpoints belong here
 briefly, with whole older sections moved through the reading map rather than
 repeated historical handoffs.
-
-## 281. Matched Retained Cylinder Top-Offset Residuals (2026-11-11)
-
-Resumed clean/synchronized `08b7559`; selected editor/terminal interpreter
-`/opt/venv/bin/python`, terminal Python3.12.3. Prior top-offset patch rejection
-and interrupted outcome were verified clean before the user's pause; no retained
-281 test log or successful source/test execution inferred. Historical spent and
-unknown attempts remain unchanged. Fresh routine checks below use standing authority.
-
-Hypothesis: default-off literal `include_cylinder_top_offset_residuals` requiring
-`include_cylinder=True` composes captured mount height/top/scalar cap numerator
-through the unchanged supplied-word difference helper. Matched delivered/pending
-identities and independent closing checks remain, no corrected upstream values.
-Cheapest discriminator: existing23-case snapshot family expanded to ninth mode,
-207 cases, exact top-minus-height oracle with scalar observation handling.
-
-Fresh bounded routine ledger: <=3 pytest invocations, focused then required root
-plus one diagnosed-repair reserve,300 s each. Root `python -m pytest -q && ruff
-check . && git diff --check`, changed Python format check. Fixture <=4steps/5reads/
-3geometries/3retentions/6active-helper+cylinder matches/2pending matches/64digests.
-New mode <=9696 values/11202 binary operations/12 oracle operations; prior eight
-caps unchanged. Combined control adds previous eight arithmetic helpers and chain
-<=6each. No snapshot intake/read/retain/step/reset/replay/clock; tick/frame/RNG
-preserved. Existing helper <=32 cylinders/65 words/32 entries/65 values/64 binary
-operations,4096-bit ceiling unchanged; <=18 original/closing invocations across
-delivered/<=8 pending records. Explicit21-bit observed scalar numerator in16-bit
-work-limit control. Preserve failures/unknown attempts; diagnose before rerun,
-no protected experiment or old refund. No additional C/Arm/sanitizer/board opt-ins,
-dependencies, models or task data.
-
-Focused207 passed/3260 deselected,32.22 s. Required root4390 passed,1 known
-transformer QDQ xfailed,71 warnings,156.50 s; root Ruff, changed-file format and
-whitespace passed. Editor/Pylance syntax clean; AST confirms only snapshot and
-existing arithmetic family changed, previous defaults/23 cases conserved. Pylance
-signature query found no call sites, not compatibility proof. Two of three pytest
-positions used, no failure/abort; unused reserve is not follow-on authority.
-Logs `cylinder-281-focused-1.log`/`cylinder-281-root-1.log` retained under recovery
-directory; no additional C/Arm/sanitizer/board opt-in gates ran.
-
-Exact scalar difference, nonzero/unknown residual, default skipped work, detached
-output, matched delivered/pending identity, closing suppression and forced bit
-exhaustion verified. Prior eight caps unchanged. All eight flags false; no uniform/
-numerical/physical/source/geometry/coverage/clock/one-use/permission/admission or
-usable command. Next whole271-275 archive then matched guarded top division.
-
-## 282. Matched Retained Cylinder Top-Division Residuals (2026-11-11)
-
-Whole271-275 archive moved verbatim (228 lines), root769 lines, four chapter05
-references rebased; exact prior sections/bibliography and six local targets passed,
-whitespace passed. One guarded migration/check,30 s cap, no failure/abort; originals/
-script/log retained under recovery directory. Code suite not rerun for docs-only
-archive; do not repeat successful migration or renew historical evidence authority.
-
-Hypothesis: default-off literal `include_cylinder_top_division_residuals` requiring
-`include_cylinder=True` composes captured up-ray/scalar cap numerator/distance
-words through the unchanged guarded helper. Matched delivered/pending identities
-and independent closing checks remain, no corrected upstream values. Zero up
-requires observed +inf/no quotient, including signed zero. Cheapest discriminator:
-existing23-case snapshot family in ten modes,230 cases, exact numerator/up oracle.
-New copy control supplies negative-zero up and +inf distance at one retained ray;
-matching branch words do not establish geometry or ray qualification.
-
-Fresh bounded routine ledger: <=3 pytest invocations, focused then required root
-plus one diagnosed-repair reserve,300 s each. Root `python -m pytest -q && ruff
-check . && git diff --check`, changed Python format check. Fixture <=4steps/5reads/
-3geometries/3retentions/6active-helper+cylinder matches/2pending matches/64digests.
-New mode <=10470 values/11970 binary operations/768 oracle operations; prior nine
-caps unchanged. Combined control adds previous nine arithmetic helpers and chain
-<=6each. No snapshot intake/read/retain/step/reset/replay/clock; tick/frame/RNG
-preserved. Existing helper <=32 cylinders/2272 words/2048 entries/2144 values/4096
-binary operations,4096-bit ceiling unchanged; <=18 original/closing invocations
-across delivered/<=8 pending records. Explicit21-bit observed distance in16-bit
-work-limit control. Preserve failures/unknown attempts; diagnose before rerun,
-no protected experiment or old refund. No additional C/Arm/sanitizer/board opt-ins,
-dependencies, models or task data.
-
-First focused229 passed/1 failed/3260 deselected,36.82 s: copy fixture's ray
-mutation disagreed with paired retained native rays, correctly rejected by the
-unchanged strict history guard. Repair only synthetic fixture to align the native
-and cylinder copies of that supplied ray word; retain guard, all flags false and
-no geometric/source qualification. Same230 controls rerun using diagnosed-repair
-reserve; then required root uses final original pytest position. First failure
-log retained, no failure erased/refunded, no abort.
-
-Implemented separate default-off literal option, original/closing delivered and
-pending guarded reports, strict outgoing comparison before publication. Fixture
-repair aligns paired supplied words only, does not qualify a ray/source/scene.
-Repaired same230 focused passed,3260 deselected,45.68 s. Required root4413 passed,
-one known transformer QDQ xfail,71 warnings,148.69 s. Ruff root lint, changed-file
-format, whitespace/editor/Pylance syntax and AST scope/default/23-case conservation
-passed; primitive helper/history guard and all other methods/functions unchanged.
-Pylance signature query found no call sites, not compatibility proof. All three
-pytest positions spent including first failure, no abort, no further repeat.
-Logs `cylinder-282-focused-{1,2}.log`, `cylinder-282-root-1.log`, archive originals/
-utility/log retained under `.git/recovery-20261109-PmbQpU`; no cleanup required.
-
-All eight qualification/admission flags remain false; nonfinite observations
-unknown, signed words preserved, matching +inf bypass is not a finite intersection.
-No geometry/coverage/source/error/clock/one-use/permission or usable command; no
-additional C/Arm/sanitizer/board opt-in gates ran. Next compose supplied cap-relative
-words with explicit raw nonfinite-distance/+0 fallback, then independent cap-square
-arithmetic. Preserve matched identities, closing checks and unresolved word ties.
-
-## 283. Matched Retained Cylinder Top-Relative Residuals (2026-11-11)
-
-Hypothesis: default-off literal `include_cylinder_top_relative_residuals` requiring
-`include_cylinder=True` composes captured offset/horizontal-ray/raw cap distance/
-relative words through the unchanged combined-expression helper. Matched delivered/
-pending identities and independent closing probes retain raw nonfinite-distance
-word and explicit effective +0 fallback, not a corrected upstream quotient.
-Cheapest discriminator: existing23-case family in eleven modes,253 controls,
-independent exact supplied-word two-axis oracle; copy supplies +inf distance and
-corresponding offset relative words, no ray/source/geometry qualification.
-
-Fresh bounded routine ledger: <=3 pytest invocations, focused then required root
-plus one diagnosed-repair reserve,300 s each. Root `python -m pytest -q && ruff
-check . && git diff --check`, changed Python format check. Fixture <=4steps/5reads/
-3geometries/3retentions/6active-helper+cylinder matches/2pending matches/64digests.
-New mode <=12402 values/14274 binary operations/2304 oracle operations; prior ten
-caps unchanged. Combined control includes previous ten arithmetic helpers and
-selection chain <=6each. Existing helper <=32 cylinders/6400 words/4096 entries/
-6336 values/12288 binary operations,4096-bit ceiling unchanged; <=18 original/
-closing invocations across delivered/<=8 pending records. Explicit21-bit observed
-relative in16-bit work-limit control. No snapshot intake/read/retain/step/reset/
-replay/clock; tick/frame/both RNGs preserved. Preserve failures/unknown attempts,
-diagnose before rerun, no old refund/protected experiment or additional C/Arm/
-sanitizer/board opt-ins. No dependency/model/task-data/hardware changes. All eight
-flags false; no isolated primitive/FMA, uniform error/geometry/coverage/source/
-clock/one-use/permission/admission or usable command.
-
-Implemented separate default-off literal option, delivered/pending reports and
-independent closing computations with strict outgoing checks before publication.
-Focused253 passed,3260 deselected,40.15 s. Required root4436 passed,one known
-transformer QDQ xfail,71 warnings,147.68 s; Ruff root lint, changed-file format,
-whitespace/editor and AST scope/default/23-case/ten-mode-cap conservation passed.
-Primitive helpers/history guards and all other methods/functions unchanged. Two
-of three pytest positions spent, no failure/abort; unused reserve is not follow-on
-authority. Logs `cylinder-283-focused-1.log`, `cylinder-283-root-1.log` retained
-under `.git/recovery-20261109-PmbQpU`, no cleanup or successful-gate repeat required.
-No additional C/Arm/sanitizer/board opt-in gates ran, no qualification/admission
-flags changed. Next independent captured cap radial/radius-square expression
-residuals with matched original/closing identities; preserve supplied operands,
-nonfinite unknowns and unresolved equal-value/different-word minimum ties.
-
-## 284. Matched Retained Cylinder Cap-Square Residuals (2026-11-11)
-
-Hypothesis: default-off literal `include_cylinder_top_radial_residuals` requiring
-`include_cylinder=True` composes captured relative/radius/radial-squared/radius-
-squared words through the unchanged independent two-family helper. Delivered/
-pending identities and independent closing probes compare both families before
-publication; no corrected upstream words or mask decision. Cheapest discriminator:
-existing23-case family in twelve modes,276 controls, independent exact square
-oracles for both families; late delivered radial and pending radius mutations
-must suppress publication. Copy supplies signed-zero relative/radial words only;
-residual/nonfinite/malformed/work controls alter both observed square families.
-
-Fresh bounded routine ledger: <=3 pytest invocations, focused then required root
-plus one diagnosed-repair reserve,300 s each. Root `python -m pytest -q && ruff
-check . && git diff --check`, changed Python format check. Fixture <=4steps/5reads/
-3geometries/3retentions/6active-helper+cylinder matches/2pending matches/64digests.
-New mode <=13566 values/15822 binary operations/1548 oracle operations; prior eleven
-caps unchanged. Combined control includes previous eleven arithmetic helpers and
-selection chain <=6each. Existing helper <=32 cylinders/6208 words/2048 radial+
-32 radius entries/6208 values/8256 binary operations,4096-bit ceiling unchanged;
-<=18 original/closing invocations across delivered/<=8 pending records. Finite
-relative/radius operands; nonfinite observed squares retain unknown residuals.
-Explicit21-bit observed squares in16-bit work-limit control. No snapshot intake/
-read/retain/step/reset/replay/clock; tick/frame/both RNGs preserved. Preserve
-failures/unknown attempts; diagnose before rerun, no old refund/protected experiment.
-All eight flags false, no isolated radial primitive/FMA or uniform error/geometry/
-coverage/source/clock/one-use/permission/admission or usable command. No dependency/
-model/task-data/hardware changes or additional C/Arm/sanitizer/board opt-ins.
-
-First focused259 passed/17 failed/3260 deselected,59.14 s: new probe/fixtures
-misnamed retained `radial_squared_m2` as `radial_m2`, causing KeyError or malformed
-new copy layout. Actual retained schema and existing selection probe confirmed
-the correct key. Repair only five new accesses, no helper/schema/guard/cap changes.
-Same276 controls rerun using diagnosed-repair reserve, then final original pytest
-position for required root. First failure log retained, no refund/abort.
-
-Repaired same276 focused passed,3260 deselected,47.42 s. Formatting/lint/editor
-and AST scope/default/23-case/eleven-cap conservation passed; helpers/history
-guards and all other methods/functions unchanged. First root4457 passed/2 failed,
-one known transformer QDQ xfail,71 warnings,165.04 s: unchanged selection held
-rejected delivery identity and missing-delivered rejected retention identity.
-Both original guards remained; traceback test source displayed `???`. Actual
-files complete/tails intact, diff scoped to intended work. Source/test mtimes
-08:14:33 fall inside approximate root interval ending log mtime08:15:31 minus
-reported165.04 s. This supports concurrent source-write interference, not proven
-writer attribution or a waived guard. No source regression inferred away.
-
-Original three pytest positions all spent, both failed logs retained, no abort.
-Diagnosed fresh bounded routine revalidation under standing authority: <=2 pytest
-invocations, unchanged two failed selection controls then one required root,
-300 s each. No parallel tools/formatter/editor calls during either run; hash all
-three source-identity files plus tests before/after each and reject changed hashes.
-No new fixtures, old caps/guards/ceilings unchanged, no repeat after unchanged
-failure or successful gate. Retain outputs in distinct revalidation logs; no old
-refund or numerical/source/clock/permission/admission qualification.
-
-Two failed selection controls revalidated2 passed,0.79 s; sole fresh root4459
-passed,one known transformer QDQ xfail,71 warnings,150.31 s. All four source/test
-hashes unchanged before/after each run; root Ruff lint, changed-file format and
-whitespace passed. Original three plus fresh two positions all spent, no abort;
-no additional retry. Guard failures retained, writer/cause not proven by later
-pass. Logs `cylinder-284-focused-{1,2}.log`, `cylinder-284-root-1.log`,
-`cylinder-284-selection-revalidation-1.log`, `cylinder-284-root-revalidation-1.log`
-retained under `.git/recovery-20261109-PmbQpU`; no cleanup required.
-
-Implemented matched default-off two-family report option with strict original/
-closing delivered/pending comparison. All eight flags remain false, no usable
-command or geometry/coverage/error/source/clock/one-use/permission/admission
-claim; no additional C/Arm/sanitizer/board opt-in gates ran. Next reassess the
-supported cross-path native-ToF acquisition/recorder/delivery prerequisites;
-retain supplied operands, raw nonfinite unknowns and unresolved word ties.
-
-## 285. Matched Native Wall-to-Cylinder Boundary Prerequisite (2026-11-11)
-
-Local hypothesis: captured fourth-wall `minimum_after_m` words are copied as
-cylinder `post_wall_ranges_m` at the native stage boundary. Existing combined
-wall/cylinder delivered/pending snapshot control supplies the cheapest exact-word
-discriminator, with no extra acquisitions or geometry. First small reversible
-edit adds that assertion only; matching words are not geometry/error/coverage or
-source/clock/one-use/permission/admission qualification.
-
-Fresh bounded routine ledger: <=3 pytest invocations, first existing48-case wall/
-cylinder snapshot family, then smallest necessary boundary integration controls
-if supported, then required root,300 s each. Existing per-case <=4steps/5reads/
-3retentions/3geometries/6matcher/2pending/4queue/2frame/64digests and existing
-combined <=6timing/selection/direction-norm/other-wall/clock caps unchanged. No
-new snapshot read/retain/step/reset/replay/clock or rational boundary work. Source-
-sensitive pytest serial, no parallel edits/formatter/editor tools; source/test
-hashes before/after. Preserve failures/aborts/old spent ledgers; a blocked boundary
-does not authorize geometry/source/error/timing/admission claims or protected runs.
-No new dependencies/models/task-data/hardware or C/Arm/sanitizer/board opt-in gates.
-
-Initial48 focused controls passed,3488 deselected,11.23 s; source/test hashes
-unchanged. First integration patch rejected signature context; verified no source
-or new test edits landed, no pytest position spent. Corrected owning signature/
-preflight contexts. Supported next edit adds default-off literal boundary report
-requiring both traces, paired original/closing delivered/pending identities and
-strict outgoing checks. Pure helper <=128 canonical range words<=32chars/64
-equality comparisons/64 entries+64 count inspections, no rational work; <=18
-original/closing calls across delivered/<=8 pending. Separate20-control matrix
-reuses existing source fixture, <=4steps/5reads/3retentions/3geometries/6each
-boundary/wall/cylinder matches/2pending/64digests, <=384 conservative boundary
-and192 oracle comparisons. No new fixture/data/environment; default/literal/
-dependency/missing/malformed, mismatches/signed zero, late reports/source/owner/
-budget and detached output covered. Stable mismatches report correspondence only;
-all eight flags false, minimum word ties remain unresolved.
-
-First20 integration controls7 passed/13 failed,3536 deselected,21.20 s: closing
-boundary probe was inserted after closing wall but before closing cylinder match,
-raising UnboundLocalError. Nearby closing owner confirms order. Repair only probe
-placement after both traces/all arithmetic closing reports, before closing queue
-and final typed/source/outgoing checks. First failure retained, no guard/cap change.
-Narrowly revised assistant-selected routine ledger: original last pytest position
-reassigned to same20 repaired focus; one additional required-root position, total
-<=4 invocations at300 s each, no new controls or protected-budget renewal. No
-unchanged rerun after failure; root permitted only after repaired focus passes.
-
-Repaired20 integration controls passed,3536 deselected,5.55 s. Required root4479
-passed,known transformer QDQ xfail/71 warnings,175.15 s. Source/test hashes unchanged
-across both checks; Ruff root lint/changed-file format/whitespace/editor and AST
-prior-helper/method/default/48-case-decorator conservation passed. All four routine
-positions spent including failure, no abort; no further repeat. Logs
-`cylinder-285-boundary-focus-1.log`, `cylinder-285-integration-focus-{1,2}.log`,
-`cylinder-285-root-1.log` retained under `.git/recovery-20261109-PmbQpU`.
-All eight flags false, no geometry/error/coverage/source/clock/permission/admission
-or usable command; no additional C/Arm/sanitizer/board opt-ins ran. Next examine
-actual native ray-generation source prerequisites; squared-norm correspondence
-alone is not ray geometry or a numerical allowance. No cleanup required.
 
 ## 286. Native Ray-Generation Source Prerequisite (2026-11-11)
 
@@ -617,6 +346,26 @@ coverage/source/clock/one-use/physical/permission/admission evidence; all8 flags
 false. Synthetic8 record copies are NOT eight measured acquisitions. Next opt-in
 recorder-owned direction history, original+closing cache/history/input pairing,
 then delivered/pending correspondence. No usable command is admitted.
+
+## 292. Whole Cylinder Checkpoint Archive (2026-11-11)
+
+Clean/synchronized afb6c8e, root982 lines; move whole281–285 before further source
+checkpoint growth. Existing archive pattern, no body inline/reference links to
+rebase, exactly5 chapter05 references. Preserve originals in existing recovery
+directory rays-292-{review-before,design-5-before}.md, no overwritten backups.
+First mechanical relocation failed Perl compilation at ambiguous `$1[...]`
+interpolation: cmp verified BOTH live docs unchanged, no archive created, clean
+worktree, failure retained here/transcript. Only `${1}` interpolation repair;
+second guarded relocation succeeded. New273-line archive retains all five
+historical bodies/anchors/failures/approvals/spent/unknown/evidence-limit text
+exactly with single EOF newline (separator whitespace normalization only).
+Root reading map/source bibliography and chapter05 bytes conserved except
+intended map/5 reference edits; five local targets/anchors, archive whitespace,
+four source/test bytes against HEAD and git diff --check passed. Root712 lines
+before this note, no code gate rerun; last source gate4575/known QDQ xfail remains
+§291 evidence, not a fresh archival test result. No budgets/studies/qualification
+renewed, all8 flags false, no permission/admission. Next opt-in recorder-owned
+direction history, then delivered/pending original+closing correspondence.
 
 ## Sources
 
@@ -979,4 +728,5 @@ Methods and measurements:
 [chapter-review-18]: docs/review/266-270.md
 [chapter-review-19]: docs/review/271-275.md
 [chapter-review-20]: docs/review/276-280.md
+[chapter-review-21]: docs/review/281-285.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11

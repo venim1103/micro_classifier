@@ -14067,11 +14067,15 @@ def test_native_tof_selection_snapshot(
         "late_timing_budget",
     ),
 )
-@pytest.mark.parametrize("cylinder", (False, True, None))
+@pytest.mark.parametrize(
+    ("cylinder", "products"),
+    ((False, False), (True, False), (None, False), (None, True)),
+)
 def test_native_tof_wall_snapshot(
-    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
+    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder, products
 ):
     from dataclasses import replace
+    from fractions import Fraction
 
     from sim import diagnostics, rover
 
@@ -14103,6 +14107,11 @@ def test_native_tof_wall_snapshot(
             "binding",
             "forbidden",
             "late",
+            "product",
+            "product_active",
+            "values",
+            "binary",
+            "oracle",
         ),
         0,
     )
@@ -14217,6 +14226,9 @@ def test_native_tof_wall_snapshot(
     original_queue = diagnostics._copy_native_tof_pending_queue
     original_frame = diagnostics._check_native_tof_delivery_frame
     original_binding = diagnostics._c1_source_binding_digest
+    original_product = diagnostics._native_tof_direction_product_residuals
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
     outgoing = {}
 
     def matched(*args, **kwargs):
@@ -14231,7 +14243,9 @@ def test_native_tof_wall_snapshot(
             elif case == "late_selection":
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
-                outgoing["arithmetic"]["source_qualified"] = True
+                outgoing["product" if products else "arithmetic"][
+                    "source_qualified"
+                ] = True
             elif case == "late_pending":
                 outgoing["pending"][0]["sample_words"] = (
                     outgoing["pending"][0]["sample_words"][0] ^ 1,
@@ -14280,6 +14294,34 @@ def test_native_tof_wall_snapshot(
         outgoing.setdefault("arithmetic", actual)
         return actual
 
+    def product(*args, **kwargs):
+        work["product"] += 1
+        assert work["product"] <= 6
+        work["product_active"] = True
+        try:
+            actual = original_product(*args, **kwargs)
+        finally:
+            work["product_active"] = False
+        outgoing.setdefault("product", actual)
+        return actual
+
+    def value(instance, argument):
+        if work["product_active"]:
+            work["values"] += 1
+            assert work["values"] <= 2304
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        if work["product_active"]:
+            work["binary"] += 1
+            assert work["binary"] <= 1536
+        return original_binary(instance, left, right, operation)
+
+    def oracle(left, right, operation):
+        work["oracle"] += 1
+        assert work["oracle"] <= 768
+        return left * right if operation == "mul" else left - right
+
     def pending(*args, **kwargs):
         work["pending"] += 1
         assert work["pending"] <= 2
@@ -14309,18 +14351,22 @@ def test_native_tof_wall_snapshot(
                     else trace["walls"][0]
                 )
                 if direction:
-                    selected["sensor_up"] = (
+                    name = "sensor_forward" if products else "sensor_up"
+                    selected[name] = (
                         math.nextafter(
-                            float.fromhex(selected["sensor_up"][0]), math.inf
+                            float.fromhex(selected[name][0]), math.inf
                         ).hex(),
-                        *selected["sensor_up"][1:],
+                        *selected[name][1:],
                     )
                 else:
                     selected["hit"] = (not selected["hit"][0], *selected["hit"][1:])
             elif case == "outgoing":
                 outgoing["wall"][kind]["source_qualified"] = True
             elif case == "late_owner":
-                owner._binding = {"changed": True}
+                if products:
+                    owner._tof_history[0]["native_source"].pop("inputs")
+                else:
+                    owner._binding = {"changed": True}
             else:
                 return actual
             work["late"] += 1
@@ -14343,6 +14389,9 @@ def test_native_tof_wall_snapshot(
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_selection", selection)
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timing)
     monkeypatch.setattr(diagnostics, "_native_tof_direction_norm_residuals", arithmetic)
+    monkeypatch.setattr(diagnostics, "_native_tof_direction_product_residuals", product)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
     monkeypatch.setattr(diagnostics, "_match_native_tof_pending_sources", pending)
     monkeypatch.setattr(diagnostics, "_copy_native_tof_pending_queue", queue)
     monkeypatch.setattr(diagnostics, "_check_native_tof_delivery_frame", checked)
@@ -14370,6 +14419,7 @@ def test_native_tof_wall_snapshot(
             include_selection=combined,
             include_timing=combined,
             include_direction_norm_residuals=combined,
+            include_direction_product_residuals=products and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -14418,6 +14468,67 @@ def test_native_tof_wall_snapshot(
                         assert all(entry[kind][flag] is False for flag in flags)
                 else:
                     assert f"pending_{kind}" not in result
+                if products:
+                    reports = (
+                        result["direction_product_residuals"],
+                        *result.get("pending_direction_product_residuals", ()),
+                    )
+                    records = (selected, *result.get("pending_direction", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert len(diagnostic["entries"]) == 128
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        generation = record["direction"]["direction_generation"]
+                        for entry in diagnostic["entries"]:
+                            names = (
+                                (
+                                    "elevation_cosine_forward",
+                                    "azimuth_cosine",
+                                    "sensor_forward",
+                                )
+                                if entry["component"] == "forward"
+                                else (
+                                    "elevation_cosine_left",
+                                    "azimuth_sine",
+                                    "sensor_left",
+                                )
+                            )
+                            left, right, observed = (
+                                generation[name][entry["ray_index"]] for name in names
+                            )
+                            exact = oracle(
+                                Fraction(float.fromhex(left)),
+                                Fraction(float.fromhex(right)),
+                                "mul",
+                            )
+                            residual = oracle(
+                                Fraction(float.fromhex(observed)), exact, "sub"
+                            )
+                            assert (
+                                entry["operand_hex"] == (left, right)
+                                and entry["observed_component_hex"] == observed
+                            )
+                            assert (
+                                Fraction(*entry["exact_unrounded_expression_ratio"])
+                                == exact
+                            )
+                            assert Fraction(*entry["signed_residual_ratio"]) == residual
+                    result["direction_product_residuals"]["diagnostic"]["entries"][0][
+                        "observed_component_hex"
+                    ] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["direction_generation"][
+                            "sensor_forward"
+                        ][0]
+                        != "changed"
+                    )
+                else:
+                    assert (
+                        "direction_product_residuals" not in result
+                        and "pending_direction_product_residuals" not in result
+                    )
                 if combined:
                     if cylinder:
                         assert result["wall"]["tick"] == selected["tick"]
@@ -14470,6 +14581,8 @@ def test_native_tof_wall_snapshot(
                     "pending_sources",
                     "direction_norm_residuals",
                     "pending_direction_norm_residuals",
+                    "direction_product_residuals",
+                    "pending_direction_product_residuals",
                 }
                 & result.keys()
             )
@@ -14501,6 +14614,19 @@ def test_native_tof_wall_snapshot(
         )
     )
     assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_direction"))
+def test_native_tof_direction_product_dependency(
+    c1_motion_receipt_source_fixture, case
+):
+    owner = deepcopy(c1_motion_receipt_source_fixture[1])
+    with pytest.raises(ValueError, match="include_direction_product_residuals"):
+        owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_direction=case == "flag",
+            include_direction_product_residuals=True if case == "dependency" else 1,
+        )
 
 
 @pytest.mark.parametrize(

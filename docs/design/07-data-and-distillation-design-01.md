@@ -2378,6 +2378,21 @@ yet matched to owned delivered/pending traces. See
 [actual controls, import-only repair and gates][native-tof-direction-product-review].
 
 
+#### Matched Native Direction Products (2026-11-11)
+
+Literal default-off `include_direction_product_residuals` requires
+`include_direction=True` in delivered/pending snapshot. Composes standalone
+supplied-word products from original and closing retained generation traces,
+typed native/direction history, source IDs, complete original/closing history/
+input/identity/frame/queue/outgoing-word checks. Closing native history prevalidated
+before companion lookup; late malformed source stays unknown/no payloads.
+No corrected observations, geometry/trig/primitive/FMA/uniform-error/source/
+coverage/clock/one-use/physical/permission/admission proof; all eight flags false,
+equal-value/different-word ties unresolved. Per product helper unchanged six64-word
+tuples/128 entries/384values/256binary/4096bits, no replay/intake/recorder/clock.
+See [actual matched controls, preflight and gates][native-tof-direction-owned-product-review].
+
+
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
@@ -2387,3 +2402,4 @@ yet matched to owned delivered/pending traces. See
 [native-tof-direction-match-review]: ../../REVIEW.md#294-bounded-retained-native-direction-join-2026-11-11
 [native-tof-direction-snapshot-review]: ../../REVIEW.md#295-deliveredpending-native-direction-snapshot-2026-11-11
 [native-tof-direction-product-review]: ../../REVIEW.md#296-supplied-word-native-direction-products-2026-11-11
+[native-tof-direction-owned-product-review]: ../../REVIEW.md#297-matched-native-direction-product-reports-2026-11-11

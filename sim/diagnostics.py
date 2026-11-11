@@ -16415,6 +16415,7 @@ class _SyntheticC1SourceRecorder:
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
         include_direction=False,
+        include_direction_product_residuals=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -16430,6 +16431,14 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_cylinder must be a literal bool")
         if type(include_direction) is not bool:
             raise ValueError("include_direction must be a literal bool")
+        if type(include_direction_product_residuals) is not bool:
+            raise ValueError(
+                "include_direction_product_residuals must be a literal bool"
+            )
+        if include_direction_product_residuals and not include_direction:
+            raise ValueError(
+                "include_direction_product_residuals requires include_direction=True"
+            )
         if type(include_wall_cylinder_boundary_diagnostics) is not bool:
             raise ValueError(
                 "include_wall_cylinder_boundary_diagnostics must be a literal bool"
@@ -16716,6 +16725,29 @@ class _SyntheticC1SourceRecorder:
                     pre_noise_ranges_m=native["pre_noise_ranges_m"],
                     sample_words=source["sample_words"],
                     valid_mask=source["valid_mask"],
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def direction_product_probe(record):
+            generation = record["direction"]["direction_generation"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_direction_product_residuals(
+                    **{
+                        f"{key}_hex": generation[key]
+                        for key in (
+                            "elevation_cosine_forward",
+                            "azimuth_cosine",
+                            "sensor_forward",
+                            "elevation_cosine_left",
+                            "azimuth_sine",
+                            "sensor_left",
+                        )
+                    },
                     synthetic_test_only=True,
                 ),
             }
@@ -17344,6 +17376,17 @@ class _SyntheticC1SourceRecorder:
                 direction_output_binding = _c1_source_binding_digest(
                     {"direction": direction, "pending_direction": pending_direction}
                 )
+            if include_direction_product_residuals:
+                direction_products = direction_product_probe(direction)
+                pending_direction_products = tuple(
+                    direction_product_probe(record) for record in pending_direction
+                )
+                direction_products_binding = _c1_source_binding_digest(
+                    {
+                        "products": direction_products,
+                        "pending_products": pending_direction_products,
+                    }
+                )
             if include_wall_cylinder_boundary_diagnostics:
                 wall_cylinder_boundary = wall_cylinder_boundary_probe(wall, cylinder)
                 pending_wall_cylinder_boundary = (
@@ -17599,6 +17642,7 @@ class _SyntheticC1SourceRecorder:
                     else ()
                 )
             if include_direction:
+                _check_native_tof_history_layout(self._tof_history, template)
                 _check_native_tof_direction_history(
                     self._tof_direction_history, self._tof_history, self._epoch
                 )
@@ -17825,7 +17869,13 @@ class _SyntheticC1SourceRecorder:
                 )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
-            if include_timing or include_selection or include_wall or include_cylinder:
+            if (
+                include_timing
+                or include_selection
+                or include_wall
+                or include_cylinder
+                or include_direction
+            ):
                 _check_native_tof_history_layout(self._tof_history, template)
             if include_timing:
                 _check_native_tof_timing_history(
@@ -17846,6 +17896,17 @@ class _SyntheticC1SourceRecorder:
             if include_direction:
                 _check_native_tof_direction_history(
                     self._tof_direction_history, self._tof_history, self._epoch
+                )
+            if include_direction_product_residuals:
+                _check_native_tof_direction_history(
+                    [direction_after, *pending_direction_after],
+                    self._tof_history,
+                    self._epoch,
+                )
+                direction_products_after = direction_product_probe(direction_after)
+                pending_direction_products_after = tuple(
+                    direction_product_probe(record)
+                    for record in pending_direction_after
                 )
             if include_pending_sources and (
                 environment.pending is not pending_before
@@ -18203,6 +18264,24 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF sampling residual source or outgoing records changed"
                 )
+            if include_direction_product_residuals and (
+                not _native_tof_word_copy_matches(
+                    direction_products, direction_products_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_direction_products, pending_direction_products_after
+                )
+                or _c1_source_binding_digest(
+                    {
+                        "products": direction_products,
+                        "pending_products": pending_direction_products,
+                    }
+                )
+                != direction_products_binding
+            ):
+                raise ValueError(
+                    "native ToF direction product source or outgoing records changed"
+                )
             if include_direction_norm_residuals and (
                 not _native_tof_word_copy_matches(
                     direction_norm_residuals, direction_norm_after
@@ -18382,6 +18461,12 @@ class _SyntheticC1SourceRecorder:
             result["sampling_residuals"] = sampling_residuals
             if include_pending_sources:
                 result["pending_sampling_residuals"] = pending_sampling_residuals
+        if include_direction_product_residuals:
+            result["direction_product_residuals"] = direction_products
+            if include_pending_sources:
+                result["pending_direction_product_residuals"] = (
+                    pending_direction_products
+                )
         if include_direction_norm_residuals:
             result["direction_norm_residuals"] = direction_norm_residuals
             if include_pending_sources:

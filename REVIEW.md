@@ -531,6 +531,49 @@ clock/one-use/physical/permission/admission qualification. Standalone product
 diagnostic NOT yet paired to retained delivery; next original+closing delivered/
 pending composition without correcting words or adopting numerical/physical bounds.
 
+## 297. Matched Native Direction Product Reports (2026-11-11)
+
+Begin clean719cc90. Hypothesis: append-only literal product-report option requiring
+include_direction=True composes the standalone bounded product helper from original
+and closing retained generation words, with typed copies/input/history/ID/binding
+checks and no corrected upstream values. Strengthen native-history prevalidation
+before closing direction parse and final companion checks; missing native inputs
+after closing frame callback must be unknown, not unchecked lookup. All8 false,
+no geometry/trig/primitive/FMA/uniform-error/source/coverage/clock/physical/
+permission/admission adoption. Existing24-case matrix72 controls conserved plus
+new direction-products24=96, three option/dependency controls=99. Old per-case
+4steps/5reads/3retentions/3geometries/6matches/2pending/4queue/2frame/64bindings/
+one late-mutation caps unchanged; product<=6calls/2304value/1536binary and independent
+oracle<=768ops, 4096bit ceiling unchanged. Count product arithmetic only while
+helper active; existing norm controls/caps remain. Original/closing reports have
+<=128 entries/source; no intake/replay/trig/geometry/clock during snapshot.
+Three routine pytest positions first99/60s, sole necessary repair99/60s, root/360s;
+retain rays-297-* logs, count failed/aborted/unknown attempts, no refunds/protected
+data/studies/dependencies/hardware. Next source-word prerequisites only, no bounds.
+
+First99 passed/3652deselected/13.26s with four hashes stable: existing72 modes
+and24 names/caps conserved, new product mode reports original+closing delivered/
+pending128-entry observations with exact independent oracles, mutated sensor
+product/outgoing diagnostic/late missing native input rejected. Append-only literal
+product flag/dependency three controls passed; old modes leave product keys absent.
+Product<=6calls/2304values/1536binary, oracle<=768 operations; old matching/digest/
+frame/queue/norm counters unchanged, no forbidden replay/intake/clock. Ruff formatted
+only two touched Python files; lint/format/whitespace/editor clear. AST all prior
+source methods except snapshot_native_tof_delivery and old test definitions except
+existing snapshot matrix conserved; old defaults/case names/modes unchanged.
+Required root `python -m pytest -q && ruff check . && git diff --check` passed4674/
+known QDQ xfail/71warnings/162.51s, four source/test hashes stable; touched format
+passed. Two of3 pytest positions spent, no failure/abort/refund; unused repair
+reserve NOT follow-on authority. Logs rays-297-{focused-1,root-1} retained in
+original recovery directory, no data/downloads/dependencies/studies/hardware or
+additional native/Arm/sanitizer/board opt-in commands. Product reports paired to
+actual retained generation words, source identities and closing trace checks, not
+corrected or qualified. Unsupported/nonfinite raw source stays unknown, all8 flags
+false; equal-value/different-word ties unresolved. No trig/geometry/primitive/FMA/
+uniform-error/source/coverage/clock/one-use/physical/permission/admission proof.
+Next bounded supplied-word pitch-rotation combined-expression discrepancies, then
+matched composition only as supported; no numerical/physical bounds adopted.
+
 ## Sources
 
 Hardware and tools:

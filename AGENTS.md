@@ -31,17 +31,18 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §283 for matched retained cylinder cap-relative residuals;
+Read [REVIEW.md][review] §284 for matched retained cylinder cap-square residuals,
+failed checks and bounded stable-source revalidation; §283 covers cap-relative,
 §282 covers guarded top division and the lossless 271-275 archive, §281 scalar offset,
 §278 the NF1 relocation to chapter04 and §274 the cylinder topic in chapter05.
-§§231-282
+§§231-283
 retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next compose independent supplied-word cap radial/radius-square arithmetic with
-matched cylinder records, preserving raw nonfinite unknowns, identity/closing
-checks and unresolved word ties.
+Next reassess supported cross-path native-ToF acquisition/recorder/delivery
+prerequisites, preserving supplied operands, raw nonfinite unknowns,
+identity/closing checks and unresolved word ties.
 Preserve unresolved equal-value/different-word
 ties; matching words do not prove geometry, coverage or error.
 §§181-191 record workflow, clocks and source ownership. The Q0-Q5

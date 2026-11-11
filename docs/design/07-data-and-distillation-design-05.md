@@ -2383,6 +2383,21 @@ clock/one-use/permission/admission or usable command. See
 [actual two-axis controls and limits][native-tof-cylinder-matched-top-relative-review].
 
 
+#### Matched Retained Cylinder Cap-Square Residuals (2026-11-11)
+
+Default-off literal `include_cylinder_top_radial_residuals` requires
+`include_cylinder=True`. Matched delivered/pending identities and independent
+closing checks compose captured relative/radius/radial-squared/radius-squared
+words through the unchanged independent two-family helper. Finite relative/radius
+operands; nonfinite observed square residuals stay unknown. <=32 cylinders/6208
+words/2048 radial+32 radius entries/6208 values/8256 binary operations per helper,
+4096-bit ceiling unchanged; <=18 original/closing invocations across delivered/
+<=8 pending records. No corrected upstream words or isolated radial primitive/FMA
+claim; all eight flags false, no geometry/source/coverage/error/clock/one-use/
+permission/admission or usable command. See
+[actual controls, failed gate and bounded revalidation][native-tof-cylinder-matched-cap-square-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2419,3 +2434,4 @@ clock/one-use/permission/admission or usable command. See
 [native-tof-cylinder-matched-top-offset-review]: ../../REVIEW.md#281-matched-retained-cylinder-top-offset-residuals-2026-11-11
 [native-tof-cylinder-matched-top-division-review]: ../../REVIEW.md#282-matched-retained-cylinder-top-division-residuals-2026-11-11
 [native-tof-cylinder-matched-top-relative-review]: ../../REVIEW.md#283-matched-retained-cylinder-top-relative-residuals-2026-11-11
+[native-tof-cylinder-matched-cap-square-review]: ../../REVIEW.md#284-matched-retained-cylinder-cap-square-residuals-2026-11-11

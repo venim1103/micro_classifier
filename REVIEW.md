@@ -506,6 +506,78 @@ flags changed. Next independent captured cap radial/radius-square expression
 residuals with matched original/closing identities; preserve supplied operands,
 nonfinite unknowns and unresolved equal-value/different-word minimum ties.
 
+## 284. Matched Retained Cylinder Cap-Square Residuals (2026-11-11)
+
+Hypothesis: default-off literal `include_cylinder_top_radial_residuals` requiring
+`include_cylinder=True` composes captured relative/radius/radial-squared/radius-
+squared words through the unchanged independent two-family helper. Delivered/
+pending identities and independent closing probes compare both families before
+publication; no corrected upstream words or mask decision. Cheapest discriminator:
+existing23-case family in twelve modes,276 controls, independent exact square
+oracles for both families; late delivered radial and pending radius mutations
+must suppress publication. Copy supplies signed-zero relative/radial words only;
+residual/nonfinite/malformed/work controls alter both observed square families.
+
+Fresh bounded routine ledger: <=3 pytest invocations, focused then required root
+plus one diagnosed-repair reserve,300 s each. Root `python -m pytest -q && ruff
+check . && git diff --check`, changed Python format check. Fixture <=4steps/5reads/
+3geometries/3retentions/6active-helper+cylinder matches/2pending matches/64digests.
+New mode <=13566 values/15822 binary operations/1548 oracle operations; prior eleven
+caps unchanged. Combined control includes previous eleven arithmetic helpers and
+selection chain <=6each. Existing helper <=32 cylinders/6208 words/2048 radial+
+32 radius entries/6208 values/8256 binary operations,4096-bit ceiling unchanged;
+<=18 original/closing invocations across delivered/<=8 pending records. Finite
+relative/radius operands; nonfinite observed squares retain unknown residuals.
+Explicit21-bit observed squares in16-bit work-limit control. No snapshot intake/
+read/retain/step/reset/replay/clock; tick/frame/both RNGs preserved. Preserve
+failures/unknown attempts; diagnose before rerun, no old refund/protected experiment.
+All eight flags false, no isolated radial primitive/FMA or uniform error/geometry/
+coverage/source/clock/one-use/permission/admission or usable command. No dependency/
+model/task-data/hardware changes or additional C/Arm/sanitizer/board opt-ins.
+
+First focused259 passed/17 failed/3260 deselected,59.14 s: new probe/fixtures
+misnamed retained `radial_squared_m2` as `radial_m2`, causing KeyError or malformed
+new copy layout. Actual retained schema and existing selection probe confirmed
+the correct key. Repair only five new accesses, no helper/schema/guard/cap changes.
+Same276 controls rerun using diagnosed-repair reserve, then final original pytest
+position for required root. First failure log retained, no refund/abort.
+
+Repaired same276 focused passed,3260 deselected,47.42 s. Formatting/lint/editor
+and AST scope/default/23-case/eleven-cap conservation passed; helpers/history
+guards and all other methods/functions unchanged. First root4457 passed/2 failed,
+one known transformer QDQ xfail,71 warnings,165.04 s: unchanged selection held
+rejected delivery identity and missing-delivered rejected retention identity.
+Both original guards remained; traceback test source displayed `???`. Actual
+files complete/tails intact, diff scoped to intended work. Source/test mtimes
+08:14:33 fall inside approximate root interval ending log mtime08:15:31 minus
+reported165.04 s. This supports concurrent source-write interference, not proven
+writer attribution or a waived guard. No source regression inferred away.
+
+Original three pytest positions all spent, both failed logs retained, no abort.
+Diagnosed fresh bounded routine revalidation under standing authority: <=2 pytest
+invocations, unchanged two failed selection controls then one required root,
+300 s each. No parallel tools/formatter/editor calls during either run; hash all
+three source-identity files plus tests before/after each and reject changed hashes.
+No new fixtures, old caps/guards/ceilings unchanged, no repeat after unchanged
+failure or successful gate. Retain outputs in distinct revalidation logs; no old
+refund or numerical/source/clock/permission/admission qualification.
+
+Two failed selection controls revalidated2 passed,0.79 s; sole fresh root4459
+passed,one known transformer QDQ xfail,71 warnings,150.31 s. All four source/test
+hashes unchanged before/after each run; root Ruff lint, changed-file format and
+whitespace passed. Original three plus fresh two positions all spent, no abort;
+no additional retry. Guard failures retained, writer/cause not proven by later
+pass. Logs `cylinder-284-focused-{1,2}.log`, `cylinder-284-root-1.log`,
+`cylinder-284-selection-revalidation-1.log`, `cylinder-284-root-revalidation-1.log`
+retained under `.git/recovery-20261109-PmbQpU`; no cleanup required.
+
+Implemented matched default-off two-family report option with strict original/
+closing delivered/pending comparison. All eight flags remain false, no usable
+command or geometry/coverage/error/source/clock/one-use/permission/admission
+claim; no additional C/Arm/sanitizer/board opt-in gates ran. Next reassess the
+supported cross-path native-ToF acquisition/recorder/delivery prerequisites;
+retain supplied operands, raw nonfinite unknowns and unresolved word ties.
+
 ## Sources
 
 Hardware and tools:

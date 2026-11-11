@@ -28045,6 +28045,7 @@ def test_native_tof_cylinder_selection_snapshot(
         "top_offset",
         "top_division",
         "top_relative",
+        "top_radial",
     ),
 )
 def test_native_tof_cylinder_offset_snapshot(
@@ -28065,7 +28066,9 @@ def test_native_tof_cylinder_offset_snapshot(
     top_offset = kind == "top_offset"
     top_division = kind == "top_division"
     top_relative = kind == "top_relative"
-    top_controls = top_offset or top_division or top_relative
+    top_radial = kind == "top_radial"
+    top_controls = top_offset or top_division or top_relative or top_radial
+    entry_family = "radial_entries" if top_radial else "entries"
     residual_key = (
         "signed_squared_residual_ratio" if root_squared else "signed_residual_ratio"
     )
@@ -28081,6 +28084,7 @@ def test_native_tof_cylinder_offset_snapshot(
         "top_offset": (9696, 11202, 12),
         "top_division": (10470, 11970, 768),
         "top_relative": (12402, 14274, 2304),
+        "top_radial": (13566, 15822, 1548),
     }[kind]
     field = f"cylinder_{kind}_residuals"
     option = f"include_{field}"
@@ -28118,6 +28122,7 @@ def test_native_tof_cylinder_offset_snapshot(
             "combined_altitude",
             "combined_top_offset",
             "combined_top_division",
+            "combined_top_relative",
             "late",
             "forbidden",
         ),
@@ -28160,6 +28165,10 @@ def test_native_tof_cylinder_offset_snapshot(
         owner._tof_cylinder_history.pop(0)
     elif case == "missing_pending":
         owner._tof_cylinder_history.pop()
+    elif top_radial and case == "copy":
+        top = owner._tof_cylinder_history[0]["cylinder"]["cylinders"][0]["top"]
+        top["relative_m"] = ((-0.0).hex(), (0.0).hex(), *top["relative_m"][2:])
+        top["radial_squared_m2"] = ((-0.0).hex(), *top["radial_squared_m2"][1:])
     elif top_relative and case == "copy":
         cylinder = owner._tof_cylinder_history[0]["cylinder"]["cylinders"][0]
         top = cylinder["top"]
@@ -28197,6 +28206,8 @@ def test_native_tof_cylinder_offset_snapshot(
         key = (
             "horizontal_squared"
             if horizontal_norm
+            else "radial_squared_m2"
+            if top_radial
             else "relative_m"
             if top_relative
             else "distance_m"
@@ -28231,6 +28242,16 @@ def test_native_tof_cylinder_offset_snapshot(
             *observed_words[1:],
         )
         entry[key] = updated_words[0] if top_offset else updated_words
+        if top_radial:
+            entry["radius_squared_m2"] = (
+                "0.0"
+                if case == "malformed"
+                else "inf"
+                if case == "infinite_observation"
+                else (2.0**20).hex()
+                if case == "work_limit"
+                else (float.fromhex(entry["radius_squared_m2"]) + 0.125).hex()
+            )
     before_tick, before_frame = environment.tick, owner._current[3]
     before_rng = deepcopy(environment.rng.bit_generator.state)
     before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
@@ -28271,10 +28292,12 @@ def test_native_tof_cylinder_offset_snapshot(
         if top_controls
         else {}
     )
-    if top_division or top_relative:
+    if top_division or top_relative or top_radial:
         prior_top_reports["combined_top_offset"] = "top_offset"
-    if top_relative:
+    if top_relative or top_radial:
         prior_top_reports["combined_top_division"] = "top_division"
+    if top_radial:
+        prior_top_reports["combined_top_relative"] = "top_relative"
     names.update(
         {
             name: f"_native_tof_cylinder_{suffix}_residuals"
@@ -28292,7 +28315,9 @@ def test_native_tof_cylinder_offset_snapshot(
         if name == "offset" and work[name] == closing_count:
             if case in ("late_residual", "late_pending_report"):
                 target = outgoing["offset"][1 if case == "late_pending_report" else 0][
-                    "entries"
+                    "radius_entries"
+                    if top_radial and case == "late_pending_report"
+                    else entry_family
                 ][0]
                 numerator, denominator = target[residual_key]
                 target[residual_key] = (numerator ^ 1, denominator)
@@ -28475,17 +28500,26 @@ def test_native_tof_cylinder_offset_snapshot(
                     diagnostic = report["diagnostic"]
                     assert all(diagnostic[flag] is False for flag in flags)
                     trace = record["cylinder"]
-                    assert len(diagnostic["entries"]) == (
+                    assert len(diagnostic[entry_family]) == (
                         len(trace["cylinders"])
                         if top_offset
                         else 64 * len(trace["cylinders"])
-                        if top_division
+                        if top_division or top_radial
                         else 64
                         if horizontal_norm
                         else 128 * len(trace["cylinders"])
                         if side_numerator or top_relative
                         else (64 if projection or discriminant or root_squared else 2)
                         * len(trace["cylinders"])
+                    )
+                    if top_radial:
+                        assert len(diagnostic["radius_entries"]) == len(
+                            trace["cylinders"]
+                        )
+                    entries = (
+                        diagnostic[entry_family] + diagnostic["radius_entries"]
+                        if top_radial
+                        else diagnostic[entry_family]
                     )
                     reference_bases = []
                     if discriminant:
@@ -28504,8 +28538,69 @@ def test_native_tof_cylinder_offset_snapshot(
                             )
                             work["oracle"] += 5
                             assert work["oracle"] <= oracle_cap
-                    for entry in diagnostic["entries"]:
-                        if top_offset:
+                    for entry in entries:
+                        if top_radial:
+                            cylinder = trace["cylinders"][entry["obstacle_index"]]
+                            radial = "ray_index" in entry
+                            if radial:
+                                ray = entry["ray_index"]
+                                relative_words = cylinder["top"]["relative_m"][
+                                    ray * 2 : ray * 2 + 2
+                                ]
+                                relative = tuple(
+                                    Fraction.from_float(float.fromhex(word))
+                                    for word in relative_words
+                                )
+                                exact = (
+                                    relative[0] * relative[0]
+                                    + relative[1] * relative[1]
+                                )
+                                work["oracle"] += 3
+                                observed_word = cylinder["top"]["radial_squared_m2"][
+                                    ray
+                                ]
+                                assert entry["relative_xy_hex"] == relative_words
+                                assert (
+                                    entry["observed_radial_squared_hex"]
+                                    == observed_word
+                                )
+                            else:
+                                radius_word = cylinder["radius_m"]
+                                radius = Fraction.from_float(float.fromhex(radius_word))
+                                exact = radius * radius
+                                work["oracle"] += 1
+                                observed_word = cylinder["top"]["radius_squared_m2"]
+                                assert entry["radius_hex"] == radius_word
+                                assert (
+                                    entry["observed_radius_squared_hex"]
+                                    == observed_word
+                                )
+                            assert (
+                                diagnostic["comparison_basis"]
+                                == "independent_supplied_word_relative_sum_of_squares_and_radius_squared"
+                            )
+                            assert (
+                                entry[
+                                    "exact_unrounded_expression_ratio"
+                                    if radial
+                                    else "exact_square_ratio"
+                                ]
+                                == exact.as_integer_ratio()
+                            )
+                            assert entry["status"] == (
+                                (
+                                    "computed_exact_cylinder_top_radial_squared_expression_residual"
+                                    if radial
+                                    else "computed_exact_cylinder_top_radius_squared_word_residual"
+                                )
+                                if math.isfinite(float.fromhex(observed_word))
+                                else (
+                                    "unknown_nonfinite_cylinder_top_radial_squared"
+                                    if radial
+                                    else "unknown_nonfinite_cylinder_top_radius_squared"
+                                )
+                            )
+                        elif top_offset:
                             cylinder = trace["cylinders"][entry["obstacle_index"]]
                             height_word = float(
                                 trace["inputs"]["config"]["tof_mount_height"]
@@ -28877,15 +28972,29 @@ def test_native_tof_cylinder_offset_snapshot(
                                     entry["status"] == "unknown_nonfinite_cylinder_root"
                                 )
                 if case == "residual":
-                    assert reports[0]["diagnostic"]["entries"][0][residual_key][0] != 0
+                    assert (
+                        reports[0]["diagnostic"][entry_family][0][residual_key][0] != 0
+                    )
+                    if top_radial:
+                        assert (
+                            reports[0]["diagnostic"]["radius_entries"][0][residual_key][
+                                0
+                            ]
+                            != 0
+                        )
                 if case == "delivered_only":
                     assert f"pending_{field}" not in result
                 if case == "output_detached":
                     before_history = deepcopy(owner._tof_cylinder_history)
-                    reports[0]["diagnostic"]["entries"][0][residual_key] = (
+                    reports[0]["diagnostic"][entry_family][0][residual_key] = (
                         99,
                         1,
                     )
+                    if top_radial:
+                        reports[0]["diagnostic"]["radius_entries"][0][residual_key] = (
+                            98,
+                            1,
+                        )
                     assert owner._tof_cylinder_history == before_history
                 if case == "selection_combined":
                     assert work["chain"] == closing_count

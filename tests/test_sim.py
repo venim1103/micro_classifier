@@ -12652,6 +12652,36 @@ def test_native_tof_wall_intake(
             "obstacle_operand",
             "max_obstacles",
         )
+    ]
+    + [
+        (None, case)
+        for case in (
+            "copy",
+            "signed_zero",
+            "oversize",
+            "tuple_history",
+            "order",
+            "duplicate",
+            "epoch",
+            "missing_pair",
+            "delivery",
+            "flag",
+            "profile",
+            "rays",
+            "word_shape",
+            "noncanonical",
+            "overflow",
+            "nonfinite",
+            "word_budget",
+            "source_oversize",
+            "source_tuple",
+            "generation_inputs",
+            "effective_pitch",
+            "generation_rays",
+            "generation_flag",
+            "generation_layout",
+            "legacy_source",
+        )
     ],
 )
 def test_native_tof_wall_history_layout(
@@ -12661,10 +12691,11 @@ def test_native_tof_wall_history_layout(
 
     from sim import diagnostics, rover
 
-    kind = "cylinder" if cylinder else "wall"
+    direction = cylinder is None
+    kind = "direction" if direction else "cylinder" if cylinder else "wall"
     validate = getattr(diagnostics, f"_check_native_tof_{kind}_history")
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    if cylinder:
+    if cylinder or direction:
         environment.scenario = replace(
             environment.scenario,
             obstacles=((3.0, 3.0, 0.25),) * (32 if case == "max_obstacles" else 1),
@@ -12685,7 +12716,13 @@ def test_native_tof_wall_history_layout(
         }
     ]
     trace = history[0][kind]
-    entry = trace["cylinders"][0] if cylinder else trace["walls"][0]
+    entry = (
+        trace["direction_generation"]
+        if direction
+        else trace["cylinders"][0]
+        if cylinder
+        else trace["walls"][0]
+    )
     stage = entry["sides"][0] if cylinder else entry
     if case in ("copy", "max_obstacles"):
         for offset in range(1, 8):
@@ -12712,10 +12749,12 @@ def test_native_tof_wall_history_layout(
     elif case == "flag":
         trace["source_qualified"] = True
     elif case == "word_shape":
-        stage["distance_m"] = ("0x0.0p+0",) * 65
+        stage["sensor_forward" if direction else "distance_m"] = ("0x0.0p+0",) * 65
     elif case in ("noncanonical", "overflow"):
         word = "0.0" if case == "noncanonical" else "0x1p+999999"
-        stage["numerator_m"] = (word,) * 64 if cylinder else word
+        stage["pitch_sine" if direction else "numerator_m"] = (
+            (word,) * 64 if cylinder else word
+        )
     elif case == "index":
         entry["obstacle_index" if cylinder else "wall_index"] = False
     elif case == "mask":
@@ -12731,17 +12770,35 @@ def test_native_tof_wall_history_layout(
     elif case == "top_shape":
         entry["top"]["relative_m"] = ("0x0.0p+0",) * 129
     elif case == "nonfinite":
-        entry["root_m"] = ("nan",) * 64
+        entry["sensor_up" if direction else "root_m"] = ("nan",) * 64
     elif case == "range_negative":
         stage["candidate_m"] = ("-inf",) * 64
     elif case == "word_budget":
-        stage["numerator_m"] = ("0" * 33,) * 64
+        stage["sensor_up" if direction else "numerator_m"] = ("0" * 33,) * 64
     elif case == "source_oversize":
         source_history *= 9
     elif case == "source_tuple":
         source_history = tuple(source_history)
     elif case == "obstacle_operand":
         entry["radius_m"] = "0x0.0p+0"
+    elif case == "signed_zero":
+        entry["pitch_sine"] = "-0x0.0p+0"
+    elif case == "generation_inputs":
+        entry["inputs"]["field_of_view_rad"] += 0.25
+    elif case == "effective_pitch":
+        entry["effective_pitch_rad"] = "0x0.0p+0"
+    elif case == "generation_rays":
+        entry["world_frame_unit_rays"] = ("0x0.0p+0",) * 192
+    elif case == "generation_flag":
+        entry["source_qualified"] = True
+    elif case == "generation_layout":
+        entry["extra"] = "0x0.0p+0"
+    elif case == "legacy_source":
+        source_history[0]["native_source"]["inputs"]["config"]["tof_mount_height"] = (
+            None
+        )
+        source_history[0]["native_source"]["world_frame_unit_rays"] = None
+        source_history[0]["native_source"]["floor_candidate_ranges_m"] = None
     before = deepcopy((history, source_history))
     work = {"forbidden": 0}
 
@@ -12755,6 +12812,7 @@ def test_native_tof_wall_history_layout(
         "_sample_simulator_native_tof_source",
         "_sample_simulator_native_tof_wall_source",
         "_sample_simulator_native_tof_cylinder_source",
+        "_sample_simulator_native_tof_direction_source",
         "_c1_source_binding_digest",
     ):
         monkeypatch.setattr(diagnostics, name, forbidden)
@@ -12764,9 +12822,11 @@ def test_native_tof_wall_history_layout(
         monkeypatch.setattr(RoverEnv, name, forbidden)
     for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
         monkeypatch.setattr(rover, name, forbidden)
-    if case in ("copy", "max_obstacles"):
+    if case in ("copy", "max_obstacles", "signed_zero"):
         assert validate(history, source_history, owner._epoch) is None
-        assert len(history) == len(source_history) == 8
+        assert (
+            len(history) == len(source_history) == (1 if case == "signed_zero" else 8)
+        )
     else:
         with pytest.raises(ValueError):
             validate(history, source_history, owner._epoch)

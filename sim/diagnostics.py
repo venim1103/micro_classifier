@@ -14547,6 +14547,169 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _check_native_tof_direction_history(history, source_history, source_epoch):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native ToF direction history budget exhausted")
+    if type(source_history) is not list or len(source_history) > 8:
+        raise ValueError("native ToF direction source history budget exhausted")
+    previous = -1
+    zero = "0x0.0p+0"
+    generation_scalars = (
+        "effective_pitch_rad",
+        "pitch_cosine",
+        "pitch_sine",
+        "yaw_cosine",
+        "yaw_sine",
+    )
+    generation_arrays = (
+        "angles_rad",
+        "elevation_rad",
+        "azimuth_rad",
+        "elevation_cosine_forward",
+        "azimuth_cosine",
+        "elevation_cosine_left",
+        "azimuth_sine",
+        "sensor_forward",
+        "sensor_left",
+        "sensor_up",
+        "pitched_forward",
+        "pitched_up",
+        "world_frame_unit_rays",
+    )
+    range_arrays = (
+        "world_frame_unit_rays",
+        "floor_candidate_ranges_m",
+        "pre_noise_ranges_m",
+    )
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+
+    def canonical(word, finite):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("unsupported native ToF retained direction word budget")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "unsupported native ToF retained direction word"
+            ) from error
+        if (
+            value.hex() != word
+            or math.isnan(value)
+            or (finite and not math.isfinite(value))
+            or (not finite and value == -math.inf)
+        ):
+            raise ValueError("unsupported native ToF retained direction canonical word")
+
+    for entry in history:
+        if (
+            type(entry) is not dict
+            or len(entry) != 4
+            or any(type(key) is not str for key in entry)
+            or set(entry) != {"source_epoch", "tick", "delivery_tick", "direction"}
+            or type(entry["source_epoch"]) is not str
+            or entry["source_epoch"] != source_epoch
+            or type(entry["tick"]) is not int
+            or not previous < entry["tick"] <= 0xFFFFFFFF // 50000
+            or type(entry["delivery_tick"]) is not int
+            or not 0 <= entry["delivery_tick"] <= 0xFFFFFFFF // 50000
+        ):
+            raise ValueError("unsupported native ToF direction history metadata")
+        previous = entry["tick"]
+        matches = [
+            source for source in source_history if source["tick"] == entry["tick"]
+        ]
+        if (
+            len(matches) != 1
+            or matches[0]["source_epoch"] != entry["source_epoch"]
+            or matches[0]["delivery_tick"] != entry["delivery_tick"]
+        ):
+            raise ValueError("native ToF direction history source pairing missing")
+        native = matches[0]["native_source"]
+        inputs = native["inputs"]
+        if (
+            native["world_frame_unit_rays"] is None
+            or inputs["config"]["tof_mount_height"] is None
+        ):
+            raise ValueError(
+                "native ToF retained direction requires mounted source rays"
+            )
+        generation_expected = {
+            "schema": "micro-classifier/native-tof-direction-source/1",
+            "allowed_use": "native_tof_direction_diagnostics_only",
+            "status": "recorded_native_tof_direction_values",
+            **{flag: False for flag in flags},
+            "inputs": {
+                "yaw_rad": float(inputs["yaw_rad"]),
+                "field_of_view_rad": float(inputs["config"]["field_of_view"]),
+                "mount_height_m": float(inputs["config"]["tof_mount_height"]),
+                "mount_pitch_rad": float(inputs["config"]["tof_mount_pitch"]),
+            },
+            **{key: zero for key in generation_scalars},
+            **{
+                key: (zero,)
+                * (
+                    8
+                    if key == "angles_rad"
+                    else 192
+                    if key == "world_frame_unit_rays"
+                    else 64
+                )
+                for key in generation_arrays
+            },
+        }
+        expected = {
+            "schema": "micro-classifier/native-tof-direction-trace/1",
+            "allowed_use": "native_tof_direction_diagnostics_only",
+            "status": "recorded_native_tof_direction_and_range_values",
+            **{flag: False for flag in flags},
+            "inputs": inputs,
+            **{key: native[key] for key in range_arrays},
+            "direction_generation": generation_expected,
+        }
+        trace = entry["direction"]
+        if not _native_tof_word_copy_matches(trace, expected, shape_only=True):
+            raise ValueError("unsupported native ToF retained direction layout")
+        if any(
+            not _native_tof_word_copy_matches(trace[key], value)
+            for key, value in expected.items()
+            if key != "direction_generation"
+        ):
+            raise ValueError(
+                "native ToF retained direction native word pairing mismatched"
+            )
+        generation = trace["direction_generation"]
+        if (
+            any(
+                not _native_tof_word_copy_matches(generation[key], value)
+                for key, value in generation_expected.items()
+                if key not in (*generation_arrays, *generation_scalars)
+            )
+            or generation["effective_pitch_rad"]
+            != generation_expected["inputs"]["mount_pitch_rad"].hex()
+            or generation["world_frame_unit_rays"] != trace["world_frame_unit_rays"]
+        ):
+            raise ValueError(
+                "native ToF retained direction generation pairing mismatched"
+            )
+        for key in generation_scalars:
+            canonical(generation[key], True)
+        for key in generation_arrays:
+            for word in generation[key]:
+                canonical(word, True)
+        for key in range_arrays:
+            for word in trace[key]:
+                canonical(word, key == "world_frame_unit_rays")
+
+
 def _check_native_tof_cylinder_history(history, source_history, source_epoch):
     if type(history) is not list or len(history) > 8:
         raise ValueError("native ToF cylinder history budget exhausted")

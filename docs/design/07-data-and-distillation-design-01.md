@@ -2303,7 +2303,24 @@ all eight flags false, no usable command/admission. See
 [actual bounded controls, collection failure and checks][native-tof-direction-intake-review].
 
 
+#### Typed Native Direction History (2026-11-11)
+
+`_check_native_tof_direction_history` validates <=8 builtin ordered records against
+the existing independently validated <=8 native-history records. Fixed closed
+schemas/false flags, native input/range words, generation input/effective pitch/
+final-ray correspondence; <=16 arrays/1224 words+five result/four input scalars
+per record, canonical float.hex strings<=32chars, finite generation observations.
+Legacy/unmounted native source rejected before conversion, unsupported/nonfinite
+generation stays unknown. Canonical supplied signed-zero words remain distinct
+and unchanged. No trig/arithmetic replay/intake/recorder/hash/clock, no numerical
+qualification of observed component/trig words or native-history qualification
+by this companion join. It is not recorder-owned retention or delivery lineage,
+coverage/source/error/one-use/physical/permission/admission evidence; all eight
+flags false. See [actual controls, guard repair and checks][native-tof-direction-history-review].
+
+
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
 [native-tof-direction-intake-review]: ../../REVIEW.md#290-bounded-closed-native-direction-source-intake-2026-11-11
+[native-tof-direction-history-review]: ../../REVIEW.md#291-typed-native-direction-history-validation-2026-11-11

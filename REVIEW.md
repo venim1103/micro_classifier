@@ -574,6 +574,50 @@ admission evidence. Recorder retention and delivery remain absent for direction.
 Next fixed-shape typed direction-history validation, then opt-in recorder and
 delivered/pending original+closing correspondence; unresolved word ties remain.
 
+## 291. Typed Native Direction-History Validation (2026-11-11)
+
+Begin clean/synchronized2d38c60 under existing routine authority. Hypothesis:
+fixed-shape typed direction records can join an existing validated native history
+without replay, preserving raw finite supplied generation words and signed zero.
+<=8 ordered records/<=8 native records, <=64 pair inspections, per record16
+arrays/1224 words+5 result scalars and4 input scalars; schema/flags/native context/
+generation input/effective pitch/ray joins, canonical strings<=32chars, no rational
+work, hashes/intake/recorder/replay/step/reset/geometry/clocks. Generation trig/
+component words are structurally checked ONLY, not recalculated or geometrically
+qualified. All eight flags false, no source/numerical/physical/permission/admission.
+Existing42 controls conserved plus24 direction=66, <=8 bounded detached synthetic
+record copies, one fixture acquisition/two native intakes BEFORE poison hooks.
+<=3 routine pytest positions: first66/60 s, one necessary repair66/60 s, root/300 s;
+retain rays-291-* logs in original recovery directory, count all failure/abort/
+unknown, no budget refunds/new studies/dependencies/data. Next recorder retention.
+
+First66 passed/3585deselected/3.45 s with four source/test hashes stable. Local
+review found legacy native source could hit float(None) before mounted rejection;
+repair moves that rejection BEFORE expected generation construction. Add one
+legacy-source control, reserve67/60 s replaces66/60 s, overall3 positions stays.
+Existing42 and new24 controls unchanged; no failed/refunded/qualified attempt or
+protected cap increase, same slice's necessary guard+one fixture repair only.
+
+Repaired67 passed/3585deselected/1.85 s, four source/test hashes stable; all new
+direction metadata/shape/canonical/nonfinite/native+generation pairing/legacy
+cases and signed-zero preservation exercised, unchanged42 expression prefix
+conserved by AST. Source all previous definitions conserved; sole new validator
+and existing matrix changed. Ruff formatted only two touched Python files;
+lint/format/whitespace/editor diagnostics clear. Required root
+`python -m pytest -q && ruff check . && git diff --check` passed4575/known QDQ
+xfail/71warnings/145.48 s, hashes of diagnostics/rover/protocol/test_sim stable;
+touched format check also passed. All3 pytest positions spent, no failed/aborted/
+refunded attempt; rays-291-{focused-1,focused-2,root-1} logs retained in original
+recovery directory. No downloads/dependencies/studies/task data/hardware/C/Arm/
+sanitizer/board opt-in gates for this simulator-only increment. Native history
+is independently validated by its existing owner before this companion join;
+source-list8 cap is not standalone native-history qualification. Direction words
+remain supplied and structurally bounded, NOT recalculated trig/geometry/error/
+coverage/source/clock/one-use/physical/permission/admission evidence; all8 flags
+false. Synthetic8 record copies are NOT eight measured acquisitions. Next opt-in
+recorder-owned direction history, original+closing cache/history/input pairing,
+then delivered/pending correspondence. No usable command is admitted.
+
 ## Sources
 
 Hardware and tools:

@@ -2417,3 +2417,19 @@ Not yet matched to delivered/pending retained traces; see
 [actual controls, failures and stable-source gates][native-tof-direction-pitch-review].
 
 [native-tof-direction-pitch-review]: ../../REVIEW.md#298-supplied-word-native-direction-pitch-expressions-2026-11-11
+
+#### Matched Native Direction Pitch Expressions (2026-11-11)
+
+Literal default-off `include_direction_pitch_residuals` requires
+`include_direction=True` in delivered/pending snapshot. Composes the standalone
+pitch helper from original and closing retained generation words/IDs, after typed
+native/direction preflight and before final history/input/identity/frame/queue/
+outgoing-report checks. Optional product+pitch combination retains separate
+report counters; default keys unchanged, unknown omits all payloads, copies detached.
+Helper remains <=258values/512binary/128entries/4096bits with supplied words and
+raw nonfinite unknowns; no replay/trig/corrected values/primitive/FMA/uniform-error/
+geometry/source/coverage/clock/one-use/physical/permission/admission qualification,
+all eight flags false and equal-value/different-word ties unresolved. See
+[actual matched controls and gates][native-tof-direction-owned-pitch-review].
+
+[native-tof-direction-owned-pitch-review]: ../../REVIEW.md#300-matched-native-direction-pitch-reports-2026-11-11

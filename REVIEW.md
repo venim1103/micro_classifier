@@ -457,6 +457,50 @@ anchors/copied ray target and unchanged source/test bytes passed; whitespace cle
 last4701-pass gate remains source evidence only. Next bounded original+closing
 retained delivered/pending pitch-expression composition, all8 false/no bounds.
 
+## 300. Matched Native Direction Pitch Reports (2026-11-11)
+
+Begin cleanf780917. Hypothesis: append-only literal default-off pitch option,
+requiring include_direction=True, composes standalone supplied-word pitch helper
+on original+closing retained delivered/pending generation words and IDs; closing
+reports/history/input/frame/queue/owner/output checks precede publication. All8
+false, no trig/FMA/uniform-error/geometry/source/coverage/clock/physical/admission.
+Existing24names/96snapshot+3dependency controls conserved, new pitch24+3=126;
+combined new mode also selects product report. Old caps/defaults preserved:
+4steps/5reads/3retentions/3geometries/6matches/2pending/4queue/2frame/64bindings,
+one late mutation. Separate pitch<=6helpers/1548values/3072binary/1536oracle;
+product old6/2304/1536/768 unchanged, norm forwarded separately, 4096bits unchanged.
+New mutations target observed pitched_up, scalar pitch_cosine and outgoing report;
+no replay/intake/trig/recorder/step/reset/clock in snapshot. Pylance no resolved
+method callers, not static compatibility proof; runtime controls/default-prefix
+conservation discriminate. Fresh3 routine pytest positions first126/60s, sole
+necessary repair126/60s, required root/360s; failures/aborts/unknown spent, no
+refund/protected study/model/dependency/hardware/audit renewal. Retain rays-300-*
+logs, serial pytest/no simultaneous source/formatter/editor tools. Exit matched
+pitch diagnostics only, then remaining supported supplied-word yaw prerequisites.
+
+First126 passed/3679deselected/18.89s, four hashes stable; old96 modes/24 names/
+three dependencies preserved, new pitch24/three dependency controls and combined
+product+pitch report validated by independent exact oracles. Delivered/pending/
+held/default word identities, detached outputs, scalar cosine/observed pitched_up/
+outgoing-report mutations and unknown/no-payload rejection exercised, no extra
+source reads/trig/recorder/clocks. Separate pitch1548values/3072binary/1536oracle
+and old product/norm/call/binding/queue/frame caps unchanged. Ruff formatted only
+two touched Python files; lint/format/whitespace/editor/AST old definitions and
+methods/default-prefix/decorators/caps conserved. Required root
+`python -m pytest -q && ruff check . && git diff --check` passed4728/known QDQ
+xfail/71warnings/186.11s; four hashes stable, touched format-check passed. Twoof3
+pytest positions spent/no failure/abort/refund, unused repair NOT follow-on
+authority. Logs rays-300-{focused-1,root-1} retained in original recovery directory.
+No data/studies/models/dependencies/hardware/additional native/Arm/sanitizer/board
+opt-in commands; all8 false, unsupported/nonfinite raw source unknown, supplied
+word ties unresolved, no corrected values or geometry/trig/primitive/FMA/uniform-
+error/source/coverage/clock/one-use/physical/permission/admission proof. Scoped
+documentation checker first rejected recorded "126 passed" through its own
+contradictory literal matcher; corrected checker requires actual count/time
+strings, same scoped history/reference/byte/whitespace check passed, no
+source/assertion/cap change or pytest position spent. Next
+bounded supplied-word yaw-expression discrepancies, then matched composition.
+
 ## Sources
 
 Hardware and tools:

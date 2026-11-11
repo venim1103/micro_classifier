@@ -14069,7 +14069,7 @@ def test_native_tof_selection_snapshot(
 )
 @pytest.mark.parametrize(
     ("cylinder", "products"),
-    ((False, False), (True, False), (None, False), (None, True)),
+    ((False, False), (True, False), (None, False), (None, True), (None, "pitch")),
 )
 def test_native_tof_wall_snapshot(
     monkeypatch, c1_motion_receipt_source_fixture, case, cylinder, products
@@ -14079,6 +14079,9 @@ def test_native_tof_wall_snapshot(
 
     from sim import diagnostics, rover
 
+    pitch = products == "pitch"
+    products = products is True
+    include_products = products or (pitch and case == "combined")
     direction = cylinder is None
     kind = "direction" if direction else "cylinder" if cylinder else "wall"
     history_name = f"_tof_{kind}_history"
@@ -14112,6 +14115,11 @@ def test_native_tof_wall_snapshot(
             "values",
             "binary",
             "oracle",
+            "pitch",
+            "pitch_active",
+            "pitch_values",
+            "pitch_binary",
+            "pitch_oracle",
         ),
         0,
     )
@@ -14227,6 +14235,7 @@ def test_native_tof_wall_snapshot(
     original_frame = diagnostics._check_native_tof_delivery_frame
     original_binding = diagnostics._c1_source_binding_digest
     original_product = diagnostics._native_tof_direction_product_residuals
+    original_pitch = diagnostics._native_tof_direction_pitch_residuals
     original_value = diagnostics._C1CommandArithmetic.value
     original_binary = diagnostics._C1CommandArithmetic.binary
     outgoing = {}
@@ -14243,7 +14252,7 @@ def test_native_tof_wall_snapshot(
             elif case == "late_selection":
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
-                outgoing["product" if products else "arithmetic"][
+                outgoing["pitch" if pitch else "product" if products else "arithmetic"][
                     "source_qualified"
                 ] = True
             elif case == "late_pending":
@@ -14305,22 +14314,46 @@ def test_native_tof_wall_snapshot(
         outgoing.setdefault("product", actual)
         return actual
 
+    def pitch_probe(*args, **kwargs):
+        work["pitch"] += 1
+        assert work["pitch"] <= 6
+        work["pitch_active"] = True
+        try:
+            actual = original_pitch(*args, **kwargs)
+        finally:
+            work["pitch_active"] = False
+        outgoing.setdefault("pitch", actual)
+        return actual
+
     def value(instance, argument):
         if work["product_active"]:
             work["values"] += 1
             assert work["values"] <= 2304
+        if work["pitch_active"]:
+            work["pitch_values"] += 1
+            assert work["pitch_values"] <= 1548
         return original_value(instance, argument)
 
     def binary(instance, left, right, operation):
         if work["product_active"]:
             work["binary"] += 1
             assert work["binary"] <= 1536
+        if work["pitch_active"]:
+            work["pitch_binary"] += 1
+            assert work["pitch_binary"] <= 3072
         return original_binary(instance, left, right, operation)
 
     def oracle(left, right, operation):
         work["oracle"] += 1
         assert work["oracle"] <= 768
         return left * right if operation == "mul" else left - right
+
+    def pitch_oracle(left, right, operation):
+        work["pitch_oracle"] += 1
+        assert work["pitch_oracle"] <= 1536
+        if operation == "mul":
+            return left * right
+        return left + right if operation == "add" else left - right
 
     def pending(*args, **kwargs):
         work["pending"] += 1
@@ -14351,7 +14384,13 @@ def test_native_tof_wall_snapshot(
                     else trace["walls"][0]
                 )
                 if direction:
-                    name = "sensor_forward" if products else "sensor_up"
+                    name = (
+                        "pitched_up"
+                        if pitch
+                        else "sensor_forward"
+                        if products
+                        else "sensor_up"
+                    )
                     selected[name] = (
                         math.nextafter(
                             float.fromhex(selected[name][0]), math.inf
@@ -14363,7 +14402,14 @@ def test_native_tof_wall_snapshot(
             elif case == "outgoing":
                 outgoing["wall"][kind]["source_qualified"] = True
             elif case == "late_owner":
-                if products:
+                if pitch:
+                    generation = getattr(owner, history_name)[0][kind][
+                        "direction_generation"
+                    ]
+                    generation["pitch_cosine"] = math.nextafter(
+                        float.fromhex(generation["pitch_cosine"]), math.inf
+                    ).hex()
+                elif products:
                     owner._tof_history[0]["native_source"].pop("inputs")
                 else:
                     owner._binding = {"changed": True}
@@ -14390,6 +14436,9 @@ def test_native_tof_wall_snapshot(
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timing)
     monkeypatch.setattr(diagnostics, "_native_tof_direction_norm_residuals", arithmetic)
     monkeypatch.setattr(diagnostics, "_native_tof_direction_product_residuals", product)
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_direction_pitch_residuals", pitch_probe
+    )
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
     monkeypatch.setattr(diagnostics, "_match_native_tof_pending_sources", pending)
@@ -14419,7 +14468,8 @@ def test_native_tof_wall_snapshot(
             include_selection=combined,
             include_timing=combined,
             include_direction_norm_residuals=combined,
-            include_direction_product_residuals=products and case != "default",
+            include_direction_product_residuals=include_products and case != "default",
+            include_direction_pitch_residuals=pitch and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -14432,6 +14482,9 @@ def test_native_tof_wall_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
+        if not pitch or case == "default":
+            assert "direction_pitch_residuals" not in result
+            assert "pending_direction_pitch_residuals" not in result
         if case in ("copy", "default", "held", "delivered_only", "combined"):
             assert result["snapshot_available"] is True, result["reason"]
             assert result["frame"] == before_frame
@@ -14468,7 +14521,7 @@ def test_native_tof_wall_snapshot(
                         assert all(entry[kind][flag] is False for flag in flags)
                 else:
                     assert f"pending_{kind}" not in result
-                if products:
+                if include_products:
                     reports = (
                         result["direction_product_residuals"],
                         *result.get("pending_direction_product_residuals", ()),
@@ -14529,6 +14582,69 @@ def test_native_tof_wall_snapshot(
                         "direction_product_residuals" not in result
                         and "pending_direction_product_residuals" not in result
                     )
+                if pitch:
+                    reports = (
+                        result["direction_pitch_residuals"],
+                        *result.get("pending_direction_pitch_residuals", ()),
+                    )
+                    records = (selected, *result.get("pending_direction", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert len(diagnostic["entries"]) == 128
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        generation = record["direction"]["direction_generation"]
+                        cosine = Fraction(float.fromhex(generation["pitch_cosine"]))
+                        sine = Fraction(float.fromhex(generation["pitch_sine"]))
+                        for entry in diagnostic["entries"]:
+                            index = entry["ray_index"]
+                            forward_word = generation["sensor_forward"][index]
+                            up_word = generation["sensor_up"][index]
+                            forward, up = (
+                                Fraction(float.fromhex(forward_word)),
+                                Fraction(float.fromhex(up_word)),
+                            )
+                            exact = pitch_oracle(
+                                pitch_oracle(
+                                    cosine,
+                                    forward if entry["component"] == "forward" else up,
+                                    "mul",
+                                ),
+                                pitch_oracle(
+                                    sine,
+                                    up if entry["component"] == "forward" else forward,
+                                    "mul",
+                                ),
+                                "add" if entry["component"] == "forward" else "sub",
+                            )
+                            observed = generation[f"pitched_{entry['component']}"][
+                                index
+                            ]
+                            residual = pitch_oracle(
+                                Fraction(float.fromhex(observed)), exact, "sub"
+                            )
+                            assert entry["operand_hex"] == (
+                                generation["pitch_cosine"],
+                                generation["pitch_sine"],
+                                forward_word,
+                                up_word,
+                            )
+                            assert entry["observed_component_hex"] == observed
+                            assert (
+                                Fraction(*entry["exact_unrounded_expression_ratio"])
+                                == exact
+                            )
+                            assert Fraction(*entry["signed_residual_ratio"]) == residual
+                    result["direction_pitch_residuals"]["diagnostic"]["entries"][0][
+                        "observed_component_hex"
+                    ] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["direction_generation"][
+                            "pitched_forward"
+                        ][0]
+                        != "changed"
+                    )
                 if combined:
                     if cylinder:
                         assert result["wall"]["tick"] == selected["tick"]
@@ -14583,6 +14699,8 @@ def test_native_tof_wall_snapshot(
                     "pending_direction_norm_residuals",
                     "direction_product_residuals",
                     "pending_direction_product_residuals",
+                    "direction_pitch_residuals",
+                    "pending_direction_pitch_residuals",
                 }
                 & result.keys()
             )
@@ -14617,15 +14735,21 @@ def test_native_tof_wall_snapshot(
 
 
 @pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_direction"))
+@pytest.mark.parametrize("pitch", (False, True))
 def test_native_tof_direction_product_dependency(
-    c1_motion_receipt_source_fixture, case
+    c1_motion_receipt_source_fixture, case, pitch
 ):
     owner = deepcopy(c1_motion_receipt_source_fixture[1])
-    with pytest.raises(ValueError, match="include_direction_product_residuals"):
+    name = (
+        "include_direction_pitch_residuals"
+        if pitch
+        else "include_direction_product_residuals"
+    )
+    with pytest.raises(ValueError, match=name):
         owner.snapshot_native_tof_delivery(
             synthetic_test_only=True,
             include_direction=case == "flag",
-            include_direction_product_residuals=True if case == "dependency" else 1,
+            **{name: True if case == "dependency" else 1},
         )
 
 

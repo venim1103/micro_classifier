@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §288 for fresh ray-to-ToF acquisition pairing;
+Read [REVIEW.md][review] §289 for intact ray-source design relocation to chapter01;
+§288 covers fresh ray-to-ToF acquisition pairing,
 §287 covers cold pairing and fixture-only repairs,
 §286 covers native ray generation and lossless 276-280 archive,
 §285 wall/cylinder boundary words and

@@ -35,6 +35,7 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [7. Data and Distillation Design][chapter-design-05]
 - [Native ToF Wall Computation Prerequisites (2026-11-10)][native-tof-wall-design]
 - [Native ToF Cylinder Computation Prerequisites (2026-11-10)][native-tof-cylinder-design]
+- [Native ToF Ray-Generation Prerequisites (2026-11-11)][native-tof-ray-design]
 - [Synthetic Evaluation Tooling (2026-10-16)][chapter-design-06]
 - [Controlled Scalar Arithmetic Candidate (2026-11-03)][chapter-design-07]
 - [NF1 Interval-to-Word Certificate Contract (2026-11-04)][chapter-design-08]
@@ -113,3 +114,4 @@ options instead of implying general Jev or Vela compatibility.
 [chapter-design-15]: docs/design/13-evidence-and-limitations.md
 [native-tof-wall-design]: docs/design/07-data-and-distillation-design-02.md#native-tof-wall-computation-prerequisites-2026-11-10
 [native-tof-cylinder-design]: docs/design/07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10
+[native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11

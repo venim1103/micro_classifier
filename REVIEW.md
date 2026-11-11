@@ -515,6 +515,23 @@ permission/admission or usable command. No additional C/Arm/sanitizer/board opt-
 Next bounded closed direction-source intake before recorder retention/delivery;
 raw unsupported/nonfinite source stays unknown, no reconstructed trig.
 
+## 289. Ray-Source Design Topic Relocation (2026-11-11)
+
+Checkpoint006e699 pushed/clean. Before further chapter05 growth beyond2497lines,
+moved three whole ray-generation/cold-pair/fresh-acquisition contracts and three
+same-folder reference definitions intact to existing chapter01. Old three05
+heading aliases remain reachable through [ray-generation design][native-tof-ray-design].
+Initial move checks conserved exact prior chapter01, complete topic/ref bytes
+and unrelated chapter05 bytes; whitespace passed. Chapter01 now2289/05 now2465
+lines. No source/test/default/gate/qualification/threshold change or code-suite
+repeat; prior4528-pass root remains source checkpoint, not numerical evidence.
+Originals rays-289-design-{1,5}-before.md retained under existing recovery directory;
+no cleanup required. Next bounded closed direction-source intake using original
+native acquisition/cache/RNG pairing; raw unsupported/nonfinite remains unknown.
+
+Final six local targets/anchors, three old aliases, complete topic/ref/prior
+chapter/review/Sources/stable workflow and unchanged source/test bytes passed.
+
 ## Sources
 
 Hardware and tools:
@@ -876,3 +893,4 @@ Methods and measurements:
 [chapter-review-18]: docs/review/266-270.md
 [chapter-review-19]: docs/review/271-275.md
 [chapter-review-20]: docs/review/276-280.md
+[native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11

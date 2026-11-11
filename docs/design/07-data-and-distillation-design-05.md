@@ -2414,45 +2414,15 @@ one-use/permission/admission or usable command. See
 
 #### Cold Native Ray-Generation Source (2026-11-11)
 
-`tof_directions(..., source=None)` preserves original trig calls/order and return
-words. Opt-in empty builtin dictionary/exact Config/finite native-input preflight
-retains copied angles/grid, separate original elevation cosine calls, azimuth
-trig, sensor/pitched components, actual pitch/yaw libm pairs and final rays.
-<=13 arrays/904 binary64 words plus<=9 scalar words, no extra trig/geometry/
-clock/RNG/recorder calls. Raw nonfinite observed trig/results remain raw, not
-corrected or qualified. Source trace is cold only, not yet paired to ToF returns,
-fresh acquisition or retained delivery. Products/combined rotation intermediates
-are not isolated primitive/FMA or uniform error evidence. All eight flags false;
-no geometry/coverage/source/clock/one-use/permission/admission. See
-[actual controls, fixture repair, archive and limits][native-tof-direction-source-review].
-
+See [ray-generation design][native-tof-ray-design].
 
 #### Cold Native Ray-to-ToF Pairing (2026-11-11)
 
-Default-off `tof_ranges(..., direction_source=None)` requires separate empty
-builtin sink and mounted native rays. Reuses original generator once with private
-source, pairs its copied trace with original native pose/config/scenario and
-actual floor/final pre-noise words; all four prior sinks/default call paths stay
-unchanged. <=16 copied arrays/1224 words plus<=9 ray scalars and existing bounded
-native context, no extra geometry/trig/clock/RNG. Raw NaN rays can produce guarded
-+inf candidates/ranges, not finite geometry. Cold pairing is not fresh acquisition,
-intake/retention/delivery provenance, numerical/coverage/physical evidence or
-qualification. All eight flags false; no permission/admission. See
-[actual failures, fixture-only repairs and limits][native-tof-direction-range-source-review].
-
+See [ray-generation design][native-tof-ray-design].
 
 #### Fresh Native Ray-to-ToF Acquisition (2026-11-11)
 
-Literal `step(capture_native_tof_direction=False)` requires native capture/mounted
-rays before mutation; default/held/reset clear private direction cache, rejected
-preflight preserves. Fresh existing sensor phase forwards separate cold sink;
-cache pairs actual original native source, RNG references and nominal acquisition/
-delivery ticks. Other trace/timing companions share original cache, no additional
-geometry/noise/dropout/clock reads. This is source correspondence only, not bounded
-closed intake, recorder/delivery lineage, uniform trig/error/coverage/physical
-qualification or one-use execution. All eight flags false; no permission/admission.
-See [actual controls, checks and limits][native-tof-direction-acquisition-review].
-
+See [ray-generation design][native-tof-ray-design].
 
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
@@ -2492,6 +2462,4 @@ See [actual controls, checks and limits][native-tof-direction-acquisition-review
 [native-tof-cylinder-matched-top-relative-review]: ../../REVIEW.md#283-matched-retained-cylinder-top-relative-residuals-2026-11-11
 [native-tof-cylinder-matched-cap-square-review]: ../../REVIEW.md#284-matched-retained-cylinder-cap-square-residuals-2026-11-11
 [native-tof-wall-cylinder-boundary-review]: ../../REVIEW.md#285-matched-native-wall-to-cylinder-boundary-prerequisite-2026-11-11
-[native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
-[native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
-[native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
+[native-tof-ray-design]: 07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11

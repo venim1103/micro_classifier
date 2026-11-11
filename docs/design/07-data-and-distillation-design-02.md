@@ -2316,6 +2316,31 @@ No implementation/adoption, integrator/reference change, bounds, dependencies,
 numerical/fixture execution, collection or runtime integration follows. All
 approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 
+#### Native ToF Return-Postprocessing Prerequisites (2026-11-11)
+
+The cold [native sampler][c1-motion-source] accepts an append-only
+`postprocessing_source=None` keyword. Its default branch retains the original
+noise addition, dropout mask, clip/select and float32 cast. Opt-in requires an
+empty builtin dictionary, native capture, actual owner and supported finite
+sampling profile; its receiver must differ from native/selection/wall/cylinder/
+direction receivers before geometry, RNG or optional clock work.
+
+The separate `micro-classifier/native-tof-postprocessing-source/1` packet copies
+the actual existing normal and dropout draws, pre-noise/noisy ranges, both
+validity masks, clipped/selected ranges and stored float32 ranges. Nine8x8 arrays
+contain384 float64 values,64 float32 values and128 booleans; four declared profile
+fields retain max range, noise standard deviation, dropout and mount height.
+No extra draw, replay, replacement noise law or changed sensor operation is
+introduced. Captured operands, intermediate words and masks are observations,
+not a probabilistic or physical model, error allowance or corrected geometry.
+
+This is cold source capture only: no new acquisition cache, recorder history or
+delivered/pending publication is connected. Raw unsupported/nonfinite source
+stays unknown for qualification; matching words do not adopt numerical, coverage,
+clock, one-use, physical or command-admission evidence. All eight qualification/
+permission/training flags remain false. [The checkpoint][native-tof-postprocessing-review]
+retains bounded controls, actual failed checks and next source prerequisite.
+
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
 [floor-rules]: ../../sim/rules.py
@@ -2341,3 +2366,4 @@ approved scopes are exhausted; physical/task-quality/data/hardware gates remain.
 [native-tof-wall-minimum-review]: ../review/241-245.md#244-native-tof-wall-minimum-word-correspondence-2026-11-10
 [native-tof-wall-selection-match-review]: ../review/241-245.md#245-matched-native-tof-wall-selection-diagnostics-2026-11-10
 [native-tof-cylinder-topic]: 07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10
+[native-tof-postprocessing-review]: ../../REVIEW.md#306-cold-native-tof-return-postprocessing-capture-2026-11-11

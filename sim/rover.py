@@ -285,7 +285,48 @@ class RoverEnv:
         wall_source=None,
         cylinder_source=None,
         direction_source=None,
+        postprocessing_source=None,
     ):
+        if postprocessing_source is not None:
+            if type(postprocessing_source) is not dict or postprocessing_source:
+                raise ValueError(
+                    "native ToF postprocessing requires an empty builtin dictionary"
+                )
+            if native_source is None:
+                raise ValueError(
+                    "native ToF postprocessing requires native ToF source capture"
+                )
+            if any(
+                postprocessing_source is companion
+                for companion in (
+                    native_source,
+                    selection_source,
+                    wall_source,
+                    cylinder_source,
+                    direction_source,
+                )
+            ):
+                raise ValueError(
+                    "native ToF postprocessing requires a separate source dictionary"
+                )
+            if type(self) is not RoverEnv:
+                raise TypeError(
+                    "native ToF postprocessing requires the actual RoverEnv"
+                )
+            _check_native_tof_source_inputs(
+                self.position, self.yaw, self.scenario, self.config
+            )
+            if (
+                not math.isfinite(self.config.noise_std)
+                or self.config.noise_std < 0
+                or not math.isfinite(self.config.dropout)
+                or not 0 <= self.config.dropout <= 1
+                or not math.isfinite(self.config.max_range)
+                or self.config.max_range <= 0
+            ):
+                raise ValueError(
+                    "native ToF postprocessing requires supported finite sampling inputs"
+                )
         if selection_source is not None and native_source is None:
             raise ValueError("native ToF selection requires native ToF source capture")
         if wall_source is not None and native_source is None:
@@ -340,9 +381,63 @@ class RoverEnv:
             if config.tof_mount_height is None
             else np.isfinite(grid) & (grid < config.max_range)
         )
-        grid += self.rng.normal(0, config.noise_std, grid.shape)
-        valid &= self.rng.random((8, 8)) >= config.dropout
-        grid = np.where(valid, np.clip(grid, 0, config.max_range), 0).astype(np.float32)
+        if postprocessing_source is None:
+            grid += self.rng.normal(0, config.noise_std, grid.shape)
+            valid &= self.rng.random((8, 8)) >= config.dropout
+            grid = np.where(valid, np.clip(grid, 0, config.max_range), 0).astype(
+                np.float32
+            )
+        else:
+            pre_noise = grid.copy()
+            valid_before = valid.copy()
+            noise = self.rng.normal(0, config.noise_std, grid.shape)
+            grid += noise
+            noisy = grid.copy()
+            dropout = self.rng.random((8, 8))
+            valid &= dropout >= config.dropout
+            clipped = np.clip(grid, 0, config.max_range)
+            selected = np.where(valid, clipped, 0)
+            grid = selected.astype(np.float32)
+            postprocessing_source.update(
+                schema="micro-classifier/native-tof-postprocessing-source/1",
+                allowed_use="native_tof_postprocessing_diagnostics_only",
+                status="recorded_native_tof_postprocessing_values",
+                **{
+                    flag: False
+                    for flag in (
+                        "fixture_permission_granted",
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                        "numerically_certified",
+                        "source_qualified",
+                        "native_execution_qualified",
+                        "command_admission_qualified",
+                    )
+                },
+                inputs={
+                    "max_range_m": float(config.max_range),
+                    "noise_std_m": float(config.noise_std),
+                    "dropout": float(config.dropout),
+                    "mount_height_m": None
+                    if config.tof_mount_height is None
+                    else float(config.tof_mount_height),
+                },
+                **{
+                    name: values.copy()
+                    for name, values in (
+                        ("pre_noise_ranges_m", pre_noise),
+                        ("valid_before_dropout", valid_before),
+                        ("noise_draw_m", noise),
+                        ("noisy_ranges_m", noisy),
+                        ("dropout_draw", dropout),
+                        ("valid_after_dropout", valid),
+                        ("clipped_ranges_m", clipped),
+                        ("selected_ranges_m", selected),
+                        ("stored_ranges_m", grid),
+                    )
+                },
+            )
         self.pending.append((self.tick + config.latency_ticks, self.tick, grid, valid))
         if native_source is not None:
             self._native_tof_source = {

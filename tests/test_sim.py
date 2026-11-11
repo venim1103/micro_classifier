@@ -8256,6 +8256,274 @@ def test_native_tof_direction_source(monkeypatch, case):
     "case",
     (
         "copy",
+        "noisy",
+        "dropout",
+        "rotated",
+        "legacy",
+        "default",
+        "none",
+        "missing_native",
+        "occupied",
+        "subclass",
+        "wrong_owner",
+        "wrong_config",
+        "invalid_noise",
+        "invalid_dropout",
+        "invalid_max",
+        "detached",
+        "raw_nonfinite",
+        "negative_noise",
+        "large_noise",
+        "all_dropout",
+        "combined",
+        "clock",
+        "masked",
+        "store_rounding",
+        "alias_native",
+        "alias_selection",
+        "alias_wall",
+        "alias_cylinder",
+        "alias_direction",
+    ),
+)
+def test_native_tof_postprocessing_source(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from sim import rover
+
+    environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    if case == "legacy":
+        environment.config = replace(environment.config, tof_mount_height=None)
+    elif case in ("noisy", "dropout", "all_dropout"):
+        environment.config = replace(
+            environment.config,
+            noise_std=0.1 if case == "noisy" else 0,
+            dropout=1.0 if case == "all_dropout" else 0.5 if case == "dropout" else 0,
+        )
+    elif case == "rotated":
+        environment.yaw = math.pi / 2
+    invalid = case in {
+        "missing_native",
+        "occupied",
+        "subclass",
+        "wrong_owner",
+        "wrong_config",
+        "invalid_noise",
+        "invalid_dropout",
+        "invalid_max",
+        "alias_native",
+        "alias_selection",
+        "alias_wall",
+        "alias_cylinder",
+        "alias_direction",
+    }
+    source = {}
+    if case == "occupied":
+        source["retained"] = True
+    elif case == "subclass":
+
+        class Source(dict):
+            pass
+
+        source = Source()
+    elif case == "wrong_config":
+        environment.config = SimpleNamespace()
+    elif case in ("invalid_noise", "invalid_dropout", "invalid_max"):
+        object.__setattr__(
+            environment.config,
+            {
+                "invalid_noise": "noise_std",
+                "invalid_dropout": "dropout",
+                "invalid_max": "max_range",
+            }[case],
+            math.nan if case == "invalid_dropout" else math.inf,
+        )
+    baseline = deepcopy(environment)
+    work = {"geometry": 0, "normal": 0, "random": 0, "clock": 0}
+    tapes = []
+    original_geometry = rover.tof_ranges
+    original_clock = rover._motion_receipt_clock_ns
+
+    def geometry(*args, **kwargs):
+        work["geometry"] += 1
+        assert not invalid and work["geometry"] <= 2
+        actual = original_geometry(*args, **kwargs)
+        if case == "raw_nonfinite":
+            actual = np.full((8, 8), math.nan)
+        elif case in ("masked", "store_rounding"):
+            actual = np.full((8, 8), math.nextafter(1.0, math.inf))
+            if case == "masked":
+                actual[0, 0] = math.inf
+        return actual
+
+    class Rng:
+        def __init__(self, original):
+            self.original = original
+            self.calls = []
+
+        def normal(self, *args, **kwargs):
+            work["normal"] += 1
+            assert not invalid and work["normal"] <= 2
+            actual = self.original.normal(*args, **kwargs)
+            if case in ("negative_noise", "large_noise"):
+                actual = np.full((8, 8), -100.0 if case == "negative_noise" else 100.0)
+            self.calls.append(("normal", deepcopy(args), actual.copy()))
+            return actual
+
+        def random(self, *args, **kwargs):
+            work["random"] += 1
+            assert not invalid and work["random"] <= 2
+            actual = self.original.random(*args, **kwargs)
+            self.calls.append(("random", deepcopy(args), actual.copy()))
+            return actual
+
+    def clock():
+        work["clock"] += 1
+        assert not invalid and work["clock"] <= 4
+        return original_clock()
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    for owner in (baseline, environment):
+        owner.rng = Rng(owner.rng)
+        tapes.append(owner.rng.calls)
+    native = None if case == "missing_native" else {}
+    preflight_options = {}
+    if case == "alias_native":
+        native = source
+    elif case.startswith("alias_"):
+        preflight_options[f"{case.removeprefix('alias_')}_source"] = source
+    before_source = deepcopy(source)
+    if invalid:
+        owner = SimpleNamespace() if case == "wrong_owner" else environment
+        with pytest.raises((ValueError, TypeError)):
+            RoverEnv._sample(
+                owner,
+                native_source=native,
+                postprocessing_source=source,
+                capture_clock=True,
+                **preflight_options,
+            )
+        assert source == before_source and all(value == 0 for value in work.values())
+    else:
+        baseline._sample(native_source={}, capture_clock=case == "clock")
+        options = {"native_source": native, "capture_clock": case == "clock"}
+        if case == "combined":
+            options.update(
+                selection_source={},
+                wall_source={},
+                cylinder_source={},
+                direction_source={},
+            )
+        if case != "default":
+            options["postprocessing_source"] = None if case == "none" else source
+        environment._sample(**options)
+        assert work["geometry"] == work["normal"] == work["random"] == 2
+        assert work["clock"] == (4 if case == "clock" else 0)
+        first, second = baseline.pending[-1], environment.pending[-1]
+        assert first[:2] == second[:2]
+        np.testing.assert_array_equal(
+            first[2].view(np.uint32), second[2].view(np.uint32)
+        )
+        np.testing.assert_array_equal(first[3], second[3])
+        assert (
+            baseline.rng.original.bit_generator.state
+            == environment.rng.original.bit_generator.state
+        )
+        assert (
+            baseline.odometry_rng.bit_generator.state
+            == environment.odometry_rng.bit_generator.state
+        )
+        for before_call, after_call in zip(*tapes, strict=True):
+            assert before_call[:2] == after_call[:2]
+            np.testing.assert_array_equal(
+                before_call[2].view(np.uint64), after_call[2].view(np.uint64)
+            )
+        if case in ("default", "none"):
+            assert source == {}
+        else:
+            assert (
+                source["schema"]
+                == "micro-classifier/native-tof-postprocessing-source/1"
+            )
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ):
+                assert source[flag] is False
+            noise, dropout = tapes[1][0][2], tapes[1][1][2]
+            np.testing.assert_array_equal(
+                source["noise_draw_m"].view(np.uint64), noise.view(np.uint64)
+            )
+            np.testing.assert_array_equal(
+                source["dropout_draw"].view(np.uint64), dropout.view(np.uint64)
+            )
+            expected_noisy = source["pre_noise_ranges_m"] + noise
+            expected_valid = source["valid_before_dropout"] & (
+                dropout >= environment.config.dropout
+            )
+            expected_clipped = np.clip(expected_noisy, 0, environment.config.max_range)
+            expected_selected = np.where(expected_valid, expected_clipped, 0)
+            for key, expected in (
+                ("noisy_ranges_m", expected_noisy),
+                ("clipped_ranges_m", expected_clipped),
+                ("selected_ranges_m", expected_selected),
+            ):
+                np.testing.assert_array_equal(
+                    source[key].view(np.uint64), expected.view(np.uint64)
+                )
+                assert source[key].shape == (8, 8) and source[key].dtype == np.float64
+            np.testing.assert_array_equal(source["valid_after_dropout"], expected_valid)
+            np.testing.assert_array_equal(
+                source["stored_ranges_m"].view(np.uint32),
+                expected_selected.astype(np.float32).view(np.uint32),
+            )
+            np.testing.assert_array_equal(
+                source["stored_ranges_m"].view(np.uint32), second[2].view(np.uint32)
+            )
+            np.testing.assert_array_equal(source["valid_after_dropout"], second[3])
+            if case == "raw_nonfinite":
+                assert (
+                    np.isnan(source["pre_noise_ranges_m"]).all()
+                    and np.isnan(source["noisy_ranges_m"]).all()
+                )
+                assert (
+                    not source["valid_before_dropout"].any()
+                    and not source["stored_ranges_m"].any()
+                )
+            elif case in ("negative_noise", "large_noise", "all_dropout"):
+                assert (
+                    np.all(
+                        source["stored_ranges_m"]
+                        == (
+                            environment.config.max_range if case == "large_noise" else 0
+                        )
+                    )
+                    or case == "large_noise"
+                    and np.all(
+                        source["stored_ranges_m"][source["valid_after_dropout"]]
+                        == environment.config.max_range
+                    )
+                )
+            if case == "detached":
+                source["stored_ranges_m"][:] = -1
+                source["valid_after_dropout"][:] = False
+                assert np.all(second[2] >= 0) and second[3].any()
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
         "rotated",
         "pitch",
         "default",

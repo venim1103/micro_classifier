@@ -525,6 +525,62 @@ do not duplicate. Next bounded cold return-postprocessing capture at actual
 _sample owner: noise/dropout draws, masks, clip/select/store words with no extra
 RNG calls/replay or noise-law/error/coverage/timing adoption; source-only first.
 
+## 306. Cold Native ToF Return-Postprocessing Capture (2026-11-11)
+
+Begin clean7b50dd3. Hypothesis at _sample owner: append-only postprocessing_source
+None keeps exact old sampling branch; opt-in empty builtin dict/native-source/
+actual-owner/supported finite profile preflight before clock/geometry/RNG,
+retain actual existing noise+dropout draws and raw/noisy/masks/clip/select/float32
+store arrays without extra RNG calls/replay or noise-law/error/coverage/timing
+adoption. Nine8x8 arrays/sevenfloat arrays448values/twobool128/576array words,
+four profile fields; raw unsupported/nonfinite words remain observations not
+qualification, all8 flags false. New24 controls in existing test file, <=2sample/
+2geometry/2normal/2random/4existing clocks per fixture; two identical seeded-owner
+branches/independent operand and uint64/uint32 word parity/masks/pending/RNG-state
+oracles, injected synthetic draws/nonfinite words not task data or noise model.
+Old source/tests/defaults unchanged outside _sample; Pylance all7 old callers
+compatible before new signature. Fresh3 pytest positions first24/60s, sole
+necessary repair24/60s, root360s; failures/aborts/unknown spent not refunded,
+retain returns-306-* in original recovery directory; serial no source/editor/
+formatter tools during tests. Exit COLD source only, no new acquisition/recorder/
+delivery/admission/actuation. Next close supported cold-source boundaries before
+later independently scoped fresh acquisition ownership.
+
+First24 collection FAILED/0.23s: test insertion at adjacent repeated decorator
+boundary left stray empty direction-source header and replaced range-test
+decorator. Restore ONLY exact checkpoint17-case range decorator and remove
+stray header; retain new cold test and source implementation unchanged. Original
+direction-source body preserved. Failed pipeline did not reach closing hashes;
+first position spent/log retained not refunded. Same reserved24/60s next, no
+assertion/resource/protected cap change.
+
+Repaired24 PASS/9.47s, four source/test hashes stable; root4858 PASS/known QDQ
+xfail/71warnings/233.52s, four hashes stable, root Ruff/touched format/whitespace
+PASS. All3 initial positions spent. Formatting touched only rover/test; AST
+all old tests/cases/imports/methods unchanged outside _sample, old keyword prefix
+and three default sampling operations exact. Editor clear; post-signature8
+callers/7 compatible plus intentional wrong-owner rejection fixture incompatible.
+
+Narrow diff review exposes missing receiver-alias guard: shared postprocessing
+dict can overwrite native/selection/wall/cylinder/direction packet at update.
+Add ONLY five-way identity preflight and5 zero-work negative controls, conserve
+old24 cases/caps/default behavior. Necessary adjacent source repair plan TWO
+fresh routine positions: exact5 aliases/60s, root360s; count failures/aborts/unknown,
+no initial-attempt refund/protected renewal/assertion/resource relaxation.
+Retain returns-306-aliases-focused-1/root-2; no code suite repeat for documentation.
+
+Exact5 aliases PASS/10.86s and root4863 PASS/known QDQ xfail/71warnings/173.36s;
+four hashes stable in each, root Ruff/touched format/whitespace/editor PASS.
+All5 pytest positions spent, initial collection failure retained, no abort/refund
+or protected renewal. Old tests/cases exact; only new29-case test, same per-case
+caps. Cold contract placed in existing chapter02 because ray chapter01 is full;
+new map/reference only, prior contracts/requirements/historical records preserved.
+No additional native/Arm/sanitizer/board commands beyond required default interface
+controls, no dependencies/downloads/model/study/data/actuation/admission work.
+No logs/artifacts removed; original recovery directory retains all returns-306-*.
+Next bounded supported cold-source closure before independently scoped fresh
+acquisition/cache ownership, then intake/retention/delivery only as evidence permits.
+
 ## Sources
 
 Hardware and tools:

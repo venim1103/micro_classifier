@@ -22772,6 +22772,246 @@ def test_native_tof_wall_projection_residuals(
         "large_finite",
         "positive_inf",
         "negative_inf",
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_operand",
+        "word_type",
+        "word_budget",
+        "budget",
+        "budget_high",
+        "work_limit",
+        "list_source",
+        "tuple_subclass",
+    ),
+)
+def test_native_tof_direction_product_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    arguments = {
+        key: (value.hex(),) * 64
+        for key, value in (
+            ("elevation_cosine_forward_hex", 0.5),
+            ("azimuth_cosine_hex", 0.25),
+            ("sensor_forward_hex", 0.125),
+            ("elevation_cosine_left_hex", 0.5),
+            ("azimuth_sine_hex", -0.25),
+            ("sensor_left_hex", -0.125),
+        )
+    }
+    setup = {"direction": 0}
+    original_direction = rover.tof_directions
+
+    def direction(*args, **kwargs):
+        setup["direction"] += 1
+        assert setup["direction"] <= 1
+        return original_direction(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_directions", direction)
+    if case == "actual":
+        captured = {}
+        rover.tof_directions(environment.yaw, environment.config, source=captured)
+        arguments = {
+            key: tuple(
+                float(word).hex() for word in captured[key.removesuffix("_hex")].flat
+            )
+            for key in arguments
+        }
+    elif case == "rounded":
+        operand = math.nextafter(1.0, math.inf)
+        arguments["elevation_cosine_forward_hex"] = (operand.hex(),) * 64
+        arguments["azimuth_cosine_hex"] = (operand.hex(),) * 64
+        arguments["sensor_forward_hex"] = ((operand * operand).hex(),) * 64
+    elif case == "mismatch":
+        arguments["sensor_forward_hex"] = ((0.25).hex(),) * 64
+    elif case == "signed_zero":
+        arguments["elevation_cosine_forward_hex"] = ((-0.0).hex(),) * 64
+        arguments["sensor_forward_hex"] = ((-0.0).hex(),) * 64
+    elif case in ("subnormal", "work_limit"):
+        arguments["elevation_cosine_forward_hex"] = (math.ulp(0.0).hex(),) * 64
+        arguments["azimuth_cosine_hex"] = ((0.5).hex(),) * 64
+        arguments["sensor_forward_hex"] = ((0.0).hex(),) * 64
+    elif case == "large_finite":
+        maximum = "0x1.fffffffffffffp+1023"
+        arguments["elevation_cosine_forward_hex"] = (maximum,) * 64
+        arguments["azimuth_cosine_hex"] = ((1.0).hex(),) * 64
+        arguments["sensor_forward_hex"] = (maximum,) * 64
+    elif case in ("positive_inf", "negative_inf", "nan", "word_type", "word_budget"):
+        arguments["sensor_forward_hex"] = (
+            {
+                "positive_inf": "inf",
+                "negative_inf": "-inf",
+                "nan": "nan",
+                "word_type": False,
+                "word_budget": "0" * 33,
+            }[case],
+        ) * 64
+    elif case == "shape":
+        arguments["sensor_forward_hex"] *= 2
+    elif case in ("noncanonical", "overflow_word", "finite_operand"):
+        arguments["elevation_cosine_forward_hex"] = (
+            {
+                "noncanonical": "1.0",
+                "overflow_word": "0x1p+999999",
+                "finite_operand": "inf",
+            }[case],
+        ) * 64
+    elif case == "list_source":
+        arguments["sensor_forward_hex"] = list(arguments["sensor_forward_hex"])
+    elif case == "tuple_subclass":
+
+        class Words(tuple):
+            pass
+
+        arguments["sensor_forward_hex"] = Words(arguments["sensor_forward_hex"])
+    before = deepcopy(arguments)
+    original_value, original_binary = (
+        diagnostics._C1CommandArithmetic.value,
+        diagnostics._C1CommandArithmetic.binary,
+    )
+    work = {"values": 0, "binary": 0, "oracle": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 384
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 256
+        return original_binary(instance, left, right, operation)
+
+    def oracle(left, right, operation):
+        work["oracle"] += 1
+        assert work["oracle"] <= 256
+        return left * right if operation == "mul" else left - right
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "direction products must not intake/read/retain/hash/step/reset/trig/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case in ("budget", "budget_high", "work_limit"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {"budget": True, "budget_high": 4097, "work_limit": 16}[case],
+        )
+    for name in (
+        "_sample_simulator_native_tof_direction_source",
+        "_sample_simulator_native_tof_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_operand",
+        "word_type",
+        "word_budget",
+        "budget",
+        "budget_high",
+        "work_limit",
+        "list_source",
+        "tuple_subclass",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_direction_product_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        if case != "work_limit":
+            assert work["values"] == work["binary"] == 0
+    else:
+        result = diagnostics._native_tof_direction_product_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert result["comparison_basis"] == "unrounded_supplied_word_scalar_product"
+        assert len(result["entries"]) == 128
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for entry in result["entries"]:
+            index = entry["ray_index"]
+            names = (
+                (
+                    "elevation_cosine_forward_hex",
+                    "azimuth_cosine_hex",
+                    "sensor_forward_hex",
+                )
+                if entry["component"] == "forward"
+                else (
+                    "elevation_cosine_left_hex",
+                    "azimuth_sine_hex",
+                    "sensor_left_hex",
+                )
+            )
+            left, right, observed = (arguments[name][index] for name in names)
+            exact = oracle(
+                Fraction(float.fromhex(left)), Fraction(float.fromhex(right)), "mul"
+            )
+            assert (
+                entry["operand_hex"] == (left, right)
+                and entry["observed_component_hex"] == observed
+            )
+            assert Fraction(*entry["exact_unrounded_expression_ratio"]) == exact
+            if math.isfinite(float.fromhex(observed)):
+                residual = oracle(Fraction(float.fromhex(observed)), exact, "sub")
+                assert Fraction(*entry["signed_residual_ratio"]) == residual
+                assert entry["status"] == "computed_exact_direction_product_residual"
+            else:
+                assert (
+                    entry["signed_residual_ratio"] is None
+                    and entry["status"] == "unknown_nonfinite_direction_product"
+                )
+        if case in ("rounded", "subnormal"):
+            assert Fraction(*result["entries"][0]["signed_residual_ratio"]) < 0
+        elif case == "signed_zero":
+            assert result["entries"][0]["observed_component_hex"] == "-0x0.0p+0"
+        result["entries"][0]["observed_component_hex"] = "changed"
+    assert arguments == before and work["forbidden"] == 0
+    assert setup["direction"] == int(case == "actual")
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
+        "rounded",
+        "mismatch",
+        "signed_zero",
+        "subnormal",
+        "large_finite",
+        "positive_inf",
+        "negative_inf",
         "empty",
         "max_obstacles",
         "flag",

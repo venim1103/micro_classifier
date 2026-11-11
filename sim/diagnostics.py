@@ -12004,6 +12004,126 @@ def _native_tof_cylinder_horizontal_norm_residuals(
     }
 
 
+def _native_tof_direction_product_residuals(
+    *,
+    elevation_cosine_forward_hex,
+    azimuth_cosine_hex,
+    sensor_forward_hex,
+    elevation_cosine_left_hex,
+    azimuth_sine_hex,
+    sensor_left_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native direction product residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError(
+            "native direction product residual rational budget unsupported"
+        )
+
+    def decoded(words, finite_only):
+        if type(words) is not tuple or len(words) != 64:
+            raise ValueError("native direction product residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError(
+                    "native direction product residual word budget exhausted"
+                )
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native direction product residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native direction product residual words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    supplied = (
+        (
+            "forward",
+            elevation_cosine_forward_hex,
+            azimuth_cosine_hex,
+            sensor_forward_hex,
+        ),
+        ("left", elevation_cosine_left_hex, azimuth_sine_hex, sensor_left_hex),
+    )
+    values = tuple(
+        (decoded(left, True), decoded(right, True), decoded(observed, False))
+        for _, left, right, observed in supplied
+    )
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        for (component, left_words, right_words, observed_words), (
+            left,
+            right,
+            observed,
+        ) in zip(supplied, values, strict=True):
+            for ray_index in range(64):
+                exact = arithmetic.binary(
+                    arithmetic.value(left[ray_index]),
+                    arithmetic.value(right[ray_index]),
+                    "mul",
+                )
+                value = observed[ray_index]
+                residual = (
+                    arithmetic.binary(arithmetic.value(value), exact, "sub")
+                    if math.isfinite(value)
+                    else None
+                )
+                entries.append(
+                    {
+                        "component": component,
+                        "ray_index": ray_index,
+                        "operand_hex": (left_words[ray_index], right_words[ray_index]),
+                        "observed_component_hex": observed_words[ray_index],
+                        "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                        "signed_residual_ratio": None
+                        if residual is None
+                        else residual.as_integer_ratio(),
+                        "status": "unknown_nonfinite_direction_product"
+                        if residual is None
+                        else "computed_exact_direction_product_residual",
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native direction product residual rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-direction-product-residuals/1",
+        "allowed_use": "offline_direction_component_word_diagnostics_only",
+        "status": "reported_direction_component_product_residuals",
+        "comparison_basis": "unrounded_supplied_word_scalar_product",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_projection_residuals(
     *, offset_m_hex, world_frame_unit_rays, projection_m_hex, synthetic_test_only=False
 ):

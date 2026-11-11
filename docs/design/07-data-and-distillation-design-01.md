@@ -2363,6 +2363,21 @@ equal-value/different-word ties remain. No replay/intake/recorder/clock in snaps
 See [actual controls, cap/default conservation and root checks][native-tof-direction-snapshot-review].
 
 
+#### Supplied-Word Native Direction Products (2026-11-11)
+
+`_native_tof_direction_product_residuals` reports observed sensor forward/left
+minus supplied elevation cosine*azimuth cosine/sine as exact unrounded product
+and signed discrepancy ratios. Six builtin64-word tuples/384 decodes, <=128
+entries/384 rational values/256 binary operations, canonical words<=32chars,
+unchanged1..4096bit ceiling. Finite operands, raw +/-inf observations unknown,
+NaN/unsupported reject; signed supplied/observed words preserved separately from
+value ratios, equal-value/different-word ties unresolved. No trig/geometry/replay/
+intake/recorder/hash/clock or primitive/FMA/uniform-error/source/coverage/physical/
+permission/admission qualification, all eight flags false. Standalone only, not
+yet matched to owned delivered/pending traces. See
+[actual controls, import-only repair and gates][native-tof-direction-product-review].
+
+
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
@@ -2371,3 +2386,4 @@ See [actual controls, cap/default conservation and root checks][native-tof-direc
 [native-tof-direction-retention-review]: ../../REVIEW.md#293-recorder-owned-native-direction-history-2026-11-11
 [native-tof-direction-match-review]: ../../REVIEW.md#294-bounded-retained-native-direction-join-2026-11-11
 [native-tof-direction-snapshot-review]: ../../REVIEW.md#295-deliveredpending-native-direction-snapshot-2026-11-11
+[native-tof-direction-product-review]: ../../REVIEW.md#296-supplied-word-native-direction-products-2026-11-11

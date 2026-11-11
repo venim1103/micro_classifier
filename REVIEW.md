@@ -487,6 +487,50 @@ ties remain unresolved. Next bounded supplied-word sensor-component product
 discrepancies using unchanged exact arithmetic limits; no physical/numerical
 bounds or qualification adopted, no learned/board/study work reopened.
 
+## 296. Supplied-Word Native Direction Products (2026-11-11)
+
+Begin clean5037cd3. Existing projection residual helper establishes canonical
+word/finite-operand/unknown-nonfinite-observation/exact-rational pattern. Direction
+helper reports observed forward/left minus supplied elevation cosine*azimuth
+cosine/sine, six64-word builtin tuples/384 decodes,128 entries, <=384 value
+conversions/256 binary operations/256 independent oracle operations, <=32char
+canonical words/unchanged1..4096bit ceiling. One actual cold generation only in
+actual fixture, no geometry/intake/read/retention/replay/trig/clock/hash in helper.
+Raw +/-inf observations remain unknown/unchanged, NaN/unsupported operands reject;
+signed words retained, exact value ratios do NOT resolve different-word zero ties.
+22 synthetic controls, existing helper/tests/defaults unchanged; no primitive/FMA/
+trig/uniform-error/source/geometry/coverage/clock/physical/permission/admission
+qualification, all8 flags false. Three routine pytest positions first22/60s,
+sole necessary repair22/60s, required root/360s. Count failures/aborts/unknown,
+retain rays-296-* logs, no refund/protected data/studies/dependencies/hardware.
+Next compose supported product reports against original+closing retained traces,
+without correcting observed words or adopting numerical/physical bounds.
+
+First22 passed/3702deselected/0.52s, four source/test hashes stable. Ruff formatted
+only two touched Python files then I001 rejected missing standard/local import
+blank line in new test. Repair ONLY import separation, no assertion/source change;
+lint pipeline stopped before format/whitespace/AST commands, no pytest consumed
+or successful AST check inferred. Same scoped style/conservation checks next.
+
+Import-only repair passed scoped lint/format/whitespace/AST; all prior source/test
+definitions/defaults/cases conserved, sole product helper/new22-control function
+added. Editor diagnostics clear. Actual cold generation, rounded mismatch,
+underflow/subnormal/large finite, signed-zero words, +/-inf unknown observations,
+canonical/builtin/shape/word/bit rejection and16bit work-limit controls exercised;
+<=384 value/256 binary/256 oracle caps, no forbidden operations. Required root
+`python -m pytest -q && ruff check . && git diff --check` passed4647/known QDQ
+xfail/71warnings/153.99s, four source/test hashes stable, touched format passed.
+Two of3 pytest positions spent, no test failure/abort/refund; failed I001 style
+pipeline retained above, unused test reserve NOT follow-on authority. Logs
+rays-296-{focused-1,root-1} retained in original recovery directory, no new data/
+downloads/dependencies/studies/hardware/additional native/Arm/sanitizer/board
+opt-in commands. Supplied operands/observations remain unchanged; NaN/unsupported
+reject, +/-inf observation raw/unknown, equal-value/different-word ties unresolved.
+All8 flags false, no geometry/trig/primitive/FMA/uniform-error/source/coverage/
+clock/one-use/physical/permission/admission qualification. Standalone product
+diagnostic NOT yet paired to retained delivery; next original+closing delivered/
+pending composition without correcting words or adopting numerical/physical bounds.
+
 ## Sources
 
 Hardware and tools:

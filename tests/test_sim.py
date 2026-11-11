@@ -29277,8 +29277,9 @@ def test_native_tof_cylinder_stage_chain_diagnostics(
         "scalar_budget",
     ),
 )
+@pytest.mark.parametrize("yaw", (False, True))
 def test_native_tof_direction_pitch_residuals(
-    monkeypatch, c1_motion_receipt_source_fixture, case
+    monkeypatch, c1_motion_receipt_source_fixture, case, yaw
 ):
     from fractions import Fraction
 
@@ -29392,6 +29393,46 @@ def test_native_tof_direction_pitch_residuals(
             "scalar_noncanonical": "1.0",
             "scalar_budget": "0" * 33,
         }[case]
+    rotation = "yaw" if yaw else "pitch"
+    components = ("x", "y") if yaw else ("forward", "up")
+    forward_key = "pitched_forward_hex" if yaw else "sensor_forward_hex"
+    other_key = "sensor_left_hex" if yaw else "sensor_up_hex"
+    helper = (
+        diagnostics._native_tof_direction_yaw_residuals
+        if yaw
+        else diagnostics._native_tof_direction_pitch_residuals
+    )
+    if yaw:
+        arguments = {
+            "yaw_cosine_hex": arguments["pitch_cosine_hex"],
+            "yaw_sine_hex": arguments["pitch_sine_hex"],
+            "pitched_forward_hex": arguments["sensor_forward_hex"],
+            "sensor_left_hex": tuple(
+                (-float.fromhex(word)).hex() for word in arguments["sensor_up_hex"]
+            ),
+            "world_x_hex": arguments["pitched_forward_hex"],
+            "world_y_hex": tuple(
+                (-float.fromhex(word)).hex() for word in arguments["pitched_up_hex"]
+            ),
+        }
+        if case == "actual":
+            arguments = {
+                "yaw_cosine_hex": captured["yaw_cosine"].hex(),
+                "yaw_sine_hex": captured["yaw_sine"].hex(),
+                "pitched_forward_hex": tuple(
+                    float(word).hex() for word in captured["pitched_forward"].flat
+                ),
+                "sensor_left_hex": tuple(
+                    float(word).hex() for word in captured["sensor_left"].flat
+                ),
+                **{
+                    f"world_{component}_hex": tuple(
+                        float(word).hex()
+                        for word in captured["world_frame_unit_rays"][..., axis].flat
+                    )
+                    for axis, component in enumerate(components)
+                },
+            }
     before = deepcopy(arguments)
     original_value = diagnostics._C1CommandArithmetic.value
     original_binary = diagnostics._C1CommandArithmetic.binary
@@ -29468,18 +29509,14 @@ def test_native_tof_direction_pitch_residuals(
     }
     if case in rejected:
         with pytest.raises(ValueError):
-            diagnostics._native_tof_direction_pitch_residuals(
-                **arguments, synthetic_test_only=1 if case == "flag" else True
-            )
+            helper(**arguments, synthetic_test_only=1 if case == "flag" else True)
         if case != "work_limit":
             assert work["values"] == work["binary"] == 0
     else:
-        result = diagnostics._native_tof_direction_pitch_residuals(
-            **arguments, synthetic_test_only=True
-        )
+        result = helper(**arguments, synthetic_test_only=True)
         assert (
             result["comparison_basis"]
-            == "unrounded_supplied_word_pitch_rotation_expression"
+            == f"unrounded_supplied_word_{rotation}_rotation_expression"
         )
         assert len(result["entries"]) == 128
         for flag in (
@@ -29493,27 +29530,30 @@ def test_native_tof_direction_pitch_residuals(
             "command_admission_qualified",
         ):
             assert result[flag] is False
-        cosine = Fraction(float.fromhex(arguments["pitch_cosine_hex"]))
-        sine = Fraction(float.fromhex(arguments["pitch_sine_hex"]))
+        cosine = Fraction(float.fromhex(arguments[f"{rotation}_cosine_hex"]))
+        sine = Fraction(float.fromhex(arguments[f"{rotation}_sine_hex"]))
         for entry in result["entries"]:
             index = entry["ray_index"]
-            forward_word = arguments["sensor_forward_hex"][index]
-            up_word = arguments["sensor_up_hex"][index]
+            forward_word = arguments[forward_key][index]
+            up_word = arguments[other_key][index]
             forward, up = (
                 Fraction(float.fromhex(forward_word)),
                 Fraction(float.fromhex(up_word)),
             )
+            first = entry["component"] == components[0]
             exact = oracle(
-                oracle(
-                    cosine, forward if entry["component"] == "forward" else up, "mul"
-                ),
-                oracle(sine, up if entry["component"] == "forward" else forward, "mul"),
-                "add" if entry["component"] == "forward" else "sub",
+                oracle(cosine, forward if first else up, "mul"),
+                oracle(sine, up if first else forward, "mul"),
+                "sub" if first == yaw else "add",
             )
-            observed = arguments[f"pitched_{entry['component']}_hex"][index]
+            observed = arguments[
+                f"world_{entry['component']}_hex"
+                if yaw
+                else f"pitched_{entry['component']}_hex"
+            ][index]
             assert entry["operand_hex"] == (
-                arguments["pitch_cosine_hex"],
-                arguments["pitch_sine_hex"],
+                arguments[f"{rotation}_cosine_hex"],
+                arguments[f"{rotation}_sine_hex"],
                 forward_word,
                 up_word,
             )
@@ -29522,10 +29562,12 @@ def test_native_tof_direction_pitch_residuals(
             if math.isfinite(float.fromhex(observed)):
                 residual = oracle(Fraction(float.fromhex(observed)), exact, "sub")
                 assert Fraction(*entry["signed_residual_ratio"]) == residual
-                assert entry["status"] == "computed_exact_direction_pitch_residual"
+                assert (
+                    entry["status"] == f"computed_exact_direction_{rotation}_residual"
+                )
             else:
                 assert entry["signed_residual_ratio"] is None
-                assert entry["status"] == "unknown_nonfinite_direction_pitch"
+                assert entry["status"] == f"unknown_nonfinite_direction_{rotation}"
         if case in ("rounded", "subnormal"):
             assert Fraction(*result["entries"][0]["signed_residual_ratio"]) < 0
         elif case == "signed_zero":

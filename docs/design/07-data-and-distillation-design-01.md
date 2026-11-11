@@ -2433,3 +2433,19 @@ all eight flags false and equal-value/different-word ties unresolved. See
 [actual matched controls and gates][native-tof-direction-owned-pitch-review].
 
 [native-tof-direction-owned-pitch-review]: ../../REVIEW.md#300-matched-native-direction-pitch-reports-2026-11-11
+
+#### Supplied-Word Native Direction Yaw Expressions (2026-11-11)
+
+Standalone `_native_tof_direction_yaw_residuals` compares observed world x/y words
+with exact rational supplied-word `c*f-s*l` and `s*f+c*l`, from yaw cosine/sine
+and retained pitched-forward/sensor-left operands. Two canonical scalar words,
+four64-word builtin tuples <=32chars, finite operands and raw observed +/-inf
+with unknown residuals; early preflight and existing1..4096bit guard,
+<=258decode-values/512binary/128interleaved horizontal entries. Literal synthetic
+opt-in, all eight qualification flags false; no source/read/hash/recorder/trig/
+replay/clock calls, corrected upstream values, up-passthrough claim, isolated
+primitive/FMA/uniform-error/trig/geometry/source/coverage/physical/admission
+qualification. Signed words retained and equal-value/different-word ties remain
+unresolved. See [actual standalone controls, failures and gates][native-tof-direction-yaw-review].
+
+[native-tof-direction-yaw-review]: ../../REVIEW.md#301-supplied-word-native-direction-yaw-expressions-2026-11-11

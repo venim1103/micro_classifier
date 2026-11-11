@@ -12247,6 +12247,127 @@ def _native_tof_direction_pitch_residuals(
     }
 
 
+def _native_tof_direction_yaw_residuals(
+    *,
+    yaw_cosine_hex,
+    yaw_sine_hex,
+    pitched_forward_hex,
+    sensor_left_hex,
+    world_x_hex,
+    world_y_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native direction yaw residuals require synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native direction yaw residual rational budget unsupported")
+
+    def decoded(words, count, finite_only):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("native direction yaw residual word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native direction yaw residual word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native direction yaw residual words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native direction yaw residual words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    cosine = decoded((yaw_cosine_hex,), 1, True)[0]
+    sine = decoded((yaw_sine_hex,), 1, True)[0]
+    forward = decoded(pitched_forward_hex, 64, True)
+    left = decoded(sensor_left_hex, 64, True)
+    observed_x = decoded(world_x_hex, 64, False)
+    observed_y = decoded(world_y_hex, 64, False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        cosine_ratio, sine_ratio = arithmetic.value(cosine), arithmetic.value(sine)
+        for ray_index in range(64):
+            forward_ratio = arithmetic.value(forward[ray_index])
+            left_ratio = arithmetic.value(left[ray_index])
+            exact_x = arithmetic.binary(
+                arithmetic.binary(cosine_ratio, forward_ratio, "mul"),
+                arithmetic.binary(sine_ratio, left_ratio, "mul"),
+                "sub",
+            )
+            exact_y = arithmetic.binary(
+                arithmetic.binary(sine_ratio, forward_ratio, "mul"),
+                arithmetic.binary(cosine_ratio, left_ratio, "mul"),
+                "add",
+            )
+            for component, exact, observed, words in (
+                ("x", exact_x, observed_x, world_x_hex),
+                ("y", exact_y, observed_y, world_y_hex),
+            ):
+                value = observed[ray_index]
+                residual = (
+                    arithmetic.binary(arithmetic.value(value), exact, "sub")
+                    if math.isfinite(value)
+                    else None
+                )
+                entries.append(
+                    {
+                        "component": component,
+                        "ray_index": ray_index,
+                        "operand_hex": (
+                            yaw_cosine_hex,
+                            yaw_sine_hex,
+                            pitched_forward_hex[ray_index],
+                            sensor_left_hex[ray_index],
+                        ),
+                        "observed_component_hex": words[ray_index],
+                        "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                        "signed_residual_ratio": None
+                        if residual is None
+                        else residual.as_integer_ratio(),
+                        "status": "unknown_nonfinite_direction_yaw"
+                        if residual is None
+                        else "computed_exact_direction_yaw_residual",
+                    }
+                )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native direction yaw residual rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-direction-yaw-residuals/1",
+        "allowed_use": "offline_direction_component_word_diagnostics_only",
+        "status": "reported_direction_yaw_expression_residuals",
+        "comparison_basis": "unrounded_supplied_word_yaw_rotation_expression",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_cylinder_projection_residuals(
     *, offset_m_hex, world_frame_unit_rays, projection_m_hex, synthetic_test_only=False
 ):

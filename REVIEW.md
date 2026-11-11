@@ -501,6 +501,63 @@ strings, same scoped history/reference/byte/whitespace check passed, no
 source/assertion/cap change or pytest position spent. Next
 bounded supplied-word yaw-expression discrepancies, then matched composition.
 
+## 301. Supplied-Word Native Direction Yaw Expressions (2026-11-11)
+
+Begin clean6296742. Hypothesis from actual tof_directions owner: two horizontal
+unrounded expressions c*f-s*l and s*f+c*l using supplied yaw cosine/sine,
+pitched_forward/sensor_left and observed world x/y words. Add standalone helper,
+no source/predecessor/trig/geometry/primitive/FMA/uniform error qualification or
+up passthrough claim. Same literal opt-in, canonical builtin scalars/four64-word
+tuples <=32chars, finite operands/observed +/-inf unknown, early preflight before
+rational work; unchanged1..4096bits/258decode-values/512binary/128entries. Reuse
+old27 pitch cases with separate yaw mode=54, old names/caps/defaults retained;
+one actual direction generation per actual mode, forbidden intake/read/hash/
+recorder/step/reset/trig/replay/clock, independent <=512 Fraction oracle. All8
+false, no data/model/study/dependency/hardware/extra native opt-in/audit renewal.
+Fresh3 routine pytest positions first54/60s, sole necessary repair54/60s, root/
+360s; failures/aborts/unknown spent not refunded, retain rays-301-* logs, serial
+pytest/no concurrent formatter/source/editor tools. Exit standalone horizontal
+yaw only, next original+closing matched retained composition as supported.
+
+First54 passed/3778deselected/4.68s; four hashes stable, old27 pitch controls,
+exact supplied operands/residuals, raw +/-inf unknowns/cancellation, malformed
+preflight and hard arithmetic/forbidden-call counters passed. Only new yaw
+helper and existing pitch-test mode changed; old source/defaults/test names/
+decorator/parameter prefix conserved in AST. Touched format/lint/whitespace/
+editor clear, Pylance yaw definition+one test selection only; changed pytest
+signature no resolved callers, not static compatibility proof.
+
+First required root FAILED2/4753passed/known QDQ xfail/71warnings/188.81s:
+unchanged wall_cylinder_boundary_snapshot late_cylinder/malformed fail in setup
+retention producer/recorder compound closing guard, before yaw reporting. Current
+source/test parse and every prior owner/boundary AST exact. Reused shell before
+value equals current four hashes, not a persisted start record or proof of
+in-run stability; failed pipeline did not reach closing hashes/lint/format/diff.
+diagnostics/test mtimes12:45:11.607112/12:45:11.751112 inside root log
+birth12:43:44.299127--modify12:46:53.362060 UTC support possible overlapping
+rewrite, NOT writer/cause/clock/source qualification; exact failed guard limb
+unknown. Preserve failed root, no damaged file recovery/source/cap/assertion fix.
+Two original pytest positions spent. Diagnose then reallocate unused routine
+54-repair position to ONLY these two controls/60s and add ONE necessary root
+revalidation/360s under standing routine authority: fresh finite two-step
+recovery, four total positions if complete, no old refund/protected renewal.
+Retain rays-301-failed-controls-1/root-2; serialize, no source/formatter/editor
+tools during either check, unchanged fixtures/assertions/limits/all8 false.
+
+Recovery exact2 passed/0.92s then required root
+`python -m pytest -q && ruff check . && git diff --check` passed4755/known QDQ
+xfail/71warnings/175.44s; four hashes stable for both, touched format-check passed.
+All four positions spent, failed root preserved, no abort/refund/tolerance/cap/
+source/guard change; passing recovery does not establish the failed guard limb,
+writer/cause, in-run source immutability or clocks. Logs rays-301-focused-1,
+root-1,failed-controls-1,root-2 retained in original recovery directory; no extra
+data/study/model/dependency/hardware/additional native/Arm/sanitizer/board opt-in
+or general audit. Helper remains horizontal supplied-word expression diagnostics
+only, no trig/geometry/up-passthrough/primitive/FMA/uniform-error/source/coverage/
+clock/one-use/physical/permission/admission proof or usable command, all8 false.
+Next matched yaw reports against original+closing retained delivered/pending
+cosine/sine/pitched_forward/sensor_left/world x/y words and typed identities.
+
 ## Sources
 
 Hardware and tools:

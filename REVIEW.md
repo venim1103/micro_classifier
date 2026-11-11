@@ -578,6 +578,63 @@ claim; no additional C/Arm/sanitizer/board opt-in gates ran. Next reassess the
 supported cross-path native-ToF acquisition/recorder/delivery prerequisites;
 retain supplied operands, raw nonfinite unknowns and unresolved word ties.
 
+## 285. Matched Native Wall-to-Cylinder Boundary Prerequisite (2026-11-11)
+
+Local hypothesis: captured fourth-wall `minimum_after_m` words are copied as
+cylinder `post_wall_ranges_m` at the native stage boundary. Existing combined
+wall/cylinder delivered/pending snapshot control supplies the cheapest exact-word
+discriminator, with no extra acquisitions or geometry. First small reversible
+edit adds that assertion only; matching words are not geometry/error/coverage or
+source/clock/one-use/permission/admission qualification.
+
+Fresh bounded routine ledger: <=3 pytest invocations, first existing48-case wall/
+cylinder snapshot family, then smallest necessary boundary integration controls
+if supported, then required root,300 s each. Existing per-case <=4steps/5reads/
+3retentions/3geometries/6matcher/2pending/4queue/2frame/64digests and existing
+combined <=6timing/selection/direction-norm/other-wall/clock caps unchanged. No
+new snapshot read/retain/step/reset/replay/clock or rational boundary work. Source-
+sensitive pytest serial, no parallel edits/formatter/editor tools; source/test
+hashes before/after. Preserve failures/aborts/old spent ledgers; a blocked boundary
+does not authorize geometry/source/error/timing/admission claims or protected runs.
+No new dependencies/models/task-data/hardware or C/Arm/sanitizer/board opt-in gates.
+
+Initial48 focused controls passed,3488 deselected,11.23 s; source/test hashes
+unchanged. First integration patch rejected signature context; verified no source
+or new test edits landed, no pytest position spent. Corrected owning signature/
+preflight contexts. Supported next edit adds default-off literal boundary report
+requiring both traces, paired original/closing delivered/pending identities and
+strict outgoing checks. Pure helper <=128 canonical range words<=32chars/64
+equality comparisons/64 entries+64 count inspections, no rational work; <=18
+original/closing calls across delivered/<=8 pending. Separate20-control matrix
+reuses existing source fixture, <=4steps/5reads/3retentions/3geometries/6each
+boundary/wall/cylinder matches/2pending/64digests, <=384 conservative boundary
+and192 oracle comparisons. No new fixture/data/environment; default/literal/
+dependency/missing/malformed, mismatches/signed zero, late reports/source/owner/
+budget and detached output covered. Stable mismatches report correspondence only;
+all eight flags false, minimum word ties remain unresolved.
+
+First20 integration controls7 passed/13 failed,3536 deselected,21.20 s: closing
+boundary probe was inserted after closing wall but before closing cylinder match,
+raising UnboundLocalError. Nearby closing owner confirms order. Repair only probe
+placement after both traces/all arithmetic closing reports, before closing queue
+and final typed/source/outgoing checks. First failure retained, no guard/cap change.
+Narrowly revised assistant-selected routine ledger: original last pytest position
+reassigned to same20 repaired focus; one additional required-root position, total
+<=4 invocations at300 s each, no new controls or protected-budget renewal. No
+unchanged rerun after failure; root permitted only after repaired focus passes.
+
+Repaired20 integration controls passed,3536 deselected,5.55 s. Required root4479
+passed,known transformer QDQ xfail/71 warnings,175.15 s. Source/test hashes unchanged
+across both checks; Ruff root lint/changed-file format/whitespace/editor and AST
+prior-helper/method/default/48-case-decorator conservation passed. All four routine
+positions spent including failure, no abort; no further repeat. Logs
+`cylinder-285-boundary-focus-1.log`, `cylinder-285-integration-focus-{1,2}.log`,
+`cylinder-285-root-1.log` retained under `.git/recovery-20261109-PmbQpU`.
+All eight flags false, no geometry/error/coverage/source/clock/permission/admission
+or usable command; no additional C/Arm/sanitizer/board opt-ins ran. Next examine
+actual native ray-generation source prerequisites; squared-norm correspondence
+alone is not ray geometry or a numerical allowance. No cleanup required.
+
 ## Sources
 
 Hardware and tools:

@@ -14515,6 +14515,60 @@ def _match_native_tof_retained_cylinder(source, cylinder_history):
     return deepcopy(matches[0])
 
 
+def _native_tof_wall_cylinder_boundary_diagnostics(
+    *, wall_minimum_m_hex, post_wall_ranges_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native wall/cylinder boundary requires synthetic_test_only=True"
+        )
+    for words in (wall_minimum_m_hex, post_wall_ranges_m_hex):
+        if type(words) is not tuple or len(words) != 64:
+            raise ValueError("native wall/cylinder boundary word count unsupported")
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native wall/cylinder boundary word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native wall/cylinder boundary word unsupported"
+                ) from error
+            if value.hex() != word or math.isnan(value) or value < 0:
+                raise ValueError("native wall/cylinder boundary word unsupported")
+    entries = tuple(
+        {
+            "ray_index": index,
+            "wall_minimum_hex": wall_word,
+            "cylinder_post_wall_hex": cylinder_word,
+            "words_match": wall_word == cylinder_word,
+        }
+        for index, (wall_word, cylinder_word) in enumerate(
+            zip(wall_minimum_m_hex, post_wall_ranges_m_hex, strict=True)
+        )
+    )
+    return {
+        "schema": "micro-classifier/native-tof-wall-cylinder-boundary/1",
+        "allowed_use": "offline_wall_cylinder_stage_word_diagnostics_only",
+        "status": "reported_wall_cylinder_boundary_word_correspondence",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "word_mismatch_count": sum(not entry["words_match"] for entry in entries),
+        "entries": entries,
+    }
+
+
 def _match_native_tof_retained_wall(source, wall_history):
     matches = [
         entry
@@ -15736,6 +15790,7 @@ class _SyntheticC1SourceRecorder:
         include_selection=False,
         include_wall=False,
         include_cylinder=False,
+        include_wall_cylinder_boundary_diagnostics=False,
         include_wall_residuals=False,
         include_wall_projection_residuals=False,
         include_wall_selection_diagnostics=False,
@@ -15768,6 +15823,16 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_wall must be a literal bool")
         if type(include_cylinder) is not bool:
             raise ValueError("include_cylinder must be a literal bool")
+        if type(include_wall_cylinder_boundary_diagnostics) is not bool:
+            raise ValueError(
+                "include_wall_cylinder_boundary_diagnostics must be a literal bool"
+            )
+        if include_wall_cylinder_boundary_diagnostics and not (
+            include_wall and include_cylinder
+        ):
+            raise ValueError(
+                "include_wall_cylinder_boundary_diagnostics requires include_wall=True and include_cylinder=True"
+            )
         if type(include_wall_residuals) is not bool:
             raise ValueError("include_wall_residuals must be a literal bool")
         if include_wall_residuals and not include_wall:
@@ -16123,6 +16188,23 @@ class _SyntheticC1SourceRecorder:
                     minimum_after_m_hex=tuple(
                         wall["minimum_after_m"] for wall in walls
                     ),
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def wall_cylinder_boundary_probe(wall_record, cylinder_record):
+            keys = ("source_epoch", "tick", "delivery_tick")
+            if any(wall_record[key] != cylinder_record[key] for key in keys):
+                raise ValueError("native wall/cylinder boundary identities disagree")
+            return {
+                **{key: wall_record[key] for key in keys},
+                "diagnostic": _native_tof_wall_cylinder_boundary_diagnostics(
+                    wall_minimum_m_hex=wall_record["wall"]["walls"][3][
+                        "minimum_after_m"
+                    ],
+                    post_wall_ranges_m_hex=cylinder_record["cylinder"][
+                        "post_wall_ranges_m"
+                    ],
                     synthetic_test_only=True,
                 ),
             }
@@ -16619,6 +16701,18 @@ class _SyntheticC1SourceRecorder:
                 cylinder_output_binding = _c1_source_binding_digest(
                     {"cylinder": cylinder, "pending_cylinder": pending_cylinder}
                 )
+            if include_wall_cylinder_boundary_diagnostics:
+                wall_cylinder_boundary = wall_cylinder_boundary_probe(wall, cylinder)
+                pending_wall_cylinder_boundary = (
+                    tuple(
+                        wall_cylinder_boundary_probe(wall_record, cylinder_record)
+                        for wall_record, cylinder_record in zip(
+                            pending_wall, pending_cylinder, strict=True
+                        )
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_wall_residuals:
                 wall_residuals = wall_residual_probe(wall)
                 pending_wall_residuals = (
@@ -17055,6 +17149,20 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_wall_cylinder_boundary_diagnostics:
+                wall_cylinder_boundary_after = wall_cylinder_boundary_probe(
+                    wall_after, cylinder_after
+                )
+                pending_wall_cylinder_boundary_after = (
+                    tuple(
+                        wall_cylinder_boundary_probe(wall_record, cylinder_record)
+                        for wall_record, cylinder_record in zip(
+                            pending_wall_after, pending_cylinder_after, strict=True
+                        )
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_timing or include_selection or include_wall or include_cylinder:
@@ -17178,6 +17286,17 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError(
                         "native ToF retained timing or outgoing pairs changed"
                     )
+            if include_wall_cylinder_boundary_diagnostics and (
+                not _native_tof_word_copy_matches(
+                    wall_cylinder_boundary, wall_cylinder_boundary_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_wall_cylinder_boundary, pending_wall_cylinder_boundary_after
+                )
+            ):
+                raise ValueError(
+                    "native wall/cylinder boundary source or outgoing records changed"
+                )
             if include_cylinder_top_radial_residuals and (
                 not _native_tof_word_copy_matches(
                     cylinder_top_radial_residuals,
@@ -17475,6 +17594,12 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_cylinder_selection_diagnostics"] = (
                     pending_cylinder_selection_diagnostics
+                )
+        if include_wall_cylinder_boundary_diagnostics:
+            result["wall_cylinder_boundary_diagnostics"] = wall_cylinder_boundary
+            if include_pending_sources:
+                result["pending_wall_cylinder_boundary_diagnostics"] = (
+                    pending_wall_cylinder_boundary
                 )
         if include_cylinder_offset_residuals:
             result["cylinder_offset_residuals"] = cylinder_offset_residuals

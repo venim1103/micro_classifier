@@ -2398,6 +2398,20 @@ permission/admission or usable command. See
 [actual controls, failed gate and bounded revalidation][native-tof-cylinder-matched-cap-square-review].
 
 
+#### Matched Native Wall-to-Cylinder Boundary (2026-11-11)
+
+Default-off literal `include_wall_cylinder_boundary_diagnostics` requires both
+`include_wall=True` and `include_cylinder=True`. Paired delivered/pending identity
+and original/closing checks compose fourth-wall minimum and captured cylinder
+post-wall words. <=128 canonical range words<=32chars/64 comparisons/64 entries+
+64 count inspections per helper, no rational work; <=18 original/closing calls
+across delivered/<=8 pending records. Stable mismatches, including distinct zero
+words, report word correspondence only; no corrected upstream values or adopted
+minimum ties. All eight flags false, no geometry/source/coverage/error/clock/
+one-use/permission/admission or usable command. See
+[actual controls, closing-order repair and limits][native-tof-wall-cylinder-boundary-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2435,3 +2449,4 @@ permission/admission or usable command. See
 [native-tof-cylinder-matched-top-division-review]: ../../REVIEW.md#282-matched-retained-cylinder-top-division-residuals-2026-11-11
 [native-tof-cylinder-matched-top-relative-review]: ../../REVIEW.md#283-matched-retained-cylinder-top-relative-residuals-2026-11-11
 [native-tof-cylinder-matched-cap-square-review]: ../../REVIEW.md#284-matched-retained-cylinder-cap-square-residuals-2026-11-11
+[native-tof-wall-cylinder-boundary-review]: ../../REVIEW.md#285-matched-native-wall-to-cylinder-boundary-prerequisite-2026-11-11

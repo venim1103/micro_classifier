@@ -13641,6 +13641,19 @@ def test_native_tof_wall_snapshot(
                         assert all(
                             result["wall"]["wall"][flag] is False for flag in flags
                         )
+                        assert (
+                            result["wall"]["wall"]["walls"][3]["minimum_after_m"]
+                            == selected["cylinder"]["post_wall_ranges_m"]
+                        )
+                        for wall_record, cylinder_record in zip(
+                            result["pending_wall"],
+                            result["pending_cylinder"],
+                            strict=True,
+                        ):
+                            assert (
+                                wall_record["wall"]["walls"][3]["minimum_after_m"]
+                                == cylinder_record["cylinder"]["post_wall_ranges_m"]
+                            )
                     assert result["timing"]["clock"]["qualified"] is False
                     assert result["selection"]["selection"]["source_qualified"] is False
                     assert (
@@ -13700,6 +13713,318 @@ def test_native_tof_wall_snapshot(
             "late_wall_budget",
             "late_selection_budget",
             "late_timing_budget",
+        )
+    )
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "copy",
+        "default",
+        "flag",
+        "dependency_wall",
+        "dependency_cylinder",
+        "missing_delivered",
+        "missing_pending",
+        "held",
+        "delivered_only",
+        "wall_mismatch",
+        "cylinder_mismatch",
+        "word_zero",
+        "late_delivered",
+        "late_pending",
+        "late_wall",
+        "late_cylinder",
+        "malformed",
+        "output_detached",
+        "late_owner",
+        "late_budget",
+    ),
+)
+def test_native_tof_wall_cylinder_boundary_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.scenario = replace(environment.scenario, obstacles=((3.0, 3.0, 0.25),))
+    owner = type(owner)(environment.scenario, synthetic_test_only=True)
+    work = dict.fromkeys(
+        (
+            "geometry",
+            "steps",
+            "reads",
+            "retention",
+            "boundary",
+            "wall",
+            "cylinder",
+            "pending",
+            "binding",
+            "comparisons",
+            "oracle",
+            "late",
+            "forbidden",
+        ),
+        0,
+    )
+    original_geometry = rover.tof_ranges
+
+    def geometry(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        return original_geometry(*args, **kwargs)
+
+    def read():
+        work["reads"] += 1
+        assert work["reads"] <= 5
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+
+    monkeypatch.setattr(rover, "tof_ranges", geometry)
+    read()
+    for _ in range(4 if case == "held" else 3):
+        work["steps"] += 1
+        assert work["steps"] <= 4
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_wall=True,
+            capture_native_tof_cylinder=True,
+        )
+        read()
+        if environment._native_tof_source is not None:
+            work["retention"] += 1
+            assert work["retention"] <= 3
+            owner.record_native_tof_source(
+                environment,
+                synthetic_test_only=True,
+                include_wall=True,
+                include_cylinder=True,
+            )
+    if case == "missing_delivered":
+        owner._tof_wall_history.pop(0)
+    elif case == "missing_pending":
+        owner._tof_cylinder_history.pop()
+    elif case in ("wall_mismatch", "word_zero", "malformed"):
+        wall = owner._tof_wall_history[0]["wall"]["walls"][3]
+        word = (
+            "0.0"
+            if case == "malformed"
+            else (-0.0).hex()
+            if case == "word_zero"
+            else (9.0).hex()
+        )
+        wall["minimum_after_m"] = (word, *wall["minimum_after_m"][1:])
+        if case == "word_zero":
+            trace = owner._tof_cylinder_history[0]["cylinder"]
+            trace["post_wall_ranges_m"] = (
+                (0.0).hex(),
+                *trace["post_wall_ranges_m"][1:],
+            )
+    elif case == "cylinder_mismatch":
+        trace = owner._tof_cylinder_history[0]["cylinder"]
+        trace["post_wall_ranges_m"] = ((9.0).hex(), *trace["post_wall_ranges_m"][1:])
+    before_tick, before_frame = environment.tick, owner._current[3]
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry = deepcopy(environment.odometry_rng.bit_generator.state)
+    closing_count = 2 * (
+        1 + (0 if case == "delivered_only" else len(environment.pending))
+    )
+    names = {
+        "boundary": "_native_tof_wall_cylinder_boundary_diagnostics",
+        "wall": "_match_native_tof_retained_wall",
+        "cylinder": "_match_native_tof_retained_cylinder",
+        "pending": "_match_native_tof_pending_sources",
+    }
+    originals = {name: getattr(diagnostics, symbol) for name, symbol in names.items()}
+    outgoing = {name: [] for name in names}
+
+    def called(name, *args, **kwargs):
+        work[name] += 1
+        assert work[name] <= (2 if name == "pending" else 6)
+        if name == "boundary":
+            work["comparisons"] += 64
+            assert work["comparisons"] <= 384
+        actual = originals[name](*args, **kwargs)
+        outgoing[name].append(actual)
+        if name == "boundary" and work[name] == closing_count:
+            if case in ("late_delivered", "late_pending"):
+                target = outgoing["boundary"][1 if case == "late_pending" else 0]
+                target["entries"][0]["words_match"] = not target["entries"][0][
+                    "words_match"
+                ]
+            elif case == "late_wall":
+                wall = outgoing["wall"][0]["wall"]["walls"][3]
+                wall["minimum_after_m"] = ((9.0).hex(), *wall["minimum_after_m"][1:])
+            elif case == "late_cylinder":
+                trace = outgoing["cylinder"][0]["cylinder"]
+                trace["post_wall_ranges_m"] = (
+                    (9.0).hex(),
+                    *trace["post_wall_ranges_m"][1:],
+                )
+            elif case == "late_owner":
+                owner._binding = {"changed": True}
+            elif case == "late_budget":
+                owner._tof_wall_history.extend(owner._tof_wall_history * 8)
+                outgoing["bindings_before_budget"] = work["binding"]
+            else:
+                return actual
+            work["late"] += 1
+        return actual
+
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "boundary snapshot must not read/retain/step/reset/replay/clock/rational"
+        )
+
+    for name, symbol in names.items():
+        monkeypatch.setattr(
+            diagnostics,
+            symbol,
+            lambda *args, _name=name, **kwargs: called(_name, *args, **kwargs),
+        )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_wall_source",
+        "_sample_simulator_native_tof_cylinder_source",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("value", "binary"):
+        monkeypatch.setattr(diagnostics._C1CommandArithmetic, name, forbidden)
+    option = "include_wall_cylinder_boundary_diagnostics"
+    field = "wall_cylinder_boundary_diagnostics"
+    if case in ("flag", "dependency_wall", "dependency_cylinder"):
+        with pytest.raises(ValueError, match=option):
+            owner.snapshot_native_tof_delivery(
+                synthetic_test_only=True,
+                include_wall=case != "dependency_wall",
+                include_cylinder=case != "dependency_cylinder",
+                **{option: 1 if case == "flag" else True},
+            )
+    else:
+        result = owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_wall=True,
+            include_cylinder=True,
+            include_pending_sources=case != "delivered_only",
+            **{option: case != "default"},
+        )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        assert all(result[flag] is False for flag in flags)
+        accepted = (
+            "copy",
+            "default",
+            "held",
+            "delivered_only",
+            "wall_mismatch",
+            "cylinder_mismatch",
+            "word_zero",
+            "output_detached",
+        )
+        if case in accepted:
+            assert result["snapshot_available"] is True, result["reason"]
+            if case == "default":
+                assert field not in result and f"pending_{field}" not in result
+                assert work["boundary"] == work["comparisons"] == 0
+            else:
+                assert work["boundary"] == closing_count
+                walls = (result["wall"], *result.get("pending_wall", ()))
+                cylinders = (result["cylinder"], *result.get("pending_cylinder", ()))
+                reports = (result[field], *result.get(f"pending_{field}", ()))
+                assert len(walls) == len(cylinders) == len(reports)
+                for wall_record, cylinder_record, report in zip(
+                    walls, cylinders, reports, strict=True
+                ):
+                    for key in ("source_epoch", "tick", "delivery_tick"):
+                        assert report[key] == wall_record[key] == cylinder_record[key]
+                    diagnostic = report["diagnostic"]
+                    assert all(diagnostic[flag] is False for flag in flags)
+                    assert len(diagnostic["entries"]) == 64
+                    mismatches = 0
+                    for ray, entry in enumerate(diagnostic["entries"]):
+                        wall_word = wall_record["wall"]["walls"][3]["minimum_after_m"][
+                            ray
+                        ]
+                        cylinder_word = cylinder_record["cylinder"][
+                            "post_wall_ranges_m"
+                        ][ray]
+                        work["oracle"] += 1
+                        assert work["oracle"] <= 192
+                        assert entry["ray_index"] == ray
+                        assert entry["wall_minimum_hex"] == wall_word
+                        assert entry["cylinder_post_wall_hex"] == cylinder_word
+                        assert entry["words_match"] is (wall_word == cylinder_word)
+                        mismatches += int(wall_word != cylinder_word)
+                    assert diagnostic["word_mismatch_count"] == mismatches
+                assert reports[0]["diagnostic"]["word_mismatch_count"] == int(
+                    case in ("wall_mismatch", "cylinder_mismatch", "word_zero")
+                )
+                if case == "delivered_only":
+                    assert f"pending_{field}" not in result
+                if case == "output_detached":
+                    histories = deepcopy(
+                        (owner._tof_wall_history, owner._tof_cylinder_history)
+                    )
+                    reports[0]["diagnostic"]["entries"][0]["words_match"] = False
+                    assert (
+                        owner._tof_wall_history,
+                        owner._tof_cylinder_history,
+                    ) == histories
+        else:
+            assert (
+                result["status"] == "unknown" and result["snapshot_available"] is False
+            )
+            assert not (
+                {"source", "frame", "wall", "cylinder", field, f"pending_{field}"}
+                & result.keys()
+            )
+            if case == "malformed":
+                assert work["binding"] == 0
+            if case == "late_budget":
+                assert work["binding"] == outgoing["bindings_before_budget"]
+    assert environment.tick == before_tick and owner._current[3] == before_frame
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry
+    assert work["late"] == int(
+        case
+        in (
+            "late_delivered",
+            "late_pending",
+            "late_wall",
+            "late_cylinder",
+            "late_owner",
+            "late_budget",
         )
     )
     assert work["forbidden"] == 0

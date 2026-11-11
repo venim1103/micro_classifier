@@ -65,8 +65,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 276-280][chapter-review-20]
 - [Checkpoints 281-285][chapter-review-21]
 - [Checkpoints 286-290][chapter-review-22]
+- [Checkpoints 291-295][chapter-review-23]
 
-Checkpoints 291 onward and the source bibliography remain below.
+Checkpoints 296 onward and the source bibliography remain below.
 ## Recovery and Document Layout (2026-11-09)
 
 Following the user's reported crash, the live review was a 262,527-byte exact
@@ -109,190 +110,6 @@ finite fixture limits, counting the interruption rather than assuming success.
 All qualification/admission flags remain false. Future checkpoints belong here
 briefly, with whole older sections moved through the reading map rather than
 repeated historical handoffs.
-
-## 291. Typed Native Direction-History Validation (2026-11-11)
-
-Begin clean/synchronized2d38c60 under existing routine authority. Hypothesis:
-fixed-shape typed direction records can join an existing validated native history
-without replay, preserving raw finite supplied generation words and signed zero.
-<=8 ordered records/<=8 native records, <=64 pair inspections, per record16
-arrays/1224 words+5 result scalars and4 input scalars; schema/flags/native context/
-generation input/effective pitch/ray joins, canonical strings<=32chars, no rational
-work, hashes/intake/recorder/replay/step/reset/geometry/clocks. Generation trig/
-component words are structurally checked ONLY, not recalculated or geometrically
-qualified. All eight flags false, no source/numerical/physical/permission/admission.
-Existing42 controls conserved plus24 direction=66, <=8 bounded detached synthetic
-record copies, one fixture acquisition/two native intakes BEFORE poison hooks.
-<=3 routine pytest positions: first66/60 s, one necessary repair66/60 s, root/300 s;
-retain rays-291-* logs in original recovery directory, count all failure/abort/
-unknown, no budget refunds/new studies/dependencies/data. Next recorder retention.
-
-First66 passed/3585deselected/3.45 s with four source/test hashes stable. Local
-review found legacy native source could hit float(None) before mounted rejection;
-repair moves that rejection BEFORE expected generation construction. Add one
-legacy-source control, reserve67/60 s replaces66/60 s, overall3 positions stays.
-Existing42 and new24 controls unchanged; no failed/refunded/qualified attempt or
-protected cap increase, same slice's necessary guard+one fixture repair only.
-
-Repaired67 passed/3585deselected/1.85 s, four source/test hashes stable; all new
-direction metadata/shape/canonical/nonfinite/native+generation pairing/legacy
-cases and signed-zero preservation exercised, unchanged42 expression prefix
-conserved by AST. Source all previous definitions conserved; sole new validator
-and existing matrix changed. Ruff formatted only two touched Python files;
-lint/format/whitespace/editor diagnostics clear. Required root
-`python -m pytest -q && ruff check . && git diff --check` passed4575/known QDQ
-xfail/71warnings/145.48 s, hashes of diagnostics/rover/protocol/test_sim stable;
-touched format check also passed. All3 pytest positions spent, no failed/aborted/
-refunded attempt; rays-291-{focused-1,focused-2,root-1} logs retained in original
-recovery directory. No downloads/dependencies/studies/task data/hardware/C/Arm/
-sanitizer/board opt-in gates for this simulator-only increment. Native history
-is independently validated by its existing owner before this companion join;
-source-list8 cap is not standalone native-history qualification. Direction words
-remain supplied and structurally bounded, NOT recalculated trig/geometry/error/
-coverage/source/clock/one-use/physical/permission/admission evidence; all8 flags
-false. Synthetic8 record copies are NOT eight measured acquisitions. Next opt-in
-recorder-owned direction history, original+closing cache/history/input pairing,
-then delivered/pending correspondence. No usable command is admitted.
-
-## 292. Whole Cylinder Checkpoint Archive (2026-11-11)
-
-Clean/synchronized afb6c8e, root982 lines; move whole281–285 before further source
-checkpoint growth. Existing archive pattern, no body inline/reference links to
-rebase, exactly5 chapter05 references. Preserve originals in existing recovery
-directory rays-292-{review-before,design-5-before}.md, no overwritten backups.
-First mechanical relocation failed Perl compilation at ambiguous `$1[...]`
-interpolation: cmp verified BOTH live docs unchanged, no archive created, clean
-worktree, failure retained here/transcript. Only `${1}` interpolation repair;
-second guarded relocation succeeded. New273-line archive retains all five
-historical bodies/anchors/failures/approvals/spent/unknown/evidence-limit text
-exactly with single EOF newline (separator whitespace normalization only).
-Root reading map/source bibliography and chapter05 bytes conserved except
-intended map/5 reference edits; five local targets/anchors, archive whitespace,
-four source/test bytes against HEAD and git diff --check passed. Root712 lines
-before this note, no code gate rerun; last source gate4575/known QDQ xfail remains
-§291 evidence, not a fresh archival test result. No budgets/studies/qualification
-renewed, all8 flags false, no permission/admission. Next opt-in recorder-owned
-direction history, then delivered/pending original+closing correspondence.
-
-## 293. Recorder-Owned Native Direction History (2026-11-11)
-
-Begin clean58452f2. Hypothesis: default-off literal include_direction extends
-existing native recorder companion ownership/copy/closing checks without replay.
-<=8 native+direction records, fixed validated generation fields, retained-tick
-trim/idempotent exact repeat, original+closing cache/RNG/producer/profile/history
-identity and binding; all8 qualification/admission flags stay false. No additional
-geometry/noise/clock during retention, no source/geometry/numerical/physical proof.
-Reuse unchanged17-case retention matrix with old wall/cylinder34 controls plus
-direction17=51. Per case<=13 geometries/14 reads/10 retentions/20 direction intakes/
-40 native intakes/256 bindings/one late mutation. Direction combined includes all
-four prior companions, exactly18 native intakes/2 existing clock reads; prior
-wall10/cylinder14 combined caps and every old per-case limit stay unchanged.
-Three routine pytest positions first51/60s, sole necessary repair51/60s, root/300s;
-count failed/aborted/unknown attempts, retain rays-293-* logs in original recovery
-directory, no protected budget renewal/new data/studies/dependencies/hardware.
-Next delivered/pending matching, not qualification or an admitted command.
-
-First51 passed/3618deselected/4.53s with four source/test hashes stable. Existing
-17 case names and two wall/cylinder families conserved; direction original/closing
-cache/history/output/owner mutation controls, empty default, literal bool, missing
-source, exact duplicate/changed repeat, canonical paired-word rejection before
-bindings, retained-tick gap/8-record trim exercised. Combined direction+timing+
-selection+wall+cylinder exactly18 native intakes/2 existing clock reads, old10/14
-controls unchanged. Ruff formatted ONLY two touched Python files; scoped lint/
-format/whitespace/editor diagnostics clear. AST all prior source functions/recorder
-methods except init+record_native_tof_source conserved; append-only keyword default
-include_direction=False, all old defaults/case names/families unchanged. Internal
-ownership/candidate binding includes direction history; not a source qualification
-or frozen wire change. Required root `python -m pytest -q && ruff check . && git diff
---check` passed4592/known QDQ xfail/71warnings/145.19s, source/test hashes stable;
-touched format check passed. Two of3 routine pytest positions spent, unused
-repair reserve is not follow-on authority; no failure/abort/refund. Logs
-rays-293-{focused-1,root-1} retained in original recovery directory, no new data/
-dependencies/downloads/studies/hardware/C/Arm/sanitizer/board gates. Supplied raw
-finite words retained, unsupported/nonfinite unknown; all8 flags false. No trig/
-geometry/source/coverage/numerical/error/clock/one-use/physical/permission/admission
-qualification, no usable command. Next retained direction delivered/pending joins
-and opt-in original+closing publication; current snapshots do not expose direction.
-
-Clarification: the preceding native-control limit means no ADDITIONAL C/Arm/
-sanitizer/board opt-in commands beyond the required root gate; it does not claim
-default interface/native controls were omitted from that gate.
-
-## 294. Bounded Retained Native Direction Join (2026-11-11)
-
-Begin clean e9666ed. Nearby wall matcher selects one prevalidated record by
-epoch/acquisition/delivery identifiers then deep-copies it. Direction join keeps
-that precondition (independently validated source/history), explicitly caps the
-builtin history at8 and compares exact typed identity words, <=24 inspections.
-One detached selected trace; no revalidation/replay/intake/recorder/hash/geometry/
-clocks or geometry/source/numerical/physical/permission/admission qualification.
-Nine bounded synthetic controls, per fixture one fresh step/two producer reads/
-one retention/two direction intakes/four native intakes before poison hooks;
-native context/canonical generation prevalidated, negative identity/cap mutations
-are join controls ONLY, not accepted source history. Existing fixtures/caps stay.
-Three routine pytest positions: first9/60s, sole necessary repair9/60s, root/300s;
-retain rays-294-* logs in original recovery directory, count failure/abort/unknown,
-no refunds/protected studies/data/dependencies/hardware. All8 flags false, no
-usable command. Next opt-in original+closing delivered/pending publication.
-
-Nine passed/3669deselected/0.87s, four source/test hashes stable; nested detachment,
-missing/ambiguous/identity/type/cap controls exercised, poison hooks zero. Ruff
-formatted only touched test file, both touched Python format/lint/whitespace/
-editor checks clear; AST all prior source/test definitions/defaults/cases unchanged.
-Required root `python -m pytest -q && ruff check . && git diff --check` passed4601/
-known QDQ xfail/71warnings/264.42s, four hashes stable, touched format check passed.
-Two of3 pytest positions spent, unused repair reserve NOT follow-on authority;
-no failure/abort/refund. Logs rays-294-{focused-1,root-1} retained in existing
-recovery directory; no data/downloads/dependencies/studies/hardware or additional
-C/Arm/sanitizer/board opt-in commands. Matcher selects prevalidated records only,
-not a standalone source/history validator. No sensor/geometry/numerical/coverage/
-error/clock/one-use/physical/permission/admission evidence, all8 flags remain false.
-Delivered/pending snapshots still lack direction publication; compose original/
-closing history and input checks next without treating hash/word joins as proof.
-
-## 295. Delivered/Pending Native Direction Snapshot (2026-11-11)
-
-Begin clean dbcaa15. Hypothesis: append-only literal include_direction=False can
-compose the bounded retained join into original+closing delivered/pending native
-source/frame/queue checks. Typed native+direction history before hashes and after
-all closing traces; history identity/input binding, outgoing typed copies and
-original/closing full-word correspondence, <=8 records/192 ray/64 range words,
-fixed finite generation fields. No new geometry/intake/recorder/read/replay/clock,
-no canonical correction/numerical/source/physical/permission/admission; all8 false.
-Reuse unchanged24-case snapshot family old48 controls plusdirection24=72. Same
-per-case<=4steps/5reads/3retentions/3geometries/6clocks BEFORE snapshot, <=6 selected
-and other-wall/selection/timing/norm matches, 2pending matches/4queue copies/2frame
-checks/64bindings/one late mutation, <=2 actual pending records. Default output
-keys/options unchanged; optional direction payload only after full closing success.
-Three routine pytest positions first72/60s, sole necessary repair72/60s, root/360s
-(prior root264.42s observed; fresh assistant-selected wall-time budget, no program
-deadline/work/assertion/protected cap change). Count failures/aborts/unknown,
-retain rays-295-* logs, no refunds/protected studies/data/dependencies/hardware.
-Next supported ray-word prerequisites only, not numerical or physical adoption.
-
-First72 passed/3630deselected/9.30s, four source/test hashes stable; all prior48
-controls and24 case names/caps conserved, direction default output keys absent,
-held/delivered-only/pending identity, typed/canonical words, detached payloads,
-late history/output/owner/arithmetic/selection/timing/pending mutations exercised.
-Late over-budget histories rejected before further binding, no payloads on unknown;
-native input/frame/queue original+closing checks retained, no extra replay/clock.
-Ruff formatted ONLY two touched Python files, lint/format/whitespace/editor clear;
-AST all prior definitions/methods except snapshot_native_tof_delivery conserved,
-append-only include_direction=False and all old defaults/case names/families.
-Required root `python -m pytest -q && ruff check . && git diff --check` passed4625/
-known QDQ xfail/71warnings/148.28s, four hashes stable, touched format passed.
-Two of3 pytest positions spent, unused repair reserve NOT follow-on authority;
-no failed/aborted/refunded attempt. Logs rays-295-{focused-1,root-1} retained in
-original recovery directory, no new data/downloads/dependencies/studies/hardware/
-additional native/Arm/sanitizer/board opt-in commands. Raw unsupported/nonfinite
-generation remains unknown; no corrected observations, all8 flags false. Native
-direction capture/intake/typed history/ownership/delivered+pending publication
-are now source-word prerequisites, NOT uniform trig/error/coverage/clock/one-use/
-physical clearance/source/permission/admission qualification. Matching words and
-squared-norm correspondence do not prove ray geometry; equal-value/different-word
-ties remain unresolved. Next bounded supplied-word sensor-component product
-discrepancies using unchanged exact arithmetic limits; no physical/numerical
-bounds or qualification adopted, no learned/board/study work reopened.
 
 ## 296. Supplied-Word Native Direction Products (2026-11-11)
 
@@ -596,6 +413,26 @@ unresolved, no corrected values/up-passthrough/primitive/FMA/trig/uniform-error/
 geometry/source/coverage/clock/one-use/physical/permission/admission proof or
 usable command. Next archive whole291--295 with links/history/limits intact
 before root growth, then bounded final-up word-copy prerequisite as supported.
+
+## 303. Intact Direction Checkpoint Archival (2026-11-11)
+
+Clean/synchronized e8f482e, root963lines. Guarded one-shot mechanical move of
+whole291--295 to185-line archive, exact five bodies/headings/failures/approvals/
+spent/unknown/limits; separator EOF normalized only, no body links to rebase.
+Four chapter01 inbound references and new root map target/definition rebased,
+all five historical anchors retained; remaining root/Sources/design bytes exact
+except intended map/four references. Preserve rays-303-{review-before,
+design-1-before}.md and archive-review-303.pl in original recovery directory,
+no overwritten backups. `perl -c` then sole guarded relocation and independent
+body/map/bibliography/design/source-byte conservation passed; four targets/
+anchors/root-map/no-stale-links and git diff --check passed. Root781lines before
+this note/chapter01=2468, four source/test files byte-identical to checkpoint.
+No code suite rerun/fixture/query/data/model/study/dependency/hardware/additional
+native/Arm/sanitizer/board/audit commands, no budgets/refunds/qualification
+renewed; last4782-pass gate remains source evidence only, all8 false/no admission.
+Migration DONE, do not repeat. Next bounded final-up supplied-word copy
+correspondence, then matched original+closing retained composition as supported,
+not ray geometry/trig/uniform-error/source/clock/one-use/physical qualification.
 
 ## Sources
 
@@ -960,4 +797,5 @@ Methods and measurements:
 [chapter-review-20]: docs/review/276-280.md
 [chapter-review-21]: docs/review/281-285.md
 [chapter-review-22]: docs/review/286-290.md
+[chapter-review-23]: docs/review/291-295.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11

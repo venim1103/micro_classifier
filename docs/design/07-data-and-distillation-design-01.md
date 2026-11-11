@@ -2397,10 +2397,10 @@ See [actual matched controls, preflight and gates][native-tof-direction-owned-pr
 [native-tof-direction-range-source-review]: ../review/286-290.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../review/286-290.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
 [native-tof-direction-intake-review]: ../review/286-290.md#290-bounded-closed-native-direction-source-intake-2026-11-11
-[native-tof-direction-history-review]: ../../REVIEW.md#291-typed-native-direction-history-validation-2026-11-11
-[native-tof-direction-retention-review]: ../../REVIEW.md#293-recorder-owned-native-direction-history-2026-11-11
-[native-tof-direction-match-review]: ../../REVIEW.md#294-bounded-retained-native-direction-join-2026-11-11
-[native-tof-direction-snapshot-review]: ../../REVIEW.md#295-deliveredpending-native-direction-snapshot-2026-11-11
+[native-tof-direction-history-review]: ../review/291-295.md#291-typed-native-direction-history-validation-2026-11-11
+[native-tof-direction-retention-review]: ../review/291-295.md#293-recorder-owned-native-direction-history-2026-11-11
+[native-tof-direction-match-review]: ../review/291-295.md#294-bounded-retained-native-direction-join-2026-11-11
+[native-tof-direction-snapshot-review]: ../review/291-295.md#295-deliveredpending-native-direction-snapshot-2026-11-11
 [native-tof-direction-product-review]: ../../REVIEW.md#296-supplied-word-native-direction-products-2026-11-11
 [native-tof-direction-owned-product-review]: ../../REVIEW.md#297-matched-native-direction-product-reports-2026-11-11
 

@@ -11606,19 +11606,20 @@ def test_actual_native_tof_selection_acquisition(
         "timed_selection",
     ),
 )
-@pytest.mark.parametrize("cylinder", (False, True))
+@pytest.mark.parametrize("kind", ("wall", "cylinder", "direction"))
 def test_actual_native_tof_wall_acquisition(
-    monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
+    monkeypatch, c1_motion_receipt_source_fixture, case, kind
 ):
     from dataclasses import replace
 
     from sim import rover
 
-    kind = "cylinder" if cylinder else "wall"
+    cylinder = kind == "cylinder"
+    direction = kind == "direction"
     capture_option = f"capture_native_tof_{kind}"
     cache_name = f"_native_tof_{kind}_source"
     environment = deepcopy(c1_motion_receipt_source_fixture[0])
-    if cylinder:
+    if cylinder or direction:
         environment.scenario = replace(
             environment.scenario, obstacles=((3.0, 3.0, 0.25),)
         )
@@ -11679,6 +11680,7 @@ def test_actual_native_tof_wall_acquisition(
                 "_native_tof_selection_source",
                 "_native_tof_wall_source",
                 "_native_tof_cylinder_source",
+                "_native_tof_direction_source",
             )
         )
         with pytest.raises(ValueError):
@@ -11700,6 +11702,7 @@ def test_actual_native_tof_wall_acquisition(
                     environment._native_tof_selection_source,
                     environment._native_tof_wall_source,
                     environment._native_tof_cylinder_source,
+                    environment._native_tof_direction_source,
                 ),
                 previous,
                 strict=True,
@@ -11716,7 +11719,12 @@ def test_actual_native_tof_wall_acquisition(
         **{capture_option: case not in ("default", "source_only")},
         **(
             {"capture_native_tof_wall": True}
-            if cylinder and case in ("selection", "timed_selection")
+            if (cylinder or direction) and case in ("selection", "timed_selection")
+            else {}
+        ),
+        **(
+            {"capture_native_tof_cylinder": True}
+            if direction and case in ("selection", "timed_selection")
             else {}
         ),
         capture_native_tof_selection=case in ("selection", "timed_selection"),
@@ -11767,6 +11775,18 @@ def test_actual_native_tof_wall_acquisition(
                     "minimum_after_m"
                 ].view(np.uint64),
             )
+    elif direction:
+        generation = wall["direction_generation"]
+        np.testing.assert_equal(
+            generation["world_frame_unit_rays"].view(np.uint64),
+            wall["world_frame_unit_rays"].view(np.uint64),
+        )
+        assert not np.shares_memory(
+            generation["world_frame_unit_rays"], wall["world_frame_unit_rays"]
+        )
+        if case in ("selection", "timed_selection"):
+            for name in ("_native_tof_wall_source", "_native_tof_cylinder_source"):
+                assert getattr(environment, name)["source"] is captured["source"]
     else:
         assert len(wall["walls"]) == 4
     assert work["wall"] == 1
@@ -11801,7 +11821,9 @@ def test_actual_native_tof_wall_acquisition(
     if case == "sample_detach":
         held = native["pre_noise_ranges_m"].copy()
         wall["pre_noise_ranges_m"][:] = -99.0
-        if not cylinder:
+        if direction:
+            wall["direction_generation"]["world_frame_unit_rays"][:] = -99.0
+        elif not cylinder:
             wall["walls"][0]["distance_m"][:] = -99.0
         else:
             wall["post_wall_ranges_m"][:] = -99.0

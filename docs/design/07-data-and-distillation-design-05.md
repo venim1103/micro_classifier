@@ -2441,6 +2441,19 @@ qualification. All eight flags false; no permission/admission. See
 [actual failures, fixture-only repairs and limits][native-tof-direction-range-source-review].
 
 
+#### Fresh Native Ray-to-ToF Acquisition (2026-11-11)
+
+Literal `step(capture_native_tof_direction=False)` requires native capture/mounted
+rays before mutation; default/held/reset clear private direction cache, rejected
+preflight preserves. Fresh existing sensor phase forwards separate cold sink;
+cache pairs actual original native source, RNG references and nominal acquisition/
+delivery ticks. Other trace/timing companions share original cache, no additional
+geometry/noise/dropout/clock reads. This is source correspondence only, not bounded
+closed intake, recorder/delivery lineage, uniform trig/error/coverage/physical
+qualification or one-use execution. All eight flags false; no permission/admission.
+See [actual controls, checks and limits][native-tof-direction-acquisition-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2481,3 +2494,4 @@ qualification. All eight flags false; no permission/admission. See
 [native-tof-wall-cylinder-boundary-review]: ../../REVIEW.md#285-matched-native-wall-to-cylinder-boundary-prerequisite-2026-11-11
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
+[native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11

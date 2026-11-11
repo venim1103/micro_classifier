@@ -483,6 +483,38 @@ range correspondence is not finite geometry/trig-error/source/coverage/clock/
 one-use/permission/admission. No extra C/Arm/sanitizer/board opt-ins. Next fresh
 acquisition pairing through existing native cache; held output is not new source.
 
+## 288. Fresh Native Ray-to-ToF Acquisition Pairing (2026-11-11)
+
+Checkpointba2ae14 pushed/clean. Hypothesis: existing fresh native sensor phase can
+retain cold direction trace alongside original cache without extra geometry,
+noise/dropout/clock work. Separate literal step capture_native_tof_direction=False
+requires native capture/mounted rays; private direction acquisition pairs
+original native object/RNG references/nominal acquisition+delivery tick. Default,
+held and reset clear; rejected preflight preserves. No source qualification.
+Reuse old16-case acquisition matrix as wall/cylinder/direction families=48,
+prior32 scenarios/caps conserved. <=3 geometries/1 selected trace/1 selection/
+2 existing timed-clock reads per case, no new sampling or clock; unchanged32
+cylinders/64 rays/16-array1224-word cold trace. <=3 routine pytest positions:
+first48/60 s, one necessary repair48/60 s, required root/300 s, count failures/
+aborts/unknowns; retain rays-288-* logs, no refunds/protected studies/dependencies/
+hardware. All eight flags false, no geometry/error/source/clock/one-use/admission;
+bounded intake/retention/delivery and numerical/physical evidence still separate.
+First patch rejected reset context; worktree clean/no partial edits/no pytest
+spent. Nearby reset pending-deque and actual if-capture-clock anchors corrected.
+
+First48 controls passed,3557 deselected,0.77 s; root4528 passed,known transformer
+QDQ xfail/71 warnings,158.45 s. All four source/test hashes stable across both;
+root Ruff lint/changed format/whitespace/editor passed. AST only reset/update/
+sample/step and existing acquisition matrix changed, all prior other nodes/defaults
+and16-case decorator conserved. Sensor methods7 compatible callers each; step
+38of40 compatible/same two intentional receipt=1 negatives159/299. Twoof3 pytest
+positions used, no test failure/abort/refund; unused reserve not follow-on authority.
+Logs rays-288-focused-1.log/root-1.log retained in existing recovery directory;
+no cleanup. All eight flags false; no geometry/coverage/error/source/clock/one-use/
+permission/admission or usable command. No additional C/Arm/sanitizer/board opt-ins.
+Next bounded closed direction-source intake before recorder retention/delivery;
+raw unsupported/nonfinite source stays unknown, no reconstructed trig.
+
 ## Sources
 
 Hardware and tools:

@@ -13125,6 +13125,45 @@ def test_native_tof_wall_intake(
             "generation_layout",
             "legacy_source",
         )
+    ]
+    + [
+        ("postprocessing", case)
+        for case in (
+            "copy",
+            "legacy",
+            "noise_rng",
+            "signed_zero",
+            "oversize",
+            "tuple_history",
+            "order",
+            "duplicate",
+            "epoch",
+            "missing_pair",
+            "delivery",
+            "flag",
+            "numeric_flag",
+            "word_shape",
+            "noncanonical",
+            "overflow",
+            "nonfinite",
+            "positive_inf",
+            "word_budget",
+            "source_oversize",
+            "source_tuple",
+            "profile",
+            "input_type",
+            "pre_noise",
+            "store_words",
+            "mask_words",
+            "mask_type",
+            "mask_shape",
+            "tick_type",
+            "delivery_type",
+            "store_type",
+            "store_budget",
+            "stored_nonfinite",
+            "extra",
+        )
     ],
 )
 def test_native_tof_wall_history_layout(
@@ -13134,10 +13173,29 @@ def test_native_tof_wall_history_layout(
 
     from sim import diagnostics, rover
 
+    postprocessing = cylinder == "postprocessing"
+    cylinder = False if postprocessing else cylinder
     direction = cylinder is None
-    kind = "direction" if direction else "cylinder" if cylinder else "wall"
+    kind = (
+        "postprocessing"
+        if postprocessing
+        else "direction"
+        if direction
+        else "cylinder"
+        if cylinder
+        else "wall"
+    )
     validate = getattr(diagnostics, f"_check_native_tof_{kind}_history")
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if postprocessing and case in ("legacy", "noise_rng"):
+        environment.config = replace(
+            environment.config,
+            noise_std=0.02 if case == "noise_rng" else environment.config.noise_std,
+            dropout=0.1 if case == "noise_rng" else environment.config.dropout,
+            tof_mount_height=None
+            if case == "legacy"
+            else environment.config.tof_mount_height,
+        )
     if cylinder or direction:
         environment.scenario = replace(
             environment.scenario,
@@ -13160,14 +13218,16 @@ def test_native_tof_wall_history_layout(
     ]
     trace = history[0][kind]
     entry = (
-        trace["direction_generation"]
+        trace
+        if postprocessing
+        else trace["direction_generation"]
         if direction
         else trace["cylinders"][0]
         if cylinder
         else trace["walls"][0]
     )
     stage = entry["sides"][0] if cylinder else entry
-    if case in ("copy", "max_obstacles"):
+    if case in ("copy", "max_obstacles", "legacy", "noise_rng"):
         for offset in range(1, 8):
             paired_source, paired_wall = deepcopy((source_history[0], history[0]))
             for entry in (paired_source, paired_wall):
@@ -13192,18 +13252,31 @@ def test_native_tof_wall_history_layout(
     elif case == "flag":
         trace["source_qualified"] = True
     elif case == "word_shape":
-        stage["sensor_forward" if direction else "distance_m"] = ("0x0.0p+0",) * 65
+        stage[
+            "noise_draw_m"
+            if postprocessing
+            else "sensor_forward"
+            if direction
+            else "distance_m"
+        ] = ("0x0.0p+0",) * 65
     elif case in ("noncanonical", "overflow"):
         word = "0.0" if case == "noncanonical" else "0x1p+999999"
-        stage["pitch_sine" if direction else "numerator_m"] = (
-            (word,) * 64 if cylinder else word
-        )
+        stage[
+            "noise_draw_m"
+            if postprocessing
+            else "pitch_sine"
+            if direction
+            else "numerator_m"
+        ] = (word,) * 64 if cylinder or postprocessing else word
     elif case == "index":
         entry["obstacle_index" if cylinder else "wall_index"] = False
     elif case == "mask":
         stage["hit"] = (1,) * 64
     elif case == "profile":
-        trace["inputs"]["config"]["max_range"] = 3.0
+        if postprocessing:
+            trace["inputs"]["max_range_m"] = 3.0
+        else:
+            trace["inputs"]["config"]["max_range"] = 3.0
     elif case == "rays":
         trace["world_frame_unit_rays"] = ("0x0.0p+0",) * 192
     elif case == "side_count":
@@ -13213,11 +13286,19 @@ def test_native_tof_wall_history_layout(
     elif case == "top_shape":
         entry["top"]["relative_m"] = ("0x0.0p+0",) * 129
     elif case == "nonfinite":
-        entry["sensor_up" if direction else "root_m"] = ("nan",) * 64
+        entry[
+            "noise_draw_m" if postprocessing else "sensor_up" if direction else "root_m"
+        ] = ("nan",) * 64
     elif case == "range_negative":
         stage["candidate_m"] = ("-inf",) * 64
     elif case == "word_budget":
-        stage["sensor_up" if direction else "numerator_m"] = ("0" * 33,) * 64
+        stage[
+            "noise_draw_m"
+            if postprocessing
+            else "sensor_up"
+            if direction
+            else "numerator_m"
+        ] = ("0" * 33,) * 64
     elif case == "source_oversize":
         source_history *= 9
     elif case == "source_tuple":
@@ -13225,7 +13306,10 @@ def test_native_tof_wall_history_layout(
     elif case == "obstacle_operand":
         entry["radius_m"] = "0x0.0p+0"
     elif case == "signed_zero":
-        entry["pitch_sine"] = "-0x0.0p+0"
+        if postprocessing:
+            entry["noise_draw_m"] = ("-0x0.0p+0",) * 64
+        else:
+            entry["pitch_sine"] = "-0x0.0p+0"
     elif case == "generation_inputs":
         entry["inputs"]["field_of_view_rad"] += 0.25
     elif case == "effective_pitch":
@@ -13242,6 +13326,39 @@ def test_native_tof_wall_history_layout(
         )
         source_history[0]["native_source"]["world_frame_unit_rays"] = None
         source_history[0]["native_source"]["floor_candidate_ranges_m"] = None
+    elif case == "numeric_flag":
+        trace["source_qualified"] = 0
+    elif case == "positive_inf":
+        trace["noisy_ranges_m"] = ("inf",) * 64
+    elif case == "input_type":
+        trace["inputs"]["dropout"] = False
+    elif case == "pre_noise":
+        trace["pre_noise_ranges_m"] = ("0x0.0p+0",) * 64
+    elif case in ("store_words", "store_type", "store_budget"):
+        words = trace["stored_ranges_m"]
+        trace["stored_ranges_m"] = (
+            words[0] ^ 1
+            if case == "store_words"
+            else False
+            if case == "store_type"
+            else 1 << 32,
+            *words[1:],
+        )
+    elif case == "mask_words":
+        masks = trace["valid_after_dropout"]
+        trace["valid_after_dropout"] = (not masks[0], *masks[1:])
+    elif case in ("mask_type", "mask_shape"):
+        trace["valid_before_dropout"] = (
+            (1,) * 64 if case == "mask_type" else (False,) * 65
+        )
+    elif case == "stored_nonfinite":
+        words = (0x7FC00000, *trace["stored_ranges_m"][1:])
+        trace["stored_ranges_m"] = words
+        source_history[0]["sample_words"] = words
+    elif case in ("tick_type", "delivery_type"):
+        history[0]["tick" if case == "tick_type" else "delivery_tick"] = True
+    elif case == "extra":
+        trace["extra"] = "0x0.0p+0"
     before = deepcopy((history, source_history))
     work = {"forbidden": 0}
 
@@ -13256,6 +13373,7 @@ def test_native_tof_wall_history_layout(
         "_sample_simulator_native_tof_wall_source",
         "_sample_simulator_native_tof_cylinder_source",
         "_sample_simulator_native_tof_direction_source",
+        "_sample_simulator_native_tof_postprocessing_source",
         "_c1_source_binding_digest",
     ):
         monkeypatch.setattr(diagnostics, name, forbidden)
@@ -13265,11 +13383,16 @@ def test_native_tof_wall_history_layout(
         monkeypatch.setattr(RoverEnv, name, forbidden)
     for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
         monkeypatch.setattr(rover, name, forbidden)
-    if case in ("copy", "max_obstacles", "signed_zero"):
+    if case in ("copy", "max_obstacles", "signed_zero", "legacy", "noise_rng"):
         assert validate(history, source_history, owner._epoch) is None
         assert (
             len(history) == len(source_history) == (1 if case == "signed_zero" else 8)
         )
+        if postprocessing:
+            assert trace["stored_ranges_m"] == source_history[0]["sample_words"]
+            assert trace["valid_after_dropout"] == source_history[0]["valid_mask"]
+            if case == "signed_zero":
+                assert trace["noise_draw_m"] == ("-0x0.0p+0",) * 64
     else:
         with pytest.raises(ValueError):
             validate(history, source_history, owner._epoch)

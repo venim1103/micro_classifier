@@ -15102,6 +15102,136 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _check_native_tof_postprocessing_history(history, source_history, source_epoch):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native ToF postprocessing history budget exhausted")
+    if type(source_history) is not list or len(source_history) > 8:
+        raise ValueError("native ToF postprocessing source history budget exhausted")
+    previous = -1
+    zero = "0x0.0p+0"
+    float_arrays = (
+        "pre_noise_ranges_m",
+        "noise_draw_m",
+        "noisy_ranges_m",
+        "dropout_draw",
+        "clipped_ranges_m",
+        "selected_ranges_m",
+    )
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+
+    def canonical(word):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError(
+                "unsupported native ToF retained postprocessing word budget"
+            )
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "unsupported native ToF retained postprocessing word"
+            ) from error
+        if value.hex() != word or not math.isfinite(value):
+            raise ValueError(
+                "unsupported native ToF retained postprocessing canonical word"
+            )
+
+    for entry in history:
+        if (
+            type(entry) is not dict
+            or len(entry) != 4
+            or any(type(key) is not str for key in entry)
+            or set(entry) != {"source_epoch", "tick", "delivery_tick", "postprocessing"}
+            or type(entry["source_epoch"]) is not str
+            or entry["source_epoch"] != source_epoch
+            or type(entry["tick"]) is not int
+            or not previous < entry["tick"] <= 0xFFFFFFFF // 50000
+            or type(entry["delivery_tick"]) is not int
+            or not 0 <= entry["delivery_tick"] <= 0xFFFFFFFF // 50000
+        ):
+            raise ValueError("unsupported native ToF postprocessing history metadata")
+        previous = entry["tick"]
+        matches = [
+            source for source in source_history if source["tick"] == entry["tick"]
+        ]
+        if (
+            len(matches) != 1
+            or matches[0]["source_epoch"] != entry["source_epoch"]
+            or matches[0]["delivery_tick"] != entry["delivery_tick"]
+        ):
+            raise ValueError("native ToF postprocessing history source pairing missing")
+        source = matches[0]
+        native = source["native_source"]
+        config = native["inputs"]["config"]
+        expected = {
+            "schema": "micro-classifier/native-tof-postprocessing-source/1",
+            "allowed_use": "native_tof_postprocessing_diagnostics_only",
+            "status": "recorded_native_tof_postprocessing_values",
+            **{flag: False for flag in flags},
+            "inputs": {
+                "max_range_m": float(config["max_range"]),
+                "noise_std_m": float(config["noise_std"]),
+                "dropout": float(config["dropout"]),
+                "mount_height_m": None
+                if config["tof_mount_height"] is None
+                else float(config["tof_mount_height"]),
+            },
+            **{key: (zero,) * 64 for key in float_arrays},
+            "valid_before_dropout": (False,) * 64,
+            "valid_after_dropout": source["valid_mask"],
+            "stored_ranges_m": source["sample_words"],
+        }
+        trace = entry["postprocessing"]
+        if not _native_tof_word_copy_matches(trace, expected, shape_only=True):
+            raise ValueError("unsupported native ToF retained postprocessing layout")
+        if (
+            any(
+                not _native_tof_word_copy_matches(trace[key], value)
+                for key, value in expected.items()
+                if key not in (*float_arrays, "valid_before_dropout")
+            )
+            or trace["pre_noise_ranges_m"] != native["pre_noise_ranges_m"]
+        ):
+            raise ValueError(
+                "native ToF retained postprocessing native word pairing mismatched"
+            )
+        inputs = trace["inputs"]
+        if (
+            any(
+                not math.isfinite(inputs[key])
+                for key in ("max_range_m", "noise_std_m", "dropout")
+            )
+            or inputs["max_range_m"] <= 0
+            or inputs["noise_std_m"] < 0
+            or not 0 <= inputs["dropout"] <= 1
+            or (
+                inputs["mount_height_m"] is not None
+                and not math.isfinite(inputs["mount_height_m"])
+            )
+        ):
+            raise ValueError("unsupported native ToF retained postprocessing profile")
+        for key in float_arrays:
+            for word in trace[key]:
+                canonical(word)
+        if any(
+            type(word) is not int
+            or not 0 <= word <= 0xFFFFFFFF
+            or word & 0x7F800000 == 0x7F800000
+            for word in trace["stored_ranges_m"]
+        ):
+            raise ValueError(
+                "unsupported native ToF retained postprocessing storage word"
+            )
+
+
 def _check_native_tof_direction_history(history, source_history, source_epoch):
     if type(history) is not list or len(history) > 8:
         raise ValueError("native ToF direction history budget exhausted")

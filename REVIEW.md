@@ -481,6 +481,46 @@ study/dependency commands; unchanged default interface controls ran in root.
 All8 flags false, source correspondence only. Next typed <=8-record postprocessing
 history, then recorder retention and delivered/pending composition as supported.
 
+## 310. Typed Bounded Native ToF Postprocessing History (2026-11-11)
+
+Begin cleanfd0d88b. Local hypothesis: closed21-key postprocessing packet may use
+neighboring typed history pattern: <=8 ordered builtin-list four-key records,
+exact builtin epoch/tick/delivery metadata, unique independently prevalidated
+native source pairing, finite canonical six64 float words <=32chars, two64
+literal masks and stored64 uint32 words. Profile/pre-noise/stored/final-mask joins
+only; no internal arithmetic/noise-law/source/geometry/coverage/error/physical/
+clock/one-use/admission qualification and all8 flags false. Unsupported/nonfinite
+raw source stays unknown; signed observation words retained, no replay/draw/hash/
+clock/intake/read/retention in validator. Extend old67-case matrix by33 controls;
+one existing fresh step/geometry/two native intakes before poison per new fixture,
+copy/legacy/noisy use8 declared paired records from one actual packet, NOT8 measured
+acquisitions. Guard max3072 float decodes/512 storage words/1024 bool masks per
+validation; unchanged arithmetic/default/frozen/work/old-family controls.
+Fresh3 routine pytest positions first33/60s, sole necessary repair33/60s,
+root360s; failures/aborts/unknown spent, no historical/protected refunds/renewals.
+Keep returns-310-* in original recovery directory; serialize source-sensitive
+checks from editors/formatters. Exit typed history, then opt-in recorder retention
+and delivered/pending composition as supported, not protected work/admission.
+
+First33 PASS0.74s/four hashes stable; scoped Ruff/format/editor/AST old definitions,
+imports/defaults/exact old67-case prefix PASS. One nearby native archive boundary
+read showed storage prevalidation checks uint32 range, not finite IEEE float32
+encoding. Retain original guard contract; ONLY new companion guard now rejects
+all-ones float32 exponent (raw infinity/NaN) and adds one matching NaN storage
+word in native+postprocessing control. This is finite representation preflight,
+not noise/clip arithmetic qualification. Narrow routine plan revision: reserved
+necessary check34/60s then sole root360s, same3 positions and no old/protected
+refund/renewal, new integer bit test within existing512 stored-word count.
+
+Revised34 PASS5.04s/four hashes stable; scoped Ruff/format/editor/AST conservation
+PASS. Pylance selected /opt/venv/bin/python; references resolve definition only,
+not static caller compatibility proof. Two of three positions spent; root gate
+NOT RUN. User paused for today, then requested a WIP commit/push only. Preserve
+this unfinished increment as WIP, not a verified source checkpoint or contract
+adoption. Resume only after a fresh continuation: check current files and finish
+the pending required gate before recorder retention. Logs remain retained;
+all8 flags false, no qualification or protected-budget renewal.
+
 ## Sources
 
 Hardware and tools:

@@ -465,6 +465,47 @@ additional C/Arm/sanitizer/board opt-in gates ran. Next compose supplied cap-rel
 words with explicit raw nonfinite-distance/+0 fallback, then independent cap-square
 arithmetic. Preserve matched identities, closing checks and unresolved word ties.
 
+## 283. Matched Retained Cylinder Top-Relative Residuals (2026-11-11)
+
+Hypothesis: default-off literal `include_cylinder_top_relative_residuals` requiring
+`include_cylinder=True` composes captured offset/horizontal-ray/raw cap distance/
+relative words through the unchanged combined-expression helper. Matched delivered/
+pending identities and independent closing probes retain raw nonfinite-distance
+word and explicit effective +0 fallback, not a corrected upstream quotient.
+Cheapest discriminator: existing23-case family in eleven modes,253 controls,
+independent exact supplied-word two-axis oracle; copy supplies +inf distance and
+corresponding offset relative words, no ray/source/geometry qualification.
+
+Fresh bounded routine ledger: <=3 pytest invocations, focused then required root
+plus one diagnosed-repair reserve,300 s each. Root `python -m pytest -q && ruff
+check . && git diff --check`, changed Python format check. Fixture <=4steps/5reads/
+3geometries/3retentions/6active-helper+cylinder matches/2pending matches/64digests.
+New mode <=12402 values/14274 binary operations/2304 oracle operations; prior ten
+caps unchanged. Combined control includes previous ten arithmetic helpers and
+selection chain <=6each. Existing helper <=32 cylinders/6400 words/4096 entries/
+6336 values/12288 binary operations,4096-bit ceiling unchanged; <=18 original/
+closing invocations across delivered/<=8 pending records. Explicit21-bit observed
+relative in16-bit work-limit control. No snapshot intake/read/retain/step/reset/
+replay/clock; tick/frame/both RNGs preserved. Preserve failures/unknown attempts,
+diagnose before rerun, no old refund/protected experiment or additional C/Arm/
+sanitizer/board opt-ins. No dependency/model/task-data/hardware changes. All eight
+flags false; no isolated primitive/FMA, uniform error/geometry/coverage/source/
+clock/one-use/permission/admission or usable command.
+
+Implemented separate default-off literal option, delivered/pending reports and
+independent closing computations with strict outgoing checks before publication.
+Focused253 passed,3260 deselected,40.15 s. Required root4436 passed,one known
+transformer QDQ xfail,71 warnings,147.68 s; Ruff root lint, changed-file format,
+whitespace/editor and AST scope/default/23-case/ten-mode-cap conservation passed.
+Primitive helpers/history guards and all other methods/functions unchanged. Two
+of three pytest positions spent, no failure/abort; unused reserve is not follow-on
+authority. Logs `cylinder-283-focused-1.log`, `cylinder-283-root-1.log` retained
+under `.git/recovery-20261109-PmbQpU`, no cleanup or successful-gate repeat required.
+No additional C/Arm/sanitizer/board opt-in gates ran, no qualification/admission
+flags changed. Next independent captured cap radial/radius-square expression
+residuals with matched original/closing identities; preserve supplied operands,
+nonfinite unknowns and unresolved equal-value/different-word minimum ties.
+
 ## Sources
 
 Hardware and tools:

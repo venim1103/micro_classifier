@@ -2368,6 +2368,21 @@ geometry/source/coverage/error/clock/one-use/permission/admission or usable comm
 See [actual controls, rejected fixture and evidence limits][native-tof-cylinder-matched-top-division-review].
 
 
+#### Matched Retained Cylinder Top-Relative Residuals (2026-11-11)
+
+Default-off literal `include_cylinder_top_relative_residuals` requires
+`include_cylinder=True`. Matched delivered/pending identities and independent
+closing checks compose captured offset/horizontal-ray/raw cap distance/relative
+words through the unchanged combined-expression helper. Raw nonfinite distance
+word retains explicit effective +0 fallback; nonfinite observed relative residual
+stays unknown. <=32 cylinders/6400 words/4096 entries/6336 values/12288 binary
+operations per helper,4096-bit ceiling unchanged; <=18 original/closing invocations
+across delivered/<=8 pending records. No corrected upstream words or isolated
+primitive/FMA claim; all eight flags false, no geometry/source/coverage/error/
+clock/one-use/permission/admission or usable command. See
+[actual two-axis controls and limits][native-tof-cylinder-matched-top-relative-review].
+
+
 [native-tof-cylinder-trace-review]: ../review/246-250.md#246-actual-native-tof-cylinder-quadratic-trace-2026-11-10
 [native-tof-cylinder-stages-review]: ../review/246-250.md#247-actual-native-tof-cylinder-sidetop-trace-2026-11-10
 [native-tof-cylinder-acquisition-review]: ../review/246-250.md#248-actual-fresh-tof-cylinder-acquisition-pairing-2026-11-10
@@ -2403,3 +2418,4 @@ See [actual controls, rejected fixture and evidence limits][native-tof-cylinder-
 [native-tof-cylinder-matched-altitude-review]: ../../REVIEW.md#280-matched-retained-cylinder-side-altitude-residuals-2026-11-10
 [native-tof-cylinder-matched-top-offset-review]: ../../REVIEW.md#281-matched-retained-cylinder-top-offset-residuals-2026-11-11
 [native-tof-cylinder-matched-top-division-review]: ../../REVIEW.md#282-matched-retained-cylinder-top-division-residuals-2026-11-11
+[native-tof-cylinder-matched-top-relative-review]: ../../REVIEW.md#283-matched-retained-cylinder-top-relative-residuals-2026-11-11

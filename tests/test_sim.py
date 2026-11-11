@@ -28044,6 +28044,7 @@ def test_native_tof_cylinder_selection_snapshot(
         "side_altitude",
         "top_offset",
         "top_division",
+        "top_relative",
     ),
 )
 def test_native_tof_cylinder_offset_snapshot(
@@ -28063,7 +28064,8 @@ def test_native_tof_cylinder_offset_snapshot(
     side_altitude = kind == "side_altitude"
     top_offset = kind == "top_offset"
     top_division = kind == "top_division"
-    top_controls = top_offset or top_division
+    top_relative = kind == "top_relative"
+    top_controls = top_offset or top_division or top_relative
     residual_key = (
         "signed_squared_residual_ratio" if root_squared else "signed_residual_ratio"
     )
@@ -28078,6 +28080,7 @@ def test_native_tof_cylinder_offset_snapshot(
         "side_altitude": (9678, 11190, 2304),
         "top_offset": (9696, 11202, 12),
         "top_division": (10470, 11970, 768),
+        "top_relative": (12402, 14274, 2304),
     }[kind]
     field = f"cylinder_{kind}_residuals"
     option = f"include_{field}"
@@ -28114,6 +28117,7 @@ def test_native_tof_cylinder_offset_snapshot(
             "combined_division",
             "combined_altitude",
             "combined_top_offset",
+            "combined_top_division",
             "late",
             "forbidden",
         ),
@@ -28156,6 +28160,11 @@ def test_native_tof_cylinder_offset_snapshot(
         owner._tof_cylinder_history.pop(0)
     elif case == "missing_pending":
         owner._tof_cylinder_history.pop()
+    elif top_relative and case == "copy":
+        cylinder = owner._tof_cylinder_history[0]["cylinder"]["cylinders"][0]
+        top = cylinder["top"]
+        top["distance_m"] = ("inf", *top["distance_m"][1:])
+        top["relative_m"] = (*cylinder["offset_m"], *top["relative_m"][2:])
     elif top_division and case == "copy":
         trace = owner._tof_cylinder_history[0]["cylinder"]
         rays = trace["world_frame_unit_rays"]
@@ -28188,6 +28197,8 @@ def test_native_tof_cylinder_offset_snapshot(
         key = (
             "horizontal_squared"
             if horizontal_norm
+            else "relative_m"
+            if top_relative
             else "distance_m"
             if top_division
             else "altitude_m"
@@ -28260,8 +28271,10 @@ def test_native_tof_cylinder_offset_snapshot(
         if top_controls
         else {}
     )
-    if top_division:
+    if top_division or top_relative:
         prior_top_reports["combined_top_offset"] = "top_offset"
+    if top_relative:
+        prior_top_reports["combined_top_division"] = "top_division"
     names.update(
         {
             name: f"_native_tof_cylinder_{suffix}_residuals"
@@ -28470,7 +28483,7 @@ def test_native_tof_cylinder_offset_snapshot(
                         else 64
                         if horizontal_norm
                         else 128 * len(trace["cylinders"])
-                        if side_numerator
+                        if side_numerator or top_relative
                         else (64 if projection or discriminant or root_squared else 2)
                         * len(trace["cylinders"])
                     )
@@ -28511,6 +28524,44 @@ def test_native_tof_cylinder_offset_snapshot(
                             assert entry["observed_top_offset_hex"] == observed_word
                             assert (
                                 entry["exact_difference_ratio"]
+                                == exact.as_integer_ratio()
+                            )
+                        elif top_relative:
+                            index, ray = entry["obstacle_index"], entry["ray_index"]
+                            axis = entry["axis"]
+                            cylinder = trace["cylinders"][index]
+                            distance_word = cylinder["top"]["distance_m"][ray]
+                            distance = float.fromhex(distance_word)
+                            effective = distance if math.isfinite(distance) else 0.0
+                            offset_word = cylinder["offset_m"][axis]
+                            direction_word = trace["world_frame_unit_rays"][
+                                ray * 3 + axis
+                            ]
+                            exact = Fraction.from_float(float.fromhex(offset_word)) + (
+                                Fraction.from_float(effective)
+                                * Fraction.from_float(float.fromhex(direction_word))
+                            )
+                            work["oracle"] += 2
+                            observed_word = cylinder["top"]["relative_m"][
+                                ray * 2 + axis
+                            ]
+                            assert (
+                                diagnostic["comparison_basis"]
+                                == "unrounded_supplied_word_offset_plus_effective_distance_times_horizontal_ray"
+                            )
+                            assert axis in (0, 1)
+                            assert entry["offset_axis_hex"] == offset_word
+                            assert entry["direction_axis_hex"] == direction_word
+                            assert entry["raw_distance_hex"] == distance_word
+                            assert entry["effective_distance_hex"] == effective.hex()
+                            assert entry["distance_branch"] == (
+                                "finite_distance"
+                                if math.isfinite(distance)
+                                else "nonfinite_distance_zero_fallback"
+                            )
+                            assert entry["observed_relative_hex"] == observed_word
+                            assert (
+                                entry["exact_unrounded_expression_ratio"]
                                 == exact.as_integer_ratio()
                             )
                         elif top_division:
@@ -28790,6 +28841,10 @@ def test_native_tof_cylinder_offset_snapshot(
                             if top_division:
                                 assert entry["status"] == (
                                     "computed_exact_cylinder_top_division_word_residual"
+                                )
+                            if top_relative:
+                                assert entry["status"] == (
+                                    "computed_exact_cylinder_top_relative_expression_residual"
                                 )
                             residual = observed_value - exact
                             work["oracle"] += 1

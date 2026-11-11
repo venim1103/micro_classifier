@@ -367,6 +367,46 @@ before this note, no code gate rerun; last source gate4575/known QDQ xfail remai
 renewed, all8 flags false, no permission/admission. Next opt-in recorder-owned
 direction history, then delivered/pending original+closing correspondence.
 
+## 293. Recorder-Owned Native Direction History (2026-11-11)
+
+Begin clean58452f2. Hypothesis: default-off literal include_direction extends
+existing native recorder companion ownership/copy/closing checks without replay.
+<=8 native+direction records, fixed validated generation fields, retained-tick
+trim/idempotent exact repeat, original+closing cache/RNG/producer/profile/history
+identity and binding; all8 qualification/admission flags stay false. No additional
+geometry/noise/clock during retention, no source/geometry/numerical/physical proof.
+Reuse unchanged17-case retention matrix with old wall/cylinder34 controls plus
+direction17=51. Per case<=13 geometries/14 reads/10 retentions/20 direction intakes/
+40 native intakes/256 bindings/one late mutation. Direction combined includes all
+four prior companions, exactly18 native intakes/2 existing clock reads; prior
+wall10/cylinder14 combined caps and every old per-case limit stay unchanged.
+Three routine pytest positions first51/60s, sole necessary repair51/60s, root/300s;
+count failed/aborted/unknown attempts, retain rays-293-* logs in original recovery
+directory, no protected budget renewal/new data/studies/dependencies/hardware.
+Next delivered/pending matching, not qualification or an admitted command.
+
+First51 passed/3618deselected/4.53s with four source/test hashes stable. Existing
+17 case names and two wall/cylinder families conserved; direction original/closing
+cache/history/output/owner mutation controls, empty default, literal bool, missing
+source, exact duplicate/changed repeat, canonical paired-word rejection before
+bindings, retained-tick gap/8-record trim exercised. Combined direction+timing+
+selection+wall+cylinder exactly18 native intakes/2 existing clock reads, old10/14
+controls unchanged. Ruff formatted ONLY two touched Python files; scoped lint/
+format/whitespace/editor diagnostics clear. AST all prior source functions/recorder
+methods except init+record_native_tof_source conserved; append-only keyword default
+include_direction=False, all old defaults/case names/families unchanged. Internal
+ownership/candidate binding includes direction history; not a source qualification
+or frozen wire change. Required root `python -m pytest -q && ruff check . && git diff
+--check` passed4592/known QDQ xfail/71warnings/145.19s, source/test hashes stable;
+touched format check passed. Two of3 routine pytest positions spent, unused
+repair reserve is not follow-on authority; no failure/abort/refund. Logs
+rays-293-{focused-1,root-1} retained in original recovery directory, no new data/
+dependencies/downloads/studies/hardware/C/Arm/sanitizer/board gates. Supplied raw
+finite words retained, unsupported/nonfinite unknown; all8 flags false. No trig/
+geometry/source/coverage/numerical/error/clock/one-use/physical/permission/admission
+qualification, no usable command. Next retained direction delivered/pending joins
+and opt-in original+closing publication; current snapshots do not expose direction.
+
 ## Sources
 
 Hardware and tools:

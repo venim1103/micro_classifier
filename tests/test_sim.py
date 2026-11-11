@@ -13069,7 +13069,7 @@ def test_native_tof_selection_retention(
         "noncanonical_pair",
     ),
 )
-@pytest.mark.parametrize("cylinder", (False, True))
+@pytest.mark.parametrize("cylinder", (False, True, None))
 def test_native_tof_wall_retention(
     monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
 ):
@@ -13077,12 +13077,13 @@ def test_native_tof_wall_retention(
 
     from sim import diagnostics, rover
 
-    kind = "cylinder" if cylinder else "wall"
+    direction = cylinder is None
+    kind = "direction" if direction else "cylinder" if cylinder else "wall"
     history_name = f"_tof_{kind}_history"
     cache_name = f"_native_tof_{kind}_source"
     intake_name = f"_sample_simulator_native_tof_{kind}_source"
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    if cylinder:
+    if cylinder or direction:
         environment.scenario = replace(
             environment.scenario, obstacles=((3.0, 3.0, 0.25),)
         )
@@ -13129,7 +13130,12 @@ def test_native_tof_wall_retention(
         capture_native_tof_source=True,
         **{f"capture_native_tof_{kind}": case != "missing"},
         **(
-            {"capture_native_tof_wall": True} if cylinder and case == "combined" else {}
+            {
+                "capture_native_tof_wall": True,
+                **({"capture_native_tof_cylinder": True} if direction else {}),
+            }
+            if (cylinder or direction) and case == "combined"
+            else {}
         ),
         capture_native_tof_selection=case == "combined",
         capture_native_tof_timing=case == "combined",
@@ -13177,7 +13183,7 @@ def test_native_tof_wall_retention(
     def native(*args, **kwargs):
         work["native"] += 1
         assert work["native"] <= (
-            (14 if cylinder else 10) if case == "combined" else 40
+            (18 if direction else 14 if cylinder else 10) if case == "combined" else 40
         )
         return original_native(*args, **kwargs)
 
@@ -13186,7 +13192,12 @@ def test_native_tof_wall_retention(
         if (
             work["intake"] == 1
             and type(value) is dict
-            and value.get("schema") == f"micro-classifier/native-tof-{kind}-source/1"
+            and value.get("schema")
+            == (
+                "micro-classifier/native-tof-direction-trace/1"
+                if direction
+                else f"micro-classifier/native-tof-{kind}-source/1"
+            )
         ):
             outgoing["wall"] = actual
         return actual
@@ -13213,7 +13224,14 @@ def test_native_tof_wall_retention(
                 environment,
                 synthetic_test_only=True,
                 **{f"include_{kind}": selected},
-                **({"include_wall": True} if cylinder and case == "combined" else {}),
+                **(
+                    {
+                        "include_wall": True,
+                        **({"include_cylinder": True} if direction else {}),
+                    }
+                    if (cylinder or direction) and case == "combined"
+                    else {}
+                ),
                 include_selection=case == "combined",
                 include_timing=case == "combined",
             )
@@ -13250,6 +13268,11 @@ def test_native_tof_wall_retention(
             if cylinder:
                 assert len(entry[kind]["cylinders"]) == 1
                 assert len(entry[kind]["cylinders"][0]["sides"]) == 2
+            elif direction:
+                assert (
+                    entry[kind]["direction_generation"]["world_frame_unit_rays"]
+                    == entry[kind]["world_frame_unit_rays"]
+                )
             assert all(
                 entry[kind][flag] is False
                 for flag in (
@@ -13270,15 +13293,24 @@ def test_native_tof_wall_retention(
             if case == "combined":
                 assert owner._tof_timing_history[0]["clock"]["qualified"] is False
                 assert owner._tof_selection_history[0]["tick"] == entry["tick"]
-                assert work["clock"] == 2 and work["native"] == (14 if cylinder else 10)
-                if cylinder:
+                assert work["clock"] == 2 and work["native"] == (
+                    18 if direction else 14 if cylinder else 10
+                )
+                if cylinder or direction:
                     assert owner._tof_wall_history[0]["tick"] == entry["tick"]
+                if direction:
+                    assert owner._tof_cylinder_history[0]["tick"] == entry["tick"]
             elif case == "duplicate":
                 before = deepcopy(getattr(owner, history_name))
                 retain()
                 assert getattr(owner, history_name) == before
             elif case == "duplicate_changed":
-                if cylinder:
+                if direction:
+                    raw = getattr(environment, cache_name)[kind]["direction_generation"]
+                    raw["sensor_forward"][0, 0] = math.nextafter(
+                        raw["sensor_forward"][0, 0], math.inf
+                    )
+                elif cylinder:
                     raw = getattr(environment, cache_name)[kind]["cylinders"][0]
                     raw["projection_m"][0, 0] = math.nextafter(
                         raw["projection_m"][0, 0], math.inf
@@ -13297,6 +13329,10 @@ def test_native_tof_wall_retention(
                 words = ("0.0", *paired["world_frame_unit_rays"][1:])
                 paired["world_frame_unit_rays"] = words
                 getattr(owner, history_name)[0][kind]["world_frame_unit_rays"] = words
+                if direction:
+                    getattr(owner, history_name)[0][kind]["direction_generation"][
+                        "world_frame_unit_rays"
+                    ] = words
                 bindings_before = work["binding"]
                 with pytest.raises(ValueError, match="canonical"):
                     retain()

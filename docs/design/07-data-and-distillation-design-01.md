@@ -2319,8 +2319,25 @@ coverage/source/error/one-use/physical/permission/admission evidence; all eight
 flags false. See [actual controls, guard repair and checks][native-tof-direction-history-review].
 
 
+#### Recorder-Owned Native Direction History (2026-11-11)
+
+Literal default-off `record_native_tof_source(include_direction=False)` requires
+fresh original cache and current bound producer; typed owned/candidate history
+validation, <=8 native-tick-aligned records, exact-repeat idempotence/changed-word
+rejection, detached generation words. Original+closing cache/native/RNG/producer/
+profile/history identities and ownership/candidate bindings checked before any
+assignment. All prior trace/timing companions can share the same acquisition;
+no extra geometry/noise/replay/clock during retention, no canonical correction.
+Unsupported/nonfinite generation remains unknown; all eight flags false. Internal
+owned-history bindings are correspondence only, not numerical/trig/geometry/
+source/coverage/error/clock/one-use/physical/permission/admission qualification.
+No delivered/pending direction matching/publication follows from this retention.
+See [actual controls, default/cap conservation and gates][native-tof-direction-retention-review].
+
+
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
 [native-tof-direction-intake-review]: ../../REVIEW.md#290-bounded-closed-native-direction-source-intake-2026-11-11
 [native-tof-direction-history-review]: ../../REVIEW.md#291-typed-native-direction-history-validation-2026-11-11
+[native-tof-direction-retention-review]: ../../REVIEW.md#293-recorder-owned-native-direction-history-2026-11-11

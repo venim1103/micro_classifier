@@ -2449,3 +2449,20 @@ qualification. Signed words retained and equal-value/different-word ties remain
 unresolved. See [actual standalone controls, failures and gates][native-tof-direction-yaw-review].
 
 [native-tof-direction-yaw-review]: ../../REVIEW.md#301-supplied-word-native-direction-yaw-expressions-2026-11-11
+
+#### Matched Native Direction Yaw Expressions (2026-11-11)
+
+Literal default-off `include_direction_yaw_residuals` requires
+`include_direction=True` in delivered/pending snapshot. Original and closing
+typed native/direction retained records supply yaw cosine/sine, pitched-forward,
+sensor-left and canonical world x/y strided words/IDs to the standalone helper;
+history/input/owner/frame/queue/copy/outgoing-report checks close before payload
+publication. Product+pitch+yaw+norm combination keeps separate old counters,
+default keys unchanged, detached output and unknown omits all payloads. Same
+<=258values/512binary/128entries/4096bits per yaw helper; all eight flags false,
+raw unsupported/nonfinite source unknown, supplied ties unresolved. No trig/
+up-passthrough/primitive/FMA/uniform-error/geometry/source/coverage/clock/one-use/
+physical/permission/admission qualification. See
+[actual matched controls and gates][native-tof-direction-owned-yaw-review].
+
+[native-tof-direction-owned-yaw-review]: ../../REVIEW.md#302-matched-native-direction-yaw-reports-2026-11-11

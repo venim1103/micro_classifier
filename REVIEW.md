@@ -558,6 +558,45 @@ clock/one-use/physical/permission/admission proof or usable command, all8 false.
 Next matched yaw reports against original+closing retained delivered/pending
 cosine/sine/pitched_forward/sensor_left/world x/y words and typed identities.
 
+## 302. Matched Native Direction Yaw Reports (2026-11-11)
+
+Begin clean9e6eeab. Hypothesis: append-only literal default-off yaw report option
+requires include_direction=True; compose standalone yaw on original+closing
+retained delivered/pending scalar/array words and typed IDs, closed x/y strided
+slices only after native/direction preflight, final history/owner/input/frame/
+queue/copy/report-binding checks before publish. No up-passthrough/primitive/
+FMA/trig/uniform-error/geometry/source/coverage/clock/one-use/admission; all8 false.
+Preserve old120snapshot+6dependency controls, new yaw24+3=153; combined yaw also
+product+pitch+norm with separate old counters. Old4steps/5reads/3retentions/
+3geometries/6matches/2pending/4queue/2frame/64bindings/one late mutation unchanged;
+yaw separate6helpers/1548values/3072binary/1536oracle, same1..4096bits. Scalar
+yaw_cosine, final world-x and outgoing-yaw report late mutations discriminate;
+unknown omits every payload/default keys unchanged/detached. Pylance no resolved
+method callers NOT static compatibility proof. Fresh3 routine pytest positions
+first153/60s, sole necessary repair153/60s, root360s; count failures/aborts/unknown
+as spent, no refund or old reserved position/protected renewal. Logs rays-302-*
+retained original recovery directory; serial no source/editor/formatter tools
+during checks. Exit matched horizontal yaw only, then bounded final-up word
+passthrough prerequisites as supported, never ray geometry/error qualification.
+
+First153 passed/3706deselected/18.76s, four hashes stable; old120 modes/24names/
+six dependencies preserved, new yaw24+3 including combined product/pitch/yaw/
+norm and separate counters, supplied-word Fraction oracles/IDs/detachment,
+held/delivered-only/default and late world-x/scalar/outgoing-report rejection
+passed. Old source methods/default prefix/test names/case decorators/modes/
+dependency prefix conserved in AST, touched format/lint/whitespace/editor clear.
+Required root `python -m pytest -q && ruff check . && git diff --check`
+passed4782/known QDQ xfail/71warnings/152.91s; four hashes stable, touched
+format-check passed. Twoof3 pytest positions spent/no failure/abort/refund,
+unused repair NOT follow-on authority. Logs rays-302-{focused-1,root-1} retained
+in original recovery directory, no source/guard/tolerance/cap relaxation or
+data/study/model/dependency/hardware/additional native/Arm/sanitizer/board opt-in/
+general audit; all8 false, unsupported/nonfinite source unknown, supplied ties
+unresolved, no corrected values/up-passthrough/primitive/FMA/trig/uniform-error/
+geometry/source/coverage/clock/one-use/physical/permission/admission proof or
+usable command. Next archive whole291--295 with links/history/limits intact
+before root growth, then bounded final-up word-copy prerequisite as supported.
+
 ## Sources
 
 Hardware and tools:

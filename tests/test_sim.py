@@ -14069,7 +14069,14 @@ def test_native_tof_selection_snapshot(
 )
 @pytest.mark.parametrize(
     ("cylinder", "products"),
-    ((False, False), (True, False), (None, False), (None, True), (None, "pitch")),
+    (
+        (False, False),
+        (True, False),
+        (None, False),
+        (None, True),
+        (None, "pitch"),
+        (None, "yaw"),
+    ),
 )
 def test_native_tof_wall_snapshot(
     monkeypatch, c1_motion_receipt_source_fixture, case, cylinder, products
@@ -14080,8 +14087,10 @@ def test_native_tof_wall_snapshot(
     from sim import diagnostics, rover
 
     pitch = products == "pitch"
+    yaw = products == "yaw"
     products = products is True
-    include_products = products or (pitch and case == "combined")
+    include_products = products or ((pitch or yaw) and case == "combined")
+    include_pitch = pitch or (yaw and case == "combined")
     direction = cylinder is None
     kind = "direction" if direction else "cylinder" if cylinder else "wall"
     history_name = f"_tof_{kind}_history"
@@ -14120,6 +14129,11 @@ def test_native_tof_wall_snapshot(
             "pitch_values",
             "pitch_binary",
             "pitch_oracle",
+            "yaw",
+            "yaw_active",
+            "yaw_values",
+            "yaw_binary",
+            "yaw_oracle",
         ),
         0,
     )
@@ -14236,6 +14250,7 @@ def test_native_tof_wall_snapshot(
     original_binding = diagnostics._c1_source_binding_digest
     original_product = diagnostics._native_tof_direction_product_residuals
     original_pitch = diagnostics._native_tof_direction_pitch_residuals
+    original_yaw = diagnostics._native_tof_direction_yaw_residuals
     original_value = diagnostics._C1CommandArithmetic.value
     original_binary = diagnostics._C1CommandArithmetic.binary
     outgoing = {}
@@ -14252,9 +14267,15 @@ def test_native_tof_wall_snapshot(
             elif case == "late_selection":
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
-                outgoing["pitch" if pitch else "product" if products else "arithmetic"][
-                    "source_qualified"
-                ] = True
+                outgoing[
+                    "yaw"
+                    if yaw
+                    else "pitch"
+                    if pitch
+                    else "product"
+                    if products
+                    else "arithmetic"
+                ]["source_qualified"] = True
             elif case == "late_pending":
                 outgoing["pending"][0]["sample_words"] = (
                     outgoing["pending"][0]["sample_words"][0] ^ 1,
@@ -14325,6 +14346,17 @@ def test_native_tof_wall_snapshot(
         outgoing.setdefault("pitch", actual)
         return actual
 
+    def yaw_probe(*args, **kwargs):
+        work["yaw"] += 1
+        assert work["yaw"] <= 6
+        work["yaw_active"] = True
+        try:
+            actual = original_yaw(*args, **kwargs)
+        finally:
+            work["yaw_active"] = False
+        outgoing.setdefault("yaw", actual)
+        return actual
+
     def value(instance, argument):
         if work["product_active"]:
             work["values"] += 1
@@ -14332,6 +14364,9 @@ def test_native_tof_wall_snapshot(
         if work["pitch_active"]:
             work["pitch_values"] += 1
             assert work["pitch_values"] <= 1548
+        if work["yaw_active"]:
+            work["yaw_values"] += 1
+            assert work["yaw_values"] <= 1548
         return original_value(instance, argument)
 
     def binary(instance, left, right, operation):
@@ -14341,6 +14376,9 @@ def test_native_tof_wall_snapshot(
         if work["pitch_active"]:
             work["pitch_binary"] += 1
             assert work["pitch_binary"] <= 3072
+        if work["yaw_active"]:
+            work["yaw_binary"] += 1
+            assert work["yaw_binary"] <= 3072
         return original_binary(instance, left, right, operation)
 
     def oracle(left, right, operation):
@@ -14351,6 +14389,13 @@ def test_native_tof_wall_snapshot(
     def pitch_oracle(left, right, operation):
         work["pitch_oracle"] += 1
         assert work["pitch_oracle"] <= 1536
+        if operation == "mul":
+            return left * right
+        return left + right if operation == "add" else left - right
+
+    def yaw_oracle(left, right, operation):
+        work["yaw_oracle"] += 1
+        assert work["yaw_oracle"] <= 1536
         if operation == "mul":
             return left * right
         return left + right if operation == "add" else left - right
@@ -14385,7 +14430,9 @@ def test_native_tof_wall_snapshot(
                 )
                 if direction:
                     name = (
-                        "pitched_up"
+                        "world_frame_unit_rays"
+                        if yaw
+                        else "pitched_up"
                         if pitch
                         else "sensor_forward"
                         if products
@@ -14402,12 +14449,13 @@ def test_native_tof_wall_snapshot(
             elif case == "outgoing":
                 outgoing["wall"][kind]["source_qualified"] = True
             elif case == "late_owner":
-                if pitch:
+                if pitch or yaw:
                     generation = getattr(owner, history_name)[0][kind][
                         "direction_generation"
                     ]
-                    generation["pitch_cosine"] = math.nextafter(
-                        float.fromhex(generation["pitch_cosine"]), math.inf
+                    name = "yaw_cosine" if yaw else "pitch_cosine"
+                    generation[name] = math.nextafter(
+                        float.fromhex(generation[name]), math.inf
                     ).hex()
                 elif products:
                     owner._tof_history[0]["native_source"].pop("inputs")
@@ -14439,6 +14487,7 @@ def test_native_tof_wall_snapshot(
     monkeypatch.setattr(
         diagnostics, "_native_tof_direction_pitch_residuals", pitch_probe
     )
+    monkeypatch.setattr(diagnostics, "_native_tof_direction_yaw_residuals", yaw_probe)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
     monkeypatch.setattr(diagnostics, "_match_native_tof_pending_sources", pending)
@@ -14469,7 +14518,8 @@ def test_native_tof_wall_snapshot(
             include_timing=combined,
             include_direction_norm_residuals=combined,
             include_direction_product_residuals=include_products and case != "default",
-            include_direction_pitch_residuals=pitch and case != "default",
+            include_direction_pitch_residuals=include_pitch and case != "default",
+            include_direction_yaw_residuals=yaw and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -14482,9 +14532,12 @@ def test_native_tof_wall_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
-        if not pitch or case == "default":
+        if not include_pitch or case == "default":
             assert "direction_pitch_residuals" not in result
             assert "pending_direction_pitch_residuals" not in result
+        if not yaw or case == "default":
+            assert "direction_yaw_residuals" not in result
+            assert "pending_direction_yaw_residuals" not in result
         if case in ("copy", "default", "held", "delivered_only", "combined"):
             assert result["snapshot_available"] is True, result["reason"]
             assert result["frame"] == before_frame
@@ -14582,7 +14635,7 @@ def test_native_tof_wall_snapshot(
                         "direction_product_residuals" not in result
                         and "pending_direction_product_residuals" not in result
                     )
-                if pitch:
+                if include_pitch:
                     reports = (
                         result["direction_pitch_residuals"],
                         *result.get("pending_direction_pitch_residuals", ()),
@@ -14645,6 +14698,68 @@ def test_native_tof_wall_snapshot(
                         ][0]
                         != "changed"
                     )
+                if yaw:
+                    reports = (
+                        result["direction_yaw_residuals"],
+                        *result.get("pending_direction_yaw_residuals", ()),
+                    )
+                    records = (selected, *result.get("pending_direction", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert len(diagnostic["entries"]) == 128
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        generation = record["direction"]["direction_generation"]
+                        cosine = Fraction(float.fromhex(generation["yaw_cosine"]))
+                        sine = Fraction(float.fromhex(generation["yaw_sine"]))
+                        for entry in diagnostic["entries"]:
+                            index = entry["ray_index"]
+                            forward_word = generation["pitched_forward"][index]
+                            left_word = generation["sensor_left"][index]
+                            forward = Fraction(float.fromhex(forward_word))
+                            left = Fraction(float.fromhex(left_word))
+                            exact = yaw_oracle(
+                                yaw_oracle(
+                                    cosine,
+                                    forward if entry["component"] == "x" else left,
+                                    "mul",
+                                ),
+                                yaw_oracle(
+                                    sine,
+                                    left if entry["component"] == "x" else forward,
+                                    "mul",
+                                ),
+                                "sub" if entry["component"] == "x" else "add",
+                            )
+                            axis = 0 if entry["component"] == "x" else 1
+                            observed = generation["world_frame_unit_rays"][
+                                index * 3 + axis
+                            ]
+                            residual = yaw_oracle(
+                                Fraction(float.fromhex(observed)), exact, "sub"
+                            )
+                            assert entry["operand_hex"] == (
+                                generation["yaw_cosine"],
+                                generation["yaw_sine"],
+                                forward_word,
+                                left_word,
+                            )
+                            assert entry["observed_component_hex"] == observed
+                            assert (
+                                Fraction(*entry["exact_unrounded_expression_ratio"])
+                                == exact
+                            )
+                            assert Fraction(*entry["signed_residual_ratio"]) == residual
+                    result["direction_yaw_residuals"]["diagnostic"]["entries"][0][
+                        "observed_component_hex"
+                    ] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["direction_generation"][
+                            "world_frame_unit_rays"
+                        ][0]
+                        != "changed"
+                    )
                 if combined:
                     if cylinder:
                         assert result["wall"]["tick"] == selected["tick"]
@@ -14701,6 +14816,8 @@ def test_native_tof_wall_snapshot(
                     "pending_direction_product_residuals",
                     "direction_pitch_residuals",
                     "pending_direction_pitch_residuals",
+                    "direction_yaw_residuals",
+                    "pending_direction_yaw_residuals",
                 }
                 & result.keys()
             )
@@ -14735,13 +14852,15 @@ def test_native_tof_wall_snapshot(
 
 
 @pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_direction"))
-@pytest.mark.parametrize("pitch", (False, True))
+@pytest.mark.parametrize("pitch", (False, True, "yaw"))
 def test_native_tof_direction_product_dependency(
     c1_motion_receipt_source_fixture, case, pitch
 ):
     owner = deepcopy(c1_motion_receipt_source_fixture[1])
     name = (
-        "include_direction_pitch_residuals"
+        "include_direction_yaw_residuals"
+        if pitch == "yaw"
+        else "include_direction_pitch_residuals"
         if pitch
         else "include_direction_product_residuals"
     )

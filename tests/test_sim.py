@@ -8408,6 +8408,19 @@ def test_native_tof_postprocessing_source(
                 **preflight_options,
             )
         assert source == before_source and all(value == 0 for value in work.values())
+        if case in ("invalid_noise", "invalid_dropout", "invalid_max"):
+            before_position, before_tick = environment.position.copy(), environment.tick
+            with pytest.raises(ValueError, match="finite sampling"):
+                environment.step(
+                    [0.125, 0.3],
+                    capture_native_tof_source=True,
+                    capture_native_tof_postprocessing=True,
+                    capture_native_tof_timing=True,
+                )
+            np.testing.assert_array_equal(environment.position, before_position)
+            assert environment.tick == before_tick and all(
+                value == 0 for value in work.values()
+            )
     else:
         baseline._sample(native_source={}, capture_clock=case == "clock")
         options = {"native_source": native, "capture_clock": case == "clock"}
@@ -11874,7 +11887,7 @@ def test_actual_native_tof_selection_acquisition(
         "timed_selection",
     ),
 )
-@pytest.mark.parametrize("kind", ("wall", "cylinder", "direction"))
+@pytest.mark.parametrize("kind", ("wall", "cylinder", "direction", "postprocessing"))
 def test_actual_native_tof_wall_acquisition(
     monkeypatch, c1_motion_receipt_source_fixture, case, kind
 ):
@@ -11884,6 +11897,7 @@ def test_actual_native_tof_wall_acquisition(
 
     cylinder = kind == "cylinder"
     direction = kind == "direction"
+    postprocessing = kind == "postprocessing"
     capture_option = f"capture_native_tof_{kind}"
     cache_name = f"_native_tof_{kind}_source"
     environment = deepcopy(c1_motion_receipt_source_fixture[0])
@@ -11897,8 +11911,17 @@ def test_actual_native_tof_wall_acquisition(
         environment.config = replace(environment.config, tof_mount_height=None)
     baseline = deepcopy(environment)
     original_ranges = rover.tof_ranges
+    original_sample = RoverEnv._sample
     work = {"geometry": 0, "wall": 0, "selection": 0, "clock": 0}
     originals = []
+
+    def sample(owner, **kwargs):
+        postprocessing_source = kwargs.get("postprocessing_source")
+        if postprocessing_source is not None:
+            work["wall"] += 1
+            assert work["wall"] <= 1 and kwargs.get("native_source") is not None
+            originals.append(postprocessing_source)
+        return original_sample(owner, **kwargs)
 
     def ranges(*args, **kwargs):
         work["geometry"] += 1
@@ -11920,6 +11943,8 @@ def test_actual_native_tof_wall_acquisition(
 
     monkeypatch.setattr(rover, "tof_ranges", ranges)
     monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    if postprocessing:
+        monkeypatch.setattr(RoverEnv, "_sample", sample)
     if case == "preflight_preserves":
         environment.step(
             [0.125, 0.3], capture_native_tof_source=True, **{capture_option: True}
@@ -11928,11 +11953,10 @@ def test_actual_native_tof_wall_acquisition(
     if case in (
         "flag",
         "missing_native",
-        "legacy",
         "budget",
         "pose",
         "preflight_preserves",
-    ):
+    ) or (case == "legacy" and not postprocessing):
         if case in ("pose", "preflight_preserves"):
             environment.position[0] = math.nan
         elif case == "budget":
@@ -11949,6 +11973,7 @@ def test_actual_native_tof_wall_acquisition(
                 "_native_tof_wall_source",
                 "_native_tof_cylinder_source",
                 "_native_tof_direction_source",
+                "_native_tof_postprocessing_source",
             )
         )
         with pytest.raises(ValueError):
@@ -11971,6 +11996,7 @@ def test_actual_native_tof_wall_acquisition(
                     environment._native_tof_wall_source,
                     environment._native_tof_cylinder_source,
                     environment._native_tof_direction_source,
+                    environment._native_tof_postprocessing_source,
                 ),
                 previous,
                 strict=True,
@@ -11987,12 +12013,19 @@ def test_actual_native_tof_wall_acquisition(
         **{capture_option: case not in ("default", "source_only")},
         **(
             {"capture_native_tof_wall": True}
-            if (cylinder or direction) and case in ("selection", "timed_selection")
+            if (cylinder or direction or postprocessing)
+            and case in ("selection", "timed_selection")
             else {}
         ),
         **(
             {"capture_native_tof_cylinder": True}
-            if direction and case in ("selection", "timed_selection")
+            if (direction or postprocessing)
+            and case in ("selection", "timed_selection")
+            else {}
+        ),
+        **(
+            {"capture_native_tof_direction": True}
+            if postprocessing and case in ("selection", "timed_selection")
             else {}
         ),
         capture_native_tof_selection=case in ("selection", "timed_selection"),
@@ -12021,11 +12054,32 @@ def test_actual_native_tof_wall_acquisition(
     wall = captured[kind]
     assert len(originals) == 1 and originals[0] is wall
     native = environment._native_tof_source["source"]
-    assert wall["inputs"] == native["inputs"]
+    if postprocessing:
+        assert wall["inputs"] == {
+            "max_range_m": float(environment.config.max_range),
+            "noise_std_m": float(environment.config.noise_std),
+            "dropout": float(environment.config.dropout),
+            "mount_height_m": environment.config.tof_mount_height,
+        }
+        np.testing.assert_array_equal(
+            wall["stored_ranges_m"].view(np.uint32),
+            captured["source"]["tof_m"].view(np.uint32),
+        )
+        np.testing.assert_array_equal(
+            wall["valid_after_dropout"], captured["source"]["tof_valid"]
+        )
+        assert not np.shares_memory(
+            wall["stored_ranges_m"], captured["source"]["tof_m"]
+        )
+        assert not np.shares_memory(
+            wall["valid_after_dropout"], captured["source"]["tof_valid"]
+        )
+    else:
+        assert wall["inputs"] == native["inputs"]
     for name in (
         "pre_noise_ranges_m",
-        "world_frame_unit_rays",
-        *(("floor_candidate_ranges_m",) if not cylinder else ()),
+        *(("world_frame_unit_rays",) if not postprocessing else ()),
+        *(("floor_candidate_ranges_m",) if not cylinder and not postprocessing else ()),
     ):
         np.testing.assert_equal(
             wall[name].view(np.uint64), native[name].view(np.uint64)
@@ -12054,6 +12108,14 @@ def test_actual_native_tof_wall_acquisition(
         )
         if case in ("selection", "timed_selection"):
             for name in ("_native_tof_wall_source", "_native_tof_cylinder_source"):
+                assert getattr(environment, name)["source"] is captured["source"]
+    elif postprocessing:
+        if case in ("selection", "timed_selection"):
+            for name in (
+                "_native_tof_wall_source",
+                "_native_tof_cylinder_source",
+                "_native_tof_direction_source",
+            ):
                 assert getattr(environment, name)["source"] is captured["source"]
     else:
         assert len(wall["walls"]) == 4
@@ -12091,6 +12153,9 @@ def test_actual_native_tof_wall_acquisition(
         wall["pre_noise_ranges_m"][:] = -99.0
         if direction:
             wall["direction_generation"]["world_frame_unit_rays"][:] = -99.0
+        elif postprocessing:
+            wall["stored_ranges_m"][:] = -99.0
+            wall["valid_after_dropout"][:] = ~wall["valid_after_dropout"]
         elif not cylinder:
             wall["walls"][0]["distance_m"][:] = -99.0
         else:

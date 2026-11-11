@@ -31,8 +31,9 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §306 for cold native return-postprocessing capture
-and distinct-receiver preflight; §305 covers matched native final-up copy reports;
+Read [REVIEW.md][review] §307 for fresh native postprocessing acquisition
+pairing; §306 covers cold return-postprocessing capture and distinct receivers;
+§305 covers matched native final-up copy reports;
 §304 covers supplied-word native final-up copies;
 §303 covers intact direction checkpoint archival;
 §302 covers matched native yaw-expression reports;
@@ -62,9 +63,10 @@ retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next close supported cold postprocessing boundaries, then bounded default-off
-fresh acquisition pairing of actual noise/dropout draws and clip/select/store
-words, no extra RNG calls or noise-law adoption. Floor division reports already
+Next bounded closed postprocessing intake with original/closing native cache,
+RNG/profile/pose/input/stored-word/mask joins, no replay or extra draws; retain
+raw unsupported/nonfinite source as unknown without noise-law adoption.
+Floor division reports already
 exist and are not a new task;
 raw unsupported/nonfinite source stays unknown. Preserve supplied
 operands, raw nonfinite unknowns, identity/closing checks and unresolved word ties.

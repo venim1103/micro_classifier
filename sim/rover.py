@@ -191,6 +191,7 @@ class RoverEnv:
         self._native_tof_wall_source = None
         self._native_tof_cylinder_source = None
         self._native_tof_direction_source = None
+        self._native_tof_postprocessing_source = None
         self.pending = deque()
         self.pending_ego = deque()
         self.ego_sample_tick = None
@@ -218,6 +219,7 @@ class RoverEnv:
         wall_source=None,
         cylinder_source=None,
         direction_source=None,
+        postprocessing_source=None,
     ):
         """Quantize acquisitions to decision ticks; deliver pending frames every tick."""
         phase = (
@@ -226,7 +228,22 @@ class RoverEnv:
             else self.tick // self.sensor_period_ticks
         )
         if phase != self.sensor_phase:
-            if direction_source is not None:
+            if postprocessing_source is not None:
+                options = {
+                    "native_source": native_source,
+                    "capture_clock": capture_clock,
+                    "postprocessing_source": postprocessing_source,
+                }
+                for name, value in (
+                    ("direction_source", direction_source),
+                    ("selection_source", selection_source),
+                    ("wall_source", wall_source),
+                    ("cylinder_source", cylinder_source),
+                ):
+                    if value is not None:
+                        options[name] = value
+                self._sample(**options)
+            elif direction_source is not None:
                 options = {
                     "native_source": native_source,
                     "capture_clock": capture_clock,
@@ -316,17 +333,7 @@ class RoverEnv:
             _check_native_tof_source_inputs(
                 self.position, self.yaw, self.scenario, self.config
             )
-            if (
-                not math.isfinite(self.config.noise_std)
-                or self.config.noise_std < 0
-                or not math.isfinite(self.config.dropout)
-                or not 0 <= self.config.dropout <= 1
-                or not math.isfinite(self.config.max_range)
-                or self.config.max_range <= 0
-            ):
-                raise ValueError(
-                    "native ToF postprocessing requires supported finite sampling inputs"
-                )
+            _check_native_tof_postprocessing_inputs(self.config)
         if selection_source is not None and native_source is None:
             raise ValueError("native ToF selection requires native ToF source capture")
         if wall_source is not None and native_source is None:
@@ -549,6 +556,31 @@ class RoverEnv:
                 "source": self._native_tof_source,
                 "direction": direction_source,
             }
+        if postprocessing_source is not None:
+            self._native_tof_postprocessing_source = {
+                "schema": "micro-classifier/native-tof-postprocessing-acquisition/1",
+                "allowed_use": "native_tof_postprocessing_diagnostics_only",
+                "status": "recorded_native_tof_postprocessing_acquisition",
+                **{
+                    flag: False
+                    for flag in (
+                        "fixture_permission_granted",
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                        "numerically_certified",
+                        "source_qualified",
+                        "native_execution_qualified",
+                        "command_admission_qualified",
+                    )
+                },
+                "rng": self.rng,
+                "odometry_rng": self.odometry_rng,
+                "tick": self.tick,
+                "delivery_tick": self.tick + config.latency_ticks,
+                "source": self._native_tof_source,
+                "postprocessing": postprocessing_source,
+            }
         if capture_clock:
             end_ns = _motion_receipt_clock_ns()
             ordered = begin_ns is not None and end_ns is not None and end_ns >= begin_ns
@@ -686,6 +718,7 @@ class RoverEnv:
         capture_native_tof_wall=False,
         capture_native_tof_cylinder=False,
         capture_native_tof_direction=False,
+        capture_native_tof_postprocessing=False,
     ):
         if type(capture_motion_receipt) is not bool:
             raise ValueError("capture_motion_receipt must be a literal boolean")
@@ -701,6 +734,10 @@ class RoverEnv:
             raise ValueError("capture_native_tof_cylinder must be a literal boolean")
         if type(capture_native_tof_direction) is not bool:
             raise ValueError("capture_native_tof_direction must be a literal boolean")
+        if type(capture_native_tof_postprocessing) is not bool:
+            raise ValueError(
+                "capture_native_tof_postprocessing must be a literal boolean"
+            )
         if capture_native_tof_timing and not capture_native_tof_source:
             raise ValueError("native ToF timing requires native ToF source capture")
         if capture_native_tof_selection and not capture_native_tof_source:
@@ -711,6 +748,12 @@ class RoverEnv:
             raise ValueError("native ToF cylinder requires native ToF source capture")
         if capture_native_tof_direction and not capture_native_tof_source:
             raise ValueError("native ToF direction requires native ToF source capture")
+        if capture_native_tof_postprocessing and not capture_native_tof_source:
+            raise ValueError(
+                "native ToF postprocessing requires native ToF source capture"
+            )
+        if capture_native_tof_postprocessing and type(self) is not RoverEnv:
+            raise TypeError("native ToF postprocessing requires the actual RoverEnv")
         if self.done:
             raise RuntimeError("episode ended; call reset before step")
         action = np.asarray(action, dtype=np.float64)
@@ -721,6 +764,8 @@ class RoverEnv:
             _check_native_tof_source_inputs(
                 self.position, self.yaw, self.scenario, config
             )
+        if capture_native_tof_postprocessing:
+            _check_native_tof_postprocessing_inputs(config)
         if capture_native_tof_selection and config.tof_mount_height is None:
             raise ValueError("native ToF selection requires mounted rays")
         if capture_native_tof_wall and config.tof_mount_height is None:
@@ -774,6 +819,7 @@ class RoverEnv:
         self._native_tof_wall_source = None
         self._native_tof_cylinder_source = None
         self._native_tof_direction_source = None
+        self._native_tof_postprocessing_source = None
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -847,7 +893,22 @@ class RoverEnv:
                 break
             self.position, self.yaw = position, yaw
         self.tick += 1
-        if capture_native_tof_direction:
+        if capture_native_tof_postprocessing:
+            options = {
+                "native_source": {},
+                "capture_clock": capture_native_tof_timing,
+                "postprocessing_source": {},
+            }
+            for name, enabled in (
+                ("direction_source", capture_native_tof_direction),
+                ("wall_source", capture_native_tof_wall),
+                ("cylinder_source", capture_native_tof_cylinder),
+                ("selection_source", capture_native_tof_selection),
+            ):
+                if enabled:
+                    options[name] = {}
+            self._update_sensor(**options)
+        elif capture_native_tof_direction:
             options = {
                 "native_source": {},
                 "capture_clock": capture_native_tof_timing,
@@ -1081,6 +1142,20 @@ def _check_native_tof_source_inputs(position, yaw, scenario, config):
         or not math.isfinite(yaw)
     ):
         raise ValueError("ToF source requires a finite native pose")
+
+
+def _check_native_tof_postprocessing_inputs(config):
+    if (
+        not math.isfinite(config.noise_std)
+        or config.noise_std < 0
+        or not math.isfinite(config.dropout)
+        or not 0 <= config.dropout <= 1
+        or not math.isfinite(config.max_range)
+        or config.max_range <= 0
+    ):
+        raise ValueError(
+            "native ToF postprocessing requires supported finite sampling inputs"
+        )
 
 
 def _retain_native_tof_source(

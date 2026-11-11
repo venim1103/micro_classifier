@@ -581,6 +581,47 @@ No logs/artifacts removed; original recovery directory retains all returns-306-*
 Next bounded supported cold-source closure before independently scoped fresh
 acquisition/cache ownership, then intake/retention/delivery only as evidence permits.
 
+## 307. Fresh Native ToF Postprocessing Acquisition Pairing (2026-11-11)
+
+Begin clean61e4151. Hypothesis: append-only literal step flagFalse and sensor
+receiverNone route separate cold packet ONLY on actual fresh _sample; acquisition
+cache pairs exact native cache/RNG/tick/delivery with existing stored words/mask,
+default/held/reset clear, rejected preflight retains prior state before work.
+Reuse finite sampling-profile predicate in cold and step paths, no default
+operation/RNG/cadence/clock changes. Add postprocessing16 to existing48 acquisition
+matrix; three existing invalid-profile cold controls also assert zero-work step
+rejection. Same3geometry/1selected/1selection/2existing clocks per acquisition
+fixture, <=2 cold calls plus1 zero-work step for three invalid profiles; no extra
+fixture/data/model/hardware or admission. Legacy cold/postprocessing supported;
+old mounted-only wall/cylinder/direction controls unchanged.
+Fresh3 routine pytest positions: first19/60s, sole necessary repair19/60s,
+root360s; count failures/aborts/unknown spent, no old-position refund/protected
+renewal. Retain returns-307-* original recovery directory, serial tests without
+source/editor/formatter tools. Exit acquisition-only/all8false, not typed intake,
+recorder/delivery/noise-law/numerical/physical/clock/one-use/admission qualification.
+
+Focused19 PASS/4.75s; root4879 PASS/known QDQ xfail/71warnings/214.43s. Four
+source/test hashes stable in both, root Ruff/touched format/whitespace/editor PASS;
+only test file formatted. AST exact old methods/imports outside reset/update/
+sample/step, old keyword prefixes/None+False defaults/default sampling branch,
+old16-case48-mode acquisition and29-case cold names conserved. Shared finite
+predicate replaces only duplicate opt-in check; cold cases3 strengthen step
+preflight without extra work. Post-signature sensor8/8compatible; sample9 with
+one intentional wrong-owner fixture incompatible, step40 with same2 old literal1
+motion-receipt rejection fixtures incompatible. Twoof3 pytest positions spent,
+no failure/abort/refund; unused repair reserve not follow-on authority. All8flags
+false/no usable command. No additional native/Arm/sanitizer/board opt-in command,
+dependencies/downloads/model/study/task-data/actuation or noise-law adoption.
+Logs retained returns-307-* original recovery directory; no artifact cleanup.
+Next whole296-300 archival before further root growth, then bounded closed
+postprocessing intake using original/closing cache/native/RNG/profile/pose/
+inputs/stored words/masks, unsupported/nonfinite remains unknown.
+
+Documentation checker FAILED literal "no extra work" while record states
+"without extra work". Correct matcher only to actual wording; same strict
+history/contracts/stable-workflow/reference/anchor/ledger check next. No source,
+assertion/resource change or pytest position spent; code gate not rerun.
+
 ## Sources
 
 Hardware and tools:

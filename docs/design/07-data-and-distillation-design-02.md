@@ -2334,12 +2334,32 @@ No extra draw, replay, replacement noise law or changed sensor operation is
 introduced. Captured operands, intermediate words and masks are observations,
 not a probabilistic or physical model, error allowance or corrected geometry.
 
-This is cold source capture only: no new acquisition cache, recorder history or
-delivered/pending publication is connected. Raw unsupported/nonfinite source
+Cold capture alone is not acquisition, recorder history or delivered/pending
+publication qualification. Raw unsupported/nonfinite source
 stays unknown for qualification; matching words do not adopt numerical, coverage,
 clock, one-use, physical or command-admission evidence. All eight qualification/
 permission/training flags remain false. [The checkpoint][native-tof-postprocessing-review]
 retains bounded controls, actual failed checks and next source prerequisite.
+
+#### Fresh Native ToF Postprocessing Acquisition (2026-11-11)
+
+The append-only `capture_native_tof_postprocessing=False` step flag requires
+literal booleans and native capture. Actual-owner/native inputs and the same
+finite postprocessing profile are checked before state mutation or clock work.
+Sensor routing passes a distinct cold receiver only to an actual fresh sample;
+the separate `micro-classifier/native-tof-postprocessing-acquisition/1` cache
+joins that packet to the exact native cache, original RNG identities and nominal
+acquisition/delivery ticks. Its stored float32 words and final validity mask
+correspond to the native pending sample, not an already delivered observation.
+Default, source-only, held and reset paths clear the new cache; rejected preflight
+preserves prior state. Existing noise/dropout draws, cadence and optional two
+clock reads are unchanged. Legacy cold/postprocessing capture remains supported,
+without broadening the mounted-only wall/cylinder/direction interfaces.
+
+This is source ownership only, not typed intake, recorder retention, delivery or
+numerical/noise-law/coverage/physical/clock/one-use/admission qualification. All
+eight flags remain false; [the acquisition checkpoint][native-tof-postprocessing-acquisition-review]
+retains finite controls, measured check outcomes and outstanding evidence.
 
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
@@ -2367,3 +2387,4 @@ retains bounded controls, actual failed checks and next source prerequisite.
 [native-tof-wall-selection-match-review]: ../review/241-245.md#245-matched-native-tof-wall-selection-diagnostics-2026-11-10
 [native-tof-cylinder-topic]: 07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10
 [native-tof-postprocessing-review]: ../../REVIEW.md#306-cold-native-tof-return-postprocessing-capture-2026-11-11
+[native-tof-postprocessing-acquisition-review]: ../../REVIEW.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11

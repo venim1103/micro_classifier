@@ -2403,3 +2403,17 @@ See [actual matched controls, preflight and gates][native-tof-direction-owned-pr
 [native-tof-direction-snapshot-review]: ../../REVIEW.md#295-deliveredpending-native-direction-snapshot-2026-11-11
 [native-tof-direction-product-review]: ../../REVIEW.md#296-supplied-word-native-direction-products-2026-11-11
 [native-tof-direction-owned-product-review]: ../../REVIEW.md#297-matched-native-direction-product-reports-2026-11-11
+
+#### Supplied-Word Direction Pitch Expressions (2026-11-11)
+
+Standalone synthetic-only pitch report compares exact combined supplied-word
+`c*f+s*u` and `c*u-s*f` to observed pitched forward/up words. Two finite canonical
+scalar words plus four64-word builtin tuples, <=258decodes/values/512binary/
+128entries/4096bits; finite operands, raw +/-inf observations unknown/no residual,
+NaN/unsupported rejected. Supplied signed words retained, all eight flags false.
+No trig replay/corrected observations/isolated multiply-add/FMA/uniform error/
+geometry/source/coverage/clock/one-use/physical/permission/admission qualification.
+Not yet matched to delivered/pending retained traces; see
+[actual controls, failures and stable-source gates][native-tof-direction-pitch-review].
+
+[native-tof-direction-pitch-review]: ../../REVIEW.md#298-supplied-word-native-direction-pitch-expressions-2026-11-11

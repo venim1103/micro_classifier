@@ -574,6 +574,65 @@ uniform-error/source/coverage/clock/one-use/physical/permission/admission proof.
 Next bounded supplied-word pitch-rotation combined-expression discrepancies, then
 matched composition only as supported; no numerical/physical bounds adopted.
 
+## 298. Supplied-Word Native Direction Pitch Expressions (2026-11-11)
+
+Begin clean acce2c9. Local hypothesis: captured pitch cosine/sine and sensor
+forward/up words suffice for exact combined forward=c*f+s*u and up=c*u-s*f
+discrepancies against observed pitched words, not isolated multiply/add/FMA/trig
+or geometry proof. Reuse bounded rational owner and canonical word guards;
+two scalar/four64-word tuples=258 decodes/values, <=512binary/128entries,
+4096bit ceiling unchanged. First cheap check27 synthetic controls incl one cold
+generation capture before poison, exact Fraction oracle<=512ops, cancellation/
+rounded/subnormal/signedzero/largefinite/raw +/-inf unknown and preflight/type/
+shape/canonical/budget guards. No replay/intake/hash/recorder/step/reset/trig/clock
+in helper; all8 flags false, supplied words retained, no corrected outputs.
+Three routine pytest positions first27/60s, sole necessary repair27/60s, root/360s;
+failures/aborts/unknowns spent, no refund/protected experiment renewal. Retain
+rays-298-* in original recovery directory; no dependencies/data/studies/hardware.
+Exit verified standalone report only, then compatible matched composition;
+raw unsupported/nonfinite source unknown, no bounds or word-tie resolution.
+
+First focused collection failed0.41s with IndentationError: a function jump plus
+repeated decorator replacement landed at old cylinder-selection parameter block,
+not the intended projection boundary; no cases ran, after-hash pipeline not reached.
+Diff diagnosed exact displaced old names; restore only original selection decorator,
+keep additive pitch test at that boundary, source helper unchanged. First position
+spent; sole reserved same27 focused repair next, no refund or cap relaxation.
+
+Same27 passed/3751deselected/0.55s, four hashes stable. Scoped Ruff format/lint/
+format-check/whitespace/editor clear; AST exact conservation of every previous
+source/test top-level node, including all old selection names/decorators. First
+root failed6/4695passed/known QDQ xfail/71warnings/307.06s: unchanged cylinder
+selection missing_pending/flag/dependency/late_side_mask/late_side_minimum/
+late_top_mask failed during setup retention/read with producer/recorder/source-
+file changes; pitch controls passed. One explicit source-files mismatch guard,
+others compound original/closing identity/binding guards; not pitch arithmetic
+failure. Failed && pipeline did NOT run closing hash/lint/format/whitespace.
+Post-failure source/test intact and old ASTs still exact; diagnostic/test mtimes
+12:01:31.849763/12:01:32.087415 lie within log birth11:58:55.667651 to
+modify12:04:03.025048 UTC interval. Supports overlapping writes, NOT writer,
+precise cause or qualified clock evidence. No source/old assertion repair or
+tolerance/work/fixture/safety relaxation. Background terminal notification exit1
+recovered; one output retrieval found already-cleaned ID, no live job or retry.
+All original3 pytest positions spent incl collection/root failures, no refunds.
+Fresh necessary stable-source revalidation under standing routine authority:
+exact six failed controls<=60s once, then required root<=360s once, two added
+positions only, same source/test unchanged, serial/no concurrent editor/format/
+source tools while pytest. Retain rays-298-failed-controls-1/root-2 logs and
+original failures; no protected study/audit/model/dependency/hardware renewal.
+
+Stable-source six setup controls passed/3772deselected/1.40s, then required root
+`python -m pytest -q && ruff check . && git diff --check` passed4701/known QDQ
+xfail/71warnings/183.06s; four hashes stable and touched format-check passed.
+All five pytest positions spent, both failures retained, no abort/refund/cap or
+old-definition/assertion change. Logs rays-298-{focused-1,focused-2,root-1,
+failed-controls-1,root-2} kept in original recovery directory, no new data/study/
+dependency/hardware/additional native/Arm/sanitizer/board opt-in commands.
+Standalone128-entry pitch report only; all8 false, raw +/-inf unknown, no corrected
+words/trig/primitive/FMA/uniform-error/geometry/source/coverage/clock/one-use/
+physical/permission/admission proof. Next archive intact286-290 before further
+root growth, then original+closing retained delivered/pending pitch composition.
+
 ## Sources
 
 Hardware and tools:

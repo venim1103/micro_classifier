@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §297 for matched native direction product reports;
+Read [REVIEW.md][review] §298 for supplied-word pitch-rotation expressions;
+§297 covers matched native direction product reports;
 §296 covers supplied-word direction product discrepancies;
 §295 covers closed delivered/pending direction publication;
 §294 covers bounded retained native direction joins;
@@ -53,7 +54,8 @@ retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next implement bounded supplied-word pitch-rotation expression discrepancies;
+Next archive intact §§286-290 before root review growth, then compose supplied-word
+pitch discrepancies against original/closing retained delivered/pending traces;
 raw unsupported/nonfinite source stays unknown. Preserve supplied
 operands, raw nonfinite unknowns, identity/closing checks and unresolved word ties.
 Squared-norm correspondence alone is not ray geometry or numerical qualification.

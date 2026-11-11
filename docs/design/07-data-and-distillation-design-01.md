@@ -2393,10 +2393,10 @@ tuples/128 entries/384values/256binary/4096bits, no replay/intake/recorder/clock
 See [actual matched controls, preflight and gates][native-tof-direction-owned-product-review].
 
 
-[native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
-[native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
-[native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
-[native-tof-direction-intake-review]: ../../REVIEW.md#290-bounded-closed-native-direction-source-intake-2026-11-11
+[native-tof-direction-source-review]: ../review/286-290.md#286-native-ray-generation-source-prerequisite-2026-11-11
+[native-tof-direction-range-source-review]: ../review/286-290.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
+[native-tof-direction-acquisition-review]: ../review/286-290.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
+[native-tof-direction-intake-review]: ../review/286-290.md#290-bounded-closed-native-direction-source-intake-2026-11-11
 [native-tof-direction-history-review]: ../../REVIEW.md#291-typed-native-direction-history-validation-2026-11-11
 [native-tof-direction-retention-review]: ../../REVIEW.md#293-recorder-owned-native-direction-history-2026-11-11
 [native-tof-direction-match-review]: ../../REVIEW.md#294-bounded-retained-native-direction-join-2026-11-11

@@ -2347,6 +2347,22 @@ all eight flags false. No intake/recorder/hash/geometry/clock calls in matching.
 See [actual bounded join controls and gates][native-tof-direction-match-review].
 
 
+#### Delivered/Pending Native Direction Snapshot (2026-11-11)
+
+Append-only literal default-off `snapshot_native_tof_delivery(include_direction=False)`
+publishes direction and optional pending_direction only after independent typed
+native/direction history preflight and complete original+closing input/frame/queue/
+history identity/binding/outgoing-word correspondence. <=8 native/companion records,
+fixed generation shapes/canonical finite words, unknown/malformed/late oversized
+history yields no payloads; unselected output keys/options unchanged. Held and
+delivered-only paths preserve native acquisition identity, not one-use execution.
+No source/geometry/trig/error/coverage/clock/physical/permission/admission proof,
+all eight flags false; squared-norm or matching words do not qualify ray geometry.
+Unsupported/nonfinite generation stays unknown without correction, unresolved
+equal-value/different-word ties remain. No replay/intake/recorder/clock in snapshot.
+See [actual controls, cap/default conservation and root checks][native-tof-direction-snapshot-review].
+
+
 [native-tof-direction-source-review]: ../../REVIEW.md#286-native-ray-generation-source-prerequisite-2026-11-11
 [native-tof-direction-range-source-review]: ../../REVIEW.md#287-cold-native-ray-to-tof-source-pairing-2026-11-11
 [native-tof-direction-acquisition-review]: ../../REVIEW.md#288-fresh-native-ray-to-tof-acquisition-pairing-2026-11-11
@@ -2354,3 +2370,4 @@ See [actual bounded join controls and gates][native-tof-direction-match-review].
 [native-tof-direction-history-review]: ../../REVIEW.md#291-typed-native-direction-history-validation-2026-11-11
 [native-tof-direction-retention-review]: ../../REVIEW.md#293-recorder-owned-native-direction-history-2026-11-11
 [native-tof-direction-match-review]: ../../REVIEW.md#294-bounded-retained-native-direction-join-2026-11-11
+[native-tof-direction-snapshot-review]: ../../REVIEW.md#295-deliveredpending-native-direction-snapshot-2026-11-11

@@ -16294,6 +16294,7 @@ class _SyntheticC1SourceRecorder:
         include_floor_residuals=False,
         include_sampling_residuals=False,
         include_direction_norm_residuals=False,
+        include_direction=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -16307,6 +16308,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_wall must be a literal bool")
         if type(include_cylinder) is not bool:
             raise ValueError("include_cylinder must be a literal bool")
+        if type(include_direction) is not bool:
+            raise ValueError("include_direction must be a literal bool")
         if type(include_wall_cylinder_boundary_diagnostics) is not bool:
             raise ValueError(
                 "include_wall_cylinder_boundary_diagnostics must be a literal bool"
@@ -16468,6 +16471,7 @@ class _SyntheticC1SourceRecorder:
         selection_before = self._tof_selection_history if include_selection else None
         wall_before = self._tof_wall_history if include_wall else None
         cylinder_before = self._tof_cylinder_history if include_cylinder else None
+        direction_before = self._tof_direction_history if include_direction else None
         current_before, dynamics_before = self._current, self._dynamics_sample
         if environment is None or current_before is None or dynamics_before is None:
             return result
@@ -16491,7 +16495,13 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
-            if include_timing or include_selection or include_wall or include_cylinder:
+            if (
+                include_timing
+                or include_selection
+                or include_wall
+                or include_cylinder
+                or include_direction
+            ):
                 _check_native_tof_history_layout(self._tof_history, template)
             if include_timing:
                 _check_native_tof_timing_history(
@@ -16508,6 +16518,10 @@ class _SyntheticC1SourceRecorder:
             if include_cylinder:
                 _check_native_tof_cylinder_history(
                     self._tof_cylinder_history, self._tof_history, self._epoch
+                )
+            if include_direction:
+                _check_native_tof_direction_history(
+                    self._tof_direction_history, self._tof_history, self._epoch
                 )
             return _c1_source_binding_digest(
                 {
@@ -16540,6 +16554,11 @@ class _SyntheticC1SourceRecorder:
                     **(
                         {"tof_cylinder_history": self._tof_cylinder_history}
                         if include_cylinder
+                        else {}
+                    ),
+                    **(
+                        {"tof_direction_history": self._tof_direction_history}
+                        if include_direction
                         else {}
                     ),
                     "binding": self._binding,
@@ -17081,6 +17100,8 @@ class _SyntheticC1SourceRecorder:
                 wall_binding = _c1_source_binding_digest(wall_before)
             if include_cylinder:
                 cylinder_binding = _c1_source_binding_digest(cylinder_before)
+            if include_direction:
+                direction_binding = _c1_source_binding_digest(direction_before)
             if include_pending_sources:
                 pending_before = environment.pending
                 pending_copy = _copy_native_tof_pending_queue(environment)
@@ -17184,6 +17205,24 @@ class _SyntheticC1SourceRecorder:
                 )
                 cylinder_output_binding = _c1_source_binding_digest(
                     {"cylinder": cylinder, "pending_cylinder": pending_cylinder}
+                )
+            if include_direction:
+                direction = _match_native_tof_retained_direction(
+                    copied, direction_before
+                )
+                pending_direction = (
+                    tuple(
+                        _match_native_tof_retained_direction(source, direction_before)
+                        for source in pending_sources
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                _check_native_tof_direction_history(
+                    [direction, *pending_direction], history_before, self._epoch
+                )
+                direction_output_binding = _c1_source_binding_digest(
+                    {"direction": direction, "pending_direction": pending_direction}
                 )
             if include_wall_cylinder_boundary_diagnostics:
                 wall_cylinder_boundary = wall_cylinder_boundary_probe(wall, cylinder)
@@ -17439,6 +17478,23 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
+            if include_direction:
+                _check_native_tof_direction_history(
+                    self._tof_direction_history, self._tof_history, self._epoch
+                )
+                direction_after = _match_native_tof_retained_direction(
+                    live_after, self._tof_direction_history
+                )
+                pending_direction_after = (
+                    tuple(
+                        _match_native_tof_retained_direction(
+                            source, self._tof_direction_history
+                        )
+                        for source in pending_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
             if include_wall_residuals:
                 wall_residuals_after = wall_residual_probe(wall_after)
                 pending_wall_residuals_after = (
@@ -17667,6 +17723,10 @@ class _SyntheticC1SourceRecorder:
                 _check_native_tof_cylinder_history(
                     self._tof_cylinder_history, self._tof_history, self._epoch
                 )
+            if include_direction:
+                _check_native_tof_direction_history(
+                    self._tof_direction_history, self._tof_history, self._epoch
+                )
             if include_pending_sources and (
                 environment.pending is not pending_before
                 or self._simulator_pending is not pending_before
@@ -17677,6 +17737,31 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF pending context or outgoing sources changed"
                 )
+            if include_direction:
+                _check_native_tof_direction_history(
+                    [direction, *pending_direction], self._tof_history, self._epoch
+                )
+                _check_native_tof_direction_history(
+                    [direction_after, *pending_direction_after],
+                    self._tof_history,
+                    self._epoch,
+                )
+                if (
+                    self._tof_direction_history is not direction_before
+                    or not _native_tof_word_copy_matches(direction, direction_after)
+                    or not _native_tof_word_copy_matches(
+                        pending_direction, pending_direction_after
+                    )
+                    or _c1_source_binding_digest(self._tof_direction_history)
+                    != direction_binding
+                    or _c1_source_binding_digest(
+                        {"direction": direction, "pending_direction": pending_direction}
+                    )
+                    != direction_output_binding
+                ):
+                    raise ValueError(
+                        "native ToF retained direction or outgoing pairs changed"
+                    )
             if include_wall:
                 _check_native_tof_wall_history(
                     [wall, *pending_wall], self._tof_history, self._epoch
@@ -18057,6 +18142,10 @@ class _SyntheticC1SourceRecorder:
             result["cylinder"] = cylinder
             if include_pending_sources:
                 result["pending_cylinder"] = pending_cylinder
+        if include_direction:
+            result["direction"] = direction
+            if include_pending_sources:
+                result["pending_direction"] = pending_direction
         if include_wall_residuals:
             result["wall_residuals"] = wall_residuals
             if include_pending_sources:

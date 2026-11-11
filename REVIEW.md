@@ -443,6 +443,50 @@ error/clock/one-use/physical/permission/admission evidence, all8 flags remain fa
 Delivered/pending snapshots still lack direction publication; compose original/
 closing history and input checks next without treating hash/word joins as proof.
 
+## 295. Delivered/Pending Native Direction Snapshot (2026-11-11)
+
+Begin clean dbcaa15. Hypothesis: append-only literal include_direction=False can
+compose the bounded retained join into original+closing delivered/pending native
+source/frame/queue checks. Typed native+direction history before hashes and after
+all closing traces; history identity/input binding, outgoing typed copies and
+original/closing full-word correspondence, <=8 records/192 ray/64 range words,
+fixed finite generation fields. No new geometry/intake/recorder/read/replay/clock,
+no canonical correction/numerical/source/physical/permission/admission; all8 false.
+Reuse unchanged24-case snapshot family old48 controls plusdirection24=72. Same
+per-case<=4steps/5reads/3retentions/3geometries/6clocks BEFORE snapshot, <=6 selected
+and other-wall/selection/timing/norm matches, 2pending matches/4queue copies/2frame
+checks/64bindings/one late mutation, <=2 actual pending records. Default output
+keys/options unchanged; optional direction payload only after full closing success.
+Three routine pytest positions first72/60s, sole necessary repair72/60s, root/360s
+(prior root264.42s observed; fresh assistant-selected wall-time budget, no program
+deadline/work/assertion/protected cap change). Count failures/aborts/unknown,
+retain rays-295-* logs, no refunds/protected studies/data/dependencies/hardware.
+Next supported ray-word prerequisites only, not numerical or physical adoption.
+
+First72 passed/3630deselected/9.30s, four source/test hashes stable; all prior48
+controls and24 case names/caps conserved, direction default output keys absent,
+held/delivered-only/pending identity, typed/canonical words, detached payloads,
+late history/output/owner/arithmetic/selection/timing/pending mutations exercised.
+Late over-budget histories rejected before further binding, no payloads on unknown;
+native input/frame/queue original+closing checks retained, no extra replay/clock.
+Ruff formatted ONLY two touched Python files, lint/format/whitespace/editor clear;
+AST all prior definitions/methods except snapshot_native_tof_delivery conserved,
+append-only include_direction=False and all old defaults/case names/families.
+Required root `python -m pytest -q && ruff check . && git diff --check` passed4625/
+known QDQ xfail/71warnings/148.28s, four hashes stable, touched format passed.
+Two of3 pytest positions spent, unused repair reserve NOT follow-on authority;
+no failed/aborted/refunded attempt. Logs rays-295-{focused-1,root-1} retained in
+original recovery directory, no new data/downloads/dependencies/studies/hardware/
+additional native/Arm/sanitizer/board opt-in commands. Raw unsupported/nonfinite
+generation remains unknown; no corrected observations, all8 flags false. Native
+direction capture/intake/typed history/ownership/delivered+pending publication
+are now source-word prerequisites, NOT uniform trig/error/coverage/clock/one-use/
+physical clearance/source/permission/admission qualification. Matching words and
+squared-norm correspondence do not prove ray geometry; equal-value/different-word
+ties remain unresolved. Next bounded supplied-word sensor-component product
+discrepancies using unchanged exact arithmetic limits; no physical/numerical
+bounds or qualification adopted, no learned/board/study work reopened.
+
 ## Sources
 
 Hardware and tools:

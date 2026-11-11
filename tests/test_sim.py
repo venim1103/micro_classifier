@@ -14067,7 +14067,7 @@ def test_native_tof_selection_snapshot(
         "late_timing_budget",
     ),
 )
-@pytest.mark.parametrize("cylinder", (False, True))
+@pytest.mark.parametrize("cylinder", (False, True, None))
 def test_native_tof_wall_snapshot(
     monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
 ):
@@ -14075,11 +14075,12 @@ def test_native_tof_wall_snapshot(
 
     from sim import diagnostics, rover
 
-    kind = "cylinder" if cylinder else "wall"
+    direction = cylinder is None
+    kind = "direction" if direction else "cylinder" if cylinder else "wall"
     history_name = f"_tof_{kind}_history"
     matcher_name = f"_match_native_tof_retained_{kind}"
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    if cylinder:
+    if cylinder or direction:
         environment.scenario = replace(
             environment.scenario, obstacles=((3.0, 3.0, 0.25),)
         )
@@ -14145,7 +14146,11 @@ def test_native_tof_wall_snapshot(
             [0.125, 0.3],
             capture_native_tof_source=True,
             **{f"capture_native_tof_{kind}": True},
-            **({"capture_native_tof_wall": True} if cylinder and combined else {}),
+            **(
+                {"capture_native_tof_wall": True}
+                if (cylinder or direction) and combined
+                else {}
+            ),
             capture_native_tof_selection=combined,
             capture_native_tof_timing=combined,
         )
@@ -14157,7 +14162,11 @@ def test_native_tof_wall_snapshot(
                 environment,
                 synthetic_test_only=True,
                 **{f"include_{kind}": True},
-                **({"include_wall": True} if cylinder and combined else {}),
+                **(
+                    {"include_wall": True}
+                    if (cylinder or direction) and combined
+                    else {}
+                ),
                 include_selection=combined,
                 include_timing=combined,
             )
@@ -14177,8 +14186,17 @@ def test_native_tof_wall_snapshot(
         getattr(owner, history_name)[0]["delivery_tick"] += 1
     elif case == "type":
         trace = getattr(owner, history_name)[0][kind]
-        selected = trace["cylinders"][0]["sides"][0] if cylinder else trace["walls"][0]
-        selected["hit"] = (1, *selected["hit"][1:])
+        selected = (
+            trace["direction_generation"]
+            if direction
+            else trace["cylinders"][0]["sides"][0]
+            if cylinder
+            else trace["walls"][0]
+        )
+        if direction:
+            selected["pitch_sine"] = True
+        else:
+            selected["hit"] = (1, *selected["hit"][1:])
     elif case == "budget":
         setattr(owner, history_name, getattr(owner, history_name) * 9)
     elif case == "noncanonical_pair":
@@ -14186,6 +14204,10 @@ def test_native_tof_wall_snapshot(
         words = ("0.0", *paired["world_frame_unit_rays"][1:])
         paired["world_frame_unit_rays"] = words
         getattr(owner, history_name)[0][kind]["world_frame_unit_rays"] = words
+        if direction:
+            getattr(owner, history_name)[0][kind]["direction_generation"][
+                "world_frame_unit_rays"
+            ] = words
     original_wall = getattr(diagnostics, matcher_name)
     original_other_wall = diagnostics._match_native_tof_retained_wall
     original_selection = diagnostics._match_native_tof_retained_selection
@@ -14221,8 +14243,8 @@ def test_native_tof_wall_snapshot(
                 "late_timing_budget",
             ):
                 name = case.removeprefix("late_").removesuffix("_budget")
-                if cylinder and name == "wall":
-                    name = "cylinder"
+                if (cylinder or direction) and name == "wall":
+                    name = kind
                 getattr(owner, f"_tof_{name}_history").extend(
                     getattr(owner, f"_tof_{name}_history") * 8
                 )
@@ -14234,7 +14256,7 @@ def test_native_tof_wall_snapshot(
 
     def other_wall(*args, **kwargs):
         work["other_wall"] += 1
-        assert cylinder and combined and work["other_wall"] <= 6
+        assert (cylinder or direction) and combined and work["other_wall"] <= 6
         return original_other_wall(*args, **kwargs)
 
     def selection(*args, **kwargs):
@@ -14280,9 +14302,21 @@ def test_native_tof_wall_snapshot(
             elif case == "late_wall":
                 trace = getattr(owner, history_name)[0][kind]
                 selected = (
-                    trace["cylinders"][0]["sides"][0] if cylinder else trace["walls"][0]
+                    trace["direction_generation"]
+                    if direction
+                    else trace["cylinders"][0]["sides"][0]
+                    if cylinder
+                    else trace["walls"][0]
                 )
-                selected["hit"] = (not selected["hit"][0], *selected["hit"][1:])
+                if direction:
+                    selected["sensor_up"] = (
+                        math.nextafter(
+                            float.fromhex(selected["sensor_up"][0]), math.inf
+                        ).hex(),
+                        *selected["sensor_up"][1:],
+                    )
+                else:
+                    selected["hit"] = (not selected["hit"][0], *selected["hit"][1:])
             elif case == "outgoing":
                 outgoing["wall"][kind]["source_qualified"] = True
             elif case == "late_owner":
@@ -14304,7 +14338,7 @@ def test_native_tof_wall_snapshot(
         )
 
     monkeypatch.setattr(diagnostics, matcher_name, matched)
-    if cylinder:
+    if cylinder or direction:
         monkeypatch.setattr(diagnostics, "_match_native_tof_retained_wall", other_wall)
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_selection", selection)
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timing)
@@ -14332,7 +14366,7 @@ def test_native_tof_wall_snapshot(
             synthetic_test_only=True,
             include_pending_sources=case != "delivered_only",
             **{f"include_{kind}": case != "default"},
-            **({"include_wall": True} if cylinder and combined else {}),
+            **({"include_wall": True} if (cylinder or direction) and combined else {}),
             include_selection=combined,
             include_timing=combined,
             include_direction_norm_residuals=combined,
@@ -14359,6 +14393,11 @@ def test_native_tof_wall_snapshot(
                 if cylinder:
                     assert len(selected[kind]["cylinders"]) == 1
                     assert len(selected[kind]["cylinders"][0]["sides"]) == 2
+                elif direction:
+                    assert (
+                        selected[kind]["direction_generation"]["world_frame_unit_rays"]
+                        == selected[kind]["world_frame_unit_rays"]
+                    )
                 for key in ("source_epoch", "tick", "delivery_tick"):
                     assert selected[key] == result["source"][key]
                 assert (
@@ -14422,6 +14461,8 @@ def test_native_tof_wall_snapshot(
                     "pending_wall",
                     "cylinder",
                     "pending_cylinder",
+                    "direction",
+                    "pending_direction",
                     "selection",
                     "pending_selection",
                     "timing",

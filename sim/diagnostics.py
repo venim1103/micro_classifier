@@ -12310,6 +12310,128 @@ def _native_tof_postprocessing_dropout_diagnostics(
     }
 
 
+def _native_tof_postprocessing_clip_selection_diagnostics(
+    *,
+    max_range_m_hex,
+    noisy_ranges_m_hex,
+    clipped_ranges_m_hex,
+    selected_ranges_m_hex,
+    valid_after_dropout,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native postprocessing clip/selection requires synthetic_test_only=True"
+        )
+    arrays = (noisy_ranges_m_hex, clipped_ranges_m_hex, selected_ranges_m_hex)
+    if any(type(words) is not tuple or len(words) != 64 for words in arrays):
+        raise ValueError("native postprocessing clip/selection word count unsupported")
+    if (
+        type(valid_after_dropout) is not tuple
+        or len(valid_after_dropout) != 64
+        or any(type(word) is not bool for word in valid_after_dropout)
+    ):
+        raise ValueError("native postprocessing clip/selection mask unsupported")
+
+    def decoded(word):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError(
+                "native postprocessing clip/selection word budget exhausted"
+            )
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "native postprocessing clip/selection words must be canonical"
+            ) from error
+        if value.hex() != word or math.isnan(value):
+            raise ValueError(
+                "native postprocessing clip/selection words must be canonical"
+            )
+        return value
+
+    maximum = decoded(max_range_m_hex)
+    if not math.isfinite(maximum) or maximum <= 0:
+        raise ValueError("native postprocessing clip/selection profile unsupported")
+    noisy, clipped, selected = (
+        tuple(decoded(word) for word in words) for words in arrays
+    )
+    entries = []
+    for ray_index in range(64):
+        valid = valid_after_dropout[ray_index]
+        source_word = clipped_ranges_m_hex[ray_index] if valid else "0x0.0p+0"
+        finite = all(
+            math.isfinite(values[ray_index]) for values in (noisy, clipped, selected)
+        )
+        expected_clip = max(0.0, min(maximum, noisy[ray_index])) if finite else None
+        expected_selected = (clipped[ray_index] if valid else 0.0) if finite else None
+        entries.append(
+            {
+                "ray_index": ray_index,
+                "max_range_m_hex": max_range_m_hex,
+                "noisy_range_hex": noisy_ranges_m_hex[ray_index],
+                "clipped_range_hex": clipped_ranges_m_hex[ray_index],
+                "selected_range_hex": selected_ranges_m_hex[ray_index],
+                "valid_after_dropout": valid,
+                "selection_input_hex": source_word,
+                "expected_clipped_value_ratio": None
+                if expected_clip is None
+                else expected_clip.as_integer_ratio(),
+                "expected_selected_value_ratio": None
+                if expected_selected is None
+                else expected_selected.as_integer_ratio(),
+                "clipped_values_match": clipped[ray_index] == expected_clip
+                if finite
+                else None,
+                "selection_values_match": selected[ray_index] == expected_selected
+                if finite
+                else None,
+                "noisy_clipped_words_match": noisy_ranges_m_hex[ray_index]
+                == clipped_ranges_m_hex[ray_index]
+                if finite
+                else None,
+                "selection_words_match": selected_ranges_m_hex[ray_index] == source_word
+                if finite
+                else None,
+                "status": "compared_supplied_clip_and_selection_values"
+                if finite
+                else "unknown_nonfinite_clip_selection_source",
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-tof-postprocessing-clip-selection-diagnostics/1",
+        "allowed_use": "offline_native_tof_postprocessing_word_diagnostics_only",
+        "status": "reported_postprocessing_clip_selection_correspondence",
+        "comparison_basis": "supplied_word_clamp_values_and_selected_word_copy",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "clip_value_mismatch_count": sum(
+            entry["clipped_values_match"] is False for entry in entries
+        ),
+        "selection_value_mismatch_count": sum(
+            entry["selection_values_match"] is False for entry in entries
+        ),
+        "selection_word_mismatch_count": sum(
+            entry["selection_words_match"] is False for entry in entries
+        ),
+        "unknown_count": sum(
+            entry["clipped_values_match"] is None for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_direction_pitch_residuals(
     *,
     pitch_cosine_hex,

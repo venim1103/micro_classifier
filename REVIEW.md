@@ -527,6 +527,41 @@ dependency/download/hardware/extra native/Arm/sanitizer opt-in.
 Next independently supported supplied-word clip/select correspondence;
 preserve raw nonfinite unknowns and equal-value/different-word ties.
 
+## 320. Supplied-Word Native ToF Clip/Selection Correspondence (2026-11-12)
+
+Begin clean pushed ae0e3fd. Actual sampler captures
+`clipped = np.clip(grid, 0, config.max_range)` and
+`selected = np.where(valid, clipped, 0)` before the float32 cast.
+Standalone helper compares supplied noisy/clipped/selected words and a literal
+mask against declared clamp values and selected raw-word inputs. Use observed
+clipped operands for selection, never corrected upstream values. Existing
+positive finite max-range field is supplied, not a new bound/threshold.
+Raw nonfinite in any stage keeps the whole comparison unknown; NaN/unsupported
+metadata rejects. Preserve all signed words and equal-value/different-word ties
+without predicting NumPy zero signs or adopting native rounding/primitive laws.
+
+Three builtin64-word tuples and64 literal masks,<=32char canonical words,
+193 decodes,256 value comparisons,128 raw-word comparisons and64 entries.
+Add24 bounded actual/inside/outside/boundary/independent-stage-mismatch/masked/
+zero-tie/raw-nonfinite/typed-word/mask/profile controls; independent Fraction
+oracle <=128 clamp comparisons. One actual cold sample/geometry with only
+existing normal/dropout draws before poisoning intake/read/retention/replay/
+step/reset/sample/hash/clock/geometry calls. Prior helpers/defaults/tests exact.
+
+Fresh three routine positions: focused24/60s, sole necessary repair24/60s,
+required root/360s; failures/aborts/unknown spent, no old/protected refund.
+Retain ignored `.git/returns-320-*` outputs/hashes; serialize checks.
+First24 PASS3.43s, all four hashes stable; scoped Ruff/changed format/whitespace
+PASS. Required root PASS5115, known QDQ1 xfail/71 warnings/159.39s;
+root Ruff/changed format/whitespace and all four hashes PASS.
+Both executed positions spent; repair reserve unused, not follow-on authority.
+
+All eight flags remain false. Standalone pointwise value/word correspondence is
+not native primitive/rounding/cast/noise-law/numerical/error/geometry/coverage/
+source/clock/one-use/physical/permission/admission qualification. No new study/
+model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
+Next bounded original/closing retained clip/select report joins.
+
 ## Sources
 
 Hardware and tools:

@@ -31135,6 +31135,254 @@ def test_native_tof_postprocessing_dropout_diagnostics(
     "case",
     (
         "actual",
+        "inside",
+        "below",
+        "above",
+        "bounds",
+        "clip_mismatch",
+        "select_mismatch",
+        "invalid_mask",
+        "zero_tie",
+        "nonfinite_noisy",
+        "nonfinite_clipped",
+        "nonfinite_selected",
+        "flag",
+        "shape",
+        "mask_type",
+        "mask_word",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "max_nonfinite",
+        "max_domain",
+        "tuple_subclass",
+        "nan",
+        "overflow_word",
+    ),
+)
+def test_native_tof_postprocessing_clip_selection_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    arguments = {
+        "max_range_m_hex": (1.0).hex(),
+        "noisy_ranges_m_hex": ((0.75).hex(),) * 64,
+        "clipped_ranges_m_hex": ((0.75).hex(),) * 64,
+        "selected_ranges_m_hex": ((0.75).hex(),) * 64,
+        "valid_after_dropout": (True,) * 64,
+    }
+    setup = {"geometry": 0}
+    original_ranges = rover.tof_ranges
+
+    def ranges(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_ranges(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    if case == "actual":
+        captured = {}
+        environment._sample(native_source={}, postprocessing_source=captured)
+        arguments = {
+            "max_range_m_hex": captured["inputs"]["max_range_m"].hex(),
+            **{
+                key: tuple(
+                    float(word).hex()
+                    for word in captured[key.removesuffix("_hex")].flat
+                )
+                for key in (
+                    "noisy_ranges_m_hex",
+                    "clipped_ranges_m_hex",
+                    "selected_ranges_m_hex",
+                )
+            },
+            "valid_after_dropout": tuple(
+                map(bool, captured["valid_after_dropout"].flat)
+            ),
+        }
+    elif case in ("below", "above"):
+        arguments["noisy_ranges_m_hex"] = (
+            (-0.5 if case == "below" else 2.0).hex(),
+        ) * 64
+        for key in ("clipped_ranges_m_hex", "selected_ranges_m_hex"):
+            arguments[key] = ((0.0 if case == "below" else 1.0).hex(),) * 64
+    elif case == "bounds":
+        for key in (
+            "noisy_ranges_m_hex",
+            "clipped_ranges_m_hex",
+            "selected_ranges_m_hex",
+        ):
+            arguments[key] = ((0.0).hex(), (1.0).hex()) * 32
+    elif case == "clip_mismatch":
+        for key in ("clipped_ranges_m_hex", "selected_ranges_m_hex"):
+            arguments[key] = ((0.5).hex(),) * 64
+    elif case == "select_mismatch":
+        arguments["selected_ranges_m_hex"] = ((0.5).hex(),) * 64
+    elif case == "invalid_mask":
+        arguments["valid_after_dropout"] = (False,) * 64
+        arguments["selected_ranges_m_hex"] = ((0.0).hex(),) * 64
+    elif case == "zero_tie":
+        arguments["noisy_ranges_m_hex"] = ((-0.0).hex(),) * 64
+        arguments["clipped_ranges_m_hex"] = ((0.0).hex(),) * 64
+        arguments["selected_ranges_m_hex"] = ((-0.0).hex(),) * 64
+    elif case.startswith("nonfinite_"):
+        key = {
+            "nonfinite_noisy": "noisy_ranges_m_hex",
+            "nonfinite_clipped": "clipped_ranges_m_hex",
+            "nonfinite_selected": "selected_ranges_m_hex",
+        }[case]
+        arguments[key] = ("inf",) * 64
+    elif case == "shape":
+        arguments["selected_ranges_m_hex"] *= 2
+    elif case == "mask_type":
+        arguments["valid_after_dropout"] = list(arguments["valid_after_dropout"])
+    elif case == "mask_word":
+        arguments["valid_after_dropout"] = (1,) * 64
+    elif case in ("word_type", "noncanonical", "word_budget", "nan", "overflow_word"):
+        arguments["noisy_ranges_m_hex"] = (
+            {
+                "word_type": False,
+                "noncanonical": "1.0",
+                "word_budget": "0" * 33,
+                "nan": "nan",
+                "overflow_word": "0x1p+999999",
+            }[case],
+        ) * 64
+    elif case in ("max_nonfinite", "max_domain"):
+        arguments["max_range_m_hex"] = "inf" if case == "max_nonfinite" else (0.0).hex()
+    elif case == "tuple_subclass":
+
+        class Words(tuple):
+            pass
+
+        arguments["selected_ranges_m_hex"] = Words(arguments["selected_ranges_m_hex"])
+    before = deepcopy(arguments)
+    work = {"oracle": 0, "forbidden": 0}
+
+    def oracle(noisy, maximum):
+        work["oracle"] += 2
+        assert work["oracle"] <= 128
+        return min(max(Fraction(noisy), Fraction(0)), Fraction(maximum))
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "clip/select must not intake/read/retain/hash/step/reset/replay/clock"
+        )
+
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_postprocessing_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset", "_sample"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "mask_type",
+        "mask_word",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "max_nonfinite",
+        "max_domain",
+        "tuple_subclass",
+        "nan",
+        "overflow_word",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_postprocessing_clip_selection_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_postprocessing_clip_selection_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 64
+        assert result["clip_value_mismatch_count"] == (
+            64 if case == "clip_mismatch" else 0
+        )
+        assert result["selection_value_mismatch_count"] == (
+            64 if case == "select_mismatch" else 0
+        )
+        assert result["selection_word_mismatch_count"] == (
+            64 if case in ("select_mismatch", "zero_tie") else 0
+        )
+        assert result["unknown_count"] == (64 if case.startswith("nonfinite_") else 0)
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for entry in result["entries"]:
+            index = entry["ray_index"]
+            noisy_word = arguments["noisy_ranges_m_hex"][index]
+            clipped_word = arguments["clipped_ranges_m_hex"][index]
+            selected_word = arguments["selected_ranges_m_hex"][index]
+            noisy, clipped, selected = map(
+                float.fromhex, (noisy_word, clipped_word, selected_word)
+            )
+            valid = arguments["valid_after_dropout"][index]
+            source_word = clipped_word if valid else (0.0).hex()
+            assert entry["noisy_range_hex"] == noisy_word
+            assert entry["clipped_range_hex"] == clipped_word
+            assert entry["selected_range_hex"] == selected_word
+            assert entry["selection_input_hex"] == source_word
+            if all(map(math.isfinite, (noisy, clipped, selected))):
+                expected_clip = oracle(
+                    noisy, float.fromhex(arguments["max_range_m_hex"])
+                )
+                expected_selected = Fraction(clipped if valid else 0.0)
+                assert Fraction(*entry["expected_clipped_value_ratio"]) == expected_clip
+                assert (
+                    Fraction(*entry["expected_selected_value_ratio"])
+                    == expected_selected
+                )
+                assert entry["clipped_values_match"] is (
+                    Fraction(clipped) == expected_clip
+                )
+                assert entry["selection_values_match"] is (
+                    Fraction(selected) == expected_selected
+                )
+                assert entry["selection_words_match"] is (selected_word == source_word)
+            else:
+                assert entry["expected_clipped_value_ratio"] is None
+                assert entry["expected_selected_value_ratio"] is None
+                assert entry["clipped_values_match"] is None
+                assert entry["selection_values_match"] is None
+                assert entry["selection_words_match"] is None
+                assert entry["status"] == "unknown_nonfinite_clip_selection_source"
+        if case == "zero_tie":
+            assert result["entries"][0]["clipped_values_match"] is True
+            assert result["entries"][0]["selection_values_match"] is True
+            assert result["entries"][0]["noisy_clipped_words_match"] is False
+            assert result["entries"][0]["selection_words_match"] is False
+        result["entries"][0]["selected_range_hex"] = "changed"
+    assert arguments == before and work["forbidden"] == 0
+    assert setup["geometry"] == int(case == "actual")
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "exact",
         "mismatch",
         "signed_zero_tie",

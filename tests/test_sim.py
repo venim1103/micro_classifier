@@ -14731,6 +14731,7 @@ def test_native_tof_selection_snapshot(
         ("postprocessing", False),
         ("postprocessing", "noise"),
         ("postprocessing", "dropout"),
+        ("postprocessing", "clip_selection"),
     ),
 )
 def test_native_tof_wall_snapshot(
@@ -14744,7 +14745,10 @@ def test_native_tof_wall_snapshot(
     pitch = products == "pitch"
     yaw = products == "yaw"
     up_copy = products == "up"
-    dropout_diagnostics = products == "dropout"
+    clip_selection = products == "clip_selection"
+    dropout_diagnostics = products == "dropout" or (
+        clip_selection and case == "combined"
+    )
     noise_addition = products == "noise" or (dropout_diagnostics and case == "combined")
     products = products is True
     include_products = products or ((pitch or yaw or up_copy) and case == "combined")
@@ -14813,6 +14817,8 @@ def test_native_tof_wall_snapshot(
             "noise_oracle",
             "dropout",
             "dropout_oracle",
+            "clip_selection",
+            "clip_selection_oracle",
         ),
         0,
     )
@@ -14957,7 +14963,9 @@ def test_native_tof_wall_snapshot(
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
                 outgoing[
-                    "dropout"
+                    "clip_selection"
+                    if clip_selection
+                    else "dropout"
                     if dropout_diagnostics
                     else "noise_addition"
                     if noise_addition
@@ -15077,6 +15085,16 @@ def test_native_tof_wall_snapshot(
         diagnostics._native_tof_postprocessing_noise_addition_residuals
     )
     original_dropout = diagnostics._native_tof_postprocessing_dropout_diagnostics
+    original_clip_selection = (
+        diagnostics._native_tof_postprocessing_clip_selection_diagnostics
+    )
+
+    def clip_selection_probe(*args, **kwargs):
+        work["clip_selection"] += 1
+        assert work["clip_selection"] <= 6
+        actual = original_clip_selection(*args, **kwargs)
+        outgoing.setdefault("clip_selection", actual)
+        return actual
 
     def dropout_probe(*args, **kwargs):
         work["dropout"] += 1
@@ -15276,6 +15294,11 @@ def test_native_tof_wall_snapshot(
     monkeypatch.setattr(
         diagnostics, "_native_tof_postprocessing_dropout_diagnostics", dropout_probe
     )
+    monkeypatch.setattr(
+        diagnostics,
+        "_native_tof_postprocessing_clip_selection_diagnostics",
+        clip_selection_probe,
+    )
     monkeypatch.setattr(diagnostics, "_native_tof_word_copy_matches", word_match)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
@@ -15318,6 +15341,8 @@ def test_native_tof_wall_snapshot(
             and case != "default",
             include_postprocessing_dropout_diagnostics=dropout_diagnostics
             and case != "default",
+            include_postprocessing_clip_selection_diagnostics=clip_selection
+            and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -15330,6 +15355,10 @@ def test_native_tof_wall_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
+        if not clip_selection or case == "default":
+            assert "postprocessing_clip_selection_diagnostics" not in result
+            assert "pending_postprocessing_clip_selection_diagnostics" not in result
+            assert work["clip_selection"] == 0
         if not dropout_diagnostics or case == "default":
             assert "postprocessing_dropout_diagnostics" not in result
             assert "pending_postprocessing_dropout_diagnostics" not in result
@@ -15481,6 +15510,71 @@ def test_native_tof_wall_snapshot(
                     ][0]["dropout_draw_hex"] = "changed"
                     assert (
                         getattr(owner, history_name)[0][kind]["dropout_draw"][0]
+                        != "changed"
+                    )
+                if clip_selection:
+                    reports = (
+                        result["postprocessing_clip_selection_diagnostics"],
+                        *result.get(
+                            "pending_postprocessing_clip_selection_diagnostics", ()
+                        ),
+                    )
+                    records = (selected, *result.get("pending_postprocessing", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        assert len(diagnostic["entries"]) == 64
+                        assert diagnostic["clip_value_mismatch_count"] == 0
+                        assert diagnostic["selection_value_mismatch_count"] == 0
+                        assert diagnostic["selection_word_mismatch_count"] == 0
+                        assert diagnostic["unknown_count"] == 0
+                        trace = record["postprocessing"]
+                        maximum = Fraction(trace["inputs"]["max_range_m"])
+                        for entry in diagnostic["entries"]:
+                            index = entry["ray_index"]
+                            words = tuple(
+                                trace[key][index]
+                                for key in (
+                                    "noisy_ranges_m",
+                                    "clipped_ranges_m",
+                                    "selected_ranges_m",
+                                )
+                            )
+                            noisy, clipped, selected_value = (
+                                Fraction(float.fromhex(word)) for word in words
+                            )
+                            work["clip_selection_oracle"] += 2
+                            assert work["clip_selection_oracle"] <= 384
+                            expected_clip = min(max(noisy, Fraction(0)), maximum)
+                            valid = trace["valid_after_dropout"][index]
+                            expected_selected = clipped if valid else Fraction(0)
+                            source_word = words[1] if valid else (0.0).hex()
+                            assert entry["noisy_range_hex"] == words[0]
+                            assert entry["clipped_range_hex"] == words[1]
+                            assert entry["selected_range_hex"] == words[2]
+                            assert entry["selection_input_hex"] == source_word
+                            assert (
+                                Fraction(*entry["expected_clipped_value_ratio"])
+                                == expected_clip
+                                == clipped
+                            )
+                            assert (
+                                Fraction(*entry["expected_selected_value_ratio"])
+                                == expected_selected
+                                == selected_value
+                            )
+                            assert entry["clipped_values_match"] is True
+                            assert entry["selection_values_match"] is True
+                            assert entry["selection_words_match"] is (
+                                words[2] == source_word
+                            )
+                    result["postprocessing_clip_selection_diagnostics"]["diagnostic"][
+                        "entries"
+                    ][0]["selected_range_hex"] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["selected_ranges_m"][0]
                         != "changed"
                     )
                 if include_products:
@@ -15765,6 +15859,8 @@ def test_native_tof_wall_snapshot(
                     "pending_postprocessing_noise_addition_residuals",
                     "postprocessing_dropout_diagnostics",
                     "pending_postprocessing_dropout_diagnostics",
+                    "postprocessing_clip_selection_diagnostics",
+                    "pending_postprocessing_clip_selection_diagnostics",
                     "selection",
                     "pending_selection",
                     "timing",
@@ -15840,6 +15936,23 @@ def test_native_tof_postprocessing_dropout_dependency(
             synthetic_test_only=True,
             include_postprocessing=case == "flag",
             include_postprocessing_dropout_diagnostics=True
+            if case == "dependency"
+            else 1,
+        )
+
+
+@pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_postprocessing"))
+def test_native_tof_postprocessing_clip_selection_dependency(
+    c1_motion_receipt_source_fixture, case
+):
+    owner = deepcopy(c1_motion_receipt_source_fixture[1])
+    with pytest.raises(
+        ValueError, match="include_postprocessing_clip_selection_diagnostics"
+    ):
+        owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_postprocessing=case == "flag",
+            include_postprocessing_clip_selection_diagnostics=True
             if case == "dependency"
             else 1,
         )

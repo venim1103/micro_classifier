@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §320 for active supplied-word clip/select diagnostics;
+Read [REVIEW.md][review] §321 for active matched clip/select reports;
+§320 records completed supplied-word clip/select diagnostics;
 §319 records completed matched dropout reports;
 §318 records completed supplied-word dropout-mask diagnostics;
 §317 records the completed matched noise-addition reports;
@@ -83,7 +84,9 @@ complete; retained additive reports and their required gate are complete.
 Standalone dropout comparison/mask diagnostics and their gate are complete;
 retained mask reports and their required gate are complete.
 Standalone clip/select word diagnostics and their required gate are complete;
-next independent retained clip/select joins. Preserve
+retained clip/select joins and their required gate are complete.
+Next lossless checkpoint311-315 archival, then independent supplied stored-
+float32 correspondence without rounding-law adoption. Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already

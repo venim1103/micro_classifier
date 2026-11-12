@@ -2279,12 +2279,24 @@ metadata. Signed-word ties remain unresolved, all eight flags false; no native
 primitive/rounding/error/noise law is adopted. Retained joins are separate.
 [Checkpoint §320][native-tof-clip-selection-review] retains bounds and controls.
 
+#### Matched Native ToF Clip/Selection Reports (2026-11-12)
+
+Literal default-off clip/select report inclusion requires postprocessing.
+Delivered/optional pending reports use matched retained operands, original/
+closing native/companion guards and source/history/report/output joins before
+publication. Changed or unsupported joins publish explicit unknown without
+partial fields. Detached reports preserve observed operands, raw nonfinite
+unknowns and zero-word ties; all eight flags remain false. No rounding, noise
+law, primitive/error bound or qualification follows from value/word matching.
+[Checkpoint §321][native-tof-clip-selection-match-review] records controls.
+
 [c1-motion-source]: ../../sim/rover.py
 [native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
 [native-tof-dropout-review]: ../../REVIEW.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
 [native-tof-dropout-match-review]: ../../REVIEW.md#319-matched-native-tof-dropout-reports-2026-11-12
 [native-tof-clip-selection-review]: ../../REVIEW.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12
+[native-tof-clip-selection-match-review]: ../../REVIEW.md#321-matched-native-tof-clipselection-reports-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

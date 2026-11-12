@@ -562,6 +562,42 @@ source/clock/one-use/physical/permission/admission qualification. No new study/
 model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
 Next bounded original/closing retained clip/select report joins.
 
+## 321. Matched Native ToF Clip/Selection Reports (2026-11-12)
+
+Begin clean pushed6acd424. Literal default-off
+`include_postprocessing_clip_selection_diagnostics` requires postprocessing
+inclusion. Delivered/optional pending reports use matched retained noisy/
+clipped/selected/mask/input words after independent native/companion guards.
+Original/closing native/RNG/profile/pose/input/frame/history/queue/stored-word/
+mask/report/output joins precede publication. Detached reports carry exact
+typed source epoch/tick/delivery labels; unsupported or changed joins publish
+explicit unknown without partial fields. Observed clipped operands and raw
+nonfinite unknowns/zero-word ties remain unchanged, all eight flags false.
+
+Reuse24 snapshot cases plus3 literal/dependency cases. Before execution owning
+fixture inspection corrected the two-source estimate: delivered+<=2 pending,
+original/closing<=6 reports,<=1158 decodes/1536 value/768 raw-word comparisons,
+384 entries; independent Fraction oracle<=384 clamp comparisons. Existing
+producer/RNG/geometry/clock/retention/frame/binding and addition/dropout/
+selection/timing/arithmetic controls stay unchanged; combined case includes
+prior reports without more producer work. No old/protected budget refund.
+
+Fresh focused27/60s, sole necessary repair27/60s, root/360s positions.
+First27 PASS6.04s with240 unselected; four hashes stable, scoped Ruff/
+changed format/whitespace PASS. Root PASS5142, known QDQ1 xfail/71 warnings/
+160.18s; root Ruff/changed format/whitespace and all four hashes PASS.
+Both executed positions spent; repair unused, not follow-on authority.
+Ignored `.git/returns-321-*`
+outputs/hashes retained. Pylance before/after resolved no dynamic callers,
+not static compatibility proof. No replay/extra RNG/study/model/dependency/
+download/hardware/native/Arm/sanitizer opt-in or law/threshold adoption.
+Value/word matches are not numerical/error/source/geometry/coverage/clock/
+one-use/physical/permission/admission qualification.
+
+Next preserve whole checkpoints311-315 before root review growth, then
+independent supplied selected-float64/stored-float32 correspondence; do not
+silently adopt a rounding model or normalize signed words.
+
 ## Sources
 
 Hardware and tools:

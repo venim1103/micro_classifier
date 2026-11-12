@@ -17487,6 +17487,7 @@ class _SyntheticC1SourceRecorder:
         include_postprocessing=False,
         include_postprocessing_noise_addition_residuals=False,
         include_postprocessing_dropout_diagnostics=False,
+        include_postprocessing_clip_selection_diagnostics=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -17522,6 +17523,17 @@ class _SyntheticC1SourceRecorder:
         if include_postprocessing_dropout_diagnostics and not include_postprocessing:
             raise ValueError(
                 "include_postprocessing_dropout_diagnostics requires include_postprocessing=True"
+            )
+        if type(include_postprocessing_clip_selection_diagnostics) is not bool:
+            raise ValueError(
+                "include_postprocessing_clip_selection_diagnostics must be a literal bool"
+            )
+        if (
+            include_postprocessing_clip_selection_diagnostics
+            and not include_postprocessing
+        ):
+            raise ValueError(
+                "include_postprocessing_clip_selection_diagnostics requires include_postprocessing=True"
             )
         if type(include_direction_product_residuals) is not bool:
             raise ValueError(
@@ -17970,6 +17982,28 @@ class _SyntheticC1SourceRecorder:
                     dropout_hex=trace["inputs"]["dropout"].hex(),
                     dropout_draw_hex=trace["dropout_draw"],
                     valid_before_dropout=trace["valid_before_dropout"],
+                    valid_after_dropout=trace["valid_after_dropout"],
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def postprocessing_clip_selection_probe(record):
+            trace = record["postprocessing"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_postprocessing_clip_selection_diagnostics(
+                    max_range_m_hex=trace["inputs"]["max_range_m"].hex(),
+                    **{
+                        f"{key}_hex": trace[key]
+                        for key in (
+                            "noisy_ranges_m",
+                            "clipped_ranges_m",
+                            "selected_ranges_m",
+                        )
+                    },
                     valid_after_dropout=trace["valid_after_dropout"],
                     synthetic_test_only=True,
                 ),
@@ -18663,6 +18697,20 @@ class _SyntheticC1SourceRecorder:
                         "pending_dropout": pending_postprocessing_dropout,
                     }
                 )
+            if include_postprocessing_clip_selection_diagnostics:
+                postprocessing_clip_selection = postprocessing_clip_selection_probe(
+                    postprocessing
+                )
+                pending_postprocessing_clip_selection = tuple(
+                    postprocessing_clip_selection_probe(record)
+                    for record in pending_postprocessing
+                )
+                postprocessing_clip_selection_binding = _c1_source_binding_digest(
+                    {
+                        "clip_selection": postprocessing_clip_selection,
+                        "pending_clip_selection": pending_postprocessing_clip_selection,
+                    }
+                )
             if include_direction_product_residuals:
                 direction_products = direction_product_probe(direction)
                 pending_direction_products = tuple(
@@ -19306,6 +19354,14 @@ class _SyntheticC1SourceRecorder:
                         postprocessing_dropout_probe(record)
                         for record in pending_postprocessing_after
                     )
+                if include_postprocessing_clip_selection_diagnostics:
+                    postprocessing_clip_selection_after = (
+                        postprocessing_clip_selection_probe(postprocessing_after)
+                    )
+                    pending_postprocessing_clip_selection_after = tuple(
+                        postprocessing_clip_selection_probe(record)
+                        for record in pending_postprocessing_after
+                    )
                 if (
                     self._tof_postprocessing_history is not postprocessing_before
                     or not _native_tof_word_copy_matches(
@@ -19728,6 +19784,25 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF postprocessing dropout source or outgoing reports changed"
                 )
+            if include_postprocessing_clip_selection_diagnostics and (
+                not _native_tof_word_copy_matches(
+                    postprocessing_clip_selection, postprocessing_clip_selection_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_postprocessing_clip_selection,
+                    pending_postprocessing_clip_selection_after,
+                )
+                or _c1_source_binding_digest(
+                    {
+                        "clip_selection": postprocessing_clip_selection,
+                        "pending_clip_selection": pending_postprocessing_clip_selection,
+                    }
+                )
+                != postprocessing_clip_selection_binding
+            ):
+                raise ValueError(
+                    "native ToF postprocessing clip/selection source or outgoing reports changed"
+                )
             if include_direction_pitch_residuals and (
                 not _native_tof_word_copy_matches(
                     direction_pitch, direction_pitch_after
@@ -19854,6 +19929,14 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_postprocessing_dropout_diagnostics"] = (
                     pending_postprocessing_dropout
+                )
+        if include_postprocessing_clip_selection_diagnostics:
+            result["postprocessing_clip_selection_diagnostics"] = (
+                postprocessing_clip_selection
+            )
+            if include_pending_sources:
+                result["pending_postprocessing_clip_selection_diagnostics"] = (
+                    pending_postprocessing_clip_selection
                 )
         if include_wall_residuals:
             result["wall_residuals"] = wall_residuals

@@ -2377,10 +2377,10 @@ The complete unchanged topic continues in [chapter03][postprocessing-relocated-7
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-intake-review]: ../review/306-310.md#309-bounded-closed-native-tof-postprocessing-intake-2026-11-11
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11
-[native-tof-postprocessing-retention-review]: ../../REVIEW.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
-[native-tof-postprocessing-match-review]: ../../REVIEW.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
-[native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
-[native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
+[native-tof-postprocessing-retention-review]: ../review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
+[native-tof-postprocessing-match-review]: ../review/311-315.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
+[native-tof-postprocessing-delivery-review]: ../review/311-315.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
+[native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [postprocessing-relocated-0]: 07-data-and-distillation-design-03.md#native-tof-return-postprocessing-prerequisites-2026-11-11
 [postprocessing-relocated-1]: 07-data-and-distillation-design-03.md#fresh-native-tof-postprocessing-acquisition-2026-11-11
 [postprocessing-relocated-2]: 07-data-and-distillation-design-03.md#closed-native-tof-postprocessing-intake-2026-11-11

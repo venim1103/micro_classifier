@@ -2291,16 +2291,16 @@ law, primitive/error bound or qualification follows from value/word matching.
 [Checkpoint §321][native-tof-clip-selection-match-review] records controls.
 
 [c1-motion-source]: ../../sim/rover.py
-[native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
+[native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
 [native-tof-dropout-review]: ../../REVIEW.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
 [native-tof-dropout-match-review]: ../../REVIEW.md#319-matched-native-tof-dropout-reports-2026-11-12
 [native-tof-clip-selection-review]: ../../REVIEW.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12
 [native-tof-clip-selection-match-review]: ../../REVIEW.md#321-matched-native-tof-clipselection-reports-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
-[native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
+[native-tof-postprocessing-delivery-review]: ../review/311-315.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11
 [native-tof-postprocessing-intake-review]: ../review/306-310.md#309-bounded-closed-native-tof-postprocessing-intake-2026-11-11
-[native-tof-postprocessing-match-review]: ../../REVIEW.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
-[native-tof-postprocessing-retention-review]: ../../REVIEW.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
+[native-tof-postprocessing-match-review]: ../review/311-315.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
+[native-tof-postprocessing-retention-review]: ../review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
 [native-tof-postprocessing-review]: ../review/306-310.md#306-cold-native-tof-return-postprocessing-capture-2026-11-11

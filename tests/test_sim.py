@@ -14730,6 +14730,7 @@ def test_native_tof_selection_snapshot(
         (None, "up"),
         ("postprocessing", False),
         ("postprocessing", "noise"),
+        ("postprocessing", "dropout"),
     ),
 )
 def test_native_tof_wall_snapshot(
@@ -14743,7 +14744,8 @@ def test_native_tof_wall_snapshot(
     pitch = products == "pitch"
     yaw = products == "yaw"
     up_copy = products == "up"
-    noise_addition = products == "noise"
+    dropout_diagnostics = products == "dropout"
+    noise_addition = products == "noise" or (dropout_diagnostics and case == "combined")
     products = products is True
     include_products = products or ((pitch or yaw or up_copy) and case == "combined")
     include_pitch = pitch or ((yaw or up_copy) and case == "combined")
@@ -14809,6 +14811,8 @@ def test_native_tof_wall_snapshot(
             "noise_values",
             "noise_binary",
             "noise_oracle",
+            "dropout",
+            "dropout_oracle",
         ),
         0,
     )
@@ -14953,7 +14957,9 @@ def test_native_tof_wall_snapshot(
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
                 outgoing[
-                    "noise_addition"
+                    "dropout"
+                    if dropout_diagnostics
+                    else "noise_addition"
                     if noise_addition
                     else "up"
                     if up_copy
@@ -15070,6 +15076,14 @@ def test_native_tof_wall_snapshot(
     original_noise_addition = (
         diagnostics._native_tof_postprocessing_noise_addition_residuals
     )
+    original_dropout = diagnostics._native_tof_postprocessing_dropout_diagnostics
+
+    def dropout_probe(*args, **kwargs):
+        work["dropout"] += 1
+        assert work["dropout"] <= 6
+        actual = original_dropout(*args, **kwargs)
+        outgoing.setdefault("dropout", actual)
+        return actual
 
     def noise_probe(*args, **kwargs):
         work["noise_addition"] += 1
@@ -15136,6 +15150,11 @@ def test_native_tof_wall_snapshot(
         assert work["noise_oracle"] <= 384
         return left + right if operation == "add" else left - right
 
+    def dropout_oracle(draw, threshold, prior):
+        work["dropout_oracle"] += 1
+        assert work["dropout_oracle"] <= 192
+        return prior and Fraction(draw) >= Fraction(threshold)
+
     def pending(*args, **kwargs):
         work["pending"] += 1
         assert work["pending"] <= 2
@@ -15167,11 +15186,12 @@ def test_native_tof_wall_snapshot(
                     else trace["walls"][0]
                 )
                 if postprocessing:
-                    selected["noise_draw_m"] = (
+                    name = "dropout_draw" if dropout_diagnostics else "noise_draw_m"
+                    selected[name] = (
                         math.nextafter(
-                            float.fromhex(selected["noise_draw_m"][0]), math.inf
+                            float.fromhex(selected[name][0]), math.inf
                         ).hex(),
-                        *selected["noise_draw_m"][1:],
+                        *selected[name][1:],
                     )
                 elif direction:
                     name = (
@@ -15253,6 +15273,9 @@ def test_native_tof_wall_snapshot(
     monkeypatch.setattr(
         diagnostics, "_native_tof_postprocessing_noise_addition_residuals", noise_probe
     )
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_postprocessing_dropout_diagnostics", dropout_probe
+    )
     monkeypatch.setattr(diagnostics, "_native_tof_word_copy_matches", word_match)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
@@ -15293,6 +15316,8 @@ def test_native_tof_wall_snapshot(
             include_direction_up_copy_diagnostics=up_copy and case != "default",
             include_postprocessing_noise_addition_residuals=noise_addition
             and case != "default",
+            include_postprocessing_dropout_diagnostics=dropout_diagnostics
+            and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -15305,6 +15330,10 @@ def test_native_tof_wall_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
+        if not dropout_diagnostics or case == "default":
+            assert "postprocessing_dropout_diagnostics" not in result
+            assert "pending_postprocessing_dropout_diagnostics" not in result
+            assert work["dropout"] == 0
         if not noise_addition or case == "default":
             assert "postprocessing_noise_addition_residuals" not in result
             assert "pending_postprocessing_noise_addition_residuals" not in result
@@ -15411,6 +15440,47 @@ def test_native_tof_wall_snapshot(
                     ][0]["observed_noisy_range_hex"] = "changed"
                     assert (
                         getattr(owner, history_name)[0][kind]["noisy_ranges_m"][0]
+                        != "changed"
+                    )
+                if dropout_diagnostics:
+                    reports = (
+                        result["postprocessing_dropout_diagnostics"],
+                        *result.get("pending_postprocessing_dropout_diagnostics", ()),
+                    )
+                    records = (selected, *result.get("pending_postprocessing", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert len(diagnostic["entries"]) == 64
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        assert diagnostic["mask_mismatch_count"] == 0
+                        assert diagnostic["unknown_mask_count"] == 0
+                        trace = record["postprocessing"]
+                        for entry in diagnostic["entries"]:
+                            index = entry["ray_index"]
+                            draw_word = trace["dropout_draw"][index]
+                            prior = trace["valid_before_dropout"][index]
+                            observed = trace["valid_after_dropout"][index]
+                            expected = dropout_oracle(
+                                float.fromhex(draw_word),
+                                trace["inputs"]["dropout"],
+                                prior,
+                            )
+                            assert entry["dropout_draw_hex"] == draw_word
+                            assert (
+                                entry["dropout_threshold_hex"]
+                                == trace["inputs"]["dropout"].hex()
+                            )
+                            assert entry["valid_before_dropout"] is prior
+                            assert entry["observed_valid_after_dropout"] is observed
+                            assert entry["expected_valid_after_dropout"] is expected
+                            assert entry["mask_matches"] is True
+                    result["postprocessing_dropout_diagnostics"]["diagnostic"][
+                        "entries"
+                    ][0]["dropout_draw_hex"] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["dropout_draw"][0]
                         != "changed"
                     )
                 if include_products:
@@ -15693,6 +15763,8 @@ def test_native_tof_wall_snapshot(
                     "pending_postprocessing",
                     "postprocessing_noise_addition_residuals",
                     "pending_postprocessing_noise_addition_residuals",
+                    "postprocessing_dropout_diagnostics",
+                    "pending_postprocessing_dropout_diagnostics",
                     "selection",
                     "pending_selection",
                     "timing",
@@ -15753,6 +15825,21 @@ def test_native_tof_postprocessing_noise_addition_dependency(
             synthetic_test_only=True,
             include_postprocessing=case == "flag",
             include_postprocessing_noise_addition_residuals=True
+            if case == "dependency"
+            else 1,
+        )
+
+
+@pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_postprocessing"))
+def test_native_tof_postprocessing_dropout_dependency(
+    c1_motion_receipt_source_fixture, case
+):
+    owner = deepcopy(c1_motion_receipt_source_fixture[1])
+    with pytest.raises(ValueError, match="include_postprocessing_dropout_diagnostics"):
+        owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_postprocessing=case == "flag",
+            include_postprocessing_dropout_diagnostics=True
             if case == "dependency"
             else 1,
         )

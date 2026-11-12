@@ -2257,10 +2257,22 @@ mask preflight rejects unsupported metadata; all eight flags remain false.
 This is not comparator/native/physical qualification. Retained report joins
 remain separate; [checkpoint §318][native-tof-dropout-review] retains bounds.
 
+#### Matched ToF Dropout Reports (2026-11-12)
+
+The [offline snapshot][c1-prototype-source] appends literal default-off
+`include_postprocessing_dropout_diagnostics`, requiring postprocessing inclusion.
+Original/closing native/companion prevalidation, history identities, words,
+report content and detached output bindings precede delivered/pending report
+publication. Default keys remain unchanged and changed/unsupported evidence
+returns explicit unknown without partial output. No draw interval, probability
+law, threshold or qualification is adopted; all eight flags remain false.
+[Checkpoint §319][native-tof-dropout-match-review] retains bounds and controls.
+
 [c1-motion-source]: ../../sim/rover.py
 [native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
 [native-tof-dropout-review]: ../../REVIEW.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
+[native-tof-dropout-match-review]: ../../REVIEW.md#319-matched-native-tof-dropout-reports-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

@@ -488,6 +488,45 @@ permission/admission qualification. No new study/model/dependency/download/
 hardware/extra native/Arm/sanitizer opt-in. Next original/closing retained
 dropout-mask report joins, without changing source or adopting a probability law.
 
+## 319. Matched Native ToF Dropout Reports (2026-11-12)
+
+Begin clean pushed89bdbef. Append literal default-off
+`include_postprocessing_dropout_diagnostics`, requiring postprocessing inclusion.
+Reuse the standalone supplied-word threshold/prior-mask comparison against
+original/closing retained delivered and optional pending traces. Existing
+native/typed companion prevalidation follows closing frame/queue callbacks
+before report construction; final history identity, word, report-content and
+detached output bindings must agree before publication. No new draw, finite
+draw interval, threshold, probability/noise law or correction is adopted.
+
+Extend existing24-case snapshot matrix with24 dropout-report cases and three
+literal/dependency controls; old216 cases/defaults and source/matcher/fixture
+caps stay unchanged. New scope <=6 dropout reports/390 word decodes/384 predicate
+comparisons; independent Fraction oracle <=192 comparisons. Combined control
+also uses existing additive reports within unchanged six-call/1,152-value/
+768-binary/384-oracle caps. Check report identities/raw draw/threshold words/
+prior/observed/expected masks, mismatch/unknown counts, detached outputs,
+default key absence and late unknown-with-no-partial-publication.
+
+Fresh three routine positions: focused27/60s, sole necessary repair27/60s,
+required root/360s; failures/aborts/unknown spent, no historical/protected refund.
+Retain ignored `.git/returns-319-*` outputs/hashes; serialize checks.
+First27 PASS5.71s/216 deselected, all four source hashes stable; scoped Ruff/
+changed format/whitespace PASS. Required root PASS5091/known QDQ xfail/
+71 warnings/159.13s; root Ruff/changed format/whitespace PASS, all four source
+hashes stable. Scoped diff/AST and reference checks PASS for prior module/
+recorder/default/test nodes and old216-case prefix. Two of three fresh positions
+spent, no failure/abort/refund; unused repair is not follow-on authority.
+No successful code gate repeated for documentation closeout.
+
+All eight flags remain false; raw unsupported/nonfinite source remains unknown.
+This is matched source/word/mask content, not native comparator execution,
+probability/noise-law, clip/cast/numerical/error/geometry/coverage/source/clock/
+one-use/physical/permission/admission qualification. No new study/model/
+dependency/download/hardware/extra native/Arm/sanitizer opt-in.
+Next independently supported supplied-word clip/select correspondence;
+preserve raw nonfinite unknowns and equal-value/different-word ties.
+
 ## Sources
 
 Hardware and tools:

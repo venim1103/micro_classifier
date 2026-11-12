@@ -17364,6 +17364,7 @@ class _SyntheticC1SourceRecorder:
         include_direction_up_copy_diagnostics=False,
         include_postprocessing=False,
         include_postprocessing_noise_addition_residuals=False,
+        include_postprocessing_dropout_diagnostics=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -17391,6 +17392,14 @@ class _SyntheticC1SourceRecorder:
         ):
             raise ValueError(
                 "include_postprocessing_noise_addition_residuals requires include_postprocessing=True"
+            )
+        if type(include_postprocessing_dropout_diagnostics) is not bool:
+            raise ValueError(
+                "include_postprocessing_dropout_diagnostics must be a literal bool"
+            )
+        if include_postprocessing_dropout_diagnostics and not include_postprocessing:
+            raise ValueError(
+                "include_postprocessing_dropout_diagnostics requires include_postprocessing=True"
             )
         if type(include_direction_product_residuals) is not bool:
             raise ValueError(
@@ -17824,6 +17833,22 @@ class _SyntheticC1SourceRecorder:
                             "noisy_ranges_m",
                         )
                     },
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def postprocessing_dropout_probe(record):
+            trace = record["postprocessing"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_postprocessing_dropout_diagnostics(
+                    dropout_hex=trace["inputs"]["dropout"].hex(),
+                    dropout_draw_hex=trace["dropout_draw"],
+                    valid_before_dropout=trace["valid_before_dropout"],
+                    valid_after_dropout=trace["valid_after_dropout"],
                     synthetic_test_only=True,
                 ),
             }
@@ -18504,6 +18529,18 @@ class _SyntheticC1SourceRecorder:
                         "pending_addition": pending_postprocessing_noise_addition,
                     }
                 )
+            if include_postprocessing_dropout_diagnostics:
+                postprocessing_dropout = postprocessing_dropout_probe(postprocessing)
+                pending_postprocessing_dropout = tuple(
+                    postprocessing_dropout_probe(record)
+                    for record in pending_postprocessing
+                )
+                postprocessing_dropout_binding = _c1_source_binding_digest(
+                    {
+                        "dropout": postprocessing_dropout,
+                        "pending_dropout": pending_postprocessing_dropout,
+                    }
+                )
             if include_direction_product_residuals:
                 direction_products = direction_product_probe(direction)
                 pending_direction_products = tuple(
@@ -19139,6 +19176,14 @@ class _SyntheticC1SourceRecorder:
                         postprocessing_noise_addition_probe(record)
                         for record in pending_postprocessing_after
                     )
+                if include_postprocessing_dropout_diagnostics:
+                    postprocessing_dropout_after = postprocessing_dropout_probe(
+                        postprocessing_after
+                    )
+                    pending_postprocessing_dropout_after = tuple(
+                        postprocessing_dropout_probe(record)
+                        for record in pending_postprocessing_after
+                    )
                 if (
                     self._tof_postprocessing_history is not postprocessing_before
                     or not _native_tof_word_copy_matches(
@@ -19543,6 +19588,24 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF postprocessing addition source or outgoing reports changed"
                 )
+            if include_postprocessing_dropout_diagnostics and (
+                not _native_tof_word_copy_matches(
+                    postprocessing_dropout, postprocessing_dropout_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_postprocessing_dropout, pending_postprocessing_dropout_after
+                )
+                or _c1_source_binding_digest(
+                    {
+                        "dropout": postprocessing_dropout,
+                        "pending_dropout": pending_postprocessing_dropout,
+                    }
+                )
+                != postprocessing_dropout_binding
+            ):
+                raise ValueError(
+                    "native ToF postprocessing dropout source or outgoing reports changed"
+                )
             if include_direction_pitch_residuals and (
                 not _native_tof_word_copy_matches(
                     direction_pitch, direction_pitch_after
@@ -19663,6 +19726,12 @@ class _SyntheticC1SourceRecorder:
             if include_pending_sources:
                 result["pending_postprocessing_noise_addition_residuals"] = (
                     pending_postprocessing_noise_addition
+                )
+        if include_postprocessing_dropout_diagnostics:
+            result["postprocessing_dropout_diagnostics"] = postprocessing_dropout
+            if include_pending_sources:
+                result["pending_postprocessing_dropout_diagnostics"] = (
+                    pending_postprocessing_dropout
                 )
         if include_wall_residuals:
             result["wall_residuals"] = wall_residuals

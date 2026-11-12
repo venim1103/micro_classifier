@@ -12124,6 +12124,105 @@ def _native_tof_direction_product_residuals(
     }
 
 
+def _native_tof_postprocessing_noise_addition_residuals(
+    *,
+    pre_noise_ranges_m_hex,
+    noise_draw_m_hex,
+    noisy_ranges_m_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native postprocessing addition requires synthetic_test_only=True"
+        )
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native postprocessing addition rational budget unsupported")
+
+    def decoded(words, finite_only):
+        if type(words) is not tuple or len(words) != 64:
+            raise ValueError("native postprocessing addition word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native postprocessing addition word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native postprocessing addition words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError(
+                    "native postprocessing addition words must be canonical"
+                )
+            values.append(value)
+        return values
+
+    pre_noise = decoded(pre_noise_ranges_m_hex, True)
+    noise = decoded(noise_draw_m_hex, True)
+    observed = decoded(noisy_ranges_m_hex, False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        for ray_index in range(64):
+            exact = arithmetic.binary(
+                arithmetic.value(pre_noise[ray_index]),
+                arithmetic.value(noise[ray_index]),
+                "add",
+            )
+            residual = (
+                arithmetic.binary(arithmetic.value(observed[ray_index]), exact, "sub")
+                if math.isfinite(observed[ray_index])
+                else None
+            )
+            entries.append(
+                {
+                    "ray_index": ray_index,
+                    "operand_hex": (
+                        pre_noise_ranges_m_hex[ray_index],
+                        noise_draw_m_hex[ray_index],
+                    ),
+                    "observed_noisy_range_hex": noisy_ranges_m_hex[ray_index],
+                    "exact_unrounded_sum_ratio": exact.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": "unknown_nonfinite_noisy_range"
+                    if residual is None
+                    else "computed_exact_noise_addition_residual",
+                }
+            )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native postprocessing addition rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-tof-postprocessing-noise-addition-residuals/1",
+        "allowed_use": "offline_native_tof_postprocessing_word_diagnostics_only",
+        "status": "reported_postprocessing_noise_addition_residuals",
+        "comparison_basis": "unrounded_supplied_word_noise_addition",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_direction_pitch_residuals(
     *,
     pitch_cosine_hex,

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §314 for the active postprocessing delivery publication;
+Read [REVIEW.md][review] §315 for the active supplied-word noise-addition report;
+§314 records completed postprocessing delivery publication;
 §313 records the completed retained-postprocessing matcher;
 §312 records the completed postprocessing retention checkpoint;
 §311 preserves the cloud harness handoff/restart prompt;
@@ -72,8 +73,8 @@ cold cylinder/acquisition trace with their arithmetic/ownership limits.
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
 Default-off <=8-record postprocessing recorder retention and its required gate
 are complete. Retained matching and delivered/pending publication are complete.
-Next independently supported postprocessing operation/operand correspondence;
-preserve
+Standalone supplied-word noise-addition diagnostics and their required gate are
+complete; next independently bounded retained report joins. Preserve
 with original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already

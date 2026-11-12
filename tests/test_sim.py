@@ -30507,6 +30507,235 @@ def test_native_tof_direction_pitch_residuals(
     (
         "actual",
         "exact",
+        "rounded",
+        "mismatch",
+        "signed_zero_tie",
+        "signed_zero_match",
+        "subnormal",
+        "large_finite",
+        "cancellation",
+        "positive_inf",
+        "negative_inf",
+        "flag",
+        "shape",
+        "list_source",
+        "tuple_subclass",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_operand",
+        "word_type",
+        "word_budget",
+        "budget",
+        "budget_high",
+        "work_limit",
+    ),
+)
+def test_native_tof_postprocessing_noise_addition_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    arguments = {
+        "pre_noise_ranges_m_hex": ((0.5).hex(),) * 64,
+        "noise_draw_m_hex": ((0.25).hex(),) * 64,
+        "noisy_ranges_m_hex": ((0.75).hex(),) * 64,
+    }
+    setup = {"geometry": 0}
+    original_ranges = rover.tof_ranges
+
+    def ranges(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_ranges(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    if case == "actual":
+        captured = {}
+        environment._sample(
+            native_source={},
+            postprocessing_source=captured,
+        )
+        arguments = {
+            key: tuple(
+                float(word).hex() for word in captured[key.removesuffix("_hex")].flat
+            )
+            for key in arguments
+        }
+    elif case == "rounded":
+        arguments["pre_noise_ranges_m_hex"] = ((1.0).hex(),) * 64
+        arguments["noise_draw_m_hex"] = ((math.ulp(1.0) / 2).hex(),) * 64
+        arguments["noisy_ranges_m_hex"] = ((1.0).hex(),) * 64
+    elif case == "mismatch":
+        arguments["noisy_ranges_m_hex"] = ((1.0).hex(),) * 64
+    elif case in ("signed_zero_tie", "signed_zero_match"):
+        arguments["pre_noise_ranges_m_hex"] = ((0.0).hex(),) * 64
+        arguments["noise_draw_m_hex"] = (
+            (-0.0 if case == "signed_zero_match" else 0.0).hex(),
+        ) * 64
+        arguments["noisy_ranges_m_hex"] = ((-0.0).hex(),) * 64
+    elif case in ("subnormal", "work_limit"):
+        arguments["pre_noise_ranges_m_hex"] = (math.ulp(0.0).hex(),) * 64
+        arguments["noise_draw_m_hex"] = (math.ulp(0.0).hex(),) * 64
+        arguments["noisy_ranges_m_hex"] = ((2 * math.ulp(0.0)).hex(),) * 64
+    elif case in ("large_finite", "cancellation"):
+        maximum = float.fromhex("0x1.fffffffffffffp+1023")
+        arguments["pre_noise_ranges_m_hex"] = (maximum.hex(),) * 64
+        arguments["noise_draw_m_hex"] = (
+            (maximum if case == "large_finite" else -maximum).hex(),
+        ) * 64
+        arguments["noisy_ranges_m_hex"] = (
+            "inf" if case == "large_finite" else (0.0).hex(),
+        ) * 64
+    elif case in ("positive_inf", "negative_inf", "nan", "word_type", "word_budget"):
+        arguments["noisy_ranges_m_hex"] = (
+            {
+                "positive_inf": "inf",
+                "negative_inf": "-inf",
+                "nan": "nan",
+                "word_type": False,
+                "word_budget": "0" * 33,
+            }[case],
+        ) * 64
+    elif case == "shape":
+        arguments["noisy_ranges_m_hex"] *= 2
+    elif case == "list_source":
+        arguments["noisy_ranges_m_hex"] = list(arguments["noisy_ranges_m_hex"])
+    elif case == "tuple_subclass":
+
+        class Words(tuple):
+            pass
+
+        arguments["noisy_ranges_m_hex"] = Words(arguments["noisy_ranges_m_hex"])
+    elif case in ("noncanonical", "overflow_word", "finite_operand"):
+        arguments["noise_draw_m_hex"] = (
+            {
+                "noncanonical": "1.0",
+                "overflow_word": "0x1p+999999",
+                "finite_operand": "inf",
+            }[case],
+        ) * 64
+    before = deepcopy(arguments)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = {"values": 0, "binary": 0, "oracle": 0, "forbidden": 0}
+
+    def value(instance, argument):
+        work["values"] += 1
+        assert work["values"] <= 192
+        return original_value(instance, argument)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 128
+        return original_binary(instance, left, right, operation)
+
+    def oracle(left, right, operation):
+        work["oracle"] += 1
+        assert work["oracle"] <= 128
+        return left + right if operation == "add" else left - right
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "addition must not intake/read/retain/hash/step/reset/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    if case in ("budget", "budget_high", "work_limit"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {"budget": True, "budget_high": 4097, "work_limit": 16}[case],
+        )
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_postprocessing_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset", "_sample"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "list_source",
+        "tuple_subclass",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "finite_operand",
+        "word_type",
+        "word_budget",
+        "budget",
+        "budget_high",
+        "work_limit",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_postprocessing_noise_addition_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+        if case != "work_limit":
+            assert work["values"] == work["binary"] == 0
+    else:
+        result = diagnostics._native_tof_postprocessing_noise_addition_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert result["comparison_basis"] == "unrounded_supplied_word_noise_addition"
+        assert len(result["entries"]) == 64
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for entry in result["entries"]:
+            index = entry["ray_index"]
+            operands = (
+                arguments["pre_noise_ranges_m_hex"][index],
+                arguments["noise_draw_m_hex"][index],
+            )
+            exact = oracle(*(Fraction(float.fromhex(word)) for word in operands), "add")
+            observed = arguments["noisy_ranges_m_hex"][index]
+            assert entry["operand_hex"] == operands
+            assert entry["observed_noisy_range_hex"] == observed
+            assert Fraction(*entry["exact_unrounded_sum_ratio"]) == exact
+            if math.isfinite(float.fromhex(observed)):
+                residual = oracle(Fraction(float.fromhex(observed)), exact, "sub")
+                assert Fraction(*entry["signed_residual_ratio"]) == residual
+                assert entry["status"] == "computed_exact_noise_addition_residual"
+            else:
+                assert entry["signed_residual_ratio"] is None
+                assert entry["status"] == "unknown_nonfinite_noisy_range"
+        if case == "rounded":
+            assert Fraction(*result["entries"][0]["signed_residual_ratio"]) < 0
+        if case.startswith("signed_zero"):
+            assert result["entries"][0]["observed_noisy_range_hex"] == "-0x0.0p+0"
+            assert result["entries"][0]["signed_residual_ratio"] == (0, 1)
+        result["entries"][0]["observed_noisy_range_hex"] = "changed"
+    assert arguments == before and work["forbidden"] == 0
+    assert setup["geometry"] == int(case == "actual")
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
         "mismatch",
         "signed_zero_tie",
         "signed_zero_match",

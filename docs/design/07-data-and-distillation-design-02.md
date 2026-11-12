@@ -2457,6 +2457,16 @@ geometry/coverage/error/physical/clock/one-use/admission qualification; all eigh
 flags remain false. [Checkpoint §314][native-tof-postprocessing-delivery-review]
 retains finite controls and evidence limits.
 
+#### Supplied-Word ToF Noise-Addition Discrepancies (2026-11-12)
+
+The standalone [offline helper][c1-prototype-source] compares 64 observed noisy
+words against exact unrounded sums of supplied finite pre-noise/draw words.
+It preserves signed/raw words and reports nonfinite observations as unknown;
+canonical builtin-word and bounded rational preflight reject unsupported inputs.
+No noise distribution, primitive rounding/error bound or qualification is
+adopted; all eight flags remain false. Retained report joins are separate.
+[Checkpoint §315][native-tof-noise-addition-review] retains bounds and failures.
+
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
 [floor-rules]: ../../sim/rules.py
@@ -2489,3 +2499,4 @@ retains finite controls and evidence limits.
 [native-tof-postprocessing-retention-review]: ../../REVIEW.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
 [native-tof-postprocessing-match-review]: ../../REVIEW.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
 [native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
+[native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12

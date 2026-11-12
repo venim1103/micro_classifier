@@ -557,6 +557,48 @@ No new study/model/dependency/download/hardware/extra native/Arm/sanitizer opt-i
 Next reassess independently supported native postprocessing operation/operand
 correspondence, retaining source observations rather than adopting a noise law.
 
+## 315. Supplied-Word Native ToF Noise-Addition Discrepancies (2026-11-12)
+
+Begin clean pusheded54793. Actual cold sampler owner copies pre-noise grid and
+the existing normal draw around `grid += noise`; no new sample/draw or replacement
+distribution is needed to report supplied-word addition discrepancies.
+Standalone helper reuses bounded `_C1CommandArithmetic`: three builtin64-word
+tuples, <=32char canonical words, finite supplied operands, raw +/-inf observation
+unknown and NaN/unsupported rejection before rational work. Unchanged1..4096bit
+ceiling, <=192 float decodes/value conversions,128 binary operations and64 entries.
+Report exact unrounded supplied sum, observed raw noisy word and signed rational
+residual; preserve signed words and unresolved equal-value/different-word ties.
+No NumPy primitive/rounding proof, uniform error bound, noise law or qualification.
+
+Add24 bounded standalone controls: one actual cold sample/geometry with only
+existing draws before poison, exact/rounded/mismatched/subnormal/large finite/
+cancellation/signed-zero words, raw +/-inf unknown, malformed canonical/builtin/
+shape/word/bit budgets and16bit work-limit rejection. Independent Fraction
+oracle <=128 operations. No intake/read/retention/replay/step/reset/sample/hash/
+clock/geometry during helper calls. Prior helpers/defaults/tests unchanged.
+Fresh three routine positions: focused24/60s, sole necessary repair24/60s,
+required root/360s; failure/abort/unknown spent, no old/protected refund/renewal.
+Retain ignored `.git/returns-315-*` output/hash logs; serialize checks.
+
+First FAILED1/PASS23/3.81s: actual fixture passed config/scenario positionally to
+the keyword-only `_sample` owner. Verify exact owner signature and remove only
+the two unsupported arguments; no source/oracle/assertion/cap change. Necessary
+24 PASS3.11s, all four hashes stable for both. Scoped Ruff/changed format/
+whitespace PASS. Pylance workspace-symbol lookup returned no new helper match;
+runtime/AST evidence is authoritative here, not an inferred editor fact.
+Required root PASS5013/known QDQ xfail/71 warnings/153.24s; root Ruff/changed
+format/whitespace PASS, all four source hashes stable. All three fresh positions
+spent (one fixture failure, focused/root passes), no abort/refund/renewal.
+Scoped diff reviewed; all prior source/test module AST and defaults exact.
+New reference target/anchor PASS; no successful code gate repeated for closeout.
+
+All eight flags remain false; raw unsupported/nonfinite source remains unknown
+for qualification. This standalone report is not retained delivered/pending
+arithmetic composition, internal dropout/clip/cast proof, probability/noise-law/
+geometry/coverage/error/source/physical/clock/one-use/permission/admission proof.
+No new study/model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
+Next separately bounded original/closing retained noise-addition report joins.
+
 ## Sources
 
 Hardware and tools:

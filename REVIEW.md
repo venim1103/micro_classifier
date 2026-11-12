@@ -446,6 +446,39 @@ evidence remains committed documents. Next original/closing matched retained
 native goal delta reports without replay, extra draws, law/bound adoption or
 qualification shortcuts.
 
+## 335. Matched Native Goal Delta Reports WIP and Pause (2026-11-12)
+
+Begin clean pusheda165ac5. Add literal default-off
+`include_goal_delta_residuals`, requiring goal computation inclusion. Delivered
+reports reuse independently validated retained world/used-position/delta
+words, retain exact source epoch/tick/delivery labels, and close original/
+closing source/operand/report/output joins before publication. No new pending
+domain, replay/draw/trig/clock/geometry/law/bound or qualification adoption;
+all eight flags false. This implementation is WIP, not a completed root gate.
+
+Fresh26/60s, necessary repair26/60s reserve, root/360s. One no-write patch
+context miss was repaired before execution. Focused26 PASS4.29s/4453 deselected:
+reuse23 delta-mode publication cases plus3 literal/dependency/outgoing-report
+controls; unchanged plain-mode controls await required root regression.
+<=2 reports/4 entries/12 word decodes/12 value conversions/8 binary operations,
+unchanged <=2 intakes/views/matches/file checks and <=12 binding digests.
+Pylance before/after found no resolved dynamic callers, not static compatibility
+proof.
+
+The user explicitly paused during the root run; stop the owned process
+immediately. Partial log ends during pytest progress at85%, without a full
+result or subsequent style gate. The root position is spent/aborted, not passed
+or refunded. Last completed root remains5376, known QDQ1 xfail/77 warnings
+from§333. Retain `.git/returns-335-*` logs/hashes and local WIP; the subsequent
+explicit user request authorizes a WIP commit and pause, not another code run
+or implementation slice. Scoped WIP whitespace/four tested hashes and every
+unrelated source/control/decorator AST pass; no code gate is rerun. Next only
+after a fresh actual continuation request:
+revalidate the retained worktree/environment and finish the necessary bounded
+root/style/conservation gate without repeating unchanged green focused controls.
+No new source qualification, protected study/model/dependency/download/hardware
+work, or numerical/physical/clock/execution/one-use/admission evidence.
+
 ## Sources
 
 Hardware and tools:

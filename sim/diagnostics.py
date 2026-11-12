@@ -18172,7 +18172,11 @@ class _SyntheticC1SourceRecorder:
         self._tof_postprocessing_history = postprocessing_history
 
     def snapshot_native_goal_delivery(
-        self, *, synthetic_test_only=False, include_goal_computation=False
+        self,
+        *,
+        synthetic_test_only=False,
+        include_goal_computation=False,
+        include_goal_delta_residuals=False,
     ):
         from interface.protocol import State, encode_state
         from sim.rover import RoverEnv
@@ -18181,6 +18185,10 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("native goal snapshot requires synthetic_test_only=True")
         if type(include_goal_computation) is not bool:
             raise ValueError("include_goal_computation must be a literal bool")
+        if type(include_goal_delta_residuals) is not bool:
+            raise ValueError("include_goal_delta_residuals must be a literal bool")
+        if include_goal_delta_residuals and not include_goal_computation:
+            raise ValueError("native goal delta reports require goal computation")
         result = {
             "schema": "micro-classifier/synthetic-c1-native-goal-delivery/1",
             "allowed_use": "offline_native_goal_computation_diagnostics_only",
@@ -18208,6 +18216,22 @@ class _SyntheticC1SourceRecorder:
         current, dynamics = self._current, self._dynamics_sample
         if environment is None or current is None or dynamics is None:
             return result
+
+        def delta_report(record):
+            if not include_goal_delta_residuals:
+                return None
+            computation = record["goal_computation"]["computation"]
+            return {
+                **_native_goal_delta_residuals(
+                    world_goal_m=computation["inputs"]["world_goal_m"],
+                    used_position_m_hex=computation["inputs"]["used_position_m"],
+                    delta_m_hex=computation["values"]["delta_m"],
+                    synthetic_test_only=True,
+                ),
+                "source_epoch": record["source_epoch"],
+                "tick": record["tick"],
+                "delivery_tick": record["delivery_tick"],
+            }
 
         def producer():
             return {
@@ -18304,8 +18328,9 @@ class _SyntheticC1SourceRecorder:
             matched = _match_native_goal_retained_computation(target, history)
             if not _native_tof_word_copy_matches(matched["goal_computation"], live):
                 raise ValueError("native goal snapshot retained/current words mismatch")
+            report = delta_report(matched)
             copied_binding = _c1_source_binding_digest(
-                {"matched": matched, "frame": frame}
+                {"matched": matched, "frame": frame, "goal_delta_residuals": report}
             )
             closing = _sample_simulator_native_goal_computation_source(
                 environment, self._epoch
@@ -18316,6 +18341,7 @@ class _SyntheticC1SourceRecorder:
             closing_match = _match_native_goal_retained_computation(
                 target, self._goal_computation_history
             )
+            closing_report = delta_report(closing_match)
             closing_producer_binding = _c1_source_binding_digest(producer())
             if (
                 not _native_tof_word_copy_matches(live, closing)
@@ -18323,7 +18349,10 @@ class _SyntheticC1SourceRecorder:
                 or not _native_tof_word_copy_matches(
                     closing_match["goal_computation"], closing
                 )
-                or _c1_source_binding_digest({"matched": matched, "frame": frame})
+                or not _native_tof_word_copy_matches(report, closing_report)
+                or _c1_source_binding_digest(
+                    {"matched": matched, "frame": frame, "goal_delta_residuals": report}
+                )
                 != copied_binding
                 or _c1_source_binding_digest(ownership()) != owner_binding
                 or closing_producer_binding != producer_binding
@@ -18352,6 +18381,8 @@ class _SyntheticC1SourceRecorder:
             frame=frame,
             delivered_goal=matched,
         )
+        if include_goal_delta_residuals:
+            result["goal_delta_residuals"] = report
         return result
 
     def snapshot_native_tof_source(self, *, synthetic_test_only=False):

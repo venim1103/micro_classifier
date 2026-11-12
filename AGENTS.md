@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §334 for intact native goal prerequisite archival;
+Read [REVIEW.md][review] §335 for matched native goal delta WIP and user pause;
+§334 records intact native goal prerequisite archival;
 §333 records supplied-word native goal delta discrepancies;
 §332 records closed default-off native goal delivery;
 §331 records exact retained native goal matching;
@@ -111,8 +112,12 @@ retained exact goal matching and its required gate are complete;
 closed default-off latency0 delivered-goal publication and its gate are complete.
 Pending goal publication is unsupported by frozen C1's zero-latency domain;
 supplied-word native goal delta discrepancies and their gate are complete.
-Next matched retained goal delta reports,
-not noise/geometry or error-bound adoption.
+Matched retained goal delta reports have26 passing focused controls; the root
+run was stopped on the user's current explicit pause and remains spent/aborted.
+This is WIP, not a completed required gate. Resume only on a fresh actual
+continuation request; next finish bounded root/style/conservation verification,
+without repeating unchanged green focused controls or adopting noise/geometry
+or error bounds.
 Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.

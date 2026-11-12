@@ -16086,6 +16086,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_wall_history = []
         self._tof_cylinder_history = []
         self._tof_direction_history = []
+        self._tof_postprocessing_history = []
         self._receipt_history = []
 
     @staticmethod
@@ -16482,6 +16483,7 @@ class _SyntheticC1SourceRecorder:
         include_wall=False,
         include_cylinder=False,
         include_direction=False,
+        include_postprocessing=False,
     ):
         """Retain fresh acquisition words without repeating synthetic C1 staging."""
         if synthetic_test_only is not True:
@@ -16496,6 +16498,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_cylinder must be a literal bool")
         if type(include_direction) is not bool:
             raise ValueError("include_direction must be a literal bool")
+        if type(include_postprocessing) is not bool:
+            raise ValueError("include_postprocessing must be a literal bool")
         if (
             self._simulator is not environment
             or self._current is None
@@ -16512,6 +16516,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("native ToF source files changed")
         template = _native_tof_history_template(environment, self._epoch)
         _check_native_tof_history_layout(self._tof_history, template)
+        if include_postprocessing or self._tof_postprocessing_history:
+            _check_native_tof_archive_words(self._tof_history, template)
         _check_native_tof_timing_history(
             self._tof_timing_history, self._tof_history, self._epoch
         )
@@ -16526,6 +16532,9 @@ class _SyntheticC1SourceRecorder:
         )
         _check_native_tof_direction_history(
             self._tof_direction_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_postprocessing_history(
+            self._tof_postprocessing_history, self._tof_history, self._epoch
         )
 
         def producer():
@@ -16548,6 +16557,8 @@ class _SyntheticC1SourceRecorder:
         def ownership():
             current = self._current
             _check_native_tof_history_layout(self._tof_history, template)
+            if include_postprocessing or self._tof_postprocessing_history:
+                _check_native_tof_archive_words(self._tof_history, template)
             _check_native_tof_timing_history(
                 self._tof_timing_history, self._tof_history, self._epoch
             )
@@ -16562,6 +16573,9 @@ class _SyntheticC1SourceRecorder:
             )
             _check_native_tof_direction_history(
                 self._tof_direction_history, self._tof_history, self._epoch
+            )
+            _check_native_tof_postprocessing_history(
+                self._tof_postprocessing_history, self._tof_history, self._epoch
             )
             return _c1_source_binding_digest(
                 {
@@ -16581,6 +16595,7 @@ class _SyntheticC1SourceRecorder:
                     "tof_wall_history": self._tof_wall_history,
                     "tof_cylinder_history": self._tof_cylinder_history,
                     "tof_direction_history": self._tof_direction_history,
+                    "tof_postprocessing_history": self._tof_postprocessing_history,
                     "binding": self._binding,
                 }
             )
@@ -16613,7 +16628,21 @@ class _SyntheticC1SourceRecorder:
             environment._native_tof_direction_source if include_direction else None
         )
         direction_history_before = self._tof_direction_history
+        postprocessing_cache_before = (
+            environment._native_tof_postprocessing_source
+            if include_postprocessing
+            else None
+        )
+        postprocessing_history_before = self._tof_postprocessing_history
         timing_history_binding = _c1_source_binding_digest(self._tof_timing_history)
+        if include_postprocessing:
+            postprocessing = _sample_simulator_native_tof_postprocessing_source(
+                environment, self._epoch
+            )
+            postprocessing_entry = {
+                key: deepcopy(postprocessing[key])
+                for key in ("source_epoch", "tick", "delivery_tick", "postprocessing")
+            }
         if include_direction:
             direction = _sample_simulator_native_tof_direction_source(
                 environment, self._epoch
@@ -16661,6 +16690,8 @@ class _SyntheticC1SourceRecorder:
             copied = cylinder["source"]
         elif include_direction:
             copied = direction["source"]
+        elif include_postprocessing:
+            copied = postprocessing["source"]
         else:
             copied = _sample_simulator_native_tof_source(environment, self._epoch)
         _check_native_tof_history_layout(self._tof_history, copied)
@@ -16673,6 +16704,8 @@ class _SyntheticC1SourceRecorder:
             history.append(deepcopy(copied))
             history = history[-8:]
         _check_native_tof_history_layout(history, copied)
+        if include_postprocessing or self._tof_postprocessing_history:
+            _check_native_tof_archive_words(history, copied)
         retained_ticks = {entry["tick"] for entry in history}
         timing_history = [
             deepcopy(entry)
@@ -16740,6 +16773,27 @@ class _SyntheticC1SourceRecorder:
             else:
                 direction_history.append(direction_entry)
         _check_native_tof_direction_history(direction_history, history, self._epoch)
+        postprocessing_history = [
+            deepcopy(entry)
+            for entry in self._tof_postprocessing_history
+            if entry["tick"] in retained_ticks
+        ]
+        if include_postprocessing:
+            if (
+                postprocessing_history
+                and postprocessing_history[-1]["tick"] == copied["tick"]
+            ):
+                if not _native_tof_word_copy_matches(
+                    postprocessing_history[-1], postprocessing_entry
+                ):
+                    raise ValueError(
+                        "native ToF repeated postprocessing words mismatch"
+                    )
+            else:
+                postprocessing_history.append(postprocessing_entry)
+        _check_native_tof_postprocessing_history(
+            postprocessing_history, history, self._epoch
+        )
         copied_binding = _c1_source_binding_digest(
             {
                 "copied": copied,
@@ -16749,6 +16803,7 @@ class _SyntheticC1SourceRecorder:
                 "wall_history": wall_history,
                 "cylinder_history": cylinder_history,
                 "direction_history": direction_history,
+                "postprocessing_history": postprocessing_history,
             }
         )
         if include_timing:
@@ -16761,6 +16816,7 @@ class _SyntheticC1SourceRecorder:
             and not include_wall
             and not include_cylinder
             and not include_direction
+            and not include_postprocessing
         ):
             live_after = _sample_simulator_native_tof_source(environment, self._epoch)
         if include_selection:
@@ -16792,6 +16848,33 @@ class _SyntheticC1SourceRecorder:
                 and not include_cylinder
             ):
                 live_after = direction_after["source"]
+        if include_postprocessing:
+            postprocessing_after = _sample_simulator_native_tof_postprocessing_source(
+                environment, self._epoch
+            )
+            if (
+                not include_timing
+                and not include_selection
+                and not include_wall
+                and not include_cylinder
+                and not include_direction
+            ):
+                live_after = postprocessing_after["source"]
+        if include_postprocessing and (
+            environment._native_tof_postprocessing_source
+            is not postprocessing_cache_before
+            or not _native_tof_word_copy_matches(postprocessing["source"], copied)
+            or not _native_tof_word_copy_matches(
+                postprocessing_after["source"], live_after
+            )
+            or not _native_tof_word_copy_matches(
+                postprocessing_entry,
+                {key: postprocessing_after[key] for key in postprocessing_entry},
+            )
+        ):
+            raise ValueError(
+                "native ToF postprocessing source changed during retention"
+            )
         if include_direction and (
             environment._native_tof_direction_source is not direction_cache_before
             or not _native_tof_word_copy_matches(direction["source"], copied)
@@ -16838,6 +16921,9 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("native ToF timing source changed during retention")
         _check_native_tof_history_layout(self._tof_history, copied)
         _check_native_tof_history_layout(history, copied)
+        if include_postprocessing or self._tof_postprocessing_history:
+            _check_native_tof_archive_words(self._tof_history, copied)
+            _check_native_tof_archive_words(history, copied)
         _check_native_tof_timing_history(
             self._tof_timing_history, self._tof_history, self._epoch
         )
@@ -16858,6 +16944,12 @@ class _SyntheticC1SourceRecorder:
             self._tof_direction_history, self._tof_history, self._epoch
         )
         _check_native_tof_direction_history(direction_history, history, self._epoch)
+        _check_native_tof_postprocessing_history(
+            self._tof_postprocessing_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_postprocessing_history(
+            postprocessing_history, history, self._epoch
+        )
         if (
             not _native_tof_word_copy_matches(copied, live_after)
             or _c1_source_binding_digest(
@@ -16869,6 +16961,7 @@ class _SyntheticC1SourceRecorder:
                     "wall_history": wall_history,
                     "cylinder_history": cylinder_history,
                     "direction_history": direction_history,
+                    "postprocessing_history": postprocessing_history,
                 }
             )
             != copied_binding
@@ -16881,6 +16974,7 @@ class _SyntheticC1SourceRecorder:
             or self._tof_wall_history is not wall_history_before
             or self._tof_cylinder_history is not cylinder_history_before
             or self._tof_direction_history is not direction_history_before
+            or self._tof_postprocessing_history is not postprocessing_history_before
             or environment._native_tof_source is not cache_before
             or environment.rng is not rng_before
             or environment.odometry_rng is not odometry_rng_before
@@ -16896,6 +16990,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_wall_history = wall_history
         self._tof_cylinder_history = cylinder_history
         self._tof_direction_history = direction_history
+        self._tof_postprocessing_history = postprocessing_history
 
     def snapshot_native_tof_source(self, *, synthetic_test_only=False):
         if synthetic_test_only is not True:

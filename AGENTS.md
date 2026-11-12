@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §311 for the cloud harness handoff/restart prompt;
+Read [REVIEW.md][review] §312 for the active postprocessing retention checkpoint;
+§311 preserves the cloud harness handoff/restart prompt;
 §310 records completed typed postprocessing history and the former WIP gate;
 §309 covers bounded closed postprocessing intake;
 §308 covers intact product/pitch checkpoint archival;
@@ -67,7 +68,8 @@ retain wall correspondence and the complete
 cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
-Next default-off <=8-record postprocessing recorder retention, then retained joins/delivery
+Default-off <=8-record postprocessing recorder retention and its required gate
+are complete. Next separately bounded retained joins/delivery
 with original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already
@@ -97,9 +99,8 @@ ST licence/tools and board readiness remain user-side blockers; learned work,
 D4 task-quality runs and general audits/SC18 remain deferred. Detailed milestones,
 failed checks, approvals and spent ledgers belong in [DESIGN.md][design] §12 and
 dated [REVIEW.md][review] sections, not here. Replace this short state as it changes.
-The local session pauses after this completed checkpoint/handoff at the user's
-request. A fresh cloud continuation resumes the queue; committed documents are
-portable, local logs/editor memory/tools/environments are not assumed available.
+The fresh continuation resumes the queue. Committed documents are portable;
+local logs/editor memory/tools/environments are not assumed available.
 
 ## Start With Context
 

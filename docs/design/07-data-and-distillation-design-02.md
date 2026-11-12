@@ -2400,6 +2400,30 @@ qualification remain unproved. All eight flags are false. Recorder retention and
 delivered/pending composition remain separate next prerequisites. [Checkpoint §310][native-tof-postprocessing-history-review]
 retains checks, accounting and the paused-WIP-to-completion history.
 
+#### Native ToF Postprocessing Recorder Retention (2026-11-12)
+
+The separate [offline recorder][c1-prototype-source] accepts append-only literal
+`include_postprocessing=False`. Opt-in retains detached four-key postprocessing
+records aligned with at most eight retained native acquisition ticks. Exact
+repeats deduplicate; changed repeats reject. Oldest native trimming removes the
+corresponding companion records, while acquisitions retained without this option
+leave explicit companion gaps rather than synthesized traces.
+
+Native archive words are independently prevalidated before companion guards and
+digests whenever postprocessing is requested or prior companion records exist.
+Original/closing intake, native and companion cache identities, RNG identities,
+producer profile/pose/input, recorder ownership/history identities and detached
+outgoing words must agree before staged histories replace the originals.
+Default performs no postprocessing intake. No sensor replay, extra RNG draw,
+read/step/reset, clock or delivery publication is added.
+
+This is retained source correspondence, not internal noise/dropout/clip arithmetic,
+probability, numerical/geometry/coverage/error/source/physical/clock/one-use or
+admission qualification. All eight flags remain false; raw unsupported/nonfinite
+source rejects as unknown. Retained matching and delivered/pending publication
+remain separate prerequisites. [Checkpoint §312][native-tof-postprocessing-retention-review]
+retains finite controls, failures and accounting.
+
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
 [floor-rules]: ../../sim/rules.py
@@ -2429,3 +2453,4 @@ retains checks, accounting and the paused-WIP-to-completion history.
 [native-tof-postprocessing-acquisition-review]: ../../REVIEW.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-intake-review]: ../../REVIEW.md#309-bounded-closed-native-tof-postprocessing-intake-2026-11-11
 [native-tof-postprocessing-history-review]: ../../REVIEW.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11
+[native-tof-postprocessing-retention-review]: ../../REVIEW.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12

@@ -67,8 +67,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 286-290][chapter-review-22]
 - [Checkpoints 291-295][chapter-review-23]
 - [Checkpoints 296-300][chapter-review-24]
+- [Checkpoints 301-305][chapter-review-25]
 
-Checkpoints 301 onward and the source bibliography remain below.
+Checkpoints 306 onward and the source bibliography remain below.
 [Cloud harness handoff and restart prompt (§311)][cloud-harness-handoff]
 identify the current checkpoint and next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -113,213 +114,6 @@ finite fixture limits, counting the interruption rather than assuming success.
 All qualification/admission flags remain false. Future checkpoints belong here
 briefly, with whole older sections moved through the reading map rather than
 repeated historical handoffs.
-
-## 301. Supplied-Word Native Direction Yaw Expressions (2026-11-11)
-
-Begin clean6296742. Hypothesis from actual tof_directions owner: two horizontal
-unrounded expressions c*f-s*l and s*f+c*l using supplied yaw cosine/sine,
-pitched_forward/sensor_left and observed world x/y words. Add standalone helper,
-no source/predecessor/trig/geometry/primitive/FMA/uniform error qualification or
-up passthrough claim. Same literal opt-in, canonical builtin scalars/four64-word
-tuples <=32chars, finite operands/observed +/-inf unknown, early preflight before
-rational work; unchanged1..4096bits/258decode-values/512binary/128entries. Reuse
-old27 pitch cases with separate yaw mode=54, old names/caps/defaults retained;
-one actual direction generation per actual mode, forbidden intake/read/hash/
-recorder/step/reset/trig/replay/clock, independent <=512 Fraction oracle. All8
-false, no data/model/study/dependency/hardware/extra native opt-in/audit renewal.
-Fresh3 routine pytest positions first54/60s, sole necessary repair54/60s, root/
-360s; failures/aborts/unknown spent not refunded, retain rays-301-* logs, serial
-pytest/no concurrent formatter/source/editor tools. Exit standalone horizontal
-yaw only, next original+closing matched retained composition as supported.
-
-First54 passed/3778deselected/4.68s; four hashes stable, old27 pitch controls,
-exact supplied operands/residuals, raw +/-inf unknowns/cancellation, malformed
-preflight and hard arithmetic/forbidden-call counters passed. Only new yaw
-helper and existing pitch-test mode changed; old source/defaults/test names/
-decorator/parameter prefix conserved in AST. Touched format/lint/whitespace/
-editor clear, Pylance yaw definition+one test selection only; changed pytest
-signature no resolved callers, not static compatibility proof.
-
-First required root FAILED2/4753passed/known QDQ xfail/71warnings/188.81s:
-unchanged wall_cylinder_boundary_snapshot late_cylinder/malformed fail in setup
-retention producer/recorder compound closing guard, before yaw reporting. Current
-source/test parse and every prior owner/boundary AST exact. Reused shell before
-value equals current four hashes, not a persisted start record or proof of
-in-run stability; failed pipeline did not reach closing hashes/lint/format/diff.
-diagnostics/test mtimes12:45:11.607112/12:45:11.751112 inside root log
-birth12:43:44.299127--modify12:46:53.362060 UTC support possible overlapping
-rewrite, NOT writer/cause/clock/source qualification; exact failed guard limb
-unknown. Preserve failed root, no damaged file recovery/source/cap/assertion fix.
-Two original pytest positions spent. Diagnose then reallocate unused routine
-54-repair position to ONLY these two controls/60s and add ONE necessary root
-revalidation/360s under standing routine authority: fresh finite two-step
-recovery, four total positions if complete, no old refund/protected renewal.
-Retain rays-301-failed-controls-1/root-2; serialize, no source/formatter/editor
-tools during either check, unchanged fixtures/assertions/limits/all8 false.
-
-Recovery exact2 passed/0.92s then required root
-`python -m pytest -q && ruff check . && git diff --check` passed4755/known QDQ
-xfail/71warnings/175.44s; four hashes stable for both, touched format-check passed.
-All four positions spent, failed root preserved, no abort/refund/tolerance/cap/
-source/guard change; passing recovery does not establish the failed guard limb,
-writer/cause, in-run source immutability or clocks. Logs rays-301-focused-1,
-root-1,failed-controls-1,root-2 retained in original recovery directory; no extra
-data/study/model/dependency/hardware/additional native/Arm/sanitizer/board opt-in
-or general audit. Helper remains horizontal supplied-word expression diagnostics
-only, no trig/geometry/up-passthrough/primitive/FMA/uniform-error/source/coverage/
-clock/one-use/physical/permission/admission proof or usable command, all8 false.
-Next matched yaw reports against original+closing retained delivered/pending
-cosine/sine/pitched_forward/sensor_left/world x/y words and typed identities.
-
-## 302. Matched Native Direction Yaw Reports (2026-11-11)
-
-Begin clean9e6eeab. Hypothesis: append-only literal default-off yaw report option
-requires include_direction=True; compose standalone yaw on original+closing
-retained delivered/pending scalar/array words and typed IDs, closed x/y strided
-slices only after native/direction preflight, final history/owner/input/frame/
-queue/copy/report-binding checks before publish. No up-passthrough/primitive/
-FMA/trig/uniform-error/geometry/source/coverage/clock/one-use/admission; all8 false.
-Preserve old120snapshot+6dependency controls, new yaw24+3=153; combined yaw also
-product+pitch+norm with separate old counters. Old4steps/5reads/3retentions/
-3geometries/6matches/2pending/4queue/2frame/64bindings/one late mutation unchanged;
-yaw separate6helpers/1548values/3072binary/1536oracle, same1..4096bits. Scalar
-yaw_cosine, final world-x and outgoing-yaw report late mutations discriminate;
-unknown omits every payload/default keys unchanged/detached. Pylance no resolved
-method callers NOT static compatibility proof. Fresh3 routine pytest positions
-first153/60s, sole necessary repair153/60s, root360s; count failures/aborts/unknown
-as spent, no refund or old reserved position/protected renewal. Logs rays-302-*
-retained original recovery directory; serial no source/editor/formatter tools
-during checks. Exit matched horizontal yaw only, then bounded final-up word
-passthrough prerequisites as supported, never ray geometry/error qualification.
-
-First153 passed/3706deselected/18.76s, four hashes stable; old120 modes/24names/
-six dependencies preserved, new yaw24+3 including combined product/pitch/yaw/
-norm and separate counters, supplied-word Fraction oracles/IDs/detachment,
-held/delivered-only/default and late world-x/scalar/outgoing-report rejection
-passed. Old source methods/default prefix/test names/case decorators/modes/
-dependency prefix conserved in AST, touched format/lint/whitespace/editor clear.
-Required root `python -m pytest -q && ruff check . && git diff --check`
-passed4782/known QDQ xfail/71warnings/152.91s; four hashes stable, touched
-format-check passed. Twoof3 pytest positions spent/no failure/abort/refund,
-unused repair NOT follow-on authority. Logs rays-302-{focused-1,root-1} retained
-in original recovery directory, no source/guard/tolerance/cap relaxation or
-data/study/model/dependency/hardware/additional native/Arm/sanitizer/board opt-in/
-general audit; all8 false, unsupported/nonfinite source unknown, supplied ties
-unresolved, no corrected values/up-passthrough/primitive/FMA/trig/uniform-error/
-geometry/source/coverage/clock/one-use/physical/permission/admission proof or
-usable command. Next archive whole291--295 with links/history/limits intact
-before root growth, then bounded final-up word-copy prerequisite as supported.
-
-## 303. Intact Direction Checkpoint Archival (2026-11-11)
-
-Clean/synchronized e8f482e, root963lines. Guarded one-shot mechanical move of
-whole291--295 to185-line archive, exact five bodies/headings/failures/approvals/
-spent/unknown/limits; separator EOF normalized only, no body links to rebase.
-Four chapter01 inbound references and new root map target/definition rebased,
-all five historical anchors retained; remaining root/Sources/design bytes exact
-except intended map/four references. Preserve rays-303-{review-before,
-design-1-before}.md and archive-review-303.pl in original recovery directory,
-no overwritten backups. `perl -c` then sole guarded relocation and independent
-body/map/bibliography/design/source-byte conservation passed; four targets/
-anchors/root-map/no-stale-links and git diff --check passed. Root781lines before
-this note/chapter01=2468, four source/test files byte-identical to checkpoint.
-No code suite rerun/fixture/query/data/model/study/dependency/hardware/additional
-native/Arm/sanitizer/board/audit commands, no budgets/refunds/qualification
-renewed; last4782-pass gate remains source evidence only, all8 false/no admission.
-Migration DONE, do not repeat. Next bounded final-up supplied-word copy
-correspondence, then matched original+closing retained composition as supported,
-not ray geometry/trig/uniform-error/source/clock/one-use/physical qualification.
-
-## 304. Supplied-Word Native Direction Up Copies (2026-11-11)
-
-Begin cleanf0a88eb. Hypothesis from actual stack producer: pitched_up copied to
-world z; standalone canonical two64-word builtin tuple checker, <=128decodes/
-64strict word comparisons/64finite value comparisons, <=32chars, no rational.
-Report raw exact words separately from three-valued copy correspondence: finite
-identical words match, finite differing values mismatch, equal-value/different-
-word signed-zero ties and any +/-inf operands/observations unknown even when raw
-words match. Unsupported/NaN/overbudget preflight rejects before comparisons.
-All8 flags false/no trig/geometry/error/source/coverage/clock/one-use/physical/
-permission/admission claim. New25 bounded controls in existing test file with
-existing fixture, one actual generation per actual case then poison intake/read/
-hash/recorder/step/reset/trig/replay/clock/rational; old tests/defaults untouched.
-Fresh3 routine pytest positions first25/60s, sole necessary repair25/60s, root/
-360s; count failure/abort/unknown spent, no refund/protected renewal. Retain
-rays-304-* in original recovery directory, serial no source/formatter/editor
-tools during tests. Exit standalone word-copy only, next retained original+
-closing delivered/pending binding as supported, not qualified ray geometry.
-
-First25 passed/3859deselected/3.67s, four hashes stable. Actual captured up/z,
-finite matches/mismatches, both signed-zero tie orders, matching negative zero,
-subnormal/negative/maxfinite and source/observed/same/opposed infinities exercised;
-raw identical inf still unknown. Canonical/type/shape/NaN/word-budget preflight
-rejected before comparisons; <=64 strict comparisons and forbidden calls zero,
-inputs/output detached. Every old definition/import/default/decorator/test/case
-conserved in AST, only helper+new test added; touched format/lint/whitespace/
-editor clear. Pylance two helper callers, normal True compatible and intentional
-literal1 negative opt-in incompatible at test line29868, expected guard fixture
-not a compatibility repair or static all-caller pass.
-Required root `python -m pytest -q && ruff check . && git diff --check`
-passed4807/known QDQ xfail/71warnings/153.07s; four hashes stable, touched
-format-check passed. Twoof3 pytest positions spent/no failure/abort/refund,
-unused repair NOT follow-on authority; logs rays-304-{focused-1,root-1} retained
-in original recovery directory. No source/guard/tolerance/cap relaxation/data/
-study/model/dependency/hardware/additional native/Arm/sanitizer/board opt-in/
-general audit, no corrected upstream values/trig/geometry/uniform-error/source/
-coverage/clock/one-use/physical/permission/admission proof or usable command,
-all8 flags false. Next original+closing retained delivered/pending final-up
-word-copy composition with default-off include_direction dependency.
-
-## 305. Matched Native Direction Up-Copy Reports (2026-11-11)
-
-Begin clean746fd94. Hypothesis: append-only literal default-off final-up copy
-option requires include_direction=True; original+closing typed retained
-delivered/pending pitched_up/world-z words and IDs to existing helper, final
-history/input/frame/queue/owner/copied-report binding before publication.
-Same unknown/nonfinite/equal-value-different-word limits/all8 false, no
-trig/geometry/error/source/coverage/clock/one-use/physical/permission/admission.
-Preserve old144snapshot+9dependency controls; new up24+3=180, combined all
-product/pitch/yaw/up/norm with old independent arithmetic counters/caps.
-Same4steps/5reads/3retentions/3geometries/6matches/2pending/4queue/2frame/
-64bindings/one late mutation; <=6up helpers/384strict comparisons/768decodes,
-no up rational work, old1..4096bit guard unchanged for arithmetic families.
-Late pitched-up/final-z/outgoing-up mutations, default keys absent/unknown
-omits every payload/detached copies. Pylance no resolved method callers NOT
-static compatibility proof. Fresh3 pytest positions first180/60s, sole
-necessary repair180/60s, root360s; count failed/aborted/unknown spent, no
-refund/protected renewal. Retain rays-305-* original recovery directory,
-serial no source/formatter/editor tools during tests. Exit matched word-copy
-only; reassess supported ray-to-ToF source prerequisites, all qualification false.
-
-First180 FAILED5/175passed/3731deselected/24.96s: new test mode flag named up
-was shadowed by the pre-existing pitch oracle's Fraction local up, triggering
-up payload assertions in pitch copy/held/delivered-only/combined and yaw combined
-modes. New up mode itself and source implementation were not failing. Repair
-ONLY introduced bool flag to up_copy, retaining every old oracle/case/assertion/
-helper/recorder/counter/cap. Failed pipeline did not reach closing hashes; failed
-log retained, first position spent not refunded. Same reserved180/60s check next,
-no scope or protected-budget change.
-
-Repaired180 passed/3731deselected/21.33s, four hashes stable. Old144 modes/
-24names/nine dependencies and every old oracle/cap preserved; new up24+3 and
-combined product/pitch/yaw/up/norm validated with separate counters, actual
-up/z words/IDs/zero mismatch+unknown counts, delivered-only/held/default,
-late pitched-up/final-z/outgoing flags and detached/unknown-no-payload checks.
-AST all old imports/definitions/methods/default keyword prefix/case decorators/
-mode/dependency prefixes conserved except planned snapshot/two matrices;
-touched format/lint/whitespace/editor clear. Required root
-`python -m pytest -q && ruff check . && git diff --check` passed4834/known QDQ
-xfail/71warnings/156.02s; four hashes stable, touched format-check passed.
-All3 pytest positions spent, first5-failure log retained, no abort/refund/
-source/guard/tolerance/cap repair, only new test bool rename. Logs rays-305-
-{focused-1,focused-2,root-1} retained original recovery directory. All8 false;
-no data/studies/models/dependencies/hardware/additional native/Arm/sanitizer/
-board opt-in/audit, no corrected values/trig/geometry/uniform-error/source/
-coverage/clock/one-use/physical/permission/admission proof or usable command.
-Reassessment: floor guarded division already has standalone+matched reports,
-do not duplicate. Next bounded cold return-postprocessing capture at actual
-_sample owner: noise/dropout draws, masks, clip/select/store words with no extra
-RNG calls/replay or noise-law/error/coverage/timing adoption; source-only first.
 
 ## 306. Cold Native ToF Return-Postprocessing Capture (2026-11-11)
 
@@ -615,6 +409,70 @@ Continue useful authorized work across checkpoints until I explicitly pause or s
 Handoff checks PASS: exact prior review/design/stable workflow conservation,
 four tested source hashes, actual next-code anchors, new reference targets and
 editor diagnostics. No source edit or repeated successful code gate for closeout.
+
+## 312. Bounded Native ToF Postprocessing Recorder Retention (2026-11-12)
+
+Fresh continuation begins clean main7fc6047, synchronized with origin/main after
+fetch. Terminal and Pylance select /opt/venv/bin/python, Python3.12.3; installed
+pytest8.4.2, Ruff0.17.0, timeout, host cc and Arm compiler observed. No competing
+pytest/Ruff/compiler process observed; historical returns-310 logs exist with
+nonzero sizes and all four §311 source hashes match. This verifies current
+environment observations, not transferable logs, clocks or qualification.
+
+Before review growth, move whole301-305 to [their archive][chapter-review-25].
+Exact bodies including trailing separators, headings, failures and spent ledgers
+are conserved; root reading-map changes and four chapter01 references are the only
+other migration changes. Archive bodies have no Markdown links requiring rebasing.
+Exact written-layout/conservation and four rebased anchors PASS; no old migration
+or successful code gate rerun for this archival.
+
+Local hypothesis from the existing recorder: append literal
+`include_postprocessing=False`, private native-tick-aligned <=8 detached records,
+exact-repeat deduplication, changed-repeat rejection, oldest-native trimming and
+explicit absent-companion gaps. Reuse closed intake and typed companion guard;
+independent native archive-word validation precedes initial/ownership/staged/
+closing companion guards and digests when opted in or retaining prior records.
+Original/closing native and companion caches, RNG identities, producer profile/
+pose/input, recorder ownership/history identities and detached outgoing copies
+must match before committing staged histories. Default has no companion intake;
+no snapshot/delivery keys or publication implementation changed.
+
+Extend existing17-case wall/cylinder/direction retention matrix with only17
+postprocessing controls; old51 controls and their budgets stay unchanged.
+New fixtures retain <=13 geometry calls,14 reads,10 retentions,20 companion
+intakes,40 native intakes (combined22),256 binding calls and one late mutation.
+Check captured noise words, storage/final-mask joins, all eight false flags,
+unchanged RNG states, forbidden read/step/reset/replay/geometry/clock calls,
+repeat/gap/trim/budget and native-word rejection before digest.
+Fresh initial plan: focused17/60s, sole necessary repair17/60s, root/360s;
+failures/aborts/unknown spent, no historical/protected refund or renewal.
+Keep raw outputs and four-file hash lists under ignored `.git/returns-312-*`.
+
+First17 FAILED before retention: fixture changed environment noise/dropout while
+the recorder profile is fixed. Remove only that fixture override, preserving the
+production profile guard. Necessary check FAILED1/PASS16/4.95s: the new paired-word
+test incorrectly inserted a direction-only key into the closed postprocessing
+trace. Correct only the fixture pairing/expected exact archived-word rejection.
+Owning-code inspection also exposes layout-only native prevalidation; add the
+existing archive-word guard for postprocessing before companion guards/digests,
+not a relaxed assertion or a change to other families. Narrow finite routine
+revision adds one necessary17/60s check, retains reserved root/360s; both prior
+positions remain spent. Revised17 PASS4.16s, all four hashes stable across all
+three checks. Scoped Ruff/changed-file format/whitespace PASS. Pylance signature
+check found no resolved call sites, not static proof of every dynamic caller.
+
+Required root `python -m pytest -q && ruff check . && git diff --check`
+PASS4956/known QDQ xfail/71 warnings/176.36s; changed-file format PASS and all four
+source hashes stable. All four fresh positions spent (two failures, focused pass,
+root pass), no abort/refund/renewal. Scoped source/test diff reviewed; Pylance
+reports no error/warning diagnostics in either touched Python file.
+No code gate rerun for documentation closeout.
+This is recorder source correspondence only, not
+internal arithmetic/noise-law, geometry/coverage/error/source/physical/clock/
+one-use/permission/admission qualification; all eight flags remain false.
+No new study/model/dependency/download/hardware or extra native/Arm/sanitizer
+opt-in run. Next separately bounded retained-postprocessing matcher, then
+delivered/pending publication with original/closing source and owner joins.
 
 ## Sources
 
@@ -981,5 +839,6 @@ Methods and measurements:
 [chapter-review-22]: docs/review/286-290.md
 [chapter-review-23]: docs/review/291-295.md
 [chapter-review-24]: docs/review/296-300.md
+[chapter-review-25]: docs/review/301-305.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: #311-cloud-harness-handoff-and-restart-prompt-2026-11-12

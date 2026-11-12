@@ -13635,7 +13635,7 @@ def test_native_tof_selection_retention(
         "noncanonical_pair",
     ),
 )
-@pytest.mark.parametrize("cylinder", (False, True, None))
+@pytest.mark.parametrize("cylinder", (False, True, None, "postprocessing"))
 def test_native_tof_wall_retention(
     monkeypatch, c1_motion_receipt_source_fixture, case, cylinder
 ):
@@ -13643,8 +13643,18 @@ def test_native_tof_wall_retention(
 
     from sim import diagnostics, rover
 
+    postprocessing = cylinder == "postprocessing"
     direction = cylinder is None
-    kind = "direction" if direction else "cylinder" if cylinder else "wall"
+    cylinder = cylinder is True
+    kind = (
+        "postprocessing"
+        if postprocessing
+        else "direction"
+        if direction
+        else "cylinder"
+        if cylinder
+        else "wall"
+    )
     history_name = f"_tof_{kind}_history"
     cache_name = f"_native_tof_{kind}_source"
     intake_name = f"_sample_simulator_native_tof_{kind}_source"
@@ -13698,9 +13708,20 @@ def test_native_tof_wall_retention(
         **(
             {
                 "capture_native_tof_wall": True,
-                **({"capture_native_tof_cylinder": True} if direction else {}),
+                **(
+                    {
+                        "capture_native_tof_cylinder": True,
+                        **(
+                            {"capture_native_tof_direction": True}
+                            if postprocessing
+                            else {}
+                        ),
+                    }
+                    if direction or postprocessing
+                    else {}
+                ),
             }
-            if (cylinder or direction) and case == "combined"
+            if (cylinder or direction or postprocessing) and case == "combined"
             else {}
         ),
         capture_native_tof_selection=case == "combined",
@@ -13749,7 +13770,9 @@ def test_native_tof_wall_retention(
     def native(*args, **kwargs):
         work["native"] += 1
         assert work["native"] <= (
-            (18 if direction else 14 if cylinder else 10) if case == "combined" else 40
+            (22 if postprocessing else 18 if direction else 14 if cylinder else 10)
+            if case == "combined"
+            else 40
         )
         return original_native(*args, **kwargs)
 
@@ -13780,27 +13803,43 @@ def test_native_tof_wall_retention(
     def retain(selected=True):
         work["retention"] += 1
         assert work["retention"] <= 10
+        rng_before = deepcopy(environment.rng.bit_generator.state)
+        odometry_rng_before = deepcopy(environment.odometry_rng.bit_generator.state)
         with monkeypatch.context() as scoped:
             scoped.setattr(type(owner), "record_environment_tick", forbidden)
             for name in ("step", "reset"):
                 scoped.setattr(RoverEnv, name, forbidden)
             for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
                 scoped.setattr(rover, name, forbidden)
-            return owner.record_native_tof_source(
+            result = owner.record_native_tof_source(
                 environment,
                 synthetic_test_only=True,
                 **{f"include_{kind}": selected},
                 **(
                     {
                         "include_wall": True,
-                        **({"include_cylinder": True} if direction else {}),
+                        **(
+                            {
+                                "include_cylinder": True,
+                                **(
+                                    {"include_direction": True}
+                                    if postprocessing
+                                    else {}
+                                ),
+                            }
+                            if direction or postprocessing
+                            else {}
+                        ),
                     }
-                    if (cylinder or direction) and case == "combined"
+                    if (cylinder or direction or postprocessing) and case == "combined"
                     else {}
                 ),
                 include_selection=case == "combined",
                 include_timing=case == "combined",
             )
+        assert environment.rng.bit_generator.state == rng_before
+        assert environment.odometry_rng.bit_generator.state == odometry_rng_before
+        return result
 
     monkeypatch.setattr(diagnostics, intake_name, intake)
     monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
@@ -13839,6 +13878,20 @@ def test_native_tof_wall_retention(
                     entry[kind]["direction_generation"]["world_frame_unit_rays"]
                     == entry[kind]["world_frame_unit_rays"]
                 )
+            elif postprocessing:
+                assert (
+                    entry[kind]["stored_ranges_m"]
+                    == owner._tof_history[0]["sample_words"]
+                )
+                assert (
+                    entry[kind]["valid_after_dropout"]
+                    == owner._tof_history[0]["valid_mask"]
+                )
+                raw = getattr(environment, cache_name)[kind]
+                assert entry[kind]["noise_draw_m"] == tuple(
+                    float(word).hex() for word in raw["noise_draw_m"].flat
+                )
+                assert raw["noise_draw_m"] is not entry[kind]["noise_draw_m"]
             assert all(
                 entry[kind][flag] is False
                 for flag in (
@@ -13860,18 +13913,31 @@ def test_native_tof_wall_retention(
                 assert owner._tof_timing_history[0]["clock"]["qualified"] is False
                 assert owner._tof_selection_history[0]["tick"] == entry["tick"]
                 assert work["clock"] == 2 and work["native"] == (
-                    18 if direction else 14 if cylinder else 10
+                    22
+                    if postprocessing
+                    else 18
+                    if direction
+                    else 14
+                    if cylinder
+                    else 10
                 )
-                if cylinder or direction:
+                if cylinder or direction or postprocessing:
                     assert owner._tof_wall_history[0]["tick"] == entry["tick"]
-                if direction:
+                if direction or postprocessing:
                     assert owner._tof_cylinder_history[0]["tick"] == entry["tick"]
+                if postprocessing:
+                    assert owner._tof_direction_history[0]["tick"] == entry["tick"]
             elif case == "duplicate":
                 before = deepcopy(getattr(owner, history_name))
                 retain()
                 assert getattr(owner, history_name) == before
             elif case == "duplicate_changed":
-                if direction:
+                if postprocessing:
+                    raw = getattr(environment, cache_name)[kind]
+                    raw["noise_draw_m"][0, 0] = math.nextafter(
+                        raw["noise_draw_m"][0, 0], math.inf
+                    )
+                elif direction:
                     raw = getattr(environment, cache_name)[kind]["direction_generation"]
                     raw["sensor_forward"][0, 0] = math.nextafter(
                         raw["sensor_forward"][0, 0], math.inf
@@ -13894,13 +13960,19 @@ def test_native_tof_wall_retention(
                 paired = owner._tof_history[0]["native_source"]
                 words = ("0.0", *paired["world_frame_unit_rays"][1:])
                 paired["world_frame_unit_rays"] = words
-                getattr(owner, history_name)[0][kind]["world_frame_unit_rays"] = words
+                if not postprocessing:
+                    getattr(owner, history_name)[0][kind]["world_frame_unit_rays"] = (
+                        words
+                    )
                 if direction:
                     getattr(owner, history_name)[0][kind]["direction_generation"][
                         "world_frame_unit_rays"
                     ] = words
                 bindings_before = work["binding"]
-                with pytest.raises(ValueError, match="canonical"):
+                with pytest.raises(
+                    ValueError,
+                    match="archived native word" if postprocessing else "canonical",
+                ):
                     retain()
                 assert work["binding"] == bindings_before
             elif case in ("gap", "trim"):

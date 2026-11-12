@@ -2448,7 +2448,7 @@ primitive/FMA/uniform-error/trig/geometry/source/coverage/physical/admission
 qualification. Signed words retained and equal-value/different-word ties remain
 unresolved. See [actual standalone controls, failures and gates][native-tof-direction-yaw-review].
 
-[native-tof-direction-yaw-review]: ../../REVIEW.md#301-supplied-word-native-direction-yaw-expressions-2026-11-11
+[native-tof-direction-yaw-review]: ../review/301-305.md#301-supplied-word-native-direction-yaw-expressions-2026-11-11
 
 #### Matched Native Direction Yaw Expressions (2026-11-11)
 
@@ -2465,7 +2465,7 @@ up-passthrough/primitive/FMA/uniform-error/geometry/source/coverage/clock/one-us
 physical/permission/admission qualification. See
 [actual matched controls and gates][native-tof-direction-owned-yaw-review].
 
-[native-tof-direction-owned-yaw-review]: ../../REVIEW.md#302-matched-native-direction-yaw-reports-2026-11-11
+[native-tof-direction-owned-yaw-review]: ../review/301-305.md#302-matched-native-direction-yaw-reports-2026-11-11
 
 #### Supplied-Word Native Direction Up Copies (2026-11-11)
 
@@ -2481,7 +2481,7 @@ corrected values/numerical/trig/geometry/source/coverage/clock/one-use/physical/
 permission/admission proof. See
 [actual copy controls and gates][native-tof-direction-up-copy-review].
 
-[native-tof-direction-up-copy-review]: ../../REVIEW.md#304-supplied-word-native-direction-up-copies-2026-11-11
+[native-tof-direction-up-copy-review]: ../review/301-305.md#304-supplied-word-native-direction-up-copies-2026-11-11
 
 #### Matched Native Direction Up Copies (2026-11-11)
 
@@ -2497,4 +2497,4 @@ all eight qualification flags false, no trig/geometry/error/source/coverage/
 clock/one-use/physical/permission/admission proof. See
 [actual matched copy controls and gates][native-tof-direction-owned-up-copy-review].
 
-[native-tof-direction-owned-up-copy-review]: ../../REVIEW.md#305-matched-native-direction-up-copy-reports-2026-11-11
+[native-tof-direction-owned-up-copy-review]: ../review/301-305.md#305-matched-native-direction-up-copy-reports-2026-11-11

@@ -2081,3 +2081,164 @@ isolation remains the default and all broader gates remain open.
 The complete topic continues in the [cylinder topic chapter][native-tof-cylinder-topic].
 
 [native-tof-cylinder-topic]: 07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10
+
+#### Native ToF Return-Postprocessing Prerequisites (2026-11-11)
+
+The cold [native sampler][c1-motion-source] accepts an append-only
+`postprocessing_source=None` keyword. Its default branch retains the original
+noise addition, dropout mask, clip/select and float32 cast. Opt-in requires an
+empty builtin dictionary, native capture, actual owner and supported finite
+sampling profile; its receiver must differ from native/selection/wall/cylinder/
+direction receivers before geometry, RNG or optional clock work.
+
+The separate `micro-classifier/native-tof-postprocessing-source/1` packet copies
+the actual existing normal and dropout draws, pre-noise/noisy ranges, both
+validity masks, clipped/selected ranges and stored float32 ranges. Nine8x8 arrays
+contain384 float64 values,64 float32 values and128 booleans; four declared profile
+fields retain max range, noise standard deviation, dropout and mount height.
+No extra draw, replay, replacement noise law or changed sensor operation is
+introduced. Captured operands, intermediate words and masks are observations,
+not a probabilistic or physical model, error allowance or corrected geometry.
+
+Cold capture alone is not acquisition, recorder history or delivered/pending
+publication qualification. Raw unsupported/nonfinite source
+stays unknown for qualification; matching words do not adopt numerical, coverage,
+clock, one-use, physical or command-admission evidence. All eight qualification/
+permission/training flags remain false. [The checkpoint][native-tof-postprocessing-review]
+retains bounded controls, actual failed checks and next source prerequisite.
+
+#### Fresh Native ToF Postprocessing Acquisition (2026-11-11)
+
+The append-only `capture_native_tof_postprocessing=False` step flag requires
+literal booleans and native capture. Actual-owner/native inputs and the same
+finite postprocessing profile are checked before state mutation or clock work.
+Sensor routing passes a distinct cold receiver only to an actual fresh sample;
+the separate `micro-classifier/native-tof-postprocessing-acquisition/1` cache
+joins that packet to the exact native cache, original RNG identities and nominal
+acquisition/delivery ticks. Its stored float32 words and final validity mask
+correspond to the native pending sample, not an already delivered observation.
+Default, source-only, held and reset paths clear the new cache; rejected preflight
+preserves prior state. Existing noise/dropout draws, cadence and optional two
+clock reads are unchanged. Legacy cold/postprocessing capture remains supported,
+without broadening the mounted-only wall/cylinder/direction interfaces.
+
+This is source ownership only, not typed intake, recorder retention, delivery or
+numerical/noise-law/coverage/physical/clock/one-use/admission qualification. All
+eight flags remain false; [the acquisition checkpoint][native-tof-postprocessing-acquisition-review]
+retains finite controls, measured check outcomes and outstanding evidence.
+
+#### Closed Native ToF Postprocessing Intake (2026-11-11)
+
+The separate [offline intake][c1-prototype-source] validates the closed acquisition,
+trace and input layouts before copying six finite float64 8x8 arrays as canonical
+hex words, two literal boolean masks and the stored float32 uint32 words. Two
+metadata snapshots bracket two existing native intakes; original/closing cache,
+RNG identities, profile, pose, inputs and detached outgoing words must match.
+Pre-noise ranges join the native geometry output, and stored words/final mask join
+the same pending native sample. Legacy and noisy profiles remain observations.
+Unsupported/nonfinite raw source raises the unknown-path rejection, not corrected
+values or an adopted noise distribution. No replay, extra draws, clock, digest,
+recorder retention or numerical evaluation is introduced.
+
+This closed correspondence is not internal noise-addition/dropout/clip arithmetic
+proof, probability, numerical/geometry/coverage/source/physical/clock/one-use or
+admission qualification. All eight flags remain false. Typed bounded history and
+recorder/delivery joins are still separate prerequisites; [the intake checkpoint][native-tof-postprocessing-intake-review]
+retains actual failed checks, finite accounting and next action.
+
+#### Typed Native ToF Postprocessing History (2026-11-12)
+
+The [offline validator][c1-prototype-source] accepts at most eight ordered builtin
+list records with exactly `source_epoch`, `tick`, `delivery_tick`, `postprocessing`.
+The native history must be independently prevalidated before this companion guard.
+Each record requires one exact epoch/acquisition/delivery pairing, the closed
+21-key trace, unchanged profile and pre-noise/stored-word/final-mask correspondence.
+Six 64-word arrays use finite canonical float hex strings of at most 32 characters;
+two masks require literal booleans, and 64 uint32 storage words must have finite
+IEEE binary32 encoding. Signed observation words are preserved. Maximum work is
+3,072 float-word decodes, 512 stored-word checks and 1,024 mask elements for eight
+records, not a measured CPU/RAM bound. The validator does not replay, draw noise,
+hash, read, clock or retain records.
+
+Legacy/noisy profiles remain observations; internal noise/dropout/clip arithmetic,
+probability, geometry/coverage/error/source/physical/clock/one-use and admission
+qualification remain unproved. All eight flags are false. Recorder retention and
+delivered/pending composition remain separate next prerequisites. [Checkpoint §310][native-tof-postprocessing-history-review]
+retains checks, accounting and the paused-WIP-to-completion history.
+
+#### Native ToF Postprocessing Recorder Retention (2026-11-12)
+
+The separate [offline recorder][c1-prototype-source] accepts append-only literal
+`include_postprocessing=False`. Opt-in retains detached four-key postprocessing
+records aligned with at most eight retained native acquisition ticks. Exact
+repeats deduplicate; changed repeats reject. Oldest native trimming removes the
+corresponding companion records, while acquisitions retained without this option
+leave explicit companion gaps rather than synthesized traces.
+
+Native archive words are independently prevalidated before companion guards and
+digests whenever postprocessing is requested or prior companion records exist.
+Original/closing intake, native and companion cache identities, RNG identities,
+producer profile/pose/input, recorder ownership/history identities and detached
+outgoing words must agree before staged histories replace the originals.
+Default performs no postprocessing intake. No sensor replay, extra RNG draw,
+read/step/reset, clock or delivery publication is added.
+
+This is retained source correspondence, not internal noise/dropout/clip arithmetic,
+probability, numerical/geometry/coverage/error/source/physical/clock/one-use or
+admission qualification. All eight flags remain false; raw unsupported/nonfinite
+source rejects as unknown. Retained matching and delivered/pending publication
+remain separate prerequisites. [Checkpoint §312][native-tof-postprocessing-retention-review]
+retains finite controls, failures and accounting.
+
+#### Bounded Retained ToF Postprocessing Matching (2026-11-12)
+
+The [offline matcher][c1-prototype-source] requires an independently prevalidated
+native source and typed postprocessing history. It scans at most eight builtin
+list records for one exact typed epoch/acquisition/delivery identity match;
+missing or ambiguous pairs reject. The selected record is detached, including
+its nested input metadata. This helper neither replaces native/companion guards
+nor samples, hashes, reads, retains or publishes source records.
+
+This is a retained identity/copy prerequisite only. Delivery publication and
+numerical/noise-law/geometry/coverage/error/source/physical/clock/one-use/admission
+qualification are separate; all eight flags remain false.
+[Checkpoint §313][native-tof-postprocessing-match-review] retains finite checks.
+
+#### Closed ToF Postprocessing Delivery Publication (2026-11-12)
+
+The [offline delivery snapshot][c1-prototype-source] appends literal
+`include_postprocessing=False`. Opt-in publishes detached `postprocessing` and,
+only with pending-source inclusion, `pending_postprocessing` records joined to
+exact typed native epoch/acquisition/delivery identities. Stored float32 words
+and final validity masks match the corresponding delivered or pending samples.
+
+Native archive-word prevalidation precedes original/ownership/copy/closing
+companion guards and digests, including after closing frame/queue callbacks.
+Original/closing histories, detached outputs and existing producer/RNG/profile/
+pose/input/frame/pending-queue ownership checks must agree. Missing, unsupported,
+nonfinite or changed records return explicit unknown with no partial publication.
+Default output keys/operations are unchanged; no intake, replay or RNG draw is
+introduced. These are source observations, not arithmetic/noise-law/numerical/
+geometry/coverage/error/physical/clock/one-use/admission qualification; all eight
+flags remain false. [Checkpoint §314][native-tof-postprocessing-delivery-review]
+retains finite controls and evidence limits.
+
+#### Supplied-Word ToF Noise-Addition Discrepancies (2026-11-12)
+
+The standalone [offline helper][c1-prototype-source] compares 64 observed noisy
+words against exact unrounded sums of supplied finite pre-noise/draw words.
+It preserves signed/raw words and reports nonfinite observations as unknown;
+canonical builtin-word and bounded rational preflight reject unsupported inputs.
+No noise distribution, primitive rounding/error bound or qualification is
+adopted; all eight flags remain false. Retained report joins are separate.
+[Checkpoint §315][native-tof-noise-addition-review] retains bounds and failures.
+
+[c1-motion-source]: ../../sim/rover.py
+[native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
+[native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
+[native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
+[native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11
+[native-tof-postprocessing-intake-review]: ../review/306-310.md#309-bounded-closed-native-tof-postprocessing-intake-2026-11-11
+[native-tof-postprocessing-match-review]: ../../REVIEW.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
+[native-tof-postprocessing-retention-review]: ../../REVIEW.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
+[native-tof-postprocessing-review]: ../review/306-310.md#306-cold-native-tof-return-postprocessing-capture-2026-11-11

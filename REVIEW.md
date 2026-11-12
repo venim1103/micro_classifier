@@ -68,8 +68,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 291-295][chapter-review-23]
 - [Checkpoints 296-300][chapter-review-24]
 - [Checkpoints 301-305][chapter-review-25]
+- [Checkpoints 306-310][chapter-review-26]
 
-Checkpoints 306 onward and the source bibliography remain below.
+Checkpoints 311 onward and the source bibliography remain below.
 [Cloud harness handoff and restart prompt (§311)][cloud-harness-handoff]
 identify the current checkpoint and next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -114,220 +115,6 @@ finite fixture limits, counting the interruption rather than assuming success.
 All qualification/admission flags remain false. Future checkpoints belong here
 briefly, with whole older sections moved through the reading map rather than
 repeated historical handoffs.
-
-## 306. Cold Native ToF Return-Postprocessing Capture (2026-11-11)
-
-Begin clean7b50dd3. Hypothesis at _sample owner: append-only postprocessing_source
-None keeps exact old sampling branch; opt-in empty builtin dict/native-source/
-actual-owner/supported finite profile preflight before clock/geometry/RNG,
-retain actual existing noise+dropout draws and raw/noisy/masks/clip/select/float32
-store arrays without extra RNG calls/replay or noise-law/error/coverage/timing
-adoption. Nine8x8 arrays/sevenfloat arrays448values/twobool128/576array words,
-four profile fields; raw unsupported/nonfinite words remain observations not
-qualification, all8 flags false. New24 controls in existing test file, <=2sample/
-2geometry/2normal/2random/4existing clocks per fixture; two identical seeded-owner
-branches/independent operand and uint64/uint32 word parity/masks/pending/RNG-state
-oracles, injected synthetic draws/nonfinite words not task data or noise model.
-Old source/tests/defaults unchanged outside _sample; Pylance all7 old callers
-compatible before new signature. Fresh3 pytest positions first24/60s, sole
-necessary repair24/60s, root360s; failures/aborts/unknown spent not refunded,
-retain returns-306-* in original recovery directory; serial no source/editor/
-formatter tools during tests. Exit COLD source only, no new acquisition/recorder/
-delivery/admission/actuation. Next close supported cold-source boundaries before
-later independently scoped fresh acquisition ownership.
-
-First24 collection FAILED/0.23s: test insertion at adjacent repeated decorator
-boundary left stray empty direction-source header and replaced range-test
-decorator. Restore ONLY exact checkpoint17-case range decorator and remove
-stray header; retain new cold test and source implementation unchanged. Original
-direction-source body preserved. Failed pipeline did not reach closing hashes;
-first position spent/log retained not refunded. Same reserved24/60s next, no
-assertion/resource/protected cap change.
-
-Repaired24 PASS/9.47s, four source/test hashes stable; root4858 PASS/known QDQ
-xfail/71warnings/233.52s, four hashes stable, root Ruff/touched format/whitespace
-PASS. All3 initial positions spent. Formatting touched only rover/test; AST
-all old tests/cases/imports/methods unchanged outside _sample, old keyword prefix
-and three default sampling operations exact. Editor clear; post-signature8
-callers/7 compatible plus intentional wrong-owner rejection fixture incompatible.
-
-Narrow diff review exposes missing receiver-alias guard: shared postprocessing
-dict can overwrite native/selection/wall/cylinder/direction packet at update.
-Add ONLY five-way identity preflight and5 zero-work negative controls, conserve
-old24 cases/caps/default behavior. Necessary adjacent source repair plan TWO
-fresh routine positions: exact5 aliases/60s, root360s; count failures/aborts/unknown,
-no initial-attempt refund/protected renewal/assertion/resource relaxation.
-Retain returns-306-aliases-focused-1/root-2; no code suite repeat for documentation.
-
-Exact5 aliases PASS/10.86s and root4863 PASS/known QDQ xfail/71warnings/173.36s;
-four hashes stable in each, root Ruff/touched format/whitespace/editor PASS.
-All5 pytest positions spent, initial collection failure retained, no abort/refund
-or protected renewal. Old tests/cases exact; only new29-case test, same per-case
-caps. Cold contract placed in existing chapter02 because ray chapter01 is full;
-new map/reference only, prior contracts/requirements/historical records preserved.
-No additional native/Arm/sanitizer/board commands beyond required default interface
-controls, no dependencies/downloads/model/study/data/actuation/admission work.
-No logs/artifacts removed; original recovery directory retains all returns-306-*.
-Next bounded supported cold-source closure before independently scoped fresh
-acquisition/cache ownership, then intake/retention/delivery only as evidence permits.
-
-## 307. Fresh Native ToF Postprocessing Acquisition Pairing (2026-11-11)
-
-Begin clean61e4151. Hypothesis: append-only literal step flagFalse and sensor
-receiverNone route separate cold packet ONLY on actual fresh _sample; acquisition
-cache pairs exact native cache/RNG/tick/delivery with existing stored words/mask,
-default/held/reset clear, rejected preflight retains prior state before work.
-Reuse finite sampling-profile predicate in cold and step paths, no default
-operation/RNG/cadence/clock changes. Add postprocessing16 to existing48 acquisition
-matrix; three existing invalid-profile cold controls also assert zero-work step
-rejection. Same3geometry/1selected/1selection/2existing clocks per acquisition
-fixture, <=2 cold calls plus1 zero-work step for three invalid profiles; no extra
-fixture/data/model/hardware or admission. Legacy cold/postprocessing supported;
-old mounted-only wall/cylinder/direction controls unchanged.
-Fresh3 routine pytest positions: first19/60s, sole necessary repair19/60s,
-root360s; count failures/aborts/unknown spent, no old-position refund/protected
-renewal. Retain returns-307-* original recovery directory, serial tests without
-source/editor/formatter tools. Exit acquisition-only/all8false, not typed intake,
-recorder/delivery/noise-law/numerical/physical/clock/one-use/admission qualification.
-
-Focused19 PASS/4.75s; root4879 PASS/known QDQ xfail/71warnings/214.43s. Four
-source/test hashes stable in both, root Ruff/touched format/whitespace/editor PASS;
-only test file formatted. AST exact old methods/imports outside reset/update/
-sample/step, old keyword prefixes/None+False defaults/default sampling branch,
-old16-case48-mode acquisition and29-case cold names conserved. Shared finite
-predicate replaces only duplicate opt-in check; cold cases3 strengthen step
-preflight without extra work. Post-signature sensor8/8compatible; sample9 with
-one intentional wrong-owner fixture incompatible, step40 with same2 old literal1
-motion-receipt rejection fixtures incompatible. Twoof3 pytest positions spent,
-no failure/abort/refund; unused repair reserve not follow-on authority. All8flags
-false/no usable command. No additional native/Arm/sanitizer/board opt-in command,
-dependencies/downloads/model/study/task-data/actuation or noise-law adoption.
-Logs retained returns-307-* original recovery directory; no artifact cleanup.
-Next whole296-300 archival before further root growth, then bounded closed
-postprocessing intake using original/closing cache/native/RNG/profile/pose/
-inputs/stored words/masks, unsupported/nonfinite remains unknown.
-
-Documentation checker FAILED literal "no extra work" while record states
-"without extra work". Correct matcher only to actual wording; same strict
-history/contracts/stable-workflow/reference/anchor/ledger check next. No source,
-assertion/resource change or pytest position spent; code gate not rerun.
-
-## 308. Intact Direction Product/Pitch Checkpoint Archival (2026-11-11)
-
-Begin cleancd89b2a/root989. Finite documentation-only plan: one guarded move of
-whole296-300 to five-section archive, four chapter01 inbound links and root map
-rebased; preserve exact headings/bodies/failures/approvals/spent ledgers/limits.
-Reuse prior guarded archival utility pattern, syntax check before sole migration;
-retain before snapshots and new one-shot utility in original recovery directory.
-Independent byte/heading/local-reference/anchor/remaining-map/Sources/source-test
-conservation and whitespace checks, no code-suite rerun or source/qualification/
-budget renewal. Next bounded closed postprocessing intake, not floor-division
-duplication, numerical/noise-law/source/clock/admission adoption or protected work.
-
-Syntax/sole guarded migration/independent exact archive and remaining root/Sources/
-chapter01 bytes PASS; all5 historical headings/anchors and4 inbound links retained,
-only separator EOF normalization. Root796/archive208 before result note;
-chapter01 stays2500, stable AGENTS/DESIGN/chapter02/source/test bytes unchanged.
-Whitespace PASS; no failure, code-suite rerun, source/default/threshold/flag change
-or attempt/protected qualification renewal. Original returns-308-review-before/
-design-1-before snapshots and archive-review-308.pl kept in recovery directory;
-migration DONE, never rerun. No artifacts deleted or new data/model/dependency/
-hardware work. Last4879-pass source gate remains prior source evidence, all8false.
-Next bounded closed postprocessing intake and original/closing ownership joins.
-
-## 309. Bounded Closed Native ToF Postprocessing Intake (2026-11-11)
-
-Begin cleanbfc50e7. Hypothesis: closed17-key acquisition/21-key trace/4-key inputs,
-two metadata snapshots around two existing native intakes and detached outgoing
-copy suffice for typed source prerequisites, not noise-law/numerical qualification.
-Six64 finite float64 arrays encode canonical hex, stored64 float32 values retain
-uint32 words, two64 literal boolean masks; original/closing cache/native/RNG/
-profile/pose/input/pre-noise/stored-word/mask joins, no replay/extra draws/clock/
-hash/read/retention. Raw unsupported/nonfinite raises unknown-path ValueError;
-all8 flags false, no internal mask/arithmetic/noise-law/physical/coverage/clock/
-one-use/admission adoption. Extend existing61 intake controls with26 postprocessing
-cases including noisy/legacy positives, detached words and early/late mutation
-rejection; old family names/caps unchanged. Per new fixture1 existing fresh step/
-geometry before poison, <=2 native intakes/two metadata snapshots (768float-word
-encodes/128store words/256mask bools), no source/recorder/RNG/clock work in intake.
-Fresh3 routine pytest positions first26/60s, sole necessary repair26/60s,
-root360s; failures/aborts/unknown spent, no old/protected refund/renewal.
-Retain returns-309-* original recovery directory; serialize tests from source/
-editor/formatter tools. Exit intake only, then typed bounded history/retention/
-delivery as supported, no usable command or protected work.
-
-First26 FAILED4/PASS22/12.48s: late_rng/late_store/late_pose/late_mask all reached
-expected intake rejection, then old fixture assertion followed deliberately
-replaced RNG reference or expected old mutation-count set (1 != 0). Retain
-original RNG object/state and include ONLY four new mutation names in exact
-counter assertion; source/helper/old cases/limits unchanged. Failed pipeline
-did not reach closing hashes; first position spent/log retained, no refund.
-Same reserved26/60s next, no source/tolerance/assertion/resource cap relaxation.
-
-Same26 PASS4.99s; root4905 PASS/knownQDQxfail/71 warnings/180.98s. Successful
-focused/root runs retained all four before/after source/test hashes; Ruff root,
-changed-file format, whitespace and editor diagnostics PASS. AST conservation
-checks retain every old source definition/import/default and exact old61-case
-intake expression; only one helper and26 additive controls. Pylance signature
-query resolved no callers for new private helper (dynamic fixture lookup), not
-static compatibility proof. All3 fresh pytest positions spent; initial failure
-and both successful logs retained, no aborted/unknown attempts refunded and no
-protected experiment renewed. No additional opt-in C/Arm/sanitizer/board/model/
-study/dependency commands; unchanged default interface controls ran in root.
-All8 flags false, source correspondence only. Next typed <=8-record postprocessing
-history, then recorder retention and delivered/pending composition as supported.
-
-## 310. Typed Bounded Native ToF Postprocessing History (2026-11-11)
-
-Begin cleanfd0d88b. Local hypothesis: closed21-key postprocessing packet may use
-neighboring typed history pattern: <=8 ordered builtin-list four-key records,
-exact builtin epoch/tick/delivery metadata, unique independently prevalidated
-native source pairing, finite canonical six64 float words <=32chars, two64
-literal masks and stored64 uint32 words. Profile/pre-noise/stored/final-mask joins
-only; no internal arithmetic/noise-law/source/geometry/coverage/error/physical/
-clock/one-use/admission qualification and all8 flags false. Unsupported/nonfinite
-raw source stays unknown; signed observation words retained, no replay/draw/hash/
-clock/intake/read/retention in validator. Extend old67-case matrix by33 controls;
-one existing fresh step/geometry/two native intakes before poison per new fixture,
-copy/legacy/noisy use8 declared paired records from one actual packet, NOT8 measured
-acquisitions. Guard max3072 float decodes/512 storage words/1024 bool masks per
-validation; unchanged arithmetic/default/frozen/work/old-family controls.
-Fresh3 routine pytest positions first33/60s, sole necessary repair33/60s,
-root360s; failures/aborts/unknown spent, no historical/protected refunds/renewals.
-Keep returns-310-* in original recovery directory; serialize source-sensitive
-checks from editors/formatters. Exit typed history, then opt-in recorder retention
-and delivered/pending composition as supported, not protected work/admission.
-
-First33 PASS0.74s/four hashes stable; scoped Ruff/format/editor/AST old definitions,
-imports/defaults/exact old67-case prefix PASS. One nearby native archive boundary
-read showed storage prevalidation checks uint32 range, not finite IEEE float32
-encoding. Retain original guard contract; ONLY new companion guard now rejects
-all-ones float32 exponent (raw infinity/NaN) and adds one matching NaN storage
-word in native+postprocessing control. This is finite representation preflight,
-not noise/clip arithmetic qualification. Narrow routine plan revision: reserved
-necessary check34/60s then sole root360s, same3 positions and no old/protected
-refund/renewal, new integer bit test within existing512 stored-word count.
-
-Revised34 PASS5.04s/four hashes stable; scoped Ruff/format/editor/AST conservation
-PASS. Pylance selected /opt/venv/bin/python; references resolve definition only,
-not static caller compatibility proof. Two of three positions spent; root gate
-NOT RUN. User paused for today, then requested a WIP commit/push only. Preserve
-this unfinished increment as WIP, not a verified source checkpoint or contract
-adoption. Resume only after a fresh continuation: check current files and finish
-the pending required gate before recorder retention. Logs remain retained;
-all8 flags false, no qualification or protected-budget renewal.
-
-**Checkpoint completion (2026-11-12).** Fresh user continuation resumes only this
-checkpoint and migration handoff, then pauses. Clean main at pushed f31e833;
-current source/test AST matches the WIP and preserves all old definitions/imports/
-defaults/67-case prefix. Selected and terminal Python /opt/venv, Python3.12.3;
-retained focused logs verified present, no competing test/compiler jobs observed.
-Sole reserved root PASS4939/knownQDQxfail/71 warnings/144.93s, all four source/test
-hashes stable, root Ruff/changed-file format/whitespace/editor diagnostics PASS.
-All3 routine pytest positions now spent; no extra focused run, failure, refund,
-dependency/model/study/hardware or additional opt-in C/Arm/sanitizer command.
-The unchanged default interface controls ran. Typed history checkpoint complete,
-not recorder retention or numerical/physical/source/admission qualification.
 
 ## 311. Cloud Harness Handoff and Restart Prompt (2026-11-12)
 
@@ -598,6 +385,29 @@ arithmetic composition, internal dropout/clip/cast proof, probability/noise-law/
 geometry/coverage/error/source/physical/clock/one-use/permission/admission proof.
 No new study/model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
 Next separately bounded original/closing retained noise-addition report joins.
+
+## 316. Intact Postprocessing Checkpoint and Topic Relocation (2026-11-12)
+
+Begin clean pushedf73b9ab. Before further growth, move whole306-310 to
+[their archive][chapter-review-26], preserving exact bodies, separators, headings,
+failures, approvals, spent/unknown ledgers and pause/WIP/completion boundaries.
+No archive-body links require rebasing; four live postprocessing checkpoint
+references now target the archive. Root map allocation and remaining bodies
+are conserved, not a renewed test/experiment budget or qualification.
+
+Relocate the complete151-line postprocessing topic from chapter02 to existing
+chapter03 without changing its body. Preserve every old topic/subtopic anchor
+in chapter02 as a link to its unchanged chapter03 section; retain old reference
+definitions, copy only missing topic definitions and verify any existing
+definition agrees. Existing chapter03 is an exact prefix, no unrelated topic
+body changed. DESIGN's direct postprocessing reading-map target now selects
+chapter03. Exact written-layout, all eight retained heading anchors, new/rebased
+local targets and whitespace PASS; four tested source hashes remain unchanged.
+Resulting review/chapter02/chapter03 sizes before this note:757/2391/2244 lines.
+Original documents and migration utility retained in session artifact storage,
+not a portable Git log. No code suite, old migration, experiment or successful
+source gate rerun. All qualification/admission flags remain false.
+Next bounded original/closing retained noise-addition report composition.
 
 ## Sources
 
@@ -965,5 +775,6 @@ Methods and measurements:
 [chapter-review-23]: docs/review/291-295.md
 [chapter-review-24]: docs/review/296-300.md
 [chapter-review-25]: docs/review/301-305.md
+[chapter-review-26]: docs/review/306-310.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: #311-cloud-harness-handoff-and-restart-prompt-2026-11-12

@@ -116,4 +116,4 @@ options instead of implying general Jev or Vela compatibility.
 [native-tof-wall-design]: docs/design/07-data-and-distillation-design-02.md#native-tof-wall-computation-prerequisites-2026-11-10
 [native-tof-cylinder-design]: docs/design/07-data-and-distillation-design-05.md#native-tof-cylinder-computation-prerequisites-2026-11-10
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
-[native-tof-postprocessing-design]: docs/design/07-data-and-distillation-design-02.md#native-tof-return-postprocessing-prerequisites-2026-11-11
+[native-tof-postprocessing-design]: docs/design/07-data-and-distillation-design-03.md#native-tof-return-postprocessing-prerequisites-2026-11-11

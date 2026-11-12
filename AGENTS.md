@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §315 for the active supplied-word noise-addition report;
+Read [REVIEW.md][review] §316 for intact postprocessing checkpoint/topic relocation;
+§315 records the completed supplied-word noise-addition report;
 §314 records completed postprocessing delivery publication;
 §313 records the completed retained-postprocessing matcher;
 §312 records the completed postprocessing retention checkpoint;

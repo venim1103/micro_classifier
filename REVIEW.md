@@ -435,6 +435,37 @@ Next default-off <=8-record native goal recorder retention with prevalidation,
 original/closing ownership, exact-repeat deduplication, changed-repeat
 rejection, native-tick trimming and retained gaps; publication is later.
 
+## 330. Default-Off Native Goal Recorder Retention (2026-11-12)
+
+Begin clean pushed8962f07. Add an independent literal default-off recorder
+method and empty builtin goal history. Disabled inclusion is a no-op; enabled
+work requires the current bound C1 producer. Prevalidate retained raw typed
+words before source intake/digests; close original/closing owner/cache/native/
+RNG/profile/pose/input/current-frame/history/stored-word/source-file bindings
+before changing recorder history. Keep <=8 detached records, exact-repeat
+deduplication, changed-repeat rejection, native-tick trimming and skipped gaps.
+Unchanged repeats preserve history identity; a repeat still trims supported
+expired older records. No publication, replay, draw, trig, clock or geometry
+work during retention. All flags false; no numerical/noise/physical/clock/
+one-use/source/admission qualification from matching words or digests.
+
+Fresh24/60s, necessary fixture repair24/60s, root/360s. Before execution correct
+the prospective validator bound4 to5 for prevalidation, original/candidate and
+both closing validations; no position spent/refunded. First22 PASS/2 FAIL5.49s:
+gap/trim fixtures assumed capture tick2, but owning setup captures at4. Necessary
+fixture-only repair derives the actual native start:24 PASS4.47s, no source/
+work/tolerance change. One fresh closing-owner-clear control/60s verifies a
+necessary explicit ValueError guard before tuple access:1 PASS/24 deselected
+3.84s, not another green24 run. Root PASS5314, known QDQ1 xfail/77 warnings
+167.72s. Root/scoped Ruff, changed format/whitespace, four hashes and every
+old source/control/decorator AST PASS. Per retention <=2 intakes/4 views/
+5 bounded history validators/12 digests/2 file checks; <=11 setup steps/
+12 owner reads per synthetic case, never during retention. All four executed
+positions spent; ignored `.git/returns-330-*` logs/hashes retained. No protected
+studies/native/Arm/model/dependency/download/hardware work. Next separately
+retained exact goal epoch/tick/delivery matching and closed publication;
+missing/unsupported/nonfinite joins stay unknown without partial fields.
+
 ## Sources
 
 Hardware and tools:

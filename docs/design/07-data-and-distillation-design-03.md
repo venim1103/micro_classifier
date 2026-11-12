@@ -2365,7 +2365,21 @@ No noise/trig/cast/error law or source/physical/clock/execution/admission
 qualification follows. Recorder retention and publication remain separate.
 [Checkpoint §329][native-goal-history-review] records work limits and controls.
 
+#### Default-Off Native Goal Recorder Retention (2026-11-12)
+
+The [offline recorder][c1-prototype-source] has independent literal default-off
+goal inclusion: disabled work is a no-op, enabled work needs a current bound C1
+producer. Retained raw words are prevalidated before intake/digests; original/
+closing owner/cache/native/RNG/profile/pose/input/current-frame/history/stored/
+source-file joins precede changing <=8 detached records. Exact repeats dedup,
+changed repeats reject; native-tick trimming preserves skipped gaps, including
+expired-row trimming on a repeat. No replay/draw/trig/clock/geometry, publication
+or numerical/noise/physical/source/clock/execution/admission qualification;
+all eight flags false. [Checkpoint §330][native-goal-retention-review] records
+the finite controls and necessary fixture/closing-guard repairs.
+
 [c1-motion-source]: ../../sim/rover.py
+[native-goal-retention-review]: ../../REVIEW.md#330-default-off-native-goal-recorder-retention-2026-11-12
 [native-goal-history-review]: ../../REVIEW.md#329-typed-bounded-native-goal-computation-history-2026-11-12
 [native-goal-intake-review]: ../../REVIEW.md#327-closed-native-goal-computation-intake-2026-11-12
 [native-goal-acquisition-review]: ../../REVIEW.md#326-native-goal-computation-acquisition-pairing-2026-11-12

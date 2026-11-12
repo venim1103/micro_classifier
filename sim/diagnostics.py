@@ -16963,6 +16963,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_cylinder_history = []
         self._tof_direction_history = []
         self._tof_postprocessing_history = []
+        self._goal_computation_history = []
         self._receipt_history = []
 
     @staticmethod
@@ -17348,6 +17349,142 @@ class _SyntheticC1SourceRecorder:
         self._tof_sample = None
         self._dynamics_sample = snapshot
         self._receipt_history = receipt_history
+
+    def record_native_goal_computation_source(
+        self, environment, *, synthetic_test_only=False, include_goal_computation=False
+    ):
+        """Retain bounded goal source words without staging or qualifying them."""
+        if synthetic_test_only is not True:
+            raise ValueError("native goal retention requires synthetic_test_only=True")
+        if type(include_goal_computation) is not bool:
+            raise ValueError("include_goal_computation must be a literal bool")
+        if not include_goal_computation:
+            return
+        if (
+            self._simulator is not environment
+            or self._current is None
+            or self._dynamics_sample is None
+            or self._current[0] != environment.tick
+            or self._simulator_rng is not environment.rng
+            or self._simulator_odometry_rng is not environment.odometry_rng
+        ):
+            raise ValueError("native goal retention requires a current bound producer")
+        retained = self._goal_computation_history
+        if type(retained) is not list or len(retained) > 8:
+            raise ValueError("native goal retention history budget exhausted")
+        if retained:
+            last = retained[-1]
+            if type(last) is not dict or set(last) != {
+                "source_epoch",
+                "tick",
+                "delivery_tick",
+                "goal_computation",
+            }:
+                raise ValueError("unsupported native goal retention history metadata")
+            _check_native_goal_computation_history(retained, last["goal_computation"])
+            if last["source_epoch"] != self._epoch:
+                raise ValueError("native goal retention history epoch changed")
+        if self._source_files() != self._identities:
+            raise ValueError("native goal retention source files changed")
+
+        def producer():
+            return {
+                "tick": environment.tick,
+                "pose_m_rad": (
+                    *map(float, environment.position),
+                    float(environment.yaw),
+                ),
+                "native_action": (
+                    float(environment.speed),
+                    float(environment.turn_rate),
+                ),
+                "native_goal_source": deepcopy(environment._native_goal_source),
+                "observation": environment._observation(),
+                "config": asdict(environment.config),
+                "scenario": asdict(environment.scenario),
+            }
+
+        def ownership():
+            current = self._current
+            if current is None:
+                raise ValueError(
+                    "native goal recorder ownership changed during retention"
+                )
+            return {
+                "epoch": self._epoch,
+                "profile": {
+                    "config": asdict(self._config),
+                    "scenario": asdict(self._scenario),
+                },
+                "identities": self._identities,
+                "current": (current[0], current[1], asdict(current[2]), current[3]),
+                "dynamics_sample": self._dynamics_sample,
+                "goal_history": self._goal_computation_history,
+                "binding": self._binding,
+            }
+
+        observed = producer()
+        producer_binding = _c1_source_binding_digest(observed)
+        if producer_binding != _c1_source_binding_digest(
+            {key: self._dynamics_sample.get(key) for key in observed}
+        ):
+            raise ValueError("native goal producer changed after recorder read")
+        owner_binding = _c1_source_binding_digest(ownership())
+        simulator = self._simulator
+        rng, odometry_rng = environment.rng, environment.odometry_rng
+        cache, native = (
+            environment._native_goal_computation_source,
+            environment._native_goal_source,
+        )
+        live = _sample_simulator_native_goal_computation_source(
+            environment, self._epoch
+        )
+        _check_native_goal_computation_history(retained, live)
+        duplicate = bool(retained and retained[-1]["tick"] == live["tick"])
+        if duplicate and not _native_tof_word_copy_matches(
+            retained[-1]["goal_computation"], live
+        ):
+            raise ValueError("native goal acquisition changed at a repeated tick")
+        history = deepcopy(
+            [entry for entry in retained if entry["tick"] > live["tick"] - 8]
+        )
+        if not duplicate:
+            history.append(
+                {
+                    "source_epoch": live["source_epoch"],
+                    "tick": live["tick"],
+                    "delivery_tick": live["delivery_tick"],
+                    "goal_computation": deepcopy(live),
+                }
+            )
+        _check_native_goal_computation_history(history, live)
+        copied_binding = _c1_source_binding_digest({"live": live, "history": history})
+        closing = _sample_simulator_native_goal_computation_source(
+            environment, self._epoch
+        )
+        _check_native_goal_computation_history(self._goal_computation_history, closing)
+        _check_native_goal_computation_history(history, closing)
+        if (
+            not _native_tof_word_copy_matches(live, closing)
+            or _c1_source_binding_digest({"live": live, "history": history})
+            != copied_binding
+            or _c1_source_binding_digest(ownership()) != owner_binding
+            or _c1_source_binding_digest(producer()) != producer_binding
+            or self._simulator is not simulator
+            or self._goal_computation_history is not retained
+            or environment._native_goal_computation_source is not cache
+            or environment._native_goal_source is not native
+            or environment.rng is not rng
+            or environment.odometry_rng is not odometry_rng
+            or self._simulator_rng is not rng
+            or self._simulator_odometry_rng is not odometry_rng
+            or self._source_files() != self._identities
+        ):
+            raise ValueError(
+                "native goal producer or recorder changed during retention"
+            )
+        if not duplicate or len(history) != len(retained):
+            self._goal_computation_history = history
 
     def record_native_tof_source(
         self,

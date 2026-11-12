@@ -2233,8 +2233,22 @@ No noise distribution, primitive rounding/error bound or qualification is
 adopted; all eight flags remain false. Retained report joins are separate.
 [Checkpoint §315][native-tof-noise-addition-review] retains bounds and failures.
 
+#### Matched ToF Noise-Addition Reports (2026-11-12)
+
+The [offline snapshot][c1-prototype-source] appends literal default-off
+`include_postprocessing_noise_addition_residuals`, requiring postprocessing
+inclusion. It reports supplied-word sum discrepancies for retained delivered
+and optional pending traces only after original/closing native/companion,
+history identity, word, report-content and detached output-binding checks.
+Prevalidation also follows closing frame/queue callbacks. Default keys are
+unchanged; malformed or changed evidence remains explicit unknown without
+partial publication. No noise/rounding/error law or qualification is adopted;
+all eight flags remain false. [Checkpoint §317][native-tof-noise-addition-match-review]
+retains bounds and controls.
+
 [c1-motion-source]: ../../sim/rover.py
 [native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
+[native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

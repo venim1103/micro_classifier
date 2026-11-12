@@ -14729,6 +14729,7 @@ def test_native_tof_selection_snapshot(
         (None, "yaw"),
         (None, "up"),
         ("postprocessing", False),
+        ("postprocessing", "noise"),
     ),
 )
 def test_native_tof_wall_snapshot(
@@ -14742,6 +14743,7 @@ def test_native_tof_wall_snapshot(
     pitch = products == "pitch"
     yaw = products == "yaw"
     up_copy = products == "up"
+    noise_addition = products == "noise"
     products = products is True
     include_products = products or ((pitch or yaw or up_copy) and case == "combined")
     include_pitch = pitch or ((yaw or up_copy) and case == "combined")
@@ -14802,6 +14804,11 @@ def test_native_tof_wall_snapshot(
             "up",
             "up_active",
             "up_comparisons",
+            "noise_addition",
+            "noise_active",
+            "noise_values",
+            "noise_binary",
+            "noise_oracle",
         ),
         0,
     )
@@ -14946,7 +14953,9 @@ def test_native_tof_wall_snapshot(
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
                 outgoing[
-                    "up"
+                    "noise_addition"
+                    if noise_addition
+                    else "up"
                     if up_copy
                     else "yaw"
                     if yaw
@@ -15058,7 +15067,25 @@ def test_native_tof_wall_snapshot(
             assert work["up_comparisons"] <= 384
         return original_word_match(*args, **kwargs)
 
+    original_noise_addition = (
+        diagnostics._native_tof_postprocessing_noise_addition_residuals
+    )
+
+    def noise_probe(*args, **kwargs):
+        work["noise_addition"] += 1
+        assert work["noise_addition"] <= 6
+        work["noise_active"] = True
+        try:
+            actual = original_noise_addition(*args, **kwargs)
+        finally:
+            work["noise_active"] = False
+        outgoing.setdefault("noise_addition", actual)
+        return actual
+
     def value(instance, argument):
+        if work["noise_active"]:
+            work["noise_values"] += 1
+            assert work["noise_values"] <= 1152
         if work["product_active"]:
             work["values"] += 1
             assert work["values"] <= 2304
@@ -15071,6 +15098,9 @@ def test_native_tof_wall_snapshot(
         return original_value(instance, argument)
 
     def binary(instance, left, right, operation):
+        if work["noise_active"]:
+            work["noise_binary"] += 1
+            assert work["noise_binary"] <= 768
         if work["product_active"]:
             work["binary"] += 1
             assert work["binary"] <= 1536
@@ -15099,6 +15129,11 @@ def test_native_tof_wall_snapshot(
         assert work["yaw_oracle"] <= 1536
         if operation == "mul":
             return left * right
+        return left + right if operation == "add" else left - right
+
+    def noise_oracle(left, right, operation):
+        work["noise_oracle"] += 1
+        assert work["noise_oracle"] <= 384
         return left + right if operation == "add" else left - right
 
     def pending(*args, **kwargs):
@@ -15215,6 +15250,9 @@ def test_native_tof_wall_snapshot(
     monkeypatch.setattr(
         diagnostics, "_native_tof_direction_up_copy_diagnostics", up_probe
     )
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_postprocessing_noise_addition_residuals", noise_probe
+    )
     monkeypatch.setattr(diagnostics, "_native_tof_word_copy_matches", word_match)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
@@ -15253,6 +15291,8 @@ def test_native_tof_wall_snapshot(
             include_direction_pitch_residuals=include_pitch and case != "default",
             include_direction_yaw_residuals=include_yaw and case != "default",
             include_direction_up_copy_diagnostics=up_copy and case != "default",
+            include_postprocessing_noise_addition_residuals=noise_addition
+            and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -15265,6 +15305,10 @@ def test_native_tof_wall_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
+        if not noise_addition or case == "default":
+            assert "postprocessing_noise_addition_residuals" not in result
+            assert "pending_postprocessing_noise_addition_residuals" not in result
+            assert work["noise_addition"] == 0
         if not include_pitch or case == "default":
             assert "direction_pitch_residuals" not in result
             assert "pending_direction_pitch_residuals" not in result
@@ -15327,6 +15371,48 @@ def test_native_tof_wall_snapshot(
                             )
                 else:
                     assert f"pending_{kind}" not in result
+                if noise_addition:
+                    reports = (
+                        result["postprocessing_noise_addition_residuals"],
+                        *result.get(
+                            "pending_postprocessing_noise_addition_residuals", ()
+                        ),
+                    )
+                    records = (selected, *result.get("pending_postprocessing", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert len(diagnostic["entries"]) == 64
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        trace = record["postprocessing"]
+                        for entry in diagnostic["entries"]:
+                            index = entry["ray_index"]
+                            words = (
+                                trace["pre_noise_ranges_m"][index],
+                                trace["noise_draw_m"][index],
+                            )
+                            observed = trace["noisy_ranges_m"][index]
+                            exact = noise_oracle(
+                                *(Fraction(float.fromhex(word)) for word in words),
+                                "add",
+                            )
+                            residual = noise_oracle(
+                                Fraction(float.fromhex(observed)), exact, "sub"
+                            )
+                            assert entry["operand_hex"] == words
+                            assert entry["observed_noisy_range_hex"] == observed
+                            assert (
+                                Fraction(*entry["exact_unrounded_sum_ratio"]) == exact
+                            )
+                            assert Fraction(*entry["signed_residual_ratio"]) == residual
+                    result["postprocessing_noise_addition_residuals"]["diagnostic"][
+                        "entries"
+                    ][0]["observed_noisy_range_hex"] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["noisy_ranges_m"][0]
+                        != "changed"
+                    )
                 if include_products:
                     reports = (
                         result["direction_product_residuals"],
@@ -15605,6 +15691,8 @@ def test_native_tof_wall_snapshot(
                     "pending_direction",
                     "postprocessing",
                     "pending_postprocessing",
+                    "postprocessing_noise_addition_residuals",
+                    "pending_postprocessing_noise_addition_residuals",
                     "selection",
                     "pending_selection",
                     "timing",
@@ -15651,6 +15739,23 @@ def test_native_tof_wall_snapshot(
         )
     )
     assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_postprocessing"))
+def test_native_tof_postprocessing_noise_addition_dependency(
+    c1_motion_receipt_source_fixture, case
+):
+    owner = deepcopy(c1_motion_receipt_source_fixture[1])
+    with pytest.raises(
+        ValueError, match="include_postprocessing_noise_addition_residuals"
+    ):
+        owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_postprocessing=case == "flag",
+            include_postprocessing_noise_addition_residuals=True
+            if case == "dependency"
+            else 1,
+        )
 
 
 @pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_direction"))

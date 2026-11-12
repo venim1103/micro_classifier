@@ -409,6 +409,46 @@ not a portable Git log. No code suite, old migration, experiment or successful
 source gate rerun. All qualification/admission flags remain false.
 Next bounded original/closing retained noise-addition report composition.
 
+## 317. Matched Native ToF Noise-Addition Reports (2026-11-12)
+
+Begin clean pushedadd441d. Separate local hypothesis: append literal default-off
+`include_postprocessing_noise_addition_residuals`, requiring postprocessing
+inclusion. Reuse standalone supplied-word sum reporting against original/closing
+retained delivered and optional pending traces. Native/typed companion
+prevalidation precedes report construction, including after closing frame/queue
+callbacks; final original/closing word, history identity, report-content and
+output-binding checks precede publication. Supplied operands and raw words are
+unchanged; no source correction or adopted noise/rounding/error law.
+
+Extend existing24-case snapshot matrix with24 report-mode cases and three literal/
+dependency controls. Original192 controls/defaults and per-family work caps
+remain unchanged. New report scope <=6 calls/1,152 value conversions/768 binary
+operations; independent Fraction oracle <=384 operations,64 entries/report,
+unchanged32char/1..4096bit bounds. Existing four-step/five-read/three-acquisition/
+geometry/retention fixture limits and original/closing late-mutation controls
+stay in force. Check report IDs/operands/observations/exact sums/residuals, absent
+default keys, nested output detachment and unknown-with-no-partial-publication.
+
+Fresh three routine positions: focused27/60s, sole necessary repair27/60s,
+required root/360s; failures/aborts/unknown spent, no old/protected refund or
+renewal. Keep ignored `.git/returns-317-*` outputs/hashes; checks serialized.
+First27 PASS5.71s/192 deselected, all four source hashes stable; scoped Ruff/
+changed format/whitespace PASS. Pylance signature check found no resolved call
+sites, not static proof of every dynamic caller. Required root PASS5040/
+known QDQ xfail/71 warnings/157.05s; root Ruff/changed format/whitespace PASS,
+all four source hashes stable. Scoped source/test diff and AST conservation
+PASS for old module/recorder/default/test nodes and old192-case prefix;
+new reference target/anchor PASS. Two of three fresh positions spent, no
+failure/abort/refund; unused repair is not follow-on authority.
+No successful code gate repeated for documentation closeout.
+
+All eight flags remain false. Observed raw unsupported/nonfinite source remains
+unknown; matching reports do not qualify native primitive/FMA/rounding/error/
+noise-law/dropout/clip/cast/geometry/coverage/source/clock/one-use/physical/
+permission/admission. No new study/model/dependency/download/hardware/extra
+native/Arm/sanitizer opt-in. Next independently supported supplied-word dropout
+comparison/mask correspondence, without probability-law or threshold adoption.
+
 ## Sources
 
 Hardware and tools:

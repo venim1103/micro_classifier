@@ -17276,6 +17276,7 @@ class _SyntheticC1SourceRecorder:
         include_direction_yaw_residuals=False,
         include_direction_up_copy_diagnostics=False,
         include_postprocessing=False,
+        include_postprocessing_noise_addition_residuals=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -17293,6 +17294,17 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_direction must be a literal bool")
         if type(include_postprocessing) is not bool:
             raise ValueError("include_postprocessing must be a literal bool")
+        if type(include_postprocessing_noise_addition_residuals) is not bool:
+            raise ValueError(
+                "include_postprocessing_noise_addition_residuals must be a literal bool"
+            )
+        if (
+            include_postprocessing_noise_addition_residuals
+            and not include_postprocessing
+        ):
+            raise ValueError(
+                "include_postprocessing_noise_addition_residuals requires include_postprocessing=True"
+            )
         if type(include_direction_product_residuals) is not bool:
             raise ValueError(
                 "include_direction_product_residuals must be a literal bool"
@@ -17705,6 +17717,26 @@ class _SyntheticC1SourceRecorder:
                 "diagnostic": _native_tof_direction_up_copy_diagnostics(
                     pitched_up_hex=generation["pitched_up"],
                     world_z_hex=generation["world_frame_unit_rays"][2::3],
+                    synthetic_test_only=True,
+                ),
+            }
+
+        def postprocessing_noise_addition_probe(record):
+            trace = record["postprocessing"]
+            return {
+                **{
+                    key: record[key]
+                    for key in ("source_epoch", "tick", "delivery_tick")
+                },
+                "diagnostic": _native_tof_postprocessing_noise_addition_residuals(
+                    **{
+                        f"{key}_hex": trace[key]
+                        for key in (
+                            "pre_noise_ranges_m",
+                            "noise_draw_m",
+                            "noisy_ranges_m",
+                        )
+                    },
                     synthetic_test_only=True,
                 ),
             }
@@ -18371,6 +18403,20 @@ class _SyntheticC1SourceRecorder:
                         "pending_postprocessing": pending_postprocessing,
                     }
                 )
+            if include_postprocessing_noise_addition_residuals:
+                postprocessing_noise_addition = postprocessing_noise_addition_probe(
+                    postprocessing
+                )
+                pending_postprocessing_noise_addition = tuple(
+                    postprocessing_noise_addition_probe(record)
+                    for record in pending_postprocessing
+                )
+                postprocessing_noise_addition_binding = _c1_source_binding_digest(
+                    {
+                        "addition": postprocessing_noise_addition,
+                        "pending_addition": pending_postprocessing_noise_addition,
+                    }
+                )
             if include_direction_product_residuals:
                 direction_products = direction_product_probe(direction)
                 pending_direction_products = tuple(
@@ -18998,6 +19044,14 @@ class _SyntheticC1SourceRecorder:
                     self._tof_history,
                     self._epoch,
                 )
+                if include_postprocessing_noise_addition_residuals:
+                    postprocessing_noise_addition_after = (
+                        postprocessing_noise_addition_probe(postprocessing_after)
+                    )
+                    pending_postprocessing_noise_addition_after = tuple(
+                        postprocessing_noise_addition_probe(record)
+                        for record in pending_postprocessing_after
+                    )
                 if (
                     self._tof_postprocessing_history is not postprocessing_before
                     or not _native_tof_word_copy_matches(
@@ -19383,6 +19437,25 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF direction product source or outgoing records changed"
                 )
+            if include_postprocessing_noise_addition_residuals and (
+                not _native_tof_word_copy_matches(
+                    postprocessing_noise_addition, postprocessing_noise_addition_after
+                )
+                or not _native_tof_word_copy_matches(
+                    pending_postprocessing_noise_addition,
+                    pending_postprocessing_noise_addition_after,
+                )
+                or _c1_source_binding_digest(
+                    {
+                        "addition": postprocessing_noise_addition,
+                        "pending_addition": pending_postprocessing_noise_addition,
+                    }
+                )
+                != postprocessing_noise_addition_binding
+            ):
+                raise ValueError(
+                    "native ToF postprocessing addition source or outgoing reports changed"
+                )
             if include_direction_pitch_residuals and (
                 not _native_tof_word_copy_matches(
                     direction_pitch, direction_pitch_after
@@ -19496,6 +19569,14 @@ class _SyntheticC1SourceRecorder:
             result["postprocessing"] = postprocessing
             if include_pending_sources:
                 result["pending_postprocessing"] = pending_postprocessing
+        if include_postprocessing_noise_addition_residuals:
+            result["postprocessing_noise_addition_residuals"] = (
+                postprocessing_noise_addition
+            )
+            if include_pending_sources:
+                result["pending_postprocessing_noise_addition_residuals"] = (
+                    pending_postprocessing_noise_addition
+                )
         if include_wall_residuals:
             result["wall_residuals"] = wall_residuals
             if include_pending_sources:

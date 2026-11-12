@@ -612,8 +612,44 @@ class RoverEnv:
                 },
             }
 
-    def _record_history(self):
+    def _record_history(self, *, goal_source=None):
         config = self.config
+        world_goal = None
+        if goal_source is not None:
+            if type(goal_source) is not dict or goal_source:
+                raise ValueError(
+                    "native goal source requires an empty builtin dictionary"
+                )
+            if (
+                type(self) is not RoverEnv
+                or type(config) is not Config
+                or type(self.scenario) is not Scenario
+            ):
+                raise ValueError("native goal source owner or profile unsupported")
+            config.__post_init__()
+            if (
+                type(self.position) is not np.ndarray
+                or self.position.shape != (2,)
+                or self.position.dtype != np.dtype(np.float64)
+                or not np.isfinite(self.position).all()
+                or type(self.scenario.goal) is not tuple
+                or len(self.scenario.goal) != 2
+            ):
+                raise ValueError("native goal source position or goal unsupported")
+            scalars = (self.yaw, *self.scenario.goal)
+            if any(type(value) not in (int, float, np.float64) for value in scalars):
+                raise ValueError("native goal source scalar inputs unsupported")
+            try:
+                finite = all(math.isfinite(value) for value in scalars)
+            except OverflowError as error:
+                raise ValueError(
+                    "native goal source scalar inputs unsupported"
+                ) from error
+            if not finite:
+                raise ValueError("native goal source scalar inputs unsupported")
+            world_goal = np.asarray(self.scenario.goal)
+            if world_goal.dtype.kind not in "iuf":
+                raise ValueError("native goal source goal word dtype unsupported")
         position = self.position.copy()
         if config.odometry_position_error:
             angle = self.odometry_rng.uniform(-math.pi, math.pi)
@@ -621,7 +657,9 @@ class RoverEnv:
                 self.odometry_rng.random()
             )
             position += radius * np.array([math.cos(angle), math.sin(angle)])
-        delta = np.asarray(self.scenario.goal) - position
+        if world_goal is None:
+            world_goal = np.asarray(self.scenario.goal)
+        delta = world_goal - position
         cosine, sine = math.cos(self.yaw), math.sin(self.yaw)
         if config.odometry_heading_error:
             error = self.odometry_rng.uniform(
@@ -643,6 +681,49 @@ class RoverEnv:
             "yaw_rad": float(self.yaw),
             "goal_m": tuple(map(float, native_goal)),
         }
+        if goal_source is not None:
+            finite = (
+                np.isfinite(delta).all()
+                and math.isfinite(cosine)
+                and math.isfinite(sine)
+                and np.isfinite(native_goal).all()
+                and np.isfinite(goal).all()
+            )
+            goal_source.update(
+                schema="micro-classifier/native-goal-computation-source/1",
+                allowed_use="native_goal_computation_diagnostics_only",
+                status="recorded_native_goal_values"
+                if finite
+                else "unknown_nonfinite_native_goal_values",
+                **{
+                    flag: False
+                    for flag in (
+                        "fixture_permission_granted",
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                        "numerically_certified",
+                        "source_qualified",
+                        "native_execution_qualified",
+                        "command_admission_qualified",
+                    )
+                },
+                tick=self.tick,
+                inputs={
+                    "world_goal_m": world_goal.copy(),
+                    "used_position_m": position.copy(),
+                    "yaw_rad": float(self.yaw),
+                    "odometry_position_error_m": config.odometry_position_error,
+                    "odometry_heading_error_rad": config.odometry_heading_error,
+                },
+                values={
+                    "delta_m": delta.copy(),
+                    "used_cosine": cosine,
+                    "used_sine": sine,
+                    "native_goal_m": self._native_goal_source["goal_m"],
+                    "stored_goal_m": goal.copy(),
+                },
+            )
         ego = np.array([self.speed, self.turn_rate, *goal], dtype=np.float32)
         self.pending_ego.append(
             (self.tick + config.odometry_latency_ticks, self.tick, ego)

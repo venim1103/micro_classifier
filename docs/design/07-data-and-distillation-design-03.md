@@ -2311,6 +2311,19 @@ unknown without partial fields. Numerical and decoded-word equality stay
 separate; no cast law/error bound or qualification is adopted, all eight flags
 false. [Checkpoint §324][native-tof-storage-match-review] records the controls.
 
+#### Cold Native Goal Computation Source (2026-11-12)
+
+The actual [goal producer][c1-motion-source] accepts default-off
+`goal_source=None`: an empty builtin cold receiver, actual owner/profile,
+supported finite input/dtype preflight before state/RNG work. It copies actual
+world-goal dtype, used position/delta/cosine/sine, native goal and stored float32
+pair without changing the legacy goal cache or calculations. Used operands may
+include existing odometry draws; no noise/trig/cast law is adopted. Computed raw
+nonfinite values stay explicit unknown, all eight flags false. Acquisition,
+typed intake/retention/delivery and source/numerical/physical/clock/admission
+qualification are separate. [Checkpoint §325][native-goal-cold-source-review]
+retains bounds, actual fixture/source failures and necessary repairs.
+
 [c1-motion-source]: ../../sim/rover.py
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
@@ -2320,6 +2333,7 @@ false. [Checkpoint §324][native-tof-storage-match-review] records the controls.
 [native-tof-clip-selection-match-review]: ../../REVIEW.md#321-matched-native-tof-clipselection-reports-2026-11-12
 [native-tof-storage-review]: ../../REVIEW.md#323-supplied-word-native-tof-selectedstorage-residuals-2026-11-12
 [native-tof-storage-match-review]: ../../REVIEW.md#324-matched-native-tof-selectedstorage-reports-2026-11-12
+[native-goal-cold-source-review]: ../../REVIEW.md#325-cold-native-goal-computation-source-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../review/311-315.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

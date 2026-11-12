@@ -31837,6 +31837,187 @@ def test_native_tof_postprocessing_storage_residuals(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "default",
+        "noisy",
+        "raw_nonfinite",
+        "receiver",
+        "receiver_type",
+        "owner",
+        "position_shape",
+        "position_dtype",
+        "nonfinite_position",
+        "yaw_type",
+        "yaw_nonfinite",
+        "goal_shape",
+        "goal_nonfinite",
+        "goal_dtype",
+        "profile_type",
+        "profile_nonfinite",
+        "profile_negative",
+    ),
+)
+def test_native_goal_computation_source(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import rover
+
+    environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    source = {}
+    if case == "noisy":
+        environment.config = replace(
+            environment.config,
+            odometry_position_error=0.005,
+            odometry_heading_error=0.002,
+        )
+    elif case == "raw_nonfinite":
+        environment.scenario = replace(
+            environment.scenario,
+            goal=(float.fromhex("0x1.fffffffffffffp+1023"),) * 2,
+        )
+    elif case == "receiver":
+        source["existing"] = True
+    elif case == "receiver_type":
+        source = []
+    elif case == "owner":
+
+        class DerivedRover(RoverEnv):
+            pass
+
+        derived = DerivedRover.__new__(DerivedRover)
+        derived.__dict__ = deepcopy(environment.__dict__)
+        environment = derived
+    elif case == "position_shape":
+        environment.position = np.ones(3, dtype=np.float64)
+    elif case == "position_dtype":
+        environment.position = environment.position.astype(np.float32)
+    elif case == "nonfinite_position":
+        environment.position[0] = math.inf
+    elif case in ("yaw_type", "yaw_nonfinite"):
+        environment.yaw = True if case == "yaw_type" else math.inf
+    elif case in ("goal_shape", "goal_nonfinite", "goal_dtype"):
+        environment.scenario = replace(
+            environment.scenario,
+            goal=(1.0,)
+            if case == "goal_shape"
+            else (1 << 100, 1)
+            if case == "goal_dtype"
+            else (math.inf, 1.0),
+        )
+    elif case == "profile_type":
+        environment.config = {}
+    elif case in ("profile_nonfinite", "profile_negative"):
+        object.__setattr__(
+            environment.config,
+            "odometry_position_error",
+            math.inf if case == "profile_nonfinite" else -0.1,
+        )
+    baseline = deepcopy(environment)
+    before_source = deepcopy(source)
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    before_history = deepcopy(environment.history)
+    before_pending = deepcopy(environment.pending_ego)
+    before_goal = deepcopy(environment._native_goal_source)
+    before_tick = environment.tick
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("goal capture must not sample/step/read/geometry/clock")
+
+    for name in ("_sample", "_update_sensor", "step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    accepted = {"copy", "default", "noisy", "raw_nonfinite"}
+    if case not in accepted:
+        with pytest.raises(ValueError):
+            environment._record_history(goal_source=source)
+        assert source == before_source
+        assert environment.rng.bit_generator.state == before_rng
+        assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+        assert environment._native_goal_source == before_goal
+        assert len(environment.history) == len(before_history)
+        assert len(environment.pending_ego) == len(before_pending)
+        for old, current in zip(before_history, environment.history, strict=True):
+            for left, right in zip(old, current, strict=True):
+                assert np.array_equal(left, right)
+        for old, current in zip(before_pending, environment.pending_ego, strict=True):
+            assert old[:2] == current[:2]
+            assert np.array_equal(old[2], current[2])
+    else:
+        baseline._record_history()
+        environment._record_history(
+            **({"goal_source": source} if case != "default" else {})
+        )
+        assert environment._native_goal_source == baseline._native_goal_source
+        assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+        assert (
+            environment.odometry_rng.bit_generator.state
+            == baseline.odometry_rng.bit_generator.state
+        )
+        assert len(environment.history) == len(baseline.history)
+        assert len(environment.pending_ego) == len(baseline.pending_ego)
+        for old, current in zip(baseline.history, environment.history, strict=True):
+            for left, right in zip(old, current, strict=True):
+                assert np.array_equal(left.view(np.uint8), right.view(np.uint8))
+        for old, current in zip(
+            baseline.pending_ego, environment.pending_ego, strict=True
+        ):
+            assert old[:2] == current[:2]
+            assert np.array_equal(old[2].view(np.uint8), current[2].view(np.uint8))
+        if case == "default":
+            assert source == {}
+        else:
+            assert source["status"] == (
+                "unknown_nonfinite_native_goal_values"
+                if case == "raw_nonfinite"
+                else "recorded_native_goal_values"
+            )
+            assert source["tick"] == environment._native_goal_source["tick"]
+            assert environment.ego_sample_tick == source["tick"]
+            assert (
+                source["values"]["native_goal_m"]
+                == environment._native_goal_source["goal_m"]
+            )
+            assert (
+                tuple(source["inputs"]["used_position_m"])
+                == environment._native_goal_source["position_m"]
+            )
+            assert np.array_equal(
+                source["values"]["stored_goal_m"].view(np.uint32),
+                environment.ego[2:].view(np.uint32),
+            )
+            assert source["values"]["stored_goal_m"].dtype == np.dtype(np.float32)
+            assert source["inputs"]["used_position_m"].dtype == np.dtype(np.float64)
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ):
+                assert source[flag] is False
+            source["inputs"]["used_position_m"][0] = -123
+            source["values"]["stored_goal_m"][0] = -123
+            assert environment._native_goal_source == baseline._native_goal_source
+            assert np.array_equal(
+                environment.ego.view(np.uint32),
+                baseline.ego.view(np.uint32),
+            )
+    assert environment.tick == before_tick
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "mismatch",

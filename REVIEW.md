@@ -435,6 +435,44 @@ Next reassess independently supported setup/source/coverage/error/timing
 prerequisites and guarded request/executor dependencies in design§12; missing
 qualification alone is not a reason to stop compatible prerequisite work.
 
+## 325. Cold Native Goal Computation Source (2026-11-12)
+
+Begin clean pushed0b84e02. Reassessment of design§§1/2/12 and owning code finds
+native integration source/arithmetic/snapshots already present: do not duplicate
+NF2 or floor reports. The actual goal producer retains a four-key final native
+cache but not consumed delta/trig operands or stored float32 output. Add append-
+only default-off `goal_source=None` to its cold `_record_history` operation.
+Empty builtin receiver, actual owner/profile and supported finite input/word
+layout preflight precede RNG/state work. Reuse existing Config validation;
+no new profile/safety threshold or law. Default calculations/order/dtypes,
+legacy goal keys, RNG/queues/history remain unchanged.
+
+Copy ten vector components and five used/profile scalar values, tick/schema
+metadata and eight false flags. World-goal dtype is retained, not normalized;
+used position/cosine/sine include any existing odometry draws, not a law or
+asserted true-yaw trig result. Computed raw nonfinite values remain explicit
+unknown without correction. No new draw, clock, geometry, step, replay, study,
+model, dependency, download, hardware/native/Arm/sanitizer opt-in or qualification.
+Cold copies alone are not acquisition/cache/intake/retention/delivery or evidence
+for numerical/primitive/geometry/coverage/clock/one-use/physical/admission bounds.
+
+Fresh initial17/60s, sole fixture repair17/60s and root/360s positions.
+First14 PASS/3 FAIL/2 retained overflow warnings5.31s: fixture indexed pending
+ego despite zero-latency immediate delivery, not a producer failure. One
+no-write patch context miss was diagnosed from formatted lines. Fixture repair
+binds produced ego tick/current stored words; unchanged source/limits. Revised17
+PASS3.65s. Before root, a bounded two-word/5s probe confirmed finite2^100 can
+infer an unsupported object array and fail source status after state work.
+Necessary source dtype preflight repair, not a new integer/physical bound:
+materialize once before state only when opted in, reject unsupported dtype.
+Revised18/60s PASS3.54s/2 warnings; all four hashes stable for each test.
+Root PASS5211, known QDQ1 xfail/73 warnings165.02s (two added raw-overflow
+warnings retained); root/scoped Ruff, changed format/whitespace and four
+hashes PASS. Two resolved old callers before/five callers after are signature-
+compatible. All five executed positions spent, no historical/protected refund;
+ignored `.git/returns-325-*` outputs/hashes and probe outcome retained.
+Next separately default-off actual goal acquisition/ownership pairing.
+
 ## Sources
 
 Hardware and tools:

@@ -14732,11 +14732,13 @@ def test_native_tof_selection_snapshot(
         ("postprocessing", "noise"),
         ("postprocessing", "dropout"),
         ("postprocessing", "clip_selection"),
+        ("postprocessing", "storage"),
     ),
 )
 def test_native_tof_wall_snapshot(
     monkeypatch, c1_motion_receipt_source_fixture, case, cylinder, products
 ):
+    import struct
     from dataclasses import replace
     from fractions import Fraction
 
@@ -14745,7 +14747,8 @@ def test_native_tof_wall_snapshot(
     pitch = products == "pitch"
     yaw = products == "yaw"
     up_copy = products == "up"
-    clip_selection = products == "clip_selection"
+    storage = products == "storage"
+    clip_selection = products == "clip_selection" or (storage and case == "combined")
     dropout_diagnostics = products == "dropout" or (
         clip_selection and case == "combined"
     )
@@ -14819,6 +14822,11 @@ def test_native_tof_wall_snapshot(
             "dropout_oracle",
             "clip_selection",
             "clip_selection_oracle",
+            "storage",
+            "storage_active",
+            "storage_values",
+            "storage_binary",
+            "storage_oracle",
         ),
         0,
     )
@@ -14963,7 +14971,9 @@ def test_native_tof_wall_snapshot(
                 outgoing["selection"]["selection"]["source_qualified"] = True
             elif case == "late_arithmetic":
                 outgoing[
-                    "clip_selection"
+                    "storage"
+                    if storage
+                    else "clip_selection"
                     if clip_selection
                     else "dropout"
                     if dropout_diagnostics
@@ -15088,6 +15098,18 @@ def test_native_tof_wall_snapshot(
     original_clip_selection = (
         diagnostics._native_tof_postprocessing_clip_selection_diagnostics
     )
+    original_storage = diagnostics._native_tof_postprocessing_storage_residuals
+
+    def storage_probe(*args, **kwargs):
+        work["storage"] += 1
+        assert work["storage"] <= 6
+        work["storage_active"] = True
+        try:
+            actual = original_storage(*args, **kwargs)
+        finally:
+            work["storage_active"] = False
+        outgoing.setdefault("storage", actual)
+        return actual
 
     def clip_selection_probe(*args, **kwargs):
         work["clip_selection"] += 1
@@ -15115,6 +15137,9 @@ def test_native_tof_wall_snapshot(
         return actual
 
     def value(instance, argument):
+        if work["storage_active"]:
+            work["storage_values"] += 1
+            assert work["storage_values"] <= 768
         if work["noise_active"]:
             work["noise_values"] += 1
             assert work["noise_values"] <= 1152
@@ -15130,6 +15155,9 @@ def test_native_tof_wall_snapshot(
         return original_value(instance, argument)
 
     def binary(instance, left, right, operation):
+        if work["storage_active"]:
+            work["storage_binary"] += 1
+            assert work["storage_binary"] <= 384 and operation == "sub"
         if work["noise_active"]:
             work["noise_binary"] += 1
             assert work["noise_binary"] <= 768
@@ -15204,7 +15232,13 @@ def test_native_tof_wall_snapshot(
                     else trace["walls"][0]
                 )
                 if postprocessing:
-                    name = "dropout_draw" if dropout_diagnostics else "noise_draw_m"
+                    name = (
+                        "selected_ranges_m"
+                        if storage
+                        else "dropout_draw"
+                        if dropout_diagnostics
+                        else "noise_draw_m"
+                    )
                     selected[name] = (
                         math.nextafter(
                             float.fromhex(selected[name][0]), math.inf
@@ -15299,6 +15333,9 @@ def test_native_tof_wall_snapshot(
         "_native_tof_postprocessing_clip_selection_diagnostics",
         clip_selection_probe,
     )
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_postprocessing_storage_residuals", storage_probe
+    )
     monkeypatch.setattr(diagnostics, "_native_tof_word_copy_matches", word_match)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
@@ -15343,6 +15380,7 @@ def test_native_tof_wall_snapshot(
             and case != "default",
             include_postprocessing_clip_selection_diagnostics=clip_selection
             and case != "default",
+            include_postprocessing_storage_residuals=storage and case != "default",
         )
         flags = (
             "fixture_permission_granted",
@@ -15355,6 +15393,10 @@ def test_native_tof_wall_snapshot(
             "command_admission_qualified",
         )
         assert all(result[flag] is False for flag in flags)
+        if not storage or case == "default":
+            assert "postprocessing_storage_residuals" not in result
+            assert "pending_postprocessing_storage_residuals" not in result
+            assert work["storage"] == 0
         if not clip_selection or case == "default":
             assert "postprocessing_clip_selection_diagnostics" not in result
             assert "pending_postprocessing_clip_selection_diagnostics" not in result
@@ -15573,6 +15615,54 @@ def test_native_tof_wall_snapshot(
                     result["postprocessing_clip_selection_diagnostics"]["diagnostic"][
                         "entries"
                     ][0]["selected_range_hex"] = "changed"
+                    assert (
+                        getattr(owner, history_name)[0][kind]["selected_ranges_m"][0]
+                        != "changed"
+                    )
+                if storage:
+                    reports = (
+                        result["postprocessing_storage_residuals"],
+                        *result.get("pending_postprocessing_storage_residuals", ()),
+                    )
+                    records = (selected, *result.get("pending_postprocessing", ()))
+                    for report, record in zip(reports, records, strict=True):
+                        for key in ("source_epoch", "tick", "delivery_tick"):
+                            assert report[key] == record[key]
+                        diagnostic = report["diagnostic"]
+                        assert len(diagnostic["entries"]) == 64
+                        assert diagnostic["unknown_count"] == 0
+                        assert all(diagnostic[flag] is False for flag in flags)
+                        trace = record["postprocessing"]
+                        mismatches, word_mismatches = 0, 0
+                        for entry in diagnostic["entries"]:
+                            index = entry["ray_index"]
+                            selected_word = trace["selected_ranges_m"][index]
+                            stored_word = trace["stored_ranges_m"][index]
+                            observed = struct.unpack(
+                                "<f", struct.pack("<I", stored_word)
+                            )[0]
+                            supplied = Fraction(float.fromhex(selected_word))
+                            decoded = Fraction(observed)
+                            work["storage_oracle"] += 1
+                            assert work["storage_oracle"] <= 192
+                            exact = decoded - supplied
+                            assert entry["selected_range_hex"] == selected_word
+                            assert entry["stored_range_word"] == stored_word
+                            assert entry["decoded_stored_range_hex"] == observed.hex()
+                            assert Fraction(*entry["selected_value_ratio"]) == supplied
+                            assert Fraction(*entry["stored_value_ratio"]) == decoded
+                            assert Fraction(*entry["signed_residual_ratio"]) == exact
+                            assert entry["finite_values_equal"] is (supplied == decoded)
+                            assert entry["decoded_words_match"] is (
+                                selected_word == observed.hex()
+                            )
+                            mismatches += int(supplied != decoded)
+                            word_mismatches += int(selected_word != observed.hex())
+                        assert diagnostic["value_mismatch_count"] == mismatches
+                        assert diagnostic["word_mismatch_count"] == word_mismatches
+                    result["postprocessing_storage_residuals"]["diagnostic"]["entries"][
+                        0
+                    ]["selected_range_hex"] = "changed"
                     assert (
                         getattr(owner, history_name)[0][kind]["selected_ranges_m"][0]
                         != "changed"
@@ -15861,6 +15951,8 @@ def test_native_tof_wall_snapshot(
                     "pending_postprocessing_dropout_diagnostics",
                     "postprocessing_clip_selection_diagnostics",
                     "pending_postprocessing_clip_selection_diagnostics",
+                    "postprocessing_storage_residuals",
+                    "pending_postprocessing_storage_residuals",
                     "selection",
                     "pending_selection",
                     "timing",
@@ -15953,6 +16045,21 @@ def test_native_tof_postprocessing_clip_selection_dependency(
             synthetic_test_only=True,
             include_postprocessing=case == "flag",
             include_postprocessing_clip_selection_diagnostics=True
+            if case == "dependency"
+            else 1,
+        )
+
+
+@pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_postprocessing"))
+def test_native_tof_postprocessing_storage_dependency(
+    c1_motion_receipt_source_fixture, case
+):
+    owner = deepcopy(c1_motion_receipt_source_fixture[1])
+    with pytest.raises(ValueError, match="include_postprocessing_storage_residuals"):
+        owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_postprocessing=case == "flag",
+            include_postprocessing_storage_residuals=True
             if case == "dependency"
             else 1,
         )

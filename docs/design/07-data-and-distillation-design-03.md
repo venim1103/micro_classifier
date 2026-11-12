@@ -2301,6 +2301,16 @@ word is predicted or rounding/error law adopted; all eight flags remain false.
 Retained joins are separate. [Checkpoint §323][native-tof-storage-review]
 records the bounded controls and evidence limits.
 
+#### Matched Native ToF Selected/Storage Reports (2026-11-12)
+
+Literal default-off storage-report inclusion requires postprocessing.
+Delivered/optional pending reports use original/closing native/companion guards,
+retained source/history/word/mask/report/output joins and detached supplied
+residuals before publication. Changed or unsupported joins publish explicit
+unknown without partial fields. Numerical and decoded-word equality stay
+separate; no cast law/error bound or qualification is adopted, all eight flags
+false. [Checkpoint §324][native-tof-storage-match-review] records the controls.
+
 [c1-motion-source]: ../../sim/rover.py
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
@@ -2309,6 +2319,7 @@ records the bounded controls and evidence limits.
 [native-tof-clip-selection-review]: ../../REVIEW.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12
 [native-tof-clip-selection-match-review]: ../../REVIEW.md#321-matched-native-tof-clipselection-reports-2026-11-12
 [native-tof-storage-review]: ../../REVIEW.md#323-supplied-word-native-tof-selectedstorage-residuals-2026-11-12
+[native-tof-storage-match-review]: ../../REVIEW.md#324-matched-native-tof-selectedstorage-reports-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../review/311-315.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

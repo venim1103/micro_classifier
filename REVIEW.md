@@ -401,6 +401,40 @@ Pointwise supplied residuals and matching words are not rounding-law/native
 primitive/source/geometry/coverage/clock/one-use/physical/admission evidence.
 Next separately bounded original/closing retained storage report joins.
 
+## 324. Matched Native ToF Selected/Storage Reports (2026-11-12)
+
+Begin clean pushed3a21002. Literal default-off
+`include_postprocessing_storage_residuals` requires postprocessing inclusion.
+Delivered/optional pending reports use detached matched selected/storage words
+after independent native/companion guards. Original/closing native/RNG/profile/
+pose/input/frame/history/queue/stored-word/mask/report/output joins precede
+publication; changed/unsupported joins publish explicit unknown without partial
+fields. Preserve observed residuals, typed epoch/tick/delivery labels and zero-
+word ties without predicting native cast words or adopting a rounding/error
+law. Raw unsupported/nonfinite source remains unknown, all eight flags false.
+
+Reuse24 snapshot cases+3 literal/dependency controls, including changed selected
+source and outgoing storage report; combined mode includes prior postprocessing
+reports within unchanged producer/report caps. Original/closing<=6 reports,
+384 entries/768 word decodes/768 rational values/384 subtractions; independent
+struct/Fraction oracle<=192 subtractions, existing 4096-bit limit unchanged.
+No replay/extra RNG/old or protected refund/new dependency/download/model/
+study/hardware/native/Arm/sanitizer opt-in or safety/qualification change.
+
+Fresh focused27/60s, sole necessary repair27/60s, required root/360s.
+First27 PASS5.92s with264 unselected, all four hashes stable. Root PASS5193,
+known QDQ1 xfail/71 warnings/164.24s; root/scoped Ruff, changed format/
+whitespace and four hashes PASS. Both positions spent; repair reserve unused,
+not follow-on authority.
+Ignored `.git/returns-324-*` outputs/hashes retained. Pylance before/after
+resolved no dynamic callers, not static compatibility evidence.
+Source matches/residuals are not numerical/error/source/geometry/coverage/
+clock/one-use/physical/permission/admission qualification.
+
+Next reassess independently supported setup/source/coverage/error/timing
+prerequisites and guarded request/executor dependencies in design§12; missing
+qualification alone is not a reason to stop compatible prerequisite work.
+
 ## Sources
 
 Hardware and tools:

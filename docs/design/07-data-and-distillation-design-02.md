@@ -2380,6 +2380,26 @@ admission qualification. All eight flags remain false. Typed bounded history and
 recorder/delivery joins are still separate prerequisites; [the intake checkpoint][native-tof-postprocessing-intake-review]
 retains actual failed checks, finite accounting and next action.
 
+#### Typed Native ToF Postprocessing History (2026-11-12)
+
+The [offline validator][c1-prototype-source] accepts at most eight ordered builtin
+list records with exactly `source_epoch`, `tick`, `delivery_tick`, `postprocessing`.
+The native history must be independently prevalidated before this companion guard.
+Each record requires one exact epoch/acquisition/delivery pairing, the closed
+21-key trace, unchanged profile and pre-noise/stored-word/final-mask correspondence.
+Six 64-word arrays use finite canonical float hex strings of at most 32 characters;
+two masks require literal booleans, and 64 uint32 storage words must have finite
+IEEE binary32 encoding. Signed observation words are preserved. Maximum work is
+3,072 float-word decodes, 512 stored-word checks and 1,024 mask elements for eight
+records, not a measured CPU/RAM bound. The validator does not replay, draw noise,
+hash, read, clock or retain records.
+
+Legacy/noisy profiles remain observations; internal noise/dropout/clip arithmetic,
+probability, geometry/coverage/error/source/physical/clock/one-use and admission
+qualification remain unproved. All eight flags are false. Recorder retention and
+delivered/pending composition remain separate next prerequisites. [Checkpoint §310][native-tof-postprocessing-history-review]
+retains checks, accounting and the paused-WIP-to-completion history.
+
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
 [floor-rules]: ../../sim/rules.py
@@ -2408,3 +2428,4 @@ retains actual failed checks, finite accounting and next action.
 [native-tof-postprocessing-review]: ../../REVIEW.md#306-cold-native-tof-return-postprocessing-capture-2026-11-11
 [native-tof-postprocessing-acquisition-review]: ../../REVIEW.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-intake-review]: ../../REVIEW.md#309-bounded-closed-native-tof-postprocessing-intake-2026-11-11
+[native-tof-postprocessing-history-review]: ../../REVIEW.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

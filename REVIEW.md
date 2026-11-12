@@ -69,6 +69,8 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 296-300][chapter-review-24]
 
 Checkpoints 301 onward and the source bibliography remain below.
+[Cloud harness handoff and restart prompt (§311)][cloud-harness-handoff]
+identify the current checkpoint and next bounded work.
 ## Recovery and Document Layout (2026-11-09)
 
 Following the user's reported crash, the live review was a 262,527-byte exact
@@ -521,6 +523,99 @@ adoption. Resume only after a fresh continuation: check current files and finish
 the pending required gate before recorder retention. Logs remain retained;
 all8 flags false, no qualification or protected-budget renewal.
 
+**Checkpoint completion (2026-11-12).** Fresh user continuation resumes only this
+checkpoint and migration handoff, then pauses. Clean main at pushed f31e833;
+current source/test AST matches the WIP and preserves all old definitions/imports/
+defaults/67-case prefix. Selected and terminal Python /opt/venv, Python3.12.3;
+retained focused logs verified present, no competing test/compiler jobs observed.
+Sole reserved root PASS4939/knownQDQxfail/71 warnings/144.93s, all four source/test
+hashes stable, root Ruff/changed-file format/whitespace/editor diagnostics PASS.
+All3 routine pytest positions now spent; no extra focused run, failure, refund,
+dependency/model/study/hardware or additional opt-in C/Arm/sanitizer command.
+The unchanged default interface controls ran. Typed history checkpoint complete,
+not recorder retention or numerical/physical/source/admission qualification.
+
+## 311. Cloud Harness Handoff and Restart Prompt (2026-11-12)
+
+**Pause boundary.** The user requested completion of the paused checkpoint,
+documentation and a prompt before moving Copilot from local to cloud. §310 is
+now verified; no postprocessing recorder retention/delivery work was started.
+Source revision f31e833 (previously WIP) is the tested source; the documentation
+closeout is a descendant on main. Preserve fd0d88b intake and all earlier archives,
+failures, spent ledgers and evidence limits. No usable command is admitted; all
+eight qualification/permission/training flags remain false.
+
+**Next bounded slice, after a fresh continuation.** Use the existing
+`_SyntheticC1SourceRecorder.record_native_tof_source` and initializer in
+`sim/diagnostics.py`, and `test_native_tof_wall_retention` in `tests/test_sim.py`.
+Recommended compatible option: append literal `include_postprocessing=False`,
+with private <=8 native-tick-aligned detached postprocessing records, exact-repeat
+deduplication, changed-repeat rejection, oldest trimming and explicit gaps.
+Reuse `_sample_simulator_native_tof_postprocessing_source` and
+`_check_native_tof_postprocessing_history`, with independent native prevalidation
+before companion guards/digests and original/closing cache/native/RNG/profile/
+pose/input/history/outgoing-copy checks. Do not replay, draw noise, read/step/reset
+or adopt a noise law to retain records. Preserve default keys/operations and old
+family budgets. Later use the neighboring retained-direction matcher and
+`snapshot_native_tof_delivery` / `test_native_tof_wall_snapshot` for delivered/
+pending joins; do not combine that publication into the first retention slice.
+Root review is near its 1,000-line organization target. Before further checkpoint
+growth, archive whole301-305 using the existing lossless pattern and rebase links;
+preserve all historical bodies/anchors/ledgers, never rerun an old migration.
+
+**Portable evidence and environment.** The local Python3.12.3 /opt/venv environment,
+Ruff/timeout, Pylance, editor memory and recovery logs are not guaranteed in cloud.
+Read committed documents/Git first; verify actual tools/interpreter/dependencies
+and budgets there. Missing local logs/tools neither prove a pass nor refund old
+attempts; use the documented standing authority for a fresh bounded routine check
+if genuinely necessary, not an unchanged successful gate for reassurance.
+Local-only `.git/recovery-20261109-PmbQpU/returns-310-*` retains both focused logs,
+root log and root hash list; Git does not push these files. No transfer/download
+or dependency/environment/security change was performed. Recorded outcomes are
+33 PASS0.74s, revised34 PASS5.04s and root4939 PASS144.93s; all3 positions spent.
+The four tested source identities (SHA256, unchanged through closeout) are:
+
+```text
+sim/diagnostics.py d6b3339ad86cd40f2dd77f98dc1f93a621282f782325556a19c09f38308b88f6
+sim/rover.py 836c35ff01e5f29dfb2d859287d7367ce6a3ce5d5b2a414071a10059bf16fc37
+interface/protocol.py 54f91345baf73256e4d897d6c415e5d09ea07f85622d063c029259ff6eaa4ff6
+tests/test_sim.py af80a51b9f4d3d6fca8ee0d8e4b096fc1c878a7eccfe921a0d8b09d12db81130
+```
+
+**Cloud restart prompt.** This is a future user directive, not permission to
+resume after the current pause until supplied in the new chat:
+
+```text
+Continue micro_classifier from latest main containing REVIEW.md sections 310-311.
+Read AGENTS.md, REVIEW.md section 311 and section 310 completion, then DESIGN.md's
+postprocessing topic in docs/design/07-data-and-distillation-design-02.md.
+The local migration pause ends with this fresh continuation. Do not rely on old
+chat/editor memory, local /opt/venv, Pylance or .git/recovery logs being available.
+Verify worktree, upstream, current source, installed tools/interpreter and budgets.
+Typed postprocessing history is complete: 34 focused controls and root4939 passed;
+known QDQ xfail/71 warnings retained, all3 old routine positions spent, all8 flags false.
+Next implement ONLY bounded default-off postprocessing recorder retention using
+_SyntheticC1SourceRecorder.record_native_tof_source and test_native_tof_wall_retention.
+Follow section 311's ownership/prevalidation/dedup/trim/gap and no-replay constraints.
+Then reassess separately bounded retained joins and delivered/pending publication.
+Choose routine compatible decisions autonomously, record a finite synthetic scope,
+make a grounded small edit and immediately run its focused discriminating check.
+Before a verified checkpoint, run root pytest/Ruff/diff and changed-file format gates.
+Retain failures/unknown attempts; do not refund old studies or weaken assertions/caps.
+Do not repeat finished floor-division reports or unchanged green gates for reassurance.
+Keep all qualification/admission flags false and raw unsupported/nonfinite source unknown.
+No new noise law, bounds, task data/studies/training/models/dependencies/downloads,
+.devcontainer/security changes, hardware/ST access, general audits/SC18 or actuation.
+Use existing helpers/tests/docs; preserve user changes and historical evidence.
+No questionnaires/subagents unless explicitly authorized; follow higher-priority harness rules.
+Commit scoped verified increments and normal upstream pushes only when harness permits.
+Continue useful authorized work across checkpoints until I explicitly pause or stop.
+```
+
+Handoff checks PASS: exact prior review/design/stable workflow conservation,
+four tested source hashes, actual next-code anchors, new reference targets and
+editor diagnostics. No source edit or repeated successful code gate for closeout.
+
 ## Sources
 
 Hardware and tools:
@@ -887,3 +982,4 @@ Methods and measurements:
 [chapter-review-23]: docs/review/291-295.md
 [chapter-review-24]: docs/review/296-300.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
+[cloud-harness-handoff]: #311-cloud-harness-handoff-and-restart-prompt-2026-11-12

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §327 for closed native goal acquisition intake;
+Read [REVIEW.md][review] §328 for intact prerequisite checkpoint archival;
+§327 records closed native goal acquisition intake;
 §326 records native goal acquisition pairing;
 §325 records cold native goal source capture;
 §324 records completed matched selected/storage reports;
@@ -92,6 +93,7 @@ retained mask reports and their required gate are complete.
 Standalone clip/select word diagnostics and their required gate are complete;
 retained clip/select joins and their required gate are complete.
 Whole311-315 checkpoints are archived with historical anchors and ledgers.
+Whole316-320 checkpoints are archived with historical anchors and ledgers.
 Supplied selected/storage residuals and their required gate are complete.
 Retained storage report joins and their required gate are complete.
 Native integration source/arithmetic already exists and must not be duplicated.

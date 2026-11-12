@@ -2356,10 +2356,10 @@ separate. [Checkpoint §327][native-goal-intake-review] records the controls.
 [native-goal-intake-review]: ../../REVIEW.md#327-closed-native-goal-computation-intake-2026-11-12
 [native-goal-acquisition-review]: ../../REVIEW.md#326-native-goal-computation-acquisition-pairing-2026-11-12
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
-[native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
-[native-tof-dropout-review]: ../../REVIEW.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
-[native-tof-dropout-match-review]: ../../REVIEW.md#319-matched-native-tof-dropout-reports-2026-11-12
-[native-tof-clip-selection-review]: ../../REVIEW.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12
+[native-tof-noise-addition-match-review]: ../review/316-320.md#317-matched-native-tof-noise-addition-reports-2026-11-12
+[native-tof-dropout-review]: ../review/316-320.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
+[native-tof-dropout-match-review]: ../review/316-320.md#319-matched-native-tof-dropout-reports-2026-11-12
+[native-tof-clip-selection-review]: ../review/316-320.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12
 [native-tof-clip-selection-match-review]: ../../REVIEW.md#321-matched-native-tof-clipselection-reports-2026-11-12
 [native-tof-storage-review]: ../../REVIEW.md#323-supplied-word-native-tof-selectedstorage-residuals-2026-11-12
 [native-tof-storage-match-review]: ../../REVIEW.md#324-matched-native-tof-selectedstorage-reports-2026-11-12

@@ -70,8 +70,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 301-305][chapter-review-25]
 - [Checkpoints 306-310][chapter-review-26]
 - [Checkpoints 311-315][chapter-review-27]
+- [Checkpoints 316-320][chapter-review-28]
 
-Checkpoints 316 onward and the source bibliography remain below.
+Checkpoints 321 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -139,179 +140,23 @@ repeated historical handoffs.
 
 ## 316. Intact Postprocessing Checkpoint and Topic Relocation (2026-11-12)
 
-Begin clean pushedf73b9ab. Before further growth, move whole306-310 to
-[their archive][chapter-review-26], preserving exact bodies, separators, headings,
-failures, approvals, spent/unknown ledgers and pause/WIP/completion boundaries.
-No archive-body links require rebasing; four live postprocessing checkpoint
-references now target the archive. Root map allocation and remaining bodies
-are conserved, not a renewed test/experiment budget or qualification.
-
-Relocate the complete151-line postprocessing topic from chapter02 to existing
-chapter03 without changing its body. Preserve every old topic/subtopic anchor
-in chapter02 as a link to its unchanged chapter03 section; retain old reference
-definitions, copy only missing topic definitions and verify any existing
-definition agrees. Existing chapter03 is an exact prefix, no unrelated topic
-body changed. DESIGN's direct postprocessing reading-map target now selects
-chapter03. Exact written-layout, all eight retained heading anchors, new/rebased
-local targets and whitespace PASS; four tested source hashes remain unchanged.
-Resulting review/chapter02/chapter03 sizes before this note:757/2391/2244 lines.
-Original documents and migration utility retained in session artifact storage,
-not a portable Git log. No code suite, old migration, experiment or successful
-source gate rerun. All qualification/admission flags remain false.
-Next bounded original/closing retained noise-addition report composition.
+[Complete unchanged checkpoint][review-316-320-preserved-0] is preserved in the archive.
 
 ## 317. Matched Native ToF Noise-Addition Reports (2026-11-12)
 
-Begin clean pushedadd441d. Separate local hypothesis: append literal default-off
-`include_postprocessing_noise_addition_residuals`, requiring postprocessing
-inclusion. Reuse standalone supplied-word sum reporting against original/closing
-retained delivered and optional pending traces. Native/typed companion
-prevalidation precedes report construction, including after closing frame/queue
-callbacks; final original/closing word, history identity, report-content and
-output-binding checks precede publication. Supplied operands and raw words are
-unchanged; no source correction or adopted noise/rounding/error law.
-
-Extend existing24-case snapshot matrix with24 report-mode cases and three literal/
-dependency controls. Original192 controls/defaults and per-family work caps
-remain unchanged. New report scope <=6 calls/1,152 value conversions/768 binary
-operations; independent Fraction oracle <=384 operations,64 entries/report,
-unchanged32char/1..4096bit bounds. Existing four-step/five-read/three-acquisition/
-geometry/retention fixture limits and original/closing late-mutation controls
-stay in force. Check report IDs/operands/observations/exact sums/residuals, absent
-default keys, nested output detachment and unknown-with-no-partial-publication.
-
-Fresh three routine positions: focused27/60s, sole necessary repair27/60s,
-required root/360s; failures/aborts/unknown spent, no old/protected refund or
-renewal. Keep ignored `.git/returns-317-*` outputs/hashes; checks serialized.
-First27 PASS5.71s/192 deselected, all four source hashes stable; scoped Ruff/
-changed format/whitespace PASS. Pylance signature check found no resolved call
-sites, not static proof of every dynamic caller. Required root PASS5040/
-known QDQ xfail/71 warnings/157.05s; root Ruff/changed format/whitespace PASS,
-all four source hashes stable. Scoped source/test diff and AST conservation
-PASS for old module/recorder/default/test nodes and old192-case prefix;
-new reference target/anchor PASS. Two of three fresh positions spent, no
-failure/abort/refund; unused repair is not follow-on authority.
-No successful code gate repeated for documentation closeout.
-
-All eight flags remain false. Observed raw unsupported/nonfinite source remains
-unknown; matching reports do not qualify native primitive/FMA/rounding/error/
-noise-law/dropout/clip/cast/geometry/coverage/source/clock/one-use/physical/
-permission/admission. No new study/model/dependency/download/hardware/extra
-native/Arm/sanitizer opt-in. Next independently supported supplied-word dropout
-comparison/mask correspondence, without probability-law or threshold adoption.
+[Complete unchanged checkpoint][review-316-320-preserved-1] is preserved in the archive.
 
 ## 318. Supplied-Word Native ToF Dropout Mask Correspondence (2026-11-12)
 
-Begin clean pushedab124f1. Actual sampler captures the existing dropout draw
-around `valid &= dropout >= config.dropout`. Standalone helper compares supplied
-draw/threshold words and literal prior/observed masks; no draw or distribution
-model is needed. Reuse the observed profile's existing finite0..1 dropout field,
-not a new threshold. Finite draw values outside0..1 remain comparisons, not
-clamped or rejected by an invented RNG law. Raw +/-inf draw words remain unknown
-even when the prior mask is false; NaN/unsupported metadata rejects explicitly.
-
-Closed builtin64-word tuple and two64 literal boolean masks; <=32char canonical
-words,65 word decodes,64 predicate/mask comparisons and64 entries. Preserve raw
-signed words and report expected mask, observed mask, mismatch/unknown counts;
-matching values do not resolve different-word ties or qualify the comparator.
-Add24 bounded controls for actual/keep/drop/equality/prior-mask/mismatch/signed
-zero/finite out-of-range/raw nonfinite words, typed masks, closed tuple/word/
-profile preflight. One actual cold sample/geometry with only existing normal/
-dropout draws before poisoning intake/read/retention/replay/step/reset/sample/
-hash/clock/geometry paths; <=64 independent Fraction-oracle comparisons.
-All prior helper/default/test nodes remain unchanged.
-
-Fresh three routine positions: focused24/60s, sole necessary repair24/60s,
-required root/360s; failures/aborts/unknown spent, no historical/protected refund.
-Retain ignored `.git/returns-318-*` outputs/hashes, serialize checks.
-First24 PASS3.43s, all four source hashes stable; scoped Ruff/changed format/
-whitespace PASS. Required root PASS5064/known QDQ xfail/71 warnings/156.51s;
-root Ruff/changed format/whitespace PASS, all four source hashes stable.
-Scoped diff/AST and new reference target/anchor checks PASS; all prior module/
-default/test nodes exact. Two of three fresh positions spent, no failure/abort/
-refund; unused repair is not follow-on authority. No code gate repeated for
-documentation closeout.
-
-All eight flags remain false; source unknowns remain unknown. This is standalone
-supplied-word/mask correspondence, not native execution, noise/probability law,
-numerical/error/clip/cast/geometry/coverage/source/clock/one-use/physical/
-permission/admission qualification. No new study/model/dependency/download/
-hardware/extra native/Arm/sanitizer opt-in. Next original/closing retained
-dropout-mask report joins, without changing source or adopting a probability law.
+[Complete unchanged checkpoint][review-316-320-preserved-2] is preserved in the archive.
 
 ## 319. Matched Native ToF Dropout Reports (2026-11-12)
 
-Begin clean pushed89bdbef. Append literal default-off
-`include_postprocessing_dropout_diagnostics`, requiring postprocessing inclusion.
-Reuse the standalone supplied-word threshold/prior-mask comparison against
-original/closing retained delivered and optional pending traces. Existing
-native/typed companion prevalidation follows closing frame/queue callbacks
-before report construction; final history identity, word, report-content and
-detached output bindings must agree before publication. No new draw, finite
-draw interval, threshold, probability/noise law or correction is adopted.
-
-Extend existing24-case snapshot matrix with24 dropout-report cases and three
-literal/dependency controls; old216 cases/defaults and source/matcher/fixture
-caps stay unchanged. New scope <=6 dropout reports/390 word decodes/384 predicate
-comparisons; independent Fraction oracle <=192 comparisons. Combined control
-also uses existing additive reports within unchanged six-call/1,152-value/
-768-binary/384-oracle caps. Check report identities/raw draw/threshold words/
-prior/observed/expected masks, mismatch/unknown counts, detached outputs,
-default key absence and late unknown-with-no-partial-publication.
-
-Fresh three routine positions: focused27/60s, sole necessary repair27/60s,
-required root/360s; failures/aborts/unknown spent, no historical/protected refund.
-Retain ignored `.git/returns-319-*` outputs/hashes; serialize checks.
-First27 PASS5.71s/216 deselected, all four source hashes stable; scoped Ruff/
-changed format/whitespace PASS. Required root PASS5091/known QDQ xfail/
-71 warnings/159.13s; root Ruff/changed format/whitespace PASS, all four source
-hashes stable. Scoped diff/AST and reference checks PASS for prior module/
-recorder/default/test nodes and old216-case prefix. Two of three fresh positions
-spent, no failure/abort/refund; unused repair is not follow-on authority.
-No successful code gate repeated for documentation closeout.
-
-All eight flags remain false; raw unsupported/nonfinite source remains unknown.
-This is matched source/word/mask content, not native comparator execution,
-probability/noise-law, clip/cast/numerical/error/geometry/coverage/source/clock/
-one-use/physical/permission/admission qualification. No new study/model/
-dependency/download/hardware/extra native/Arm/sanitizer opt-in.
-Next independently supported supplied-word clip/select correspondence;
-preserve raw nonfinite unknowns and equal-value/different-word ties.
+[Complete unchanged checkpoint][review-316-320-preserved-3] is preserved in the archive.
 
 ## 320. Supplied-Word Native ToF Clip/Selection Correspondence (2026-11-12)
 
-Begin clean pushed ae0e3fd. Actual sampler captures
-`clipped = np.clip(grid, 0, config.max_range)` and
-`selected = np.where(valid, clipped, 0)` before the float32 cast.
-Standalone helper compares supplied noisy/clipped/selected words and a literal
-mask against declared clamp values and selected raw-word inputs. Use observed
-clipped operands for selection, never corrected upstream values. Existing
-positive finite max-range field is supplied, not a new bound/threshold.
-Raw nonfinite in any stage keeps the whole comparison unknown; NaN/unsupported
-metadata rejects. Preserve all signed words and equal-value/different-word ties
-without predicting NumPy zero signs or adopting native rounding/primitive laws.
-
-Three builtin64-word tuples and64 literal masks,<=32char canonical words,
-193 decodes,256 value comparisons,128 raw-word comparisons and64 entries.
-Add24 bounded actual/inside/outside/boundary/independent-stage-mismatch/masked/
-zero-tie/raw-nonfinite/typed-word/mask/profile controls; independent Fraction
-oracle <=128 clamp comparisons. One actual cold sample/geometry with only
-existing normal/dropout draws before poisoning intake/read/retention/replay/
-step/reset/sample/hash/clock/geometry calls. Prior helpers/defaults/tests exact.
-
-Fresh three routine positions: focused24/60s, sole necessary repair24/60s,
-required root/360s; failures/aborts/unknown spent, no old/protected refund.
-Retain ignored `.git/returns-320-*` outputs/hashes; serialize checks.
-First24 PASS3.43s, all four hashes stable; scoped Ruff/changed format/whitespace
-PASS. Required root PASS5115, known QDQ1 xfail/71 warnings/159.39s;
-root Ruff/changed format/whitespace and all four hashes PASS.
-Both executed positions spent; repair reserve unused, not follow-on authority.
-
-All eight flags remain false. Standalone pointwise value/word correspondence is
-not native primitive/rounding/cast/noise-law/numerical/error/geometry/coverage/
-source/clock/one-use/physical/permission/admission qualification. No new study/
-model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
-Next bounded original/closing retained clip/select report joins.
+[Complete unchanged checkpoint][review-316-320-preserved-4] is preserved in the archive.
 
 ## 321. Matched Native ToF Clip/Selection Reports (2026-11-12)
 
@@ -541,6 +386,26 @@ executed positions spent; unused repair reserve is not an execution or refund.
 Ignored `.git/returns-327-*` logs/hashes retained. No protected/native/Arm work.
 Next separately typed bounded goal history, then default-off recorder retention
 and matched delivery with original/closing joins; no permission/admission.
+
+## 328. Intact Goal-Prerequisite Review Archival (2026-11-12)
+
+Begin clean pusheda8dc8e6. Before further review growth, move whole316-320
+checkpoints to [their archive][chapter-review-28]: bodies, headings, separators,
+failures, spent/unused ledgers and historical limits remain byte-exact. Preserve
+all five old root anchors as archive links; rebase four chapter03 report links
+and copy the existing306-310 archive reference relative to its new location.
+Update only the root reading map and short current state; no requirements,
+source, control, authority or qualification changes.
+
+One finite preflight/apply/verify position PASS, no failure/repair. Exact archive
+text, all old root headings, local reference targets/anchors, whitespace and
+four unchanged last-root source hashes PASS. Archive179 lines; root770 before
+this note. Local `layout-328-before-*` snapshots and migration utility retained
+in the ignored session workspace; committed archive/anchors are portable.
+No code-suite rerun: unchanged gate5262 PASS/known QDQ1 xfail stays spent.
+No protected studies/native/Arm/model/dependency/download/hardware work.
+Next typed bounded native goal history, then default-off recorder retention
+and closed matched delivery; all eight qualification/admission flags false.
 
 ## Sources
 
@@ -910,6 +775,7 @@ Methods and measurements:
 [chapter-review-25]: docs/review/301-305.md
 [chapter-review-26]: docs/review/306-310.md
 [chapter-review-27]: docs/review/311-315.md
+[chapter-review-28]: docs/review/316-320.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -917,3 +783,8 @@ Methods and measurements:
 [review-311-315-preserved-2]: docs/review/311-315.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
 [review-311-315-preserved-3]: docs/review/311-315.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [review-311-315-preserved-4]: docs/review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
+[review-316-320-preserved-0]: docs/review/316-320.md#316-intact-postprocessing-checkpoint-and-topic-relocation-2026-11-12
+[review-316-320-preserved-1]: docs/review/316-320.md#317-matched-native-tof-noise-addition-reports-2026-11-12
+[review-316-320-preserved-2]: docs/review/316-320.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
+[review-316-320-preserved-3]: docs/review/316-320.md#319-matched-native-tof-dropout-reports-2026-11-12
+[review-316-320-preserved-4]: docs/review/316-320.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12

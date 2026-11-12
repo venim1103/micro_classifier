@@ -32237,6 +32237,240 @@ def test_native_goal_computation_acquisition(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "world_integer",
+        "world_unsigned",
+        "noisy",
+        "delayed",
+        "missing",
+        "cache_keys",
+        "trace_keys",
+        "qualified",
+        "native_identity",
+        "rng",
+        "odometry_rng",
+        "config",
+        "scenario",
+        "pose",
+        "tick",
+        "delivery",
+        "world_dtype",
+        "world_words",
+        "used_position",
+        "native_words",
+        "stored_words",
+        "pending_gap",
+        "history_words",
+        "word_tie",
+        "raw_nonfinite",
+        "closing_cache",
+        "closing_profile",
+        "closing_rng",
+        "closing_pose",
+        "closing_word",
+        "copied_word",
+        "history_limit",
+        "history_budget",
+    ),
+)
+def test_native_goal_computation_intake(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if case in ("world_integer", "world_unsigned", "raw_nonfinite"):
+        goal = (
+            (5, 3)
+            if case == "world_integer"
+            else ((1 << 63) + 1, (1 << 63) + 3)
+            if case == "world_unsigned"
+            else (float.fromhex("0x1.fffffffffffffp+1023"),) * 2
+        )
+        environment.scenario = replace(environment.scenario, goal=goal)
+    elif case == "noisy":
+        environment.config = replace(
+            environment.config,
+            odometry_position_error=0.005,
+            odometry_heading_error=0.002,
+        )
+    elif case in ("delayed", "pending_gap"):
+        environment.config = replace(environment.config, odometry_latency_ticks=2)
+    elif case == "word_tie":
+        environment.yaw = 0.0
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    cache = environment._native_goal_computation_source
+    trace = cache["computation"]
+    if case == "missing":
+        environment._native_goal_computation_source = None
+    elif case == "cache_keys":
+        cache["extra"] = True
+    elif case == "trace_keys":
+        trace["extra"] = True
+    elif case == "qualified":
+        trace["source_qualified"] = True
+    elif case == "native_identity":
+        cache["source"] = deepcopy(cache["source"])
+    elif case in ("rng", "odometry_rng"):
+        cache[case] = deepcopy(cache[case])
+    elif case == "config":
+        cache["config"]["max_speed"] += 0.125
+    elif case == "scenario":
+        environment.scenario = replace(environment.scenario)
+    elif case == "pose":
+        cache["pose_m_rad"] = (cache["pose_m_rad"][0] + 0.01, *cache["pose_m_rad"][1:])
+    elif case in ("tick", "delivery"):
+        cache["tick" if case == "tick" else "delivery_tick"] -= 1
+    elif case == "world_dtype":
+        trace["inputs"]["world_goal_m"] = trace["inputs"]["world_goal_m"].astype(
+            np.float32
+        )
+    elif case == "world_words":
+        trace["inputs"]["world_goal_m"][0] += 1
+    elif case == "used_position":
+        trace["inputs"]["used_position_m"][0] += 1
+    elif case == "native_words":
+        words = trace["values"]["native_goal_m"]
+        trace["values"]["native_goal_m"] = (words[0] + 1, words[1])
+    elif case == "stored_words":
+        trace["values"]["stored_goal_m"][0] += 1
+    elif case == "pending_gap":
+        environment.pending_ego.clear()
+    elif case == "history_words":
+        environment.history[-1][0][2] += 1
+    elif case == "word_tie":
+        assert trace["inputs"]["yaw_rad"].hex() == "0x0.0p+0"
+        trace["inputs"]["yaw_rad"] = -0.0
+    elif case in ("history_limit", "history_budget"):
+        environment.history = type(environment.history)(
+            [environment.history[-1]] * (8 if case == "history_limit" else 9)
+        )
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"copy": 0, "view": 0, "forbidden": 0}
+    original_copy = diagnostics.deepcopy
+    original_inputs = rover._check_native_goal_computation_inputs
+
+    def inputs_check(value):
+        work["view"] += 1
+        assert work["view"] <= 2
+        return original_inputs(value)
+
+    def copy(value):
+        result = original_copy(value)
+        if type(value) is dict and value.get("schema") == (
+            "micro-classifier/native-goal-computation-intake/1"
+        ):
+            work["copy"] += 1
+            assert work["copy"] <= 1
+            if case == "closing_cache":
+                environment._native_goal_computation_source = original_copy(cache)
+            elif case == "closing_profile":
+                environment.config = replace(
+                    environment.config, max_speed=environment.config.max_speed + 0.125
+                )
+            elif case == "closing_rng":
+                environment.rng = original_copy(environment.rng)
+            elif case == "closing_pose":
+                environment.position[0] += 0.01
+            elif case == "closing_word":
+                trace["values"]["delta_m"][0] += 1
+            elif case == "copied_word":
+                words = result["computation"]["values"]["delta_m"]
+                result["computation"]["values"]["delta_m"] = (
+                    "0x0.0p+0",
+                    words[1],
+                )
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("goal intake must not replay/draw/trig/clock/step")
+
+    monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    monkeypatch.setattr(rover, "_check_native_goal_computation_inputs", inputs_check)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    accepted = {
+        "copy",
+        "world_integer",
+        "world_unsigned",
+        "noisy",
+        "delayed",
+        "history_limit",
+    }
+    if case not in accepted:
+        with pytest.raises(ValueError, match="native goal"):
+            diagnostics._sample_simulator_native_goal_computation_source(
+                environment, owner._epoch
+            )
+        if case == "raw_nonfinite":
+            assert trace["status"] == "unknown_nonfinite_native_goal_values"
+            assert np.isinf(trace["values"]["stored_goal_m"]).any()
+    else:
+        result = diagnostics._sample_simulator_native_goal_computation_source(
+            environment, owner._epoch
+        )
+        assert work["copy"] == 1
+        assert work["view"] == 2
+        assert result["source_epoch"] == owner._epoch
+        assert result["tick"] == cache["tick"]
+        assert result["delivery_tick"] == cache["delivery_tick"]
+        assert result["pose_m_rad"] == tuple(word.hex() for word in cache["pose_m_rad"])
+        inputs, values = (
+            result["computation"]["inputs"],
+            result["computation"]["values"],
+        )
+        assert (
+            inputs["world_goal_m"]["dtype"] == trace["inputs"]["world_goal_m"].dtype.str
+        )
+        if case in ("world_integer", "world_unsigned"):
+            assert inputs["world_goal_m"]["words"] == environment.scenario.goal
+            assert all(type(word) is int for word in inputs["world_goal_m"]["words"])
+        else:
+            assert inputs["world_goal_m"]["words"] == tuple(
+                float(word).hex() for word in trace["inputs"]["world_goal_m"]
+            )
+        assert inputs["used_position_m"] == tuple(
+            float(word).hex() for word in trace["inputs"]["used_position_m"]
+        )
+        assert values["delta_m"] == tuple(
+            float(word).hex() for word in trace["values"]["delta_m"]
+        )
+        assert values["native_goal_m"] == result["source"]["goal_m"]
+        assert values["stored_goal_m"] == tuple(
+            map(int, trace["values"]["stored_goal_m"].view(np.uint32))
+        )
+        for key in result:
+            if key.endswith("qualified") or key in (
+                "fixture_permission_granted",
+                "training_approved",
+                "numerically_certified",
+            ):
+                assert result[key] is False
+                assert result["computation"][key] is False
+        result["config"]["max_speed"] = -1
+        assert cache["config"]["max_speed"] > 0
+        values["stored_goal_m"] = (0, 0)
+        assert np.any(trace["values"]["stored_goal_m"])
+        if case == "noisy":
+            assert inputs["used_position_m"] != result["pose_m_rad"][:2]
+    assert work["forbidden"] == 0
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "mismatch",

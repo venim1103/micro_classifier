@@ -2338,7 +2338,22 @@ clock/one-use or source/numerical/physical/admission qualification follows;
 closed intake, retention and delivered/pending joins are separate.
 [Checkpoint §326][native-goal-acquisition-review] retains the bounded controls.
 
+#### Closed Native Goal Computation Intake (2026-11-12)
+
+The acquisition carrier retains actual true-pose words, a fixed Config snapshot
+and Scenario identity separately from noisy used operands. The offline sampler
+closes original/closing owner/cache/native/RNG/profile/pose/input/tick/delivery/
+ego/history/stored-word bindings before one detached supported packet. Existing
+C1 tick encoding and <=8 queue/history/nominal-latency budgets bound work, not
+clocks or physical error. Inferred world dtype and exact integer/canonical
+float64 words remain distinct; stored float32 words are observed uint32 views.
+Unsupported/changed/nonfinite source rejects explicitly without partial output,
+retaining raw unknown source. No replay, noise/trig/cast law or qualification;
+all eight flags false. Typed history, recorder retention and publication remain
+separate. [Checkpoint §327][native-goal-intake-review] records the controls.
+
 [c1-motion-source]: ../../sim/rover.py
+[native-goal-intake-review]: ../../REVIEW.md#327-closed-native-goal-computation-intake-2026-11-12
 [native-goal-acquisition-review]: ../../REVIEW.md#326-native-goal-computation-acquisition-pairing-2026-11-12
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12

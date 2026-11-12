@@ -9494,6 +9494,250 @@ def _sample_simulator_native_integration_source(environment, receipt, source_epo
     }
 
 
+def _sample_simulator_native_goal_computation_source(environment, source_epoch):
+    from collections import deque
+
+    from sim.rover import RoverEnv, _check_native_goal_computation_inputs
+
+    if type(environment) is not RoverEnv:
+        raise ValueError("native goal computation requires the actual owner")
+    if type(source_epoch) is not str or len(source_epoch) != 32:
+        raise ValueError("native goal computation epoch budget exhausted")
+    captured = environment._native_goal_computation_source
+    native = environment._native_goal_source
+    rng, odometry_rng = environment.rng, environment.odometry_rng
+    pending, history = environment.pending_ego, environment.history
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+    use = "native_goal_computation_diagnostics_only"
+
+    def mapping(value, expected, extra=()):
+        if (
+            type(value) is not dict
+            or len(value) != len(expected) + len(extra)
+            or any(type(key) is not str for key in value)
+            or set(value) != {*expected, *extra}
+            or any(
+                not _native_tof_word_copy_matches(value[key], word)
+                for key, word in expected.items()
+            )
+        ):
+            raise ValueError("unsupported native goal computation metadata")
+
+    def floats(value, count):
+        if (
+            type(value) is not tuple
+            or len(value) != count
+            or any(type(word) is not float or not math.isfinite(word) for word in value)
+        ):
+            raise ValueError("unsupported native goal computation float words")
+        return tuple(word.hex() for word in value)
+
+    def array(value, dtype, count=2):
+        if (
+            type(value) is not np.ndarray
+            or value.shape != (count,)
+            or value.dtype != dtype
+            or not np.isfinite(value).all()
+        ):
+            raise ValueError("unsupported native goal computation array words")
+        if dtype == np.dtype(np.float32):
+            return tuple(map(int, value.view(np.uint32)))
+        if dtype.kind in "iu":
+            return tuple(map(int, value))
+        return tuple(float(word).hex() for word in value)
+
+    def view():
+        world = _check_native_goal_computation_inputs(environment)
+        config = environment.config
+        tick = environment.tick
+        if (
+            type(tick) is not int
+            or not 0 <= tick <= 0xFFFFFFFF // 50000
+            or not 0 <= config.odometry_latency_ticks <= 8
+            or tick + config.odometry_latency_ticks > 0xFFFFFFFF // 50000
+        ):
+            raise ValueError("native goal computation tick budget exhausted")
+        mapping(
+            captured,
+            {"schema": "micro-classifier/native-goal-computation-acquisition/1"},
+            (
+                "rng",
+                "odometry_rng",
+                "tick",
+                "delivery_tick",
+                "source",
+                "computation",
+                "config",
+                "scenario",
+                "pose_m_rad",
+            ),
+        )
+        profile = asdict(config)
+        pose = (*map(float, environment.position), float(environment.yaw))
+        if (
+            captured["rng"] is not rng
+            or captured["odometry_rng"] is not odometry_rng
+            or captured["source"] is not native
+            or captured["scenario"] is not environment.scenario
+            or type(captured["tick"]) is not int
+            or captured["tick"] != tick
+            or type(captured["delivery_tick"]) is not int
+            or captured["delivery_tick"] != tick + config.odometry_latency_ticks
+            or not _native_tof_word_copy_matches(captured["config"], profile)
+            or floats(captured["pose_m_rad"], 3) != floats(pose, 3)
+        ):
+            raise ValueError("native goal computation acquisition pairing mismatched")
+        mapping(native, {"tick": tick}, ("position_m", "yaw_rad", "goal_m"))
+        native_words = {
+            "tick": tick,
+            "position_m": floats(native["position_m"], 2),
+            "yaw_rad": floats((native["yaw_rad"],), 1)[0],
+            "goal_m": floats(native["goal_m"], 2),
+        }
+        trace = captured["computation"]
+        expected = {
+            "schema": "micro-classifier/native-goal-computation-source/1",
+            "allowed_use": use,
+            "status": "recorded_native_goal_values",
+            **dict.fromkeys(flags, False),
+            "tick": tick,
+        }
+        mapping(trace, expected, ("inputs", "values"))
+        inputs, values = trace["inputs"], trace["values"]
+        input_profile = {
+            "yaw_rad": pose[2],
+            "odometry_position_error_m": config.odometry_position_error,
+            "odometry_heading_error_rad": config.odometry_heading_error,
+        }
+        mapping(inputs, input_profile, ("world_goal_m", "used_position_m"))
+        mapping(
+            values,
+            {},
+            (
+                "delta_m",
+                "used_cosine",
+                "used_sine",
+                "native_goal_m",
+                "stored_goal_m",
+            ),
+        )
+        world_words = array(inputs["world_goal_m"], world.dtype)
+        if world_words != array(world, world.dtype):
+            raise ValueError("native goal computation world input pairing mismatched")
+        position_words = array(inputs["used_position_m"], np.dtype(np.float64))
+        goal_words = floats(values["native_goal_m"], 2)
+        if (
+            position_words != native_words["position_m"]
+            or native_words["yaw_rad"] != floats((pose[2],), 1)[0]
+            or goal_words != native_words["goal_m"]
+        ):
+            raise ValueError("native goal computation native word pairing mismatched")
+        stored = array(values["stored_goal_m"], np.dtype(np.float32))
+        if (
+            type(pending) is not deque
+            or len(pending) > 8
+            or type(history) is not deque
+            or not 1 <= len(history) <= 8
+            or type(environment.ego_sample_tick) is not int
+            or not 0 <= environment.ego_sample_tick <= tick
+        ):
+            raise ValueError("native goal computation output budget exhausted")
+        pending_words = []
+        previous = -1
+        for entry in pending:
+            if (
+                type(entry) is not tuple
+                or len(entry) != 3
+                or any(type(word) is not int for word in entry[:2])
+                or not previous < entry[1] <= tick
+                or entry[0] != entry[1] + config.odometry_latency_ticks
+                or not tick < entry[0] <= 0xFFFFFFFF // 50000
+            ):
+                raise ValueError("native goal computation pending pairing mismatched")
+            pending_words.append((*entry[:2], array(entry[2], np.dtype(np.float32), 4)))
+            previous = entry[1]
+        history_words = []
+        for entry in history:
+            if type(entry) is not tuple or len(entry) != 3:
+                raise ValueError("native goal computation history layout unsupported")
+            history_words.append(array(entry[0], np.dtype(np.float32), 4))
+        ego_words = array(environment.ego, np.dtype(np.float32), 4)
+        targets = (
+            [entry[2][2:] for entry in pending_words if entry[1] == tick]
+            if config.odometry_latency_ticks
+            else [ego_words[2:]]
+        )
+        if (
+            len(targets) != 1
+            or targets[0] != stored
+            or history_words[-1] != ego_words
+            or (
+                not config.odometry_latency_ticks
+                and environment.ego_sample_tick != tick
+            )
+        ):
+            raise ValueError("native goal computation stored output pairing mismatched")
+        packet = {
+            "schema": "micro-classifier/native-goal-computation-intake/1",
+            "allowed_use": use,
+            "status": "copied_native_goal_computation_diagnostics",
+            **dict.fromkeys(flags, False),
+            "source_epoch": source_epoch,
+            "tick": tick,
+            "delivery_tick": captured["delivery_tick"],
+            "pose_m_rad": floats(pose, 3),
+            "config": deepcopy(profile),
+            "source": native_words,
+            "computation": {
+                **expected,
+                "inputs": {
+                    **deepcopy(input_profile),
+                    "world_goal_m": {"dtype": world.dtype.str, "words": world_words},
+                    "used_position_m": position_words,
+                },
+                "values": {
+                    "delta_m": array(values["delta_m"], np.dtype(np.float64)),
+                    "used_cosine": floats((values["used_cosine"],), 1)[0],
+                    "used_sine": floats((values["used_sine"],), 1)[0],
+                    "native_goal_m": goal_words,
+                    "stored_goal_m": stored,
+                },
+            },
+        }
+        return {
+            "packet": packet,
+            "pending": tuple(pending_words),
+            "history": tuple(history_words),
+            "ego": ego_words,
+            "ego_sample_tick": environment.ego_sample_tick,
+        }
+
+    before = view()
+    copied = deepcopy(before["packet"])
+    after = view()
+    if (
+        environment._native_goal_computation_source is not captured
+        or environment._native_goal_source is not native
+        or environment.rng is not rng
+        or environment.odometry_rng is not odometry_rng
+        or environment.pending_ego is not pending
+        or environment.history is not history
+        or not _native_tof_word_copy_matches(before, after)
+        or not _native_tof_word_copy_matches(copied, after["packet"])
+    ):
+        raise ValueError("native goal computation source changed during intake")
+    return copied
+
+
 def _sample_simulator_native_tof_source(environment, source_epoch):
     from sim.rover import RoverEnv
 

@@ -505,6 +505,43 @@ No study/model/dependency/download/hardware or native/Arm/sanitizer opt-in.
 Next separately close actual goal acquisition intake with original/closing
 native/RNG/profile/pose/input/tick/delivery/stored-word joins and detached output.
 
+## 327. Closed Native Goal Computation Intake (2026-11-12)
+
+Begin pushedfde4b22. Closed intake needs the original true pose/full Config
+snapshot and Scenario identity: noisy used position cannot stand in for true
+pose or establish a noise bound. Add only these bounded acquisition carrier
+fields; default public outputs/calculations remain unchanged. The separate
+offline sampler validates actual owner,32-character epoch, existing C1 tick
+encoding and <=8 nominal odometry latency/queue/history budgets. Original and
+closing cache/native/RNG/Scenario/profile/true-pose/input/tick/delivery/ego/history/
+stored-word joins precede one detached supported packet. Unsupported, changed
+or computed nonfinite source raises explicit ValueError without partial output;
+the original raw unknown packet is retained. No replay/trig/draw/clock/geometry
+or numerical/noise/cast/physical/source/clock/one-use/admission qualification.
+All eight flags false. Recorder retention and publication remain separate.
+
+World-goal inferred dtype is preserved: finite float64 canonical words or
+exact signed/unsigned integer words, including integers not exactly expressible
+as float64. Other observed float64 operands/native values retain signed words
+as canonical strings or directly copied finite scalars;
+stored float32 words use the existing uint32 view. Profile scalar types and
+zero-word distinctions remain intact. The carrier adds25-or-fewer fixed Config
+fields and three true-pose words, not Scenario copying or a new geometry claim.
+
+Fresh49/60s (32 intake/17 affected acquisition), necessary repair49/60s reserve,
+root/360s. First49 PASS/4 retained raw warnings3.86s, no repair. Required exact
+history-limit verification adds only two fresh fixtures/60s:8 accepted,9
+rejected before row iteration/copy;2 PASS/32 deselected3.60s, not another green49
+run. Per intake <=2 views/1 packet copy, <=8 queue/history ego rows of4 words,
+<=23 captured source words/scalars plus <=25 Config fields per view. Synthetic
+repeated rows test a work limit only, not source history/coverage. Root PASS5262,
+known QDQ1 xfail/77 warnings168.02s; root/scoped Ruff, changed format/whitespace,
+four hashes and old source/test/decorator AST conservation PASS. All three
+executed positions spent; unused repair reserve is not an execution or refund.
+Ignored `.git/returns-327-*` logs/hashes retained. No protected/native/Arm work.
+Next separately typed bounded goal history, then default-off recorder retention
+and matched delivery with original/closing joins; no permission/admission.
+
 ## Sources
 
 Hardware and tools:

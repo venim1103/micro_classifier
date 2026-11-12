@@ -1026,6 +1026,9 @@ class RoverEnv:
                 "delivery_tick": self.tick + config.odometry_latency_ticks,
                 "source": self._native_goal_source,
                 "computation": goal_computation,
+                "config": asdict(config),
+                "scenario": self.scenario,
+                "pose_m_rad": (*map(float, self.position), float(self.yaw)),
             }
         else:
             self._record_history()

@@ -15764,6 +15764,125 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _native_goal_delta_residuals(
+    *, world_goal_m, used_position_m_hex, delta_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native goal delta requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native goal delta rational budget unsupported")
+
+    def decoded(words, finite_only):
+        if type(words) is not tuple or len(words) != 2:
+            raise ValueError("native goal delta word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native goal delta word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError("native goal delta words must be canonical") from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native goal delta words must be canonical")
+            values.append(value)
+        return values
+
+    if (
+        type(world_goal_m) is not dict
+        or any(type(key) is not str for key in world_goal_m)
+        or set(world_goal_m) != {"dtype", "words"}
+        or type(world_goal_m["dtype"]) is not str
+        or world_goal_m["dtype"]
+        not in (
+            np.dtype(np.float64).str,
+            np.dtype(np.int64).str,
+            np.dtype(np.uint64).str,
+        )
+        or type(world_goal_m["words"]) is not tuple
+        or len(world_goal_m["words"]) != 2
+    ):
+        raise ValueError("native goal delta world dtype or words unsupported")
+    floating_world = world_goal_m["dtype"] == np.dtype(np.float64).str
+    if floating_world:
+        world = decoded(world_goal_m["words"], True)
+    else:
+        low, high = (
+            (-(1 << 63), (1 << 63) - 1)
+            if world_goal_m["dtype"] == np.dtype(np.int64).str
+            else (0, (1 << 64) - 1)
+        )
+        if any(
+            type(word) is not int
+            or not low <= word <= high
+            or abs(word).bit_length() > bit_limit
+            for word in world_goal_m["words"]
+        ):
+            raise ValueError("native goal delta integer word or budget unsupported")
+        world = world_goal_m["words"]
+    positions = decoded(used_position_m_hex, True)
+    observed = decoded(delta_m_hex, False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        for axis in range(2):
+            exact = arithmetic.binary(
+                arithmetic.value(world[axis])
+                if floating_world
+                else Fraction(world[axis]),
+                arithmetic.value(positions[axis]),
+                "sub",
+            )
+            residual = (
+                arithmetic.binary(arithmetic.value(observed[axis]), exact, "sub")
+                if math.isfinite(observed[axis])
+                else None
+            )
+            entries.append(
+                {
+                    "axis_index": axis,
+                    "world_goal_dtype": world_goal_m["dtype"],
+                    "world_goal_word": world_goal_m["words"][axis],
+                    "used_position_hex": used_position_m_hex[axis],
+                    "observed_delta_hex": delta_m_hex[axis],
+                    "exact_unrounded_difference_ratio": exact.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": "unknown_nonfinite_goal_delta"
+                    if residual is None
+                    else "computed_exact_goal_delta_residual",
+                }
+            )
+    except ArithmeticError as error:
+        raise ValueError("native goal delta rational budget exhausted") from error
+    return {
+        "schema": "micro-classifier/native-goal-delta-residuals/1",
+        "allowed_use": "offline_native_goal_word_diagnostics_only",
+        "status": "reported_native_goal_delta_residuals",
+        "comparison_basis": "unrounded_preserved_world_word_minus_used_position",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _check_native_goal_computation_history(history, current):
     if type(history) is not list or len(history) > 8:
         raise ValueError("native goal computation history budget exhausted")

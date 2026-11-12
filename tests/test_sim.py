@@ -32877,6 +32877,194 @@ def test_native_goal_recorder_retention(
 @pytest.mark.parametrize(
     "case",
     (
+        "exact",
+        "residual",
+        "subnormal",
+        "overflow",
+        "zero",
+        "int64",
+        "uint64",
+        "permission",
+        "world_mapping",
+        "world_dtype",
+        "world_words",
+        "world_bool",
+        "world_range",
+        "world_noncanonical",
+        "world_nonfinite",
+        "position_count",
+        "position_type",
+        "position_nan",
+        "delta_count",
+        "delta_noncanonical",
+        "budget_bool",
+        "budget_zero",
+        "budget_large",
+        "budget_exhausted",
+    ),
+)
+def test_native_goal_delta_residuals(monkeypatch, case):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    world = {"dtype": np.dtype(np.float64).str, "words": ((2.0).hex(), (-1.0).hex())}
+    positions = ((1.0).hex(), (1.0).hex())
+    observed = ((1.0).hex(), (-2.0).hex())
+    valid = case in (
+        "exact",
+        "residual",
+        "subnormal",
+        "overflow",
+        "zero",
+        "int64",
+        "uint64",
+    )
+    if case == "residual":
+        observed = ("0x1.0000000000001p+0", observed[1])
+    elif case == "subnormal":
+        world["words"] = ("0x0.0000000000001p-1022", (0.0).hex())
+        positions = ((0.0).hex(), (0.0).hex())
+        observed = ((0.0).hex(), (0.0).hex())
+    elif case == "overflow":
+        maximum = float.fromhex("0x1.fffffffffffffp+1023")
+        world["words"] = (maximum.hex(), (-maximum).hex())
+        positions = ((-maximum).hex(), maximum.hex())
+        observed = ("inf", "-inf")
+    elif case == "zero":
+        world["words"] = ((-0.0).hex(), (0.0).hex())
+        positions = ((0.0).hex(), (-0.0).hex())
+        observed = ((-0.0).hex(), (0.0).hex())
+    elif case in ("int64", "uint64"):
+        world = {
+            "dtype": np.dtype(np.int64 if case == "int64" else np.uint64).str,
+            "words": (-(1 << 63), (1 << 63) - 1)
+            if case == "int64"
+            else ((1 << 64) - 1, (1 << 63) + 1),
+        }
+        observed = tuple((float(word) - 1.0).hex() for word in world["words"])
+    elif case == "world_mapping":
+        world = None
+    elif case == "world_dtype":
+        world["dtype"] = np.dtype(np.float32).str
+    elif case == "world_words":
+        world["words"] = list(world["words"])
+    elif case in ("world_bool", "world_range"):
+        world = {
+            "dtype": np.dtype(np.int64).str,
+            "words": (True if case == "world_bool" else 1 << 63, 0),
+        }
+    elif case == "world_noncanonical":
+        world["words"] = ("2", world["words"][1])
+    elif case == "world_nonfinite":
+        world["words"] = ("inf", world["words"][1])
+    elif case == "position_count":
+        positions *= 5
+    elif case == "position_type":
+        positions = (True, positions[1])
+    elif case == "position_nan":
+        positions = ("nan", positions[1])
+    elif case == "delta_count":
+        observed = ()
+    elif case == "delta_noncanonical":
+        observed = ("1", observed[1])
+    elif case.startswith("budget_"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {
+                "budget_bool": True,
+                "budget_zero": 0,
+                "budget_large": 4097,
+                "budget_exhausted": 8,
+            }[case],
+        )
+        if case == "budget_exhausted":
+            world["words"] = ((0.1).hex(), world["words"][1])
+    before = deepcopy((world, positions, observed))
+    work = {"values": 0, "binary": 0, "forbidden": 0}
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def value(self, operand):
+        work["values"] += 1
+        assert work["values"] <= 6
+        return original_value(self, operand)
+
+    def binary(self, *args):
+        work["binary"] += 1
+        assert work["binary"] <= 4
+        return original_binary(self, *args)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "supplied delta diagnostics must not replay/draw/trig/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset", "_record_history", "_observation"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if not valid:
+        with pytest.raises(ValueError, match="native goal delta"):
+            diagnostics._native_goal_delta_residuals(
+                world_goal_m=world,
+                used_position_m_hex=positions,
+                delta_m_hex=observed,
+                synthetic_test_only=case != "permission",
+            )
+    else:
+        report = diagnostics._native_goal_delta_residuals(
+            world_goal_m=world,
+            used_position_m_hex=positions,
+            delta_m_hex=observed,
+            synthetic_test_only=True,
+        )
+        assert report["status"] == "reported_native_goal_delta_residuals"
+        assert (
+            report["comparison_basis"]
+            == "unrounded_preserved_world_word_minus_used_position"
+        )
+        assert type(report["entries"]) is tuple and len(report["entries"]) == 2
+        for axis, entry in enumerate(report["entries"]):
+            operand = world["words"][axis]
+            exact = Fraction(
+                float.fromhex(operand) if type(operand) is str else operand
+            ) - Fraction(float.fromhex(positions[axis]))
+            assert entry["exact_unrounded_difference_ratio"] == exact.as_integer_ratio()
+            assert entry["world_goal_word"] == operand
+            assert entry["world_goal_dtype"] == world["dtype"]
+            assert entry["used_position_hex"] == positions[axis]
+            assert entry["observed_delta_hex"] == observed[axis]
+            if case == "overflow":
+                assert entry["status"] == "unknown_nonfinite_goal_delta"
+                assert entry["signed_residual_ratio"] is None
+            else:
+                expected = Fraction(float.fromhex(observed[axis])) - exact
+                assert entry["signed_residual_ratio"] == expected.as_integer_ratio()
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert report[flag] is False
+    assert (world, positions, observed) == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "copy",
         "budget",
         "empty",

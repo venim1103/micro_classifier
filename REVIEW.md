@@ -532,6 +532,40 @@ separate prerequisite, not permission to alter C1. Next bounded supplied-word
 native goal delta discrepancies, preserving unsupported/nonfinite unknowns
 and unresolved equal-value/different-word ties; no geometry/error adoption.
 
+## 333. Supplied-Word Native Goal Delta Discrepancies (2026-11-12)
+
+Begin clean pushed3a198b4. Add bounded supplied world-minus-used-position
+residuals for two native goal axes. Preserve the supplied inferred float64/
+int64/uint64 dtype and exact words; finite canonical operands prevalidate
+before exact arithmetic. Validated <=64-bit integers use exact Fraction,
+not the existing generic arithmetic value helper's float conversion. A bounded
+six-line local diagnostic confirmed int64 max loses its original word through
+that generic conversion; no helper/producer/interface semantics changed.
+The comparison is the unrounded preserved input difference versus observed
+delta, including any conversion discrepancy, not a NumPy coercion/rounding law.
+Observed infinity returns explicit unknown residual while retaining raw words
+and finite exact difference; unsupported/NaN inputs reject without mutation.
+Zero signs remain raw words, not normalized or numerically qualified.
+
+Fresh24/60s, necessary repair24/60s reserve, root/360s. First23 PASS/1 FAIL4.88s:
+the eight-bit exhausted-budget fixture used small exact integers which fit.
+Fixture-only repair supplies canonical0.1; only that necessary case ran:
+1 PASS3.82s, unchanged green23 not repeated. Root PASS5376, known QDQ1 xfail/
+77 warnings172.68s; root Ruff PASS, format check FAIL only for Ruff-required
+parentheses around0.1.hex(). Formatter-only repair preserves the tested AST
+exactly; changed format/whitespace PASS, no green semantic/root Ruff rerun.
+Four before hashes PASS; final hashes retained. Every prior source/control/
+decorator AST and scoped references PASS. <=2 entries/6 word decodes/
+4 binary operations/6 value conversions, <=4096 arithmetic bits. Integer
+extremes, subnormal/nonzero residuals, overflow, signed zero, malformed dtype/
+words/shape/types and literal permission/work budgets are covered. Executed
+positions remain spent; ignored `.git/returns-333-*` logs/hashes retained.
+No replay/RNG/trig/clock/geometry/source/numerical/error/physical/one-use/
+admission adoption, all eight flags false; no protected/native/Arm/model/
+dependency/download/hardware work. Next matched retained native goal delta
+reports with original/closing typed source/operand/output joins. Archive
+whole321-325 before further root review growth.
+
 ## Sources
 
 Hardware and tools:

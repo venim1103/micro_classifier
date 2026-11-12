@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §332 for closed default-off native goal delivery;
+Read [REVIEW.md][review] §333 for supplied-word native goal delta discrepancies;
+§332 records closed default-off native goal delivery;
 §331 records exact retained native goal matching;
 §330 records default-off native goal recorder retention;
 §329 records typed bounded native goal history;
@@ -107,8 +108,9 @@ Default-off <=8-record goal retention and its required gate are complete;
 retained exact goal matching and its required gate are complete;
 closed default-off latency0 delivered-goal publication and its gate are complete.
 Pending goal publication is unsupported by frozen C1's zero-latency domain;
-next bounded supplied-word native goal delta discrepancies, not noise/geometry
-or error-bound adoption.
+supplied-word native goal delta discrepancies and their gate are complete.
+Next lossless whole321-325 archival, then matched retained goal delta reports,
+not noise/geometry or error-bound adoption.
 Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.

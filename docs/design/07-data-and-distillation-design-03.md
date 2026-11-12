@@ -2409,6 +2409,23 @@ or source/numerical/error/physical/clock/execution/one-use/admission adoption.
 All eight flags false. [Checkpoint §332][native-goal-delivery-review] preserves
 actual failures, repairs, controls and limits.
 
+#### Supplied-Word Native Goal Delta Discrepancies (2026-11-12)
+
+Two supplied inferred float64/int64/uint64 world words minus finite canonical
+used-position words define the exact unrounded comparison to observed delta.
+Validated integer operands retain their exact <=64-bit value without generic
+float conversion. The residual includes any conversion discrepancy; it is not
+a NumPy coercion/rounding law or an error bound. Canonical observed infinity
+retains raw words and finite exact difference with explicit unknown residual;
+unsupported/NaN operands reject without partial output or mutation. Zero
+signs remain raw supplied words, not inferred signs or normalized ties.
+<=2 entries/6 word decodes/4 binary operations/6 value conversions and the
+existing <=4096-bit arithmetic cap. All eight flags false; no source/geometry/
+noise/numerical/physical/clock/execution/one-use/admission adoption.
+[Checkpoint §333][native-goal-delta-review] preserves controls and failures;
+retained matching/report publication remains separate.
+
+[native-goal-delta-review]: ../../REVIEW.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../../REVIEW.md#332-closed-default-off-native-goal-delivery-2026-11-12
 [c1-motion-source]: ../../sim/rover.py
 [native-goal-match-review]: ../../REVIEW.md#331-exact-retained-native-goal-matching-2026-11-12

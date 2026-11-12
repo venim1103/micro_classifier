@@ -12223,6 +12223,93 @@ def _native_tof_postprocessing_noise_addition_residuals(
     }
 
 
+def _native_tof_postprocessing_dropout_diagnostics(
+    *,
+    dropout_hex,
+    dropout_draw_hex,
+    valid_before_dropout,
+    valid_after_dropout,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError(
+            "native postprocessing dropout requires synthetic_test_only=True"
+        )
+    if type(dropout_draw_hex) is not tuple or len(dropout_draw_hex) != 64:
+        raise ValueError("native postprocessing dropout word count unsupported")
+    for mask in (valid_before_dropout, valid_after_dropout):
+        if (
+            type(mask) is not tuple
+            or len(mask) != 64
+            or any(type(word) is not bool for word in mask)
+        ):
+            raise ValueError("native postprocessing dropout mask layout unsupported")
+
+    def decoded(word):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("native postprocessing dropout word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "native postprocessing dropout words must be canonical"
+            ) from error
+        if value.hex() != word or math.isnan(value):
+            raise ValueError("native postprocessing dropout words must be canonical")
+        return value
+
+    threshold = decoded(dropout_hex)
+    if not math.isfinite(threshold) or not 0 <= threshold <= 1:
+        raise ValueError("native postprocessing dropout profile unsupported")
+    draws = tuple(decoded(word) for word in dropout_draw_hex)
+    entries = []
+    for ray_index, value in enumerate(draws):
+        expected = (
+            valid_before_dropout[ray_index] and value >= threshold
+            if math.isfinite(value)
+            else None
+        )
+        matches = (
+            valid_after_dropout[ray_index] is expected if expected is not None else None
+        )
+        entries.append(
+            {
+                "ray_index": ray_index,
+                "dropout_threshold_hex": dropout_hex,
+                "dropout_draw_hex": dropout_draw_hex[ray_index],
+                "valid_before_dropout": valid_before_dropout[ray_index],
+                "observed_valid_after_dropout": valid_after_dropout[ray_index],
+                "expected_valid_after_dropout": expected,
+                "mask_matches": matches,
+                "status": "unknown_nonfinite_dropout_draw"
+                if matches is None
+                else "compared_supplied_dropout_words_and_mask",
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-tof-postprocessing-dropout-diagnostics/1",
+        "allowed_use": "offline_native_tof_postprocessing_word_diagnostics_only",
+        "status": "reported_postprocessing_dropout_word_mask_correspondence",
+        "comparison_basis": "supplied_word_draw_ge_dropout_and_prior_mask",
+        **{
+            flag: False
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "mask_mismatch_count": sum(entry["mask_matches"] is False for entry in entries),
+        "unknown_mask_count": sum(entry["mask_matches"] is None for entry in entries),
+        "entries": tuple(entries),
+    }
+
+
 def _native_tof_direction_pitch_residuals(
     *,
     pitch_cosine_hex,

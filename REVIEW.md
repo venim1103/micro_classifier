@@ -449,6 +449,45 @@ permission/admission. No new study/model/dependency/download/hardware/extra
 native/Arm/sanitizer opt-in. Next independently supported supplied-word dropout
 comparison/mask correspondence, without probability-law or threshold adoption.
 
+## 318. Supplied-Word Native ToF Dropout Mask Correspondence (2026-11-12)
+
+Begin clean pushedab124f1. Actual sampler captures the existing dropout draw
+around `valid &= dropout >= config.dropout`. Standalone helper compares supplied
+draw/threshold words and literal prior/observed masks; no draw or distribution
+model is needed. Reuse the observed profile's existing finite0..1 dropout field,
+not a new threshold. Finite draw values outside0..1 remain comparisons, not
+clamped or rejected by an invented RNG law. Raw +/-inf draw words remain unknown
+even when the prior mask is false; NaN/unsupported metadata rejects explicitly.
+
+Closed builtin64-word tuple and two64 literal boolean masks; <=32char canonical
+words,65 word decodes,64 predicate/mask comparisons and64 entries. Preserve raw
+signed words and report expected mask, observed mask, mismatch/unknown counts;
+matching values do not resolve different-word ties or qualify the comparator.
+Add24 bounded controls for actual/keep/drop/equality/prior-mask/mismatch/signed
+zero/finite out-of-range/raw nonfinite words, typed masks, closed tuple/word/
+profile preflight. One actual cold sample/geometry with only existing normal/
+dropout draws before poisoning intake/read/retention/replay/step/reset/sample/
+hash/clock/geometry paths; <=64 independent Fraction-oracle comparisons.
+All prior helper/default/test nodes remain unchanged.
+
+Fresh three routine positions: focused24/60s, sole necessary repair24/60s,
+required root/360s; failures/aborts/unknown spent, no historical/protected refund.
+Retain ignored `.git/returns-318-*` outputs/hashes, serialize checks.
+First24 PASS3.43s, all four source hashes stable; scoped Ruff/changed format/
+whitespace PASS. Required root PASS5064/known QDQ xfail/71 warnings/156.51s;
+root Ruff/changed format/whitespace PASS, all four source hashes stable.
+Scoped diff/AST and new reference target/anchor checks PASS; all prior module/
+default/test nodes exact. Two of three fresh positions spent, no failure/abort/
+refund; unused repair is not follow-on authority. No code gate repeated for
+documentation closeout.
+
+All eight flags remain false; source unknowns remain unknown. This is standalone
+supplied-word/mask correspondence, not native execution, noise/probability law,
+numerical/error/clip/cast/geometry/coverage/source/clock/one-use/physical/
+permission/admission qualification. No new study/model/dependency/download/
+hardware/extra native/Arm/sanitizer opt-in. Next original/closing retained
+dropout-mask report joins, without changing source or adopting a probability law.
+
 ## Sources
 
 Hardware and tools:

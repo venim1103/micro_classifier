@@ -30840,6 +30840,214 @@ def test_native_tof_postprocessing_noise_addition_residuals(
     "case",
     (
         "actual",
+        "keep",
+        "drop",
+        "equality",
+        "masked_before",
+        "mismatch",
+        "signed_zero",
+        "negative_finite",
+        "large_finite",
+        "positive_inf",
+        "negative_inf",
+        "flag",
+        "shape",
+        "mask_type",
+        "mask_word",
+        "word_type",
+        "word_budget",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "threshold_type",
+        "threshold_nonfinite",
+        "threshold_domain",
+        "tuple_subclass",
+    ),
+)
+def test_native_tof_postprocessing_dropout_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    arguments = {
+        "dropout_hex": (0.5).hex(),
+        "dropout_draw_hex": ((0.75).hex(),) * 64,
+        "valid_before_dropout": (True,) * 64,
+        "valid_after_dropout": (True,) * 64,
+    }
+    setup = {"geometry": 0}
+    original_ranges = rover.tof_ranges
+
+    def ranges(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_ranges(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    if case == "actual":
+        captured = {}
+        environment._sample(native_source={}, postprocessing_source=captured)
+        arguments = {
+            "dropout_hex": captured["inputs"]["dropout"].hex(),
+            "dropout_draw_hex": tuple(
+                float(word).hex() for word in captured["dropout_draw"].flat
+            ),
+            **{
+                key: tuple(map(bool, captured[key].flat))
+                for key in ("valid_before_dropout", "valid_after_dropout")
+            },
+        }
+    elif case in ("drop", "equality", "negative_finite", "large_finite"):
+        arguments["dropout_draw_hex"] = (
+            {
+                "drop": 0.25,
+                "equality": 0.5,
+                "negative_finite": -0.5,
+                "large_finite": 1024.0,
+            }[case].hex(),
+        ) * 64
+        arguments["valid_after_dropout"] = (case in ("equality", "large_finite"),) * 64
+    elif case == "masked_before":
+        arguments["valid_before_dropout"] = (False,) * 64
+        arguments["valid_after_dropout"] = (False,) * 64
+    elif case == "mismatch":
+        arguments["valid_after_dropout"] = (False,) * 64
+    elif case == "signed_zero":
+        arguments["dropout_hex"] = (0.0).hex()
+        arguments["dropout_draw_hex"] = ((-0.0).hex(),) * 64
+    elif case in (
+        "positive_inf",
+        "negative_inf",
+        "word_type",
+        "word_budget",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+    ):
+        arguments["dropout_draw_hex"] = (
+            {
+                "positive_inf": "inf",
+                "negative_inf": "-inf",
+                "word_type": False,
+                "word_budget": "0" * 33,
+                "noncanonical": "1.0",
+                "overflow_word": "0x1p+999999",
+                "nan": "nan",
+            }[case],
+        ) * 64
+    elif case == "shape":
+        arguments["dropout_draw_hex"] *= 2
+    elif case == "mask_type":
+        arguments["valid_before_dropout"] = list(arguments["valid_before_dropout"])
+    elif case == "mask_word":
+        arguments["valid_after_dropout"] = (1,) * 64
+    elif case.startswith("threshold_"):
+        arguments["dropout_hex"] = {
+            "threshold_type": False,
+            "threshold_nonfinite": "inf",
+            "threshold_domain": (-0.25).hex(),
+        }[case]
+    elif case == "tuple_subclass":
+
+        class Words(tuple):
+            pass
+
+        arguments["dropout_draw_hex"] = Words(arguments["dropout_draw_hex"])
+    before = deepcopy(arguments)
+    work = {"oracle": 0, "forbidden": 0}
+
+    def oracle(draw, threshold, prior):
+        work["oracle"] += 1
+        assert work["oracle"] <= 64
+        return prior and Fraction(draw) >= Fraction(threshold)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "dropout must not intake/read/retain/hash/step/reset/replay/clock"
+        )
+
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_postprocessing_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset", "_sample"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "mask_type",
+        "mask_word",
+        "word_type",
+        "word_budget",
+        "noncanonical",
+        "overflow_word",
+        "nan",
+        "threshold_type",
+        "threshold_nonfinite",
+        "threshold_domain",
+        "tuple_subclass",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_postprocessing_dropout_diagnostics(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_postprocessing_dropout_diagnostics(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 64
+        assert result["mask_mismatch_count"] == (64 if case == "mismatch" else 0)
+        assert result["unknown_mask_count"] == (64 if case.endswith("_inf") else 0)
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        for entry in result["entries"]:
+            index = entry["ray_index"]
+            word = arguments["dropout_draw_hex"][index]
+            draw = float.fromhex(word)
+            prior = arguments["valid_before_dropout"][index]
+            observed = arguments["valid_after_dropout"][index]
+            assert entry["dropout_draw_hex"] == word
+            assert entry["dropout_threshold_hex"] == arguments["dropout_hex"]
+            assert entry["valid_before_dropout"] is prior
+            assert entry["observed_valid_after_dropout"] is observed
+            if math.isfinite(draw):
+                expected = oracle(draw, float.fromhex(arguments["dropout_hex"]), prior)
+                assert entry["expected_valid_after_dropout"] is expected
+                assert entry["mask_matches"] is (observed is expected)
+            else:
+                assert entry["expected_valid_after_dropout"] is None
+                assert entry["mask_matches"] is None
+                assert entry["status"] == "unknown_nonfinite_dropout_draw"
+        result["entries"][0]["dropout_draw_hex"] = "changed"
+    assert arguments == before and work["forbidden"] == 0
+    assert setup["geometry"] == int(case == "actual")
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "exact",
         "mismatch",
         "signed_zero_tie",

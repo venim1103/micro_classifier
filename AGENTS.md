@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §317 for the active matched noise-addition reports;
+Read [REVIEW.md][review] §318 for active supplied-word dropout-mask diagnostics;
+§317 records the completed matched noise-addition reports;
 §316 records intact postprocessing checkpoint/topic relocation;
 §315 records the completed supplied-word noise-addition report;
 §314 records completed postprocessing delivery publication;
@@ -77,7 +78,8 @@ Default-off <=8-record postprocessing recorder retention and its required gate
 are complete. Retained matching and delivered/pending publication are complete.
 Standalone supplied-word noise-addition diagnostics and their required gate are
 complete; retained additive reports and their required gate are complete.
-Next independent dropout comparison/mask correspondence. Preserve
+Standalone dropout comparison/mask diagnostics and their gate are complete;
+next independent retained mask-report joins. Preserve
 with original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already

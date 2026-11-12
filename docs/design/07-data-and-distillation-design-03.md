@@ -2246,9 +2246,21 @@ partial publication. No noise/rounding/error law or qualification is adopted;
 all eight flags remain false. [Checkpoint §317][native-tof-noise-addition-match-review]
 retains bounds and controls.
 
+#### Supplied-Word ToF Dropout Mask Correspondence (2026-11-12)
+
+The standalone [offline helper][c1-prototype-source] compares supplied dropout
+draw/threshold words and literal before/after masks for64 cells. It retains
+signed words, reports mismatch/unknown counts, and keeps nonfinite draw
+observations unknown. Existing profile threshold validation is retained;
+no finite draw interval or probability law is adopted. Canonical builtin-word/
+mask preflight rejects unsupported metadata; all eight flags remain false.
+This is not comparator/native/physical qualification. Retained report joins
+remain separate; [checkpoint §318][native-tof-dropout-review] retains bounds.
+
 [c1-motion-source]: ../../sim/rover.py
 [native-tof-noise-addition-review]: ../../REVIEW.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
+[native-tof-dropout-review]: ../../REVIEW.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

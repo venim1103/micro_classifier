@@ -14021,22 +14021,30 @@ def test_native_tof_wall_retention(
         "tuple",
     ),
 )
+@pytest.mark.parametrize("kind", ("direction", "postprocessing"))
 def test_native_tof_direction_retained_match(
-    monkeypatch, c1_motion_receipt_source_fixture, case
+    monkeypatch, c1_motion_receipt_source_fixture, case, kind
 ):
     from sim import diagnostics, rover
 
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
     owner.record_environment_tick(environment, synthetic_test_only=True)
     environment.step(
-        [0.125, 0.3], capture_native_tof_source=True, capture_native_tof_direction=True
+        [0.125, 0.3],
+        capture_native_tof_source=True,
+        **{f"capture_native_tof_{kind}": True},
     )
     owner.record_environment_tick(environment, synthetic_test_only=True)
     owner.record_native_tof_source(
-        environment, synthetic_test_only=True, include_direction=True
+        environment, synthetic_test_only=True, **{f"include_{kind}": True}
     )
-    source, history = deepcopy((owner._tof_history[0], owner._tof_direction_history))
-    diagnostics._check_native_tof_direction_history(history, [source], owner._epoch)
+    source, history = deepcopy(
+        (owner._tof_history[0], getattr(owner, f"_tof_{kind}_history"))
+    )
+    diagnostics._check_native_tof_archive_words([source], source)
+    getattr(diagnostics, f"_check_native_tof_{kind}_history")(
+        history, [source], owner._epoch
+    )
     if case == "missing":
         history = []
     elif case == "duplicate":
@@ -14065,6 +14073,7 @@ def test_native_tof_direction_retained_match(
     for name in (
         "_sample_simulator_native_tof_source",
         "_sample_simulator_native_tof_direction_source",
+        "_sample_simulator_native_tof_postprocessing_source",
         "_c1_source_binding_digest",
     ):
         monkeypatch.setattr(diagnostics, name, forbidden)
@@ -14075,15 +14084,19 @@ def test_native_tof_direction_retained_match(
     for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
         monkeypatch.setattr(rover, name, forbidden)
     if case == "copy":
-        actual = diagnostics._match_native_tof_retained_direction(source, history)
-        assert actual == history[0] and actual is not history[0]
-        actual["direction"]["direction_generation"]["pitch_sine"] = "changed"
-        assert (
-            history[0]["direction"]["direction_generation"]["pitch_sine"] != "changed"
+        actual = getattr(diagnostics, f"_match_native_tof_retained_{kind}")(
+            source, history
         )
+        assert actual == history[0] and actual is not history[0]
+        if kind == "postprocessing":
+            actual[kind]["inputs"]["noise_std_m"] = -99.0
+            assert history[0][kind]["inputs"]["noise_std_m"] >= 0.0
+        else:
+            actual[kind]["direction_generation"]["pitch_sine"] = "changed"
+            assert history[0][kind]["direction_generation"]["pitch_sine"] != "changed"
     else:
         with pytest.raises(ValueError):
-            diagnostics._match_native_tof_retained_direction(source, history)
+            getattr(diagnostics, f"_match_native_tof_retained_{kind}")(source, history)
     assert (source, history) == before and work["forbidden"] == 0
 
 

@@ -15761,6 +15761,22 @@ def _match_native_tof_retained_direction(source, direction_history):
     return deepcopy(matches[0])
 
 
+def _match_native_tof_retained_postprocessing(source, postprocessing_history):
+    if type(postprocessing_history) is not list or len(postprocessing_history) > 8:
+        raise ValueError("native ToF retained postprocessing history budget exhausted")
+    matches = [
+        entry
+        for entry in postprocessing_history
+        if all(
+            _native_tof_word_copy_matches(entry[key], source[key])
+            for key in ("source_epoch", "tick", "delivery_tick")
+        )
+    ]
+    if len(matches) != 1:
+        raise ValueError("native ToF retained postprocessing pair missing or ambiguous")
+    return deepcopy(matches[0])
+
+
 def _match_native_tof_retained_selection(source, selection_history):
     matches = [
         entry

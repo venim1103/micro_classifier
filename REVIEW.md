@@ -474,6 +474,45 @@ No new study/model/dependency/download/hardware or extra native/Arm/sanitizer
 opt-in run. Next separately bounded retained-postprocessing matcher, then
 delivered/pending publication with original/closing source and owner joins.
 
+## 313. Bounded Retained Native ToF Postprocessing Matching (2026-11-12)
+
+Begin clean pushed7b558e4. Upstream main identity confirmed by ls-remote.
+Previous push succeeded despite nonfatal stale credential-store helper paths;
+no credential/security/remote configuration changed and no secret inspected.
+
+Separate local hypothesis from retained-direction matcher: prevalidated native
+source and typed companion history can use <=8-record unique matching of exact
+builtin epoch/acquisition/delivery identities, then a detached copy. Matching
+equal-value/different-type metadata is not accepted; missing/ambiguous pairs,
+non-builtin list and >8 records reject. This helper assumes prior independent
+native archive-word and companion-history prevalidation; it does not replace
+those guards, sample source or publish delivered/pending results.
+
+Extend only existing9-case retained-direction matcher fixture with9 postprocessing
+controls; original cases/family remain unchanged. Each new fixture uses one fresh
+step/geometry, two recorder reads and one retention before poisoning intake/
+read/retention/step/reset/replay/clock/hash paths. Match scans <=8 entries/24
+typed metadata comparisons, then at most one detached trace copy. Missing/
+duplicate/epoch/tick/delivery/typed-tick/budget/tuple rejection and nested outgoing
+copy independence leave input records unchanged. Fresh three routine pytest
+positions: first9/60s, sole necessary repair9/60s, required root/360s. Failures/
+aborts/unknown remain spent; reserve is not follow-on authority, no old refund.
+Retain ignored `.git/returns-313-*` output/hash logs; checks serialized.
+
+First9 PASS3.72s, four source/test hashes stable; scoped Ruff/changed format/
+whitespace PASS. Required root PASS4965/known QDQ xfail/71 warnings/159.43s,
+root Ruff/changed format/whitespace PASS, all four source hashes stable.
+Two of three fresh pytest positions spent, no failure/abort/refund; unused repair
+is not follow-on authority. Pylance pytest-signature check found no resolved call
+sites, not static proof of dynamic callers. No code gate repeated for closeout.
+No delivery implementation or
+default/public key change, numerical/internal-noise/noise-law/geometry/coverage/
+source/error/clock/one-use/physical/permission/admission qualification. All eight
+flags remain false; unsupported/nonfinite source stays unknown. No protected
+study/model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
+Next independently bounded delivered/pending composition using original/closing
+native/source/RNG/profile/pose/input/history/stored-word/mask and outgoing joins.
+
 ## Sources
 
 Hardware and tools:

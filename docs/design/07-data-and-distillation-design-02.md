@@ -2424,6 +2424,20 @@ source rejects as unknown. Retained matching and delivered/pending publication
 remain separate prerequisites. [Checkpoint §312][native-tof-postprocessing-retention-review]
 retains finite controls, failures and accounting.
 
+#### Bounded Retained ToF Postprocessing Matching (2026-11-12)
+
+The [offline matcher][c1-prototype-source] requires an independently prevalidated
+native source and typed postprocessing history. It scans at most eight builtin
+list records for one exact typed epoch/acquisition/delivery identity match;
+missing or ambiguous pairs reject. The selected record is detached, including
+its nested input metadata. This helper neither replaces native/companion guards
+nor samples, hashes, reads, retains or publishes source records.
+
+This is a retained identity/copy prerequisite only. Delivery publication and
+numerical/noise-law/geometry/coverage/error/source/physical/clock/one-use/admission
+qualification are separate; all eight flags remain false.
+[Checkpoint §313][native-tof-postprocessing-match-review] retains finite checks.
+
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
 [floor-rules]: ../../sim/rules.py
@@ -2454,3 +2468,4 @@ retains finite controls, failures and accounting.
 [native-tof-postprocessing-intake-review]: ../../REVIEW.md#309-bounded-closed-native-tof-postprocessing-intake-2026-11-11
 [native-tof-postprocessing-history-review]: ../../REVIEW.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11
 [native-tof-postprocessing-retention-review]: ../../REVIEW.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
+[native-tof-postprocessing-match-review]: ../../REVIEW.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12

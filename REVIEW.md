@@ -492,6 +492,46 @@ closed default-off goal publication from delivered/pending bindings, preserving
 original/closing owner/native/RNG/profile/pose/input/history/stored-word joins
 and explicit unknown without partial fields.
 
+## 332. Closed Default-Off Native Goal Delivery (2026-11-12)
+
+Begin pushed5b0b7cb with retained matching complete; resumed untested local
+publication work preserved. Reverify main/upstream0/0, Python3.12.3 at
+/opt/venv, Ruff0.17.0, timeout and365GiB free. Add independent literal
+default-off delivered-goal publication. Disabled work returns explicit unknown
+without reads/payload; enabled work prevalidates <=8 retained raw records,
+joins actual encoded State frame and exact stored goal words, and closes
+original/closing owner/cache/native/RNG/profile/pose/input/history/dynamics/
+source-file/output correspondence. Unsupported or missing correspondence is
+explicit unknown without epoch/tick/frame/goal fields. All eight flags false.
+
+Frozen C1 has zero odometry latency: this supports delivered-only latency0,
+not a new pending profile. Positive latency is explicit unsupported domain;
+no accepted profile/interface/noise/numerical/physical/clock/execution/one-use/
+source/admission requirement changed. State has three goal components; the
+unchanged encoder binds all three, and its planar first two float32 words
+match retained storage. No replay/step/read-environment/RNG/trig/clock/geometry
+work in publication.
+
+Fresh20/60s, necessary20/60s repair reserve, root/360s. First19 PASS/1 FAIL
+4.74s: publication incorrectly expected a two-component State goal. Source
+repair validates actual three-component planar shape and extracts its first
+two words; valid mismatch fixture and work instrumentation added. Repair19
+PASS/1 FAIL5.41s: new file-check wrapper passed self to the existing static
+helper, causing early unknowns. Necessary fixture-only revised20/60s:
+20 PASS4.14s; assert closing branches reached, two views/matches/file checks
+and unchanged <=12 digest cap. Three fresh required controls/60s verify missing
+current/dynamics and a closing producer mutation of same-list history:
+3 PASS3.55s after moving the last producer observation before owner closure.
+No unchanged green20 rerun. Root PASS5352, known QDQ1 xfail/77 warnings
+171.08s. Root/scoped Ruff, changed format/whitespace, four hashes, every prior
+source/control/decorator AST and scoped local references PASS;
+Pylance confirms State.goal_m tuple[float,float,float]. All executed positions
+remain spent; ignored `.git/returns-332-*` logs/hashes retained. No protected/
+native/Arm/model/dependency/download/hardware work. Pending domain remains a
+separate prerequisite, not permission to alter C1. Next bounded supplied-word
+native goal delta discrepancies, preserving unsupported/nonfinite unknowns
+and unresolved equal-value/different-word ties; no geometry/error adoption.
+
 ## Sources
 
 Hardware and tools:

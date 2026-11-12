@@ -2389,6 +2389,27 @@ error/clock/execution/physical/admission qualification or publication follows;
 all eight flags false. [Checkpoint §331][native-goal-match-review] records
 bounded controls; closed delivered/pending publication remains separate.
 
+#### Closed Default-Off Native Goal Delivery (2026-11-12)
+
+Independent literal default-off inclusion publishes only a delivered-goal
+diagnostic joined to its actual encoded State frame and <=8 independently
+validated retained records. Exact first-two float32 goal words are matched
+without zero normalization; the unchanged three-component State encoder
+binds the full planar frame. Original/closing owner/cache/native/RNG/profile/
+pose/input/history/dynamics/source-file/output joins close before publication,
+including owner closure after the last producer observation. Missing,
+unsupported, changed or nonfinite correspondence returns explicit unknown
+without partial epoch/tick/frame/goal fields.
+
+The frozen C1 profile has zero odometry latency; this delivered-only method
+does not create a positive-latency/pending domain. Pending publication remains
+separate and unsupported here. <=2 intakes/views/matches/file checks, <=12
+digests and <=8 retained records; no replay/draw/trig/clock/geometry/actuation
+or source/numerical/error/physical/clock/execution/one-use/admission adoption.
+All eight flags false. [Checkpoint §332][native-goal-delivery-review] preserves
+actual failures, repairs, controls and limits.
+
+[native-goal-delivery-review]: ../../REVIEW.md#332-closed-default-off-native-goal-delivery-2026-11-12
 [c1-motion-source]: ../../sim/rover.py
 [native-goal-match-review]: ../../REVIEW.md#331-exact-retained-native-goal-matching-2026-11-12
 [native-goal-retention-review]: ../../REVIEW.md#330-default-off-native-goal-recorder-retention-2026-11-12

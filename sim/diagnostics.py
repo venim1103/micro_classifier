@@ -18052,6 +18052,189 @@ class _SyntheticC1SourceRecorder:
         self._tof_direction_history = direction_history
         self._tof_postprocessing_history = postprocessing_history
 
+    def snapshot_native_goal_delivery(
+        self, *, synthetic_test_only=False, include_goal_computation=False
+    ):
+        from interface.protocol import State, encode_state
+        from sim.rover import RoverEnv
+
+        if synthetic_test_only is not True:
+            raise ValueError("native goal snapshot requires synthetic_test_only=True")
+        if type(include_goal_computation) is not bool:
+            raise ValueError("include_goal_computation must be a literal bool")
+        result = {
+            "schema": "micro-classifier/synthetic-c1-native-goal-delivery/1",
+            "allowed_use": "offline_native_goal_computation_diagnostics_only",
+            "status": "unknown",
+            "reason": "goal_computation_not_requested",
+            "snapshot_available": False,
+            **dict.fromkeys(
+                (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                ),
+                False,
+            ),
+        }
+        if not include_goal_computation:
+            return result
+        result["reason"] = "missing_current_native_goal_correspondence"
+        environment, history = self._simulator, self._goal_computation_history
+        current, dynamics = self._current, self._dynamics_sample
+        if environment is None or current is None or dynamics is None:
+            return result
+
+        def producer():
+            return {
+                "tick": environment.tick,
+                "pose_m_rad": (
+                    *map(float, environment.position),
+                    float(environment.yaw),
+                ),
+                "native_action": (
+                    float(environment.speed),
+                    float(environment.turn_rate),
+                ),
+                "native_goal_source": deepcopy(environment._native_goal_source),
+                "observation": environment._observation(),
+                "config": asdict(environment.config),
+                "scenario": asdict(environment.scenario),
+            }
+
+        def ownership():
+            state = self._current
+            if state is None:
+                raise ValueError("native goal snapshot owner cleared")
+            return {
+                "epoch": self._epoch,
+                "profile": {
+                    "config": asdict(self._config),
+                    "scenario": asdict(self._scenario),
+                },
+                "identities": self._identities,
+                "current": (state[0], state[1], asdict(state[2]), state[3]),
+                "dynamics_sample": self._dynamics_sample,
+                "goal_history": self._goal_computation_history,
+                "binding": self._binding,
+            }
+
+        try:
+            if (
+                type(environment) is not RoverEnv
+                or type(environment.config) is not Config
+                or type(self._config) is not Config
+                or environment.config.odometry_latency_ticks != 0
+                or self._config.odometry_latency_ticks != 0
+            ):
+                raise ValueError("native goal pending/domain profile unsupported")
+            if (
+                type(history) is not list
+                or not 1 <= len(history) <= 8
+                or type(history[-1]) is not dict
+                or "goal_computation" not in history[-1]
+            ):
+                raise ValueError("missing or unsupported native goal snapshot history")
+            _check_native_goal_computation_history(
+                history, history[-1]["goal_computation"]
+            )
+            if (
+                self._simulator_rng is not environment.rng
+                or self._simulator_odometry_rng is not environment.odometry_rng
+                or current[0] != environment.tick
+                or environment.ego_sample_tick != environment.tick
+                or type(current[2]) is not State
+                or self._source_files() != self._identities
+            ):
+                raise ValueError(
+                    "native goal snapshot producer epoch/tick/files changed"
+                )
+            rng, odometry_rng = environment.rng, environment.odometry_rng
+            cache, native = (
+                environment._native_goal_computation_source,
+                environment._native_goal_source,
+            )
+            live = _sample_simulator_native_goal_computation_source(
+                environment, self._epoch
+            )
+            _check_native_goal_computation_history(history, live)
+            observed = producer()
+            producer_binding = _c1_source_binding_digest(observed)
+            if producer_binding != _c1_source_binding_digest(
+                {key: dynamics.get(key) for key in observed}
+            ):
+                raise ValueError("native goal snapshot producer changed after read")
+            owner_binding = _c1_source_binding_digest(ownership())
+            frame = bytes(current[3])
+            if encode_state(current[2]) != frame:
+                raise ValueError("native goal snapshot frame binding mismatched")
+            goal = np.asarray(current[2].goal_m, dtype=np.float32)
+            if goal.shape != (3,) or not np.isfinite(goal).all() or goal[2] != 0:
+                raise ValueError("native goal snapshot frame goal unsupported")
+            target = {
+                "source_epoch": self._epoch,
+                "tick": environment.ego_sample_tick,
+                "delivery_tick": environment.ego_sample_tick,
+                "stored_goal_m": tuple(map(int, goal[:2].view(np.uint32))),
+            }
+            matched = _match_native_goal_retained_computation(target, history)
+            if not _native_tof_word_copy_matches(matched["goal_computation"], live):
+                raise ValueError("native goal snapshot retained/current words mismatch")
+            copied_binding = _c1_source_binding_digest(
+                {"matched": matched, "frame": frame}
+            )
+            closing = _sample_simulator_native_goal_computation_source(
+                environment, self._epoch
+            )
+            _check_native_goal_computation_history(
+                self._goal_computation_history, closing
+            )
+            closing_match = _match_native_goal_retained_computation(
+                target, self._goal_computation_history
+            )
+            closing_producer_binding = _c1_source_binding_digest(producer())
+            if (
+                not _native_tof_word_copy_matches(live, closing)
+                or not _native_tof_word_copy_matches(matched, closing_match)
+                or not _native_tof_word_copy_matches(
+                    closing_match["goal_computation"], closing
+                )
+                or _c1_source_binding_digest({"matched": matched, "frame": frame})
+                != copied_binding
+                or _c1_source_binding_digest(ownership()) != owner_binding
+                or closing_producer_binding != producer_binding
+                or self._simulator is not environment
+                or self._goal_computation_history is not history
+                or self._current is not current
+                or self._dynamics_sample is not dynamics
+                or environment._native_goal_computation_source is not cache
+                or environment._native_goal_source is not native
+                or environment.rng is not rng
+                or environment.odometry_rng is not odometry_rng
+                or self._simulator_rng is not rng
+                or self._simulator_odometry_rng is not odometry_rng
+                or self._source_files() != self._identities
+            ):
+                raise ValueError("native goal snapshot owner/source/output changed")
+        except (ValueError, TypeError, OverflowError) as error:
+            result["reason"] = str(error)
+            return result
+        result.update(
+            status="checked_delivered_native_goal_diagnostics",
+            reason=None,
+            snapshot_available=True,
+            source_epoch=self._epoch,
+            tick=current[0],
+            frame=frame,
+            delivered_goal=matched,
+        )
+        return result
+
     def snapshot_native_tof_source(self, *, synthetic_test_only=False):
         if synthetic_test_only is not True:
             raise ValueError("native ToF snapshot requires synthetic_test_only=True")

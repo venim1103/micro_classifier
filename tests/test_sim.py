@@ -32977,6 +32977,234 @@ def test_native_goal_retained_matching(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "default",
+        "flag",
+        "permission",
+        "unbound",
+        "missing_history",
+        "missing_cache",
+        "wrong_domain",
+        "word_history",
+        "flags",
+        "epoch",
+        "rng",
+        "frame",
+        "goal_frame",
+        "copied_record",
+        "closing_cache",
+        "closing_history",
+        "closing_current",
+        "closing_profile",
+        "closing_source",
+        "missing_current",
+        "missing_dynamics",
+        "closing_producer_history",
+    ),
+)
+def test_native_goal_delivery_snapshot(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_goal_computation_source(
+        environment, synthetic_test_only=True, include_goal_computation=True
+    )
+    if case == "unbound":
+        owner._simulator = None
+    elif case == "missing_current":
+        owner._current = None
+    elif case == "missing_dynamics":
+        owner._dynamics_sample = None
+    elif case == "missing_history":
+        owner._goal_computation_history.clear()
+    elif case == "missing_cache":
+        environment._native_goal_computation_source = None
+    elif case == "wrong_domain":
+        environment.config = replace(environment.config, odometry_latency_ticks=2)
+    elif case == "word_history":
+        owner._goal_computation_history[0]["goal_computation"]["computation"]["values"][
+            "delta_m"
+        ] = ("inf", "0x0.0p+0")
+    elif case == "flags":
+        owner._goal_computation_history[0]["goal_computation"]["source_qualified"] = (
+            True
+        )
+    elif case == "epoch":
+        owner._epoch = "0" * 32
+    elif case == "rng":
+        owner._simulator_rng = deepcopy(environment.rng)
+    elif case == "frame":
+        owner._current = (*owner._current[:3], owner._current[3][:-1])
+    elif case == "goal_frame":
+        state = replace(owner._current[2], goal_m=(0.0, 0.0, 0.0))
+        owner._current = (
+            owner._current[0],
+            owner._current[1],
+            state,
+            owner._current[3],
+        )
+    before_tick = environment.tick
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {
+        "intake": 0,
+        "matches": 0,
+        "digests": 0,
+        "files": 0,
+        "observations": 0,
+        "forbidden": 0,
+    }
+    original_intake = diagnostics._sample_simulator_native_goal_computation_source
+    original_match = diagnostics._match_native_goal_retained_computation
+    original_digest = diagnostics._c1_source_binding_digest
+    original_files = type(owner)._source_files
+    original_observation = RoverEnv._observation
+
+    def digest(*args):
+        work["digests"] += 1
+        assert work["digests"] <= 12
+        return original_digest(*args)
+
+    def files(self):
+        work["files"] += 1
+        assert work["files"] <= 2
+        return original_files()
+
+    def observation(self):
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        if work["observations"] == 2 and case == "closing_producer_history":
+            owner._goal_computation_history[0]["goal_computation"][
+                "source_qualified"
+            ] = True
+        return original_observation(self)
+
+    def intake(*args):
+        work["intake"] += 1
+        assert work["intake"] <= 2
+        if work["intake"] == 2:
+            if case == "closing_cache":
+                environment._native_goal_computation_source = deepcopy(
+                    environment._native_goal_computation_source
+                )
+            elif case == "closing_history":
+                owner._goal_computation_history = list(owner._goal_computation_history)
+            elif case == "closing_current":
+                owner._current = None
+            elif case == "closing_profile":
+                owner._config = replace(owner._config, max_speed=0.7)
+            elif case == "closing_source":
+                environment._native_goal_computation_source["computation"]["values"][
+                    "delta_m"
+                ][0] += 1
+        return original_intake(*args)
+
+    def match(*args):
+        work["matches"] += 1
+        assert work["matches"] <= 2
+        value = original_match(*args)
+        if case == "copied_record":
+            value["goal_computation"]["config"]["max_speed"] = 0.7
+        return value
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("goal publication must not replay/read/draw/trig/clock")
+
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_goal_computation_source", intake
+    )
+    monkeypatch.setattr(diagnostics, "_match_native_goal_retained_computation", match)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(type(owner), "_source_files", files)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if case in ("flag", "permission"):
+        with pytest.raises(ValueError):
+            owner.snapshot_native_goal_delivery(
+                synthetic_test_only=case != "permission",
+                include_goal_computation=1 if case == "flag" else True,
+            )
+    else:
+        result = owner.snapshot_native_goal_delivery(
+            synthetic_test_only=True, include_goal_computation=case != "default"
+        )
+        if case == "copy":
+            assert result["snapshot_available"] is True, result["reason"]
+            assert result["frame"] == owner._current[3]
+            assert result["tick"] == environment.tick
+            assert diagnostics._native_tof_word_copy_matches(
+                result["delivered_goal"], owner._goal_computation_history[0]
+            )
+            result["delivered_goal"]["goal_computation"]["config"]["max_speed"] = -1
+            assert (
+                owner._goal_computation_history[0]["goal_computation"]["config"][
+                    "max_speed"
+                ]
+                > 0
+            )
+        else:
+            assert result["status"] == "unknown"
+            assert result["snapshot_available"] is False
+            assert type(result["reason"]) is str
+            assert set(result) == {
+                "schema",
+                "allowed_use",
+                "status",
+                "reason",
+                "snapshot_available",
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            }
+        for key in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[key] is False
+        if case in ("default", "word_history", "flags", "wrong_domain"):
+            assert work["intake"] == 0
+        if case.startswith("closing_"):
+            assert work["intake"] == 2
+        if case == "copy":
+            assert work["matches"] == 2
+            assert work["observations"] == 2
+            assert work["files"] == 2
+        if case == "default":
+            assert not any(work.values())
+    assert work["forbidden"] == 0
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "mismatch",

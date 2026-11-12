@@ -31497,6 +31497,241 @@ def test_native_tof_postprocessing_clip_selection_diagnostics(
     (
         "actual",
         "exact",
+        "residual_positive",
+        "residual_negative",
+        "zero_tie",
+        "negative_zero",
+        "subnormal",
+        "extreme",
+        "nonfinite_positive",
+        "nonfinite_negative",
+        "flag",
+        "shape",
+        "stored_shape",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "stored_bool",
+        "stored_domain",
+        "stored_nonfinite",
+        "nan",
+        "overflow_word",
+        "tuple_subclass",
+        "bit_limit",
+        "bit_limit_type",
+    ),
+)
+def test_native_tof_postprocessing_storage_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    import struct
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    arguments = {
+        "selected_ranges_m_hex": ((0.75).hex(),) * 64,
+        "stored_ranges_m": (0x3F400000,) * 64,
+    }
+    setup = {"geometry": 0}
+    original_ranges = rover.tof_ranges
+
+    def ranges(*args, **kwargs):
+        setup["geometry"] += 1
+        assert setup["geometry"] <= 1
+        return original_ranges(*args, **kwargs)
+
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    if case == "actual":
+        captured = {}
+        environment._sample(native_source={}, postprocessing_source=captured)
+        arguments = {
+            "selected_ranges_m_hex": tuple(
+                float(word).hex() for word in captured["selected_ranges_m"].flat
+            ),
+            "stored_ranges_m": tuple(
+                map(int, captured["stored_ranges_m"].view(np.uint32).flat)
+            ),
+        }
+    elif case in ("residual_positive", "residual_negative"):
+        selected, stored = (
+            (0.1, 0x3DCCCCCD)
+            if case == "residual_positive"
+            else (math.nextafter(1.0, math.inf), 0x3F800000)
+        )
+        arguments["selected_ranges_m_hex"] = (selected.hex(),) * 64
+        arguments["stored_ranges_m"] = (stored,) * 64
+    elif case in ("zero_tie", "negative_zero"):
+        arguments["selected_ranges_m_hex"] = ((-0.0).hex(),) * 64
+        arguments["stored_ranges_m"] = (0 if case == "zero_tie" else 0x80000000,) * 64
+    elif case in ("subnormal", "extreme"):
+        arguments["selected_ranges_m_hex"] = (
+            (
+                float.fromhex("0x1p-150")
+                if case == "subnormal"
+                else float.fromhex("0x1.fffffffffffffp+1023")
+            ).hex(),
+        ) * 64
+        arguments["stored_ranges_m"] = (0 if case == "subnormal" else 0x7F7FFFFF,) * 64
+    elif case.startswith("nonfinite_"):
+        arguments["selected_ranges_m_hex"] = (
+            "inf" if case == "nonfinite_positive" else "-inf",
+        ) * 64
+    elif case == "shape":
+        arguments["selected_ranges_m_hex"] *= 2
+    elif case == "stored_shape":
+        arguments["stored_ranges_m"] *= 2
+    elif case in ("word_type", "noncanonical", "word_budget", "nan", "overflow_word"):
+        arguments["selected_ranges_m_hex"] = (
+            {
+                "word_type": False,
+                "noncanonical": "1.0",
+                "word_budget": "0" * 33,
+                "nan": "nan",
+                "overflow_word": "0x1p+999999",
+            }[case],
+        ) * 64
+    elif case in ("stored_bool", "stored_domain", "stored_nonfinite"):
+        arguments["stored_ranges_m"] = (
+            {
+                "stored_bool": False,
+                "stored_domain": 0x100000000,
+                "stored_nonfinite": 0x7F800000,
+            }[case],
+        ) * 64
+    elif case == "tuple_subclass":
+
+        class Words(tuple):
+            pass
+
+        arguments["stored_ranges_m"] = Words(arguments["stored_ranges_m"])
+    elif case in ("bit_limit", "bit_limit_type"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            1 if case == "bit_limit" else True,
+        )
+    before = deepcopy(arguments)
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"values": 0, "binary": 0, "oracle": 0, "forbidden": 0}
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def value(instance, word):
+        work["values"] += 1
+        assert work["values"] <= 128
+        return original_value(instance, word)
+
+    def binary(instance, left, right, operation):
+        work["binary"] += 1
+        assert work["binary"] <= 64 and operation == "sub"
+        return original_binary(instance, left, right, operation)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "storage residuals must not intake/read/retain/replay/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_tof_postprocessing_source",
+        "_c1_source_binding_digest",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset", "_sample"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    rejected = {
+        "flag",
+        "shape",
+        "stored_shape",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "stored_bool",
+        "stored_domain",
+        "stored_nonfinite",
+        "nan",
+        "overflow_word",
+        "tuple_subclass",
+        "bit_limit",
+        "bit_limit_type",
+    }
+    if case in rejected:
+        with pytest.raises(ValueError):
+            diagnostics._native_tof_postprocessing_storage_residuals(
+                **arguments, synthetic_test_only=1 if case == "flag" else True
+            )
+    else:
+        result = diagnostics._native_tof_postprocessing_storage_residuals(
+            **arguments, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 64
+        assert result["unknown_count"] == (64 if case.startswith("nonfinite_") else 0)
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        mismatches, word_mismatches = 0, 0
+        for entry in result["entries"]:
+            index = entry["ray_index"]
+            selected_word = arguments["selected_ranges_m_hex"][index]
+            stored_word = arguments["stored_ranges_m"][index]
+            selected = float.fromhex(selected_word)
+            observed = struct.unpack("<f", struct.pack("<I", stored_word))[0]
+            assert entry["selected_range_hex"] == selected_word
+            assert entry["stored_range_word"] == stored_word
+            assert entry["decoded_stored_range_hex"] == observed.hex()
+            if math.isfinite(selected):
+                work["oracle"] += 1
+                assert work["oracle"] <= 64
+                expected = Fraction(observed) - Fraction(selected)
+                assert Fraction(*entry["signed_residual_ratio"]) == expected
+                assert Fraction(*entry["selected_value_ratio"]) == Fraction(selected)
+                assert Fraction(*entry["stored_value_ratio"]) == Fraction(observed)
+                assert entry["finite_values_equal"] is (observed == selected)
+                assert entry["decoded_words_match"] is (observed.hex() == selected_word)
+                mismatches += int(observed != selected)
+                word_mismatches += int(observed.hex() != selected_word)
+            else:
+                assert entry["selected_value_ratio"] is None
+                assert entry["stored_value_ratio"] is None
+                assert entry["signed_residual_ratio"] is None
+                assert entry["finite_values_equal"] is None
+                assert entry["decoded_words_match"] is None
+                assert entry["status"] == "unknown_nonfinite_selected_range"
+        assert result["value_mismatch_count"] == mismatches
+        assert result["word_mismatch_count"] == word_mismatches
+        if case == "zero_tie":
+            assert result["value_mismatch_count"] == 0
+            assert result["word_mismatch_count"] == 64
+        result["entries"][0]["selected_range_hex"] = "changed"
+    assert arguments == before and work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    assert setup["geometry"] == int(case == "actual")
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
+        "exact",
         "mismatch",
         "signed_zero_tie",
         "signed_zero_match",

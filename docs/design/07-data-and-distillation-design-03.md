@@ -2290,6 +2290,17 @@ unknowns and zero-word ties; all eight flags remain false. No rounding, noise
 law, primitive/error bound or qualification follows from value/word matching.
 [Checkpoint §321][native-tof-clip-selection-match-review] records controls.
 
+#### Supplied-Word ToF Selected/Storage Residuals (2026-11-12)
+
+The standalone [offline helper][c1-prototype-source] decodes supplied finite
+builtin uint32 storage words using the existing sampling view and reports exact
+stored-minus-selected residuals. Canonical selected +/-inf remains unknown;
+unsupported words/metadata reject explicitly. Numerical and decoded-word
+equality remain separate; signed-zero ties are not normalized. No native cast
+word is predicted or rounding/error law adopted; all eight flags remain false.
+Retained joins are separate. [Checkpoint §323][native-tof-storage-review]
+records the bounded controls and evidence limits.
+
 [c1-motion-source]: ../../sim/rover.py
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
@@ -2297,6 +2308,7 @@ law, primitive/error bound or qualification follows from value/word matching.
 [native-tof-dropout-match-review]: ../../REVIEW.md#319-matched-native-tof-dropout-reports-2026-11-12
 [native-tof-clip-selection-review]: ../../REVIEW.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12
 [native-tof-clip-selection-match-review]: ../../REVIEW.md#321-matched-native-tof-clipselection-reports-2026-11-12
+[native-tof-storage-review]: ../../REVIEW.md#323-supplied-word-native-tof-selectedstorage-residuals-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../review/311-315.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

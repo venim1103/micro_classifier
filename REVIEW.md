@@ -371,6 +371,36 @@ in session files, portable evidence in Git documents.
 Next independent bounded selected-float64/stored-float32 supplied-word
 correspondence. Preserve raw words/unknowns, not a rounding model or bound.
 
+## 323. Supplied-Word Native ToF Selected/Storage Residuals (2026-11-12)
+
+Begin clean pushed644bec6. Actual sampler captures selected float64 input and
+stored float32 result of `selected.astype(np.float32)`. Standalone helper
+reuses the existing sampling report's uint32-to-float32 view, not its ideal-
+sampling policy. Preserve closed-history finite builtin uint32 storage
+preflight and supplied canonical selected words; raw selected +/-inf reports
+unknown, unsupported/NaN metadata explicitly rejects. Report exact decoded
+stored-minus-supplied-selected residuals, numerical equality and decoded-word
+equality separately. Do not predict stored rounding/cast words or adopt a cast
+law, numerical/error bound or qualify zero-word ties. All eight flags false.
+
+Two builtin64-word tuples; selected canonical words<=32char,64 selected decodes/
+64 storage views,128 rational values/64 subtractions/64 entries,1..4096-bit
+hard bound. Add24 cold-actual/exact/signed residual/zero-tie/subnormal/extreme/
+raw-nonfinite/typed-word/shape/storage/rational-budget controls; independent
+struct decode and Fraction oracle<=64 subtractions. Only one existing-draw
+actual capture/geometry before poisoning intake/read/retain/step/reset/replay/
+hash/clock/geometry paths; RNG/odometry state and inputs unchanged thereafter.
+
+Fresh focused24/60s, sole necessary repair24/60s, required root/360s positions.
+First24 PASS3.40s with all four hashes stable; root PASS5166, known QDQ1 xfail/
+71 warnings/160.61s. Root/scoped Ruff, changed format/whitespace and all four
+hashes PASS. Both executed positions spent; repair unused, not follow-on authority.
+Ignored `.git/returns-323-*` outputs/hashes retained; no historical/protected
+refund, new dependency/download/model/study/hardware/native/Arm/sanitizer opt-in.
+Pointwise supplied residuals and matching words are not rounding-law/native
+primitive/source/geometry/coverage/clock/one-use/physical/admission evidence.
+Next separately bounded original/closing retained storage report joins.
+
 ## Sources
 
 Hardware and tools:

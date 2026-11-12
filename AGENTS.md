@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §322 for intact retention/delivery checkpoint archival;
+Read [REVIEW.md][review] §323 for active supplied selected/storage residuals;
+§322 records intact retention/delivery checkpoint archival;
 §321 records completed matched clip/select reports;
 §320 records completed supplied-word clip/select diagnostics;
 §319 records completed matched dropout reports;
@@ -87,8 +88,8 @@ retained mask reports and their required gate are complete.
 Standalone clip/select word diagnostics and their required gate are complete;
 retained clip/select joins and their required gate are complete.
 Whole311-315 checkpoints are archived with historical anchors and ledgers.
-Next independent supplied stored-float32 correspondence without rounding-law
-adoption. Preserve
+Supplied selected/storage residuals and their required gate are complete.
+Next retained storage report joins without rounding-law adoption. Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already

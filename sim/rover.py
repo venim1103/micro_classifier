@@ -192,6 +192,7 @@ class RoverEnv:
         self._native_tof_cylinder_source = None
         self._native_tof_direction_source = None
         self._native_tof_postprocessing_source = None
+        self._native_goal_computation_source = None
         self.pending = deque()
         self.pending_ego = deque()
         self.ego_sample_tick = None
@@ -620,36 +621,7 @@ class RoverEnv:
                 raise ValueError(
                     "native goal source requires an empty builtin dictionary"
                 )
-            if (
-                type(self) is not RoverEnv
-                or type(config) is not Config
-                or type(self.scenario) is not Scenario
-            ):
-                raise ValueError("native goal source owner or profile unsupported")
-            config.__post_init__()
-            if (
-                type(self.position) is not np.ndarray
-                or self.position.shape != (2,)
-                or self.position.dtype != np.dtype(np.float64)
-                or not np.isfinite(self.position).all()
-                or type(self.scenario.goal) is not tuple
-                or len(self.scenario.goal) != 2
-            ):
-                raise ValueError("native goal source position or goal unsupported")
-            scalars = (self.yaw, *self.scenario.goal)
-            if any(type(value) not in (int, float, np.float64) for value in scalars):
-                raise ValueError("native goal source scalar inputs unsupported")
-            try:
-                finite = all(math.isfinite(value) for value in scalars)
-            except OverflowError as error:
-                raise ValueError(
-                    "native goal source scalar inputs unsupported"
-                ) from error
-            if not finite:
-                raise ValueError("native goal source scalar inputs unsupported")
-            world_goal = np.asarray(self.scenario.goal)
-            if world_goal.dtype.kind not in "iuf":
-                raise ValueError("native goal source goal word dtype unsupported")
+            world_goal = _check_native_goal_computation_inputs(self)
         position = self.position.copy()
         if config.odometry_position_error:
             angle = self.odometry_rng.uniform(-math.pi, math.pi)
@@ -800,6 +772,7 @@ class RoverEnv:
         capture_native_tof_cylinder=False,
         capture_native_tof_direction=False,
         capture_native_tof_postprocessing=False,
+        capture_native_goal_computation=False,
     ):
         if type(capture_motion_receipt) is not bool:
             raise ValueError("capture_motion_receipt must be a literal boolean")
@@ -819,6 +792,10 @@ class RoverEnv:
             raise ValueError(
                 "capture_native_tof_postprocessing must be a literal boolean"
             )
+        if type(capture_native_goal_computation) is not bool:
+            raise ValueError(
+                "capture_native_goal_computation must be a literal boolean"
+            )
         if capture_native_tof_timing and not capture_native_tof_source:
             raise ValueError("native ToF timing requires native ToF source capture")
         if capture_native_tof_selection and not capture_native_tof_source:
@@ -837,6 +814,8 @@ class RoverEnv:
             raise TypeError("native ToF postprocessing requires the actual RoverEnv")
         if self.done:
             raise RuntimeError("episode ended; call reset before step")
+        if capture_native_goal_computation:
+            _check_native_goal_computation_inputs(self)
         action = np.asarray(action, dtype=np.float64)
         if action.shape != (2,) or not np.isfinite(action).all():
             raise ValueError("action must contain finite speed and turn rate")
@@ -901,6 +880,7 @@ class RoverEnv:
         self._native_tof_cylinder_source = None
         self._native_tof_direction_source = None
         self._native_tof_postprocessing_source = None
+        self._native_goal_computation_source = None
         old_distance = float(
             np.linalg.norm(np.asarray(self.scenario.goal) - self.position)
         )
@@ -1035,7 +1015,20 @@ class RoverEnv:
             )
         else:
             self._update_sensor()
-        self._record_history()
+        if capture_native_goal_computation:
+            goal_computation = {}
+            self._record_history(goal_source=goal_computation)
+            self._native_goal_computation_source = {
+                "schema": "micro-classifier/native-goal-computation-acquisition/1",
+                "rng": self.rng,
+                "odometry_rng": self.odometry_rng,
+                "tick": self.tick,
+                "delivery_tick": self.tick + config.odometry_latency_ticks,
+                "source": self._native_goal_source,
+                "computation": goal_computation,
+            }
+        else:
+            self._record_history()
         info = self._info(collision, False)
         success = not collision and info["distance_to_goal_m"] <= config.goal_tolerance
         info["success"] = success
@@ -1080,6 +1073,39 @@ class RoverEnv:
             }
             info["motion_receipt"] = receipt
         return observation, float(reward), terminated, truncated, info
+
+
+def _check_native_goal_computation_inputs(environment):
+    config = environment.config
+    if (
+        type(environment) is not RoverEnv
+        or type(config) is not Config
+        or type(environment.scenario) is not Scenario
+    ):
+        raise ValueError("native goal source owner or profile unsupported")
+    config.__post_init__()
+    if (
+        type(environment.position) is not np.ndarray
+        or environment.position.shape != (2,)
+        or environment.position.dtype != np.dtype(np.float64)
+        or not np.isfinite(environment.position).all()
+        or type(environment.scenario.goal) is not tuple
+        or len(environment.scenario.goal) != 2
+    ):
+        raise ValueError("native goal source position or goal unsupported")
+    scalars = (environment.yaw, *environment.scenario.goal)
+    if any(type(value) not in (int, float, np.float64) for value in scalars):
+        raise ValueError("native goal source scalar inputs unsupported")
+    try:
+        finite = all(math.isfinite(value) for value in scalars)
+    except OverflowError as error:
+        raise ValueError("native goal source scalar inputs unsupported") from error
+    if not finite:
+        raise ValueError("native goal source scalar inputs unsupported")
+    world_goal = np.asarray(environment.scenario.goal)
+    if world_goal.dtype.kind not in "iuf":
+        raise ValueError("native goal source goal word dtype unsupported")
+    return world_goal
 
 
 def _motion_receipt_clock_ns():

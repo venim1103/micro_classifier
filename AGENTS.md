@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §325 for active cold native goal source capture;
+Read [REVIEW.md][review] §326 for native goal acquisition pairing;
+§325 records cold native goal source capture;
 §324 records completed matched selected/storage reports;
 §323 records completed supplied selected/storage residuals;
 §322 records intact retention/delivery checkpoint archival;
@@ -93,8 +94,9 @@ Whole311-315 checkpoints are archived with historical anchors and ledgers.
 Supplied selected/storage residuals and their required gate are complete.
 Retained storage report joins and their required gate are complete.
 Native integration source/arithmetic already exists and must not be duplicated.
-Cold goal consumed-operand/storage capture and its required gate are complete;
-next independent actual goal acquisition/ownership pairing. Preserve
+Cold goal consumed-operand/storage capture and actual acquisition pairing with
+their required gates are complete; next closed actual goal acquisition intake.
+Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already

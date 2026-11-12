@@ -32018,6 +32018,225 @@ def test_native_goal_computation_source(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "default",
+        "source_only",
+        "flag",
+        "owner",
+        "profile_type",
+        "profile_invalid",
+        "goal_dtype",
+        "position_dtype",
+        "yaw_nonfinite",
+        "goal_nonfinite",
+        "reset",
+        "held",
+        "combined",
+        "delayed",
+        "noisy",
+        "raw_nonfinite",
+    ),
+)
+def test_native_goal_computation_acquisition(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import rover
+
+    environment = deepcopy(c1_motion_receipt_source_fixture[0])
+    if case == "owner":
+
+        class DerivedRover(RoverEnv):
+            pass
+
+        derived = DerivedRover.__new__(DerivedRover)
+        derived.__dict__ = deepcopy(environment.__dict__)
+        environment = derived
+    elif case == "profile_type":
+        environment.config = {}
+    elif case == "profile_invalid":
+        object.__setattr__(environment.config, "odometry_position_error", -0.1)
+    elif case in ("goal_dtype", "goal_nonfinite", "raw_nonfinite"):
+        environment.scenario = replace(
+            environment.scenario,
+            goal=(1 << 100, 1)
+            if case == "goal_dtype"
+            else (math.inf, 1.0)
+            if case == "goal_nonfinite"
+            else (float.fromhex("0x1.fffffffffffffp+1023"),) * 2,
+        )
+    elif case == "position_dtype":
+        environment.position = environment.position.astype(np.float32)
+    elif case == "yaw_nonfinite":
+        environment.yaw = math.inf
+    elif case == "held":
+        environment.sensor_phase = (
+            environment.tick + 1
+            if environment.sensor_period_ticks is None
+            else (environment.tick + 1) // environment.sensor_period_ticks
+        )
+    elif case == "delayed":
+        environment.config = replace(environment.config, odometry_latency_ticks=2)
+    elif case == "noisy":
+        environment.config = replace(
+            environment.config,
+            odometry_position_error=0.005,
+            odometry_heading_error=0.002,
+        )
+    rejected = {
+        "flag",
+        "owner",
+        "profile_type",
+        "profile_invalid",
+        "goal_dtype",
+        "position_dtype",
+        "yaw_nonfinite",
+        "goal_nonfinite",
+    }
+    if case in rejected:
+        environment._native_goal_computation_source = {"prior": True}
+    before_cache = environment._native_goal_computation_source
+    before_tick = environment.tick
+    before_position = environment.position.copy()
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    before_native = deepcopy(environment._native_goal_source)
+    before_history = len(environment.history)
+    baseline = deepcopy(environment)
+    work = {"history": 0, "source": 0, "clock": 0, "geometry": 0}
+    original_history = RoverEnv._record_history
+    original_ranges = rover.tof_ranges
+
+    def record_history(self, **kwargs):
+        work["history"] += 1
+        assert work["history"] <= 3
+        work["source"] += int(kwargs.get("goal_source") is not None)
+        assert work["source"] <= 1
+        return original_history(self, **kwargs)
+
+    def clock():
+        work["clock"] += 1
+        assert case == "combined" and work["clock"] <= 8
+        return 100
+
+    def ranges(*args, **kwargs):
+        work["geometry"] += 1
+        assert work["geometry"] <= 3
+        return original_ranges(*args, **kwargs)
+
+    monkeypatch.setattr(RoverEnv, "_record_history", record_history)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", clock)
+    monkeypatch.setattr(rover, "tof_ranges", ranges)
+    if case in rejected:
+        with pytest.raises(ValueError):
+            environment.step(
+                [0.125, 0.3],
+                capture_native_goal_computation=1 if case == "flag" else True,
+            )
+        assert environment._native_goal_computation_source is before_cache
+        assert environment.tick == before_tick
+        assert np.array_equal(environment.position, before_position)
+        assert environment.rng.bit_generator.state == before_rng
+        assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+        assert environment._native_goal_source == before_native
+        assert len(environment.history) == before_history
+        assert work == dict.fromkeys(work, 0)
+    else:
+        options = {
+            "capture_native_tof_source": case in ("source_only", "held", "combined"),
+            "capture_native_tof_postprocessing": case == "combined",
+            "capture_native_tof_timing": case == "combined",
+            "capture_motion_receipt": case == "combined",
+        }
+        baseline_result = baseline.step([0.125, 0.3], **options)
+        result = environment.step(
+            [0.125, 0.3],
+            capture_native_goal_computation=case not in ("default", "source_only"),
+            **options,
+        )
+        assert set(result[0]) == set(baseline_result[0])
+        for key in result[0]:
+            value, reference = result[0][key], baseline_result[0][key]
+            assert type(value) is type(reference)
+            if type(value) is np.ndarray:
+                assert value.dtype == reference.dtype and value.shape == reference.shape
+                assert np.array_equal(value.view(np.uint8), reference.view(np.uint8))
+            elif type(value) is float:
+                assert value.hex() == reference.hex()
+            else:
+                assert value == reference
+        assert result[1].hex() == baseline_result[1].hex()
+        assert result[2:4] == baseline_result[2:4]
+        assert set(result[4]) == set(baseline_result[4])
+        assert environment._native_goal_source == baseline._native_goal_source
+        assert environment.rng.bit_generator.state == baseline.rng.bit_generator.state
+        assert (
+            environment.odometry_rng.bit_generator.state
+            == baseline.odometry_rng.bit_generator.state
+        )
+        cache = environment._native_goal_computation_source
+        if case in ("default", "source_only"):
+            assert cache is None and work["source"] == 0
+        else:
+            assert work["source"] == 1
+            assert cache["rng"] is environment.rng
+            assert cache["odometry_rng"] is environment.odometry_rng
+            assert cache["source"] is environment._native_goal_source
+            assert cache["tick"] == environment.tick == before_tick + 1
+            assert (
+                cache["delivery_tick"]
+                == environment.tick + environment.config.odometry_latency_ticks
+            )
+            trace = cache["computation"]
+            assert trace["tick"] == cache["tick"]
+            assert trace["values"]["native_goal_m"] == cache["source"]["goal_m"]
+            assert (
+                tuple(trace["inputs"]["used_position_m"])
+                == cache["source"]["position_m"]
+            )
+            assert trace["status"] == (
+                "unknown_nonfinite_native_goal_values"
+                if case == "raw_nonfinite"
+                else "recorded_native_goal_values"
+            )
+            target = (
+                environment.pending_ego[-1][2] if case == "delayed" else environment.ego
+            )
+            assert np.array_equal(
+                trace["values"]["stored_goal_m"].view(np.uint32),
+                target[2:].view(np.uint32),
+            )
+            for flag in (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ):
+                assert trace[flag] is False
+            trace["values"]["stored_goal_m"][0] = -123
+            assert np.array_equal(
+                target[2:].view(np.uint32),
+                baseline.pending_ego[-1][2][2:].view(np.uint32)
+                if case == "delayed"
+                else baseline.ego[2:].view(np.uint32),
+            )
+            if case == "held":
+                assert environment._native_tof_source is None
+                assert work["geometry"] == 0
+            if case == "reset":
+                environment.reset()
+                assert environment._native_goal_computation_source is None
+        assert work["clock"] == (8 if case == "combined" else 0)
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "mismatch",

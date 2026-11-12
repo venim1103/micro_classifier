@@ -2324,7 +2324,22 @@ typed intake/retention/delivery and source/numerical/physical/clock/admission
 qualification are separate. [Checkpoint §325][native-goal-cold-source-review]
 retains bounds, actual fixture/source failures and necessary repairs.
 
+#### Native Goal Computation Acquisition Pairing (2026-11-12)
+
+Literal default-off `capture_native_goal_computation=False` prevalidates actual
+owner/profile and supported inputs before step state/RNG/clock work. One actual
+history production supplies a separate private acquisition cache retaining
+legacy native-source identity, both actual RNG identities, cold computation,
+tick and nominal odometry delivery tick. Reset/default steps clear the cache;
+goal acquisition is independent of fresh/held ToF. Existing public outputs,
+native goal cache/calculations and draws remain unchanged. Raw computed
+nonfinite source stays unknown, all eight flags false. No noise/trig/cast law,
+clock/one-use or source/numerical/physical/admission qualification follows;
+closed intake, retention and delivered/pending joins are separate.
+[Checkpoint §326][native-goal-acquisition-review] retains the bounded controls.
+
 [c1-motion-source]: ../../sim/rover.py
+[native-goal-acquisition-review]: ../../REVIEW.md#326-native-goal-computation-acquisition-pairing-2026-11-12
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../../REVIEW.md#317-matched-native-tof-noise-addition-reports-2026-11-12
 [native-tof-dropout-review]: ../../REVIEW.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12

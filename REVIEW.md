@@ -473,6 +473,38 @@ compatible. All five executed positions spent, no historical/protected refund;
 ignored `.git/returns-325-*` outputs/hashes and probe outcome retained.
 Next separately default-off actual goal acquisition/ownership pairing.
 
+## 326. Native Goal Computation Acquisition Pairing (2026-11-12)
+
+Begin pushed991dc62, main/upstream0/0 after fetch; Python3.12.3 at `/opt/venv`,
+pytest8.4.2/Ruff0.17.0/timeout installed,365GiB free in the shared environment.
+Append literal default-off `capture_native_goal_computation=False` to `step`.
+Reuse the cold producer's input/profile/dtype preflight before state/RNG/clock
+work, then capture one actual history production into a distinct private cache.
+Retain actual RNG/odometry-RNG and legacy native-source identity, cold computation
+packet, acquisition tick and nominal odometry delivery tick. Goal acquisition
+is independent of fresh/held ToF; reset/default steps clear this cache. Existing
+goal calculations/cache keys and public observation/info/return shape remain
+unchanged. Computed raw nonfinite source remains explicit unknown, all eight
+flags false; no trig/noise/cast law, clock/one-use or qualification follows.
+Closed typed intake, retention and delivered/pending joins remain separate.
+
+Fresh17/60s, sole necessary fixture repair17/60s, required root/360s positions.
+Per case <=3 history calls, <=1 cold receiver, <=3 geometry calls, <=8 existing
+clock reads only in combined capture; paired steps have unchanged RNG/output
+words and no replay/additional draws. First8 PASS/9 FAIL/2 raw warnings8.22s:
+the comparison fixture applied numerical `equal_nan` to the observation schema
+string. Repair compares exact types, ndarray dtype/shape/raw bytes, scalar float
+hex words and nonnumerical equality, without changing producer or limits.
+Revised17 PASS/2 warnings3.65s; root PASS5228, known QDQ1 xfail/75 warnings179.91s.
+Root/scoped Ruff, changed-file format, whitespace and four source hashes PASS.
+Scoped AST conservation retains every other source function;43 resolved step
+callers have only three intentional invalid-boolean negative-fixture diagnostics
+(the prior two and this slice's new control). All three positions spent; no
+historical/protected refund. Ignored `.git/returns-326-*` logs/hashes retained.
+No study/model/dependency/download/hardware or native/Arm/sanitizer opt-in.
+Next separately close actual goal acquisition intake with original/closing
+native/RNG/profile/pose/input/tick/delivery/stored-word joins and detached output.
+
 ## Sources
 
 Hardware and tools:

@@ -2352,7 +2352,21 @@ retaining raw unknown source. No replay, noise/trig/cast law or qualification;
 all eight flags false. Typed history, recorder retention and publication remain
 separate. [Checkpoint §327][native-goal-intake-review] records the controls.
 
+#### Typed Bounded Native Goal Computation History (2026-11-12)
+
+Four-key records retain the complete closed intake packet. Current and <=8
+saved packets receive independent closed type/finite-word validation before
+epoch/profile/world-input/order joins. Exact signed/unsigned world integers,
+inferred dtype, canonical float64 signs and finite builtin uint32 storage words
+are preserved; native/true-pose/yaw bindings and all eight false flags remain
+required. Existing Config validation requires all fields, not silent defaults.
+Unsupported/nonfinite data and unresolved word mismatches reject explicitly.
+No noise/trig/cast/error law or source/physical/clock/execution/admission
+qualification follows. Recorder retention and publication remain separate.
+[Checkpoint §329][native-goal-history-review] records work limits and controls.
+
 [c1-motion-source]: ../../sim/rover.py
+[native-goal-history-review]: ../../REVIEW.md#329-typed-bounded-native-goal-computation-history-2026-11-12
 [native-goal-intake-review]: ../../REVIEW.md#327-closed-native-goal-computation-intake-2026-11-12
 [native-goal-acquisition-review]: ../../REVIEW.md#326-native-goal-computation-acquisition-pairing-2026-11-12
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12

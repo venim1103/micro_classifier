@@ -32471,6 +32471,162 @@ def test_native_goal_computation_intake(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "gaps",
+        "limit",
+        "budget",
+        "record_type",
+        "epoch",
+        "tick_bool",
+        "duplicate",
+        "delivery",
+        "record_extra",
+        "packet_extra",
+        "qualified",
+        "profile",
+        "world_dtype",
+        "unsigned_range",
+        "signed_range",
+        "word_type",
+        "noncanonical",
+        "nonfinite",
+        "native_pair",
+        "yaw_tie",
+        "storage_bool",
+        "storage_range",
+        "storage_nonfinite",
+        "current_bad",
+        "world_unsigned",
+        "world_signed",
+    ),
+)
+def test_native_goal_computation_history(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.yaw = 0.0
+    if case in ("world_unsigned", "unsigned_range"):
+        environment.scenario = replace(
+            environment.scenario, goal=((1 << 64) - 1, (1 << 63) + 1)
+        )
+    elif case in ("world_signed", "signed_range"):
+        environment.scenario = replace(
+            environment.scenario, goal=(-(1 << 63), (1 << 63) - 1)
+        )
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    current = diagnostics._sample_simulator_native_goal_computation_source(
+        environment, owner._epoch
+    )
+    before_rng = deepcopy(environment.rng.bit_generator.state)
+    before_odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
+    before_tick = environment.tick
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("typed goal history must not replay/draw/trig/clock")
+
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    current["tick"] = current["delivery_tick"] = 16
+    current["source"]["tick"] = current["computation"]["tick"] = 16
+
+    def record(tick):
+        saved = deepcopy(current)
+        saved["tick"] = saved["delivery_tick"] = tick
+        saved["source"]["tick"] = saved["computation"]["tick"] = tick
+        return {
+            "source_epoch": saved["source_epoch"],
+            "tick": tick,
+            "delivery_tick": tick,
+            "goal_computation": saved,
+        }
+
+    history = [record(3)]
+    if case == "gaps":
+        history = [record(1), record(7), record(15)]
+    elif case in ("limit", "budget"):
+        history = [record(tick) for tick in range(1, 9 if case == "limit" else 10)]
+    elif case == "record_type":
+        history = tuple(history)
+    entry = history[0]
+    packet = entry["goal_computation"]
+    values = packet["computation"]["values"]
+    if case == "epoch":
+        entry["source_epoch"] = "0" * 32
+    elif case == "tick_bool":
+        entry["tick"] = True
+    elif case == "duplicate":
+        history.append(deepcopy(entry))
+    elif case == "delivery":
+        entry["delivery_tick"] += 1
+    elif case == "record_extra":
+        entry["extra"] = True
+    elif case == "packet_extra":
+        packet["extra"] = True
+    elif case == "qualified":
+        packet["computation"]["source_qualified"] = True
+    elif case == "profile":
+        packet["config"]["max_speed"] += 0.125
+    elif case == "world_dtype":
+        packet["computation"]["inputs"]["world_goal_m"]["dtype"] = "<f4"
+    elif case in ("unsigned_range", "signed_range", "word_type"):
+        world = packet["computation"]["inputs"]["world_goal_m"]
+        world["words"] = (
+            (1 << 64)
+            if case == "unsigned_range"
+            else -(1 << 63) - 1
+            if case == "signed_range"
+            else False,
+            world["words"][1],
+        )
+    elif case in ("noncanonical", "nonfinite"):
+        values["delta_m"] = (
+            "0x0p+0" if case == "noncanonical" else "inf",
+            values["delta_m"][1],
+        )
+    elif case == "native_pair":
+        packet["source"]["goal_m"] = ("0x0.0p+0", packet["source"]["goal_m"][1])
+    elif case == "yaw_tie":
+        packet["computation"]["inputs"]["yaw_rad"] = -0.0
+    elif case in ("storage_bool", "storage_range", "storage_nonfinite"):
+        values["stored_goal_m"] = (
+            True
+            if case == "storage_bool"
+            else 1 << 32
+            if case == "storage_range"
+            else 0x7F800000,
+            values["stored_goal_m"][1],
+        )
+    elif case == "current_bad":
+        current["computation"]["values"]["delta_m"] = ("inf", "0x0.0p+0")
+    accepted = {"copy", "gaps", "limit", "world_unsigned", "world_signed"}
+    original = deepcopy(history)
+    if case in accepted:
+        diagnostics._check_native_goal_computation_history(history, current)
+    else:
+        with pytest.raises(ValueError):
+            diagnostics._check_native_goal_computation_history(history, current)
+    assert diagnostics._native_tof_word_copy_matches(
+        {"history": tuple(history)}, {"history": tuple(original)}
+    )
+    assert work["forbidden"] == 0
+    assert environment.tick == before_tick
+    assert environment.rng.bit_generator.state == before_rng
+    assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "mismatch",

@@ -15764,6 +15764,204 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _check_native_goal_computation_history(history, current):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native goal computation history budget exhausted")
+    flags = (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    )
+    use = "native_goal_computation_diagnostics_only"
+
+    def mapping(value, expected, extra=()):
+        if (
+            type(value) is not dict
+            or len(value) != len(expected) + len(extra)
+            or any(type(key) is not str for key in value)
+            or set(value) != {*expected, *extra}
+            or any(
+                not _native_tof_word_copy_matches(value[key], word)
+                for key, word in expected.items()
+            )
+        ):
+            raise ValueError("unsupported native goal history metadata")
+
+    def canonical(word):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("unsupported native goal history word budget")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError("unsupported native goal history word") from error
+        if not math.isfinite(value) or value.hex() != word:
+            raise ValueError("unsupported native goal history canonical word")
+
+    def vector(words, count):
+        if type(words) is not tuple or len(words) != count:
+            raise ValueError("unsupported native goal history vector")
+        for word in words:
+            canonical(word)
+
+    def packet(value):
+        mapping(
+            value,
+            {
+                "schema": "micro-classifier/native-goal-computation-intake/1",
+                "allowed_use": use,
+                "status": "copied_native_goal_computation_diagnostics",
+                **dict.fromkeys(flags, False),
+            },
+            (
+                "source_epoch",
+                "tick",
+                "delivery_tick",
+                "pose_m_rad",
+                "config",
+                "source",
+                "computation",
+            ),
+        )
+        tick, delivery = value["tick"], value["delivery_tick"]
+        if (
+            type(value["source_epoch"]) is not str
+            or len(value["source_epoch"]) != 32
+            or type(tick) is not int
+            or not 0 <= tick <= 0xFFFFFFFF // 50000
+            or type(delivery) is not int
+            or not 0 <= delivery <= 0xFFFFFFFF // 50000
+        ):
+            raise ValueError("unsupported native goal history ticks or epoch")
+        profile = value["config"]
+        mapping(profile, {}, tuple(Config.__dataclass_fields__))
+        if any(type(word) not in (int, float, type(None)) for word in profile.values()):
+            raise ValueError("unsupported native goal history profile types")
+        config = Config(**profile)
+        if (
+            config.odometry_latency_ticks > 8
+            or delivery != tick + config.odometry_latency_ticks
+        ):
+            raise ValueError("native goal history delivery pairing mismatched")
+        vector(value["pose_m_rad"], 3)
+        source, trace = value["source"], value["computation"]
+        mapping(source, {"tick": tick}, ("position_m", "yaw_rad", "goal_m"))
+        vector(source["position_m"], 2)
+        canonical(source["yaw_rad"])
+        vector(source["goal_m"], 2)
+        mapping(
+            trace,
+            {
+                "schema": "micro-classifier/native-goal-computation-source/1",
+                "allowed_use": use,
+                "status": "recorded_native_goal_values",
+                **dict.fromkeys(flags, False),
+                "tick": tick,
+            },
+            ("inputs", "values"),
+        )
+        inputs, values = trace["inputs"], trace["values"]
+        mapping(
+            inputs,
+            {
+                "odometry_position_error_m": config.odometry_position_error,
+                "odometry_heading_error_rad": config.odometry_heading_error,
+            },
+            ("world_goal_m", "used_position_m", "yaw_rad"),
+        )
+        if type(inputs["yaw_rad"]) is not float or not math.isfinite(inputs["yaw_rad"]):
+            raise ValueError("unsupported native goal history yaw")
+        world = inputs["world_goal_m"]
+        mapping(world, {}, ("dtype", "words"))
+        if (
+            type(world["dtype"]) is not str
+            or world["dtype"]
+            not in (
+                np.dtype(np.float64).str,
+                np.dtype(np.int64).str,
+                np.dtype(np.uint64).str,
+            )
+            or type(world["words"]) is not tuple
+            or len(world["words"]) != 2
+        ):
+            raise ValueError("unsupported native goal history world dtype or words")
+        if world["dtype"] == np.dtype(np.float64).str:
+            vector(world["words"], 2)
+        else:
+            low, high = (
+                (-(1 << 63), (1 << 63) - 1)
+                if world["dtype"] == np.dtype(np.int64).str
+                else (0, (1 << 64) - 1)
+            )
+            if any(
+                type(word) is not int or not low <= word <= high
+                for word in world["words"]
+            ):
+                raise ValueError("unsupported native goal history integer world word")
+        vector(inputs["used_position_m"], 2)
+        mapping(
+            values,
+            {},
+            ("delta_m", "used_cosine", "used_sine", "native_goal_m", "stored_goal_m"),
+        )
+        vector(values["delta_m"], 2)
+        canonical(values["used_cosine"])
+        canonical(values["used_sine"])
+        vector(values["native_goal_m"], 2)
+        stored = values["stored_goal_m"]
+        if (
+            type(stored) is not tuple
+            or len(stored) != 2
+            or any(
+                type(word) is not int
+                or not 0 <= word <= 0xFFFFFFFF
+                or word & 0x7F800000 == 0x7F800000
+                for word in stored
+            )
+        ):
+            raise ValueError("unsupported native goal history stored word")
+        if (
+            inputs["used_position_m"] != source["position_m"]
+            or inputs["yaw_rad"].hex() != source["yaw_rad"]
+            or source["yaw_rad"] != value["pose_m_rad"][2]
+            or values["native_goal_m"] != source["goal_m"]
+        ):
+            raise ValueError("native goal history native word pairing mismatched")
+
+    packet(current)
+    previous = -1
+    for entry in history:
+        mapping(
+            entry, {}, ("source_epoch", "tick", "delivery_tick", "goal_computation")
+        )
+        saved = entry["goal_computation"]
+        packet(saved)
+        if (
+            not _native_tof_word_copy_matches(
+                entry["source_epoch"], current["source_epoch"]
+            )
+            or type(entry["tick"]) is not int
+            or not previous < entry["tick"] <= current["tick"]
+            or entry["tick"] != saved["tick"]
+            or type(entry["delivery_tick"]) is not int
+            or entry["delivery_tick"] != saved["delivery_tick"]
+            or saved["source_epoch"] != entry["source_epoch"]
+            or not _native_tof_word_copy_matches(saved["config"], current["config"])
+            or not _native_tof_word_copy_matches(
+                saved["computation"]["inputs"]["world_goal_m"],
+                current["computation"]["inputs"]["world_goal_m"],
+            )
+        ):
+            raise ValueError(
+                "native goal history epoch/profile/order pairing mismatched"
+            )
+        previous = entry["tick"]
+
+
 def _check_native_tof_postprocessing_history(history, source_history, source_epoch):
     if type(history) is not list or len(history) > 8:
         raise ValueError("native ToF postprocessing history budget exhausted")

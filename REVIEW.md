@@ -407,6 +407,34 @@ No protected studies/native/Arm/model/dependency/download/hardware work.
 Next typed bounded native goal history, then default-off recorder retention
 and closed matched delivery; all eight qualification/admission flags false.
 
+## 329. Typed Bounded Native Goal Computation History (2026-11-12)
+
+Begin clean pushed9a3fb69. Add separate four-key typed goal history validation,
+not retention/publication. Independently validate the current closed intake
+and <=8 saved packets before epoch/profile/world-input/ordering joins. Preserve
+native/true-pose/yaw word correspondence, exact inferred uint64/int64 world
+values, canonical finite float64 words, finite builtin uint32 storage words
+and literal false flags. Existing Config validation is reused with every field
+required; unsupported metadata, nonfinite words and zero-word mismatches reject
+explicitly without changing inputs. No cast/trig/noise/error law or source/
+physical/clock/one-use/admission qualification follows from these joins.
+
+Fresh27/60s, necessary repair27/60s reserve, root/360s. First27 PASS3.88s, no
+failure/repair; root PASS5289, known QDQ1 xfail/77 warnings164.71s. Root/scoped
+Ruff, changed format/whitespace, four hashes and every old source/control/
+decorator AST PASS. <=9 packet validations (current plus8), <=18 canonical
+decodes/23 data words/scalars and <=25 fixed Config fields per packet.
+Eight entries/gaps and signed/unsigned extremes are supported; ninth entry,
+wrong types, flags, epoch/profile/order, noncanonical/nonfinite data, native/
+yaw ties, storage and malformed current prototype reject. Shifted/repeated
+metadata are bounded unit fixtures only: not native acquisition history,
+coverage, timing, execution or labels. Both executed positions spent; unused
+repair is not refunded authority. Ignored `.git/returns-329-*` logs/hashes
+retained, no protected/native/Arm/model/dependency/download/hardware work.
+Next default-off <=8-record native goal recorder retention with prevalidation,
+original/closing ownership, exact-repeat deduplication, changed-repeat
+rejection, native-tick trimming and retained gaps; publication is later.
+
 ## Sources
 
 Hardware and tools:

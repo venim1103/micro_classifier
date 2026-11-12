@@ -17176,6 +17176,7 @@ class _SyntheticC1SourceRecorder:
         include_direction_pitch_residuals=False,
         include_direction_yaw_residuals=False,
         include_direction_up_copy_diagnostics=False,
+        include_postprocessing=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError("native ToF delivery requires synthetic_test_only=True")
@@ -17191,6 +17192,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_cylinder must be a literal bool")
         if type(include_direction) is not bool:
             raise ValueError("include_direction must be a literal bool")
+        if type(include_postprocessing) is not bool:
+            raise ValueError("include_postprocessing must be a literal bool")
         if type(include_direction_product_residuals) is not bool:
             raise ValueError(
                 "include_direction_product_residuals must be a literal bool"
@@ -17381,6 +17384,9 @@ class _SyntheticC1SourceRecorder:
         wall_before = self._tof_wall_history if include_wall else None
         cylinder_before = self._tof_cylinder_history if include_cylinder else None
         direction_before = self._tof_direction_history if include_direction else None
+        postprocessing_before = (
+            self._tof_postprocessing_history if include_postprocessing else None
+        )
         current_before, dynamics_before = self._current, self._dynamics_sample
         if environment is None or current_before is None or dynamics_before is None:
             return result
@@ -17410,8 +17416,11 @@ class _SyntheticC1SourceRecorder:
                 or include_wall
                 or include_cylinder
                 or include_direction
+                or include_postprocessing
             ):
                 _check_native_tof_history_layout(self._tof_history, template)
+            if include_postprocessing:
+                _check_native_tof_archive_words(self._tof_history, template)
             if include_timing:
                 _check_native_tof_timing_history(
                     self._tof_timing_history, self._tof_history, self._epoch
@@ -17431,6 +17440,10 @@ class _SyntheticC1SourceRecorder:
             if include_direction:
                 _check_native_tof_direction_history(
                     self._tof_direction_history, self._tof_history, self._epoch
+                )
+            if include_postprocessing:
+                _check_native_tof_postprocessing_history(
+                    self._tof_postprocessing_history, self._tof_history, self._epoch
                 )
             return _c1_source_binding_digest(
                 {
@@ -17468,6 +17481,11 @@ class _SyntheticC1SourceRecorder:
                     **(
                         {"tof_direction_history": self._tof_direction_history}
                         if include_direction
+                        else {}
+                    ),
+                    **(
+                        {"tof_postprocessing_history": self._tof_postprocessing_history}
+                        if include_postprocessing
                         else {}
                     ),
                     "binding": self._binding,
@@ -18039,6 +18057,11 @@ class _SyntheticC1SourceRecorder:
         try:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
+            if include_postprocessing:
+                _check_native_tof_archive_words(history_before, template)
+                _check_native_tof_postprocessing_history(
+                    postprocessing_before, history_before, self._epoch
+                )
             if include_timing:
                 _check_native_tof_timing_history(
                     timing_before, history_before, self._epoch
@@ -18094,6 +18117,10 @@ class _SyntheticC1SourceRecorder:
                 cylinder_binding = _c1_source_binding_digest(cylinder_before)
             if include_direction:
                 direction_binding = _c1_source_binding_digest(direction_before)
+            if include_postprocessing:
+                postprocessing_binding = _c1_source_binding_digest(
+                    postprocessing_before
+                )
             if include_pending_sources:
                 pending_before = environment.pending
                 pending_copy = _copy_native_tof_pending_queue(environment)
@@ -18215,6 +18242,35 @@ class _SyntheticC1SourceRecorder:
                 )
                 direction_output_binding = _c1_source_binding_digest(
                     {"direction": direction, "pending_direction": pending_direction}
+                )
+            if include_postprocessing:
+                postprocessing = _match_native_tof_retained_postprocessing(
+                    copied, postprocessing_before
+                )
+                pending_postprocessing = (
+                    tuple(
+                        _match_native_tof_retained_postprocessing(
+                            source, postprocessing_before
+                        )
+                        for source in pending_sources
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+                _check_native_tof_archive_words(
+                    [copied, *pending_sources] if include_pending_sources else [copied],
+                    template,
+                )
+                _check_native_tof_postprocessing_history(
+                    [postprocessing, *pending_postprocessing],
+                    history_before,
+                    self._epoch,
+                )
+                postprocessing_output_binding = _c1_source_binding_digest(
+                    {
+                        "postprocessing": postprocessing,
+                        "pending_postprocessing": pending_postprocessing,
+                    }
                 )
             if include_direction_product_residuals:
                 direction_products = direction_product_probe(direction)
@@ -18434,6 +18490,8 @@ class _SyntheticC1SourceRecorder:
             _check_native_tof_history_layout(self._tof_history, template)
             observed_after = producer()
             _check_native_tof_delivery_frame(observed_after, self._current)
+            if include_postprocessing:
+                _check_native_tof_archive_words(self._tof_history, template)
             if include_pending_sources:
                 pending_after = _match_native_tof_pending_sources(
                     environment, self._tof_history, self._epoch
@@ -18520,6 +18578,24 @@ class _SyntheticC1SourceRecorder:
                     tuple(
                         _match_native_tof_retained_direction(
                             source, self._tof_direction_history
+                        )
+                        for source in pending_after
+                    )
+                    if include_pending_sources
+                    else ()
+                )
+            if include_postprocessing:
+                _check_native_tof_archive_words(self._tof_history, template)
+                _check_native_tof_postprocessing_history(
+                    self._tof_postprocessing_history, self._tof_history, self._epoch
+                )
+                postprocessing_after = _match_native_tof_retained_postprocessing(
+                    live_after, self._tof_postprocessing_history
+                )
+                pending_postprocessing_after = (
+                    tuple(
+                        _match_native_tof_retained_postprocessing(
+                            source, self._tof_postprocessing_history
                         )
                         for source in pending_after
                     )
@@ -18736,6 +18812,11 @@ class _SyntheticC1SourceRecorder:
                 )
             if include_pending_sources:
                 pending_queue_after = _copy_native_tof_pending_queue(environment)
+            if include_postprocessing:
+                _check_native_tof_archive_words(self._tof_history, template)
+                _check_native_tof_postprocessing_history(
+                    self._tof_postprocessing_history, self._tof_history, self._epoch
+                )
             if (
                 include_timing
                 or include_selection
@@ -18807,6 +18888,38 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF pending context or outgoing sources changed"
                 )
+            if include_postprocessing:
+                _check_native_tof_postprocessing_history(
+                    [postprocessing, *pending_postprocessing],
+                    self._tof_history,
+                    self._epoch,
+                )
+                _check_native_tof_postprocessing_history(
+                    [postprocessing_after, *pending_postprocessing_after],
+                    self._tof_history,
+                    self._epoch,
+                )
+                if (
+                    self._tof_postprocessing_history is not postprocessing_before
+                    or not _native_tof_word_copy_matches(
+                        postprocessing, postprocessing_after
+                    )
+                    or not _native_tof_word_copy_matches(
+                        pending_postprocessing, pending_postprocessing_after
+                    )
+                    or _c1_source_binding_digest(self._tof_postprocessing_history)
+                    != postprocessing_binding
+                    or _c1_source_binding_digest(
+                        {
+                            "postprocessing": postprocessing,
+                            "pending_postprocessing": pending_postprocessing,
+                        }
+                    )
+                    != postprocessing_output_binding
+                ):
+                    raise ValueError(
+                        "native ToF retained postprocessing or outgoing pairs changed"
+                    )
             if include_direction:
                 _check_native_tof_direction_history(
                     [direction, *pending_direction], self._tof_history, self._epoch
@@ -19280,6 +19393,10 @@ class _SyntheticC1SourceRecorder:
             result["direction"] = direction
             if include_pending_sources:
                 result["pending_direction"] = pending_direction
+        if include_postprocessing:
+            result["postprocessing"] = postprocessing
+            if include_pending_sources:
+                result["pending_postprocessing"] = pending_postprocessing
         if include_wall_residuals:
             result["wall_residuals"] = wall_residuals
             if include_pending_sources:

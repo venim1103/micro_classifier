@@ -14728,6 +14728,7 @@ def test_native_tof_selection_snapshot(
         (None, "pitch"),
         (None, "yaw"),
         (None, "up"),
+        ("postprocessing", False),
     ),
 )
 def test_native_tof_wall_snapshot(
@@ -14745,8 +14746,18 @@ def test_native_tof_wall_snapshot(
     include_products = products or ((pitch or yaw or up_copy) and case == "combined")
     include_pitch = pitch or ((yaw or up_copy) and case == "combined")
     include_yaw = yaw or (up_copy and case == "combined")
+    postprocessing = cylinder == "postprocessing"
     direction = cylinder is None
-    kind = "direction" if direction else "cylinder" if cylinder else "wall"
+    cylinder = cylinder is True
+    kind = (
+        "postprocessing"
+        if postprocessing
+        else "direction"
+        if direction
+        else "cylinder"
+        if cylinder
+        else "wall"
+    )
     history_name = f"_tof_{kind}_history"
     matcher_name = f"_match_native_tof_retained_{kind}"
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
@@ -14836,7 +14847,7 @@ def test_native_tof_wall_snapshot(
             **{f"capture_native_tof_{kind}": True},
             **(
                 {"capture_native_tof_wall": True}
-                if (cylinder or direction) and combined
+                if (cylinder or direction or postprocessing) and combined
                 else {}
             ),
             capture_native_tof_selection=combined,
@@ -14852,7 +14863,7 @@ def test_native_tof_wall_snapshot(
                 **{f"include_{kind}": True},
                 **(
                     {"include_wall": True}
-                    if (cylinder or direction) and combined
+                    if (cylinder or direction or postprocessing) and combined
                     else {}
                 ),
                 include_selection=combined,
@@ -14875,13 +14886,20 @@ def test_native_tof_wall_snapshot(
     elif case == "type":
         trace = getattr(owner, history_name)[0][kind]
         selected = (
-            trace["direction_generation"]
+            trace
+            if postprocessing
+            else trace["direction_generation"]
             if direction
             else trace["cylinders"][0]["sides"][0]
             if cylinder
             else trace["walls"][0]
         )
-        if direction:
+        if postprocessing:
+            selected["valid_before_dropout"] = (
+                1,
+                *selected["valid_before_dropout"][1:],
+            )
+        elif direction:
             selected["pitch_sine"] = True
         else:
             selected["hit"] = (1, *selected["hit"][1:])
@@ -14891,7 +14909,8 @@ def test_native_tof_wall_snapshot(
         paired = owner._tof_history[0]["native_source"]
         words = ("0.0", *paired["world_frame_unit_rays"][1:])
         paired["world_frame_unit_rays"] = words
-        getattr(owner, history_name)[0][kind]["world_frame_unit_rays"] = words
+        if not postprocessing:
+            getattr(owner, history_name)[0][kind]["world_frame_unit_rays"] = words
         if direction:
             getattr(owner, history_name)[0][kind]["direction_generation"][
                 "world_frame_unit_rays"
@@ -14948,7 +14967,7 @@ def test_native_tof_wall_snapshot(
                 "late_timing_budget",
             ):
                 name = case.removeprefix("late_").removesuffix("_budget")
-                if (cylinder or direction) and name == "wall":
+                if (cylinder or direction or postprocessing) and name == "wall":
                     name = kind
                 getattr(owner, f"_tof_{name}_history").extend(
                     getattr(owner, f"_tof_{name}_history") * 8
@@ -14961,7 +14980,11 @@ def test_native_tof_wall_snapshot(
 
     def other_wall(*args, **kwargs):
         work["other_wall"] += 1
-        assert (cylinder or direction) and combined and work["other_wall"] <= 6
+        assert (
+            (cylinder or direction or postprocessing)
+            and combined
+            and work["other_wall"] <= 6
+        )
         return original_other_wall(*args, **kwargs)
 
     def selection(*args, **kwargs):
@@ -15100,13 +15123,22 @@ def test_native_tof_wall_snapshot(
             elif case == "late_wall":
                 trace = getattr(owner, history_name)[0][kind]
                 selected = (
-                    trace["direction_generation"]
+                    trace
+                    if postprocessing
+                    else trace["direction_generation"]
                     if direction
                     else trace["cylinders"][0]["sides"][0]
                     if cylinder
                     else trace["walls"][0]
                 )
-                if direction:
+                if postprocessing:
+                    selected["noise_draw_m"] = (
+                        math.nextafter(
+                            float.fromhex(selected["noise_draw_m"][0]), math.inf
+                        ).hex(),
+                        *selected["noise_draw_m"][1:],
+                    )
+                elif direction:
                     name = (
                         "pitched_up"
                         if up_copy
@@ -15129,7 +15161,9 @@ def test_native_tof_wall_snapshot(
             elif case == "outgoing":
                 outgoing["wall"][kind]["source_qualified"] = True
             elif case == "late_owner":
-                if up_copy:
+                if postprocessing:
+                    owner._tof_history[0]["native_source"].pop("inputs")
+                elif up_copy:
                     generation = getattr(owner, history_name)[0][kind][
                         "direction_generation"
                     ]
@@ -15168,7 +15202,7 @@ def test_native_tof_wall_snapshot(
         )
 
     monkeypatch.setattr(diagnostics, matcher_name, matched)
-    if cylinder or direction:
+    if cylinder or direction or postprocessing:
         monkeypatch.setattr(diagnostics, "_match_native_tof_retained_wall", other_wall)
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_selection", selection)
     monkeypatch.setattr(diagnostics, "_match_native_tof_retained_timing", timing)
@@ -15207,7 +15241,11 @@ def test_native_tof_wall_snapshot(
             synthetic_test_only=True,
             include_pending_sources=case != "delivered_only",
             **{f"include_{kind}": case != "default"},
-            **({"include_wall": True} if (cylinder or direction) and combined else {}),
+            **(
+                {"include_wall": True}
+                if (cylinder or direction or postprocessing) and combined
+                else {}
+            ),
             include_selection=combined,
             include_timing=combined,
             include_direction_norm_residuals=combined,
@@ -15252,6 +15290,15 @@ def test_native_tof_wall_snapshot(
                         selected[kind]["direction_generation"]["world_frame_unit_rays"]
                         == selected[kind]["world_frame_unit_rays"]
                     )
+                elif postprocessing:
+                    assert (
+                        selected[kind]["stored_ranges_m"]
+                        == result["source"]["sample_words"]
+                    )
+                    assert (
+                        selected[kind]["valid_after_dropout"]
+                        == result["source"]["valid_mask"]
+                    )
                 for key in ("source_epoch", "tick", "delivery_tick"):
                     assert selected[key] == result["source"][key]
                 assert (
@@ -15270,6 +15317,14 @@ def test_native_tof_wall_snapshot(
                         for key in ("source_epoch", "tick", "delivery_tick"):
                             assert entry[key] == source[key]
                         assert all(entry[kind][flag] is False for flag in flags)
+                        if postprocessing:
+                            assert (
+                                entry[kind]["stored_ranges_m"] == source["sample_words"]
+                            )
+                            assert (
+                                entry[kind]["valid_after_dropout"]
+                                == source["valid_mask"]
+                            )
                 else:
                     assert f"pending_{kind}" not in result
                 if include_products:
@@ -15548,6 +15603,8 @@ def test_native_tof_wall_snapshot(
                     "pending_cylinder",
                     "direction",
                     "pending_direction",
+                    "postprocessing",
+                    "pending_postprocessing",
                     "selection",
                     "pending_selection",
                     "timing",

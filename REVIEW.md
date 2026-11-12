@@ -513,6 +513,50 @@ study/model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
 Next independently bounded delivered/pending composition using original/closing
 native/source/RNG/profile/pose/input/history/stored-word/mask and outgoing joins.
 
+## 314. Closed Native ToF Postprocessing Delivery Publication (2026-11-12)
+
+Begin clean pushed9e8d6d5. Local hypothesis from the existing direction snapshot:
+append literal `include_postprocessing=False`; compose separately retained traces
+against exact delivered and optional pending native acquisition identities.
+Independent native archive-word validation precedes original/ownership/copy/
+closing companion guards and digests, including after closing frame and pending
+queue callbacks. Recheck typed original/closing companion histories, detached
+outputs, stored words and final masks before publishing. Existing producer/RNG/
+profile/pose/input/frame/pending-queue ownership checks remain in place.
+Missing/ambiguous/unsupported/nonfinite or changed source returns the existing
+explicit unknown reason, without source/frame/companion publication. Default
+adds no postprocessing keys or intake/matcher calls; no sensor replay or new draw.
+
+Extend only existing24-case wall/cylinder/direction snapshot matrix with24
+postprocessing cases; old168 controls/budgets remain unchanged. Per new fixture:
+<=4 steps,5 reads,3 retentions/geometries,6 companion/other-wall/timing/selection/
+norm matches,2 pending matches,4 queue copies,2 frame checks,64 bindings and one
+late mutation. Capture and retain at most three actual fresh acquisitions before
+poisoning intake/read/retention/replay/step/reset/clock/geometry paths. Check exact
+delivered/pending identities and stored-word/mask joins, detached copies, held/
+delivered-only/default output keys, prehash native/canonical/budget rejection,
+closing native-input removal and late outgoing/owner/history/queue/report changes.
+No new arithmetic report or numerical/noise-law adoption is added.
+
+Fresh three routine positions: first24/60s, sole necessary repair24/60s,
+required root/360s; failures/aborts/unknown spent, no historical/protected refund.
+Keep ignored `.git/returns-314-*` outputs/hashes, serialize source-sensitive
+checks. First24 PASS5.64s, all four hashes stable; scoped Ruff/changed format/
+whitespace PASS. Pylance signature check found no resolved call sites, not
+static proof of every dynamic caller. Required root PASS4989/known QDQ xfail/
+71 warnings/158.08s; root Ruff/changed format/whitespace PASS, all four source
+hashes stable. Scoped diff reviewed; all previous module/recorder nodes, API
+defaults and old168-case prefix conserved in AST. Two of three fresh positions
+spent, no failure/abort/refund; unused repair is not follow-on authority.
+No successful code gate repeated for documentation closeout.
+
+All eight flags remain false; raw unsupported/nonfinite source stays unknown.
+Matching traces/words are not internal noise/dropout/clip arithmetic, probability,
+geometry/coverage/error/source/physical/clock/one-use/permission/admission proof.
+No new study/model/dependency/download/hardware/extra native/Arm/sanitizer opt-in.
+Next reassess independently supported native postprocessing operation/operand
+correspondence, retaining source observations rather than adopting a noise law.
+
 ## Sources
 
 Hardware and tools:

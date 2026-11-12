@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §313 for the active retained-postprocessing matcher;
+Read [REVIEW.md][review] §314 for the active postprocessing delivery publication;
+§313 records the completed retained-postprocessing matcher;
 §312 records the completed postprocessing retention checkpoint;
 §311 preserves the cloud harness handoff/restart prompt;
 §310 records completed typed postprocessing history and the former WIP gate;
@@ -70,8 +71,9 @@ cold cylinder/acquisition trace with their arithmetic/ownership limits.
 §§226-228 preserve earlier interrupted/unknown
 attempts and autonomous routine-recovery authority; those attempts are not refunded.
 Default-off <=8-record postprocessing recorder retention and its required gate
-are complete. Retained matching and its required gate are complete. Next
-separately bounded delivered/pending publication
+are complete. Retained matching and delivered/pending publication are complete.
+Next independently supported postprocessing operation/operand correspondence;
+preserve
 with original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.
 Floor division reports already

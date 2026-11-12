@@ -2438,6 +2438,25 @@ numerical/noise-law/geometry/coverage/error/source/physical/clock/one-use/admiss
 qualification are separate; all eight flags remain false.
 [Checkpoint §313][native-tof-postprocessing-match-review] retains finite checks.
 
+#### Closed ToF Postprocessing Delivery Publication (2026-11-12)
+
+The [offline delivery snapshot][c1-prototype-source] appends literal
+`include_postprocessing=False`. Opt-in publishes detached `postprocessing` and,
+only with pending-source inclusion, `pending_postprocessing` records joined to
+exact typed native epoch/acquisition/delivery identities. Stored float32 words
+and final validity masks match the corresponding delivered or pending samples.
+
+Native archive-word prevalidation precedes original/ownership/copy/closing
+companion guards and digests, including after closing frame/queue callbacks.
+Original/closing histories, detached outputs and existing producer/RNG/profile/
+pose/input/frame/pending-queue ownership checks must agree. Missing, unsupported,
+nonfinite or changed records return explicit unknown with no partial publication.
+Default output keys/operations are unchanged; no intake, replay or RNG draw is
+introduced. These are source observations, not arithmetic/noise-law/numerical/
+geometry/coverage/error/physical/clock/one-use/admission qualification; all eight
+flags remain false. [Checkpoint §314][native-tof-postprocessing-delivery-review]
+retains finite controls and evidence limits.
+
 [c1-motion-source]: ../../sim/rover.py
 [c1-prototype-source]: ../../sim/diagnostics.py
 [floor-rules]: ../../sim/rules.py
@@ -2469,3 +2488,4 @@ qualification are separate; all eight flags remain false.
 [native-tof-postprocessing-history-review]: ../../REVIEW.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11
 [native-tof-postprocessing-retention-review]: ../../REVIEW.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
 [native-tof-postprocessing-match-review]: ../../REVIEW.md#313-bounded-retained-native-tof-postprocessing-matching-2026-11-12
+[native-tof-postprocessing-delivery-review]: ../../REVIEW.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12

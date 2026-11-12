@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §333 for supplied-word native goal delta discrepancies;
+Read [REVIEW.md][review] §334 for intact native goal prerequisite archival;
+§333 records supplied-word native goal delta discrepancies;
 §332 records closed default-off native goal delivery;
 §331 records exact retained native goal matching;
 §330 records default-off native goal recorder retention;
@@ -99,6 +100,7 @@ Standalone clip/select word diagnostics and their required gate are complete;
 retained clip/select joins and their required gate are complete.
 Whole311-315 checkpoints are archived with historical anchors and ledgers.
 Whole316-320 checkpoints are archived with historical anchors and ledgers.
+Whole321-325 checkpoints are archived with historical anchors and ledgers.
 Supplied selected/storage residuals and their required gate are complete.
 Retained storage report joins and their required gate are complete.
 Native integration source/arithmetic already exists and must not be duplicated.
@@ -109,7 +111,7 @@ retained exact goal matching and its required gate are complete;
 closed default-off latency0 delivered-goal publication and its gate are complete.
 Pending goal publication is unsupported by frozen C1's zero-latency domain;
 supplied-word native goal delta discrepancies and their gate are complete.
-Next lossless whole321-325 archival, then matched retained goal delta reports,
+Next matched retained goal delta reports,
 not noise/geometry or error-bound adoption.
 Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain

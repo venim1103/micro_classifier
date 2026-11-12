@@ -2438,10 +2438,10 @@ retained matching/report publication remains separate.
 [native-tof-dropout-review]: ../review/316-320.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12
 [native-tof-dropout-match-review]: ../review/316-320.md#319-matched-native-tof-dropout-reports-2026-11-12
 [native-tof-clip-selection-review]: ../review/316-320.md#320-supplied-word-native-tof-clipselection-correspondence-2026-11-12
-[native-tof-clip-selection-match-review]: ../../REVIEW.md#321-matched-native-tof-clipselection-reports-2026-11-12
-[native-tof-storage-review]: ../../REVIEW.md#323-supplied-word-native-tof-selectedstorage-residuals-2026-11-12
-[native-tof-storage-match-review]: ../../REVIEW.md#324-matched-native-tof-selectedstorage-reports-2026-11-12
-[native-goal-cold-source-review]: ../../REVIEW.md#325-cold-native-goal-computation-source-2026-11-12
+[native-tof-clip-selection-match-review]: ../review/321-325.md#321-matched-native-tof-clipselection-reports-2026-11-12
+[native-tof-storage-review]: ../review/321-325.md#323-supplied-word-native-tof-selectedstorage-residuals-2026-11-12
+[native-tof-storage-match-review]: ../review/321-325.md#324-matched-native-tof-selectedstorage-reports-2026-11-12
+[native-goal-cold-source-review]: ../review/321-325.md#325-cold-native-goal-computation-source-2026-11-12
 [native-tof-postprocessing-acquisition-review]: ../review/306-310.md#307-fresh-native-tof-postprocessing-acquisition-pairing-2026-11-11
 [native-tof-postprocessing-delivery-review]: ../review/311-315.md#314-closed-native-tof-postprocessing-delivery-publication-2026-11-12
 [native-tof-postprocessing-history-review]: ../review/306-310.md#310-typed-bounded-native-tof-postprocessing-history-2026-11-11

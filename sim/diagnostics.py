@@ -16605,6 +16605,53 @@ def _match_native_tof_retained_wall(source, wall_history):
     return deepcopy(matches[0])
 
 
+def _match_native_goal_retained_computation(source, history):
+    if (
+        type(source) is not dict
+        or len(source) != 4
+        or any(type(key) is not str for key in source)
+        or set(source) != {"source_epoch", "tick", "delivery_tick", "stored_goal_m"}
+        or type(source["source_epoch"]) is not str
+        or len(source["source_epoch"]) != 32
+        or any(type(source[key]) is not int for key in ("tick", "delivery_tick"))
+        or not 0 <= source["tick"] <= source["delivery_tick"] <= 0xFFFFFFFF // 50000
+        or type(source["stored_goal_m"]) is not tuple
+        or len(source["stored_goal_m"]) != 2
+        or any(
+            type(word) is not int
+            or not 0 <= word <= 0xFFFFFFFF
+            or word & 0x7F800000 == 0x7F800000
+            for word in source["stored_goal_m"]
+        )
+    ):
+        raise ValueError("unsupported native goal retained target metadata or words")
+    if type(history) is not list or len(history) > 8:
+        raise ValueError("native goal retained history budget exhausted")
+    if not history:
+        raise ValueError("native goal retained pair missing")
+    last = history[-1]
+    if type(last) is not dict or "goal_computation" not in last:
+        raise ValueError("unsupported native goal retained record")
+    _check_native_goal_computation_history(history, last["goal_computation"])
+    matches = [
+        entry
+        for entry in history
+        if all(
+            _native_tof_word_copy_matches(entry[key], source[key])
+            for key in ("source_epoch", "tick", "delivery_tick")
+        )
+    ]
+    if len(matches) != 1:
+        raise ValueError("native goal retained pair missing or ambiguous")
+    matched = matches[0]
+    if (
+        matched["goal_computation"]["computation"]["values"]["stored_goal_m"]
+        != source["stored_goal_m"]
+    ):
+        raise ValueError("native goal retained stored word pairing mismatched")
+    return deepcopy(matched)
+
+
 def _match_native_tof_retained_direction(source, direction_history):
     if type(direction_history) is not list or len(direction_history) > 8:
         raise ValueError("native ToF retained direction history budget exhausted")

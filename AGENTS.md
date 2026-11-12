@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §330 for default-off native goal recorder retention;
+Read [REVIEW.md][review] §331 for exact retained native goal matching;
+§330 records default-off native goal recorder retention;
 §329 records typed bounded native goal history;
 §328 records intact prerequisite checkpoint archival;
 §327 records closed native goal acquisition intake;
@@ -102,7 +103,8 @@ Native integration source/arithmetic already exists and must not be duplicated.
 Cold goal consumed-operand/storage capture, actual acquisition pairing,
 closed intake and typed bounded history with their required gates are complete.
 Default-off <=8-record goal retention and its required gate are complete;
-next retained exact goal matching, then closed matched delivery.
+retained exact goal matching and its required gate are complete;
+next closed default-off matched goal delivery.
 Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.

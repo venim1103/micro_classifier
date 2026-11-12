@@ -32877,6 +32877,106 @@ def test_native_goal_recorder_retention(
 @pytest.mark.parametrize(
     "case",
     (
+        "copy",
+        "budget",
+        "empty",
+        "list_type",
+        "target_type",
+        "target_bool",
+        "tick",
+        "delivery",
+        "epoch",
+        "stored_bool",
+        "stored_inf",
+        "stored_tie",
+        "ambiguous",
+        "corrupt_history",
+        "extra_target",
+    ),
+)
+def test_native_goal_retained_matching(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    packet = diagnostics._sample_simulator_native_goal_computation_source(
+        environment, owner._epoch
+    )
+    history = [
+        {
+            "source_epoch": packet["source_epoch"],
+            "tick": packet["tick"],
+            "delivery_tick": packet["delivery_tick"],
+            "goal_computation": packet,
+        }
+    ]
+    source = {
+        "source_epoch": packet["source_epoch"],
+        "tick": packet["tick"],
+        "delivery_tick": packet["delivery_tick"],
+        "stored_goal_m": packet["computation"]["values"]["stored_goal_m"],
+    }
+    if case == "budget":
+        history *= 9
+    elif case == "empty":
+        history.clear()
+    elif case == "list_type":
+        history = tuple(history)
+    elif case == "target_type":
+        source = None
+    elif case == "target_bool":
+        source["tick"] = True
+    elif case in ("tick", "delivery"):
+        source["tick" if case == "tick" else "delivery_tick"] += 1
+    elif case == "epoch":
+        source["source_epoch"] = "0" * 32
+    elif case == "stored_bool":
+        source["stored_goal_m"] = (True, 0)
+    elif case == "stored_inf":
+        source["stored_goal_m"] = (0x7F800000, 0)
+    elif case == "stored_tie":
+        packet["computation"]["values"]["stored_goal_m"] = (0, 0)
+        source["stored_goal_m"] = (0x80000000, 0)
+    elif case == "ambiguous":
+        history.append(deepcopy(history[0]))
+    elif case == "corrupt_history":
+        packet["computation"]["values"]["delta_m"] = ("inf", "0x0.0p+0")
+    elif case == "extra_target":
+        source["extra"] = True
+    rng = deepcopy(environment.rng.bit_generator.state)
+    tick = environment.tick
+    work = {"forbidden": 0}
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("retained matching must not replay/read/step/trig/clock")
+
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if case != "copy":
+        with pytest.raises(ValueError, match="native goal"):
+            diagnostics._match_native_goal_retained_computation(source, history)
+    else:
+        result = diagnostics._match_native_goal_retained_computation(source, history)
+        assert diagnostics._native_tof_word_copy_matches(result, history[0])
+        result["goal_computation"]["config"]["max_speed"] = -1
+        assert packet["config"]["max_speed"] > 0
+        assert result["goal_computation"]["source_qualified"] is False
+        assert result["goal_computation"]["command_admission_qualified"] is False
+    assert environment.rng.bit_generator.state == rng
+    assert environment.tick == tick
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "exact",
         "mismatch",

@@ -2378,7 +2378,19 @@ or numerical/noise/physical/source/clock/execution/admission qualification;
 all eight flags false. [Checkpoint §330][native-goal-retention-review] records
 the finite controls and necessary fixture/closing-guard repairs.
 
+#### Exact Retained Native Goal Matching (2026-11-12)
+
+A four-key typed target's epoch/tick/delivery and two finite builtin uint32
+goal words are validated independently before <=8 typed retained records.
+One unique exact epoch/tick/delivery match and exact storage words permit a
+detached record; unsupported/missing/ambiguous/nonfinite/word-tie targets
+reject explicitly. No numerical equality normalization, source/geometry/
+error/clock/execution/physical/admission qualification or publication follows;
+all eight flags false. [Checkpoint §331][native-goal-match-review] records
+bounded controls; closed delivered/pending publication remains separate.
+
 [c1-motion-source]: ../../sim/rover.py
+[native-goal-match-review]: ../../REVIEW.md#331-exact-retained-native-goal-matching-2026-11-12
 [native-goal-retention-review]: ../../REVIEW.md#330-default-off-native-goal-recorder-retention-2026-11-12
 [native-goal-history-review]: ../../REVIEW.md#329-typed-bounded-native-goal-computation-history-2026-11-12
 [native-goal-intake-review]: ../../REVIEW.md#327-closed-native-goal-computation-intake-2026-11-12

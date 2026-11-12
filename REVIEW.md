@@ -466,6 +466,32 @@ studies/native/Arm/model/dependency/download/hardware work. Next separately
 retained exact goal epoch/tick/delivery matching and closed publication;
 missing/unsupported/nonfinite joins stay unknown without partial fields.
 
+## 331. Exact Retained Native Goal Matching (2026-11-12)
+
+Begin clean pushed31a8dd1. Add a separate bounded retained matcher, not
+publication. Independently validate a four-key target with32-character epoch,
+typed C1-range tick/delivery and two finite builtin uint32 goal words before
+retained history. Require <=8 independently validated typed records and one
+unique exact epoch/tick/delivery match, then exact stored-word correspondence.
+Return a detached record; missing/ambiguous/unsupported/nonfinite/changed-word
+targets reject explicitly without partial output. Equal numerical zeros with
+different storage words remain unresolved, not normalized. All flags false;
+no source/geometry/error/clock/one-use/physical/admission qualification follows.
+
+Fresh15/60s, necessary repair15/60s reserve, root/360s. First15 PASS4.02s, no
+failure/repair; root PASS5329, known QDQ1 xfail/77 warnings188.07s. Root/scoped
+Ruff, changed format/whitespace, four hashes and every old source/control/
+decorator AST PASS. <=8 retained candidates/9 packet validations, one detached
+result; one actual setup capture/intake, no replay/draw/trig/clock/geometry in
+matching. Typed targets, empty/oversized/nonlist histories, exact epoch/tick/
+delivery, ambiguity, raw unknown words, zero storage ties and detached false
+flags are covered. Both executed positions spent; unused repair is not
+refunded authority. Ignored `.git/returns-331-*` logs/hashes retained, no
+protected/native/Arm/model/dependency/download/hardware work. Next separately
+closed default-off goal publication from delivered/pending bindings, preserving
+original/closing owner/native/RNG/profile/pose/input/history/stored-word joins
+and explicit unknown without partial fields.
+
 ## Sources
 
 Hardware and tools:

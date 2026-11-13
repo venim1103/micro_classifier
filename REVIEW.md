@@ -562,6 +562,38 @@ Next supplied target/yaw clipping correspondence from existing receipt fields,
 then supported closed current receipt/update reports; Q0-Q5 acceptance remains
 unresolved, with no usable command admitted.
 
+## 343. Supplied Target and Yaw Clipping Correspondence (2026-11-13)
+
+Begin clean pushedc5257e4. Owning RoverEnv.step clips submitted speed to the
+existing [0,max_speed] and yaw rate to [-max_turn_rate,max_turn_rate]; actual
+receipts already retain submitted/profile/clipped words. Existing receipt
+chain checks validate duration/continuity/final action, not these clamps.
+Separate six-word diagnostics follow the completed ToF clamp-word pattern,
+without generalizing its64-ray schema or changing either producer.
+
+Report exact selected-value ratios and numeric/unique-candidate word
+correspondence separately. Equal-valued different zero candidates remain
+unresolved, not normalized or selected by an inferred native branch law.
+Canonical +/-inf action/output is unknown per component; NaN/invalid words
+or nonfinite/nonpositive existing Config limits reject, raw inputs unchanged.
+No rounding/error/source/timing/physical/command adoption; eight flags false.
+
+Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS5.44s/
+4719 deselected, no repair. Fixed <=6 decodes,2 entries,4 min/max comparisons,
+6 candidate/2 observed numeric equalities and2 builtin dyadic ratios; <=3
+candidate words per entry. No rational engine or arithmetic. The actual control
+consumes the existing captured receipt without additional capture; independent
+Fraction controls cover both sides/boundaries, identity, zero selection ties/
+word mismatches, subnormal, nonfinite and shape/profile/permission/work limits.
+Root PASS5666, known QDQ1 xfail/77 warnings193.37s; root Ruff/changed format/
+whitespace/four hashes and prior module/control/decorator AST conservation/
+scoped references PASS. Executed positions spent; unused repair not authority.
+Ignored `.git/returns-343-*` logs/hashes retained. No replay/draw/trig/clock/
+geometry, protected study/model/dependency/download/hardware/native/Arm or
+extra opt-in work. Next lossless whole331-335 archival before more root growth,
+then supported closed current receipt/update reports. Q0-Q5 still requires
+independent acceptance; no usable command is admitted.
+
 ## Sources
 
 Hardware and tools:

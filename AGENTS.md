@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §342 for supplied pre-integration speed-update residuals;
+Read [REVIEW.md][review] §343 for supplied target/yaw clipping correspondence;
+§342 records supplied pre-integration speed-update residuals;
 §341 records matched retained goal storage reports;
 §340 records supplied native/stored goal-word correspondence;
 §339 records matched retained native goal expression reports;
@@ -131,8 +132,10 @@ are complete; supplied native/stored goal-word correspondence and its gate are
 complete; default-off matched retained storage reports and their gate are
 complete. Q2 supplied pre-integration speed-update residuals and their gate are
 complete using existing receipt operands, not a new capture or uniform bound.
-Next close supplied target/yaw clipping correspondence before composing supported
-current receipt/update reports; independently qualified setup/source/coverage/
+Supplied target/yaw clipping correspondence and its gate are complete; equal
+values with different zero words retain unresolved selection ties.
+Next archive intact331-335 checkpoints before further root review growth, then
+compose supported current receipt/update reports; independently qualified setup/source/coverage/
 error/timing and request/guard/executor dependencies remain unresolved.
 Do not duplicate completed integration/floor/goal reports. Preserve consumed
 coefficients and observed delta without trig/noise/geometry/error adoption;

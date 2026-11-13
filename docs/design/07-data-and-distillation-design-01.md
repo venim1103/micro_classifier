@@ -907,6 +907,25 @@ qualification. Eight flags remain false. The [checkpoint][native-speed-update-re
 records direct/actual-word controls and the required gate.
 
 
+##### Supplied Target and Yaw Clipping Words (2026-11-13)
+
+The private `_native_action_clipping_diagnostics` compares six canonical
+submitted/profile/observed words for the existing speed [0,max_speed] and yaw
+[-max_turn_rate,max_turn_rate] clamps. Numeric equality and unique equal-value
+word-candidate correspondence remain separate; different zero-word candidates
+stay unresolved, not an inferred native selection or normalization law.
+Canonical nonfinite action/output is unknown per component; malformed/NaN words
+and nonfinite/nonpositive existing Config limits reject without mutation.
+
+Literal synthetic permission and <=6 decodes/2 entries/4 min-max comparisons/
+6 candidate and2 observed numeric equalities/2 builtin dyadic ratios bound the
+work, with <=3 candidate words per entry and no rational engine. Actual receipts
+already contain all operands: no capture, read, replay, RNG, trig, clock or
+controller change. This is not source/uniform-error/physical/command acceptance;
+eight flags stay false. The [checkpoint][native-action-clipping-review] preserves
+the direct/actual-word controls, work limits and required gate.
+
+
 ##### Current Owned Native Arithmetic Composition (2026-11-09)
 
 The private recorder's strict opt-in `snapshot_native_integration_arithmetic`
@@ -2206,6 +2225,7 @@ figure is not an established minimum.
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09
 [native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13
+[native-action-clipping-review]: ../../REVIEW.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
 [native-arithmetic-review]: ../review/183-220.md#196-supported-native-word-arithmetic-discrepancies-2026-11-09
 [native-arithmetic-composition-review]: ../review/183-220.md#197-current-owned-native-arithmetic-composition-2026-11-09
 [native-arithmetic-record-review]: ../review/183-220.md#198-exact-native-arithmetic-record-validation-2026-11-09

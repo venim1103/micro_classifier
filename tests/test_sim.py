@@ -33456,6 +33456,193 @@ def test_native_speed_update_residuals(
     "case",
     (
         "actual",
+        "below",
+        "above",
+        "inside",
+        "lower_boundary",
+        "upper_boundary",
+        "zero_tie",
+        "zero_word_mismatch",
+        "mismatch",
+        "subnormal",
+        "nonfinite_input",
+        "nonfinite_output",
+        "permission",
+        "count",
+        "collection",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "nan",
+        "limit_inf",
+        "speed_zero",
+        "yaw_negative",
+        "speed_bool",
+        "extra_word",
+    ),
+)
+def test_native_action_clipping_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    words = tuple(value.hex() for value in (0.125, 0.5, 0.125, 0.3, 0.6, 0.3))
+    valid = case in (
+        "actual",
+        "below",
+        "above",
+        "inside",
+        "lower_boundary",
+        "upper_boundary",
+        "zero_tie",
+        "zero_word_mismatch",
+        "mismatch",
+        "subnormal",
+        "nonfinite_input",
+        "nonfinite_output",
+    )
+    if case == "actual":
+        receipt = c1_motion_receipt_source_fixture[0]._motion_receipt_source["receipt"]
+        words = tuple(
+            float(value).hex()
+            for value in (
+                receipt["submitted_action"][0],
+                receipt["config"]["max_speed"],
+                receipt["clipped_target_speed_m_s"],
+                receipt["submitted_action"][1],
+                receipt["config"]["max_turn_rate"],
+                receipt["clipped_turn_rate_rad_s"],
+            )
+        )
+    elif case in ("below", "above", "lower_boundary", "upper_boundary"):
+        words = tuple(
+            value.hex()
+            for value in {
+                "below": (-0.25, 0.5, 0.0, -1.0, 0.6, -0.6),
+                "above": (0.75, 0.5, 0.5, 1.0, 0.6, 0.6),
+                "lower_boundary": (0.0, 0.5, 0.0, -0.6, 0.6, -0.6),
+                "upper_boundary": (0.5, 0.5, 0.5, 0.6, 0.6, 0.6),
+            }[case]
+        )
+    elif case == "zero_tie":
+        words = ((-0.0).hex(), words[1], (0.0).hex(), *words[3:])
+    elif case == "zero_word_mismatch":
+        words = (*words[:3], (-0.0).hex(), words[4], (0.0).hex())
+    elif case == "mismatch":
+        words = (*words[:2], (0.4).hex(), *words[3:5], (0.2).hex())
+    elif case == "subnormal":
+        tiny = "0x0.0000000000001p-1022"
+        words = (tiny, words[1], tiny, tiny, words[4], tiny)
+    elif case == "nonfinite_input":
+        words = ("inf", *words[1:])
+    elif case == "nonfinite_output":
+        words = (*words[:2], "-inf", *words[3:])
+    elif case == "count":
+        words *= 2
+    elif case == "collection":
+        words = list(words)
+    elif case == "word_type":
+        words = (True, *words[1:])
+    elif case == "noncanonical":
+        words = ("0.125", *words[1:])
+    elif case == "word_budget":
+        words = ("0" * 33, *words[1:])
+    elif case == "nan":
+        words = ("nan", *words[1:])
+    elif case == "limit_inf":
+        words = (words[0], "inf", *words[2:])
+    elif case == "speed_zero":
+        words = (words[0], (0.0).hex(), *words[2:])
+    elif case == "yaw_negative":
+        words = (*words[:4], (-0.6).hex(), words[5])
+    elif case == "speed_bool":
+        words = (words[0], False, *words[2:])
+    elif case == "extra_word":
+        words = (*words, (0.0).hex())
+    before = deepcopy(words)
+    work = {"decodes": 0, "forbidden": 0}
+
+    class Decoder:
+        @staticmethod
+        def fromhex(word):
+            work["decodes"] += 1
+            assert work["decodes"] <= 6
+            return float.fromhex(word)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("action clipping must not replay/read/draw/trig/clock")
+
+    monkeypatch.setattr(diagnostics, "float", Decoder, raising=False)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", forbidden)
+    for name in ("step", "reset", "_record_history", "_observation"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if not valid:
+        with pytest.raises(ValueError, match="native action clipping"):
+            diagnostics._native_action_clipping_diagnostics(
+                input_hex=words, synthetic_test_only=case != "permission"
+            )
+    else:
+        result = diagnostics._native_action_clipping_diagnostics(
+            input_hex=words, synthetic_test_only=True
+        )
+        assert len(result["entries"]) == 2
+        assert result["input_hex"] == words
+        for index, entry in zip((0, 3), result["entries"], strict=True):
+            submitted, maximum, observed = (
+                float.fromhex(word) for word in words[index : index + 3]
+            )
+            if case in ("nonfinite_input", "nonfinite_output") and index == 0:
+                assert entry["status"] == "unknown_nonfinite_action_clipping_source"
+                assert entry["expected_clipped_value_ratio"] is None
+                assert entry["clipped_values_match"] is None
+                assert entry["clipped_words_match"] is None
+                assert entry["equal_value_candidate_hex"] == ()
+                continue
+            low = Fraction(0) if index == 0 else -Fraction(maximum)
+            expected = min(max(Fraction(submitted), low), Fraction(maximum))
+            assert entry["expected_clipped_value_ratio"] == expected.as_integer_ratio()
+            assert entry["clipped_values_match"] is (Fraction(observed) == expected)
+        assert result["word_tie_count"] == (1 if case == "zero_tie" else 0)
+        assert result["clip_value_mismatch_count"] == (2 if case == "mismatch" else 0)
+        assert result["clip_word_mismatch_count"] == (
+            2 if case == "mismatch" else int(case == "zero_word_mismatch")
+        )
+        assert result["unknown_count"] == int(
+            case in ("nonfinite_input", "nonfinite_output")
+        )
+        if case == "zero_tie":
+            assert set(result["entries"][0]["equal_value_candidate_hex"]) == {
+                (-0.0).hex(),
+                (0.0).hex(),
+            }
+            assert result["entries"][0]["unique_candidate_hex"] is None
+            assert result["entries"][0]["clipped_words_match"] is None
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert words == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "exact",
         "residual",
         "zero_tie",

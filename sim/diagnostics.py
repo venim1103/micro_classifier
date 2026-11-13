@@ -8970,6 +8970,100 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _native_action_clipping_diagnostics(*, input_hex, synthetic_test_only=False):
+    if synthetic_test_only is not True:
+        raise ValueError("native action clipping requires synthetic_test_only=True")
+    if type(input_hex) is not tuple or len(input_hex) != 6:
+        raise ValueError("native action clipping word count unsupported")
+    values = []
+    for word in input_hex:
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("native action clipping word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "native action clipping words must be canonical"
+            ) from error
+        if value.hex() != word or math.isnan(value):
+            raise ValueError("native action clipping words must be canonical")
+        values.append(value)
+    if any(not math.isfinite(values[index]) or values[index] <= 0 for index in (1, 4)):
+        raise ValueError("native action clipping profile unsupported")
+    entries = []
+    for index, name in ((0, "target_speed"), (3, "turn_rate")):
+        submitted, maximum, observed = values[index : index + 3]
+        submitted_word, maximum_word, observed_word = input_hex[index : index + 3]
+        lower = 0.0 if index == 0 else -maximum
+        finite = math.isfinite(submitted) and math.isfinite(observed)
+        expected = max(lower, min(maximum, submitted)) if finite else None
+        candidates = tuple(
+            dict.fromkeys(
+                word
+                for value, word in (
+                    (lower, lower.hex()),
+                    (submitted, submitted_word),
+                    (maximum, maximum_word),
+                )
+                if finite and value == expected
+            )
+        )
+        unique_word = candidates[0] if len(candidates) == 1 else None
+        entries.append(
+            {
+                "component": name,
+                "submitted_hex": submitted_word,
+                "maximum_hex": maximum_word,
+                "observed_clipped_hex": observed_word,
+                "expected_clipped_value_ratio": None
+                if expected is None
+                else expected.as_integer_ratio(),
+                "clipped_values_match": observed == expected if finite else None,
+                "equal_value_candidate_hex": candidates,
+                "unique_candidate_hex": unique_word,
+                "clipped_words_match": observed_word == unique_word
+                if unique_word is not None
+                else None,
+                "status": "compared_supplied_action_clamp_values"
+                if finite
+                else "unknown_nonfinite_action_clipping_source",
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-action-clipping-diagnostics/1",
+        "allowed_use": "offline_native_action_clipping_word_diagnostics_only",
+        "status": "reported_action_clipping_correspondence",
+        "comparison_basis": "supplied_word_clamp_values_and_equal_value_candidates",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "input_hex": input_hex,
+        "clip_value_mismatch_count": sum(
+            entry["clipped_values_match"] is False for entry in entries
+        ),
+        "clip_word_mismatch_count": sum(
+            entry["clipped_words_match"] is False for entry in entries
+        ),
+        "word_tie_count": sum(
+            len(entry["equal_value_candidate_hex"]) > 1 for entry in entries
+        ),
+        "unknown_count": sum(
+            entry["clipped_values_match"] is None for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_speed_update_residuals(*, input_hex, synthetic_test_only=False):
     if synthetic_test_only is not True:
         raise ValueError("native speed update requires synthetic_test_only=True")

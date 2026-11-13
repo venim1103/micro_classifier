@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §356 for actual intake closing-observation repairs;
+Read [REVIEW.md][review] §357 for intact motion checkpoint archival;
+§356 records actual intake closing-observation repairs;
 §355 records the prior remaining acceptance-blocker assessment;
 §354 records closed live-receipt owned request joins;
 §353 records intact motion/goal checkpoint archival;
@@ -128,6 +129,7 @@ Whole326-330 checkpoints are archived with historical anchors and ledgers.
 Whole331-335 checkpoints are archived with historical anchors and ledgers.
 Whole336-340 checkpoints are archived with historical anchors and ledgers.
 Whole341-345 checkpoints are archived with historical anchors and ledgers.
+Whole346-350 checkpoints are archived with historical anchors and ledgers.
 Supplied selected/storage residuals and their required gate are complete.
 Retained storage report joins and their required gate are complete.
 Native integration source/arithmetic already exists and must not be duplicated.
@@ -176,8 +178,8 @@ continues smaller compatible prerequisites. Q0's owning intake sampler now
 observes before collecting original/closing pose/action/goal/profile words and
 rejects malformed original/closing owners; its fresh gate is complete.
 The prior§355 no-further-prerequisite conclusion is not a continuation stop.
-Next finish lossless whole346-350 archival, then trace a bounded actual initial-
-tick/setup source join without inventing reset execution, geometry or authority.
+Whole346-350 archival is complete. Next trace a bounded actual initial-tick/
+setup source join without inventing reset execution, geometry or authority.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

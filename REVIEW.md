@@ -76,8 +76,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 331-335][chapter-review-31]
 - [Checkpoints 336-340][chapter-review-32]
 - [Checkpoints 341-345][chapter-review-33]
+- [Checkpoints 346-350][chapter-review-34]
 
-Checkpoints 346 onward and the source bibliography remain below.
+Checkpoints 351 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -265,137 +266,23 @@ repeated historical handoffs.
 
 ## 346. Supplied Captured-Interval Division Residuals (2026-11-13)
 
-Begin clean pushed09eea2c. RoverEnv.step computes seconds=dt/planned_segments;
-existing receipt words and integration input joins retain that native interval.
-The receipt chain checks its native float quotient words, not an unrounded
-division residual. Add a separate bounded supplied duration/count/interval
-comparison using the existing rational arithmetic helper, not a floor report
-or repeated integration stage. Observed builtin planned_segments1..128 is the
-consumed divisor, not a recomputed or qualified segment-selection prediction.
-Canonical duration is finite/positive per existing Config; raw nonfinite
-observed interval is explicit unknown with supplied words preserved. No
-rounding/error/timing/source/physical/execution/admission law; eight flags false.
-
-Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS4.03s/
-4769 deselected, no repair; <=2 canonical decodes/3 rational values/one division/
-one subtraction and existing4096-bit cap. One actual control consumes the
-existing captured receipt without another step/capture; independent Fraction
-cases cover divisible/nondivisible intervals, signed residual/zero/subnormal/
-extreme values, raw unknown output and canonical/domain/permission/work limits.
-Root PASS5716, known QDQ1 xfail/77 warnings173.83s; root Ruff/changed format/
-whitespace/four hashes, every prior module/function/control/decorator AST and
-scoped references PASS. Both executed positions spent; unused repair is not
-authority. Ignored `.git/returns-346-*` logs/hashes retained; no replay/draw/
-trig/clock/geometry, protected study/model/dependency/download/hardware/native/
-Arm or additional opt-in work. Next separately default-off closed current
-receipt interval reports; native segment-selection intermediates, uniform
-motion error and qualified duration/clocks remain independent obligations.
+[Complete unchanged checkpoint][review-346-350-preserved-0] is preserved in the archive.
 
 ## 347. Intact Motion-Word Contract Relocation (2026-11-13)
 
-Begin clean pushedce71cf6. Chapter01 grew to2578 lines after bounded current
-motion-update work; move its four complete supplied speed/clipping/interval
-and current receipt-composition contracts into existing chapter04. Preserve
-byte-exact bodies/headings, flags, work limits and checkpoint wording.
-Four old chapter01 anchors remain reading links; four checkpoint labels copy
-with unchanged relative targets, and DESIGN's short map gains a direct topic
-link. A separate-topic wrapper explicitly adopts no NF1 certificate premises
-or historical study/run authority; no accepted requirement changes.
-
-One fresh mechanical migration/30s PASS, no failure/repair: exact whole block/
-prior headings, nine new scoped references/anchors, whitespace and four
-green-tested source hashes PASS. Chapter01 now2520/chapter04 2470, around
-the existing organization target; no green code/native/Arm/sanitizer rerun.
-Local before snapshots and bounded bulk migration utility retained in session
-files; committed documents remain portable. Next archive whole336-340 before
-further root review growth, then closed current receipt interval reports.
+[Complete unchanged checkpoint][review-346-350-preserved-1] is preserved in the archive.
 
 ## 348. Intact Reviewed Goal-Expression Checkpoint Archival (2026-11-13)
 
-Begin clean pushed0d81f0b. Move complete336-340 to
-[their archive][chapter-review-32] before more review growth. Preserve exact
-bodies/headings/separators, failures, approvals, spent attempts and historical
-next actions. In particular§336's recovered pytest footer remains distinct
-from§335's spent/aborted command chain; archive relocation rewrites neither
-evidence nor the user's later fresh continuation. Five old root anchors remain;
-four chapter03 references rebase, and section338's326-330 archive label copies
-relative to the new archive. No old limits or authority are renewed.
-
-One fresh mechanical migration/30s PASS, no failure/repair; whole block/prior
-headings, eleven scoped link/anchor targets, whitespace and all four tested
-source hashes PASS. Root851 lines before this note/archive149. Local before
-snapshots and bounded bulk migration utility retained in session files.
-No green code/native/Arm/sanitizer rerun, studies/models/dependencies/
-downloads/hardware or qualification adoption. Portable evidence remains Git
-documents. Next closed current receipt interval reports with original/closing
-source/report/output joins and all qualification flags false.
+[Complete unchanged checkpoint][review-346-350-preserved-2] is preserved in the archive.
 
 ## 349. Closed Current Receipt Interval Reports (2026-11-13)
 
-Begin clean pusheda0ff2de. Add independent literal default-off
-include_native_interval_division to the existing current receipt reader.
-It needs no motion-update inclusion: interval-only and combined reports reuse
-the completed supplied helper and bind detached duration/divisor/interval
-results to the current receipt digest/epoch/transition ticks/frame. Original/
-closing report metadata/operand/output checks run before the final producer
-sample and owner closure. Unsupported, nonfinite or changed source/report
-returns explicit unknown without partial history/frame/report fields.
-Default and motion-only shape/report work remain unchanged. No segment-choice/
-rounding/error/source/clock/physical/execution/admission law; eight flags false.
-
-Fresh24/60s (12 cases x interval-only/both), necessary repair24/60s reserve,
-root/360s. First24 PASS4.33s/4793 deselected, no repair; original green
-motion-only focused cases not rerun. <=2 interval reports/4 decodes/6 rational
-values/4 arithmetic operations; original2 observations/one history check/
-32 digests unchanged. Combined<=16 rational values/12 arithmetic operations
-plus4 speed comparisons, with clipping family limits unchanged.
-Controls cover source/closing-pose/report/metadata/layout mutations, raw
-unknown output, independent inclusion, disabled/permission/type and detachment.
-Root PASS5740, known QDQ1 xfail/77 warnings172.65s; root Ruff/changed format/
-whitespace/four hashes, every unrelated module/function/control/decorator AST
-and scoped references PASS; two resolved existing callers remain compatible.
-Executed positions spent; unused repair not renewed authority. Ignored
-`.git/returns-349-*` logs/hashes retained; no replay/draw/trig/clock/geometry,
-protected study/model/dependency/download/hardware/native/Arm or extra opt-in
-work. Next reassess remaining supported segment-selection/setup and executor
-source prerequisites; uniform motion error and qualified clock/one-use/
-physical/admission acceptance remain independent.
+[Complete unchanged checkpoint][review-346-350-preserved-3] is preserved in the archive.
 
 ## 350. Supplied Unrounded Segment-Count Comparison (2026-11-13)
 
-Begin clean pushed528207c. Owning step uses max(1,ceil(abs(clipped turn)*dt/
-0.1)); receipts already retain clipped rate, duration and observed planned
-count. A bounded scalar probe verifies native intermediate rounding can
-produce quotient0x1.8000000000001p+1/count4 for supplied3.0,0.1,0.1, while
-the exact quotient is3/1/reference count3. This constructed triple is outside
-frozen C1's motion domain, not a new episode, accepted trajectory or uniform
-claim. Initial Pylance tool request was rejected before execution for missing
-workspaceRoot; the corrected one-triple/30s explicit-workspace request PASS
-with /opt/venv. Keep both positions spent, without an editor-interpreter claim.
-
-Add a separate supplied reference comparator using the existing rational
-helper and one bounded integer ceiling quotient. Preserve all three raw words,
-observed builtin count1..128 and reference counts above128 without trimming.
-Canonical nonfinite rate is explicit unknown; finite positive duration/angle
-step prevalidate. No native ceil/floor replay, missing intermediate invention,
-threshold/rounding/geometry/error/source/clock/execution/admission adoption;
-all eight flags false. Supplied angle step is a reference operand, not a new
-Config field; actual-word control uses the existing0.1 program divisor.
-
-Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS4.08s/
-4817 deselected, no repair: <=3 decodes/3 rational values/2 rational operations/
-one integer ceiling quotient/three scalar comparisons, existing4096-bit cap.
-Independent Fraction ceilings cover original receipt operands, zero/sign/
-integer boundary/noninteger/rounded-count discrepancies, reference129 versus
-observed128, raw nonfinite and canonical/profile/permission/work controls.
-Root PASS5764, known QDQ1 xfail/77 warnings180.11s; root Ruff/changed format/
-whitespace/four hashes, every prior module/function/control/decorator AST
-and scoped references PASS. Executed positions spent, unused repair not
-authority; ignored `.git/returns-350-*` logs/hashes retained. No source/
-controller change, protected study/model/dependency/download/hardware/native/
-Arm or extra opt-in work. Next supported closed current segment-count reports,
-binding existing program divisor without claiming observed intermediates;
-uniform motion error/qualified clocks/physical/admission remain independent.
+[Complete unchanged checkpoint][review-346-350-preserved-4] is preserved in the archive.
 
 ## 351. Closed Current Segment-Selection Reports (2026-11-13)
 
@@ -595,6 +482,20 @@ continuation resumes compatible work despite missing admission evidence:
 next archive whole346-350, then investigate bounded initial-tick/setup source
 correspondence. Rover history retains ego/ToF/masks, not reset pose/execution;
 do not mislabel that history as an actual reset receipt or invent source words.
+
+## 357. Intact Motion Checkpoint Archival (2026-11-13)
+
+Begin clean pushed107fe0d. Archive whole346-350 blocks/headings/separators in
+the existing review family before further root growth, without reconstructing
+their ledgers. Five original root anchors, three chapter04 references and the
+relatively rebased336-340 archive label remain. Preserve§350's rejected
+workspace-root tool setup, fresh corrected runtime probe, outside-C1 discrepancy
+and all spent/qualification limits. One bounded exact-block/historical-heading/
+10-target/anchor/whitespace/four-tested-hash check PASS; no code edit or suite
+rerun. Root stays below1,000 lines, archive137. Two original document snapshots
+and the bulk utility remain in the session folder; committed text/links, not
+local recovery files, are portable. Next continue the actual initial-tick/setup
+source prerequisite without an invented reset receipt or accepted authority.
 
 ## Sources
 
@@ -970,6 +871,7 @@ Methods and measurements:
 [chapter-review-31]: docs/review/331-335.md
 [chapter-review-32]: docs/review/336-340.md
 [chapter-review-33]: docs/review/341-345.md
+[chapter-review-34]: docs/review/346-350.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -1007,3 +909,8 @@ Methods and measurements:
 [review-341-345-preserved-2]: docs/review/341-345.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
 [review-341-345-preserved-3]: docs/review/341-345.md#344-intact-goal-delivery-checkpoint-archival-2026-11-13
 [review-341-345-preserved-4]: docs/review/341-345.md#345-closed-current-receipt-motion-update-reports-2026-11-13
+[review-346-350-preserved-0]: docs/review/346-350.md#346-supplied-captured-interval-division-residuals-2026-11-13
+[review-346-350-preserved-1]: docs/review/346-350.md#347-intact-motion-word-contract-relocation-2026-11-13
+[review-346-350-preserved-2]: docs/review/346-350.md#348-intact-reviewed-goal-expression-checkpoint-archival-2026-11-13
+[review-346-350-preserved-3]: docs/review/346-350.md#349-closed-current-receipt-interval-reports-2026-11-13
+[review-346-350-preserved-4]: docs/review/346-350.md#350-supplied-unrounded-segment-count-comparison-2026-11-13

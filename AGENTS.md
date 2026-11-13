@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §341 for matched retained goal storage reports;
+Read [REVIEW.md][review] §342 for supplied pre-integration speed-update residuals;
+§341 records matched retained goal storage reports;
 §340 records supplied native/stored goal-word correspondence;
 §339 records matched retained native goal expression reports;
 §338 records intact goal ownership checkpoint archival;
@@ -128,9 +129,12 @@ The user's fresh actual continuation resumes the ordered queue. Supplied-word
 native goal expressions and closed matched retained reports with their gates
 are complete; supplied native/stored goal-word correspondence and its gate are
 complete; default-off matched retained storage reports and their gate are
-complete. Next reassess independently supported named-consumer setup/source/
-coverage/error/timing prerequisites, then permitted request/guard/executor
-dependencies; do not duplicate completed integration/floor/goal reports. Preserve consumed
+complete. Q2 supplied pre-integration speed-update residuals and their gate are
+complete using existing receipt operands, not a new capture or uniform bound.
+Next close supplied target/yaw clipping correspondence before composing supported
+current receipt/update reports; independently qualified setup/source/coverage/
+error/timing and request/guard/executor dependencies remain unresolved.
+Do not duplicate completed integration/floor/goal reports. Preserve consumed
 coefficients and observed delta without trig/noise/geometry/error adoption;
 do not repeat unchanged green gates.
 Preserve

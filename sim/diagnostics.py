@@ -8970,6 +8970,85 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _native_speed_update_residuals(*, input_hex, synthetic_test_only=False):
+    if synthetic_test_only is not True:
+        raise ValueError("native speed update requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native speed update rational budget unsupported")
+    if type(input_hex) is not tuple or len(input_hex) != 5:
+        raise ValueError("native speed update word count unsupported")
+    values = []
+    for index, word in enumerate(input_hex):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("native speed update word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError("native speed update words must be canonical") from error
+        if (
+            value.hex() != word
+            or math.isnan(value)
+            or (index < 4 and not math.isfinite(value))
+        ):
+            raise ValueError("native speed update words must be canonical")
+        values.append(value)
+    _previous, _target, acceleration, duration, observed = values
+    if acceleration <= 0 or duration <= 0:
+        raise ValueError(
+            "native speed update profile must have positive acceleration/time"
+        )
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    try:
+        previous_ratio, target_ratio, acceleration_ratio, duration_ratio = map(
+            arithmetic.value, values[:4]
+        )
+        requested_change = arithmetic.binary(target_ratio, previous_ratio, "sub")
+        acceleration_step = arithmetic.binary(acceleration_ratio, duration_ratio, "mul")
+        selected_change = requested_change
+        if arithmetic.binary(selected_change, -acceleration_step, "less"):
+            selected_change = -acceleration_step
+        if arithmetic.binary(acceleration_step, selected_change, "less"):
+            selected_change = acceleration_step
+        exact = arithmetic.binary(previous_ratio, selected_change, "add")
+        residual = (
+            arithmetic.binary(arithmetic.value(observed), exact, "sub")
+            if math.isfinite(observed)
+            else None
+        )
+    except ArithmeticError as error:
+        raise ValueError("native speed update rational budget exhausted") from error
+    return {
+        "schema": "micro-classifier/native-speed-update-residuals/1",
+        "allowed_use": "offline_native_speed_update_word_diagnostics_only",
+        "status": "computed_exact_speed_update_residual"
+        if residual is not None
+        else "unknown_nonfinite_updated_speed",
+        "comparison_basis": "unrounded_supplied_clipped_target_acceleration_update",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "input_hex": input_hex,
+        "exact_requested_change_ratio": requested_change.as_integer_ratio(),
+        "exact_acceleration_step_ratio": acceleration_step.as_integer_ratio(),
+        "exact_selected_change_ratio": selected_change.as_integer_ratio(),
+        "exact_updated_speed_ratio": exact.as_integer_ratio(),
+        "signed_residual_ratio": None
+        if residual is None
+        else residual.as_integer_ratio(),
+    }
+
+
 def _native_integration_arithmetic_stages(computed):
     inputs, values = computed["inputs"], computed["values"]
     return (

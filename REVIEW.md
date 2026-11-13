@@ -526,6 +526,42 @@ extra opt-in work. Next reassess supported named-consumer setup/source/
 coverage/error/timing prerequisites and request/guard/executor dependencies;
 do not duplicate completed integration, floor or native goal reports.
 
+## 342. Supplied Pre-Integration Speed-Update Residuals (2026-11-13)
+
+Begin clean pushedd90142c; actual main/upstream0/0, Python3.12.3 at
+/opt/venv and installed Ruff verified. Named-consumer Q2 explicitly includes
+the acceleration update before integration. Existing motion receipts retain
+initial speed, observed clipped target, Config acceleration/dt and updated
+speed; completed integration reports do not cover this expression.
+
+Add a separate five-word exact comparison: prior speed plus the unrounded
+clamp of target-minus-prior to +/-acceleration*dt, then observed updated speed
+minus that result. Preserve supplied canonical words, signed zeros and raw
+nonfinite updated speed as explicit unknown. Finite operands and positive
+acceleration/dt follow the existing Config domain. This does not recheck
+submitted-action clipping, predict intermediate rounding/native branches or
+establish uniform/propagated error. No producer/controller/capture change,
+replay/draw/trig/clock/geometry or qualification/admission; eight flags false.
+
+Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS4.52s/
+4695 deselected, no semantic repair. <=5 words/decodes/rational values,
+4 arithmetic operations and2 growth-checked comparisons, existing4096-bit
+cap. One control consumes the already captured actual receipt without another
+step/capture; direct Fraction cases cover both clamp sides/boundaries, target
+reach, nonzero residual, zero signs, subnormal/unknown output and rejection/
+permission/work limits. Root pytest PASS5642, known QDQ1 xfail/77 warnings
+226.60s. Root Ruff initially failed RUF059 for two unused local bindings;
+rename only those bindings, verify neither is read, then root Ruff/changed
+format/whitespace PASS without rerunning green semantic gates. Four hashes
+matched before the lint repair; final hashes retained. All prior module/control/
+decorator ASTs conserved, owning-file Pylance0 errors, scoped links PASS.
+Executed positions remain spent; unused repair is not renewed authority.
+Ignored `.git/returns-342-*` logs/hashes retained. No protected study/model/
+dependency/download/hardware/native/Arm or additional opt-in work.
+Next supplied target/yaw clipping correspondence from existing receipt fields,
+then supported closed current receipt/update reports; Q0-Q5 acceptance remains
+unresolved, with no usable command admitted.
+
 ## Sources
 
 Hardware and tools:

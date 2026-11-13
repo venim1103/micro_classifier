@@ -33276,6 +33276,186 @@ def test_native_goal_expression_residuals(
     "case",
     (
         "actual",
+        "accelerate",
+        "decelerate",
+        "target_reached",
+        "positive_boundary",
+        "negative_boundary",
+        "residual",
+        "signed_zero",
+        "subnormal",
+        "nonfinite_output",
+        "permission",
+        "count",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "input_nan",
+        "input_inf",
+        "output_nan",
+        "zero_duration",
+        "negative_acceleration",
+        "budget_bool",
+        "budget_zero",
+        "budget_large",
+        "budget_exhausted",
+    ),
+)
+def test_native_speed_update_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    words = tuple(value.hex() for value in (0.125, 0.5, 2.0, 0.125, 0.375))
+    valid = case in (
+        "actual",
+        "accelerate",
+        "decelerate",
+        "target_reached",
+        "positive_boundary",
+        "negative_boundary",
+        "residual",
+        "signed_zero",
+        "subnormal",
+        "nonfinite_output",
+    )
+    if case == "actual":
+        receipt = c1_motion_receipt_source_fixture[0]._motion_receipt_source["receipt"]
+        words = tuple(
+            float(value).hex()
+            for value in (
+                receipt["initial_action"][0],
+                receipt["clipped_target_speed_m_s"],
+                receipt["config"]["acceleration"],
+                receipt["nominal_duration_s"],
+                receipt["updated_speed_m_s"],
+            )
+        )
+    elif case == "decelerate":
+        words = tuple(value.hex() for value in (0.5, 0.0, 2.0, 0.125, 0.25))
+    elif case == "target_reached":
+        words = (words[0], (0.25).hex(), *words[2:4], (0.25).hex())
+    elif case == "positive_boundary":
+        words = (words[0], (0.375).hex(), *words[2:])
+    elif case == "negative_boundary":
+        words = tuple(value.hex() for value in (0.5, 0.25, 2.0, 0.125, 0.25))
+    elif case == "residual":
+        words = (*words[:4], "0x1.8000000000001p-2")
+    elif case == "signed_zero":
+        words = ((-0.0).hex(), (0.0).hex(), *words[2:4], (-0.0).hex())
+    elif case == "subnormal":
+        tiny = "0x0.0000000000001p-1022"
+        words = ((0.0).hex(), tiny, (1.0).hex(), tiny, (0.0).hex())
+    elif case == "nonfinite_output":
+        words = (*words[:4], "inf")
+    elif case == "count":
+        words *= 2
+    elif case == "word_type":
+        words = (True, *words[1:])
+    elif case == "noncanonical":
+        words = ("1", *words[1:])
+    elif case == "word_budget":
+        words = ("0" * 33, *words[1:])
+    elif case == "input_nan":
+        words = ("nan", *words[1:])
+    elif case == "input_inf":
+        words = ("inf", *words[1:])
+    elif case == "output_nan":
+        words = (*words[:4], "nan")
+    elif case == "zero_duration":
+        words = (*words[:3], (0.0).hex(), words[4])
+    elif case == "negative_acceleration":
+        words = (*words[:2], (-2.0).hex(), *words[3:])
+    elif case.startswith("budget_"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {
+                "budget_bool": True,
+                "budget_zero": 0,
+                "budget_large": 4097,
+                "budget_exhausted": 8,
+            }[case],
+        )
+        if case == "budget_exhausted":
+            words = ((0.1).hex(), *words[1:])
+    before = deepcopy(words)
+    work = {"values": 0, "binary": 0, "comparisons": 0, "forbidden": 0}
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def value(self, operand):
+        work["values"] += 1
+        assert work["values"] <= 5
+        return original_value(self, operand)
+
+    def binary(self, *args):
+        key = "comparisons" if args[-1] == "less" else "binary"
+        work[key] += 1
+        assert work[key] <= (2 if key == "comparisons" else 4)
+        return original_binary(self, *args)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "speed-update reports must not replay/read/draw/trig/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset", "_record_history", "_observation"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if not valid:
+        with pytest.raises(ValueError, match="native speed update"):
+            diagnostics._native_speed_update_residuals(
+                input_hex=words, synthetic_test_only=case != "permission"
+            )
+    else:
+        result = diagnostics._native_speed_update_residuals(
+            input_hex=words, synthetic_test_only=True
+        )
+        previous, target, acceleration, duration = (
+            Fraction(float.fromhex(word)) for word in words[:4]
+        )
+        delta, limit = target - previous, acceleration * duration
+        selected = min(max(delta, -limit), limit)
+        exact = previous + selected
+        assert result["input_hex"] == words
+        assert result["exact_requested_change_ratio"] == delta.as_integer_ratio()
+        assert result["exact_acceleration_step_ratio"] == limit.as_integer_ratio()
+        assert result["exact_selected_change_ratio"] == selected.as_integer_ratio()
+        assert result["exact_updated_speed_ratio"] == exact.as_integer_ratio()
+        if case == "nonfinite_output":
+            assert result["status"] == "unknown_nonfinite_updated_speed"
+            assert result["signed_residual_ratio"] is None
+        else:
+            residual = Fraction(float.fromhex(words[4])) - exact
+            assert result["signed_residual_ratio"] == residual.as_integer_ratio()
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert words == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "exact",
         "residual",
         "zero_tie",

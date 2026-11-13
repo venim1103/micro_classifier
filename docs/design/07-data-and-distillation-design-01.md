@@ -887,6 +887,26 @@ dependencies; all qualification/admission flags remain false. The
 references, source-field binding, signed-zero/subnormal and work/mutation controls.
 
 
+##### Supplied Pre-Integration Speed-Update Words (2026-11-13)
+
+The private `_native_speed_update_residuals` compares five canonical supplied
+binary64 words: prior speed, observed clipped target, Config acceleration/dt
+and observed updated speed. Exact prior+clamp(target-prior,+/-acceleration*dt)
+is an unrounded reference, not a prediction of native intermediate rounding
+or branch choice. Its signed observed-minus-reference residual preserves the
+raw words, including zero signs; a nonfinite updated speed remains unknown.
+Finite operands and positive acceleration/dt use the existing Config domain.
+Literal synthetic permission, <=5 decodes/values, four rational operations,
+two growth-checked comparisons and the existing4096-bit cap bound the work.
+
+Existing actual motion receipts already contain these operands; this adds no
+capture, source read, replay, RNG, trig, clock or controller change. Submitted
+target/yaw clipping is separate. Supplied words alone prove neither source
+ownership nor uniform/propagated native error, timing, physical or command
+qualification. Eight flags remain false. The [checkpoint][native-speed-update-review]
+records direct/actual-word controls and the required gate.
+
+
 ##### Current Owned Native Arithmetic Composition (2026-11-09)
 
 The private recorder's strict opt-in `snapshot_native_integration_arithmetic`
@@ -2185,6 +2205,7 @@ figure is not an established minimum.
 [integration-source-review]: ../review/183-220.md#193-actual-native-integration-source-intermediates-2026-11-09
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09
+[native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13
 [native-arithmetic-review]: ../review/183-220.md#196-supported-native-word-arithmetic-discrepancies-2026-11-09
 [native-arithmetic-composition-review]: ../review/183-220.md#197-current-owned-native-arithmetic-composition-2026-11-09
 [native-arithmetic-record-review]: ../review/183-220.md#198-exact-native-arithmetic-record-validation-2026-11-09

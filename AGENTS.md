@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §354 for closed live-receipt owned request joins;
+Read [REVIEW.md][review] §355 for the checked remaining acceptance blockers;
+§354 records closed live-receipt owned request joins;
 §353 records intact motion/goal checkpoint archival;
 §352 records native integration closing-observation repairs;
 §351 records closed current segment-selection reports;
@@ -169,10 +170,14 @@ Independent default-off live-receipt joins for owned request preparation and
 rechecking are complete, including original/closing metadata/request copies
 and malformed current-owner rejection. They do not qualify source/clock,
 permit a command or alter existing fixture-only defaults.
-Next reassess remaining supported
-Q2 segment/time and request/guard/executor prerequisites without duplicating integration/floor/
-goal reports; independently qualified setup/source/coverage/
-error/timing and request/guard/executor dependencies remain unresolved.
+Checked remaining source/setup/coverage/error/timing and request/guard/executor
+dependencies now require independent Q0-Q4 acceptance, not another duplicated
+source/arithmetic package. The named source/setup auditors and motion/
+registration/request consumers remain conditional; no accepted uniform native
+error, pose/range transform, clock/application/one-use or admitted predecessor
+evidence exists. No further necessary non-duplicative routine prerequisite was
+identified in that assessment. Preserve the conservative blocked release state;
+new concrete evidence or changed authorized scope can enable useful work.
 Do not duplicate completed integration/floor/goal reports. Preserve consumed
 coefficients and observed delta without trig/noise/geometry/error adoption;
 do not repeat unchanged green gates.

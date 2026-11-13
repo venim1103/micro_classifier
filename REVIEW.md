@@ -518,6 +518,53 @@ coverage/native-error/registration/clock/one-use/physical/admission evidence.
 Next reassess only remaining named-consumer acceptance dependencies, without
 duplicating completed source/arithmetic packages or inventing a release verdict.
 
+## 355. Checked Remaining Acceptance Blockers (2026-11-13)
+
+Begin clean pushed1821397; the active continuation was not replaced by an old
+pause or a checkpoint. After§354, check the remaining agreed queue against Q0-Q5
+and actual setup, source-word/motion, history/straight-pose, native arithmetic and
+owned request consumers. Available necessary source/currentness prerequisites
+are implemented and verified; no further necessary non-duplicative routine
+increment was identified. Further qualification/release work reaches these
+concrete unsupported inputs:
+
+- Q0 needs independently accepted actual setup/source/return/coverage provenance.
+  The setup auditor checks declared geometry; current source/receipt/request
+  joins check bounded correspondence, neither supplies that authority.
+- Q1/Q2 need propagated source-to-wire discrepancies and independent uniform
+  computed-program error/domain closure over command plus braking. Ideal motion
+  requires explicit error_evidence; native word reports do not furnish it.
+  Sinc argument/value, cos/sin, pi/wrapping and accumulated-motion obligations
+  remain unsupported in the native arithmetic contract; no invented zero/
+  sampled epsilon, duplicate arithmetic or source-scale reset follows.
+- Q3 needs accepted pose/range/clock/native-transform enclosures for all retained
+  prefixes/points. Current history tooling is conditional on exact-start/
+  nominal-tick/stored-dt/interval-ending-twist assumptions; the isolated pose
+  checker supports straight motion only. Do not narrow commands to reuse it.
+- Q4 needs qualified clock/application/receipt/error lineage and serialized
+  consume/admitted predecessor continuity. Current owned methods still emit
+  UNKNOWN/no permission; nominal tick/expiry and matching hashes are not these
+  obligations. Q5 then needs admission and separately authorized prospective D4.
+
+No accepted packet/result/decision supplying these independent obligations is
+present in the checked path. Adopting bounds/authority, protected qualification/
+task studies or hardware/ST work is not routine fixture authority. Existing
+compatible local checks are not blocked by missing historical accounting; all
+spent/rejected/aborted positions remain intact, no green gates repeated.
+Read-only tool check: stedgeai/stm32ai absent from PATH, /opt/st-tools empty;
+arm-none-eabi-gcc available, no new native/Arm/hardware run. ST licences/board
+readiness remain user-side; no licence/physical attachment claim was probed.
+
+Documentation-only blocker checkpoint: scoped content/references/whitespace/
+four tested hashes PASS; suite not rerun. All eight flags false, no usable
+command admitted. Latest source gate remains5872/known QDQ1 xfail/77 warnings.
+The next useful action needs a concrete independent Q0-Q4 claim/domain/producer/
+method/result/acceptance packet or a changed authorized scope; do not manufacture
+an acceptance token, duplicate diagnostics or renew exhausted protected work.
+Source/artifacts and logs remain as§354; main clean and synchronized before this
+checkpoint, no owned background process. This is a genuine evidence blocker,
+not a request for routine planning/testing permission or a user pause.
+
 ## Sources
 
 Hardware and tools:

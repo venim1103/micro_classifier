@@ -2457,6 +2457,23 @@ controller change follows. Eight flags false; segment selection, uniform error,
 clocks, physical permission and admission are separate. The
 [checkpoint][current-interval-division-review] records modes, mutations and gate.
 
+##### Supplied Unrounded Segment-Count Words (2026-11-13)
+
+The private `_native_segment_selection_diagnostics` compares observed builtin
+planned_segments1..128 with max(1,ceil(exact abs(clipped rate)*duration/
+supplied angle step)). This unrounded reference is not a native rounding/
+branch law; native intermediate rounding can select a different count.
+Raw rate/duration/angle words, including zero signs, remain supplied; nonfinite
+rate is unknown. Duration/angle step must be finite/positive. Reference counts
+above128 remain visible, not clipped to the existing recorded-segment budget.
+
+Literal synthetic permission, <=3 decodes/3 rational values/2 rational
+operations/one bounded integer ceiling quotient/three scalar comparisons and
+the existing4096-bit cap bound work. No native ceil/floor replay, invented
+intermediates, new Config/threshold, source/controller or qualification follows;
+eight flags false. The [checkpoint][native-segment-selection-review] preserves
+the scalar discrepancy probe, direct/actual-word controls and required gate.
+
 [sinc-cell-review]: ../../REVIEW.md
 [sinc-word-review]: ../../REVIEW.md
 [sinc-word-proof-review]: ../../REVIEW.md
@@ -2485,4 +2502,5 @@ clocks, physical permission and admission are separate. The
 [native-action-clipping-review]: ../../REVIEW.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
 [native-interval-division-review]: ../../REVIEW.md#346-supplied-captured-interval-division-residuals-2026-11-13
 [current-interval-division-review]: ../../REVIEW.md#349-closed-current-receipt-interval-reports-2026-11-13
+[native-segment-selection-review]: ../../REVIEW.md#350-supplied-unrounded-segment-count-comparison-2026-11-13
 [native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

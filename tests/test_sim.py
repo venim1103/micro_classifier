@@ -34204,6 +34204,184 @@ def test_native_interval_division_residuals(
     "case",
     (
         "actual",
+        "zero",
+        "boundary",
+        "rounded_extra",
+        "noninteger",
+        "negative_turn",
+        "mismatched_count",
+        "reference_above_budget",
+        "signed_zero",
+        "nonfinite_rate",
+        "permission",
+        "count_bool",
+        "count_zero",
+        "count_large",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "nan",
+        "duration_inf",
+        "duration_zero",
+        "step_zero",
+        "budget_bool",
+        "budget_large",
+        "budget_exhausted",
+    ),
+)
+def test_native_segment_selection_diagnostics(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    rate, duration, step, count = (0.3).hex(), (0.05).hex(), (0.1).hex(), 1
+    valid = case in (
+        "actual",
+        "zero",
+        "boundary",
+        "rounded_extra",
+        "noninteger",
+        "negative_turn",
+        "mismatched_count",
+        "reference_above_budget",
+        "signed_zero",
+        "nonfinite_rate",
+    )
+    if case == "actual":
+        receipt = c1_motion_receipt_source_fixture[0]._motion_receipt_source["receipt"]
+        rate, duration, count = (
+            float(receipt["clipped_turn_rate_rad_s"]).hex(),
+            float(receipt["nominal_duration_s"]).hex(),
+            receipt["planned_segments"],
+        )
+    elif case == "zero":
+        rate = (0.0).hex()
+    elif case == "boundary":
+        rate, duration = (1.0).hex(), (0.1).hex()
+    elif case == "rounded_extra":
+        rate, duration, count = (3.0).hex(), (0.1).hex(), 4
+    elif case == "noninteger":
+        duration, count = (1.0).hex(), 3
+    elif case == "negative_turn":
+        rate, duration, count = (-3.0).hex(), (0.1).hex(), 4
+    elif case == "mismatched_count":
+        count = 2
+    elif case == "reference_above_budget":
+        rate, duration, count = (129.0).hex(), (0.1).hex(), 128
+    elif case == "signed_zero":
+        rate = (-0.0).hex()
+    elif case == "nonfinite_rate":
+        rate = "inf"
+    elif case.startswith("count_"):
+        count = {"count_bool": True, "count_zero": 0, "count_large": 129}[case]
+    elif case == "word_type":
+        rate = True
+    elif case == "noncanonical":
+        rate = "0.3"
+    elif case == "word_budget":
+        rate = "0" * 33
+    elif case == "nan":
+        rate = "nan"
+    elif case == "duration_inf":
+        duration = "inf"
+    elif case == "duration_zero":
+        duration = (0.0).hex()
+    elif case == "step_zero":
+        step = (0.0).hex()
+    elif case.startswith("budget_"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {"budget_bool": True, "budget_large": 4097, "budget_exhausted": 8}[case],
+        )
+    expected = sweep = quotient = None
+    if valid and case != "nonfinite_rate":
+        sweep = abs(Fraction(float.fromhex(rate))) * Fraction(float.fromhex(duration))
+        quotient = sweep / Fraction(float.fromhex(step))
+        expected = max(1, math.ceil(quotient))
+    before = (rate, duration, step, count)
+    work = {"values": 0, "binary": 0, "forbidden": 0}
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def value(self, operand):
+        work["values"] += 1
+        assert work["values"] <= 3
+        return original_value(self, operand)
+
+    def binary(self, *args):
+        work["binary"] += 1
+        assert work["binary"] <= 2
+        return original_binary(self, *args)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("segment diagnostics must not replay/ceil/draw/trig/clock")
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset", "_record_history", "_observation"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if not valid:
+        with pytest.raises(ValueError, match="native segment selection"):
+            diagnostics._native_segment_selection_diagnostics(
+                clipped_turn_rate_rad_s_hex=rate,
+                duration_s_hex=duration,
+                angle_step_rad_hex=step,
+                planned_segments=count,
+                synthetic_test_only=case != "permission",
+            )
+    else:
+        result = diagnostics._native_segment_selection_diagnostics(
+            clipped_turn_rate_rad_s_hex=rate,
+            duration_s_hex=duration,
+            angle_step_rad_hex=step,
+            planned_segments=count,
+            synthetic_test_only=True,
+        )
+        assert result["input_hex"] == before[:3]
+        assert result["planned_segments"] == count
+        assert result["reference_segment_count"] == expected
+        if case == "nonfinite_rate":
+            assert result["status"] == "unknown_nonfinite_native_turn_rate"
+            assert result["segment_counts_match"] is None
+            assert result["reference_count_exceeds_capture_budget"] is None
+            assert result["exact_sweep_ratio"] is None
+            assert result["exact_segment_quotient_ratio"] is None
+        else:
+            assert result["exact_sweep_ratio"] == sweep.as_integer_ratio()
+            assert result["exact_segment_quotient_ratio"] == quotient.as_integer_ratio()
+            assert result["segment_counts_match"] is (expected == count)
+            assert result["reference_count_exceeds_capture_budget"] is (expected > 128)
+            if case == "rounded_extra":
+                assert expected == 3 and count == 4
+            elif case == "reference_above_budget":
+                assert expected == 129 and count == 128
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert (rate, duration, step, count) == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "exact",
         "residual",
         "zero_tie",

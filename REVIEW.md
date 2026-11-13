@@ -495,6 +495,42 @@ work. Next reassess remaining supported segment-selection/setup and executor
 source prerequisites; uniform motion error and qualified clock/one-use/
 physical/admission acceptance remain independent.
 
+## 350. Supplied Unrounded Segment-Count Comparison (2026-11-13)
+
+Begin clean pushed528207c. Owning step uses max(1,ceil(abs(clipped turn)*dt/
+0.1)); receipts already retain clipped rate, duration and observed planned
+count. A bounded scalar probe verifies native intermediate rounding can
+produce quotient0x1.8000000000001p+1/count4 for supplied3.0,0.1,0.1, while
+the exact quotient is3/1/reference count3. This constructed triple is outside
+frozen C1's motion domain, not a new episode, accepted trajectory or uniform
+claim. Initial Pylance tool request was rejected before execution for missing
+workspaceRoot; the corrected one-triple/30s explicit-workspace request PASS
+with /opt/venv. Keep both positions spent, without an editor-interpreter claim.
+
+Add a separate supplied reference comparator using the existing rational
+helper and one bounded integer ceiling quotient. Preserve all three raw words,
+observed builtin count1..128 and reference counts above128 without trimming.
+Canonical nonfinite rate is explicit unknown; finite positive duration/angle
+step prevalidate. No native ceil/floor replay, missing intermediate invention,
+threshold/rounding/geometry/error/source/clock/execution/admission adoption;
+all eight flags false. Supplied angle step is a reference operand, not a new
+Config field; actual-word control uses the existing0.1 program divisor.
+
+Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS4.08s/
+4817 deselected, no repair: <=3 decodes/3 rational values/2 rational operations/
+one integer ceiling quotient/three scalar comparisons, existing4096-bit cap.
+Independent Fraction ceilings cover original receipt operands, zero/sign/
+integer boundary/noninteger/rounded-count discrepancies, reference129 versus
+observed128, raw nonfinite and canonical/profile/permission/work controls.
+Root PASS5764, known QDQ1 xfail/77 warnings180.11s; root Ruff/changed format/
+whitespace/four hashes, every prior module/function/control/decorator AST
+and scoped references PASS. Executed positions spent, unused repair not
+authority; ignored `.git/returns-350-*` logs/hashes retained. No source/
+controller change, protected study/model/dependency/download/hardware/native/
+Arm or extra opt-in work. Next supported closed current segment-count reports,
+binding existing program divisor without claiming observed intermediates;
+uniform motion error/qualified clocks/physical/admission remain independent.
+
 ## Sources
 
 Hardware and tools:

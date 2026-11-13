@@ -8970,6 +8970,85 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _native_segment_selection_diagnostics(
+    *,
+    clipped_turn_rate_rad_s_hex,
+    duration_s_hex,
+    angle_step_rad_hex,
+    planned_segments,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native segment selection requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native segment selection rational budget unsupported")
+    if type(planned_segments) is not int or not 1 <= planned_segments <= 128:
+        raise ValueError("native segment selection observed count unsupported")
+    words = (clipped_turn_rate_rad_s_hex, duration_s_hex, angle_step_rad_hex)
+    values = []
+    for word in words:
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("native segment selection word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "native segment selection words must be canonical"
+            ) from error
+        if value.hex() != word or math.isnan(value):
+            raise ValueError("native segment selection words must be canonical")
+        values.append(value)
+    rate, duration, angle_step = values
+    if any(not math.isfinite(value) or value <= 0 for value in (duration, angle_step)):
+        raise ValueError("native segment selection supplied profile unsupported")
+    sweep = quotient = count = None
+    if math.isfinite(rate):
+        arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+        try:
+            sweep = arithmetic.binary(
+                arithmetic.value(abs(rate)), arithmetic.value(duration), "mul"
+            )
+            quotient = arithmetic.binary(sweep, arithmetic.value(angle_step), "div")
+            count = max(1, -(-quotient.numerator // quotient.denominator))
+        except ArithmeticError as error:
+            raise ValueError(
+                "native segment selection rational budget exhausted"
+            ) from error
+    return {
+        "schema": "micro-classifier/native-segment-selection-diagnostics/1",
+        "allowed_use": "offline_native_segment_selection_word_diagnostics_only",
+        "status": "compared_supplied_segment_count_reference"
+        if count is not None
+        else "unknown_nonfinite_native_turn_rate",
+        "comparison_basis": "unrounded_supplied_angular_sweep_ceiling_reference",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "input_hex": words,
+        "planned_segments": planned_segments,
+        "exact_sweep_ratio": None if sweep is None else sweep.as_integer_ratio(),
+        "exact_segment_quotient_ratio": None
+        if quotient is None
+        else quotient.as_integer_ratio(),
+        "reference_segment_count": count,
+        "segment_counts_match": None if count is None else planned_segments == count,
+        "reference_count_exceeds_capture_budget": None
+        if count is None
+        else count > 128,
+    }
+
+
 def _native_interval_division_residuals(
     *, duration_s_hex, planned_segments, interval_s_hex, synthetic_test_only=False
 ):

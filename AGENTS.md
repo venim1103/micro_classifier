@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §349 for closed current receipt interval reports;
+Read [REVIEW.md][review] §350 for supplied unrounded segment-count comparisons;
+§349 records closed current receipt interval reports;
 §348 records intact reviewed goal-expression archival;
 §347 records intact motion-word contract relocation;
 §346 records supplied captured-interval division residuals;
@@ -150,7 +151,12 @@ The supplied/current motion-word contracts now live in chapter04; chapter01
 retains their old anchors as reading links, without NF1 premise adoption.
 Independent default-off current receipt interval reports and their gate are
 complete, including combined motion-update mode; original/closing report work
-precedes final producer/owner closure. Next reassess remaining supported
+precedes final producer/owner closure. Supplied unrounded segment-selection
+comparisons and their gate are complete; native count4 versus reference3 is
+a retained word discrepancy, not a native rounding or segment-count law.
+Next supported current segment-selection reports must bind the existing0.1
+program divisor without inventing captured intermediates or trimming reference
+counts to the128-recorded-segment cap. Reassess remaining supported
 Q2 segment/time and request/guard/executor prerequisites without duplicating integration/floor/
 goal reports; independently qualified setup/source/coverage/
 error/timing and request/guard/executor dependencies remain unresolved.

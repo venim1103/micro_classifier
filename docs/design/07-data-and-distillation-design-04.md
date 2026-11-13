@@ -2474,6 +2474,25 @@ intermediates, new Config/threshold, source/controller or qualification follows;
 eight flags false. The [checkpoint][native-segment-selection-review] preserves
 the scalar discrepancy probe, direct/actual-word controls and required gate.
 
+##### Current Segment-Selection Composition (2026-11-13)
+
+The current receipt reader's independent literal default-off
+`include_native_segment_selection` supports all motion/interval report
+combinations. Captured clipped-rate/duration/count words join the existing0.1
+program divisor, explicitly labeled as a program operand, not an observed
+intermediate. No caller divisor/source override follows. Original/closing
+detached metadata/operand/output reports close before final producer sampling
+and owner closure; changed/unsupported/nonfinite content is unknown without
+partial fields. Existing modes/default shape/report work stay unchanged.
+
+<=2 reports/6 decodes/6 values/4 rational operations/2 bounded integer ceilings/
+6 reference-count comparisons preserve individual work limits, separately from
+fixed prevalidation. Original2 observations/one history check/32 digests remain;
+all-mode<=22 rational values/16 rational operations plus4 speed comparisons.
+No native ceil replay, new threshold/branch/error/source/clock/admission law;
+eight flags false. The [checkpoint][current-segment-selection-review] records
+all combinations, mutations and the required gate.
+
 [sinc-cell-review]: ../../REVIEW.md
 [sinc-word-review]: ../../REVIEW.md
 [sinc-word-proof-review]: ../../REVIEW.md
@@ -2503,4 +2522,5 @@ the scalar discrepancy probe, direct/actual-word controls and required gate.
 [native-interval-division-review]: ../../REVIEW.md#346-supplied-captured-interval-division-residuals-2026-11-13
 [current-interval-division-review]: ../../REVIEW.md#349-closed-current-receipt-interval-reports-2026-11-13
 [native-segment-selection-review]: ../../REVIEW.md#350-supplied-unrounded-segment-count-comparison-2026-11-13
+[current-segment-selection-review]: ../../REVIEW.md#351-closed-current-segment-selection-reports-2026-11-13
 [native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

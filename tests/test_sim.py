@@ -19290,6 +19290,168 @@ def test_receipt_native_interval_reports(
 
 
 @pytest.mark.parametrize(
+    "mode", ("selection", "motion_selection", "interval_selection", "all")
+)
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "disabled",
+        "detached",
+        "permission",
+        "flag_type",
+        "source_change",
+        "closing_source",
+        "report_change",
+        "closing_report_change",
+        "flag_change",
+        "program_word_change",
+        "nonfinite_output",
+    ),
+)
+def test_receipt_native_segment_reports(
+    c1_receipt_snapshot_fixture, monkeypatch, mode, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_receipt_snapshot_fixture)
+    original_report = diagnostics._native_segment_selection_diagnostics
+    original_digest = diagnostics._c1_source_binding_digest
+    original_observation = RoverEnv._observation
+    raw = environment._motion_receipt_source["receipt"]
+    enabled = False if case == "disabled" else 1 if case == "flag_type" else True
+    motion_enabled = mode in ("motion_selection", "all") and case != "disabled"
+    interval_enabled = mode in ("interval_selection", "all") and case != "disabled"
+    valid = case in ("valid", "disabled", "detached")
+    if case == "source_change":
+        raw["clipped_turn_rate_rad_s"] = math.nextafter(
+            raw["clipped_turn_rate_rad_s"], math.inf
+        )
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    first = None
+    work = {"reports": 0, "observations": 0, "digests": 0, "forbidden": 0}
+
+    def report(*args, **kwargs):
+        nonlocal first
+        work["reports"] += 1
+        assert work["reports"] <= 2
+        result = original_report(*args, **kwargs)
+        if work["reports"] == 1:
+            first = result
+            if case == "flag_change":
+                result["source_qualified"] = True
+            elif case == "nonfinite_output":
+                result["status"] = "unknown_nonfinite_native_turn_rate"
+            elif case == "program_word_change":
+                result["input_hex"] = (*result["input_hex"][:2], (0.2).hex())
+        else:
+            assert first is not None
+            if case == "report_change":
+                first["reference_segment_count"] = 99
+            elif case == "closing_report_change":
+                result["reference_segment_count"] = 99
+            elif case == "closing_source":
+                environment.position[0] = math.nextafter(
+                    environment.position[0], math.inf
+                )
+        return result
+
+    def observation(self):
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        return original_observation(self)
+
+    def digest(*args, **kwargs):
+        work["digests"] += 1
+        assert work["digests"] <= 32
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "segment reports must not replay/capture/draw/trig/ceil/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_native_segment_selection_diagnostics", report)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    options = {
+        "synthetic_test_only": case != "permission",
+        "include_native_motion_update": motion_enabled,
+        "include_native_interval_division": interval_enabled,
+        "include_native_segment_selection": enabled,
+    }
+    if case in ("permission", "flag_type"):
+        with pytest.raises(ValueError):
+            owner.snapshot_receipt_history(**options)
+        assert work["reports"] == work["observations"] == 0
+    else:
+        result = owner.snapshot_receipt_history(**options)
+        assert result["snapshot_available"] is valid
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == "disabled":
+            assert "native_segment_selection" not in result
+            assert (
+                "native_motion_update" not in result
+                and "native_interval_division" not in result
+            )
+            assert work["reports"] == 0
+        elif valid:
+            segment = result["native_segment_selection"]
+            assert segment["source_epoch"] == owner._epoch
+            assert segment["tick_before"] == raw["tick_before"]
+            assert segment["tick_after"] == result["current_tick"] == environment.tick
+            assert segment["receipt_binding"] == original_digest(raw)
+            assert segment["program_angle_step_rad_hex"] == (0.1).hex()
+            assert segment["diagnostics"] == first
+            assert (
+                segment["diagnostics"]["input_hex"][2]
+                == segment["program_angle_step_rad_hex"]
+            )
+            assert result["current_frame"] == owner._current[3]
+            assert ("native_motion_update" in result) is motion_enabled
+            assert ("native_interval_division" in result) is interval_enabled
+            assert work["reports"] == 2
+            if case == "detached":
+                segment["diagnostics"]["input_hex"] = ()
+                assert first["input_hex"] != ()
+                assert owner._receipt_history[-1]["motion_receipt"] == raw
+        else:
+            for key in (
+                "native_segment_selection",
+                "native_motion_update",
+                "native_interval_division",
+                "history",
+                "current_tick",
+                "current_frame",
+                "source_epoch",
+            ):
+                assert key not in result
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
+@pytest.mark.parametrize(
     "case",
     (
         "valid",

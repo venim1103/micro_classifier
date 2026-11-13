@@ -21819,6 +21819,7 @@ class _SyntheticC1SourceRecorder:
         *,
         include_native_motion_update=False,
         include_native_interval_division=False,
+        include_native_segment_selection=False,
         synthetic_test_only=False,
     ):
         """Publish copied offline history only while its actual producer is current."""
@@ -21831,6 +21832,10 @@ class _SyntheticC1SourceRecorder:
         if type(include_native_interval_division) is not bool:
             raise ValueError(
                 "include_native_interval_division must be a literal boolean"
+            )
+        if type(include_native_segment_selection) is not bool:
+            raise ValueError(
+                "include_native_segment_selection must be a literal boolean"
             )
         result = {
             "schema": "micro-classifier/synthetic-c1-receipt-history-snapshot/1",
@@ -22039,6 +22044,55 @@ class _SyntheticC1SourceRecorder:
                 "residuals": residuals,
             }
 
+        def segment_report(receipt):
+            words = (
+                float(receipt["clipped_turn_rate_rad_s"]).hex(),
+                float(receipt["nominal_duration_s"]).hex(),
+                (0.1).hex(),
+            )
+            segments = receipt["planned_segments"]
+            diagnostics = _native_segment_selection_diagnostics(
+                clipped_turn_rate_rad_s_hex=words[0],
+                duration_s_hex=words[1],
+                angle_step_rad_hex=words[2],
+                planned_segments=segments,
+                synthetic_test_only=True,
+            )
+            if (
+                type(diagnostics) is not dict
+                or diagnostics.get("schema")
+                != "micro-classifier/native-segment-selection-diagnostics/1"
+                or diagnostics.get("allowed_use")
+                != "offline_native_segment_selection_word_diagnostics_only"
+                or diagnostics.get("status")
+                != "compared_supplied_segment_count_reference"
+                or diagnostics.get("input_hex") != words
+                or type(diagnostics.get("planned_segments")) is not int
+                or diagnostics["planned_segments"] != segments
+                or any(
+                    diagnostics.get(flag) is not False
+                    for flag in (
+                        "fixture_permission_granted",
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                        "numerically_certified",
+                        "source_qualified",
+                        "native_execution_qualified",
+                        "command_admission_qualified",
+                    )
+                )
+            ):
+                raise ValueError("unsupported native segment report metadata or source")
+            return {
+                "source_epoch": self._epoch,
+                "tick_before": receipt["tick_before"],
+                "tick_after": receipt["tick_after"],
+                "receipt_binding": _c1_source_binding_digest(receipt),
+                "program_angle_step_rad_hex": words[2],
+                "diagnostics": diagnostics,
+            }
+
         try:
             binding = owner_binding()
             sampled = producer_sample()
@@ -22077,6 +22131,18 @@ class _SyntheticC1SourceRecorder:
                 ):
                     result["reason"] = "native_interval_report_changed_during_snapshot"
                     return result
+            if include_native_segment_selection:
+                segment_before = segment_report(sampled["motion_receipt"])
+                segment_binding = _c1_source_binding_digest(segment_before)
+                copied_segment = deepcopy(segment_before)
+                segment_after = segment_report(deepcopy(sampled["motion_receipt"]))
+                if (
+                    _c1_source_binding_digest(segment_before) != segment_binding
+                    or _c1_source_binding_digest(copied_segment) != segment_binding
+                    or _c1_source_binding_digest(segment_after) != segment_binding
+                ):
+                    result["reason"] = "native_segment_report_changed_during_snapshot"
+                    return result
             final_sampled_binding = _c1_source_binding_digest(producer_sample())
             if (
                 final_sampled_binding != sampled_binding
@@ -22107,6 +22173,8 @@ class _SyntheticC1SourceRecorder:
             result["native_motion_update"] = copied_update
         if include_native_interval_division:
             result["native_interval_division"] = copied_interval
+        if include_native_segment_selection:
+            result["native_segment_selection"] = copied_segment
         return result
 
     def snapshot_native_integration_source(self, *, synthetic_test_only=False):

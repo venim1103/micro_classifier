@@ -531,6 +531,40 @@ Arm or extra opt-in work. Next supported closed current segment-count reports,
 binding existing program divisor without claiming observed intermediates;
 uniform motion error/qualified clocks/physical/admission remain independent.
 
+## 351. Closed Current Segment-Selection Reports (2026-11-13)
+
+Begin clean pushedaad0ae8. Add independent literal default-off
+include_native_segment_selection to the current receipt reader, supporting
+selection-only and all combinations with motion/interval reports. No caller
+source/divisor/tick/epoch override. Bind captured clipped-rate/duration/count
+words to the existing0.1 program operand, explicitly labeled as a program
+divisor, not a captured intermediate. Detached reports preserve current
+receipt/epoch/transition/frame joins; original/closing metadata/operand/output
+checks precede final producer sampling and owner closure. Changed, unsupported
+or nonfinite evidence is unknown without partial fields. Old modes/default
+shape/report work unchanged; no native rounding/branch/error/source/clock/
+physical/execution/admission law, all eight flags false.
+
+Fresh48/60s (12 cases x selection/motion-selection/interval-selection/all),
+necessary repair48/60s reserve, root/360s. First48 PASS4.78s/4841 deselected,
+no repair or unchanged-mode focused rerun. Per family <=2 reports/6 decodes/
+6 rational values/4 rational operations/2 bounded integer ceilings/6 reference/
+count comparisons; fixed type/profile prevalidation remains separate from
+the reference bookkeeping limits, including§350's three comparisons.
+Original2 observations/one history check/32 digests unchanged; all-mode<=22
+rational values/16 rational arithmetic operations plus4 speed comparisons.
+Controls cover source/closing-pose/report/metadata/program-word mutations,
+unknown output, independent inclusion, permission/type/default-off/detachment.
+Root PASS5812, known QDQ1 xfail/77 warnings174.65s; root Ruff/changed format/
+whitespace/four hashes, unrelated module/function/control/decorator AST and
+scoped references PASS; two resolved existing callers remain compatible.
+Executed positions spent; unused repair not authority. Ignored
+`.git/returns-351-*` logs/hashes retained; no source/controller change, replay/
+draw/trig/native ceil/clock/geometry, protected study/model/dependency/
+download/hardware/native/Arm or extra opt-in work. Next reassess the remaining
+Q0-Q5 acceptance and request/guard/executor source prerequisites without
+duplicating completed reports or treating matching words as qualification.
+
 ## Sources
 
 Hardware and tools:

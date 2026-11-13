@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §350 for supplied unrounded segment-count comparisons;
+Read [REVIEW.md][review] §351 for closed current segment-selection reports;
+§350 records supplied unrounded segment-count comparisons;
 §349 records closed current receipt interval reports;
 §348 records intact reviewed goal-expression archival;
 §347 records intact motion-word contract relocation;
@@ -154,9 +155,10 @@ complete, including combined motion-update mode; original/closing report work
 precedes final producer/owner closure. Supplied unrounded segment-selection
 comparisons and their gate are complete; native count4 versus reference3 is
 a retained word discrepancy, not a native rounding or segment-count law.
-Next supported current segment-selection reports must bind the existing0.1
-program divisor without inventing captured intermediates or trimming reference
-counts to the128-recorded-segment cap. Reassess remaining supported
+Independent default-off current segment-selection reports and their gate are
+complete across all report combinations. The existing0.1 program divisor is
+explicitly labeled, not an invented captured intermediate; reference counts
+are not trimmed to the128-recorded-segment cap. Next reassess remaining supported
 Q2 segment/time and request/guard/executor prerequisites without duplicating integration/floor/
 goal reports; independently qualified setup/source/coverage/
 error/timing and request/guard/executor dependencies remain unresolved.

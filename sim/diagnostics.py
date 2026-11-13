@@ -8970,6 +8970,76 @@ def _check_synthetic_c1_motion(motion, source):
     return result
 
 
+def _native_interval_division_residuals(
+    *, duration_s_hex, planned_segments, interval_s_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native interval division requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native interval division rational budget unsupported")
+    if type(planned_segments) is not int or not 1 <= planned_segments <= 128:
+        raise ValueError("native interval division segment count unsupported")
+    values = []
+    for word in (duration_s_hex, interval_s_hex):
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("native interval division word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "native interval division words must be canonical"
+            ) from error
+        if value.hex() != word or math.isnan(value):
+            raise ValueError("native interval division words must be canonical")
+        values.append(value)
+    duration, observed = values
+    if not math.isfinite(duration) or duration <= 0:
+        raise ValueError("native interval division duration unsupported")
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    try:
+        exact = arithmetic.binary(
+            arithmetic.value(duration), arithmetic.value(planned_segments), "div"
+        )
+        residual = (
+            arithmetic.binary(arithmetic.value(observed), exact, "sub")
+            if math.isfinite(observed)
+            else None
+        )
+    except ArithmeticError as error:
+        raise ValueError(
+            "native interval division rational budget exhausted"
+        ) from error
+    return {
+        "schema": "micro-classifier/native-interval-division-residuals/1",
+        "allowed_use": "offline_native_interval_division_word_diagnostics_only",
+        "status": "computed_exact_interval_division_residual"
+        if residual is not None
+        else "unknown_nonfinite_native_interval",
+        "comparison_basis": "supplied_duration_divided_by_observed_planned_segments",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "duration_s_hex": duration_s_hex,
+        "planned_segments": planned_segments,
+        "interval_s_hex": interval_s_hex,
+        "exact_interval_ratio": exact.as_integer_ratio(),
+        "signed_residual_ratio": None
+        if residual is None
+        else residual.as_integer_ratio(),
+    }
+
+
 def _native_action_clipping_diagnostics(*, input_hex, synthetic_test_only=False):
     if synthetic_test_only is not True:
         raise ValueError("native action clipping requires synthetic_test_only=True")

@@ -926,6 +926,22 @@ eight flags stay false. The [checkpoint][native-action-clipping-review] preserve
 the direct/actual-word controls, work limits and required gate.
 
 
+##### Supplied Captured-Interval Division Words (2026-11-13)
+
+The private `_native_interval_division_residuals` compares exact supplied
+nominal duration divided by observed builtin planned_segments1..128 with
+the captured native interval. This does not recompute segment selection.
+Canonical positive finite duration follows existing Config; raw nonfinite
+observed interval is unknown, while malformed/NaN words reject without mutation.
+Raw duration/count/interval and signed observed-minus-exact ratio remain explicit.
+Literal synthetic permission, <=2 decodes/3 rational values/one division/one
+subtraction and the existing4096-bit cap bound the work. Existing receipts and
+native integration input joins already retain the operands; no source/controller
+change or replay/RNG/trig/clock follows. This is not a native rounding law,
+uniform motion error or qualified duration/clock; eight flags stay false.
+The [checkpoint][native-interval-division-review] records controls and the gate.
+
+
 ##### Current Receipt Motion-Update Composition (2026-11-13)
 
 The owned receipt-history reader's literal default-off
@@ -2246,6 +2262,7 @@ figure is not an established minimum.
 [native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13
 [native-action-clipping-review]: ../../REVIEW.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
 [current-motion-update-review]: ../../REVIEW.md#345-closed-current-receipt-motion-update-reports-2026-11-13
+[native-interval-division-review]: ../../REVIEW.md#346-supplied-captured-interval-division-residuals-2026-11-13
 [native-arithmetic-review]: ../review/183-220.md#196-supported-native-word-arithmetic-discrepancies-2026-11-09
 [native-arithmetic-composition-review]: ../review/183-220.md#197-current-owned-native-arithmetic-composition-2026-11-09
 [native-arithmetic-record-review]: ../review/183-220.md#198-exact-native-arithmetic-record-validation-2026-11-09

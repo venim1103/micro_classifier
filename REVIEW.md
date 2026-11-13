@@ -522,6 +522,34 @@ dependency/download/hardware/native/Arm or extra opt-in work. Next reassess
 remaining supported Q2 segment/time and request/guard/executor prerequisites;
 uniform source/error/timing/one-use acceptance remains independent.
 
+## 346. Supplied Captured-Interval Division Residuals (2026-11-13)
+
+Begin clean pushed09eea2c. RoverEnv.step computes seconds=dt/planned_segments;
+existing receipt words and integration input joins retain that native interval.
+The receipt chain checks its native float quotient words, not an unrounded
+division residual. Add a separate bounded supplied duration/count/interval
+comparison using the existing rational arithmetic helper, not a floor report
+or repeated integration stage. Observed builtin planned_segments1..128 is the
+consumed divisor, not a recomputed or qualified segment-selection prediction.
+Canonical duration is finite/positive per existing Config; raw nonfinite
+observed interval is explicit unknown with supplied words preserved. No
+rounding/error/timing/source/physical/execution/admission law; eight flags false.
+
+Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS4.03s/
+4769 deselected, no repair; <=2 canonical decodes/3 rational values/one division/
+one subtraction and existing4096-bit cap. One actual control consumes the
+existing captured receipt without another step/capture; independent Fraction
+cases cover divisible/nondivisible intervals, signed residual/zero/subnormal/
+extreme values, raw unknown output and canonical/domain/permission/work limits.
+Root PASS5716, known QDQ1 xfail/77 warnings173.83s; root Ruff/changed format/
+whitespace/four hashes, every prior module/function/control/decorator AST and
+scoped references PASS. Both executed positions spent; unused repair is not
+authority. Ignored `.git/returns-346-*` logs/hashes retained; no replay/draw/
+trig/clock/geometry, protected study/model/dependency/download/hardware/native/
+Arm or additional opt-in work. Next separately default-off closed current
+receipt interval reports; native segment-selection intermediates, uniform
+motion error and qualified duration/clocks remain independent obligations.
+
 ## Sources
 
 Hardware and tools:

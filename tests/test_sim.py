@@ -33878,6 +33878,182 @@ def test_native_action_clipping_diagnostics(
     "case",
     (
         "actual",
+        "divisible",
+        "nondivisible",
+        "positive_residual",
+        "negative_observed",
+        "signed_zero",
+        "subnormal",
+        "max_duration",
+        "nonfinite_output",
+        "permission",
+        "count_bool",
+        "count_zero",
+        "count_large",
+        "word_type",
+        "noncanonical",
+        "nan",
+        "duration_inf",
+        "duration_zero",
+        "duration_negative",
+        "budget_bool",
+        "budget_zero",
+        "budget_large",
+        "budget_exhausted",
+        "word_budget",
+    ),
+)
+def test_native_interval_division_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    duration, count, observed = (0.125).hex(), 2, (0.0625).hex()
+    valid = case in (
+        "actual",
+        "divisible",
+        "nondivisible",
+        "positive_residual",
+        "negative_observed",
+        "signed_zero",
+        "subnormal",
+        "max_duration",
+        "nonfinite_output",
+    )
+    if case == "actual":
+        receipt = c1_motion_receipt_source_fixture[0]._motion_receipt_source["receipt"]
+        duration, count, observed = (
+            float(receipt["nominal_duration_s"]).hex(),
+            receipt["planned_segments"],
+            float(receipt["interval_seconds"]).hex(),
+        )
+    elif case == "nondivisible":
+        duration, count, observed = (0.1).hex(), 3, (0.1 / 3).hex()
+    elif case == "positive_residual":
+        observed = math.nextafter(0.0625, math.inf).hex()
+    elif case == "negative_observed":
+        observed = (-0.0625).hex()
+    elif case == "signed_zero":
+        observed = (-0.0).hex()
+    elif case == "subnormal":
+        duration, count, observed = "0x0.0000000000001p-1022", 128, (0.0).hex()
+    elif case == "max_duration":
+        duration, count, observed = (
+            "0x1.fffffffffffffp+1023",
+            128,
+            "0x1.fffffffffffffp+1016",
+        )
+    elif case == "nonfinite_output":
+        observed = "inf"
+    elif case.startswith("count_"):
+        count = {"count_bool": True, "count_zero": 0, "count_large": 129}[case]
+    elif case == "word_type":
+        duration = True
+    elif case == "noncanonical":
+        duration = "0.125"
+    elif case == "nan":
+        observed = "nan"
+    elif case == "duration_inf":
+        duration = "inf"
+    elif case == "duration_zero":
+        duration = (0.0).hex()
+    elif case == "duration_negative":
+        duration = (-0.125).hex()
+    elif case.startswith("budget_"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {
+                "budget_bool": True,
+                "budget_zero": 0,
+                "budget_large": 4097,
+                "budget_exhausted": 8,
+            }[case],
+        )
+        if case == "budget_exhausted":
+            duration = (0.1).hex()
+    elif case == "word_budget":
+        duration = "0" * 33
+    before = (duration, count, observed)
+    work = {"values": 0, "binary": 0, "forbidden": 0}
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def value(self, operand):
+        work["values"] += 1
+        assert work["values"] <= 3
+        return original_value(self, operand)
+
+    def binary(self, *args):
+        work["binary"] += 1
+        assert work["binary"] <= 2
+        return original_binary(self, *args)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("interval reports must not replay/read/draw/trig/clock")
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset", "_record_history", "_observation"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if not valid:
+        with pytest.raises(ValueError, match="native interval division"):
+            diagnostics._native_interval_division_residuals(
+                duration_s_hex=duration,
+                planned_segments=count,
+                interval_s_hex=observed,
+                synthetic_test_only=case != "permission",
+            )
+    else:
+        result = diagnostics._native_interval_division_residuals(
+            duration_s_hex=duration,
+            planned_segments=count,
+            interval_s_hex=observed,
+            synthetic_test_only=True,
+        )
+        exact = Fraction(float.fromhex(duration)) / count
+        assert result["exact_interval_ratio"] == exact.as_integer_ratio()
+        assert (
+            result["duration_s_hex"],
+            result["planned_segments"],
+            result["interval_s_hex"],
+        ) == before
+        if case == "nonfinite_output":
+            assert result["status"] == "unknown_nonfinite_native_interval"
+            assert result["signed_residual_ratio"] is None
+        else:
+            residual = Fraction(float.fromhex(observed)) - exact
+            assert result["signed_residual_ratio"] == residual.as_integer_ratio()
+            if case == "nondivisible":
+                assert residual != 0
+            elif case == "positive_residual":
+                assert residual > 0
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert (duration, count, observed) == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "actual",
         "exact",
         "residual",
         "zero_tie",

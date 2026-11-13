@@ -443,6 +443,34 @@ dependency/download/hardware work or qualification adoption. Next independent
 default-off matched native goal expression reports, preserving consumed
 coefficients/delta and original/closing source/operand/report/output joins.
 
+## 339. Matched Retained Native Goal Expression Reports (2026-11-13)
+
+Begin clean pushed7c22b12. Add independent literal default-off expression
+report inclusion requiring goal computation. Closed retained consumed
+coefficients/observed delta/native components feed the supplied-word helper;
+detached reports preserve exact source epoch/tick/delivery labels. Original/
+closing source/operand/report/output joins close before publication, including
+final intake after both reports and the last producer observation. Unsupported,
+changed or nonfinite joins return explicit unknown without partial fields.
+No coefficient normalization, trig/noise/rounding/geometry/error adoption;
+all eight flags false, zero-latency delivered-only C1 domain unchanged.
+
+Fresh54/60s, necessary repair54/60s reserve, root/360s. First54 PASS4.99s/
+4513 deselected, no repair:50 expression-only/combined affected cases plus4
+literal/dependency/changed-output/changed-consumed-coefficient controls.
+Unchanged existing-mode focused cases not rerun. Per family <=2 reports/
+4 entries/12 decodes/12 values; expression <=16 binary operations, delta's
+original <=8 unchanged; combined <=24 values/24 binary operations. Original
+<=2 intakes/views/matches/file checks and <=12 binding digests unchanged.
+Root PASS5490, known QDQ1 xfail/77 warnings178.71s; root Ruff, changed format/
+whitespace/four hashes, prior unrelated source/control/decorator AST and scoped
+references PASS. Pylance before/after found no resolved dynamic callers, not
+static compatibility proof. Both executed positions spent, unused repair not
+authority; ignored `.git/returns-339-*` logs/hashes retained. No replay/draw/
+trig/clock/geometry/qualification, protected study/model/dependency/download/
+hardware/native/Arm or extra opt-in work. Next supplied final-native/stored
+goal-word correspondence, not predicted casting or an error bound.
+
 ## Sources
 
 Hardware and tools:

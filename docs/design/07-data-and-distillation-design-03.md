@@ -2457,6 +2457,19 @@ inputs reject without mutation. Signed words are not normalized.
 <=4096-bit arithmetic cap; all eight flags false, no qualification follows.
 [Checkpoint §337][native-goal-expression-review] records controls and limits.
 
+#### Matched Retained Native Goal Expression Reports (2026-11-13)
+
+Independent literal default-off expression inclusion requires goal computation.
+Exact retained consumed coefficients/delta/native components and source epoch/
+tick/delivery labels feed detached reports. Original/closing source/operand/
+report/output joins close before publication; unsupported or changed joins
+return explicit unknown without partial fields. Final source intake follows
+both reports and the last observation. <=2 reports/family, unchanged source/
+digest caps; combined delta/expression <=24 values/24 binary operations.
+No trig/noise/rounding/geometry/error adoption, all eight flags false.
+[Checkpoint §339][native-goal-expression-match-review] records actual controls.
+
+[native-goal-expression-match-review]: ../../REVIEW.md#339-matched-retained-native-goal-expression-reports-2026-11-13
 [native-goal-expression-review]: ../../REVIEW.md#337-supplied-word-native-goal-expression-residuals-2026-11-13
 [native-goal-review]: ../../REVIEW.md#336-current-state-review-and-native-goal-boundary-repairs-2026-11-13
 [native-goal-wip]: ../../REVIEW.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12

@@ -33405,8 +33405,15 @@ def test_native_goal_retained_matching(
 @pytest.mark.parametrize(
     "include_goal_delta_residuals", (False, True), ids=("plain", "delta")
 )
+@pytest.mark.parametrize(
+    "include_goal_expression_residuals", (False, True), ids=("existing", "expression")
+)
 def test_native_goal_delivery_snapshot(
-    monkeypatch, c1_motion_receipt_source_fixture, case, include_goal_delta_residuals
+    monkeypatch,
+    c1_motion_receipt_source_fixture,
+    case,
+    include_goal_delta_residuals,
+    include_goal_expression_residuals,
 ):
     from dataclasses import replace
 
@@ -33465,6 +33472,9 @@ def test_native_goal_delivery_snapshot(
         "reports": 0,
         "report_values": 0,
         "report_binary": 0,
+        "expression_reports": 0,
+        "expression_values": 0,
+        "expression_binary": 0,
         "forbidden": 0,
     }
     original_intake = diagnostics._sample_simulator_native_goal_computation_source
@@ -33473,8 +33483,10 @@ def test_native_goal_delivery_snapshot(
     original_files = type(owner)._source_files
     original_observation = RoverEnv._observation
     original_report = diagnostics._native_goal_delta_residuals
+    original_expression = diagnostics._native_goal_expression_residuals
     original_value = diagnostics._C1CommandArithmetic.value
     original_binary = diagnostics._C1CommandArithmetic.binary
+    inside_expression = False
 
     def report(**kwargs):
         work["reports"] += 1
@@ -33482,14 +33494,26 @@ def test_native_goal_delivery_snapshot(
         return original_report(**kwargs)
 
     def value(self, operand):
-        work["report_values"] += 1
-        assert work["report_values"] <= 12
+        key = "expression_values" if inside_expression else "report_values"
+        work[key] += 1
+        assert work[key] <= 12
         return original_value(self, operand)
 
     def binary(self, *args):
-        work["report_binary"] += 1
-        assert work["report_binary"] <= 8
+        key = "expression_binary" if inside_expression else "report_binary"
+        work[key] += 1
+        assert work[key] <= (16 if inside_expression else 8)
         return original_binary(self, *args)
+
+    def expression_report(**kwargs):
+        nonlocal inside_expression
+        work["expression_reports"] += 1
+        assert work["expression_reports"] <= 2
+        inside_expression = True
+        try:
+            return original_expression(**kwargs)
+        finally:
+            inside_expression = False
 
     def digest(*args):
         work["digests"] += 1
@@ -33556,6 +33580,9 @@ def test_native_goal_delivery_snapshot(
     monkeypatch.setattr(type(owner), "_source_files", files)
     monkeypatch.setattr(RoverEnv, "_observation", observation)
     monkeypatch.setattr(diagnostics, "_native_goal_delta_residuals", report)
+    monkeypatch.setattr(
+        diagnostics, "_native_goal_expression_residuals", expression_report
+    )
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
     for name in ("step", "reset", "_record_history"):
@@ -33571,12 +33598,15 @@ def test_native_goal_delivery_snapshot(
                 synthetic_test_only=case != "permission",
                 include_goal_computation=1 if case == "flag" else True,
                 include_goal_delta_residuals=include_goal_delta_residuals,
+                include_goal_expression_residuals=include_goal_expression_residuals,
             )
     else:
         result = owner.snapshot_native_goal_delivery(
             synthetic_test_only=True,
             include_goal_computation=case != "default",
             include_goal_delta_residuals=include_goal_delta_residuals
+            and case != "default",
+            include_goal_expression_residuals=include_goal_expression_residuals
             and case != "default",
         )
         if case == "copy":
@@ -33618,6 +33648,40 @@ def test_native_goal_delivery_snapshot(
                 assert computed["command_admission_qualified"] is False
             else:
                 assert "goal_delta_residuals" not in result
+            if include_goal_expression_residuals:
+                from fractions import Fraction
+
+                computed = result["goal_expression_residuals"]
+                retained = result["delivered_goal"]
+                values = retained["goal_computation"]["computation"]["values"]
+                cosine, sine = (
+                    Fraction(float.fromhex(values[key]))
+                    for key in ("used_cosine", "used_sine")
+                )
+                forward, left = (
+                    Fraction(float.fromhex(word)) for word in values["delta_m"]
+                )
+                exact = (
+                    cosine * forward + sine * left,
+                    -sine * forward + cosine * left,
+                )
+                for key in ("source_epoch", "tick", "delivery_tick"):
+                    assert computed[key] == retained[key]
+                assert len(computed["entries"]) == 2
+                for axis, entry in enumerate(computed["entries"]):
+                    observed = Fraction(float.fromhex(values["native_goal_m"][axis]))
+                    assert (
+                        entry["exact_unrounded_expression_ratio"]
+                        == exact[axis].as_integer_ratio()
+                    )
+                    assert (
+                        entry["signed_residual_ratio"]
+                        == (observed - exact[axis]).as_integer_ratio()
+                    )
+                assert computed["source_qualified"] is False
+                assert computed["command_admission_qualified"] is False
+            else:
+                assert "goal_expression_residuals" not in result
         else:
             assert result["status"] == "unknown"
             assert result["snapshot_available"] is False
@@ -33657,6 +33721,9 @@ def test_native_goal_delivery_snapshot(
             assert work["observations"] == 2
             assert work["files"] == 2
             assert work["reports"] == (2 if include_goal_delta_residuals else 0)
+            assert work["expression_reports"] == (
+                2 if include_goal_expression_residuals else 0
+            )
         if case == "default":
             assert not any(work.values())
     assert work["forbidden"] == 0
@@ -33767,6 +33834,74 @@ def test_native_goal_owner_layout(c1_motion_receipt_source_fixture, operation, c
             "tick",
         ):
             assert key not in result
+
+
+@pytest.mark.parametrize(
+    "case", ("literal", "dependency", "closing_output", "closing_coefficients")
+)
+def test_native_goal_expression_delivery_options(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if case in ("literal", "dependency"):
+        with pytest.raises(ValueError):
+            owner.snapshot_native_goal_delivery(
+                synthetic_test_only=True,
+                include_goal_computation=case == "literal",
+                include_goal_expression_residuals=1 if case == "literal" else True,
+            )
+        return
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_goal_computation_source(
+        environment, synthetic_test_only=True, include_goal_computation=True
+    )
+    original = diagnostics._native_goal_expression_residuals
+    reports = []
+
+    def report(**kwargs):
+        assert len(reports) < 2
+        if reports:
+            if case == "closing_output":
+                reports[0]["entries"][0]["signed_residual_ratio"] = (999, 1)
+            else:
+                environment._native_goal_computation_source["computation"]["values"][
+                    "used_cosine"
+                ] = 0.5
+        result = original(**kwargs)
+        reports.append(result)
+        return result
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("matched expressions must not replay/draw/trig/clock")
+
+    monkeypatch.setattr(diagnostics, "_native_goal_expression_residuals", report)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    before = deepcopy((environment.tick, environment.rng.bit_generator.state))
+    result = owner.snapshot_native_goal_delivery(
+        synthetic_test_only=True,
+        include_goal_computation=True,
+        include_goal_expression_residuals=True,
+    )
+    assert len(reports) == 2
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    for key in (
+        "goal_expression_residuals",
+        "goal_delta_residuals",
+        "delivered_goal",
+        "frame",
+        "tick",
+        "source_epoch",
+    ):
+        assert key not in result
+    assert (environment.tick, environment.rng.bit_generator.state) == before
 
 
 @pytest.mark.parametrize(

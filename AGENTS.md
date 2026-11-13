@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §338 for intact goal ownership checkpoint archival;
+Read [REVIEW.md][review] §339 for matched retained native goal expression reports;
+§338 records intact goal ownership checkpoint archival;
 §337 records supplied native goal expression residuals;
 §336 records current-state review, goal boundary repairs
 and the completed matched goal delta gate;
@@ -122,8 +123,8 @@ reviewed final-source closure and malformed-owner guards. The historical §335
 root position remains spent/aborted; recovered pytest output is not chain-exit
 evidence. The fresh review gate passed5412 tests plus the known QDQ xfail.
 The user's fresh actual continuation resumes the ordered queue. Supplied-word
-native goal expressions and their gate are complete; next closed matched
-retained expression reports. Preserve consumed
+native goal expressions and closed matched retained reports with their gates
+are complete; next supplied native/stored goal-word correspondence. Preserve consumed
 coefficients and observed delta without trig/noise/geometry/error adoption;
 do not repeat unchanged green gates.
 Preserve

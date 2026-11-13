@@ -479,6 +479,49 @@ root/style/conservation gate without repeating unchanged green focused controls.
 No new source qualification, protected study/model/dependency/download/hardware
 work, or numerical/physical/clock/execution/one-use/admission evidence.
 
+## 336. Current-State Review and Native Goal Boundary Repairs (2026-11-13)
+
+Review/fix request replaces the pause with a bounded current-state review,
+not automatic continuation of the feature queue. Begin clean main7c25f6e;
+fetch confirms upstream0/0, no live pytest job, Python3.12.3 at /opt/venv,
+pytest8.4.2, Ruff0.17.0, timeout and365GiB free. Review the active public/design/
+milestone status and goal capture/intake/retention/delivery/report ownership
+chain with its nearby controls. Qualified baseline/source/coverage/error/
+timing/one-use/admission and ST/board readiness remain unresolved; no learned/
+hardware/physical capability follows from fixture success.
+
+Recover the existing §335 log's actual footer:5402 PASS, known QDQ1 xfail/
+77 warnings177.00s, source hashes identical to WIP. This is recovered pytest
+output, not proof of the interrupted command chain's exit or style checks.
+Keep the historical root position spent/aborted and the pause record intact.
+The fresh complete gate below is tied to substantive review fixes.
+
+Ten fresh repro controls/60s all FAIL9.77s: the last producer observation,
+and optional closing report, ran after the last native source intake, allowing
+in-place raw-cache/nonfinite or true-pose changes to publish stale diagnostics.
+Retention had the same last-observation gap. Malformed current tuples/dynamics
+lists leaked IndexError/AttributeError instead of explicit ValueError/unknown.
+Move the final producer/report work before the final closed source intake;
+close ownership afterwards. Prevalidate actual current tuple/State/frame and
+dynamics dictionary before indexing or consuming them. Do not broaden catches,
+change arithmetic, accept nonfinite data, or add source reads/draws.
+
+Necessary affected controls84/60s PASS5.59s, including all10 formerly failing
+cases and plain/delta/default-off/gap/dedup/trim controls. Existing <=2 intakes/
+views/matches/file checks, <=12 binding digests and <=2 reports/4 entries/
+12 decodes/12 rational values/8 binary operations remain unchanged.
+Fresh root/360s PASS5412, known QDQ1 xfail/77 warnings182.47s; root Ruff,
+changed-file format, whitespace and all four before/after source hashes PASS.
+Pylance reports no errors in the owning diagnostics file; unrelated source/
+control/decorator AST and scoped local links/anchors conserved. All executed
+positions spent; ignored `.git/review-336-*` logs/hashes retained.
+
+Matched retained goal delta publication now has a completed required gate,
+not numerical/geometry/noise/source/execution/physical/admission qualification;
+all eight flags false. No native/C/Arm/ST/model/study/dependency/download/
+hardware changes or extra opt-in runs. Current review/fixes complete; leave the
+ordered feature queue untouched pending the user's next instruction.
+
 ## Sources
 
 Hardware and tools:

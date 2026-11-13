@@ -31,7 +31,9 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §335 for matched native goal delta WIP and user pause;
+Read [REVIEW.md][review] §336 for current-state review, goal boundary repairs
+and the completed matched goal delta gate;
+§335 preserves the former WIP and explicit pause;
 §334 records intact native goal prerequisite archival;
 §333 records supplied-word native goal delta discrepancies;
 §332 records closed default-off native goal delivery;
@@ -112,12 +114,14 @@ retained exact goal matching and its required gate are complete;
 closed default-off latency0 delivered-goal publication and its gate are complete.
 Pending goal publication is unsupported by frozen C1's zero-latency domain;
 supplied-word native goal delta discrepancies and their gate are complete.
-Matched retained goal delta reports have26 passing focused controls; the root
-run was stopped on the user's current explicit pause and remains spent/aborted.
-This is WIP, not a completed required gate. Resume only on a fresh actual
-continuation request; next finish bounded root/style/conservation verification,
-without repeating unchanged green focused controls or adopting noise/geometry
-or error bounds.
+Matched retained goal delta reports and their required gate are complete after
+reviewed final-source closure and malformed-owner guards. The historical §335
+root position remains spent/aborted; recovered pytest output is not chain-exit
+evidence. The fresh review gate passed5412 tests plus the known QDQ xfail.
+The user's current request is a bounded status review/fix before other work;
+it is complete, with no automatic feature-queue continuation. Resume that queue
+only on a new instruction; do not repeat green gates or adopt noise/geometry/
+error bounds.
 Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.

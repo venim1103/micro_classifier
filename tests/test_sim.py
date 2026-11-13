@@ -32649,6 +32649,7 @@ def test_native_goal_computation_history(
         "closing_history",
         "closing_profile",
         "closing_copy",
+        "closing_producer_cache",
         "closing_current",
         "files",
         "held",
@@ -32725,6 +32726,20 @@ def test_native_goal_recorder_retention(
     original_digest = diagnostics._c1_source_binding_digest
     original_files = type(owner)._source_files
 
+    original_observation = RoverEnv._observation
+    observations = 0
+
+    def observation(self):
+        nonlocal observations
+        if work["inside"]:
+            observations += 1
+            assert observations <= 2
+            if observations == 2 and case == "closing_producer_cache":
+                environment._native_goal_computation_source["computation"]["values"][
+                    "delta_m"
+                ][0] = np.inf
+        return original_observation(self)
+
     def intake(*args):
         work["intake"] += 1
         assert work["intake"] <= 2
@@ -32787,6 +32802,7 @@ def test_native_goal_recorder_retention(
     monkeypatch.setattr(diagnostics, "_check_native_goal_computation_history", check)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
     monkeypatch.setattr(type(owner), "_source_files", staticmethod(files))
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
     monkeypatch.setattr(RoverEnv, "step", controlled(RoverEnv.step, "steps"))
     monkeypatch.setattr(RoverEnv, "reset", controlled(RoverEnv.reset))
     monkeypatch.setattr(
@@ -32800,6 +32816,8 @@ def test_native_goal_recorder_retention(
         monkeypatch.setattr(rover.math, name, controlled(getattr(rover.math, name)))
 
     def retain(include=True, permission=True):
+        nonlocal observations
+        observations = 0
         work.update(intake=0, checks=0, digests=0, files=0)
         rng = deepcopy(environment.rng.bit_generator.state)
         odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
@@ -33188,6 +33206,8 @@ def test_native_goal_retained_matching(
         "missing_current",
         "missing_dynamics",
         "closing_producer_history",
+        "closing_producer_cache",
+        "closing_producer_pose",
     ),
 )
 @pytest.mark.parametrize(
@@ -33296,6 +33316,12 @@ def test_native_goal_delivery_snapshot(
             owner._goal_computation_history[0]["goal_computation"][
                 "source_qualified"
             ] = True
+        elif work["observations"] == 2 and case == "closing_producer_cache":
+            environment._native_goal_computation_source["computation"]["values"][
+                "delta_m"
+            ][0] = np.inf
+        elif work["observations"] == 2 and case == "closing_producer_pose":
+            environment.position[0] += 0.125
         return original_observation(self)
 
     def intake(*args):
@@ -33447,14 +33473,16 @@ def test_native_goal_delivery_snapshot(
     assert environment.odometry_rng.bit_generator.state == before_odometry_rng
 
 
-@pytest.mark.parametrize("case", ("literal", "dependency", "closing_output"))
+@pytest.mark.parametrize(
+    "case", ("literal", "dependency", "closing_output", "closing_report_cache")
+)
 def test_native_goal_delta_delivery_options(
     monkeypatch, c1_motion_receipt_source_fixture, case
 ):
     from sim import diagnostics, rover
 
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    if case != "closing_output":
+    if case in ("literal", "dependency"):
         with pytest.raises(ValueError):
             owner.snapshot_native_goal_delivery(
                 synthetic_test_only=True,
@@ -33474,7 +33502,12 @@ def test_native_goal_delta_delivery_options(
     def report(**kwargs):
         assert len(reports) < 2
         if reports:
-            reports[0]["entries"][0]["signed_residual_ratio"] = (999, 1)
+            if case == "closing_output":
+                reports[0]["entries"][0]["signed_residual_ratio"] = (999, 1)
+            else:
+                environment._native_goal_computation_source["computation"]["values"][
+                    "delta_m"
+                ][0] = np.inf
         result = original(**kwargs)
         reports.append(result)
         return result
@@ -33505,6 +33538,43 @@ def test_native_goal_delta_delivery_options(
     ):
         assert key not in result
     assert (environment.tick, environment.rng.bit_generator.state) == before
+
+
+@pytest.mark.parametrize("operation", ("retain", "snapshot"))
+@pytest.mark.parametrize("case", ("short_current", "invalid_dynamics"))
+def test_native_goal_owner_layout(c1_motion_receipt_source_fixture, operation, case):
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_goal_computation_source(
+        environment, synthetic_test_only=True, include_goal_computation=True
+    )
+    if case == "short_current":
+        owner._current = (environment.tick,)
+    else:
+        owner._dynamics_sample = []
+    if operation == "retain":
+        with pytest.raises(ValueError, match="native goal"):
+            owner.record_native_goal_computation_source(
+                environment, synthetic_test_only=True, include_goal_computation=True
+            )
+    else:
+        result = owner.snapshot_native_goal_delivery(
+            synthetic_test_only=True,
+            include_goal_computation=True,
+            include_goal_delta_residuals=True,
+        )
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert result["reason"]
+        for key in (
+            "frame",
+            "delivered_goal",
+            "goal_delta_residuals",
+            "source_epoch",
+            "tick",
+        ):
+            assert key not in result
 
 
 @pytest.mark.parametrize(

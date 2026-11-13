@@ -2400,6 +2400,11 @@ pose/input/history/dynamics/source-file/output joins close before publication,
 including owner closure after the last producer observation. Missing,
 unsupported, changed or nonfinite correspondence returns explicit unknown
 without partial epoch/tick/frame/goal fields.
+Current tuple/State/frame and dynamics dictionary layouts prevalidate before
+indexing or consumption. The final closed native-source intake follows the
+last producer observation and optional report calculation, so late in-place
+source/pose mutations fail closed without another intake or broader catches.
+Retention uses the same final-observation-before-source-closure order.
 
 The frozen C1 profile has zero odometry latency; this delivered-only method
 does not create a positive-latency/pending domain. Pending publication remains
@@ -2425,6 +2430,23 @@ noise/numerical/physical/clock/execution/one-use/admission adoption.
 [Checkpoint §333][native-goal-delta-review] preserves controls and failures;
 retained matching/report publication remains separate.
 
+#### Matched Retained Native Goal Delta Reports (2026-11-13)
+
+Literal default-off `include_goal_delta_residuals` requires goal computation
+inclusion. Independently typed retained world/used-position/delta words feed
+the supplied-word helper; detached reports carry exact source epoch/tick/
+delivery labels. Original/closing source/operand/report/output and recorder
+ownership joins must close before publication. Changed or unsupported joins
+return explicit unknown without partial frame/goal/report fields.
+<=2 reports/4 entries/12 word decodes/12 rational values/8 binary operations,
+with the existing intake/view/match/file/digest caps unchanged. No replay/
+extra RNG/trig/clock/geometry work, positive-latency/pending domain or rounding/
+noise/error bound is adopted; all eight qualification flags remain false.
+[Checkpoint §336][native-goal-review] records the completed gate and the
+final-source/malformed-owner repairs, preserving [the WIP pause][native-goal-wip].
+
+[native-goal-review]: ../../REVIEW.md#336-current-state-review-and-native-goal-boundary-repairs-2026-11-13
+[native-goal-wip]: ../../REVIEW.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12
 [native-goal-delta-review]: ../../REVIEW.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../../REVIEW.md#332-closed-default-off-native-goal-delivery-2026-11-12
 [c1-motion-source]: ../../sim/rover.py

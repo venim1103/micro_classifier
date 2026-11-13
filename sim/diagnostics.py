@@ -17520,6 +17520,8 @@ class _SyntheticC1SourceRecorder:
         self, environment, *, synthetic_test_only=False, include_goal_computation=False
     ):
         """Retain bounded goal source words without staging or qualifying them."""
+        from interface.protocol import State
+
         if synthetic_test_only is not True:
             raise ValueError("native goal retention requires synthetic_test_only=True")
         if type(include_goal_computation) is not bool:
@@ -17527,9 +17529,14 @@ class _SyntheticC1SourceRecorder:
         if not include_goal_computation:
             return
         if (
-            self._simulator is not environment
-            or self._current is None
-            or self._dynamics_sample is None
+            type(environment) is not RoverEnv
+            or self._simulator is not environment
+            or type(self._current) is not tuple
+            or len(self._current) != 4
+            or type(self._current[0]) is not int
+            or type(self._current[2]) is not State
+            or type(self._current[3]) is not bytes
+            or type(self._dynamics_sample) is not dict
             or self._current[0] != environment.tick
             or self._simulator_rng is not environment.rng
             or self._simulator_odometry_rng is not environment.odometry_rng
@@ -17572,7 +17579,11 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
-            if current is None:
+            if (
+                type(current) is not tuple
+                or len(current) != 4
+                or type(current[2]) is not State
+            ):
                 raise ValueError(
                     "native goal recorder ownership changed during retention"
                 )
@@ -17625,6 +17636,7 @@ class _SyntheticC1SourceRecorder:
             )
         _check_native_goal_computation_history(history, live)
         copied_binding = _c1_source_binding_digest({"live": live, "history": history})
+        closing_producer_binding = _c1_source_binding_digest(producer())
         closing = _sample_simulator_native_goal_computation_source(
             environment, self._epoch
         )
@@ -17635,7 +17647,7 @@ class _SyntheticC1SourceRecorder:
             or _c1_source_binding_digest({"live": live, "history": history})
             != copied_binding
             or _c1_source_binding_digest(ownership()) != owner_binding
-            or _c1_source_binding_digest(producer()) != producer_binding
+            or closing_producer_binding != producer_binding
             or self._simulator is not simulator
             or self._goal_computation_history is not retained
             or environment._native_goal_computation_source is not cache
@@ -18252,7 +18264,11 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             state = self._current
-            if state is None:
+            if (
+                type(state) is not tuple
+                or len(state) != 4
+                or type(state[2]) is not State
+            ):
                 raise ValueError("native goal snapshot owner cleared")
             return {
                 "epoch": self._epoch,
@@ -18277,6 +18293,15 @@ class _SyntheticC1SourceRecorder:
             ):
                 raise ValueError("native goal pending/domain profile unsupported")
             if (
+                type(current) is not tuple
+                or len(current) != 4
+                or type(current[0]) is not int
+                or type(current[2]) is not State
+                or type(current[3]) is not bytes
+                or type(dynamics) is not dict
+            ):
+                raise ValueError("native goal snapshot owner layout unsupported")
+            if (
                 type(history) is not list
                 or not 1 <= len(history) <= 8
                 or type(history[-1]) is not dict
@@ -18291,7 +18316,6 @@ class _SyntheticC1SourceRecorder:
                 or self._simulator_odometry_rng is not environment.odometry_rng
                 or current[0] != environment.tick
                 or environment.ego_sample_tick != environment.tick
-                or type(current[2]) is not State
                 or self._source_files() != self._identities
             ):
                 raise ValueError(
@@ -18332,17 +18356,17 @@ class _SyntheticC1SourceRecorder:
             copied_binding = _c1_source_binding_digest(
                 {"matched": matched, "frame": frame, "goal_delta_residuals": report}
             )
+            closing_match = _match_native_goal_retained_computation(
+                target, self._goal_computation_history
+            )
+            closing_report = delta_report(closing_match)
+            closing_producer_binding = _c1_source_binding_digest(producer())
             closing = _sample_simulator_native_goal_computation_source(
                 environment, self._epoch
             )
             _check_native_goal_computation_history(
                 self._goal_computation_history, closing
             )
-            closing_match = _match_native_goal_retained_computation(
-                target, self._goal_computation_history
-            )
-            closing_report = delta_report(closing_match)
-            closing_producer_binding = _c1_source_binding_digest(producer())
             if (
                 not _native_tof_word_copy_matches(live, closing)
                 or not _native_tof_word_copy_matches(matched, closing_match)

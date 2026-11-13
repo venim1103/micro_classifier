@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §353 for intact motion/goal checkpoint archival;
+Read [REVIEW.md][review] §354 for closed live-receipt owned request joins;
+§353 records intact motion/goal checkpoint archival;
 §352 records native integration closing-observation repairs;
 §351 records closed current segment-selection reports;
 §350 records supplied unrounded segment-count comparisons;
@@ -164,6 +165,10 @@ explicitly labeled, not an invented captured intermediate; reference counts
 are not trimmed to the128-recorded-segment cap. Native integration source and
 arithmetic readers now sample after their last observation and reject malformed
 current owners; their fresh gate is complete, without new arithmetic stages.
+Independent default-off live-receipt joins for owned request preparation and
+rechecking are complete, including original/closing metadata/request copies
+and malformed current-owner rejection. They do not qualify source/clock,
+permit a command or alter existing fixture-only defaults.
 Next reassess remaining supported
 Q2 segment/time and request/guard/executor prerequisites without duplicating integration/floor/
 goal reports; independently qualified setup/source/coverage/

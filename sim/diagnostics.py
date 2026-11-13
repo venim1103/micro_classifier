@@ -21904,6 +21904,14 @@ class _SyntheticC1SourceRecorder:
             }
 
         def owner_binding():
+            if (
+                type(self._current) is not tuple
+                or len(self._current) != 4
+                or not isinstance(self._current[2], State)
+                or type(self._current[3]) is not bytes
+                or type(self._dynamics_sample) is not dict
+            ):
+                raise ValueError("unsupported closing current receipt owner")
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22442,17 +22450,56 @@ class _SyntheticC1SourceRecorder:
         )
         return result
 
+    def _owned_request_current_receipt(self, tick, frame):
+        if not isinstance(self._simulator, RoverEnv):
+            raise TypeError("missing_owned_request_actual_producer")
+        snapshot = self.snapshot_receipt_history(synthetic_test_only=True)
+        if type(snapshot) is not dict:
+            raise ValueError("unsupported_owned_request_receipt_snapshot")
+        if snapshot.get("snapshot_available") is not True:
+            raise ValueError(
+                snapshot.get("reason", "unsupported_owned_request_receipt_snapshot")
+            )
+        if (
+            snapshot.get("schema")
+            != "micro-classifier/synthetic-c1-receipt-history-snapshot/1"
+            or snapshot.get("allowed_use") != "offline_source_history_diagnostics_only"
+            or snapshot.get("source_epoch") != self._epoch
+            or type(snapshot.get("current_tick")) is not int
+            or snapshot["current_tick"] != tick
+            or type(snapshot.get("current_frame")) is not bytes
+            or snapshot["current_frame"] != frame
+            or any(
+                snapshot.get(flag) is not False
+                for flag in (
+                    "fixture_permission_granted",
+                    "training_approved",
+                    "real_input_qualified",
+                    "free_space_qualified",
+                    "numerically_certified",
+                    "source_qualified",
+                    "native_execution_qualified",
+                    "command_admission_qualified",
+                )
+            )
+        ):
+            raise ValueError("owned_request_receipt_metadata_or_frame_mismatch")
+        return snapshot
+
     def prepare_normal_request(
         self,
         decision_frame,
         *,
         request_id,
         error_evidence,
+        include_current_receipt=False,
         synthetic_test_only=False,
     ):
         """Bind the owned latest fixture event, never admit a command."""
         if synthetic_test_only is not True:
             raise ValueError("owned request requires synthetic_test_only=True")
+        if type(include_current_receipt) is not bool:
+            raise ValueError("include_current_receipt must be a literal boolean")
         work = {"request_entries": 0, "capture_entries": 0, "digest_entries": 0}
         result = {
             "schema": "micro-classifier/synthetic-c1-owned-normal-request/1",
@@ -22477,6 +22524,11 @@ class _SyntheticC1SourceRecorder:
             "work": work,
         }
         if self._current is None or self._latest is None:
+            return result
+        if include_current_receipt and (
+            type(self._current) is not tuple or len(self._current) != 4
+        ):
+            result["reason"] = "unsupported_owned_request_current_layout"
             return result
         if self._source_files() != self._identities:
             result["reason"] = "owned_source_files_changed"
@@ -22532,6 +22584,13 @@ class _SyntheticC1SourceRecorder:
                 "latest_event": self._latest,
             }
 
+        if include_current_receipt:
+            try:
+                receipt_before = self._owned_request_current_receipt(tick, frame)
+                receipt_binding = digest(receipt_before)
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                result["reason"] = str(error)
+                return result
         binding = digest(event_binding())
         context = {
             "epoch": self._epoch,
@@ -22574,11 +22633,33 @@ class _SyntheticC1SourceRecorder:
         ):
             result["reason"] = "owned_event_changed_during_preparation"
             return result
+        if include_current_receipt:
+            try:
+                prepared_binding = digest(prepared)
+                copied_prepared = deepcopy(prepared)
+                copied_receipt = deepcopy(receipt_before)
+                receipt_after = self._owned_request_current_receipt(tick, frame)
+                if (
+                    digest(receipt_before) != receipt_binding
+                    or digest(copied_receipt) != receipt_binding
+                    or digest(receipt_after) != receipt_binding
+                    or digest(prepared) != prepared_binding
+                    or digest(copied_prepared) != prepared_binding
+                    or digest(event_binding()) != binding
+                ):
+                    result["reason"] = "owned_request_current_receipt_changed"
+                    return result
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                result["reason"] = str(error)
+                return result
+            result["current_receipt"] = copied_receipt
         result.update(
             status="prepared_owned_normal_request_fixture",
             reason="owned_latest_content_bound_source_unqualified",
             fixture_owned_request_prepared=True,
-            prepared_request=deepcopy(prepared),
+            prepared_request=copied_prepared
+            if include_current_receipt
+            else deepcopy(prepared),
         )
         return result
 
@@ -22588,11 +22669,14 @@ class _SyntheticC1SourceRecorder:
         received_request,
         *,
         error_evidence,
+        include_current_receipt=False,
         synthetic_test_only=False,
     ):
         """Reject obsolete fixture requests against the owner's current event."""
         if synthetic_test_only is not True:
             raise ValueError("owned request recheck requires synthetic_test_only=True")
+        if type(include_current_receipt) is not bool:
+            raise ValueError("include_current_receipt must be a literal boolean")
         work = {"binding_entries": 0, "preparation_entries": 0, "digest_entries": 0}
         result = {
             "schema": "micro-classifier/synthetic-c1-owned-request-recheck/1",
@@ -22617,6 +22701,11 @@ class _SyntheticC1SourceRecorder:
             "work": work,
         }
         if self._current is None or self._latest is None:
+            return result
+        if include_current_receipt and (
+            type(self._current) is not tuple or len(self._current) != 4
+        ):
+            result["reason"] = "unsupported_owned_recheck_current_layout"
             return result
         tick = self._current[0]
         work["binding_entries"] += 1
@@ -22649,6 +22738,15 @@ class _SyntheticC1SourceRecorder:
                 "latest_event": self._latest,
             }
 
+        if include_current_receipt:
+            try:
+                receipt_before = self._owned_request_current_receipt(
+                    tick, self._current[3]
+                )
+                receipt_binding = digest(receipt_before)
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                result["reason"] = str(error)
+                return result
         binding = digest(event_binding())
         work["preparation_entries"] += 1
         current = self.prepare_normal_request(
@@ -22680,6 +22778,26 @@ class _SyntheticC1SourceRecorder:
         ):
             result["reason"] = "owned_request_or_event_changed_during_recheck"
             return result
+        if include_current_receipt:
+            try:
+                copied_receipt = deepcopy(receipt_before)
+                receipt_after = self._owned_request_current_receipt(
+                    tick, receipt_before["current_frame"]
+                )
+                if (
+                    digest(receipt_before) != receipt_binding
+                    or digest(copied_receipt) != receipt_binding
+                    or digest(receipt_after) != receipt_binding
+                    or digest(event_binding()) != binding
+                    or digest(retained_request["request"]) != expected_digest
+                    or digest(received_request) != expected_digest
+                ):
+                    result["reason"] = "owned_recheck_current_receipt_changed"
+                    return result
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                result["reason"] = str(error)
+                return result
+            result["current_receipt"] = copied_receipt
         result.update(
             status="rechecked_owned_current_request_fixture",
             reason="owned_current_content_bound_source_and_guard_unqualified",

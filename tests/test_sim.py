@@ -20651,6 +20651,239 @@ def test_synthetic_c1_recorder_rechecks_current_owned_request(
 
 
 @pytest.fixture(scope="module")
+def c1_actual_request_fixture(c1_native_integration_snapshot_fixture):
+    from interface.protocol import (
+        RULES_QUESTIONS,
+        Answer,
+        Decision,
+        Status,
+        encode_decision,
+    )
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    tick = owner._current[0]
+    decision = encode_decision(
+        Decision(
+            sequence=tick,
+            timestamp_us=tick * 50000,
+            status=Status.OK,
+            answers=tuple(
+                Answer(
+                    question,
+                    tuple(float(index == choice) for index in range(len(options))),
+                    choice,
+                )
+                for (question, (_, options)), choice in zip(
+                    RULES_QUESTIONS.items(), (0, 0, 3), strict=True
+                )
+            ),
+        )
+    )
+    errors = {
+        "position_error_m": 0.0,
+        "heading_error_rad": 0.0,
+        "profile_exact": True,
+    }
+    baseline = owner.prepare_normal_request(
+        decision, request_id="d" * 32, error_evidence=errors, synthetic_test_only=True
+    )
+    assert baseline["fixture_owned_request_prepared"] is True
+    return environment, owner, decision, errors, baseline
+
+
+@pytest.mark.parametrize("mode", ("prepare", "recheck"))
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "disabled",
+        "detached",
+        "permission",
+        "flag_type",
+        "missing_producer",
+        "missing_receipts",
+        "stale_pose",
+        "closing_pose",
+        "epoch_metadata",
+        "frame_metadata",
+        "flag_metadata",
+        "original_snapshot_changed",
+        "closing_snapshot_changed",
+        "request_changed",
+        "final_observation",
+        "initial_owner",
+        "closing_owner",
+    ),
+)
+def test_owned_request_current_receipt(
+    c1_actual_request_fixture, monkeypatch, mode, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner, decision, errors, baseline = deepcopy(c1_actual_request_fixture)
+    retained = deepcopy(baseline["prepared_request"])
+    received = deepcopy(retained["request"])
+    original_snapshot = diagnostics._SyntheticC1SourceRecorder.snapshot_receipt_history
+    original_prepare = diagnostics._prepare_synthetic_c1_normal_request
+    original_digest = diagnostics._c1_source_binding_digest
+    original_observation = RoverEnv._observation
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = dict.fromkeys(
+        ("snapshot", "prepare", "digest", "observation", "forbidden"), 0
+    )
+    first = prepared = None
+    if case == "missing_producer":
+        owner._simulator = None
+    elif case == "initial_owner":
+        owner._current = ()
+    elif case == "missing_receipts":
+        owner._receipt_history = []
+    elif case == "stale_pose":
+        environment.position[0] = math.nextafter(environment.position[0], math.inf)
+
+    def snapshot(self, *args, **kwargs):
+        nonlocal first
+        work["snapshot"] += 1
+        assert work["snapshot"] <= 2
+        result = original_snapshot(self, *args, **kwargs)
+        if work["snapshot"] == 1:
+            first = result
+            if case == "epoch_metadata":
+                result["source_epoch"] = "f" * 32
+            elif case == "frame_metadata":
+                result["current_frame"] = b"changed"
+            elif case == "flag_metadata":
+                result["source_qualified"] = True
+        elif case == "original_snapshot_changed":
+            first["reason"] = "changed_original_snapshot"
+        elif case == "closing_snapshot_changed":
+            result["reason"] = "changed_closing_snapshot"
+        elif case == "request_changed":
+            if mode == "prepare":
+                prepared["request"]["request_id"] = "f" * 32
+            else:
+                received["request_id"] = "f" * 32
+        return result
+
+    def prepare(*args, **kwargs):
+        nonlocal prepared
+        work["prepare"] += 1
+        assert work["prepare"] <= 1
+        prepared = original_prepare(*args, **kwargs)
+        if case == "closing_pose":
+            environment.position[0] = math.nextafter(environment.position[0], math.inf)
+        return prepared
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= (96 if mode == "prepare" else 128)
+        return original_digest(*args, **kwargs)
+
+    def observation(self):
+        work["observation"] += 1
+        assert work["observation"] <= 4
+        result = original_observation(self)
+        if work["observation"] == 4 and case == "final_observation":
+            self.position[0] = math.nextafter(self.position[0], math.inf)
+        elif work["observation"] == 4 and case == "closing_owner":
+            owner._current = ()
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("request receipt joins must not replay/capture/draw/clock")
+
+    monkeypatch.setattr(
+        diagnostics._SyntheticC1SourceRecorder, "snapshot_receipt_history", snapshot
+    )
+    monkeypatch.setattr(diagnostics, "_prepare_synthetic_c1_normal_request", prepare)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    options = {
+        "synthetic_test_only": case != "permission",
+        "error_evidence": errors,
+        "include_current_receipt": (
+            False if case == "disabled" else 1 if case == "flag_type" else True
+        ),
+    }
+
+    def call():
+        if mode == "prepare":
+            return owner.prepare_normal_request(
+                decision, request_id="d" * 32, **options
+            )
+        return owner.recheck_normal_request(retained, received, **options)
+
+    if case in ("permission", "flag_type"):
+        with pytest.raises(ValueError):
+            call()
+        assert work["snapshot"] == work["prepare"] == work["observation"] == 0
+    else:
+        result = call()
+        available = (
+            "fixture_owned_request_prepared"
+            if mode == "prepare"
+            else "fixture_owned_request_rechecked"
+        )
+        assert result[available] is (case in ("valid", "disabled", "detached"))
+        assert result["guard_status"] == "UNKNOWN"
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == "disabled":
+            assert "current_receipt" not in result
+            assert work["snapshot"] == work["observation"] == 0
+            if mode == "prepare":
+                assert result == baseline
+        elif case in ("valid", "detached"):
+            current = result["current_receipt"]
+            assert current == first
+            assert current["source_epoch"] == owner._epoch
+            assert current["current_tick"] == environment.tick
+            assert current["current_frame"] == owner._current[3]
+            assert work["snapshot"] == 2 and work["observation"] == 4
+            if mode == "prepare":
+                assert result["prepared_request"]["request"]["state_frame_hex"] == (
+                    current["current_frame"].hex()
+                )
+            if case == "detached":
+                current["history"].clear()
+                assert first["history"] and owner._receipt_history
+        else:
+            for key in (
+                "current_receipt",
+                "prepared_request",
+                "request_sha256",
+                "current_tick",
+            ):
+                assert key not in result
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
+@pytest.fixture(scope="module")
 def c1_owned_delivery_ledger(request):
     ledger = dict.fromkeys(("owned", "prepare", "capture", "digest", "forbidden"), 0)
     yield ledger

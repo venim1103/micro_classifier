@@ -480,6 +480,44 @@ independent source/setup/coverage/error/timing acceptance and conditional
 request/guard/executor dependencies; do not manufacture duplicate arithmetic
 packages or turn matching words into qualified simulation operation.
 
+## 354. Closed Live-Receipt Owned Request Joins (2026-11-13)
+
+Begin clean pushed70edad1. Read actual Q1 source-word/motion, Q3 conditional
+registration/straight-pose and Q4 owned request consumers. Their independent
+acceptance remains missing, but Q0/Q4 have a supported non-arithmetic source
+prerequisite: existing prepare/recheck bind owned metadata, not live producer
+currentness. Add independent literal default-off include_current_receipt to
+both. A shared private reader joins actual current receipt epoch/tick/frame and
+closed all-false metadata. Original/closing receipt and detached output copies
+close after request/capture/content work; received/retained/prepared request
+mutations and changed producer/owner evidence reject without partial semantic
+publication. Old defaults, schema, fixture error assumptions, UNKNOWN guard/
+permission/qualification state, controller and wire/producer words unchanged.
+
+Fresh32/60s, one necessary repair <=32/60s reserve, root/360s. First32 PASS4.27s/
+4913 deselected. Preceding Ruff rejected TRY004 for ValueError on the invalid
+producer type; use TypeError, already handled by public wrappers, without
+rerunning green32. Inspection of opt-in indexing found original/closing owner
+layout gaps: early optional tuple guard plus existing receipt closing-binding
+validation. Four necessary added controls/60s PASS4.05s/4945 deselected; no prior
+fixture/control expansion or unchanged successful focused rerun. Per prepare/
+recheck <=2 receipt reads/4 observations/2 history checks/64 receipt digests plus
+existing request work, total digest controls <=96/128; recheck keeps one default
+inner preparation, not nested receipt reads. No new arithmetic/guard queries,
+step/reset/capture/draw/trig/ceil/clock; both RNG states unchanged.
+
+Root PASS5872, known QDQ1 xfail/77 warnings177.40s. Root Ruff/changed format/
+whitespace/four tested hashes/unrelated source/control/decorator AST/scoped
+references PASS. One resolved prepare caller compatible; recheck has no
+resolved static callers, dynamic controls ran. Executed/rejected positions
+spent; no bound, deadline, safety or semantic assertion relaxed. Ignored
+`.git/returns-354-*` focused/owner/root/hash records retained; no protected
+study/model/dependency/download/hardware/native/Arm opt-in or acceptance.
+All eight flags false; matching current source and requests is not source/
+coverage/native-error/registration/clock/one-use/physical/admission evidence.
+Next reassess only remaining named-consumer acceptance dependencies, without
+duplicating completed source/arithmetic packages or inventing a release verdict.
+
 ## Sources
 
 Hardware and tools:

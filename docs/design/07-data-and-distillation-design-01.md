@@ -498,6 +498,23 @@ with the actual recorder policy, not source authority or external clocks.
 [Delivery-integrity evidence][owned-delivery-review] retains the failed controls
 and unchanged valid-event output.
 
+Both owned methods support independent literal default-off
+`include_current_receipt`. An actual bound producer is required in this mode;
+the existing receipt reader's source epoch/current tick/frame and all-false
+metadata must match the owned request input. Original/closing receipt and
+detached request/output bindings close after request/capture/content work.
+Missing/stale/unsupported source or malformed original/closing current owners
+return unknown without partial request/receipt publication. Existing fixture
+defaults remain unchanged; no caller source/tick/context override follows.
+
+Each method adds at most two receipt reads/four observations/two history checks/
+64 receipt digests; recheck retains one default inner request preparation, not
+nested source reads. A detached `current_receipt` group is diagnostic source
+correspondence only. No permission, qualified deadline, uniform error,
+predecessor or one-use executor is established.
+The [live-receipt checkpoint][owned-current-receipt-review] preserves bounded
+mutation/default/ownership controls and the required gate.
+
 The next admission step is independently supported source/coverage and named
 S4 numerical/registration/timing evidence, not additional request hashes. Current
 conditional tooling supplies no accepted source-admission record, admitted
@@ -2228,6 +2245,7 @@ figure is not an established minimum.
 [native-tof-timing-delivery-review]: ../review/183-220.md#216-retained-tof-timing-delivery-correspondence-2026-11-09
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 [native-integration-closing-review]: ../../REVIEW.md#352-native-integration-closing-observation-repairs-2026-11-13
+[owned-current-receipt-review]: ../../REVIEW.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

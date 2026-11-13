@@ -550,6 +550,25 @@ Arm or additional opt-in work. Next separately default-off closed current
 receipt interval reports; native segment-selection intermediates, uniform
 motion error and qualified duration/clocks remain independent obligations.
 
+## 347. Intact Motion-Word Contract Relocation (2026-11-13)
+
+Begin clean pushedce71cf6. Chapter01 grew to2578 lines after bounded current
+motion-update work; move its four complete supplied speed/clipping/interval
+and current receipt-composition contracts into existing chapter04. Preserve
+byte-exact bodies/headings, flags, work limits and checkpoint wording.
+Four old chapter01 anchors remain reading links; four checkpoint labels copy
+with unchanged relative targets, and DESIGN's short map gains a direct topic
+link. A separate-topic wrapper explicitly adopts no NF1 certificate premises
+or historical study/run authority; no accepted requirement changes.
+
+One fresh mechanical migration/30s PASS, no failure/repair: exact whole block/
+prior headings, nine new scoped references/anchors, whitespace and four
+green-tested source hashes PASS. Chapter01 now2520/chapter04 2470, around
+the existing organization target; no green code/native/Arm/sanitizer rerun.
+Local before snapshots and bounded bulk migration utility retained in session
+files; committed documents remain portable. Next archive whole336-340 before
+further root review growth, then closed current receipt interval reports.
+
 ## Sources
 
 Hardware and tools:

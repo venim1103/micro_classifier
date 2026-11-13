@@ -2361,6 +2361,85 @@ documentation validation do not renew any exhausted evidence or source-test budg
 
 
 
+#### Supplied Native Motion-Update Word Prerequisites (2026-11-13)
+
+These separate motion-word diagnostics adopt neither NF1 certificate premises
+nor historical study/run authority. All qualification flags remain false.
+
+##### Supplied Pre-Integration Speed-Update Words (2026-11-13)
+
+The private `_native_speed_update_residuals` compares five canonical supplied
+binary64 words: prior speed, observed clipped target, Config acceleration/dt
+and observed updated speed. Exact prior+clamp(target-prior,+/-acceleration*dt)
+is an unrounded reference, not a prediction of native intermediate rounding
+or branch choice. Its signed observed-minus-reference residual preserves the
+raw words, including zero signs; a nonfinite updated speed remains unknown.
+Finite operands and positive acceleration/dt use the existing Config domain.
+Literal synthetic permission, <=5 decodes/values, four rational operations,
+two growth-checked comparisons and the existing4096-bit cap bound the work.
+
+Existing actual motion receipts already contain these operands; this adds no
+capture, source read, replay, RNG, trig, clock or controller change. Submitted
+target/yaw clipping is separate. Supplied words alone prove neither source
+ownership nor uniform/propagated native error, timing, physical or command
+qualification. Eight flags remain false. The [checkpoint][native-speed-update-review]
+records direct/actual-word controls and the required gate.
+
+
+##### Supplied Target and Yaw Clipping Words (2026-11-13)
+
+The private `_native_action_clipping_diagnostics` compares six canonical
+submitted/profile/observed words for the existing speed [0,max_speed] and yaw
+[-max_turn_rate,max_turn_rate] clamps. Numeric equality and unique equal-value
+word-candidate correspondence remain separate; different zero-word candidates
+stay unresolved, not an inferred native selection or normalization law.
+Canonical nonfinite action/output is unknown per component; malformed/NaN words
+and nonfinite/nonpositive existing Config limits reject without mutation.
+
+Literal synthetic permission and <=6 decodes/2 entries/4 min-max comparisons/
+6 candidate and2 observed numeric equalities/2 builtin dyadic ratios bound the
+work, with <=3 candidate words per entry and no rational engine. Actual receipts
+already contain all operands: no capture, read, replay, RNG, trig, clock or
+controller change. This is not source/uniform-error/physical/command acceptance;
+eight flags stay false. The [checkpoint][native-action-clipping-review] preserves
+the direct/actual-word controls, work limits and required gate.
+
+
+##### Supplied Captured-Interval Division Words (2026-11-13)
+
+The private `_native_interval_division_residuals` compares exact supplied
+nominal duration divided by observed builtin planned_segments1..128 with
+the captured native interval. This does not recompute segment selection.
+Canonical positive finite duration follows existing Config; raw nonfinite
+observed interval is unknown, while malformed/NaN words reject without mutation.
+Raw duration/count/interval and signed observed-minus-exact ratio remain explicit.
+Literal synthetic permission, <=2 decodes/3 rational values/one division/one
+subtraction and the existing4096-bit cap bound the work. Existing receipts and
+native integration input joins already retain the operands; no source/controller
+change or replay/RNG/trig/clock follows. This is not a native rounding law,
+uniform motion error or qualified duration/clock; eight flags stay false.
+The [checkpoint][native-interval-division-review] records controls and the gate.
+
+
+##### Current Receipt Motion-Update Composition (2026-11-13)
+
+The owned receipt-history reader's literal default-off
+`include_native_motion_update` uses its current actual receipt, not a caller
+source override. Original/closing supplied clipping/speed-update reports bind
+copied inputs, epoch/transition ticks/receipt digest and the current frame.
+Changed owner/source/history/report or unsupported/nonfinite input is unknown
+without partial payload. Equal-value zero-word candidate ties remain unresolved.
+All eight flags stay false; local discrepancies are not accepted native bounds.
+
+Producer observations precede sampled words; final producer sampling follows
+all reports and precedes final owner closure. Current layout guards reject
+before consumption. Original <=2 observations/one history validation/32 digests
+remain; <=2 reports per family preserve their individual work limits. Default
+payload/report work is unchanged, with no replay/capture/RNG/trig/clock/guard
+or controller change. The [checkpoint][current-motion-update-review] records the
+two reproduced closure failures, controls, fixture repairs and required gate.
+
+
 [sinc-cell-review]: ../../REVIEW.md
 [sinc-word-review]: ../../REVIEW.md
 [sinc-word-proof-review]: ../../REVIEW.md
@@ -2385,3 +2464,7 @@ documentation validation do not renew any exhausted evidence or source-test budg
 [sinc-binding-identity-review]: ../../REVIEW.md
 [sinc-compile-comparison-review]: ../../REVIEW.md
 [sinc-structural-protocol-review]: ../../REVIEW.md
+[current-motion-update-review]: ../../REVIEW.md#345-closed-current-receipt-motion-update-reports-2026-11-13
+[native-action-clipping-review]: ../../REVIEW.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
+[native-interval-division-review]: ../../REVIEW.md#346-supplied-captured-interval-division-residuals-2026-11-13
+[native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

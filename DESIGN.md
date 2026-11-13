@@ -38,6 +38,7 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Native ToF Ray-Generation Prerequisites (2026-11-11)][native-tof-ray-design]
 - [Native ToF Return-Postprocessing Prerequisites (2026-11-11)][native-tof-postprocessing-design]
 - [Cold Native Goal Computation Source (2026-11-12)][native-goal-source-design]
+- [Supplied Native Motion-Update Word Prerequisites (2026-11-13)][native-motion-update-word-design]
 - [Synthetic Evaluation Tooling (2026-10-16)][chapter-design-06]
 - [Controlled Scalar Arithmetic Candidate (2026-11-03)][chapter-design-07]
 - [NF1 Interval-to-Word Certificate Contract (2026-11-04)][chapter-design-08]
@@ -119,3 +120,4 @@ options instead of implying general Jev or Vela compatibility.
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [native-tof-postprocessing-design]: docs/design/07-data-and-distillation-design-03.md#native-tof-return-postprocessing-prerequisites-2026-11-11
 [native-goal-source-design]: docs/design/07-data-and-distillation-design-03.md#cold-native-goal-computation-source-2026-11-12
+[native-motion-update-word-design]: docs/design/07-data-and-distillation-design-04.md#supplied-native-motion-update-word-prerequisites-2026-11-13

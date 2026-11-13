@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §343 for supplied target/yaw clipping correspondence;
+Read [REVIEW.md][review] §344 for intact goal-delivery checkpoint archival;
+§343 records supplied target/yaw clipping correspondence;
 §342 records supplied pre-integration speed-update residuals;
 §341 records matched retained goal storage reports;
 §340 records supplied native/stored goal-word correspondence;
@@ -112,6 +113,7 @@ Whole311-315 checkpoints are archived with historical anchors and ledgers.
 Whole316-320 checkpoints are archived with historical anchors and ledgers.
 Whole321-325 checkpoints are archived with historical anchors and ledgers.
 Whole326-330 checkpoints are archived with historical anchors and ledgers.
+Whole331-335 checkpoints are archived with historical anchors and ledgers.
 Supplied selected/storage residuals and their required gate are complete.
 Retained storage report joins and their required gate are complete.
 Native integration source/arithmetic already exists and must not be duplicated.
@@ -134,8 +136,7 @@ complete. Q2 supplied pre-integration speed-update residuals and their gate are
 complete using existing receipt operands, not a new capture or uniform bound.
 Supplied target/yaw clipping correspondence and its gate are complete; equal
 values with different zero words retain unresolved selection ties.
-Next archive intact331-335 checkpoints before further root review growth, then
-compose supported current receipt/update reports; independently qualified setup/source/coverage/
+Next compose supported current receipt/update reports; independently qualified setup/source/coverage/
 error/timing and request/guard/executor dependencies remain unresolved.
 Do not duplicate completed integration/floor/goal reports. Preserve consumed
 coefficients and observed delta without trig/noise/geometry/error adoption;

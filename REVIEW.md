@@ -73,8 +73,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 316-320][chapter-review-28]
 - [Checkpoints 321-325][chapter-review-29]
 - [Checkpoints 326-330][chapter-review-30]
+- [Checkpoints 331-335][chapter-review-31]
 
-Checkpoints 331 onward and the source bibliography remain below.
+Checkpoints 336 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -202,155 +203,23 @@ repeated historical handoffs.
 
 ## 331. Exact Retained Native Goal Matching (2026-11-12)
 
-Begin clean pushed31a8dd1. Add a separate bounded retained matcher, not
-publication. Independently validate a four-key target with32-character epoch,
-typed C1-range tick/delivery and two finite builtin uint32 goal words before
-retained history. Require <=8 independently validated typed records and one
-unique exact epoch/tick/delivery match, then exact stored-word correspondence.
-Return a detached record; missing/ambiguous/unsupported/nonfinite/changed-word
-targets reject explicitly without partial output. Equal numerical zeros with
-different storage words remain unresolved, not normalized. All flags false;
-no source/geometry/error/clock/one-use/physical/admission qualification follows.
-
-Fresh15/60s, necessary repair15/60s reserve, root/360s. First15 PASS4.02s, no
-failure/repair; root PASS5329, known QDQ1 xfail/77 warnings188.07s. Root/scoped
-Ruff, changed format/whitespace, four hashes and every old source/control/
-decorator AST PASS. <=8 retained candidates/9 packet validations, one detached
-result; one actual setup capture/intake, no replay/draw/trig/clock/geometry in
-matching. Typed targets, empty/oversized/nonlist histories, exact epoch/tick/
-delivery, ambiguity, raw unknown words, zero storage ties and detached false
-flags are covered. Both executed positions spent; unused repair is not
-refunded authority. Ignored `.git/returns-331-*` logs/hashes retained, no
-protected/native/Arm/model/dependency/download/hardware work. Next separately
-closed default-off goal publication from delivered/pending bindings, preserving
-original/closing owner/native/RNG/profile/pose/input/history/stored-word joins
-and explicit unknown without partial fields.
+[Complete unchanged checkpoint][review-331-335-preserved-0] is preserved in the archive.
 
 ## 332. Closed Default-Off Native Goal Delivery (2026-11-12)
 
-Begin pushed5b0b7cb with retained matching complete; resumed untested local
-publication work preserved. Reverify main/upstream0/0, Python3.12.3 at
-/opt/venv, Ruff0.17.0, timeout and365GiB free. Add independent literal
-default-off delivered-goal publication. Disabled work returns explicit unknown
-without reads/payload; enabled work prevalidates <=8 retained raw records,
-joins actual encoded State frame and exact stored goal words, and closes
-original/closing owner/cache/native/RNG/profile/pose/input/history/dynamics/
-source-file/output correspondence. Unsupported or missing correspondence is
-explicit unknown without epoch/tick/frame/goal fields. All eight flags false.
-
-Frozen C1 has zero odometry latency: this supports delivered-only latency0,
-not a new pending profile. Positive latency is explicit unsupported domain;
-no accepted profile/interface/noise/numerical/physical/clock/execution/one-use/
-source/admission requirement changed. State has three goal components; the
-unchanged encoder binds all three, and its planar first two float32 words
-match retained storage. No replay/step/read-environment/RNG/trig/clock/geometry
-work in publication.
-
-Fresh20/60s, necessary20/60s repair reserve, root/360s. First19 PASS/1 FAIL
-4.74s: publication incorrectly expected a two-component State goal. Source
-repair validates actual three-component planar shape and extracts its first
-two words; valid mismatch fixture and work instrumentation added. Repair19
-PASS/1 FAIL5.41s: new file-check wrapper passed self to the existing static
-helper, causing early unknowns. Necessary fixture-only revised20/60s:
-20 PASS4.14s; assert closing branches reached, two views/matches/file checks
-and unchanged <=12 digest cap. Three fresh required controls/60s verify missing
-current/dynamics and a closing producer mutation of same-list history:
-3 PASS3.55s after moving the last producer observation before owner closure.
-No unchanged green20 rerun. Root PASS5352, known QDQ1 xfail/77 warnings
-171.08s. Root/scoped Ruff, changed format/whitespace, four hashes, every prior
-source/control/decorator AST and scoped local references PASS;
-Pylance confirms State.goal_m tuple[float,float,float]. All executed positions
-remain spent; ignored `.git/returns-332-*` logs/hashes retained. No protected/
-native/Arm/model/dependency/download/hardware work. Pending domain remains a
-separate prerequisite, not permission to alter C1. Next bounded supplied-word
-native goal delta discrepancies, preserving unsupported/nonfinite unknowns
-and unresolved equal-value/different-word ties; no geometry/error adoption.
+[Complete unchanged checkpoint][review-331-335-preserved-1] is preserved in the archive.
 
 ## 333. Supplied-Word Native Goal Delta Discrepancies (2026-11-12)
 
-Begin clean pushed3a198b4. Add bounded supplied world-minus-used-position
-residuals for two native goal axes. Preserve the supplied inferred float64/
-int64/uint64 dtype and exact words; finite canonical operands prevalidate
-before exact arithmetic. Validated <=64-bit integers use exact Fraction,
-not the existing generic arithmetic value helper's float conversion. A bounded
-six-line local diagnostic confirmed int64 max loses its original word through
-that generic conversion; no helper/producer/interface semantics changed.
-The comparison is the unrounded preserved input difference versus observed
-delta, including any conversion discrepancy, not a NumPy coercion/rounding law.
-Observed infinity returns explicit unknown residual while retaining raw words
-and finite exact difference; unsupported/NaN inputs reject without mutation.
-Zero signs remain raw words, not normalized or numerically qualified.
-
-Fresh24/60s, necessary repair24/60s reserve, root/360s. First23 PASS/1 FAIL4.88s:
-the eight-bit exhausted-budget fixture used small exact integers which fit.
-Fixture-only repair supplies canonical0.1; only that necessary case ran:
-1 PASS3.82s, unchanged green23 not repeated. Root PASS5376, known QDQ1 xfail/
-77 warnings172.68s; root Ruff PASS, format check FAIL only for Ruff-required
-parentheses around0.1.hex(). Formatter-only repair preserves the tested AST
-exactly; changed format/whitespace PASS, no green semantic/root Ruff rerun.
-Four before hashes PASS; final hashes retained. Every prior source/control/
-decorator AST and scoped references PASS. <=2 entries/6 word decodes/
-4 binary operations/6 value conversions, <=4096 arithmetic bits. Integer
-extremes, subnormal/nonzero residuals, overflow, signed zero, malformed dtype/
-words/shape/types and literal permission/work budgets are covered. Executed
-positions remain spent; ignored `.git/returns-333-*` logs/hashes retained.
-No replay/RNG/trig/clock/geometry/source/numerical/error/physical/one-use/
-admission adoption, all eight flags false; no protected/native/Arm/model/
-dependency/download/hardware work. Next matched retained native goal delta
-reports with original/closing typed source/operand/output joins. Archive
-whole321-325 before further root review growth.
+[Complete unchanged checkpoint][review-331-335-preserved-2] is preserved in the archive.
 
 ## 334. Intact Native Goal Prerequisite Checkpoint Archival (2026-11-12)
 
-Begin clean pushedc64cbce. Before further review growth, move whole321-325
-to [their archive][chapter-review-29], preserving byte-exact bodies/headings/separators, failures,
-approvals, spent ledgers and historical next-action wording. Five root heading
-anchors remain archive links; four live chapter03 checkpoint references
-rebase, and section322's existing311-315 archive label is copied relative to
-the new archive. Historical requirements/limits/authority are unchanged.
-
-One fresh mechanical migration/30s PASS, no failure or repair; exact retained
-block/prior headings, eleven scoped local links/anchors, whitespace and all
-four tested source hashes PASS. Root816 lines before this note; archive163.
-No code changes or green code/native/Arm/sanitizer rerun, new studies/models/
-dependencies/downloads/hardware work or qualification adoption. Local before
-snapshots and bounded migration utility retained in session files; portable
-evidence remains committed documents. Next original/closing matched retained
-native goal delta reports without replay, extra draws, law/bound adoption or
-qualification shortcuts.
+[Complete unchanged checkpoint][review-331-335-preserved-3] is preserved in the archive.
 
 ## 335. Matched Native Goal Delta Reports WIP and Pause (2026-11-12)
 
-Begin clean pusheda165ac5. Add literal default-off
-`include_goal_delta_residuals`, requiring goal computation inclusion. Delivered
-reports reuse independently validated retained world/used-position/delta
-words, retain exact source epoch/tick/delivery labels, and close original/
-closing source/operand/report/output joins before publication. No new pending
-domain, replay/draw/trig/clock/geometry/law/bound or qualification adoption;
-all eight flags false. This implementation is WIP, not a completed root gate.
-
-Fresh26/60s, necessary repair26/60s reserve, root/360s. One no-write patch
-context miss was repaired before execution. Focused26 PASS4.29s/4453 deselected:
-reuse23 delta-mode publication cases plus3 literal/dependency/outgoing-report
-controls; unchanged plain-mode controls await required root regression.
-<=2 reports/4 entries/12 word decodes/12 value conversions/8 binary operations,
-unchanged <=2 intakes/views/matches/file checks and <=12 binding digests.
-Pylance before/after found no resolved dynamic callers, not static compatibility
-proof.
-
-The user explicitly paused during the root run; stop the owned process
-immediately. Partial log ends during pytest progress at85%, without a full
-result or subsequent style gate. The root position is spent/aborted, not passed
-or refunded. Last completed root remains5376, known QDQ1 xfail/77 warnings
-from§333. Retain `.git/returns-335-*` logs/hashes and local WIP; the subsequent
-explicit user request authorizes a WIP commit and pause, not another code run
-or implementation slice. Scoped WIP whitespace/four tested hashes and every
-unrelated source/control/decorator AST pass; no code gate is rerun. Next only
-after a fresh actual continuation request:
-revalidate the retained worktree/environment and finish the necessary bounded
-root/style/conservation gate without repeating unchanged green focused controls.
-No new source qualification, protected study/model/dependency/download/hardware
-work, or numerical/physical/clock/execution/one-use/admission evidence.
+[Complete unchanged checkpoint][review-331-335-preserved-4] is preserved in the archive.
 
 ## 336. Current-State Review and Native Goal Boundary Repairs (2026-11-13)
 
@@ -593,6 +462,27 @@ geometry, protected study/model/dependency/download/hardware/native/Arm or
 extra opt-in work. Next lossless whole331-335 archival before more root growth,
 then supported closed current receipt/update reports. Q0-Q5 still requires
 independent acceptance; no usable command is admitted.
+
+## 344. Intact Goal Delivery Checkpoint Archival (2026-11-13)
+
+Begin clean pusheda30b62d. Before further review growth, move complete331-335
+to [their archive][chapter-review-31], preserving byte-exact bodies/headings/
+separators, failures, approvals, spent ledgers and historical next actions.
+In particular§335's WIP/pause/aborted-root wording remains intact; later§336
+recovery is separate evidence, not a rewritten historical pass.
+Five old root anchors remain archive links; four chapter03 checkpoint
+references rebase; section334's existing321-325 archive label is copied
+relative to the new archive. Nothing renews test authority or qualification.
+
+One fresh mechanical migration/30s PASS, no failure/repair. Exact whole block/
+prior headings, eleven scoped link/anchor targets, whitespace and all four
+green-tested source hashes PASS. Root864 lines before this note, archive155.
+No code suite/native/Arm/sanitizer rerun or new study/model/dependency/
+download/hardware work. Local before snapshots and bounded bulk migration
+utility retained in session files; committed documents remain portable.
+Next supported closed current receipt/update reports using the completed
+supplied clipping/speed-update diagnostics, without source/controller replay,
+extra draws, native-error-law adoption or usable command admission.
 
 ## Sources
 
@@ -965,6 +855,7 @@ Methods and measurements:
 [chapter-review-28]: docs/review/316-320.md
 [chapter-review-29]: docs/review/321-325.md
 [chapter-review-30]: docs/review/326-330.md
+[chapter-review-31]: docs/review/331-335.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -987,3 +878,8 @@ Methods and measurements:
 [review-326-330-preserved-2]: docs/review/326-330.md#328-intact-goal-prerequisite-review-archival-2026-11-12
 [review-326-330-preserved-3]: docs/review/326-330.md#329-typed-bounded-native-goal-computation-history-2026-11-12
 [review-326-330-preserved-4]: docs/review/326-330.md#330-default-off-native-goal-recorder-retention-2026-11-12
+[review-331-335-preserved-0]: docs/review/331-335.md#331-exact-retained-native-goal-matching-2026-11-12
+[review-331-335-preserved-1]: docs/review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
+[review-331-335-preserved-2]: docs/review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
+[review-331-335-preserved-3]: docs/review/331-335.md#334-intact-native-goal-prerequisite-checkpoint-archival-2026-11-12
+[review-331-335-preserved-4]: docs/review/331-335.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12

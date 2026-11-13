@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §347 for intact motion-word contract relocation;
+Read [REVIEW.md][review] §348 for intact reviewed goal-expression archival;
+§347 records intact motion-word contract relocation;
 §346 records supplied captured-interval division residuals;
 §345 records closed current receipt motion-update reports;
 §344 records intact goal-delivery checkpoint archival;
@@ -117,6 +118,7 @@ Whole316-320 checkpoints are archived with historical anchors and ledgers.
 Whole321-325 checkpoints are archived with historical anchors and ledgers.
 Whole326-330 checkpoints are archived with historical anchors and ledgers.
 Whole331-335 checkpoints are archived with historical anchors and ledgers.
+Whole336-340 checkpoints are archived with historical anchors and ledgers.
 Supplied selected/storage residuals and their required gate are complete.
 Retained storage report joins and their required gate are complete.
 Native integration source/arithmetic already exists and must not be duplicated.
@@ -145,8 +147,7 @@ closure. Supplied captured-interval quotient residuals and their gate are
 complete, using observed planned segments without segment-selection prediction.
 The supplied/current motion-word contracts now live in chapter04; chapter01
 retains their old anchors as reading links, without NF1 premise adoption.
-Next archive intact336-340 checkpoints before more root review growth, close
-current receipt interval reports, then reassess remaining supported
+Next close current receipt interval reports, then reassess remaining supported
 Q2 segment/time and request/guard/executor prerequisites without duplicating integration/floor/
 goal reports; independently qualified setup/source/coverage/
 error/timing and request/guard/executor dependencies remain unresolved.

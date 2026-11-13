@@ -2494,10 +2494,10 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [Checkpoint §341][native-goal-storage-match-review] records actual controls.
 
 [native-goal-storage-match-review]: ../../REVIEW.md#341-matched-retained-goal-storage-reports-2026-11-13
-[native-goal-storage-review]: ../../REVIEW.md#340-supplied-native-and-stored-goal-word-correspondence-2026-11-13
-[native-goal-expression-match-review]: ../../REVIEW.md#339-matched-retained-native-goal-expression-reports-2026-11-13
-[native-goal-expression-review]: ../../REVIEW.md#337-supplied-word-native-goal-expression-residuals-2026-11-13
-[native-goal-review]: ../../REVIEW.md#336-current-state-review-and-native-goal-boundary-repairs-2026-11-13
+[native-goal-storage-review]: ../review/336-340.md#340-supplied-native-and-stored-goal-word-correspondence-2026-11-13
+[native-goal-expression-match-review]: ../review/336-340.md#339-matched-retained-native-goal-expression-reports-2026-11-13
+[native-goal-expression-review]: ../review/336-340.md#337-supplied-word-native-goal-expression-residuals-2026-11-13
+[native-goal-review]: ../review/336-340.md#336-current-state-review-and-native-goal-boundary-repairs-2026-11-13
 [native-goal-wip]: ../review/331-335.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12
 [native-goal-delta-review]: ../review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12

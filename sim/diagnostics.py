@@ -17783,6 +17783,7 @@ class _SyntheticC1SourceRecorder:
         )
 
         def sample():
+            observation = environment._observation()
             snapshot = {
                 "tick": environment.tick,
                 "pose_m_rad": (
@@ -17796,7 +17797,7 @@ class _SyntheticC1SourceRecorder:
                 "native_goal_source": deepcopy(
                     getattr(environment, "_native_goal_source", None)
                 ),
-                "observation": environment._observation(),
+                "observation": observation,
                 "config": asdict(environment.config),
                 "scenario": asdict(environment.scenario),
             }
@@ -17839,7 +17840,16 @@ class _SyntheticC1SourceRecorder:
             return snapshot
 
         def owner_binding():
+            from interface.protocol import State
+
             current = self._current
+            if current is not None and (
+                type(current) is not tuple
+                or len(current) != 4
+                or not isinstance(current[2], State)
+                or type(current[3]) is not bytes
+            ):
+                raise ValueError("unsupported current simulator source owner")
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,

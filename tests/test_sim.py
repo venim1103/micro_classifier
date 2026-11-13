@@ -10229,6 +10229,120 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
             print("C1 receipt source ledger:", json.dumps(ledger, sort_keys=True))
 
 
+@pytest.mark.parametrize("mode", ("default", "receipt", "integration"))
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "closing_pose",
+        "closing_action",
+        "closing_profile",
+        "closing_goal",
+        "closing_owner_empty",
+        "closing_owner_state",
+        "original_owner_short",
+    ),
+)
+def test_actual_source_intake_closing_observation(
+    c1_motion_receipt_source_fixture, monkeypatch, mode, case
+):
+    from dataclasses import replace
+
+    from sim import rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    original_observation = RoverEnv._observation
+    saved = deepcopy(
+        (
+            owner._dynamics_sample,
+            owner._integration_sample,
+            owner._receipt_history,
+            owner._pending,
+            owner._history,
+            owner._latest,
+        )
+    )
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"observations": 0, "forbidden": 0}
+    if case == "original_owner_short":
+        owner._current = owner._current[:2]
+
+    def observation(self):
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        result = original_observation(self)
+        if work["observations"] == 2:
+            if case == "closing_pose":
+                self.position[0] = math.nextafter(self.position[0], math.inf)
+            elif case == "closing_action":
+                self.speed = math.nextafter(self.speed, math.inf)
+            elif case == "closing_profile":
+                self.config = replace(self.config, max_speed=0.5)
+            elif case == "closing_goal":
+                goal = self._native_goal_source["goal_m"]
+                self._native_goal_source["goal_m"] = (
+                    math.nextafter(float(goal[0]), math.inf),
+                    float(goal[1]),
+                )
+            elif case == "closing_owner_empty":
+                owner._current = ()
+            elif case == "closing_owner_state":
+                owner._current = (
+                    *owner._current[:2],
+                    Config(),
+                    owner._current[3],
+                )
+        return result
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "actual intake must not replay/reset or read another clock"
+        )
+
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    monkeypatch.setattr(RoverEnv, "step", forbidden)
+    monkeypatch.setattr(RoverEnv, "reset", forbidden)
+    monkeypatch.setattr(rover, "integrate", forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    options = {
+        "synthetic_test_only": True,
+        "capture_motion_receipt_source": mode != "default",
+        "capture_native_integration_source": mode == "integration",
+    }
+    if case == "valid":
+        owner.record_environment_tick(environment, **options)
+        assert owner._current[0] == environment.tick == 3
+        assert owner._dynamics_sample["pose_m_rad"] == (
+            *map(float, environment.position),
+            float(environment.yaw),
+        )
+        assert owner._dynamics_sample["native_action"] == (
+            float(environment.speed),
+            float(environment.turn_rate),
+        )
+        assert (owner._integration_sample is not None) is (mode == "integration")
+        assert bool(owner._receipt_history) is (mode != "default")
+    else:
+        with pytest.raises(ValueError, match="changed|unsupported"):
+            owner.record_environment_tick(environment, **options)
+        current = (
+            owner._dynamics_sample,
+            owner._integration_sample,
+            owner._receipt_history,
+            owner._pending,
+            owner._history,
+            owner._latest,
+        )
+        from sim.diagnostics import _c1_source_binding_digest
+
+        assert _c1_source_binding_digest(current) == _c1_source_binding_digest(saved)
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
 @pytest.mark.parametrize(
     "case",
     (

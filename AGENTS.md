@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §355 for the checked remaining acceptance blockers;
+Read [REVIEW.md][review] §356 for actual intake closing-observation repairs;
+§355 records the prior remaining acceptance-blocker assessment;
 §354 records closed live-receipt owned request joins;
 §353 records intact motion/goal checkpoint archival;
 §352 records native integration closing-observation repairs;
@@ -170,14 +171,16 @@ Independent default-off live-receipt joins for owned request preparation and
 rechecking are complete, including original/closing metadata/request copies
 and malformed current-owner rejection. They do not qualify source/clock,
 permit a command or alter existing fixture-only defaults.
-Checked remaining source/setup/coverage/error/timing and request/guard/executor
-dependencies now require independent Q0-Q4 acceptance, not another duplicated
-source/arithmetic package. The named source/setup auditors and motion/
-registration/request consumers remain conditional; no accepted uniform native
-error, pose/range transform, clock/application/one-use or admitted predecessor
-evidence exists. No further necessary non-duplicative routine prerequisite was
-identified in that assessment. Preserve the conservative blocked release state;
-new concrete evidence or changed authorized scope can enable useful work.
+Independent Q0-Q4 acceptance remains missing, but the renewed actual request
+continues smaller compatible prerequisites. Q0's owning intake sampler now
+observes before collecting original/closing pose/action/goal/profile words and
+rejects malformed original/closing owners; its fresh gate is complete.
+The prior§355 no-further-prerequisite conclusion is not a continuation stop.
+Next finish lossless whole346-350 archival, then trace a bounded actual initial-
+tick/setup source join without inventing reset execution, geometry or authority.
+Named source/setup auditors and motion/registration/request consumers remain
+conditional; uniform native error, pose/range transform, clock/application/
+one-use and admitted predecessor evidence is not accepted.
 Do not duplicate completed integration/floor/goal reports. Preserve consumed
 coefficients and observed delta without trig/noise/geometry/error adoption;
 do not repeat unchanged green gates.

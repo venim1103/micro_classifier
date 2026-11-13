@@ -565,6 +565,37 @@ Source/artifacts and logs remain as§354; main clean and synchronized before thi
 checkpoint, no owned background process. This is a genuine evidence blocker,
 not a request for routine planning/testing permission or a user pause.
 
+## 356. Actual Intake Closing-Observation Repairs (2026-11-13)
+
+Begin clean pushed706f5a3. Latest actual user request continues implementation,
+not a new acceptance verdict. Reassessing Q0's actual initial-origin prerequisite
+found a concrete owning intake gap overlooked by§355's no-further-prerequisite
+assessment: record_environment_tick samples producer words before its closing
+observation. Two default/receipt closing-pose controls reproduce stale intake:
+2 FAIL4.94s/4971 deselected, DID NOT RAISE. Observe before both collected samples;
+validate original/closing current tuple/State/frame layouts before indexing.
+Failed reads do not publish staged source/history or undo external mutations.
+No source/receipt/controller schema, native arithmetic or producer change.
+
+Fresh repro2/60s, new24/60s (8 cases x default/receipt/integration), one necessary
+repair reserve24/60s, root/360s. First24 PASS4.35s/4949 deselected; no repair or
+unchanged successful focused rerun. Keep2 observations and existing receipt/
+native/capture work; controls cover closing pose/action/profile/goal and malformed
+original/closing owners, retained prior data and both unchanged RNG states.
+No step/reset/native integration replay or additional clock. Root PASS5896,
+known QDQ1 xfail/77 warnings192.87s; root Ruff/changed format/whitespace/four
+tested hashes/unrelated module/function/control/decorator AST/scoped references
+PASS. Executed positions spent; no bound, allowance or semantic assertion relaxed.
+
+All eight flags false; actual source closure is not setup/source/coverage/native
+error/clock/physical/one-use/admission evidence. Protected study/model/
+dependency/download/hardware/native/Arm work unchanged and not executed.
+Ignored `.git/returns-356-*` repro/focused/root/hash records retained. The real
+continuation resumes compatible work despite missing admission evidence:
+next archive whole346-350, then investigate bounded initial-tick/setup source
+correspondence. Rover history retains ego/ToF/masks, not reset pose/execution;
+do not mislabel that history as an actual reset receipt or invent source words.
+
 ## Sources
 
 Hardware and tools:

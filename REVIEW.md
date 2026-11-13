@@ -72,8 +72,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 311-315][chapter-review-27]
 - [Checkpoints 316-320][chapter-review-28]
 - [Checkpoints 321-325][chapter-review-29]
+- [Checkpoints 326-330][chapter-review-30]
 
-Checkpoints 326 onward and the source bibliography remain below.
+Checkpoints 331 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -181,151 +182,23 @@ repeated historical handoffs.
 
 ## 326. Native Goal Computation Acquisition Pairing (2026-11-12)
 
-Begin pushed991dc62, main/upstream0/0 after fetch; Python3.12.3 at `/opt/venv`,
-pytest8.4.2/Ruff0.17.0/timeout installed,365GiB free in the shared environment.
-Append literal default-off `capture_native_goal_computation=False` to `step`.
-Reuse the cold producer's input/profile/dtype preflight before state/RNG/clock
-work, then capture one actual history production into a distinct private cache.
-Retain actual RNG/odometry-RNG and legacy native-source identity, cold computation
-packet, acquisition tick and nominal odometry delivery tick. Goal acquisition
-is independent of fresh/held ToF; reset/default steps clear this cache. Existing
-goal calculations/cache keys and public observation/info/return shape remain
-unchanged. Computed raw nonfinite source remains explicit unknown, all eight
-flags false; no trig/noise/cast law, clock/one-use or qualification follows.
-Closed typed intake, retention and delivered/pending joins remain separate.
-
-Fresh17/60s, sole necessary fixture repair17/60s, required root/360s positions.
-Per case <=3 history calls, <=1 cold receiver, <=3 geometry calls, <=8 existing
-clock reads only in combined capture; paired steps have unchanged RNG/output
-words and no replay/additional draws. First8 PASS/9 FAIL/2 raw warnings8.22s:
-the comparison fixture applied numerical `equal_nan` to the observation schema
-string. Repair compares exact types, ndarray dtype/shape/raw bytes, scalar float
-hex words and nonnumerical equality, without changing producer or limits.
-Revised17 PASS/2 warnings3.65s; root PASS5228, known QDQ1 xfail/75 warnings179.91s.
-Root/scoped Ruff, changed-file format, whitespace and four source hashes PASS.
-Scoped AST conservation retains every other source function;43 resolved step
-callers have only three intentional invalid-boolean negative-fixture diagnostics
-(the prior two and this slice's new control). All three positions spent; no
-historical/protected refund. Ignored `.git/returns-326-*` logs/hashes retained.
-No study/model/dependency/download/hardware or native/Arm/sanitizer opt-in.
-Next separately close actual goal acquisition intake with original/closing
-native/RNG/profile/pose/input/tick/delivery/stored-word joins and detached output.
+[Complete unchanged checkpoint][review-326-330-preserved-0] is preserved in the archive.
 
 ## 327. Closed Native Goal Computation Intake (2026-11-12)
 
-Begin pushedfde4b22. Closed intake needs the original true pose/full Config
-snapshot and Scenario identity: noisy used position cannot stand in for true
-pose or establish a noise bound. Add only these bounded acquisition carrier
-fields; default public outputs/calculations remain unchanged. The separate
-offline sampler validates actual owner,32-character epoch, existing C1 tick
-encoding and <=8 nominal odometry latency/queue/history budgets. Original and
-closing cache/native/RNG/Scenario/profile/true-pose/input/tick/delivery/ego/history/
-stored-word joins precede one detached supported packet. Unsupported, changed
-or computed nonfinite source raises explicit ValueError without partial output;
-the original raw unknown packet is retained. No replay/trig/draw/clock/geometry
-or numerical/noise/cast/physical/source/clock/one-use/admission qualification.
-All eight flags false. Recorder retention and publication remain separate.
-
-World-goal inferred dtype is preserved: finite float64 canonical words or
-exact signed/unsigned integer words, including integers not exactly expressible
-as float64. Other observed float64 operands/native values retain signed words
-as canonical strings or directly copied finite scalars;
-stored float32 words use the existing uint32 view. Profile scalar types and
-zero-word distinctions remain intact. The carrier adds25-or-fewer fixed Config
-fields and three true-pose words, not Scenario copying or a new geometry claim.
-
-Fresh49/60s (32 intake/17 affected acquisition), necessary repair49/60s reserve,
-root/360s. First49 PASS/4 retained raw warnings3.86s, no repair. Required exact
-history-limit verification adds only two fresh fixtures/60s:8 accepted,9
-rejected before row iteration/copy;2 PASS/32 deselected3.60s, not another green49
-run. Per intake <=2 views/1 packet copy, <=8 queue/history ego rows of4 words,
-<=23 captured source words/scalars plus <=25 Config fields per view. Synthetic
-repeated rows test a work limit only, not source history/coverage. Root PASS5262,
-known QDQ1 xfail/77 warnings168.02s; root/scoped Ruff, changed format/whitespace,
-four hashes and old source/test/decorator AST conservation PASS. All three
-executed positions spent; unused repair reserve is not an execution or refund.
-Ignored `.git/returns-327-*` logs/hashes retained. No protected/native/Arm work.
-Next separately typed bounded goal history, then default-off recorder retention
-and matched delivery with original/closing joins; no permission/admission.
+[Complete unchanged checkpoint][review-326-330-preserved-1] is preserved in the archive.
 
 ## 328. Intact Goal-Prerequisite Review Archival (2026-11-12)
 
-Begin clean pusheda8dc8e6. Before further review growth, move whole316-320
-checkpoints to [their archive][chapter-review-28]: bodies, headings, separators,
-failures, spent/unused ledgers and historical limits remain byte-exact. Preserve
-all five old root anchors as archive links; rebase four chapter03 report links
-and copy the existing306-310 archive reference relative to its new location.
-Update only the root reading map and short current state; no requirements,
-source, control, authority or qualification changes.
-
-One finite preflight/apply/verify position PASS, no failure/repair. Exact archive
-text, all old root headings, local reference targets/anchors, whitespace and
-four unchanged last-root source hashes PASS. Archive179 lines; root770 before
-this note. Local `layout-328-before-*` snapshots and migration utility retained
-in the ignored session workspace; committed archive/anchors are portable.
-No code-suite rerun: unchanged gate5262 PASS/known QDQ1 xfail stays spent.
-No protected studies/native/Arm/model/dependency/download/hardware work.
-Next typed bounded native goal history, then default-off recorder retention
-and closed matched delivery; all eight qualification/admission flags false.
+[Complete unchanged checkpoint][review-326-330-preserved-2] is preserved in the archive.
 
 ## 329. Typed Bounded Native Goal Computation History (2026-11-12)
 
-Begin clean pushed9a3fb69. Add separate four-key typed goal history validation,
-not retention/publication. Independently validate the current closed intake
-and <=8 saved packets before epoch/profile/world-input/ordering joins. Preserve
-native/true-pose/yaw word correspondence, exact inferred uint64/int64 world
-values, canonical finite float64 words, finite builtin uint32 storage words
-and literal false flags. Existing Config validation is reused with every field
-required; unsupported metadata, nonfinite words and zero-word mismatches reject
-explicitly without changing inputs. No cast/trig/noise/error law or source/
-physical/clock/one-use/admission qualification follows from these joins.
-
-Fresh27/60s, necessary repair27/60s reserve, root/360s. First27 PASS3.88s, no
-failure/repair; root PASS5289, known QDQ1 xfail/77 warnings164.71s. Root/scoped
-Ruff, changed format/whitespace, four hashes and every old source/control/
-decorator AST PASS. <=9 packet validations (current plus8), <=18 canonical
-decodes/23 data words/scalars and <=25 fixed Config fields per packet.
-Eight entries/gaps and signed/unsigned extremes are supported; ninth entry,
-wrong types, flags, epoch/profile/order, noncanonical/nonfinite data, native/
-yaw ties, storage and malformed current prototype reject. Shifted/repeated
-metadata are bounded unit fixtures only: not native acquisition history,
-coverage, timing, execution or labels. Both executed positions spent; unused
-repair is not refunded authority. Ignored `.git/returns-329-*` logs/hashes
-retained, no protected/native/Arm/model/dependency/download/hardware work.
-Next default-off <=8-record native goal recorder retention with prevalidation,
-original/closing ownership, exact-repeat deduplication, changed-repeat
-rejection, native-tick trimming and retained gaps; publication is later.
+[Complete unchanged checkpoint][review-326-330-preserved-3] is preserved in the archive.
 
 ## 330. Default-Off Native Goal Recorder Retention (2026-11-12)
 
-Begin clean pushed8962f07. Add an independent literal default-off recorder
-method and empty builtin goal history. Disabled inclusion is a no-op; enabled
-work requires the current bound C1 producer. Prevalidate retained raw typed
-words before source intake/digests; close original/closing owner/cache/native/
-RNG/profile/pose/input/current-frame/history/stored-word/source-file bindings
-before changing recorder history. Keep <=8 detached records, exact-repeat
-deduplication, changed-repeat rejection, native-tick trimming and skipped gaps.
-Unchanged repeats preserve history identity; a repeat still trims supported
-expired older records. No publication, replay, draw, trig, clock or geometry
-work during retention. All flags false; no numerical/noise/physical/clock/
-one-use/source/admission qualification from matching words or digests.
-
-Fresh24/60s, necessary fixture repair24/60s, root/360s. Before execution correct
-the prospective validator bound4 to5 for prevalidation, original/candidate and
-both closing validations; no position spent/refunded. First22 PASS/2 FAIL5.49s:
-gap/trim fixtures assumed capture tick2, but owning setup captures at4. Necessary
-fixture-only repair derives the actual native start:24 PASS4.47s, no source/
-work/tolerance change. One fresh closing-owner-clear control/60s verifies a
-necessary explicit ValueError guard before tuple access:1 PASS/24 deselected
-3.84s, not another green24 run. Root PASS5314, known QDQ1 xfail/77 warnings
-167.72s. Root/scoped Ruff, changed format/whitespace, four hashes and every
-old source/control/decorator AST PASS. Per retention <=2 intakes/4 views/
-5 bounded history validators/12 digests/2 file checks; <=11 setup steps/
-12 owner reads per synthetic case, never during retention. All four executed
-positions spent; ignored `.git/returns-330-*` logs/hashes retained. No protected
-studies/native/Arm/model/dependency/download/hardware work. Next separately
-retained exact goal epoch/tick/delivery matching and closed publication;
-missing/unsupported/nonfinite joins stay unknown without partial fields.
+[Complete unchanged checkpoint][review-326-330-preserved-4] is preserved in the archive.
 
 ## 331. Exact Retained Native Goal Matching (2026-11-12)
 
@@ -551,6 +424,24 @@ models/dependencies/downloads/hardware/native/Arm or extra opt-in work.
 Next archive whole326-330 before further review growth, then separately
 matched retained native goal expression reports with closed source/output
 joins and unchanged default-off/unknown behaviour.
+
+## 338. Intact Goal Ownership Checkpoint Archival (2026-11-13)
+
+Begin clean pushede194890. Move whole326-330 to
+[their archive][chapter-review-30] before further review growth. Preserve exact
+bodies/headings/separators, failures, approvals, spent ledgers and historical
+next actions; all five root heading anchors remain archive links. Rebase four
+chapter03 goal references and copy section328's existing316-320 archive label
+relative to its new location. No historical limits/authority are renewed.
+
+One fresh mechanical migration/30s PASS, no failure/repair; exact block/prior
+headings, eleven scoped local links/anchors, whitespace and all four last-tested
+source hashes PASS. Root820 lines before this note; archive151. Local before
+snapshots and bounded utility retained in session files, portable evidence in
+Git documents. No code edit/green code-suite rerun/native/Arm/model/study/
+dependency/download/hardware work or qualification adoption. Next independent
+default-off matched native goal expression reports, preserving consumed
+coefficients/delta and original/closing source/operand/report/output joins.
 
 ## Sources
 
@@ -922,6 +813,7 @@ Methods and measurements:
 [chapter-review-27]: docs/review/311-315.md
 [chapter-review-28]: docs/review/316-320.md
 [chapter-review-29]: docs/review/321-325.md
+[chapter-review-30]: docs/review/326-330.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -939,3 +831,8 @@ Methods and measurements:
 [review-321-325-preserved-2]: docs/review/321-325.md#323-supplied-word-native-tof-selectedstorage-residuals-2026-11-12
 [review-321-325-preserved-3]: docs/review/321-325.md#324-matched-native-tof-selectedstorage-reports-2026-11-12
 [review-321-325-preserved-4]: docs/review/321-325.md#325-cold-native-goal-computation-source-2026-11-12
+[review-326-330-preserved-0]: docs/review/326-330.md#326-native-goal-computation-acquisition-pairing-2026-11-12
+[review-326-330-preserved-1]: docs/review/326-330.md#327-closed-native-goal-computation-intake-2026-11-12
+[review-326-330-preserved-2]: docs/review/326-330.md#328-intact-goal-prerequisite-review-archival-2026-11-12
+[review-326-330-preserved-3]: docs/review/326-330.md#329-typed-bounded-native-goal-computation-history-2026-11-12
+[review-326-330-preserved-4]: docs/review/326-330.md#330-default-off-native-goal-recorder-retention-2026-11-12

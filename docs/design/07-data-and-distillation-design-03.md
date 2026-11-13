@@ -2464,10 +2464,10 @@ inputs reject without mutation. Signed words are not normalized.
 [native-goal-delivery-review]: ../../REVIEW.md#332-closed-default-off-native-goal-delivery-2026-11-12
 [c1-motion-source]: ../../sim/rover.py
 [native-goal-match-review]: ../../REVIEW.md#331-exact-retained-native-goal-matching-2026-11-12
-[native-goal-retention-review]: ../../REVIEW.md#330-default-off-native-goal-recorder-retention-2026-11-12
-[native-goal-history-review]: ../../REVIEW.md#329-typed-bounded-native-goal-computation-history-2026-11-12
-[native-goal-intake-review]: ../../REVIEW.md#327-closed-native-goal-computation-intake-2026-11-12
-[native-goal-acquisition-review]: ../../REVIEW.md#326-native-goal-computation-acquisition-pairing-2026-11-12
+[native-goal-retention-review]: ../review/326-330.md#330-default-off-native-goal-recorder-retention-2026-11-12
+[native-goal-history-review]: ../review/326-330.md#329-typed-bounded-native-goal-computation-history-2026-11-12
+[native-goal-intake-review]: ../review/326-330.md#327-closed-native-goal-computation-intake-2026-11-12
+[native-goal-acquisition-review]: ../review/326-330.md#326-native-goal-computation-acquisition-pairing-2026-11-12
 [native-tof-noise-addition-review]: ../review/311-315.md#315-supplied-word-native-tof-noise-addition-discrepancies-2026-11-12
 [native-tof-noise-addition-match-review]: ../review/316-320.md#317-matched-native-tof-noise-addition-reports-2026-11-12
 [native-tof-dropout-review]: ../review/316-320.md#318-supplied-word-native-tof-dropout-mask-correspondence-2026-11-12

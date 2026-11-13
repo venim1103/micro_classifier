@@ -522,6 +522,36 @@ all eight flags false. No native/C/Arm/ST/model/study/dependency/download/
 hardware changes or extra opt-in runs. Current review/fixes complete; leave the
 ordered feature queue untouched pending the user's next instruction.
 
+## 337. Supplied-Word Native Goal Expression Residuals (2026-11-13)
+
+Fresh actual continuation resumes from clean pushedff4ec39, main/upstream0/0,
+Python3.12.3 at /opt/venv, Ruff0.17.0/pytest8.4.2/timeout verified. Owning goal
+code already captures consumed delta/cosine/sine and final native components.
+Add a separate supplied-word comparison for `c*dx+s*dy` and `-s*dx+c*dy`.
+Use the observed delta, not recomputed world-minus-position or asserted true
+yaw coefficients. Do not normalize coefficients, add intermediate arithmetic
+to the producer, replay or adopt trig/noise/rounding/geometry/error laws.
+Canonical finite input words prevalidate; observed infinity preserves raw
+words with unknown residual, unsupported/NaN inputs reject without mutation.
+Signed-zero words remain supplied distinctions, all eight flags false.
+
+Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS3.84s/
+4489 deselected, no repair. <=2 entries/6 decodes/6 rational values/8 binary
+operations, existing <=4096-bit arithmetic cap. One actual setup acquisition
+only for the actual-word control; no replay/draw/trig/clock/geometry in helper.
+Independent Fraction controls cover transpose sign, non-unit consumed
+coefficients, cancellation, signed residuals/zeros, subnormal, overflow and
+literal/type/shape/canonical/work-budget failures. Root PASS5436, known QDQ1
+xfail/77 warnings327.92s in the shared environment, within360s; root Ruff,
+changed format/whitespace/four hashes and prior source/control/decorator AST/
+scoped local references PASS. Both executed positions spent, unused repair
+not refunded authority; ignored `.git/returns-337-*` logs/hashes retained.
+No source/physical/clock/execution/one-use/admission qualification, studies/
+models/dependencies/downloads/hardware/native/Arm or extra opt-in work.
+Next archive whole326-330 before further review growth, then separately
+matched retained native goal expression reports with closed source/output
+joins and unchanged default-off/unknown behaviour.
+
 ## Sources
 
 Hardware and tools:

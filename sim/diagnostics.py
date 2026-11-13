@@ -15764,6 +15764,102 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _native_goal_expression_residuals(
+    *, delta_m_hex, used_coefficients_hex, native_goal_m_hex, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native goal expression requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native goal expression rational budget unsupported")
+
+    def decoded(words, finite_only):
+        if type(words) is not tuple or len(words) != 2:
+            raise ValueError("native goal expression word count unsupported")
+        values = []
+        for word in words:
+            if type(word) is not str or len(word) > 32:
+                raise ValueError("native goal expression word budget exhausted")
+            try:
+                value = float.fromhex(word)
+            except (ValueError, OverflowError) as error:
+                raise ValueError(
+                    "native goal expression words must be canonical"
+                ) from error
+            if (
+                value.hex() != word
+                or math.isnan(value)
+                or (finite_only and not math.isfinite(value))
+            ):
+                raise ValueError("native goal expression words must be canonical")
+            values.append(value)
+        return values
+
+    delta = decoded(delta_m_hex, True)
+    coefficients = decoded(used_coefficients_hex, True)
+    observed = decoded(native_goal_m_hex, False)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        forward, left = map(arithmetic.value, delta)
+        cosine, sine = map(arithmetic.value, coefficients)
+        expressions = (
+            arithmetic.binary(
+                arithmetic.binary(cosine, forward, "mul"),
+                arithmetic.binary(sine, left, "mul"),
+                "add",
+            ),
+            arithmetic.binary(
+                arithmetic.binary(-sine, forward, "mul"),
+                arithmetic.binary(cosine, left, "mul"),
+                "add",
+            ),
+        )
+        for axis, exact in enumerate(expressions):
+            residual = (
+                arithmetic.binary(arithmetic.value(observed[axis]), exact, "sub")
+                if math.isfinite(observed[axis])
+                else None
+            )
+            entries.append(
+                {
+                    "axis_index": axis,
+                    "delta_m_hex": delta_m_hex,
+                    "used_coefficients_hex": used_coefficients_hex,
+                    "observed_native_goal_hex": native_goal_m_hex[axis],
+                    "exact_unrounded_expression_ratio": exact.as_integer_ratio(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "status": "unknown_nonfinite_goal_expression"
+                    if residual is None
+                    else "computed_exact_goal_expression_residual",
+                }
+            )
+    except ArithmeticError as error:
+        raise ValueError("native goal expression rational budget exhausted") from error
+    return {
+        "schema": "micro-classifier/native-goal-expression-residuals/1",
+        "allowed_use": "offline_native_goal_word_diagnostics_only",
+        "status": "reported_native_goal_expression_residuals",
+        "comparison_basis": "unrounded_supplied_delta_and_consumed_coefficients",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_goal_delta_residuals(
     *, world_goal_m, used_position_m_hex, delta_m_hex, synthetic_test_only=False
 ):

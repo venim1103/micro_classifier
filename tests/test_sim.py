@@ -33083,6 +33083,198 @@ def test_native_goal_delta_residuals(monkeypatch, case):
 @pytest.mark.parametrize(
     "case",
     (
+        "actual",
+        "exact",
+        "residual",
+        "transpose",
+        "coefficients_not_unit",
+        "cancel",
+        "subnormal",
+        "overflow",
+        "signed_zero",
+        "permission",
+        "delta_shape",
+        "coefficient_shape",
+        "native_shape",
+        "word_type",
+        "noncanonical",
+        "word_budget",
+        "nan_input",
+        "inf_input",
+        "nan_output",
+        "list_words",
+        "budget_bool",
+        "budget_zero",
+        "budget_large",
+        "budget_exhausted",
+    ),
+)
+def test_native_goal_expression_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    delta = ((2.0).hex(), (4.0).hex())
+    coefficients = ((0.5).hex(), (0.25).hex())
+    observed = ((2.0).hex(), (1.5).hex())
+    valid = case in (
+        "actual",
+        "exact",
+        "residual",
+        "transpose",
+        "coefficients_not_unit",
+        "cancel",
+        "subnormal",
+        "overflow",
+        "signed_zero",
+    )
+    if case == "actual":
+        environment, _ = deepcopy(c1_motion_receipt_source_fixture[:2])
+        environment.step([0.125, 0.0], capture_native_goal_computation=True)
+        values = environment._native_goal_computation_source["computation"]["values"]
+        delta = tuple(float(value).hex() for value in values["delta_m"])
+        coefficients = (values["used_cosine"].hex(), values["used_sine"].hex())
+        observed = tuple(value.hex() for value in values["native_goal_m"])
+    elif case == "residual":
+        observed = ("0x1.0000000000001p+1", "0x1.7ffffffffffffp+0")
+    elif case == "transpose":
+        coefficients = ((0.0).hex(), (1.0).hex())
+        observed = ((4.0).hex(), (-2.0).hex())
+    elif case == "coefficients_not_unit":
+        coefficients = ((2.0).hex(), (3.0).hex())
+        observed = ((16.0).hex(), (2.0).hex())
+    elif case == "cancel":
+        delta = ((2.0).hex(), (-2.0).hex())
+        coefficients = ((1.0).hex(), (1.0).hex())
+        observed = ((0.0).hex(), (-4.0).hex())
+    elif case == "subnormal":
+        delta = ("0x0.0000000000001p-1022", (0.0).hex())
+        coefficients = ((1.0).hex(), (0.0).hex())
+        observed = ((0.0).hex(), (0.0).hex())
+    elif case == "overflow":
+        delta = ("0x1.fffffffffffffp+1023",) * 2
+        coefficients = ((1.0).hex(), (1.0).hex())
+        observed = ("inf", (0.0).hex())
+    elif case == "signed_zero":
+        delta = ((-0.0).hex(), (0.0).hex())
+        coefficients = ((1.0).hex(), (0.0).hex())
+        observed = ((-0.0).hex(), (0.0).hex())
+    elif case == "delta_shape":
+        delta *= 5
+    elif case == "coefficient_shape":
+        coefficients = ()
+    elif case == "native_shape":
+        observed = observed[:1]
+    elif case == "word_type":
+        delta = (True, delta[1])
+    elif case == "noncanonical":
+        coefficients = ("1", coefficients[1])
+    elif case == "word_budget":
+        delta = ("0" * 33, delta[1])
+    elif case == "nan_input":
+        delta = ("nan", delta[1])
+    elif case == "inf_input":
+        coefficients = ("inf", coefficients[1])
+    elif case == "nan_output":
+        observed = ("nan", observed[1])
+    elif case == "list_words":
+        delta = list(delta)
+    elif case.startswith("budget_"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {
+                "budget_bool": True,
+                "budget_zero": 0,
+                "budget_large": 4097,
+                "budget_exhausted": 8,
+            }[case],
+        )
+        if case == "budget_exhausted":
+            delta = ((0.1).hex(), delta[1])
+    before = deepcopy((delta, coefficients, observed))
+    work = {"values": 0, "binary": 0, "forbidden": 0}
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def value(self, operand):
+        work["values"] += 1
+        assert work["values"] <= 6
+        return original_value(self, operand)
+
+    def binary(self, *args):
+        work["binary"] += 1
+        assert work["binary"] <= 8
+        return original_binary(self, *args)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "supplied goal expressions must not replay/draw/trig/clock"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset", "_record_history", "_observation"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if not valid:
+        with pytest.raises(ValueError, match="native goal expression"):
+            diagnostics._native_goal_expression_residuals(
+                delta_m_hex=delta,
+                used_coefficients_hex=coefficients,
+                native_goal_m_hex=observed,
+                synthetic_test_only=case != "permission",
+            )
+    else:
+        result = diagnostics._native_goal_expression_residuals(
+            delta_m_hex=delta,
+            used_coefficients_hex=coefficients,
+            native_goal_m_hex=observed,
+            synthetic_test_only=True,
+        )
+        cosine, sine = (Fraction(float.fromhex(word)) for word in coefficients)
+        forward, left = (Fraction(float.fromhex(word)) for word in delta)
+        expected = (cosine * forward + sine * left, -sine * forward + cosine * left)
+        assert type(result["entries"]) is tuple and len(result["entries"]) == 2
+        for axis, entry in enumerate(result["entries"]):
+            assert entry["axis_index"] == axis
+            assert entry["delta_m_hex"] == delta
+            assert entry["used_coefficients_hex"] == coefficients
+            assert entry["observed_native_goal_hex"] == observed[axis]
+            assert (
+                entry["exact_unrounded_expression_ratio"]
+                == expected[axis].as_integer_ratio()
+            )
+            if observed[axis] == "inf":
+                assert entry["status"] == "unknown_nonfinite_goal_expression"
+                assert entry["signed_residual_ratio"] is None
+            else:
+                residual = Fraction(float.fromhex(observed[axis])) - expected[axis]
+                assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert (delta, coefficients, observed) == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "copy",
         "budget",
         "empty",

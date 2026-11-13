@@ -2445,6 +2445,19 @@ noise/error bound is adopted; all eight qualification flags remain false.
 [Checkpoint §336][native-goal-review] records the completed gate and the
 final-source/malformed-owner repairs, preserving [the WIP pause][native-goal-wip].
 
+#### Supplied-Word Native Goal Expression Residuals (2026-11-13)
+
+The supplied consumed coefficient pair `(c,s)` and observed delta `(dx,dy)`
+define exact unrounded `c*dx+s*dy` and `-s*dx+c*dy` comparisons to final native
+components. Do not recompute delta, infer yaw trigonometry, normalize coefficients
+or adopt a noise/rounding/geometry/error law. Canonical finite inputs prevalidate;
+observed infinity retains raw words with unknown residual, unsupported/NaN
+inputs reject without mutation. Signed words are not normalized.
+<=2 entries/6 decodes/6 rational values/8 binary operations and the existing
+<=4096-bit arithmetic cap; all eight flags false, no qualification follows.
+[Checkpoint §337][native-goal-expression-review] records controls and limits.
+
+[native-goal-expression-review]: ../../REVIEW.md#337-supplied-word-native-goal-expression-residuals-2026-11-13
 [native-goal-review]: ../../REVIEW.md#336-current-state-review-and-native-goal-boundary-repairs-2026-11-13
 [native-goal-wip]: ../../REVIEW.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12
 [native-goal-delta-review]: ../../REVIEW.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12

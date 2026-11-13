@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §336 for current-state review, goal boundary repairs
+Read [REVIEW.md][review] §337 for supplied native goal expression residuals;
+§336 records current-state review, goal boundary repairs
 and the completed matched goal delta gate;
 §335 preserves the former WIP and explicit pause;
 §334 records intact native goal prerequisite archival;
@@ -118,10 +119,11 @@ Matched retained goal delta reports and their required gate are complete after
 reviewed final-source closure and malformed-owner guards. The historical §335
 root position remains spent/aborted; recovered pytest output is not chain-exit
 evidence. The fresh review gate passed5412 tests plus the known QDQ xfail.
-The user's current request is a bounded status review/fix before other work;
-it is complete, with no automatic feature-queue continuation. Resume that queue
-only on a new instruction; do not repeat green gates or adopt noise/geometry/
-error bounds.
+The user's fresh actual continuation resumes the ordered queue. Supplied-word
+native goal expressions and their gate are complete; next lossless whole326-330
+archival, then closed matched retained expression reports. Preserve consumed
+coefficients and observed delta without trig/noise/geometry/error adoption;
+do not repeat unchanged green gates.
 Preserve
 original/closing native/RNG/profile/pose/input/stored-word/mask joins; retain
 raw unsupported/nonfinite source as unknown without noise-law adoption.

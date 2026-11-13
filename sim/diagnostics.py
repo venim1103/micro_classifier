@@ -22209,9 +22209,22 @@ class _SyntheticC1SourceRecorder:
             or self._integration_sample is None
         ):
             return result
+        if not isinstance(producer, RoverEnv):
+            result["reason"] = "unsupported_current_native_integration_owner"
+            return result
         source_before = producer._integration_source
 
         def owner_binding():
+            from interface.protocol import State
+
+            if (
+                type(self._current) is not tuple
+                or len(self._current) != 4
+                or not isinstance(self._current[2], State)
+                or type(self._current[3]) is not bytes
+                or type(self._dynamics_sample) is not dict
+            ):
+                raise ValueError("unsupported current native integration owner")
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22230,6 +22243,7 @@ class _SyntheticC1SourceRecorder:
             )
 
         def sample():
+            observation = producer._observation()
             native_source = _sample_simulator_native_integration_source(
                 producer, producer._motion_receipt_source["receipt"], self._epoch
             )
@@ -22238,7 +22252,7 @@ class _SyntheticC1SourceRecorder:
                 "pose_m_rad": (*map(float, producer.position), float(producer.yaw)),
                 "native_action": (float(producer.speed), float(producer.turn_rate)),
                 "native_goal_source": deepcopy(producer._native_goal_source),
-                "observation": producer._observation(),
+                "observation": observation,
                 "config": asdict(producer.config),
                 "scenario": asdict(producer.scenario),
                 "motion_receipt": deepcopy(producer._motion_receipt_source["receipt"]),
@@ -22324,6 +22338,16 @@ class _SyntheticC1SourceRecorder:
         producer_before = self._simulator
 
         def owner_binding():
+            from interface.protocol import State
+
+            if self._current is not None and (
+                type(self._current) is not tuple
+                or len(self._current) != 4
+                or not isinstance(self._current[2], State)
+                or type(self._current[3]) is not bytes
+                or type(self._dynamics_sample) is not dict
+            ):
+                raise ValueError("unsupported current native arithmetic owner")
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,

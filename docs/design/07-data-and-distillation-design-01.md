@@ -859,6 +859,10 @@ one-use qualification, body-clear origin or an admitted predecessor. Two-point
 checks are not perpetual freshness or concurrent/adversarial atomicity.
 The [native snapshot checkpoint][native-integration-snapshot-review] records
 bounded source/owner/history/currentness controls and the final-read repair.
+The [closing-observation repair][native-integration-closing-review] samples
+cache and producer words after each observation and rejects malformed original/
+closing current owners before indexing; source/arithmetic readers preserve their
+existing work limits and unknown-without-partial-output behavior.
 
 
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
@@ -2223,6 +2227,7 @@ figure is not an established minimum.
 [native-tof-timing-retention-review]: ../review/183-220.md#215-opt-in-recorder-owned-native-tof-timing-retention-2026-11-09
 [native-tof-timing-delivery-review]: ../review/183-220.md#216-retained-tof-timing-delivery-correspondence-2026-11-09
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
+[native-integration-closing-review]: ../../REVIEW.md#352-native-integration-closing-observation-repairs-2026-11-13
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

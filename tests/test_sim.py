@@ -18518,6 +18518,156 @@ def test_synthetic_c1_native_integration_snapshot(
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
+@pytest.mark.parametrize("reader", ("source", "arithmetic"))
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "final_pose",
+        "final_native",
+        "final_receipt",
+        "final_profile",
+        "current_empty",
+        "current_short",
+        "current_frame",
+        "current_state",
+        "current_type",
+        "closing_current_empty",
+        "producer_type",
+    ),
+)
+def test_native_integration_final_observation(
+    c1_native_integration_snapshot_fixture, monkeypatch, reader, case
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    original_observation = RoverEnv._observation
+    original_digest = diagnostics._c1_source_binding_digest
+    original_sample = diagnostics._sample_simulator_native_integration_source
+    original_check = diagnostics._check_simulator_receipt_history
+    last_observation = 6 if reader == "source" else 12
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    retained = deepcopy(owner._integration_sample)
+    work = dict.fromkeys(("observation", "sample", "check", "digest", "forbidden"), 0)
+    if case == "current_empty":
+        owner._current = ()
+    elif case == "current_short":
+        owner._current = owner._current[:2]
+    elif case == "current_frame":
+        owner._current = (*owner._current[:3], None)
+    elif case == "current_state":
+        owner._current = (*owner._current[:2], Config(), owner._current[3])
+    elif case == "current_type":
+        owner._current = list(owner._current)
+    elif case == "producer_type":
+        owner._simulator = True
+
+    def observation(self):
+        work["observation"] += 1
+        assert work["observation"] <= last_observation
+        result = original_observation(self)
+        if work["observation"] == last_observation:
+            if case == "final_pose":
+                self.position[0] = math.nextafter(self.position[0], math.inf)
+            elif case == "final_native":
+                self._integration_source["segments"][0]["values"]["midpoint_rad"] += (
+                    0.001
+                )
+            elif case == "final_receipt":
+                self._motion_receipt_source["receipt"]["submitted_action"] = (
+                    0.25,
+                    0.3,
+                )
+            elif case == "final_profile":
+                self.config = replace(self.config, max_speed=0.5)
+            elif case == "closing_current_empty":
+                owner._current = ()
+        return result
+
+    def sample(*args, **kwargs):
+        work["sample"] += 1
+        assert work["sample"] <= (2 if reader == "source" else 4)
+        return original_sample(*args, **kwargs)
+
+    def check(*args, **kwargs):
+        work["check"] += 1
+        assert work["check"] <= (2 if reader == "source" else 4)
+        return original_check(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= (64 if reader == "source" else 160)
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("native closing reads must not replay/capture/draw/clock")
+
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", sample
+    )
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    snapshot = (
+        owner.snapshot_native_integration_source
+        if reader == "source"
+        else owner.snapshot_native_integration_arithmetic
+    )
+    result = snapshot(synthetic_test_only=True)
+    available = (
+        "snapshot_available" if reader == "source" else "discrepancies_available"
+    )
+    assert result[available] is (case == "valid")
+    for flag in (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    if case == "valid":
+        assert result["source"] == retained
+        assert result["current_frame"] == owner._current[3]
+        assert work["observation"] == last_observation
+    else:
+        assert result["status"] == "unknown"
+        for key in (
+            "source",
+            "arithmetic",
+            "current_tick",
+            "current_frame",
+            "source_epoch",
+        ):
+            assert key not in result
+        if case.startswith("current_") or case == "producer_type":
+            assert work["observation"] == 0
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
 @pytest.mark.parametrize(
     "case",
     (

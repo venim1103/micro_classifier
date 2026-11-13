@@ -565,6 +565,39 @@ download/hardware/native/Arm or extra opt-in work. Next reassess the remaining
 Q0-Q5 acceptance and request/guard/executor source prerequisites without
 duplicating completed reports or treating matching words as qualification.
 
+## 352. Native Integration Closing-Observation Repairs (2026-11-13)
+
+Begin clean pushed61381bc. Q0-Q5/request reassessment found a concrete owning-code
+currentness gap, not new acceptance evidence: native source samples read cache/
+pose/receipt/profile words before their last observation, unlike the repaired
+receipt reader. Four source/arithmetic final-pose/native-cache controls reproduce
+stale successful publication:4 FAIL7.03s/4909 deselected. Move observation before
+both actual native-cache and producer-word sampling. Guard actual producer and
+tuple/State/frame/dynamics owner layout before indexing/asdict; malformed closing
+owners are unknown, not IndexError. Existing arithmetic stages, unsupported
+obligations, source acquisition, simulator/receipt/wire/controller words unchanged.
+
+Fresh repro4/60s, required new24+affected controls <=64/60s, one necessary
+repair reserve <=64/60s, root/360s. Required52 ran:50 PASS/2 FAIL3.12s/4861
+deselected; both profile fixtures lacked local dataclasses.replace. Fixture-only
+import repair reran only those2:PASS4.42s/4911 deselected. Green50 not repeated.
+Changed format initially rejected three long new lines; existing formatter
+repaired them, changed format/root Ruff/whitespace PASS. Root PASS5836, known
+QDQ1 xfail/77 warnings200.90s. Four tested hashes and unrelated source/control/
+decorator AST conservation PASS. Executed/rejected positions spent; no cap or
+semantic assertion relaxed. Two readers keep6/12 observations,2/4 native samples,
+2/4 history checks,64/160 digests; no extra probe, replay/capture/draw/trig/ceil/
+clock. New controls cover final pose/cache/receipt/profile mutations and malformed
+original/closing owner layouts, without partial source/arithmetic/frame output.
+
+All eight flags false; no uniform native error, source/coverage/clock/physical/
+one-use/execution/admission qualification. Existing Q0-Q5 independent acceptance,
+ST/board and prospective task-quality boundaries remain missing; no studies,
+models/dependencies/downloads/hardware/native/Arm opt-ins. Ignored
+`.git/returns-352-*` repro/focused/repair/root/hash records retained. Next archive
+whole341-345 before more root growth, then advance only a concrete supported
+remaining source prerequisite; no duplicated floor/integration reports.
+
 ## Sources
 
 Hardware and tools:

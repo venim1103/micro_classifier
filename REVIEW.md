@@ -498,6 +498,34 @@ geometry, protected study/model/dependency/download/hardware/native/Arm or
 extra opt-in work. Next separately default-off matched retained storage reports
 with closed original/closing source/operand/report/output joins.
 
+## 341. Matched Retained Goal Storage Reports (2026-11-13)
+
+Begin clean pushed6985259. Add independent literal default-off storage report
+inclusion requiring goal computation. Closed typed retained final-native/
+stored words feed the supplied helper, with exact epoch/tick/delivery labels.
+Original/closing source/operand/report/output joins close before publication;
+the final intake follows all enabled reports and the last observation.
+Unsupported, changed or nonfinite source returns explicit unknown without
+partial fields. Numeric/word equality and zero ties remain separate; no
+rounding/error/noise/geometry/source/execution/physical/admission adoption,
+all eight flags false, zero-latency C1 delivery domain unchanged.
+
+Fresh104/60s, necessary repair104/60s reserve, root/360s. First104 PASS6.14s/
+4591 deselected, no repair:100 new storage-only/combined publication cases
+plus4 literal/dependency/outgoing-report/changed-stored-word controls.
+Existing-mode focused cases not rerun. Storage <=2 reports/4 entries/native
+decodes/storage views/8 rational values/4 subtractions; earlier delta/expression
+family caps unchanged. All-mode <=32 rational values/28 binary operations;
+original <=2 intakes/views/matches/file checks and <=12 digests unchanged.
+Root PASS5618, known QDQ1 xfail/77 warnings233.93s; root Ruff, changed format/
+whitespace/four hashes, prior unrelated source/control/decorator AST and scoped
+references PASS. Both executed positions spent, unused repair not authority;
+ignored `.git/returns-341-*` logs/hashes retained. No replay/draw/trig/clock/
+geometry, protected study/model/dependency/download/hardware/native/Arm or
+extra opt-in work. Next reassess supported named-consumer setup/source/
+coverage/error/timing prerequisites and request/guard/executor dependencies;
+do not duplicate completed integration, floor or native goal reports.
+
 ## Sources
 
 Hardware and tools:

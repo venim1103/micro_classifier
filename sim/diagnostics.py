@@ -18377,6 +18377,7 @@ class _SyntheticC1SourceRecorder:
         include_goal_computation=False,
         include_goal_delta_residuals=False,
         include_goal_expression_residuals=False,
+        include_goal_storage_residuals=False,
     ):
         from interface.protocol import State, encode_state
         from sim.rover import RoverEnv
@@ -18393,6 +18394,10 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("include_goal_expression_residuals must be a literal bool")
         if include_goal_expression_residuals and not include_goal_computation:
             raise ValueError("native goal expression reports require goal computation")
+        if type(include_goal_storage_residuals) is not bool:
+            raise ValueError("include_goal_storage_residuals must be a literal bool")
+        if include_goal_storage_residuals and not include_goal_computation:
+            raise ValueError("native goal storage reports require goal computation")
         result = {
             "schema": "micro-classifier/synthetic-c1-native-goal-delivery/1",
             "allowed_use": "offline_native_goal_computation_diagnostics_only",
@@ -18446,6 +18451,21 @@ class _SyntheticC1SourceRecorder:
                     delta_m_hex=values["delta_m"],
                     used_coefficients_hex=(values["used_cosine"], values["used_sine"]),
                     native_goal_m_hex=values["native_goal_m"],
+                    synthetic_test_only=True,
+                ),
+                "source_epoch": record["source_epoch"],
+                "tick": record["tick"],
+                "delivery_tick": record["delivery_tick"],
+            }
+
+        def storage_report(record):
+            if not include_goal_storage_residuals:
+                return None
+            values = record["goal_computation"]["computation"]["values"]
+            return {
+                **_native_goal_storage_residuals(
+                    native_goal_m_hex=values["native_goal_m"],
+                    stored_goal_m=values["stored_goal_m"],
                     synthetic_test_only=True,
                 ),
                 "source_epoch": record["source_epoch"],
@@ -18562,12 +18582,14 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("native goal snapshot retained/current words mismatch")
             report = delta_report(matched)
             expression = expression_report(matched)
+            storage = storage_report(matched)
             copied_binding = _c1_source_binding_digest(
                 {
                     "matched": matched,
                     "frame": frame,
                     "goal_delta_residuals": report,
                     "goal_expression_residuals": expression,
+                    "goal_storage_residuals": storage,
                 }
             )
             closing_match = _match_native_goal_retained_computation(
@@ -18575,6 +18597,7 @@ class _SyntheticC1SourceRecorder:
             )
             closing_report = delta_report(closing_match)
             closing_expression = expression_report(closing_match)
+            closing_storage = storage_report(closing_match)
             closing_producer_binding = _c1_source_binding_digest(producer())
             closing = _sample_simulator_native_goal_computation_source(
                 environment, self._epoch
@@ -18590,12 +18613,14 @@ class _SyntheticC1SourceRecorder:
                 )
                 or not _native_tof_word_copy_matches(report, closing_report)
                 or not _native_tof_word_copy_matches(expression, closing_expression)
+                or not _native_tof_word_copy_matches(storage, closing_storage)
                 or _c1_source_binding_digest(
                     {
                         "matched": matched,
                         "frame": frame,
                         "goal_delta_residuals": report,
                         "goal_expression_residuals": expression,
+                        "goal_storage_residuals": storage,
                     }
                 )
                 != copied_binding
@@ -18630,6 +18655,8 @@ class _SyntheticC1SourceRecorder:
             result["goal_delta_residuals"] = report
         if include_goal_expression_residuals:
             result["goal_expression_residuals"] = expression
+        if include_goal_storage_residuals:
+            result["goal_storage_residuals"] = storage
         return result
 
     def snapshot_native_tof_source(self, *, synthetic_test_only=False):

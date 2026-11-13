@@ -33588,12 +33588,16 @@ def test_native_goal_retained_matching(
 @pytest.mark.parametrize(
     "include_goal_expression_residuals", (False, True), ids=("existing", "expression")
 )
+@pytest.mark.parametrize(
+    "include_goal_storage_residuals", (False, True), ids=("prior", "storage")
+)
 def test_native_goal_delivery_snapshot(
     monkeypatch,
     c1_motion_receipt_source_fixture,
     case,
     include_goal_delta_residuals,
     include_goal_expression_residuals,
+    include_goal_storage_residuals,
 ):
     from dataclasses import replace
 
@@ -33655,6 +33659,9 @@ def test_native_goal_delivery_snapshot(
         "expression_reports": 0,
         "expression_values": 0,
         "expression_binary": 0,
+        "storage_reports": 0,
+        "storage_values": 0,
+        "storage_binary": 0,
         "forbidden": 0,
     }
     original_intake = diagnostics._sample_simulator_native_goal_computation_source
@@ -33664,9 +33671,11 @@ def test_native_goal_delivery_snapshot(
     original_observation = RoverEnv._observation
     original_report = diagnostics._native_goal_delta_residuals
     original_expression = diagnostics._native_goal_expression_residuals
+    original_storage = diagnostics._native_goal_storage_residuals
     original_value = diagnostics._C1CommandArithmetic.value
     original_binary = diagnostics._C1CommandArithmetic.binary
     inside_expression = False
+    inside_storage = False
 
     def report(**kwargs):
         work["reports"] += 1
@@ -33674,15 +33683,27 @@ def test_native_goal_delivery_snapshot(
         return original_report(**kwargs)
 
     def value(self, operand):
-        key = "expression_values" if inside_expression else "report_values"
+        key = (
+            "storage_values"
+            if inside_storage
+            else "expression_values"
+            if inside_expression
+            else "report_values"
+        )
         work[key] += 1
-        assert work[key] <= 12
+        assert work[key] <= (8 if inside_storage else 12)
         return original_value(self, operand)
 
     def binary(self, *args):
-        key = "expression_binary" if inside_expression else "report_binary"
+        key = (
+            "storage_binary"
+            if inside_storage
+            else "expression_binary"
+            if inside_expression
+            else "report_binary"
+        )
         work[key] += 1
-        assert work[key] <= (16 if inside_expression else 8)
+        assert work[key] <= (4 if inside_storage else 16 if inside_expression else 8)
         return original_binary(self, *args)
 
     def expression_report(**kwargs):
@@ -33694,6 +33715,16 @@ def test_native_goal_delivery_snapshot(
             return original_expression(**kwargs)
         finally:
             inside_expression = False
+
+    def storage_report(**kwargs):
+        nonlocal inside_storage
+        work["storage_reports"] += 1
+        assert work["storage_reports"] <= 2
+        inside_storage = True
+        try:
+            return original_storage(**kwargs)
+        finally:
+            inside_storage = False
 
     def digest(*args):
         work["digests"] += 1
@@ -33763,6 +33794,7 @@ def test_native_goal_delivery_snapshot(
     monkeypatch.setattr(
         diagnostics, "_native_goal_expression_residuals", expression_report
     )
+    monkeypatch.setattr(diagnostics, "_native_goal_storage_residuals", storage_report)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
     for name in ("step", "reset", "_record_history"):
@@ -33779,6 +33811,7 @@ def test_native_goal_delivery_snapshot(
                 include_goal_computation=1 if case == "flag" else True,
                 include_goal_delta_residuals=include_goal_delta_residuals,
                 include_goal_expression_residuals=include_goal_expression_residuals,
+                include_goal_storage_residuals=include_goal_storage_residuals,
             )
     else:
         result = owner.snapshot_native_goal_delivery(
@@ -33787,6 +33820,8 @@ def test_native_goal_delivery_snapshot(
             include_goal_delta_residuals=include_goal_delta_residuals
             and case != "default",
             include_goal_expression_residuals=include_goal_expression_residuals
+            and case != "default",
+            include_goal_storage_residuals=include_goal_storage_residuals
             and case != "default",
         )
         if case == "copy":
@@ -33862,6 +33897,35 @@ def test_native_goal_delivery_snapshot(
                 assert computed["command_admission_qualified"] is False
             else:
                 assert "goal_expression_residuals" not in result
+            if include_goal_storage_residuals:
+                import struct
+                from fractions import Fraction
+
+                computed = result["goal_storage_residuals"]
+                retained = result["delivered_goal"]
+                values = retained["goal_computation"]["computation"]["values"]
+                for key in ("source_epoch", "tick", "delivery_tick"):
+                    assert computed[key] == retained[key]
+                assert len(computed["entries"]) == 2
+                for axis, entry in enumerate(computed["entries"]):
+                    word = values["stored_goal_m"][axis]
+                    observed = struct.unpack("<f", struct.pack("<I", word))[0]
+                    native_word = values["native_goal_m"][axis]
+                    native = float.fromhex(native_word)
+                    assert entry["stored_goal_word"] == word
+                    assert entry["native_goal_hex"] == native_word
+                    assert (
+                        entry["signed_residual_ratio"]
+                        == (Fraction(observed) - Fraction(native)).as_integer_ratio()
+                    )
+                    assert entry["finite_values_equal"] is (observed == native)
+                    assert entry["decoded_words_match"] is (
+                        observed.hex() == native_word
+                    )
+                assert computed["source_qualified"] is False
+                assert computed["command_admission_qualified"] is False
+            else:
+                assert "goal_storage_residuals" not in result
         else:
             assert result["status"] == "unknown"
             assert result["snapshot_available"] is False
@@ -33903,6 +33967,9 @@ def test_native_goal_delivery_snapshot(
             assert work["reports"] == (2 if include_goal_delta_residuals else 0)
             assert work["expression_reports"] == (
                 2 if include_goal_expression_residuals else 0
+            )
+            assert work["storage_reports"] == (
+                2 if include_goal_storage_residuals else 0
             )
         if case == "default":
             assert not any(work.values())
@@ -34073,6 +34140,75 @@ def test_native_goal_expression_delivery_options(
     assert len(reports) == 2
     assert result["status"] == "unknown" and result["snapshot_available"] is False
     for key in (
+        "goal_expression_residuals",
+        "goal_delta_residuals",
+        "delivered_goal",
+        "frame",
+        "tick",
+        "source_epoch",
+    ):
+        assert key not in result
+    assert (environment.tick, environment.rng.bit_generator.state) == before
+
+
+@pytest.mark.parametrize(
+    "case", ("literal", "dependency", "closing_output", "closing_stored")
+)
+def test_native_goal_storage_delivery_options(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if case in ("literal", "dependency"):
+        with pytest.raises(ValueError):
+            owner.snapshot_native_goal_delivery(
+                synthetic_test_only=True,
+                include_goal_computation=case == "literal",
+                include_goal_storage_residuals=1 if case == "literal" else True,
+            )
+        return
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_goal_computation_source(
+        environment, synthetic_test_only=True, include_goal_computation=True
+    )
+    original = diagnostics._native_goal_storage_residuals
+    reports = []
+
+    def report(**kwargs):
+        assert len(reports) < 2
+        if reports:
+            if case == "closing_output":
+                reports[0]["entries"][0]["signed_residual_ratio"] = (999, 1)
+            else:
+                environment._native_goal_computation_source["computation"]["values"][
+                    "stored_goal_m"
+                ].view(np.uint32)[0] ^= 1
+        result = original(**kwargs)
+        reports.append(result)
+        return result
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("matched goal storage must not replay/draw/trig/clock")
+
+    monkeypatch.setattr(diagnostics, "_native_goal_storage_residuals", report)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    before = deepcopy((environment.tick, environment.rng.bit_generator.state))
+    result = owner.snapshot_native_goal_delivery(
+        synthetic_test_only=True,
+        include_goal_computation=True,
+        include_goal_storage_residuals=True,
+    )
+    assert len(reports) == 2
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    for key in (
+        "goal_storage_residuals",
         "goal_expression_residuals",
         "goal_delta_residuals",
         "delivered_goal",

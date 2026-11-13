@@ -2481,6 +2481,19 @@ mutation under the closed-history word preflight. <=2 entries/decodes/views,
 flags false, no law/error/geometry/source/execution/physical/admission adoption.
 [Checkpoint §340][native-goal-storage-review] preserves controls and limits.
 
+#### Matched Retained Goal Storage Reports (2026-11-13)
+
+Independent literal default-off storage inclusion requires goal computation.
+Typed retained final-native/stored words feed detached reports with exact
+source epoch/tick/delivery labels. Original/closing source/operand/report/output
+joins close before publication; final intake follows all reports and the last
+observation. Unknown/changed/nonfinite correspondence has no partial fields.
+Storage <=2 reports/4 entries/decodes/views/8 rational values/4 subtractions;
+all-mode <=32 rational values/28 binary operations, unchanged source/digest
+caps. No casting/error/geometry/qualification adoption, all eight flags false.
+[Checkpoint §341][native-goal-storage-match-review] records actual controls.
+
+[native-goal-storage-match-review]: ../../REVIEW.md#341-matched-retained-goal-storage-reports-2026-11-13
 [native-goal-storage-review]: ../../REVIEW.md#340-supplied-native-and-stored-goal-word-correspondence-2026-11-13
 [native-goal-expression-match-review]: ../../REVIEW.md#339-matched-retained-native-goal-expression-reports-2026-11-13
 [native-goal-expression-review]: ../../REVIEW.md#337-supplied-word-native-goal-expression-residuals-2026-11-13

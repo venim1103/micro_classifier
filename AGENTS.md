@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §352 for native integration closing-observation repairs;
+Read [REVIEW.md][review] §353 for intact motion/goal checkpoint archival;
+§352 records native integration closing-observation repairs;
 §351 records closed current segment-selection reports;
 §350 records supplied unrounded segment-count comparisons;
 §349 records closed current receipt interval reports;
@@ -123,6 +124,7 @@ Whole321-325 checkpoints are archived with historical anchors and ledgers.
 Whole326-330 checkpoints are archived with historical anchors and ledgers.
 Whole331-335 checkpoints are archived with historical anchors and ledgers.
 Whole336-340 checkpoints are archived with historical anchors and ledgers.
+Whole341-345 checkpoints are archived with historical anchors and ledgers.
 Supplied selected/storage residuals and their required gate are complete.
 Retained storage report joins and their required gate are complete.
 Native integration source/arithmetic already exists and must not be duplicated.

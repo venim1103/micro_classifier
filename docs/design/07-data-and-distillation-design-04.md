@@ -2517,10 +2517,10 @@ all combinations, mutations and the required gate.
 [sinc-binding-identity-review]: ../../REVIEW.md
 [sinc-compile-comparison-review]: ../../REVIEW.md
 [sinc-structural-protocol-review]: ../../REVIEW.md
-[current-motion-update-review]: ../../REVIEW.md#345-closed-current-receipt-motion-update-reports-2026-11-13
-[native-action-clipping-review]: ../../REVIEW.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
+[current-motion-update-review]: ../review/341-345.md#345-closed-current-receipt-motion-update-reports-2026-11-13
+[native-action-clipping-review]: ../review/341-345.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
 [native-interval-division-review]: ../../REVIEW.md#346-supplied-captured-interval-division-residuals-2026-11-13
 [current-interval-division-review]: ../../REVIEW.md#349-closed-current-receipt-interval-reports-2026-11-13
 [native-segment-selection-review]: ../../REVIEW.md#350-supplied-unrounded-segment-count-comparison-2026-11-13
 [current-segment-selection-review]: ../../REVIEW.md#351-closed-current-segment-selection-reports-2026-11-13
-[native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13
+[native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

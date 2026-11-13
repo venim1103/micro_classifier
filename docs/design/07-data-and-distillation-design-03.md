@@ -2493,7 +2493,7 @@ all-mode <=32 rational values/28 binary operations, unchanged source/digest
 caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [Checkpoint §341][native-goal-storage-match-review] records actual controls.
 
-[native-goal-storage-match-review]: ../../REVIEW.md#341-matched-retained-goal-storage-reports-2026-11-13
+[native-goal-storage-match-review]: ../review/341-345.md#341-matched-retained-goal-storage-reports-2026-11-13
 [native-goal-storage-review]: ../review/336-340.md#340-supplied-native-and-stored-goal-word-correspondence-2026-11-13
 [native-goal-expression-match-review]: ../review/336-340.md#339-matched-retained-native-goal-expression-reports-2026-11-13
 [native-goal-expression-review]: ../review/336-340.md#337-supplied-word-native-goal-expression-residuals-2026-11-13

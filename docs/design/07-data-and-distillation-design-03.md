@@ -2469,6 +2469,19 @@ digest caps; combined delta/expression <=24 values/24 binary operations.
 No trig/noise/rounding/geometry/error adoption, all eight flags false.
 [Checkpoint §339][native-goal-expression-match-review] records actual controls.
 
+#### Supplied Native and Stored Goal-Word Correspondence (2026-11-13)
+
+Two canonical supplied native components and finite builtin uint32 stored
+words define decoded observed binary32-minus-native residuals, not casting
+predictions. Numerical equality and decoded-word equality are independent;
+signed-zero ties remain unresolved. Native infinity retains raw words with
+unknown residual/equalities; unsupported/NaN/nonfinite storage rejects without
+mutation under the closed-history word preflight. <=2 entries/decodes/views,
+4 rational values/2 subtractions and the existing <=4096-bit cap; all eight
+flags false, no law/error/geometry/source/execution/physical/admission adoption.
+[Checkpoint §340][native-goal-storage-review] preserves controls and limits.
+
+[native-goal-storage-review]: ../../REVIEW.md#340-supplied-native-and-stored-goal-word-correspondence-2026-11-13
 [native-goal-expression-match-review]: ../../REVIEW.md#339-matched-retained-native-goal-expression-reports-2026-11-13
 [native-goal-expression-review]: ../../REVIEW.md#337-supplied-word-native-goal-expression-residuals-2026-11-13
 [native-goal-review]: ../../REVIEW.md#336-current-state-review-and-native-goal-boundary-repairs-2026-11-13

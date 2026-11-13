@@ -471,6 +471,33 @@ trig/clock/geometry/qualification, protected study/model/dependency/download/
 hardware/native/Arm or extra opt-in work. Next supplied final-native/stored
 goal-word correspondence, not predicted casting or an error bound.
 
+## 340. Supplied Native and Stored Goal-Word Correspondence (2026-11-13)
+
+Begin clean pushed5d75cd3. Add a separate two-axis final-native/stored goal
+word diagnostic using the existing uint32-to-float32 view and bounded exact
+residual helper. Preserve canonical supplied native words and finite builtin
+uint32 storage as required by closed goal history. Report decoded observed
+storage minus supplied native value; numerical equality and decoded-word
+equality stay separate. Equal zeros with different words remain ties, not
+normalized signs or casting predictions. Supplied native +/-inf produces
+explicit unknown residual/equalities; unsupported/NaN/nonfinite storage
+rejects without mutation, retaining raw inputs. No rounding/error/noise/
+geometry/source/clock/execution/physical/admission adoption, eight flags false.
+
+Fresh24/60s, necessary repair24/60s reserve, root/360s. First24 PASS14.06s/
+4567 deselected, no repair. <=2 entries/2 native decodes/2 storage views/
+4 rational values/2 subtractions and existing <=4096-bit cap. One actual setup
+acquisition for the actual-word control only; independent struct/Fraction
+controls cover residual signs, zero-word ties, subnormal/extreme values,
+raw unknown native words and typed/canonical/storage/permission/work budgets.
+Root PASS5514, known QDQ1 xfail/77 warnings199.70s; root Ruff, changed format/
+whitespace/four hashes, every prior source/control/decorator AST and scoped
+references PASS. Both executed positions spent; unused repair not authority.
+Ignored `.git/returns-340-*` logs/hashes retained; no replay/draw/trig/clock/
+geometry, protected study/model/dependency/download/hardware/native/Arm or
+extra opt-in work. Next separately default-off matched retained storage reports
+with closed original/closing source/operand/report/output joins.
+
 ## Sources
 
 Hardware and tools:

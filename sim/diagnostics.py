@@ -15764,6 +15764,97 @@ def _check_native_tof_wall_history(history, source_history, source_epoch):
                     )
 
 
+def _native_goal_storage_residuals(
+    *, native_goal_m_hex, stored_goal_m, synthetic_test_only=False
+):
+    if synthetic_test_only is not True:
+        raise ValueError("native goal storage requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("native goal storage rational budget unsupported")
+    if (
+        type(native_goal_m_hex) is not tuple
+        or len(native_goal_m_hex) != 2
+        or type(stored_goal_m) is not tuple
+        or len(stored_goal_m) != 2
+    ):
+        raise ValueError("native goal storage word count unsupported")
+    if any(
+        type(word) is not int
+        or not 0 <= word <= 0xFFFFFFFF
+        or word & 0x7F800000 == 0x7F800000
+        for word in stored_goal_m
+    ):
+        raise ValueError("native goal storage word unsupported")
+    native = []
+    for word in native_goal_m_hex:
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("native goal storage word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError("native goal storage words must be canonical") from error
+        if value.hex() != word or math.isnan(value):
+            raise ValueError("native goal storage words must be canonical")
+        native.append(value)
+    stored = np.asarray(stored_goal_m, dtype=np.uint32).view(np.float32)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+    entries = []
+    try:
+        for axis in range(2):
+            observed = float(stored[axis])
+            finite = math.isfinite(native[axis])
+            source = arithmetic.value(native[axis]) if finite else None
+            target = arithmetic.value(observed) if finite else None
+            residual = arithmetic.binary(target, source, "sub") if finite else None
+            entries.append(
+                {
+                    "axis_index": axis,
+                    "native_goal_hex": native_goal_m_hex[axis],
+                    "stored_goal_word": stored_goal_m[axis],
+                    "decoded_stored_goal_hex": observed.hex(),
+                    "signed_residual_ratio": None
+                    if residual is None
+                    else residual.as_integer_ratio(),
+                    "finite_values_equal": native[axis] == observed if finite else None,
+                    "decoded_words_match": native_goal_m_hex[axis] == observed.hex()
+                    if finite
+                    else None,
+                    "status": "computed_exact_goal_storage_residual"
+                    if finite
+                    else "unknown_nonfinite_native_goal",
+                }
+            )
+    except ArithmeticError as error:
+        raise ValueError("native goal storage rational budget exhausted") from error
+    return {
+        "schema": "micro-classifier/native-goal-storage-residuals/1",
+        "allowed_use": "offline_native_goal_word_diagnostics_only",
+        "status": "reported_native_goal_storage_residuals",
+        "comparison_basis": "decoded_observed_binary32_minus_supplied_native_goal",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "value_mismatch_count": sum(
+            entry["finite_values_equal"] is False for entry in entries
+        ),
+        "word_mismatch_count": sum(
+            entry["decoded_words_match"] is False for entry in entries
+        ),
+        "entries": tuple(entries),
+    }
+
+
 def _native_goal_expression_residuals(
     *, delta_m_hex, used_coefficients_hex, native_goal_m_hex, synthetic_test_only=False
 ):

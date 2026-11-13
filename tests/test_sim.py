@@ -33275,6 +33275,186 @@ def test_native_goal_expression_residuals(
 @pytest.mark.parametrize(
     "case",
     (
+        "actual",
+        "exact",
+        "residual",
+        "zero_tie",
+        "zero_match",
+        "reverse_zero",
+        "subnormal",
+        "negative",
+        "large_native",
+        "source_inf",
+        "permission",
+        "native_count",
+        "stored_count",
+        "native_type",
+        "stored_bool",
+        "stored_range",
+        "stored_inf",
+        "stored_nan",
+        "noncanonical",
+        "native_nan",
+        "budget_bool",
+        "budget_zero",
+        "budget_large",
+        "budget_exhausted",
+    ),
+)
+def test_native_goal_storage_residuals(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    import struct
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    native, stored = ((1.0).hex(), (-2.0).hex()), (0x3F800000, 0xC0000000)
+    valid = case in (
+        "actual",
+        "exact",
+        "residual",
+        "zero_tie",
+        "zero_match",
+        "reverse_zero",
+        "subnormal",
+        "negative",
+        "large_native",
+        "source_inf",
+    )
+    if case == "actual":
+        environment, _ = deepcopy(c1_motion_receipt_source_fixture[:2])
+        environment.step([0.125, 0.0], capture_native_goal_computation=True)
+        values = environment._native_goal_computation_source["computation"]["values"]
+        native = tuple(value.hex() for value in values["native_goal_m"])
+        stored = tuple(map(int, values["stored_goal_m"].view(np.uint32)))
+    elif case == "residual":
+        native = ("0x1.0000000000001p+0", "-0x1.0000000000001p+1")
+    elif case in ("zero_tie", "zero_match", "reverse_zero"):
+        native = ((-0.0).hex() if case != "zero_tie" else (0.0).hex(), (0.0).hex())
+        stored = (0x80000000 if case != "reverse_zero" else 0, 0)
+    elif case == "subnormal":
+        native = ("0x0.0000000000001p-1022", (0.0).hex())
+        stored = (0, 0)
+    elif case == "negative":
+        native = ((-0.1).hex(), (-2.0).hex())
+        stored = (0xBDCCCCCD, 0xC0000000)
+    elif case == "large_native":
+        native = ("0x1.fffffffffffffp+1023", native[1])
+        stored = (0x7F7FFFFF, stored[1])
+    elif case == "source_inf":
+        native = ("inf", "-inf")
+    elif case == "native_count":
+        native *= 5
+    elif case == "stored_count":
+        stored = stored[:1]
+    elif case == "native_type":
+        native = (True, native[1])
+    elif case == "stored_bool":
+        stored = (True, stored[1])
+    elif case == "stored_range":
+        stored = (1 << 32, stored[1])
+    elif case == "stored_inf":
+        stored = (0x7F800000, stored[1])
+    elif case == "stored_nan":
+        stored = (0x7FC00001, stored[1])
+    elif case == "noncanonical":
+        native = ("1", native[1])
+    elif case == "native_nan":
+        native = ("nan", native[1])
+    elif case.startswith("budget_"):
+        monkeypatch.setattr(
+            diagnostics,
+            "_SYNTHETIC_ARITHMETIC_BITS",
+            {
+                "budget_bool": True,
+                "budget_zero": 0,
+                "budget_large": 4097,
+                "budget_exhausted": 8,
+            }[case],
+        )
+        if case == "budget_exhausted":
+            native = ((0.1).hex(), native[1])
+    before = deepcopy((native, stored))
+    work = {"values": 0, "binary": 0, "forbidden": 0}
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+
+    def value(self, operand):
+        work["values"] += 1
+        assert work["values"] <= 4
+        return original_value(self, operand)
+
+    def binary(self, *args):
+        work["binary"] += 1
+        assert work["binary"] <= 2
+        return original_binary(self, *args)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("goal storage reports must not replay/draw/trig/clock")
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset", "_record_history", "_observation"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if not valid:
+        with pytest.raises(ValueError, match="native goal storage"):
+            diagnostics._native_goal_storage_residuals(
+                native_goal_m_hex=native,
+                stored_goal_m=stored,
+                synthetic_test_only=case != "permission",
+            )
+    else:
+        result = diagnostics._native_goal_storage_residuals(
+            native_goal_m_hex=native,
+            stored_goal_m=stored,
+            synthetic_test_only=True,
+        )
+        assert len(result["entries"]) == 2
+        mismatches, word_mismatches = 0, 0
+        for axis, entry in enumerate(result["entries"]):
+            observed = struct.unpack("<f", struct.pack("<I", stored[axis]))[0]
+            assert entry["native_goal_hex"] == native[axis]
+            assert entry["stored_goal_word"] == stored[axis]
+            assert entry["decoded_stored_goal_hex"] == observed.hex()
+            if case == "source_inf":
+                assert entry["signed_residual_ratio"] is None
+                assert entry["finite_values_equal"] is None
+                assert entry["decoded_words_match"] is None
+                assert entry["status"] == "unknown_nonfinite_native_goal"
+            else:
+                source = float.fromhex(native[axis])
+                exact = Fraction(observed) - Fraction(source)
+                assert entry["signed_residual_ratio"] == exact.as_integer_ratio()
+                assert entry["finite_values_equal"] is (source == observed)
+                assert entry["decoded_words_match"] is (native[axis] == observed.hex())
+                mismatches += source != observed
+                word_mismatches += native[axis] != observed.hex()
+        assert result["value_mismatch_count"] == mismatches
+        assert result["word_mismatch_count"] == word_mismatches
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert (native, stored) == before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "copy",
         "budget",
         "empty",

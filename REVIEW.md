@@ -484,6 +484,44 @@ Next supported closed current receipt/update reports using the completed
 supplied clipping/speed-update diagnostics, without source/controller replay,
 extra draws, native-error-law adoption or usable command admission.
 
+## 345. Closed Current Receipt Motion-Update Reports (2026-11-13)
+
+Begin clean pushedf0723c0. Add literal default-off
+include_native_motion_update to the existing owned current receipt-history
+reader. No caller source/tick/epoch override or new capture. Current bound
+receipt words feed both completed supplied clipping/speed-update helpers;
+copied reports retain source epoch/transition ticks/receipt binding and
+current frame. Original/closing report and source/owner/history joins precede
+publication. Disabled output shape/report work remains unchanged; unsupported,
+nonfinite or changed content is explicit unknown without partial payload.
+Equal-value/different-word clipping candidates stay unresolved. Eight flags
+false; no native rounding/error/source/clock/physical/execution/admission law.
+
+Coupled source prerequisite: two new final-observation controls reproduced
+stale pose/history publication,2 FAIL5.87s/4743 deselected. The reader sampled
+pose before observation and closed owner content before its last observation.
+Move each observation before sampled words and the final producer sample
+before final owner binding, preserving the original two-observation cap.
+Add typed current layout guards before consumption; no broad error catches.
+
+Fresh34/60s (24 new modes/mutations,2 reproductions,8 directly affected
+controls), necessary34/60s repair reserve, root/360s. Prerequisite Ruff first
+failed RUF059 unused reproduction binding/PIE807 empty-dict lambda; pytest
+did not start. Lint-only repair, then33 PASS/1 FAIL6.17s/4735 deselected:
+closing-profile fixture set0.6, already C1's max_speed. Fixture-only repair
+uses nextafter(actual max_speed,+inf); only failed case PASS1/4768 deselected/
+4.26s, green33 not repeated. <=2 observations/one history validation/32
+digests/two reports per family; speed<=10 values/8 arithmetic/4 comparisons,
+clip<=12 decodes/4 dyadic ratios; no step/capture/RNG/trig/clock/guard query.
+Root PASS5692, known QDQ1 xfail/77 warnings190.62s; root Ruff/changed format/
+whitespace/four hashes, every unrelated module/function/control/decorator AST
+and scoped references PASS. Pylance resolves two compatible existing callers,
+not all dynamic test references. All executed positions remain spent.
+Ignored `.git/returns-345-*` logs/hashes retained; no protected study/model/
+dependency/download/hardware/native/Arm or extra opt-in work. Next reassess
+remaining supported Q2 segment/time and request/guard/executor prerequisites;
+uniform source/error/timing/one-use acceptance remains independent.
+
 ## Sources
 
 Hardware and tools:

@@ -18904,6 +18904,241 @@ def test_synthetic_c1_owned_receipt_history(
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
+@pytest.mark.parametrize("mutation", ("pose", "history"))
+def test_synthetic_c1_receipt_snapshot_final_observation(
+    c1_receipt_snapshot_fixture, monkeypatch, mutation
+):
+    _environment, owner = deepcopy(c1_receipt_snapshot_fixture)
+    original_observation = RoverEnv._observation
+    calls = 0
+
+    def observation(self):
+        nonlocal calls
+        calls += 1
+        assert calls <= 2
+        result = original_observation(self)
+        if calls == 2:
+            if mutation == "pose":
+                self.position[0] = np.nextafter(self.position[0], math.inf)
+            else:
+                owner._receipt_history[0]["motion_receipt"]["submitted_action"] = (
+                    0.25,
+                    0.3,
+                )
+        return result
+
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    result = owner.snapshot_receipt_history(synthetic_test_only=True)
+    assert calls == 2
+    assert result["snapshot_available"] is False
+    assert result["reason"] == "producer_or_history_changed_during_snapshot"
+    assert "history" not in result and "current_frame" not in result
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "disabled",
+        "detached",
+        "permission",
+        "integer_flag",
+        "none_flag",
+        "string_flag",
+        "missing_current",
+        "malformed_current",
+        "missing_history",
+        "missing_producer",
+        "source_change",
+        "report_change",
+        "flag_change",
+        "closing_report_change",
+        "closing_pose",
+        "closing_history",
+        "closing_profile",
+        "closing_raw_receipt",
+        "source_files",
+        "epoch",
+        "nonfinite",
+        "nan",
+        "zero_tie",
+    ),
+)
+def test_receipt_native_motion_update(c1_receipt_snapshot_fixture, monkeypatch, case):
+    from dataclasses import replace
+
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_receipt_snapshot_fixture)
+    original_speed = diagnostics._native_speed_update_residuals
+    original_clip = diagnostics._native_action_clipping_diagnostics
+    original_digest = diagnostics._c1_source_binding_digest
+    original_observation = RoverEnv._observation
+    raw = environment._motion_receipt_source["receipt"]
+    enabled = {
+        "disabled": False,
+        "integer_flag": 1,
+        "none_flag": None,
+        "string_flag": "yes",
+    }.get(case, True)
+    valid = case in ("valid", "disabled", "detached", "zero_tie")
+    if case == "missing_current":
+        owner._current = None
+    elif case == "malformed_current":
+        owner._current = (owner._current[0],)
+    elif case == "missing_history":
+        owner._receipt_history.clear()
+    elif case == "missing_producer":
+        owner._simulator = None
+    elif case == "source_change":
+        raw["submitted_action"] = (0.25, 0.3)
+    elif case == "source_files":
+        monkeypatch.setattr(type(owner), "_source_files", staticmethod(dict))
+    elif case == "epoch":
+        owner._epoch = "f" * 32
+    elif case == "nonfinite":
+        raw["updated_speed_m_s"] = math.inf
+    elif case == "nan":
+        raw["clipped_target_speed_m_s"] = math.nan
+    elif case == "zero_tie":
+        raw["submitted_action"] = (-0.0, raw["submitted_action"][1])
+        raw["clipped_target_speed_m_s"] = 0.0
+        owner._dynamics_sample["motion_receipt"] = deepcopy(raw)
+        owner._receipt_history[-1]["motion_receipt"] = deepcopy(raw)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = {"speed": 0, "clip": 0, "observations": 0, "digests": 0, "forbidden": 0}
+    first = None
+
+    def speed(*args, **kwargs):
+        nonlocal first
+        work["speed"] += 1
+        assert work["speed"] <= 2
+        result = original_speed(*args, **kwargs)
+        if work["speed"] == 1:
+            first = result
+            if case == "flag_change":
+                result["training_approved"] = True
+        else:
+            assert first is not None
+            if case == "report_change":
+                first["signed_residual_ratio"] = (99, 1)
+            elif case == "closing_report_change":
+                result["signed_residual_ratio"] = (99, 1)
+            elif case == "closing_pose":
+                environment.position[0] = np.nextafter(
+                    environment.position[0], math.inf
+                )
+            elif case == "closing_history":
+                owner._receipt_history[0]["motion_receipt"]["submitted_action"] = (
+                    0.25,
+                    0.3,
+                )
+            elif case == "closing_profile":
+                environment.config = replace(
+                    environment.config,
+                    max_speed=math.nextafter(environment.config.max_speed, math.inf),
+                )
+            elif case == "closing_raw_receipt":
+                raw["submitted_action"] = (0.25, 0.3)
+        return result
+
+    def clip(*args, **kwargs):
+        work["clip"] += 1
+        assert work["clip"] <= 2
+        return original_clip(*args, **kwargs)
+
+    def observation(self):
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        return original_observation(self)
+
+    def digest(*args, **kwargs):
+        work["digests"] += 1
+        assert work["digests"] <= 32
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "receipt updates must not step/capture/query/draw/trig/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_native_speed_update_residuals", speed)
+    monkeypatch.setattr(diagnostics, "_native_action_clipping_diagnostics", clip)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    from sim import rover
+
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if case in ("permission", "integer_flag", "none_flag", "string_flag"):
+        with pytest.raises(ValueError):
+            owner.snapshot_receipt_history(
+                synthetic_test_only=case != "permission",
+                include_native_motion_update=enabled,
+            )
+        assert work["observations"] == work["speed"] == work["clip"] == 0
+    else:
+        result = owner.snapshot_receipt_history(
+            synthetic_test_only=True, include_native_motion_update=enabled
+        )
+        assert result["snapshot_available"] is valid
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == "disabled":
+            assert "native_motion_update" not in result
+            assert work["speed"] == work["clip"] == 0
+        elif valid:
+            update = result["native_motion_update"]
+            assert update["source_epoch"] == owner._epoch
+            assert update["tick_after"] == result["current_tick"] == environment.tick
+            assert update["tick_before"] == raw["tick_before"]
+            assert result["current_frame"] == owner._current[3]
+            assert update["receipt_binding"] == original_digest(raw)
+            assert update["speed_update"] == first
+            assert work["speed"] == work["clip"] == 2
+            if case == "zero_tie":
+                assert update["action_clipping"]["word_tie_count"] == 1
+                assert (
+                    update["action_clipping"]["entries"][0]["clipped_words_match"]
+                    is None
+                )
+            if case == "detached":
+                update["speed_update"]["input_hex"] = ()
+                result["history"][-1]["motion_receipt"]["submitted_action"] = ()
+                assert first["input_hex"] != ()
+                assert owner._receipt_history[-1]["motion_receipt"] == raw
+        else:
+            assert result["reason"] != "owned_history_matches_current_producer"
+            for key in (
+                "history",
+                "current_tick",
+                "current_frame",
+                "source_epoch",
+                "native_motion_update",
+            ):
+                assert key not in result
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
 @pytest.mark.parametrize(
     "case",
     (

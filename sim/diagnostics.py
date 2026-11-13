@@ -21665,12 +21665,16 @@ class _SyntheticC1SourceRecorder:
                 )
         return result
 
-    def snapshot_receipt_history(self, *, synthetic_test_only=False):
+    def snapshot_receipt_history(
+        self, *, include_native_motion_update=False, synthetic_test_only=False
+    ):
         """Publish copied offline history only while its actual producer is current."""
         if synthetic_test_only is not True:
             raise ValueError(
                 "receipt history snapshot requires synthetic_test_only=True"
             )
+        if type(include_native_motion_update) is not bool:
+            raise ValueError("include_native_motion_update must be a literal boolean")
         result = {
             "schema": "micro-classifier/synthetic-c1-receipt-history-snapshot/1",
             "allowed_use": "offline_source_history_diagnostics_only",
@@ -21694,6 +21698,17 @@ class _SyntheticC1SourceRecorder:
         producer = self._simulator
         if producer is None or self._current is None or not self._receipt_history:
             return result
+        from interface.protocol import State
+
+        if (
+            type(self._current) is not tuple
+            or len(self._current) != 4
+            or not isinstance(self._current[2], State)
+            or type(self._current[3]) is not bytes
+            or type(self._dynamics_sample) is not dict
+        ):
+            result["reason"] = "unsupported_current_receipt_owner"
+            return result
         if (
             producer.rng is not self._simulator_rng
             or producer.odometry_rng is not self._simulator_odometry_rng
@@ -21712,13 +21727,14 @@ class _SyntheticC1SourceRecorder:
             return result
 
         def producer_sample():
+            observation = producer._observation()
             source = producer._motion_receipt_source
             return {
                 "tick": producer.tick,
                 "pose_m_rad": (*map(float, producer.position), float(producer.yaw)),
                 "native_action": (float(producer.speed), float(producer.turn_rate)),
                 "native_goal_source": deepcopy(producer._native_goal_source),
-                "observation": producer._observation(),
+                "observation": observation,
                 "config": asdict(producer.config),
                 "scenario": asdict(producer.scenario),
                 "motion_receipt": deepcopy(source["receipt"]),
@@ -21742,6 +21758,84 @@ class _SyntheticC1SourceRecorder:
                 }
             )
 
+        def motion_update(receipt):
+            submitted = _c1_array(receipt["submitted_action"], (2,))
+            initial = _c1_array(receipt["initial_action"], (2,))
+            clipping_words = tuple(
+                float(value).hex()
+                for value in (
+                    submitted[0],
+                    receipt["config"]["max_speed"],
+                    receipt["clipped_target_speed_m_s"],
+                    submitted[1],
+                    receipt["config"]["max_turn_rate"],
+                    receipt["clipped_turn_rate_rad_s"],
+                )
+            )
+            speed_words = tuple(
+                float(value).hex()
+                for value in (
+                    initial[0],
+                    receipt["clipped_target_speed_m_s"],
+                    receipt["config"]["acceleration"],
+                    receipt["nominal_duration_s"],
+                    receipt["updated_speed_m_s"],
+                )
+            )
+            clipping = _native_action_clipping_diagnostics(
+                input_hex=clipping_words, synthetic_test_only=True
+            )
+            speed = _native_speed_update_residuals(
+                input_hex=speed_words, synthetic_test_only=True
+            )
+            for report, schema, allowed_use, words in (
+                (
+                    clipping,
+                    "micro-classifier/native-action-clipping-diagnostics/1",
+                    "offline_native_action_clipping_word_diagnostics_only",
+                    clipping_words,
+                ),
+                (
+                    speed,
+                    "micro-classifier/native-speed-update-residuals/1",
+                    "offline_native_speed_update_word_diagnostics_only",
+                    speed_words,
+                ),
+            ):
+                if (
+                    type(report) is not dict
+                    or report.get("schema") != schema
+                    or report.get("allowed_use") != allowed_use
+                    or report.get("input_hex") != words
+                    or any(
+                        report.get(flag) is not False
+                        for flag in (
+                            "fixture_permission_granted",
+                            "training_approved",
+                            "real_input_qualified",
+                            "free_space_qualified",
+                            "numerically_certified",
+                            "source_qualified",
+                            "native_execution_qualified",
+                            "command_admission_qualified",
+                        )
+                    )
+                ):
+                    raise ValueError("unsupported native motion update report metadata")
+            if (
+                clipping.get("unknown_count") != 0
+                or speed.get("status") != "computed_exact_speed_update_residual"
+            ):
+                raise ValueError("unsupported native motion update operands")
+            return {
+                "source_epoch": self._epoch,
+                "tick_before": receipt["tick_before"],
+                "tick_after": receipt["tick_after"],
+                "receipt_binding": _c1_source_binding_digest(receipt),
+                "action_clipping": clipping,
+                "speed_update": speed,
+            }
+
         try:
             binding = owner_binding()
             sampled = producer_sample()
@@ -21756,9 +21850,22 @@ class _SyntheticC1SourceRecorder:
                 config=asdict(self._config),
             )
             history = deepcopy(self._receipt_history)
+            if include_native_motion_update:
+                update = motion_update(sampled["motion_receipt"])
+                update_binding = _c1_source_binding_digest(update)
+                copied_update = deepcopy(update)
+                closing_update = motion_update(deepcopy(sampled["motion_receipt"]))
+                if (
+                    _c1_source_binding_digest(update) != update_binding
+                    or _c1_source_binding_digest(copied_update) != update_binding
+                    or _c1_source_binding_digest(closing_update) != update_binding
+                ):
+                    result["reason"] = "native_motion_update_changed_during_snapshot"
+                    return result
+            final_sampled_binding = _c1_source_binding_digest(producer_sample())
             if (
-                owner_binding() != binding
-                or _c1_source_binding_digest(producer_sample()) != sampled_binding
+                final_sampled_binding != sampled_binding
+                or owner_binding() != binding
                 or self._simulator is not producer
                 or producer.rng is not self._simulator_rng
                 or producer.odometry_rng is not self._simulator_odometry_rng
@@ -21781,6 +21888,8 @@ class _SyntheticC1SourceRecorder:
             current_frame=self._current[3],
             history=history,
         )
+        if include_native_motion_update:
+            result["native_motion_update"] = copied_update
         return result
 
     def snapshot_native_integration_source(self, *, synthetic_test_only=False):

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §348 for intact reviewed goal-expression archival;
+Read [REVIEW.md][review] §349 for closed current receipt interval reports;
+§348 records intact reviewed goal-expression archival;
 §347 records intact motion-word contract relocation;
 §346 records supplied captured-interval division residuals;
 §345 records closed current receipt motion-update reports;
@@ -147,7 +148,9 @@ closure. Supplied captured-interval quotient residuals and their gate are
 complete, using observed planned segments without segment-selection prediction.
 The supplied/current motion-word contracts now live in chapter04; chapter01
 retains their old anchors as reading links, without NF1 premise adoption.
-Next close current receipt interval reports, then reassess remaining supported
+Independent default-off current receipt interval reports and their gate are
+complete, including combined motion-update mode; original/closing report work
+precedes final producer/owner closure. Next reassess remaining supported
 Q2 segment/time and request/guard/executor prerequisites without duplicating integration/floor/
 goal reports; independently qualified setup/source/coverage/
 error/timing and request/guard/executor dependencies remain unresolved.

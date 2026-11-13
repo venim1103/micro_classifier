@@ -21736,7 +21736,11 @@ class _SyntheticC1SourceRecorder:
         return result
 
     def snapshot_receipt_history(
-        self, *, include_native_motion_update=False, synthetic_test_only=False
+        self,
+        *,
+        include_native_motion_update=False,
+        include_native_interval_division=False,
+        synthetic_test_only=False,
     ):
         """Publish copied offline history only while its actual producer is current."""
         if synthetic_test_only is not True:
@@ -21745,6 +21749,10 @@ class _SyntheticC1SourceRecorder:
             )
         if type(include_native_motion_update) is not bool:
             raise ValueError("include_native_motion_update must be a literal boolean")
+        if type(include_native_interval_division) is not bool:
+            raise ValueError(
+                "include_native_interval_division must be a literal boolean"
+            )
         result = {
             "schema": "micro-classifier/synthetic-c1-receipt-history-snapshot/1",
             "allowed_use": "offline_source_history_diagnostics_only",
@@ -21906,6 +21914,52 @@ class _SyntheticC1SourceRecorder:
                 "speed_update": speed,
             }
 
+        def interval_report(receipt):
+            duration = float(receipt["nominal_duration_s"]).hex()
+            interval = float(receipt["interval_seconds"]).hex()
+            segments = receipt["planned_segments"]
+            residuals = _native_interval_division_residuals(
+                duration_s_hex=duration,
+                planned_segments=segments,
+                interval_s_hex=interval,
+                synthetic_test_only=True,
+            )
+            if (
+                type(residuals) is not dict
+                or residuals.get("schema")
+                != "micro-classifier/native-interval-division-residuals/1"
+                or residuals.get("allowed_use")
+                != "offline_native_interval_division_word_diagnostics_only"
+                or residuals.get("status")
+                != "computed_exact_interval_division_residual"
+                or residuals.get("duration_s_hex") != duration
+                or residuals.get("interval_s_hex") != interval
+                or residuals.get("planned_segments") != segments
+                or any(
+                    residuals.get(flag) is not False
+                    for flag in (
+                        "fixture_permission_granted",
+                        "training_approved",
+                        "real_input_qualified",
+                        "free_space_qualified",
+                        "numerically_certified",
+                        "source_qualified",
+                        "native_execution_qualified",
+                        "command_admission_qualified",
+                    )
+                )
+            ):
+                raise ValueError(
+                    "unsupported native interval report metadata or source"
+                )
+            return {
+                "source_epoch": self._epoch,
+                "tick_before": receipt["tick_before"],
+                "tick_after": receipt["tick_after"],
+                "receipt_binding": _c1_source_binding_digest(receipt),
+                "residuals": residuals,
+            }
+
         try:
             binding = owner_binding()
             sampled = producer_sample()
@@ -21931,6 +21985,18 @@ class _SyntheticC1SourceRecorder:
                     or _c1_source_binding_digest(closing_update) != update_binding
                 ):
                     result["reason"] = "native_motion_update_changed_during_snapshot"
+                    return result
+            if include_native_interval_division:
+                interval_before = interval_report(sampled["motion_receipt"])
+                interval_binding = _c1_source_binding_digest(interval_before)
+                copied_interval = deepcopy(interval_before)
+                interval_after = interval_report(deepcopy(sampled["motion_receipt"]))
+                if (
+                    _c1_source_binding_digest(interval_before) != interval_binding
+                    or _c1_source_binding_digest(copied_interval) != interval_binding
+                    or _c1_source_binding_digest(interval_after) != interval_binding
+                ):
+                    result["reason"] = "native_interval_report_changed_during_snapshot"
                     return result
             final_sampled_binding = _c1_source_binding_digest(producer_sample())
             if (
@@ -21960,6 +22026,8 @@ class _SyntheticC1SourceRecorder:
         )
         if include_native_motion_update:
             result["native_motion_update"] = copied_update
+        if include_native_interval_division:
+            result["native_interval_division"] = copied_interval
         return result
 
     def snapshot_native_integration_source(self, *, synthetic_test_only=False):

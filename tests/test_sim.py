@@ -19139,6 +19139,156 @@ def test_receipt_native_motion_update(c1_receipt_snapshot_fixture, monkeypatch, 
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
+@pytest.mark.parametrize("mode", ("interval", "both"))
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "disabled",
+        "detached",
+        "permission",
+        "flag_type",
+        "source_change",
+        "closing_source",
+        "report_change",
+        "closing_report_change",
+        "flag_change",
+        "layout",
+        "nonfinite_output",
+    ),
+)
+def test_receipt_native_interval_reports(
+    c1_receipt_snapshot_fixture, monkeypatch, mode, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_receipt_snapshot_fixture)
+    original_report = diagnostics._native_interval_division_residuals
+    original_digest = diagnostics._c1_source_binding_digest
+    original_observation = RoverEnv._observation
+    raw = environment._motion_receipt_source["receipt"]
+    enabled = False if case == "disabled" else 1 if case == "flag_type" else True
+    motion_enabled = mode == "both" and case != "disabled"
+    valid = case in ("valid", "disabled", "detached")
+    if case == "source_change":
+        raw["interval_seconds"] = math.nextafter(raw["interval_seconds"], math.inf)
+    elif case == "layout":
+        owner._current = (owner._current[0],)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    first = None
+    work = {"reports": 0, "observations": 0, "digests": 0, "forbidden": 0}
+
+    def report(*args, **kwargs):
+        nonlocal first
+        work["reports"] += 1
+        assert work["reports"] <= 2
+        result = original_report(*args, **kwargs)
+        if work["reports"] == 1:
+            first = result
+            if case == "flag_change":
+                result["numerically_certified"] = True
+            elif case == "nonfinite_output":
+                result["status"] = "unknown_nonfinite_native_interval"
+                result["signed_residual_ratio"] = None
+        else:
+            assert first is not None
+            if case == "report_change":
+                first["signed_residual_ratio"] = (99, 1)
+            elif case == "closing_report_change":
+                result["signed_residual_ratio"] = (99, 1)
+            elif case == "closing_source":
+                environment.position[0] = math.nextafter(
+                    environment.position[0], math.inf
+                )
+        return result
+
+    def observation(self):
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        return original_observation(self)
+
+    def digest(*args, **kwargs):
+        work["digests"] += 1
+        assert work["digests"] <= 32
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "current intervals must not replay/capture/draw/trig/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_native_interval_division_residuals", report)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "_probe_synthetic_c1_state_motion"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if case in ("permission", "flag_type"):
+        with pytest.raises(ValueError):
+            owner.snapshot_receipt_history(
+                synthetic_test_only=case != "permission",
+                include_native_motion_update=motion_enabled,
+                include_native_interval_division=enabled,
+            )
+        assert work["reports"] == work["observations"] == 0
+    else:
+        result = owner.snapshot_receipt_history(
+            synthetic_test_only=True,
+            include_native_motion_update=motion_enabled,
+            include_native_interval_division=enabled,
+        )
+        assert result["snapshot_available"] is valid
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case == "disabled":
+            assert "native_interval_division" not in result
+            assert "native_motion_update" not in result
+            assert work["reports"] == 0
+        elif valid:
+            interval = result["native_interval_division"]
+            assert interval["source_epoch"] == owner._epoch
+            assert interval["tick_before"] == raw["tick_before"]
+            assert interval["tick_after"] == result["current_tick"] == environment.tick
+            assert interval["receipt_binding"] == original_digest(raw)
+            assert interval["residuals"] == first
+            assert result["current_frame"] == owner._current[3]
+            assert ("native_motion_update" in result) is motion_enabled
+            assert work["reports"] == 2
+            if case == "detached":
+                interval["residuals"]["duration_s_hex"] = "different"
+                assert first["duration_s_hex"] != "different"
+                assert owner._receipt_history[-1]["motion_receipt"] == raw
+        else:
+            for key in (
+                "native_interval_division",
+                "native_motion_update",
+                "history",
+                "current_tick",
+                "current_frame",
+                "source_epoch",
+            ):
+                assert key not in result
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
 @pytest.mark.parametrize(
     "case",
     (

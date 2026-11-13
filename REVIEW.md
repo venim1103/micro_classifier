@@ -464,6 +464,37 @@ downloads/hardware or qualification adoption. Portable evidence remains Git
 documents. Next closed current receipt interval reports with original/closing
 source/report/output joins and all qualification flags false.
 
+## 349. Closed Current Receipt Interval Reports (2026-11-13)
+
+Begin clean pusheda0ff2de. Add independent literal default-off
+include_native_interval_division to the existing current receipt reader.
+It needs no motion-update inclusion: interval-only and combined reports reuse
+the completed supplied helper and bind detached duration/divisor/interval
+results to the current receipt digest/epoch/transition ticks/frame. Original/
+closing report metadata/operand/output checks run before the final producer
+sample and owner closure. Unsupported, nonfinite or changed source/report
+returns explicit unknown without partial history/frame/report fields.
+Default and motion-only shape/report work remain unchanged. No segment-choice/
+rounding/error/source/clock/physical/execution/admission law; eight flags false.
+
+Fresh24/60s (12 cases x interval-only/both), necessary repair24/60s reserve,
+root/360s. First24 PASS4.33s/4793 deselected, no repair; original green
+motion-only focused cases not rerun. <=2 interval reports/4 decodes/6 rational
+values/4 arithmetic operations; original2 observations/one history check/
+32 digests unchanged. Combined<=16 rational values/12 arithmetic operations
+plus4 speed comparisons, with clipping family limits unchanged.
+Controls cover source/closing-pose/report/metadata/layout mutations, raw
+unknown output, independent inclusion, disabled/permission/type and detachment.
+Root PASS5740, known QDQ1 xfail/77 warnings172.65s; root Ruff/changed format/
+whitespace/four hashes, every unrelated module/function/control/decorator AST
+and scoped references PASS; two resolved existing callers remain compatible.
+Executed positions spent; unused repair not renewed authority. Ignored
+`.git/returns-349-*` logs/hashes retained; no replay/draw/trig/clock/geometry,
+protected study/model/dependency/download/hardware/native/Arm or extra opt-in
+work. Next reassess remaining supported segment-selection/setup and executor
+source prerequisites; uniform motion error and qualified clock/one-use/
+physical/admission acceptance remain independent.
+
 ## Sources
 
 Hardware and tools:

@@ -2440,6 +2440,23 @@ or controller change. The [checkpoint][current-motion-update-review] records the
 two reproduced closure failures, controls, fixture repairs and required gate.
 
 
+##### Current Receipt Interval Composition (2026-11-13)
+
+The current receipt reader's independent literal default-off
+`include_native_interval_division` needs no motion-update inclusion.
+Interval-only/both modes bind detached supplied quotient reports to current
+epoch/transition ticks/receipt digest/frame. Original/closing metadata/operand/
+output checks precede final producer sampling and owner closure. Changed,
+unsupported or nonfinite evidence is unknown without partial fields.
+Default/motion-only report shape and work stay unchanged.
+
+<=2 interval reports/4 decodes/6 rational values/4 arithmetic operations keep
+the individual arithmetic cap; original2 observations/one history check/
+32 digests remain. No replay/capture/RNG/trig/clock/guard query or source/
+controller change follows. Eight flags false; segment selection, uniform error,
+clocks, physical permission and admission are separate. The
+[checkpoint][current-interval-division-review] records modes, mutations and gate.
+
 [sinc-cell-review]: ../../REVIEW.md
 [sinc-word-review]: ../../REVIEW.md
 [sinc-word-proof-review]: ../../REVIEW.md
@@ -2467,4 +2484,5 @@ two reproduced closure failures, controls, fixture repairs and required gate.
 [current-motion-update-review]: ../../REVIEW.md#345-closed-current-receipt-motion-update-reports-2026-11-13
 [native-action-clipping-review]: ../../REVIEW.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
 [native-interval-division-review]: ../../REVIEW.md#346-supplied-captured-interval-division-residuals-2026-11-13
+[current-interval-division-review]: ../../REVIEW.md#349-closed-current-receipt-interval-reports-2026-11-13
 [native-speed-update-review]: ../../REVIEW.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

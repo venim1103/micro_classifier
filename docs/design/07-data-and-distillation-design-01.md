@@ -628,22 +628,7 @@ records finite synthetic controls, reset-lineage repair and actual gate results.
 
 ##### Native Motion Source Words (2026-11-09)
 
-The recorder's actual-owner path now encodes the existing observation State first,
-then derives source speed/yaw from the same original native dynamics snapshot.
-Their encoding must equal that emitted frame before capture and publication.
-Contradictory native/ego words reject without staged events; legacy fixture paths,
-normal outputs, source/decoded tolerances and all qualification flags are unchanged.
-The existing exact interval binder and motion bridge retain nonzero rounding
-discrepancies instead of collapsing both endpoints to the post-float32 word.
-
-Signed zero survives source and wire words. Binary32 0.6 overshoot still exceeds
-the motion domain and rejects before motion entries; no clamp or new allowance.
-Source goal components remain post-observation, not recovered native goal values.
-Original native motion values are not uniform native arithmetic/pose/range/clock
-error, source authority, usable permission or admitted predecessor evidence.
-The [motion-word checkpoint][native-motion-source-review] records independently
-computed Fraction references, bounded inconsistent-ego controls and actual gates.
-
+[Complete unchanged contract][native-word-source-preserved-0-0] is preserved in the native-word topic.
 
 ##### Native Goal Producer Words (2026-11-09)
 
@@ -910,166 +895,27 @@ records bounded stale/content/mutation controls and remaining source gates.
 
 ##### Retained Native Integration Intermediates (2026-11-09)
 
-The simulator integration core accepts an optional empty builtin source
-dictionary. It retains copied actual primitive inputs, angle/midpoint, normalized
-sinc argument/value, speed-interval product/distance, cos/sin/displacement and
-wrapped-heading intermediates from the existing operation order. The default
-two-value return and arithmetic output words remain unchanged. These are native
-computed values, not independently certified mathematical values or error bounds.
-
-Receipt-enabled transitions retain one separate private integration-source list
-with original RNG/odometry-RNG epoch references and transition ticks. Each actual
-attempt contributes its own computed source, including a rejected collision
-candidate, under the existing 128-attempt cap. Default transitions and reset clear
-the cache; rejected preflight leaves the still-current cache unchanged. No receipt
-or wire schema changes, extra RNG/clock reads or reported actuation follow.
-
-Producer retention alone does not populate source-recorder, retained-history or
-offline snapshot data. Those consumers need actual-producer linkage, content
-validation and currentness checks before using it. Retention supplies no native
-roundoff, clock, physical, source or command qualification; all existing admission
-flags stay false. The [integration-source checkpoint][integration-source-review]
-records fixed output-word/primitive-source/ownership compatibility controls,
-not numerical proof, board execution, fit, latency or task quality.
-
+[Complete unchanged contract][native-word-source-preserved-1-0] is preserved in the native-word topic.
 
 ##### Actual-Source Integration Ingestion (2026-11-09)
 
-The private source recorder's literal `capture_native_integration_source` option
-requires its receipt-source opt-in. It reads the actual producer cache, verifies
-RNG epoch references, transition ticks, closed finite builtin native words and
-one computed source per actual receipt attempt under the existing 128 cap.
-Input pose/action/interval and candidate endpoint words must match the receipt,
-including rejected candidates. No integration or primitive arithmetic is replayed.
-
-The temporary source snapshot includes copied integration data in its pre/post
-capture binding. Retained cache identity and recorder-owned prior integration
-sample also join stability checks before publication. Success stores a separate
-owned `_integration_sample`; reads without the option clear it. Existing source,
-receipt-history and offline receipt-snapshot schemas remain unchanged. A failed
-read does not publish a new sample or undo external mutations.
-
-This is source correspondence, not primitive correctness, native error proof,
-adversarial attestation, one-use execution, clock qualification or permission.
-Read-time native-source currentness remains a distinct dependency before an
-offline numerical consumer can use the copied sample. The
-[ingestion checkpoint][integration-ingestion-review] records bounded default/copy/fault/mutation
-controls; all qualification/admission flags stay false.
-
+[Complete unchanged contract][native-word-source-preserved-1-1] is preserved in the native-word topic.
 
 ##### Read-Time Native Integration Snapshots (2026-11-09)
 
-The private recorder's strict opt-in `snapshot_native_integration_source` reads
-only its bound producer and takes no caller tick/epoch/environment override.
-It reuses actual receipt-history currentness and compares fresh native cache
-content to the retained integration sample. Each of its two native samples also
-reads actual pose/action/goal-source/observation/profile/receipt words. Producer
-and cache identities, RNG references and compound owner/source/history bindings
-are rechecked before owned native source/current-frame publication.
-
-Missing, stale, unsupported or changed data returns unknown without native
-source/current-frame data. No step/reset/capture/integration replay/guard query
-or RNG change follows. The diagnostic result leaves all qualification/admission
-flags false; availability is not permission, native numerical proof, clock or
-one-use qualification, body-clear origin or an admitted predecessor. Two-point
-checks are not perpetual freshness or concurrent/adversarial atomicity.
-The [native snapshot checkpoint][native-integration-snapshot-review] records
-bounded source/owner/history/currentness controls and the final-read repair.
-The [closing-observation repair][native-integration-closing-review] samples
-cache and producer words after each observation and rejects malformed original/
-closing current owners before indexing; source/arithmetic readers preserve their
-existing work limits and unknown-without-partial-output behavior.
-
-The [default epoch repair][native-default-epoch-review] pins original producer RNG/
-odometry references even with all report modes off. The arithmetic wrapper also
-pins its original bound references across both source reads and the intervening
-probe, closing producer and owner identities before publication. Coordinated
-equal-state reference replacement is unknown without partial source/frame/arithmetic;
-it is not the original epoch. Valid default output and existing work limits remain
-unchanged. This two-point closure is not concurrent/adversarial attestation.
-
-The optional [later-period comparison][current-normalization-comparison-design]
-uses a separate default-off output, with original/copy/closing reports bound again
-after final producer sampling. It explicitly does not identify the earlier
-consumed sinc divisor or extend the ten supported arithmetic stages.
+[Complete unchanged contract][native-word-source-preserved-1-2] is preserved in the native-word topic.
 
 ##### Actual Consumed Normalization Divisor (2026-11-16)
 
-The existing integration source now also retains `sinc_divisor_rad` from the
-**earlier** `2 * math.pi` expression actually consumed by the argument division.
-Naming that value does not add arithmetic or replay; the later `period_rad`
-remains a distinct expression/source word. Default two-value return and output
-words remain unchanged. The existing source intake and ten-stage diagnostic
-require the new finite builtin word and include it in their source binding.
-Old/missing or unsupported source layouts remain explicitly unknown, not silently
-upgraded from the later period.
-
-This is consumed-operand retention, not pi correctness, sinc behavior or a
-uniform native error bound. Ten-stage arithmetic and all unsupported obligations
-remain unchanged; all flags false. The [retention checkpoint][consumed-divisor-review]
-records exact operation conservation, synthetic earlier/later differentiation,
-current/closing source checks and the required regression gate.
-
-The distinct [actual-consumed quotient join][consumed-normalization-join-design]
-is default-off and can coexist with the explicitly later-period comparison.
-Both close all copied reports after final producer sampling; neither adopts
-the existing unsupported pi/sinc/normalization obligations.
-
+[Complete unchanged contract][native-word-source-preserved-1-3] is preserved in the native-word topic.
 
 ##### Actual Heading Shift and Return Operands (2026-11-16)
 
-The existing native integration source separately retains
-`heading_shift_offset_rad` from the pi read consumed by the heading-shift addition
-and `heading_return_offset_rad` from the later read consumed by the final
-subtraction. Naming those two reads adds no arithmetic, modulo/trig/sinc replay or
-RNG; default output words remain unchanged. Both finite builtin words are required
-by the closed intake/arithmetic validators and participate in existing source,
-copied/current/closing bindings. Missing/nonfinite words stay explicitly unknown.
-
-Matching offsets do not prove a shared captured read or pi correctness. These
-are distinct native consumed words, not a modulo/rounding law, error bound or
-extension of the ten-stage report. All flags false; no source/geometry/clock or
-command qualification. The [heading operand checkpoint][heading-operands-review]
-records synthetic read differentiation, output/operation conservation, closing
-faults and the required gate.
-
-The separate [supplied shift/return diagnostic][supplied-heading-offset-design]
-compares explicit addition/subtraction words, not pi or heading-wrap correctness.
-Source linkage remains distinct from its supplied-word arithmetic.
-
-The separate [current heading report mode][current-heading-offset-design] now
-provides that bounded source linkage under existing currentness/closure checks.
-It remains default-off, distinct from the ten-stage arithmetic report, and does
-not adopt pi/modulo/heading-wrap or uniform-error obligations.
-The independent [current remainder mode][current-heading-remainder-design] joins
-retained shifted/period/wrapped words to the supplied ideal-remainder comparison,
-with the same ownership closure and unchanged unsupported obligations.
+[Complete unchanged contract][native-word-source-preserved-1-4] is preserved in the native-word topic.
 
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
 
-The private arithmetic probe consumes copied diagnostic native-source words,
-not actual-current-source authority. It reuses bounded rational value/binary
-operations at at most the existing 4,096-bit source cap. Ten retained stages are
-supported: angle and speed-interval products, half-angle division, midpoint
-addition, distance product, both displacement products, both position additions
-and heading-increment addition. Operand/output hex words retain signed zero;
-exact results, observed dyadics and observed-minus-exact dyadics are recorded.
-
-Closed finite native words and at most 128 segments bound ten stages and two
-rational binary operations per stage. A copied working source and before/after
-input binding detect changed input; unsupported or exhausted work returns
-unknown without partial stage publication. No integrate, capture, guard, source
-read or physical operation follows. The supplied words may be synthetic or
-fabricated; their exact rational relationships do not establish provenance.
-
-Sinc argument/value, cos/sin, pi-constant, heading wrapping and accumulated-motion
-obligations remain explicitly unsupported. Local discrepancies are not uniform
-native bounds, propagated uncertainty or numerical/source/command qualification.
-Consumers still require actual source/currentness and their separate acceptance
-dependencies; all qualification/admission flags remain false. The
-[arithmetic checkpoint][native-arithmetic-review] records fixed direct Fraction
-references, source-field binding, signed-zero/subnormal and work/mutation controls.
-
+[Complete unchanged contract][native-word-source-preserved-1-5] is preserved in the native-word topic.
 
 ##### Supplied Pre-Integration Speed-Update Words (2026-11-13)
 
@@ -1089,43 +935,11 @@ references, source-field binding, signed-zero/subnormal and work/mutation contro
 
 ##### Current Owned Native Arithmetic Composition (2026-11-09)
 
-The private recorder's strict opt-in `snapshot_native_integration_arithmetic`
-accepts no caller source/tick/epoch override. Owned current-native snapshots
-bracket one supported arithmetic probe. Its source digest and literal-false
-metadata must match; current source/frame/epoch/tick data, producer identity and
-compound recorder/source/history content are rechecked before copied publication.
-An intervening contradictory source, owner or receipt prevents publication.
-
-Missing, stale, unsupported or exhausted evidence returns unknown without partial
-source/frame/arithmetic records. Default source/history/wire APIs are unchanged.
-No step/reset/capture/integration replay/guard query or actuation follows. The
-result reports only observed local arithmetic discrepancies; source acceptance,
-uniform/propagated error, transcendental correctness, clocks, one-use execution
-and command admission remain separate. All qualification/admission flags stay
-false; matching hashes are not mathematical proof or adversarial attestation.
-Consumers still need exact record/source-word validation before relying on those
-records. The [composition checkpoint][native-arithmetic-composition-review]
-records bounded mutation/binding controls, reboot recovery and the actual gate.
-
+[Complete unchanged contract][native-word-source-preserved-2-0] is preserved in the native-word topic.
 
 ##### Exact Native Arithmetic Record Validation (2026-11-09)
 
-The current-native arithmetic reader checks supported records before publication.
-Closed literal-false metadata, exact segment/stage counts and order, source-bound
-operand/output hex words, canonical rational pairs and exact observed/exact/
-difference relationships must match. Producer and consumer share only the ten
-stage extraction definitions; direct source-field/Fraction tests remain separate.
-The consumer uses bounded direct rational operations rather than replaying the
-producer, and preflights supplied integer/canonical limits before record hashing.
-
-Malformed, inconsistent or exhausted records prevent copied publication. No
-existing producer operation/query caps, source/wire APIs or admission flags change.
-This establishes only supported local record consistency, not independent source
-truth, transcendental or accumulated-motion correctness, uniform uncertainty,
-clock/one-use qualification or permission. The
-[record checkpoint][native-arithmetic-record-review] preserves bounded rational,
-source-word, malformed-pair, preflight-order and compatibility controls.
-
+[Complete unchanged contract][native-word-source-preserved-2-1] is preserved in the native-word topic.
 
 ##### Diagnostic Receipt Clock Consistency (2026-11-09)
 
@@ -2440,13 +2254,13 @@ figure is not an established minimum.
 [native-tof-timing-delivery-review]: ../review/183-220.md#216-retained-tof-timing-delivery-correspondence-2026-11-09
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
-[current-normalization-comparison-design]: 07-data-and-distillation-design-04.md#current-later-period-comparison-2026-11-16
+[current-normalization-comparison-design]: 07-data-and-distillation-design-06.md#current-later-period-comparison-2026-11-16
 [consumed-divisor-review]: ../review/366-370.md#367-actual-consumed-normalization-divisor-retention-2026-11-16
-[consumed-normalization-join-design]: 07-data-and-distillation-design-04.md#current-actual-consumed-normalization-quotient-2026-11-16
+[consumed-normalization-join-design]: 07-data-and-distillation-design-06.md#current-actual-consumed-normalization-quotient-2026-11-16
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
-[supplied-heading-offset-design]: 07-data-and-distillation-design-04.md#supplied-heading-shift-and-return-words-2026-11-16
-[current-heading-offset-design]: 07-data-and-distillation-design-04.md#current-heading-shift-and-return-reports-2026-11-16
-[current-heading-remainder-design]: 07-data-and-distillation-design-04.md#current-heading-remainder-reports-2026-11-16
+[supplied-heading-offset-design]: 07-data-and-distillation-design-06.md#supplied-heading-shift-and-return-words-2026-11-16
+[current-heading-offset-design]: 07-data-and-distillation-design-06.md#current-heading-shift-and-return-reports-2026-11-16
+[current-heading-remainder-design]: 07-data-and-distillation-design-06.md#current-heading-remainder-reports-2026-11-16
 [native-default-epoch-review]: ../review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
@@ -2746,7 +2560,16 @@ clock/one-use/physical/permission/admission proof. See
 [actual matched copy controls and gates][native-tof-direction-owned-up-copy-review].
 
 [native-tof-direction-owned-up-copy-review]: ../review/301-305.md#305-matched-native-direction-up-copy-reports-2026-11-11
-[native-motion-word-design-0]: 07-data-and-distillation-design-04.md#supplied-pre-integration-speed-update-words-2026-11-13
-[native-motion-word-design-1]: 07-data-and-distillation-design-04.md#supplied-target-and-yaw-clipping-words-2026-11-13
-[native-motion-word-design-2]: 07-data-and-distillation-design-04.md#supplied-captured-interval-division-words-2026-11-13
-[native-motion-word-design-3]: 07-data-and-distillation-design-04.md#current-receipt-motion-update-composition-2026-11-13
+[native-motion-word-design-0]: 07-data-and-distillation-design-06.md#supplied-pre-integration-speed-update-words-2026-11-13
+[native-motion-word-design-1]: 07-data-and-distillation-design-06.md#supplied-target-and-yaw-clipping-words-2026-11-13
+[native-motion-word-design-2]: 07-data-and-distillation-design-06.md#supplied-captured-interval-division-words-2026-11-13
+[native-motion-word-design-3]: 07-data-and-distillation-design-06.md#current-receipt-motion-update-composition-2026-11-13
+[native-word-source-preserved-0-0]: 07-data-and-distillation-design-06.md#native-motion-source-words-2026-11-09
+[native-word-source-preserved-1-0]: 07-data-and-distillation-design-06.md#retained-native-integration-intermediates-2026-11-09
+[native-word-source-preserved-1-1]: 07-data-and-distillation-design-06.md#actual-source-integration-ingestion-2026-11-09
+[native-word-source-preserved-1-2]: 07-data-and-distillation-design-06.md#read-time-native-integration-snapshots-2026-11-09
+[native-word-source-preserved-1-3]: 07-data-and-distillation-design-06.md#actual-consumed-normalization-divisor-2026-11-16
+[native-word-source-preserved-1-4]: 07-data-and-distillation-design-06.md#actual-heading-shift-and-return-operands-2026-11-16
+[native-word-source-preserved-1-5]: 07-data-and-distillation-design-06.md#supported-native-word-arithmetic-discrepancies-2026-11-09
+[native-word-source-preserved-2-0]: 07-data-and-distillation-design-06.md#current-owned-native-arithmetic-composition-2026-11-09
+[native-word-source-preserved-2-1]: 07-data-and-distillation-design-06.md#exact-native-arithmetic-record-validation-2026-11-09

@@ -2363,136 +2363,79 @@ documentation validation do not renew any exhausted evidence or source-test budg
 
 #### Supplied Native Motion-Update Word Prerequisites (2026-11-13)
 
-These separate motion-word diagnostics adopt neither NF1 certificate premises
-nor historical study/run authority. All qualification flags remain false.
+[Complete unchanged contract][native-word-motion-preserved-0] is preserved in the native-word topic.
 
 ##### Supplied Pre-Integration Speed-Update Words (2026-11-13)
 
-The private `_native_speed_update_residuals` compares five canonical supplied
-binary64 words: prior speed, observed clipped target, Config acceleration/dt
-and observed updated speed. Exact prior+clamp(target-prior,+/-acceleration*dt)
-is an unrounded reference, not a prediction of native intermediate rounding
-or branch choice. Its signed observed-minus-reference residual preserves the
-raw words, including zero signs; a nonfinite updated speed remains unknown.
-Finite operands and positive acceleration/dt use the existing Config domain.
-Literal synthetic permission, <=5 decodes/values, four rational operations,
-two growth-checked comparisons and the existing4096-bit cap bound the work.
-
-Existing actual motion receipts already contain these operands; this adds no
-capture, source read, replay, RNG, trig, clock or controller change. Submitted
-target/yaw clipping is separate. Supplied words alone prove neither source
-ownership nor uniform/propagated native error, timing, physical or command
-qualification. Eight flags remain false. The [checkpoint][native-speed-update-review]
-records direct/actual-word controls and the required gate.
-
+[Complete unchanged contract][native-word-motion-preserved-1] is preserved in the native-word topic.
 
 ##### Supplied Target and Yaw Clipping Words (2026-11-13)
 
-The private `_native_action_clipping_diagnostics` compares six canonical
-submitted/profile/observed words for the existing speed [0,max_speed] and yaw
-[-max_turn_rate,max_turn_rate] clamps. Numeric equality and unique equal-value
-word-candidate correspondence remain separate; different zero-word candidates
-stay unresolved, not an inferred native selection or normalization law.
-Canonical nonfinite action/output is unknown per component; malformed/NaN words
-and nonfinite/nonpositive existing Config limits reject without mutation.
-
-Literal synthetic permission and <=6 decodes/2 entries/4 min-max comparisons/
-6 candidate and2 observed numeric equalities/2 builtin dyadic ratios bound the
-work, with <=3 candidate words per entry and no rational engine. Actual receipts
-already contain all operands: no capture, read, replay, RNG, trig, clock or
-controller change. This is not source/uniform-error/physical/command acceptance;
-eight flags stay false. The [checkpoint][native-action-clipping-review] preserves
-the direct/actual-word controls, work limits and required gate.
-
+[Complete unchanged contract][native-word-motion-preserved-2] is preserved in the native-word topic.
 
 ##### Supplied Captured-Interval Division Words (2026-11-13)
 
-The private `_native_interval_division_residuals` compares exact supplied
-nominal duration divided by observed builtin planned_segments1..128 with
-the captured native interval. This does not recompute segment selection.
-Canonical positive finite duration follows existing Config; raw nonfinite
-observed interval is unknown, while malformed/NaN words reject without mutation.
-Raw duration/count/interval and signed observed-minus-exact ratio remain explicit.
-Literal synthetic permission, <=2 decodes/3 rational values/one division/one
-subtraction and the existing4096-bit cap bound the work. Existing receipts and
-native integration input joins already retain the operands; no source/controller
-change or replay/RNG/trig/clock follows. This is not a native rounding law,
-uniform motion error or qualified duration/clock; eight flags stay false.
-The [checkpoint][native-interval-division-review] records controls and the gate.
-
+[Complete unchanged contract][native-word-motion-preserved-3] is preserved in the native-word topic.
 
 ##### Current Receipt Motion-Update Composition (2026-11-13)
 
-The owned receipt-history reader's literal default-off
-`include_native_motion_update` uses its current actual receipt, not a caller
-source override. Original/closing supplied clipping/speed-update reports bind
-copied inputs, epoch/transition ticks/receipt digest and the current frame.
-Changed owner/source/history/report or unsupported/nonfinite input is unknown
-without partial payload. Equal-value zero-word candidate ties remain unresolved.
-All eight flags stay false; local discrepancies are not accepted native bounds.
-
-Producer observations precede sampled words; final producer sampling follows
-all reports and precedes final owner closure. Current layout guards reject
-before consumption. Original <=2 observations/one history validation/32 digests
-remain; <=2 reports per family preserve their individual work limits. Default
-payload/report work is unchanged, with no replay/capture/RNG/trig/clock/guard
-or controller change. The [checkpoint][current-motion-update-review] records the
-two reproduced closure failures, controls, fixture repairs and required gate.
-
+[Complete unchanged contract][native-word-motion-preserved-4] is preserved in the native-word topic.
 
 ##### Current Receipt Interval Composition (2026-11-13)
 
-The current receipt reader's independent literal default-off
-`include_native_interval_division` needs no motion-update inclusion.
-Interval-only/both modes bind detached supplied quotient reports to current
-epoch/transition ticks/receipt digest/frame. Original/closing metadata/operand/
-output checks precede final producer sampling and owner closure. Changed,
-unsupported or nonfinite evidence is unknown without partial fields.
-Default/motion-only report shape and work stay unchanged.
-
-<=2 interval reports/4 decodes/6 rational values/4 arithmetic operations keep
-the individual arithmetic cap; original2 observations/one history check/
-32 digests remain. No replay/capture/RNG/trig/clock/guard query or source/
-controller change follows. Eight flags false; segment selection, uniform error,
-clocks, physical permission and admission are separate. The
-[checkpoint][current-interval-division-review] records modes, mutations and gate.
+[Complete unchanged contract][native-word-motion-preserved-5] is preserved in the native-word topic.
 
 ##### Supplied Unrounded Segment-Count Words (2026-11-13)
 
-The private `_native_segment_selection_diagnostics` compares observed builtin
-planned_segments1..128 with max(1,ceil(exact abs(clipped rate)*duration/
-supplied angle step)). This unrounded reference is not a native rounding/
-branch law; native intermediate rounding can select a different count.
-Raw rate/duration/angle words, including zero signs, remain supplied; nonfinite
-rate is unknown. Duration/angle step must be finite/positive. Reference counts
-above128 remain visible, not clipped to the existing recorded-segment budget.
-
-Literal synthetic permission, <=3 decodes/3 rational values/2 rational
-operations/one bounded integer ceiling quotient/three scalar comparisons and
-the existing4096-bit cap bound work. No native ceil/floor replay, invented
-intermediates, new Config/threshold, source/controller or qualification follows;
-eight flags false. The [checkpoint][native-segment-selection-review] preserves
-the scalar discrepancy probe, direct/actual-word controls and required gate.
+[Complete unchanged contract][native-word-motion-preserved-6] is preserved in the native-word topic.
 
 ##### Current Segment-Selection Composition (2026-11-13)
 
-The current receipt reader's independent literal default-off
-`include_native_segment_selection` supports all motion/interval report
-combinations. Captured clipped-rate/duration/count words join the existing0.1
-program divisor, explicitly labeled as a program operand, not an observed
-intermediate. No caller divisor/source override follows. Original/closing
-detached metadata/operand/output reports close before final producer sampling
-and owner closure; changed/unsupported/nonfinite content is unknown without
-partial fields. Existing modes/default shape/report work stay unchanged.
+[Complete unchanged contract][native-word-motion-preserved-7] is preserved in the native-word topic.
 
-<=2 reports/6 decodes/6 values/4 rational operations/2 bounded integer ceilings/
-6 reference-count comparisons preserve individual work limits, separately from
-fixed prevalidation. Original2 observations/one history check/32 digests remain;
-all-mode<=22 rational values/16 rational operations plus4 speed comparisons.
-No native ceil replay, new threshold/branch/error/source/clock/admission law;
-eight flags false. The [checkpoint][current-segment-selection-review] records
-all combinations, mutations and the required gate.
+##### Supplied Normalization Division Words (2026-11-16)
 
+[Complete unchanged contract][native-word-motion-preserved-8] is preserved in the native-word topic.
+
+##### Current Later-Period Comparison (2026-11-16)
+
+[Complete unchanged contract][native-word-motion-preserved-9] is preserved in the native-word topic.
+
+##### Current Actual-Consumed Normalization Quotient (2026-11-16)
+
+[Complete unchanged contract][native-word-motion-preserved-10] is preserved in the native-word topic.
+
+##### Supplied Heading Shift and Return Words (2026-11-16)
+
+[Complete unchanged contract][native-word-motion-preserved-11] is preserved in the native-word topic.
+
+##### Supplied Heading Remainder Words (2026-11-16)
+
+[Complete unchanged contract][native-word-motion-preserved-12] is preserved in the native-word topic.
+
+##### Current Heading Remainder Reports (2026-11-16)
+
+[Complete unchanged contract][native-word-motion-preserved-13] is preserved in the native-word topic.
+
+##### Current Heading Shift and Return Reports (2026-11-16)
+
+[Complete unchanged contract][native-word-motion-preserved-14] is preserved in the native-word topic.
+
+[native-word-motion-preserved-0]: 07-data-and-distillation-design-06.md#supplied-native-motion-update-word-prerequisites-2026-11-13
+[native-word-motion-preserved-1]: 07-data-and-distillation-design-06.md#supplied-pre-integration-speed-update-words-2026-11-13
+[native-word-motion-preserved-2]: 07-data-and-distillation-design-06.md#supplied-target-and-yaw-clipping-words-2026-11-13
+[native-word-motion-preserved-3]: 07-data-and-distillation-design-06.md#supplied-captured-interval-division-words-2026-11-13
+[native-word-motion-preserved-4]: 07-data-and-distillation-design-06.md#current-receipt-motion-update-composition-2026-11-13
+[native-word-motion-preserved-5]: 07-data-and-distillation-design-06.md#current-receipt-interval-composition-2026-11-13
+[native-word-motion-preserved-6]: 07-data-and-distillation-design-06.md#supplied-unrounded-segment-count-words-2026-11-13
+[native-word-motion-preserved-7]: 07-data-and-distillation-design-06.md#current-segment-selection-composition-2026-11-13
+[native-word-motion-preserved-8]: 07-data-and-distillation-design-06.md#supplied-normalization-division-words-2026-11-16
+[native-word-motion-preserved-9]: 07-data-and-distillation-design-06.md#current-later-period-comparison-2026-11-16
+[native-word-motion-preserved-10]: 07-data-and-distillation-design-06.md#current-actual-consumed-normalization-quotient-2026-11-16
+[native-word-motion-preserved-11]: 07-data-and-distillation-design-06.md#supplied-heading-shift-and-return-words-2026-11-16
+[native-word-motion-preserved-12]: 07-data-and-distillation-design-06.md#supplied-heading-remainder-words-2026-11-16
+[native-word-motion-preserved-13]: 07-data-and-distillation-design-06.md#current-heading-remainder-reports-2026-11-16
+[native-word-motion-preserved-14]: 07-data-and-distillation-design-06.md#current-heading-shift-and-return-reports-2026-11-16
 [sinc-cell-review]: ../../REVIEW.md
 [sinc-word-review]: ../../REVIEW.md
 [sinc-word-proof-review]: ../../REVIEW.md
@@ -2517,182 +2460,3 @@ all combinations, mutations and the required gate.
 [sinc-binding-identity-review]: ../../REVIEW.md
 [sinc-compile-comparison-review]: ../../REVIEW.md
 [sinc-structural-protocol-review]: ../../REVIEW.md
-[current-motion-update-review]: ../review/341-345.md#345-closed-current-receipt-motion-update-reports-2026-11-13
-[native-action-clipping-review]: ../review/341-345.md#343-supplied-target-and-yaw-clipping-correspondence-2026-11-13
-[native-interval-division-review]: ../review/346-350.md#346-supplied-captured-interval-division-residuals-2026-11-13
-[current-interval-division-review]: ../review/346-350.md#349-closed-current-receipt-interval-reports-2026-11-13
-[native-segment-selection-review]: ../review/346-350.md#350-supplied-unrounded-segment-count-comparison-2026-11-13
-##### Supplied Normalization Division Words (2026-11-16)
-
-Private `_native_sinc_argument_division_residuals` compares supplied canonical
-angle/divisor/normalized-argument words using the existing bounded rational
-arithmetic. It reports the unrounded quotient and signed observed-minus-exact
-residual; finite work is three value conversions/two binary operations under the
-existing4096-bit cap. Zero divisors, malformed/overlong words and exhausted work
-raise explicit errors. Canonical nonfinite words, including `nan`, stay raw unknown
-with no exact/residual publication or arithmetic; no nonfinite law is inferred.
-Signed-zero words remain distinct even when the rational discrepancy is zero.
-
-The divisor is explicitly caller-supplied, not pi evidence, a certified
-normalization constant or a captured earlier operand. Native integrate computes
-the argument using `angle / (2 * math.pi)` but retains `period_rad` only from a
-later expression; this report does not relabel that later word as earlier capture.
-The [actual consumed-divisor source][consumed-divisor-design] is retained separately;
-this supplied-word diagnostic alone does not establish that linkage.
-It does not evaluate sinc/trig, read/replay integration, extend the existing
-ten-stage report or adopt its unsupported normalization/pi/sinc/heading/accumulation
-obligations. All eight flags false; no uniform native error, source/geometry/clock,
-physical or command qualification follows.
-The [supplied normalization checkpoint][normalization-division-review] records
-bounded direct rational controls and the required gate.
-
-##### Current Later-Period Comparison (2026-11-16)
-
-The native source reader's literal default-off `include_native_normalization_division`
-adds a separate `later_period_normalization_comparison`, not an eleventh supported
-integration stage. Each entry joins its source/segment binding to the supplied-word
-diagnostic above using retained angle, **later heading period** and sinc-argument
-words. `comparison_divisor_source` explicitly names
-`later_heading_period_word_not_consumed_sinc_divisor`; equal words or zero residual
-do not establish the earlier consumed divisor, pi correctness or sinc behavior.
-
-Original/copied/closing groups and source words bind before final producer/owner
-closure and are rechecked after the last producer sample, with original RNG
-identities pinned. Changed/unsupported input yields unknown without source/frame/
-comparison publication. At most two scalar report passes over the existing128
-segments; no producer or primitive replay, extra RNG or new retained intermediate.
-Default output and ten-stage arithmetic remain unchanged. All eight flags false;
-no native uniform error, accepted geometry/source/clock or command permission.
-The [current comparison checkpoint][current-normalization-comparison-review]
-records bounded rational and closing-mutation controls.
-
-##### Current Actual-Consumed Normalization Quotient (2026-11-16)
-
-The source reader's independent literal default-off
-`include_native_consumed_normalization_division` adds
-`consumed_normalization_division` using actual retained `sinc_divisor_rad`.
-Its `comparison_divisor_source` names
-`consumed_sinc_divisor_word_from_owned_native_source_not_pi_qualification`.
-It is a source-bound invocation of the supplied-word diagnostic, not an extension
-of the ten-stage report or adoption of normalization/pi/sinc obligations.
-The later-period mode remains distinct and can be enabled independently or together.
-
-Both modes share bounded local report creation/validation and original/copy/closing/
-final binding checks. Every enabled group's original, copied and closing reports
-are rechecked after the last producer sample with original RNG identities pinned.
-No partially published groups/source/frame follow changed or unsupported input;
-a zero supplied consumed divisor also stays explicitly unknown. At most two
-report passes over128 segments per mode,512 combined scalar calls. Default and
-explicit-off output remain unchanged; no replay, capture, extra RNG or trig/sinc
-evaluation. All eight flags false; no uniform error/source/geometry/clock acceptance,
-pi correctness, one-use or command permission. The [consumed join checkpoint][consumed-normalization-join-review]
-records rational, field-selection, combined and final-closure controls.
-
-Single-mode readers preserve the original96+2N digest ceiling; the combined
-reader uses128+4N. The [heading-source checkpoint][heading-operands-review] records
-the correction of an initially broadened shared fixture ceiling.
-
-##### Supplied Heading Shift and Return Words (2026-11-16)
-
-Private `_native_heading_offset_residuals` accepts six supplied canonical words:
-heading increment/shift offset/shifted result and wrapped heading/return offset/
-next yaw. It compares the exact supplied addition and subtraction independently,
-reporting their signed observed-minus-exact ratios. It does not derive the wrapped
-heading, identify pi, evaluate modulo/floor/trig/sinc or extend the ten-stage report.
-Offsets remain supplied words, not consumed-source evidence by themselves.
-
-Finite work is six conversions/four rational binaries under the existing4096-bit
-cap and32-character canonical-word limit. Malformed, overlong, noncanonical,
-non-string, permission and budget faults raise explicitly. Any canonical nonfinite
-input, including `nan`, leaves both stages unknown with None ratios and zero
-arithmetic. Raw words, including different zero signs, are retained; zero residual
-does not prove word equality or a native rounding law.
-
-The unchanged normalization canonical-word predicate is shared, preserving its
-errors/nonfinite behavior. All eight flags false; no heading-wrap/uniform native
-error/source/geometry/clock qualification or permission. The
-[supplied heading checkpoint][supplied-heading-offset-review] records bounded
-Fraction controls and the spent timed-out root plus same-deadline recovery.
-
-##### Supplied Heading Remainder Words (2026-11-16)
-
-Private `_native_heading_remainder_residuals` accepts canonical supplied shifted
-heading, period and wrapped-result words. Its reference is the exact rational
-dividend minus the floor of the exact quotient times the supplied period; it
-reports the reference integer quotient, exact remainder and observed-minus-exact
-ratios. This definition does not adopt a native `%`, floor, rounding or pi law.
-The period is caller-supplied, not consumed-source evidence by itself.
-
-Finite work is three conversions/four bounded rational binaries and one exact
-integer division under the unchanged4096-bit budget. The integer quotient is
-constructed as a Fraction directly, never converted through float; a finite-word
-quotient can exceed floating-point range. Any canonical nonfinite word retains
-raw inputs but leaves all three results None with zero arithmetic. Zero periods,
-malformed words, permission and budget faults raise explicitly. Different zero
-words stay distinct; rational equality does not predict a native zero sign.
-
-No native integration, modulo/floor primitive, trig/sinc, capture or RNG replay;
-existing ground-plane floor reports and the ten-stage integration report are
-unchanged. All eight flags false; no uniform numerical/source/geometry/clock or
-command qualification. The [remainder checkpoint][supplied-heading-remainder-review]
-records a rounded-to-period discrepancy and exact large-quotient controls.
-
-##### Current Heading Remainder Reports (2026-11-16)
-
-The source reader's independent literal default-off
-`include_native_heading_remainders` adds `native_heading_remainders` from the
-retained shifted-heading, consumed period and wrapped-result words. Its
-`operand_source_basis` names
-`consumed_shift_period_and_wrapped_words_from_owned_native_source_not_modulo_or_pi_qualification`.
-It joins the supplied diagnostic, not a native modulo/pi/uniform-error law or
-an extension of the ten-stage report.
-
-The four independent groups share bounded creation/metadata checks and
-original/copy/closing/final bindings. All reports close again after the last
-producer sample with original RNG identities pinned. Changed/unsupported words,
-reports or a zero period yield unknown without partial source/frame/group output.
-Default and explicit-off output remain unchanged; all sixteen enabling combinations
-retain distinct labels and field selection.
-
-At most128 segments/two passes per enabled mode,1024 scalar calls with all four,
-6 observations/2 samples/2 receipt validations. Prior single96+2N/paired128+4N/
-triple160+6N digest ceilings remain unchanged; only four groups use192+8N.
-No replay, native modulo/floor/trig/sinc evaluation or extra RNG; all eight flags
-false. No source/geometry/clock/application/one-use/physical qualification or
-permission. The [current remainder checkpoint][current-heading-remainder-review]
-records bounded field-selection, combined and final-closure controls.
-
-##### Current Heading Shift and Return Reports (2026-11-16)
-
-The source reader's independent literal default-off `include_native_heading_offsets`
-adds `native_heading_offsets` from the six retained native operand/result words.
-Its `operand_source_basis` names
-`consumed_heading_shift_and_return_words_from_owned_native_source_not_pi_or_modulo_qualification`.
-It is a source-bound use of the supplied diagnostic above, not a pi/modulo/error law
-or extension of the ten-stage report.
-
-Local report creation, metadata validation and original/copy/closing/final bindings
-are shared with the two independent normalization groups. Every enabled group is
-rechecked after the last producer sample with original RNG identities pinned;
-unsupported/changed input yields unknown without partial source/frame/group output.
-The prior eight enabling combinations retain their distinct group labels and default
-output. At most128 segments/two report passes per enabled mode,768 combined scalar
-calls,6 observations/2 samples/2 receipt validations. Single96+2N/paired128+4N
-digest ceilings are unchanged; only all3 modes uses160+6N.
-
-Eight flags false; no replay, extra RNG, native pi/modulo/sinc/trig qualification,
-uniform error, accepted source/geometry/clock or permission. The
-[current heading checkpoint][current-heading-offset-review] records bounded rational,
-field-selection, combined and final-closure controls.
-
-[current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
-[normalization-division-review]: ../review/361-365.md#365-supplied-normalization-division-residuals-2026-11-16
-[current-normalization-comparison-review]: ../review/366-370.md#366-closed-current-later-period-comparisons-2026-11-16
-[consumed-divisor-design]: 07-data-and-distillation-design-01.md#actual-consumed-normalization-divisor-2026-11-16
-[consumed-normalization-join-review]: ../review/366-370.md#369-closed-actual-consumed-quotient-joins-2026-11-16
-[heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
-[supplied-heading-offset-review]: ../review/371-375.md#371-supplied-heading-shift-and-return-residuals-2026-11-16
-[supplied-heading-remainder-review]: ../../REVIEW.md#378-supplied-heading-remainder-word-residuals-2026-11-16
-[current-heading-remainder-review]: ../../REVIEW.md#379-closed-current-heading-remainder-joins-2026-11-16
-[current-heading-offset-review]: ../review/371-375.md#373-closed-current-heading-offset-reports-2026-11-16
-[native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

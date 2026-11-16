@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §379 for closed current heading remainder joins;
+Read [REVIEW.md][review] §380 for intact native-word topic relocation;
+§379 records closed current heading remainder joins;
 §378 records supplied heading remainder discrepancies;
 §377 records closed live request consumer epochs;
 §376 records intact heading/receipt checkpoint archival;
@@ -178,8 +179,9 @@ Default-off current receipt clipping/speed-update reports and their gate are
 complete; final producer observations precede sampled words and final owner
 closure. Supplied captured-interval quotient residuals and their gate are
 complete, using observed planned segments without segment-selection prediction.
-The supplied/current motion-word contracts now live in chapter04; chapter01
-retains their old anchors as reading links, without NF1 premise adoption.
+The supplied/current motion-word and native integration-source contracts now
+live in chapter06; chapter01 and chapter04 retain their old anchors as reading
+links, without NF1 premise adoption.
 Independent default-off current receipt interval reports and their gate are
 complete, including combined motion-update mode; original/closing report work
 precedes final producer/owner closure. Supplied unrounded segment-selection
@@ -267,8 +269,9 @@ Independent default-off current-source remainder joins and their required gate
 are complete across all sixteen report combinations, with original/copy/closing/
 final ownership checks. Prior per-family ceilings and ten-stage output are
 unchanged; only all four groups use the new combined work cap.
-Next organize the directly changed native-word/source topic blocks losslessly
-within the existing reading maps, then reassess compatible source/error prerequisites.
+Native-word/source topic relocation is complete with24 historical anchors;
+the NF1 body is intact and no premise or authority is adopted. Next archive whole
+376-380 before further review growth, then reassess compatible source/error prerequisites.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole371-375 checkpoints are archived intact, including the spent/unknown root

@@ -503,6 +503,32 @@ C controls passed without skips, not linked firmware/board/fit evidence.
 changed native-word/source topic blocks losslessly within existing reading maps,
 then reassess compatible prerequisites without duplicating completed reports.
 
+## 380. Intact Native-Word Topic Relocation (2026-11-16)
+
+Begin clean pushed938d0c4. Move complete native motion/integration source blocks
+and supplied/current motion-word contracts to linked chapter06. Chapter01/04 retain
+all24 historical headings as reading links; existing source01 motion-reading stubs
+stay separate to avoid duplicate new-topic anchors. Rebase local references and
+the design reading map. NF1 prefix is byte-intact; no premise/authority is adopted.
+Topic sizes2752/2698 become2575/2462 plus584 in chapter06, around the approximate
+organization targets, not a product/resource requirement.
+
+Bounded layout/transformation/conservation with one diagnosed mechanical repair.
+First transform failed its expected23-heading assertion before any repository or
+snapshot writes. Bounded heading inspection found the owning Actual-Source
+Integration Ingestion section too: actual24. Correct only the expectation; repaired
+transform PASS, with before-layout copies retained in session files.
+Full verification then failed because24 moved reference definitions were still
+used by the NF1 prefix. Restore those exact definitions in chapter04; its preexisting
+code-example `[2]` is not a new unresolved Markdown reference. One narrow necessary
+reference/conservation repair retained; neither failure was bypassed or committed.
+Exact planned bodies/old heading order/NF1 prefix and24 reference meanings PASS;
+117 local targets/four unchanged tested source hashes/whitespace PASS before commit.
+No code edit or unchanged code-suite rerun; failure remains spent, not refunded.
+No qualification/study/model/dependency/download/hardware action. Next archive
+whole376-380 before further root growth, then reassess compatible prerequisites
+without duplicating reports or inventing acceptance.
+
 ## Sources
 
 Hardware and tools:

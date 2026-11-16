@@ -425,6 +425,36 @@ snapshots/bulk utility remain in the session folder, not portable test evidence.
 Next add the separate actual-consumed quotient join under existing source closure;
 no later-period substitution or new arithmetic stages.
 
+## 369. Closed Actual-Consumed Quotient Joins (2026-11-16)
+
+Begin clean pushede3adea2. Add independent literal default-off
+include_native_consumed_normalization_division to the native source reader.
+The separate consumed_normalization_division group uses the retained earlier
+sinc_divisor_rad, not later period_rad. Reuse existing local report/closure logic;
+both groups can be enabled independently or together. Original/copied/closing
+groups/source bind before receipt closure and are all rechecked after the last
+producer sample with pinned original RNG identities. Default/later output and
+ten-stage arithmetic remain unchanged; no extra capture/replay/primitive evaluation.
+
+Fresh scope refined before first execution from17 to19/60s for distinct-word
+selection and zero-divisor unknown; necessary repair reserve19/60s, root360s.
+Reuse the existing16-control harness rather than duplicate it. First19
+PASS5.00s/5104 deselected; root PASS6046/known QDQ1 xfail/77 warnings211.54s.
+Ruff/changed format/whitespace/four tested hashes and exact default-core/unrelated
+source/control AST PASS; Pylance2 prior resolved callers compatible. No failed or
+repeated green gate. At most2 reports/segment/mode,128 segments/512 combined calls,
+six observations/two samples/two receipt validations,<=128+4N digests.
+Direct Fraction oracle, independent/combined/default modes, original/copy/closing/
+final report/pose/RNG faults and zero-divisor unknown checked. The distinct-period
+fixture modifies matched cache words only to falsify field substitution; it is not
+independent provenance or an accepted native program/domain observation.
+
+Eight flags false; consumed-source correspondence does not qualify pi, sinc,
+uniform native error, geometry, clock, application or permission. No producer/C/
+Arm/model/study/dependency/download/hardware changes. Ignored `.git/returns-369-*`
+logs/hashes retained. Next trace remaining native heading consumed operands, without
+inventing modulo/rounding laws, duplicating floor reports or accepting error bounds.
+
 ## Sources
 
 Hardware and tools:

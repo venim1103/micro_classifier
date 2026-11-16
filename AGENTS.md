@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §368 for intact initial-source checkpoint archival;
+Read [REVIEW.md][review] §369 for closed actual-consumed quotient joins;
+§368 records intact initial-source checkpoint archival;
 §367 records actual consumed-divisor retention;
 §366 records closed current later-period comparisons;
 §365 records supplied normalization division residuals;
@@ -221,9 +222,12 @@ bindings and pinned RNG identities. The comparison labels the later heading-peri
 word, not the earlier consumed sinc divisor. Actual earlier sinc_divisor_rad
 retention and its required gate are complete at the owning expression, without new
 arithmetic or changed output words. Closed source/arithmetic readers retain the
-finite builtin word; missing/unsupported words stay unknown. Next add a separate
-default-off actual-consumed quotient join, without repurposing the later comparison
-or extending the existing ten-stage contract.
+finite builtin word; missing/unsupported words stay unknown. Independent default-off
+actual-consumed quotient joins and their required gate are complete, including
+combined later-period mode. Both groups close after the last producer sample with
+pinned epochs; default output and ten-stage arithmetic remain unchanged. Next trace
+remaining native heading operand retention without replay, invented modulo/rounding
+laws or qualification.
 Whole361-365 checkpoint archival is complete, including failed fixtures and the
 spent/unknown interrupted root; historical anchors and topic links remain intact.
 Named source/setup auditors and motion/registration/request consumers remain

@@ -2566,8 +2566,31 @@ no native uniform error, accepted geometry/source/clock or command permission.
 The [current comparison checkpoint][current-normalization-comparison-review]
 records bounded rational and closing-mutation controls.
 
+##### Current Actual-Consumed Normalization Quotient (2026-11-16)
+
+The source reader's independent literal default-off
+`include_native_consumed_normalization_division` adds
+`consumed_normalization_division` using actual retained `sinc_divisor_rad`.
+Its `comparison_divisor_source` names
+`consumed_sinc_divisor_word_from_owned_native_source_not_pi_qualification`.
+It is a source-bound invocation of the supplied-word diagnostic, not an extension
+of the ten-stage report or adoption of normalization/pi/sinc obligations.
+The later-period mode remains distinct and can be enabled independently or together.
+
+Both modes share bounded local report creation/validation and original/copy/closing/
+final binding checks. Every enabled group's original, copied and closing reports
+are rechecked after the last producer sample with original RNG identities pinned.
+No partially published groups/source/frame follow changed or unsupported input;
+a zero supplied consumed divisor also stays explicitly unknown. At most two
+report passes over128 segments per mode,512 combined scalar calls. Default and
+explicit-off output remain unchanged; no replay, capture, extra RNG or trig/sinc
+evaluation. All eight flags false; no uniform error/source/geometry/clock acceptance,
+pi correctness, one-use or command permission. The [consumed join checkpoint][consumed-normalization-join-review]
+records rational, field-selection, combined and final-closure controls.
+
 [current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
 [normalization-division-review]: ../review/361-365.md#365-supplied-normalization-division-residuals-2026-11-16
 [current-normalization-comparison-review]: ../../REVIEW.md#366-closed-current-later-period-comparisons-2026-11-16
 [consumed-divisor-design]: 07-data-and-distillation-design-01.md#actual-consumed-normalization-divisor-2026-11-16
+[consumed-normalization-join-review]: ../../REVIEW.md#369-closed-actual-consumed-quotient-joins-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

@@ -989,6 +989,11 @@ remain unchanged; all flags false. The [retention checkpoint][consumed-divisor-r
 records exact operation conservation, synthetic earlier/later differentiation,
 current/closing source checks and the required regression gate.
 
+The distinct [actual-consumed quotient join][consumed-normalization-join-design]
+is default-off and can coexist with the explicitly later-period comparison.
+Both close all copied reports after final producer sampling; neither adopts
+the existing unsupported pi/sinc/normalization obligations.
+
 
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
 
@@ -2385,6 +2390,7 @@ figure is not an established minimum.
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
 [current-normalization-comparison-design]: 07-data-and-distillation-design-04.md#current-later-period-comparison-2026-11-16
 [consumed-divisor-review]: ../../REVIEW.md#367-actual-consumed-normalization-divisor-retention-2026-11-16
+[consumed-normalization-join-design]: 07-data-and-distillation-design-04.md#current-actual-consumed-normalization-quotient-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

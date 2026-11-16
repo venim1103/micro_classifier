@@ -22382,7 +22382,11 @@ class _SyntheticC1SourceRecorder:
         return result
 
     def snapshot_native_integration_source(
-        self, *, include_native_normalization_division=False, synthetic_test_only=False
+        self,
+        *,
+        include_native_normalization_division=False,
+        include_native_consumed_normalization_division=False,
+        synthetic_test_only=False,
     ):
         if synthetic_test_only is not True:
             raise ValueError(
@@ -22391,6 +22395,10 @@ class _SyntheticC1SourceRecorder:
         if type(include_native_normalization_division) is not bool:
             raise ValueError(
                 "include_native_normalization_division must be a literal boolean"
+            )
+        if type(include_native_consumed_normalization_division) is not bool:
+            raise ValueError(
+                "include_native_consumed_normalization_division must be a literal boolean"
             )
         result = {
             "schema": "micro-classifier/synthetic-c1-native-integration-snapshot/1",
@@ -22471,13 +22479,13 @@ class _SyntheticC1SourceRecorder:
             }
             return native_source, _c1_source_binding_digest(producer_source)
 
-        def normalization_reports(source):
+        def normalization_reports(source, divisor_key, divisor_basis):
             reports = []
             for index, segment in enumerate(source["segments"]):
                 values = segment["values"]
                 words = tuple(
                     values[key].hex()
-                    for key in ("angle_rad", "period_rad", "sinc_argument")
+                    for key in ("angle_rad", divisor_key, "sinc_argument")
                 )
                 report = _native_sinc_argument_division_residuals(
                     angle_rad_hex=words[0],
@@ -22510,7 +22518,7 @@ class _SyntheticC1SourceRecorder:
                         )
                     )
                 ):
-                    raise ValueError("unsupported_later_period_comparison_report")
+                    raise ValueError("unsupported_normalization_division_report")
                 reports.append(
                     {
                         "segment_index": index,
@@ -22521,7 +22529,7 @@ class _SyntheticC1SourceRecorder:
             return {
                 "source_epoch": self._epoch,
                 "source_binding": _c1_source_binding_digest(source),
-                "comparison_divisor_source": "later_heading_period_word_not_consumed_sinc_divisor",
+                "comparison_divisor_source": divisor_basis,
                 "entries": tuple(reports),
             }
 
@@ -22541,11 +22549,31 @@ class _SyntheticC1SourceRecorder:
             if sampled_binding != retained_binding:
                 result["reason"] = "native_integration_source_content_changed"
                 return result
-            if include_native_normalization_division:
-                normalization = normalization_reports(native_sample)
+            normalization_groups = {}
+            for enabled, key, divisor_key, divisor_basis in (
+                (
+                    include_native_normalization_division,
+                    "later_period_normalization_comparison",
+                    "period_rad",
+                    "later_heading_period_word_not_consumed_sinc_divisor",
+                ),
+                (
+                    include_native_consumed_normalization_division,
+                    "consumed_normalization_division",
+                    "sinc_divisor_rad",
+                    "consumed_sinc_divisor_word_from_owned_native_source_not_pi_qualification",
+                ),
+            ):
+                if not enabled:
+                    continue
+                normalization = normalization_reports(
+                    native_sample, divisor_key, divisor_basis
+                )
                 normalization_binding = _c1_source_binding_digest(normalization)
                 copied_normalization = deepcopy(normalization)
-                closing_normalization = normalization_reports(deepcopy(native_sample))
+                closing_normalization = normalization_reports(
+                    deepcopy(native_sample), divisor_key, divisor_basis
+                )
                 if (
                     _c1_source_binding_digest(normalization) != normalization_binding
                     or _c1_source_binding_digest(copied_normalization)
@@ -22554,8 +22582,18 @@ class _SyntheticC1SourceRecorder:
                     != normalization_binding
                     or _c1_source_binding_digest(native_sample) != sampled_binding
                 ):
-                    result["reason"] = "later_period_comparison_changed_during_snapshot"
+                    result["reason"] = (
+                        "later_period_comparison_changed_during_snapshot"
+                        if key == "later_period_normalization_comparison"
+                        else "consumed_normalization_division_changed_during_snapshot"
+                    )
                     return result
+                normalization_groups[key] = (
+                    normalization,
+                    copied_normalization,
+                    closing_normalization,
+                    normalization_binding,
+                )
             receipt_snapshot = self.snapshot_receipt_history(synthetic_test_only=True)
             if not receipt_snapshot["snapshot_available"]:
                 result["reason"] = receipt_snapshot["reason"]
@@ -22565,15 +22603,14 @@ class _SyntheticC1SourceRecorder:
                 _c1_source_binding_digest(final_native_sample) != sampled_binding
                 or final_producer_binding != producer_binding
                 or (
-                    include_native_normalization_division
+                    normalization_groups
                     and (
                         _c1_source_binding_digest(native_sample) != sampled_binding
-                        or _c1_source_binding_digest(normalization)
-                        != normalization_binding
-                        or _c1_source_binding_digest(copied_normalization)
-                        != normalization_binding
-                        or _c1_source_binding_digest(closing_normalization)
-                        != normalization_binding
+                        or any(
+                            _c1_source_binding_digest(group) != binding
+                            for original, copied, closing, binding in normalization_groups.values()
+                            for group in (original, copied, closing)
+                        )
                         or producer.rng is not rng_before
                         or producer.odometry_rng is not odometry_before
                     )
@@ -22598,8 +22635,8 @@ class _SyntheticC1SourceRecorder:
             current_frame=receipt_snapshot["current_frame"],
             source=native_sample,
         )
-        if include_native_normalization_division:
-            result["later_period_normalization_comparison"] = copied_normalization
+        for key, (_, copied, _, _) in normalization_groups.items():
+            result[key] = copied
         return result
 
     def snapshot_native_integration_arithmetic(

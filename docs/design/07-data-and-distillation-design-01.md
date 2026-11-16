@@ -2389,9 +2389,9 @@ figure is not an established minimum.
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
-[initial-source-retention-review]: ../../REVIEW.md#361-bounded-initial-source-retention-2026-11-13
-[retained-initial-source-review]: ../../REVIEW.md#362-bounded-retained-initial-source-reading-2026-11-16
-[owned-initial-startup-review]: ../../REVIEW.md#363-conditional-owned-initial-rest-startup-2026-11-16
+[initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13
+[retained-initial-source-review]: ../review/361-365.md#362-bounded-retained-initial-source-reading-2026-11-16
+[owned-initial-startup-review]: ../review/361-365.md#363-conditional-owned-initial-rest-startup-2026-11-16
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

@@ -79,8 +79,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 346-350][chapter-review-34]
 - [Checkpoints 351-355][chapter-review-35]
 - [Checkpoints 356-360][chapter-review-36]
+- [Checkpoints 361-365][chapter-review-37]
 
-Checkpoints 361 onward and the source bibliography remain below.
+Checkpoints 366 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -328,157 +329,23 @@ repeated historical handoffs.
 
 ## 361. Bounded Initial Source Retention (2026-11-13)
 
-Begin clean pushed38ab59e. One bounded explicit-workspace compatibility probe of
-actual initial setup/frame and delivered startup history fails IndexError before
-consumer entry: history empty. A narrow actual-layout diagnostic PASS shows C1
-ToF latency2,current0,history0,latestNone,pending delivery[2]. Goal odometry latency0
-is a different source; do not generalize it or retimestamp/implicitly advance.
-Both finite probe positions remain spent; no native/command consumer ran.
-
-Implement separate strict opt-in retain_initial_setup_source: at most one
-detached complete initial snapshot, original pinned producer/owner RNG identities,
-exact supported metadata and original/copy/closing source/setup/frame/profile
-joins. Exact repeated content deduplicates without replacement; wrong/stale/
-changed content rejects and preserves prior published data except external
-mutations, which are not rolled back. Ordinary intake/snapshot output unchanged.
-
-Fresh12 controls/60s, one necessary repair reserve12/60s, root/360s. First12
-PASS4.09s/5006 deselected, root PASS5941/known QDQ1 xfail/77 warnings199.41s.
-Root Ruff/whitespace/four tested hashes/exact default-empty slot/unrelated
-source/control AST PASS. Changed format rejects two new wrapped lines; existing
-formatter repairs them, final format PASS; no repeated green focused controls.
-Per call<=2 initial reads/4 observations/2 setup audits/84 digests; duplicates
-are bounded separately. RNG states unchanged, forbidden calls0. All positions
-spent; no fixture/work/safety limit relaxed.
-
-All eight flags false; no replay/draw/capture/clock/model/study/dependency/download/
-native/Arm/hardware work. One private snapshot is not accepted setup/geometry/
-coverage/error/timing or measured memory fit, a reset receipt, current initial
-state, later delivery or an admitted predecessor. Ignored `.git/returns-361-*`
-focused/root/hash logs retained; tool-returned compatibility/layout evidence is
-summarized here, not assumed portable editor memory. Next implement bounded
-retained initial-source reading before conditional later-delivery consumption.
+[Complete unchanged checkpoint][review-361-365-preserved-0] is preserved in the archive.
 
 ## 362. Bounded Retained Initial Source Reading (2026-11-16)
 
-Begin clean pushedcbc52f7. Add strict opt-in snapshot_retained_initial_setup_source
-for one actual tick0 record under its actual current owner. Share exact initial
-metadata/source/frame validation with retention and unchanged original owner-word
-predicate with initial reading. Close original/copy/closing retained source and
-current dynamics/pose/native State/frame/profile, source files and pinned producer/
-owner RNG references. Full owned dynamics closure preserves optional intake groups;
-basic current sampling projects only its existing seven fields. Output separately
-labels initial/current tick/frame; all eight flags stay false.
-
-Fresh18 controls/60s, one necessary repair reserve18/60s, root/360s. First18
-PASS4.35s/5018 deselected; exact owner-word predicate/unrelated source/control AST
-PASS. Fixture preparation uses one retained initial environment and exactly two
-at-rest receipt steps for one actual delivered environment, not study episodes.
-Read bounds: two observations/64 digests/no setup auditor, replay, capture, draw
-or clock. Original/closing equal-state RNG replacement, malformed owners, stale
-pose, retained/copy/frame/flag mutations and detached output covered. Ruff PASS;
-format rejects new wraps, formatter repairs them, final format/whitespace PASS;
-no repeated green focused gate.
-
-First root tool interrupted: no live tool session or pytest/timeout/tee process
-remains;5549-byte log ends around82% with NUL tail. It is spent/unknown, not a
-pass, successful chain exit or refunded position. Four tested source hashes and
-format/whitespace still PASS. Fresh required recovery root/360s with separate
-hash/log PASS5959/known QDQ1 xfail/77 warnings209.56s; root Ruff/whitespace/four
-hashes PASS. Both root positions retained separately; no protected allowance or
-assertion/work limit changed.
-
-No accepted setup/geometry/coverage/error/clock, later exact-rest/delivery,
-reset receipt, one-use executor or admitted predecessor follows. No native/Arm/
-model/study/dependency/download/hardware action. Ignored `.git/returns-362-*`
-focused/interrupted/root/recovery/hash records retained, never assumed portable.
-Next trace conditional later delivery and complete owned initial-rest State/frame
-history without inventing missing accepted evidence.
+[Complete unchanged checkpoint][review-361-365-preserved-1] is preserved in the archive.
 
 ## 363. Conditional Owned Initial-Rest Startup (2026-11-16)
 
-Begin clean pushed82d04b7. Fresh bounded compatibility probe PASS0.195267s:
-actual retained initial source/current receipts available, native State sequences
-0/1/2, unchanged consumer conditionally excludes fixed startup with work1 setup/
-3 rest/1 command; all seven consumer flags false. Zero fixture error/margin/history
-premises are assumptions, not evidence acceptance.
-
-Implement strict opt-in probe_initial_startup_path deriving actual owned initial
-setup/epoch/pose, delivered tick0 C1 event and complete State/frame history from
-validated live receipts. No caller setup/capture/tick/pose/frame/history override.
-Keep existing conditional point/error/profile premises, fixed request, exact-rest
-rejection and all source/clock/geometry/error/admission limits. Original/copied/
-closing source/receipt/event/evidence/report bindings and pinned epoch references
-must close before detached publication. All eight flags false, guard UNKNOWN.
-
-Fresh16/60s, necessary fixture repair<=16/60s, root360s. First16:8 PASS/8 FAIL18.58s,
-overbroad global math monkeypatch catches existing history inspection's reference
-tof_directions -> math.cos, not producer replay. Read owning code; fixture-only
-repair counts one existing inspection/eight source=None reference directions.
-Producer step/reset/integration/ToF acquisition/capture/clock/collection still
-forbidden; no reference/native-transform law adopted. Rerun only failed8:
-PASS5.47s/5044 deselected. Fresh actualtick3/rejectedtick4 endpoints2/60s
-PASS4.80s/5052 deselected. Fixture preparation totals five bounded receipt steps:
-two original at-rest, two additional moving controls, one additional upper-domain
-at-rest; not study episodes. First required root PASS5977/known QDQ1 xfail/
-77 warnings198.51s; hashes/style/unrelated source/API/default/consumer/control AST
-PASS. No unchanged green focused gate repeated.
-
-Before checkpoint, a concrete consumer-input closure question exposes introduced
-false success: derived State/frame evidence or detached capture mutates after
-consumer return without binding recheck. Two controls FAIL5.61s/5054 deselected.
-Bind both copied consumer inputs before work and after closing live source reads;
-necessary repair2/60s PASS0.84s/5054 deselected. Substantive-repair root360s
-PASS5979/known1 xfail/77 warnings185.89s; root Ruff/changed format/whitespace/fresh
-four-hash bracket PASS. Both root/failure positions remain spent; no tolerance,
-assertion or safety/work threshold relaxed.
-
-Bounds per join: two retained/two receipt reads/eight observations/two history
-checks/one setup audit/one consumer/256 digests, existing command/path/cell limits.
-No native/Arm/model/study/dependency/download/hardware action or admitted launch.
-Ignored `.git/returns-363-*` focused/failure/repair/endpoint/root/hash evidence
-retained separately. Next reassess named source/coverage/native-error prerequisites,
-not a matching-hash permit, repeated successful gate or general audit.
+[Complete unchanged checkpoint][review-361-365-preserved-2] is preserved in the archive.
 
 ## 364. Intact Initial Source Checkpoint Archival (2026-11-16)
 
-Begin clean pushed24afbe0. Move whole356-360 blocks/headings/separators intact,
-preserving actual intake closure, both introduced initial-reader faults and all
-first/repair/root/spent positions, consumer metadata failures, actual renewed
-continuation and prior archival ledgers. Five original root anchors and three
-chapter01 references remain/rebase; body blocks contain no reference or inline
-links needing copied definitions. One bounded exact whole-block/header/topic/
-nine-target/anchor/four-tested-hash/whitespace check PASS. No code or green suite
-rerun. Root remains below1,000 lines. Two original snapshots and bulk utility stay
-in the session folder, not assumed portable evidence. Next investigate a named Q2
-supplied-word normalization quotient prerequisite; do not relabel the later
-period word as a captured earlier divisor, extend the existing ten-stage contract,
-adopt pi/trig/sinc laws or invent a uniform error bound.
+[Complete unchanged checkpoint][review-361-365-preserved-3] is preserved in the archive.
 
 ## 365. Supplied Normalization Division Residuals (2026-11-16)
 
-Begin clean pushed1006705. Q2 native integration retains angle and normalized
-sinc argument, but the divisor expression's earlier word is not separately
-captured; later period_rad must not be relabeled as that capture. Add only a
-standalone supplied-angle/divisor/argument quotient comparison using existing
-bounded _C1CommandArithmetic. No pi/normalization/sinc/trig law or native replay.
-Existing ten-stage integration source/arithmetic/unsupported contracts unchanged.
-
-Fresh16/60s, one necessary repair reserve16/60s, root360s. First16 PASS4.59s/
-5056 deselected; root PASS5995/known QDQ1 xfail/77 warnings215.68s. Root Ruff/
-changed format/whitespace/four tested hashes/all prior source/API/default/consumer/
-control AST PASS. No failed or repeated green gate. Finite work exactly3 values/
-2 binary operations with existing4096-bit growth cap and32-character canonical
-words. Direct Fraction oracles cover nonzero residual, negative words, opposite
-zero words and subnormal quotient underflow. Zero divisor/malformed/overlong/
-permission/budget faults raise; canonical raw infinities/nan stay unknown with
-both ratios None and zero arithmetic, not a success fallback.
-
-All eight flags false; no consumed-divisor identity, accepted source/numerical/
-geometry/error/clock or admission follows. No native/Arm/model/study/dependency/
-download/hardware action. Ignored `.git/returns-365-*` focused/root/hash evidence
-retained. Next trace independently supportable native source correspondence; no
-later-period substitution, duplicate integration report or guessed error bound.
+[Complete unchanged checkpoint][review-361-365-preserved-4] is preserved in the archive.
 
 ## 366. Closed Current Later-Period Comparisons (2026-11-16)
 
@@ -538,6 +405,20 @@ All flags false; no uniform native error, accepted source/geometry/clock or
 permission. Failed positions and `.git/returns-367-*` logs/hashes retained.
 Next add a distinct default-off actual-consumed quotient join; preserve the later
 comparison's explicit provenance limit and unchanged ten-stage report.
+
+## 368. Intact Initial Source Checkpoint Archival (2026-11-16)
+
+Begin clean pushede9de193. Move whole361-365 blocks, including retention's missing
+tick0 delivery probe, retained-reader interrupted/unknown root, startup fixture/
+closing-input failures and all spent ledgers, to the linked archive. Five historical
+headings/anchors remain in this reading map; four chapter01/04 links rebased.
+No source/consumer changes or renewed authority/qualification. One bounded bulk
+transform; exact blocks/heading order/topic changes, ten local targets, whitespace
+and four previously tested source hashes PASS. Root843/archive156 lines before
+this note. Code suite not rerun for documentation-only work. Ignored before-layout
+snapshots/bulk utility remain in the session folder, not portable test evidence.
+Next add the separate actual-consumed quotient join under existing source closure;
+no later-period substitution or new arithmetic stages.
 
 ## Sources
 
@@ -916,6 +797,7 @@ Methods and measurements:
 [chapter-review-34]: docs/review/346-350.md
 [chapter-review-35]: docs/review/351-355.md
 [chapter-review-36]: docs/review/356-360.md
+[chapter-review-37]: docs/review/361-365.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -968,3 +850,8 @@ Methods and measurements:
 [review-356-360-preserved-2]: docs/review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [review-356-360-preserved-3]: docs/review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [review-356-360-preserved-4]: docs/review/356-360.md#360-intact-source-and-consumer-checkpoint-archival-2026-11-13
+[review-361-365-preserved-0]: docs/review/361-365.md#361-bounded-initial-source-retention-2026-11-13
+[review-361-365-preserved-1]: docs/review/361-365.md#362-bounded-retained-initial-source-reading-2026-11-16
+[review-361-365-preserved-2]: docs/review/361-365.md#363-conditional-owned-initial-rest-startup-2026-11-16
+[review-361-365-preserved-3]: docs/review/361-365.md#364-intact-initial-source-checkpoint-archival-2026-11-16
+[review-361-365-preserved-4]: docs/review/361-365.md#365-supplied-normalization-division-residuals-2026-11-16

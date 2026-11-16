@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §367 for actual consumed-divisor retention;
+Read [REVIEW.md][review] §368 for intact initial-source checkpoint archival;
+§367 records actual consumed-divisor retention;
 §366 records closed current later-period comparisons;
 §365 records supplied normalization division residuals;
 §364 records intact initial-source checkpoint archival;
@@ -223,6 +224,8 @@ arithmetic or changed output words. Closed source/arithmetic readers retain the
 finite builtin word; missing/unsupported words stay unknown. Next add a separate
 default-off actual-consumed quotient join, without repurposing the later comparison
 or extending the existing ten-stage contract.
+Whole361-365 checkpoint archival is complete, including failed fixtures and the
+spent/unknown interrupted root; historical anchors and topic links remain intact.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

@@ -23680,6 +23680,9 @@ class _SyntheticC1SourceRecorder:
             }
 
         if include_current_receipt:
+            producer_before = self._simulator
+            rng_before = self._simulator_rng
+            odometry_before = self._simulator_odometry_rng
             try:
                 receipt_before = self._owned_request_current_receipt(tick, frame)
                 receipt_binding = digest(receipt_before)
@@ -23741,6 +23744,12 @@ class _SyntheticC1SourceRecorder:
                     or digest(prepared) != prepared_binding
                     or digest(copied_prepared) != prepared_binding
                     or digest(event_binding()) != binding
+                    or self._simulator is not producer_before
+                    or not isinstance(producer_before, RoverEnv)
+                    or producer_before.rng is not rng_before
+                    or producer_before.odometry_rng is not odometry_before
+                    or self._simulator_rng is not rng_before
+                    or self._simulator_odometry_rng is not odometry_before
                 ):
                     result["reason"] = "owned_request_current_receipt_changed"
                     return result
@@ -23834,6 +23843,9 @@ class _SyntheticC1SourceRecorder:
             }
 
         if include_current_receipt:
+            producer_before = self._simulator
+            rng_before = self._simulator_rng
+            odometry_before = self._simulator_odometry_rng
             try:
                 receipt_before = self._owned_request_current_receipt(
                     tick, self._current[3]
@@ -23886,6 +23898,12 @@ class _SyntheticC1SourceRecorder:
                     or digest(event_binding()) != binding
                     or digest(retained_request["request"]) != expected_digest
                     or digest(received_request) != expected_digest
+                    or self._simulator is not producer_before
+                    or not isinstance(producer_before, RoverEnv)
+                    or producer_before.rng is not rng_before
+                    or producer_before.odometry_rng is not odometry_before
+                    or self._simulator_rng is not rng_before
+                    or self._simulator_odometry_rng is not odometry_before
                 ):
                     result["reason"] = "owned_recheck_current_receipt_changed"
                     return result

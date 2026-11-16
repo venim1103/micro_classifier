@@ -22331,6 +22331,12 @@ def c1_actual_request_fixture(c1_native_integration_snapshot_fixture):
         "final_observation",
         "initial_owner",
         "closing_owner",
+        "prepare_rng_epoch",
+        "prepare_odometry_rng_epoch",
+        "prepare_producer_epoch",
+        "closing_rng_epoch",
+        "closing_odometry_rng_epoch",
+        "closing_producer_epoch",
     ),
 )
 def test_owned_request_current_receipt(
@@ -22345,10 +22351,11 @@ def test_owned_request_current_receipt(
     original_prepare = diagnostics._prepare_synthetic_c1_normal_request
     original_digest = diagnostics._c1_source_binding_digest
     original_observation = RoverEnv._observation
+    original_history = diagnostics._check_simulator_receipt_history
     rng_before = deepcopy(environment.rng.bit_generator.state)
     odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
     work = dict.fromkeys(
-        ("snapshot", "prepare", "digest", "observation", "forbidden"), 0
+        ("snapshot", "prepare", "digest", "observation", "history", "forbidden"), 0
     )
     first = prepared = None
     if case == "missing_producer":
@@ -22359,6 +22366,20 @@ def test_owned_request_current_receipt(
         owner._receipt_history = []
     elif case == "stale_pose":
         environment.position[0] = math.nextafter(environment.position[0], math.inf)
+
+    def replace_epoch():
+        if case.endswith("producer_epoch"):
+            replacement = deepcopy(environment)
+            owner._simulator = replacement
+            owner._simulator_rng = replacement.rng
+            owner._simulator_odometry_rng = replacement.odometry_rng
+        else:
+            name = "odometry_rng" if "odometry_rng" in case else "rng"
+            replacement = deepcopy(getattr(environment, name))
+            setattr(environment, name, replacement)
+            setattr(owner, f"_simulator_{name}", replacement)
+            environment._motion_receipt_source[name] = replacement
+            environment._integration_source[name] = replacement
 
     def snapshot(self, *args, **kwargs):
         nonlocal first
@@ -22382,6 +22403,8 @@ def test_owned_request_current_receipt(
                 prepared["request"]["request_id"] = "f" * 32
             else:
                 received["request_id"] = "f" * 32
+        elif case.startswith("closing_") and case.endswith("_epoch"):
+            replace_epoch()
         return result
 
     def prepare(*args, **kwargs):
@@ -22391,7 +22414,14 @@ def test_owned_request_current_receipt(
         prepared = original_prepare(*args, **kwargs)
         if case == "closing_pose":
             environment.position[0] = math.nextafter(environment.position[0], math.inf)
+        elif case.startswith("prepare_") and case.endswith("_epoch"):
+            replace_epoch()
         return prepared
+
+    def history(*args, **kwargs):
+        work["history"] += 1
+        assert work["history"] <= 2
+        return original_history(*args, **kwargs)
 
     def digest(*args, **kwargs):
         work["digest"] += 1
@@ -22417,6 +22447,7 @@ def test_owned_request_current_receipt(
     )
     monkeypatch.setattr(diagnostics, "_prepare_synthetic_c1_normal_request", prepare)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", history)
     monkeypatch.setattr(RoverEnv, "_observation", observation)
     for name in ("step", "reset"):
         monkeypatch.setattr(RoverEnv, name, forbidden)
@@ -22489,6 +22520,13 @@ def test_owned_request_current_receipt(
                 current["history"].clear()
                 assert first["history"] and owner._receipt_history
         else:
+            if case.endswith("_epoch"):
+                assert result["reason"] == (
+                    "owned_request_current_receipt_changed"
+                    if mode == "prepare"
+                    else "owned_recheck_current_receipt_changed"
+                )
+                assert work["snapshot"] == 2 and work["observation"] == 4
             for key in (
                 "current_receipt",
                 "prepared_request",

@@ -506,6 +506,11 @@ detached request/output bindings close after request/capture/content work.
 Missing/stale/unsupported source or malformed original/closing current owners
 return unknown without partial request/receipt publication. Existing fixture
 defaults remain unchanged; no caller source/tick/context override follows.
+The opt-in consumers pin the original producer and bound RNG/odometry references
+before the first receipt read, then recheck actual producer and owner references
+after the second read and final payload checks. Individually matching snapshots
+cannot replace these identity joins. Equal-state coordinated replacements during
+consumer work or after the closing reader returns stay unknown without publication.
 
 Each method adds at most two receipt reads/four observations/two history checks/
 64 receipt digests; recheck retains one default inner request preparation, not
@@ -514,6 +519,8 @@ correspondence only. No permission, qualified deadline, uniform error,
 predecessor or one-use executor is established.
 The [live-receipt checkpoint][owned-current-receipt-review] preserves bounded
 mutation/default/ownership controls and the required gate.
+The [consumer-epoch checkpoint][owned-receipt-epoch-review] preserves between-read
+and closing replacement repros, the failed pin-placement repair and final gate.
 
 The next admission step is independently supported source/coverage and named
 S4 numerical/registration/timing evidence, not additional request hashes. Current
@@ -2403,6 +2410,7 @@ figure is not an established minimum.
 [receipt-pairing-review]: ../review/183-220.md#191-full-retained-source-history-pairing-checks-2026-11-09
 [receipt-snapshot-review]: ../review/183-220.md#192-read-time-actual-producer-history-snapshots-2026-11-09
 [receipt-epoch-review]: ../review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16
+[owned-receipt-epoch-review]: ../../REVIEW.md#377-closed-live-request-consumer-epochs-2026-11-16
 [integration-source-review]: ../review/183-220.md#193-actual-native-integration-source-intermediates-2026-11-09
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09

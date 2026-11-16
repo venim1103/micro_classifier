@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §376 for intact heading/receipt checkpoint archival;
+Read [REVIEW.md][review] §377 for closed live request consumer epochs;
+§376 records intact heading/receipt checkpoint archival;
 §375 records closed owning receipt epoch identities;
 §374 records closed default native epoch identities;
 §373 records closed current heading-offset reports;
@@ -250,8 +251,12 @@ Owning receipt closing epoch repairs and their required gate are complete across
 all eight report combinations, including malformed producer rejection before
 attribute access. Original producer references are pinned; coordinated equal-state
 owner/cache replacement stays unknown without partial reports.
-Next trace the receipt-dependent live request consumer's between-read epoch
-closure, not a general audit, replay or qualification.
+Opt-in live request preparation/rechecking original producer and RNG epoch joins
+and their required gate are complete across both reads and after the closing
+reader returns. The failed initial recheck pin placement is preserved with its
+repair; default-off fixture behavior and work limits remain unchanged.
+Next trace the receipt helper's conditional initial-startup consumer epoch closure,
+not a general audit, replay or qualification.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole371-375 checkpoints are archived intact, including the spent/unknown root

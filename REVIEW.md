@@ -404,6 +404,40 @@ hardware action. Local before-layout copies retained in session files.
 Next trace the directly receipt-dependent live request consumer's between-read
 epoch closure; keep all flags false and actual independent acceptance missing.
 
+## 377. Closed Live Request Consumer Epochs (2026-11-16)
+
+Begin clean pushed923ac0b. Pylance's receipt-reference trace resolves the existing
+native readers and _owned_request_current_receipt, then the owned prepare/recheck
+methods. Each reader's own pins did not close the outer consumers' original epoch:
+equal-state producer or RNG/odometry replacement during preparation or after the
+second reader returned falsely published fixture success. Pin original producer
+and bound RNG references before first read; check actual producer/owner originals
+after closing receipt and payload work, gated by include_current_receipt.
+Default-off fixture output, request/receipt shapes, guard UNKNOWN and flags unchanged.
+
+Fresh12/60s, necessary repair reserve12/60s, affected controls<=64/90s, root360s.
+First12 FAIL11.91s false success. First repair12:6 prepare PASS,6 recheck FAIL4.26s.
+Diff diagnosis: recheck pins landed in the earlier ungated request/event condition,
+changing the rejection reason and missing post-second-read replacements; disabled
+mode could access unbound pins. Move the same six checks into the final opt-in
+receipt condition. Narrow necessary reserve6/60s, only failed6 PASS0.80s; the six
+prepare passes were not separately rerun. Prior36 controls PASS0.82s/5175 deselected.
+Root PASS6134/known QDQ1 xfail/77 warnings197.25s; Ruff/changed format/whitespace/
+four tested hashes/pin-only source and unrelated source/control AST PASS.
+No signature change or relaxed assertions, reasons, work limits or deadline.
+Reuse existing fixture: <=2 reads/4 observations/2 history checks, one low-level
+preparation and96/128 total digests for prepare/recheck; no producer steps/draws.
+Both failed positions remain spent, not refunded. No unchanged green gate rerun.
+
+All eight flags false; these are owned diagnostic joins, not epoch authenticity,
+atomicity against concurrent/adversarial mutation, source/clock/application/
+one-use/predecessor acceptance, uniform numerical/physical bounds or permission.
+External mutations remain visible. Producer/C/Arm/model/study/dependency/download/
+hardware unchanged; existing root C controls passed with no skips, not linked
+firmware/board/fit evidence. `.git/returns-377-*` logs/hashes retained locally.
+Next trace the receipt helper's conditional initial-startup consumer epoch closure,
+without a general audit, duplicate arithmetic, replay or acceptance invention.
+
 ## Sources
 
 Hardware and tools:

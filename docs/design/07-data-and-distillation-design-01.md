@@ -2410,9 +2410,9 @@ figure is not an established minimum.
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
 [current-normalization-comparison-design]: 07-data-and-distillation-design-04.md#current-later-period-comparison-2026-11-16
-[consumed-divisor-review]: ../../REVIEW.md#367-actual-consumed-normalization-divisor-retention-2026-11-16
+[consumed-divisor-review]: ../review/366-370.md#367-actual-consumed-normalization-divisor-retention-2026-11-16
 [consumed-normalization-join-design]: 07-data-and-distillation-design-04.md#current-actual-consumed-normalization-quotient-2026-11-16
-[heading-operands-review]: ../../REVIEW.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
+[heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-design]: 07-data-and-distillation-design-04.md#supplied-heading-shift-and-return-words-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13

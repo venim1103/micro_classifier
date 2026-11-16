@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §371 for supplied heading shift/return residuals;
+Read [REVIEW.md][review] §372 for intact normalization checkpoint archival;
+§371 records supplied heading shift/return residuals;
 §370 records actual heading operand retention;
 §369 records closed actual-consumed quotient joins;
 §368 records intact initial-source checkpoint archival;
@@ -237,6 +238,8 @@ The first root timeout remains spent/unknown; recovery used the same360s deadlin
 Canonical nonfinite inputs block both ratios with zero arithmetic. Next add the
 separate default-off actual-source heading join, without duplicating floor reports,
 replaying primitives or adopting heading-wrap/uniform-error obligations.
+Whole366-370 checkpoints are archived intact, including the archival checker/
+premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole361-365 checkpoint archival is complete, including failed fixtures and the
 spent/unknown interrupted root; historical anchors and topic links remain intact.
 Named source/setup auditors and motion/registration/request consumers remain

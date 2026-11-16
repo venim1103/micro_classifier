@@ -2616,9 +2616,9 @@ Fraction controls and the spent timed-out root plus same-deadline recovery.
 
 [current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
 [normalization-division-review]: ../review/361-365.md#365-supplied-normalization-division-residuals-2026-11-16
-[current-normalization-comparison-review]: ../../REVIEW.md#366-closed-current-later-period-comparisons-2026-11-16
+[current-normalization-comparison-review]: ../review/366-370.md#366-closed-current-later-period-comparisons-2026-11-16
 [consumed-divisor-design]: 07-data-and-distillation-design-01.md#actual-consumed-normalization-divisor-2026-11-16
-[consumed-normalization-join-review]: ../../REVIEW.md#369-closed-actual-consumed-quotient-joins-2026-11-16
-[heading-operands-review]: ../../REVIEW.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
+[consumed-normalization-join-review]: ../review/366-370.md#369-closed-actual-consumed-quotient-joins-2026-11-16
+[heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-review]: ../../REVIEW.md#371-supplied-heading-shift-and-return-residuals-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

@@ -80,8 +80,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 351-355][chapter-review-35]
 - [Checkpoints 356-360][chapter-review-36]
 - [Checkpoints 361-365][chapter-review-37]
+- [Checkpoints 366-370][chapter-review-38]
 
-Checkpoints 366 onward and the source bibliography remain below.
+Checkpoints 371 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -349,141 +350,23 @@ repeated historical handoffs.
 
 ## 366. Closed Current Later-Period Comparisons (2026-11-16)
 
-Begin pushed01f592b; two in-scope source/test edits retained across compaction.
-Add literal default-off include_native_normalization_division to the existing
-native source reader. Its separate later_period_normalization_comparison uses
-retained angle/argument and explicitly labels
-later_heading_period_word_not_consumed_sinc_divisor. This is a comparison with a
-later word, not earlier consumed-divisor capture or pi/sinc/normalization evidence.
-Original/copied/closing reports and sampled source bind before receipt closure,
-then close again after the last producer sample; original RNG identities pinned.
-Unsupported/changed data stays unknown without partial source/frame/report output.
-
-Fresh16/60s, necessary repair reserve16/60s, root360s. First16 PASS4.39s/
-5072 deselected; root PASS6011/known QDQ1 xfail/77 warnings210.20s. Ruff/changed
-format/whitespace/four tested hashes PASS. Exact false-option source AST and all
-unrelated source/control AST conserved; two prior resolved callers compatible.
-No failed or repeated green gate. Reuse existing bounded integration fixture:
-two report passes per segment, at most128 segments/256 scalar calls, six
-observations/two native samples/two receipt validations, at most96+2N digests.
-Direct Fraction oracle and copy/final report/pose/RNG faults checked; default/off
-adds no report group/calls. No replay, extra RNG, sinc/trig or clock execution.
-
-Eight flags false; ten-stage arithmetic and unsupported obligations unchanged.
-No source/numerical/geometry/error/clock acceptance or permission. No C/Arm/model/
-study/dependency/download/hardware action. Ignored `.git/returns-366-*` logs/hashes
-retained. Next trace the actual earlier divisor at its owning expression without
-new arithmetic or relabeling this later comparison as consumed-source evidence.
+[Complete unchanged checkpoint][review-366-370-preserved-0] is preserved in the archive.
 
 ## 367. Actual Consumed Normalization Divisor Retention (2026-11-16)
 
-Begin clean pushed41d3e41. Name the existing earlier 2*pi value at integrate's
-normalization expression, consume it once and retain sinc_divisor_rad in the
-already opt-in computed source. No new multiplication/division/sinc/trig, RNG,
-receipt/wire contract or changed two-value result. Two closed source validators
-require its finite builtin float; ten-stage arithmetic stays ten-stage with the
-same explicitly unsupported normalization/pi/sinc obligations.
-
-Fresh16/60s, affected existing controls<=256/90s, one diagnosed necessary repair
-reserve16/60s, root360s. First4 FAIL10.61s KeyError missing divisor, including
-synthetic later-period differentiation; after source repair, only failed4
-PASS0.53s. Remaining12 plus34 affected controls PASS46/5058 deselected5.39s.
-Root PASS6027/known QDQ1 xfail/77 warnings233.47s. Ruff/changed format/whitespace/
-four tested hashes PASS. Inlining the named divisor and removing the one source
-field/two validator keys gives exact prior owning-operation/source AST; all
-unrelated source/control AST unchanged. Pylance actual integrate references traced;
-no API signature change. The root includes existing host/Python-C parity,
-ASan/UBSan and Cortex-M55 hard-float object controls, with no skips. C source
-unchanged; these controls are not linked firmware or board/fit evidence.
-
-Four direct owning-expression controls use one existing sinc call each; the
-later-period probe changes only a synthetic later pi lookup, not a pi/error law.
-Existing fixtures supply remaining source words, with no additional episode.
-Current reads stay<=6 observations/2 native samples/64 digests; source/copy/retained/
-final joins and missing/nonfinite/bool/numpy faults checked without replay.
-All flags false; no uniform native error, accepted source/geometry/clock or
-permission. Failed positions and `.git/returns-367-*` logs/hashes retained.
-Next add a distinct default-off actual-consumed quotient join; preserve the later
-comparison's explicit provenance limit and unchanged ten-stage report.
+[Complete unchanged checkpoint][review-366-370-preserved-1] is preserved in the archive.
 
 ## 368. Intact Initial Source Checkpoint Archival (2026-11-16)
 
-Begin clean pushede9de193. Move whole361-365 blocks, including retention's missing
-tick0 delivery probe, retained-reader interrupted/unknown root, startup fixture/
-closing-input failures and all spent ledgers, to the linked archive. Five historical
-headings/anchors remain in this reading map; four chapter01/04 links rebased.
-No source/consumer changes or renewed authority/qualification. One bounded bulk
-transform; exact blocks/heading order/topic changes, ten local targets, whitespace
-and four previously tested source hashes PASS. Root843/archive156 lines before
-this note. The first post-note checker failed an incorrect expectation that368
-follow Sources; the archive bytes/old heading order were intact. Shell semicolon
-sequencing still committed/pushed1224ed7 before the remaining assertions ran.
-Corrected bibliography-order validation then passed all conservation/target checks;
-this follow-up retains the failed check and premature sequencing, without rewriting
-history. Code suite not rerun for documentation-only work. Ignored before-layout
-snapshots/bulk utility remain in the session folder, not portable test evidence.
-Next add the separate actual-consumed quotient join under existing source closure;
-no later-period substitution or new arithmetic stages.
+[Complete unchanged checkpoint][review-366-370-preserved-2] is preserved in the archive.
 
 ## 369. Closed Actual-Consumed Quotient Joins (2026-11-16)
 
-Begin clean pushede3adea2. Add independent literal default-off
-include_native_consumed_normalization_division to the native source reader.
-The separate consumed_normalization_division group uses the retained earlier
-sinc_divisor_rad, not later period_rad. Reuse existing local report/closure logic;
-both groups can be enabled independently or together. Original/copied/closing
-groups/source bind before receipt closure and are all rechecked after the last
-producer sample with pinned original RNG identities. Default/later output and
-ten-stage arithmetic remain unchanged; no extra capture/replay/primitive evaluation.
-
-Fresh scope refined before first execution from17 to19/60s for distinct-word
-selection and zero-divisor unknown; necessary repair reserve19/60s, root360s.
-Reuse the existing16-control harness rather than duplicate it. First19
-PASS5.00s/5104 deselected; root PASS6046/known QDQ1 xfail/77 warnings211.54s.
-Ruff/changed format/whitespace/four tested hashes and exact default-core/unrelated
-source/control AST PASS; Pylance2 prior resolved callers compatible. No failed or
-repeated green gate. At most2 reports/segment/mode,128 segments/512 combined calls,
-six observations/two samples/two receipt validations,<=128+4N digests.
-Direct Fraction oracle, independent/combined/default modes, original/copy/closing/
-final report/pose/RNG faults and zero-divisor unknown checked. The distinct-period
-fixture modifies matched cache words only to falsify field substitution; it is not
-independent provenance or an accepted native program/domain observation.
-
-Eight flags false; consumed-source correspondence does not qualify pi, sinc,
-uniform native error, geometry, clock, application or permission. No producer/C/
-Arm/model/study/dependency/download/hardware changes. Ignored `.git/returns-369-*`
-logs/hashes retained. Next trace remaining native heading consumed operands, without
-inventing modulo/rounding laws, duplicating floor reports or accepting error bounds.
+[Complete unchanged checkpoint][review-366-370-preserved-3] is preserved in the archive.
 
 ## 370. Actual Heading Shift and Return Operand Retention (2026-11-16)
 
-Begin pushedf44fa41. A concrete review found369's shared test harness had broadened
-single-mode digest96+2N to combined128+4N. Restore the original per-family ceiling;
-only combined mode retains the larger cap. Immediate repaired later-valid/
-consumed-valid2 PASS6.84s; retain the oversight, not a claim of the earlier stricter
-gate. Then name/retain the two actual pi reads used by heading shift and return
-subtraction as heading_shift_offset_rad/heading_return_offset_rad. No new arithmetic,
-modulo replay, RNG or changed native output. Closed source validators require both
-finite builtin words; ten-stage arithmetic/unsupported obligations unchanged.
-
-Fresh16/60s, affected controls<=64/90s, necessary repair reserve16/60s, root360s.
-First4 FAIL7.19s missing shift operand; bounded addition instrumentation already
-distinguished the earlier/later lookup. Source repair; only failed4 PASS0.47s.
-Remaining12 plus46 affected controls PASS58/5081 deselected5.49s. Root PASS6062/
-known QDQ1 xfail/77 warnings233.33s. Ruff/changed format/whitespace/four tested hashes
-PASS; inlining two named reads/removing two fields and four validator keys gives
-exact owning-operation/source AST, with unrelated source/control AST unchanged.
-No signature change. Existing Python-C/host/sanitizer/M55 hard-float controls ran
-in the root with no skips; C source unchanged, not firmware/board/fit evidence.
-
-Four direct producer calls, one synthetic traced addition in the distinct-offset
-control; no new episode beyond existing fixtures. Missing/nonfinite/current/final
-offset faults checked; current read<=6 observations/2 samples/64 digests preserved.
-All flags false; operand words do not establish pi/modulo/rounding correctness,
-uniform native error, geometry/clock/source acceptance or permission. No model/
-study/dependency/download/hardware work. Failed positions and `.git/returns-370-*`
-evidence retained. Next supplied-word shift/return comparisons, not floor-law
-duplication or extension of the ten-stage report.
+[Complete unchanged checkpoint][review-366-370-preserved-4] is preserved in the archive.
 
 ## 371. Supplied Heading Shift and Return Residuals (2026-11-16)
 
@@ -516,6 +399,19 @@ uniform native error/source/geometry/clock acceptance or permission. Producer/C/
 Arm/model/study/dependency/download/hardware unchanged. All failed/unknown positions
 and `.git/returns-371-*` logs/hashes retained. Next a separate default-off actual
 heading-word join, not a new wrap/floor law or ten-stage report extension.
+
+## 372. Intact Normalization Checkpoint Archival (2026-11-16)
+
+Begin clean pushed022fbc1. Move whole366-370 blocks with consumed-source repros,
+archival checker/premature commit sequencing failure and per-family digest-ceiling
+oversight/repair intact. Five historical headings/anchors remain; five chapter01/04
+links rebased. No new qualification, authority or source/consumer change.
+One bounded bulk transform; exact blocks/old heading order/topic changes, eleven
+local targets, whitespace and four previously tested source hashes PASS.
+Root843/archive140 lines before this note. Code suite not rerun for documentation-
+only work. Ignored before-layout snapshots/utility remain in the session folder,
+not portable test evidence. Next the distinct default-off actual heading-word join;
+preserve standalone supplied-word and existing ten-stage limits.
 
 ## Sources
 
@@ -895,6 +791,7 @@ Methods and measurements:
 [chapter-review-35]: docs/review/351-355.md
 [chapter-review-36]: docs/review/356-360.md
 [chapter-review-37]: docs/review/361-365.md
+[chapter-review-38]: docs/review/366-370.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -952,3 +849,8 @@ Methods and measurements:
 [review-361-365-preserved-2]: docs/review/361-365.md#363-conditional-owned-initial-rest-startup-2026-11-16
 [review-361-365-preserved-3]: docs/review/361-365.md#364-intact-initial-source-checkpoint-archival-2026-11-16
 [review-361-365-preserved-4]: docs/review/361-365.md#365-supplied-normalization-division-residuals-2026-11-16
+[review-366-370-preserved-0]: docs/review/366-370.md#366-closed-current-later-period-comparisons-2026-11-16
+[review-366-370-preserved-1]: docs/review/366-370.md#367-actual-consumed-normalization-divisor-retention-2026-11-16
+[review-366-370-preserved-2]: docs/review/366-370.md#368-intact-initial-source-checkpoint-archival-2026-11-16
+[review-366-370-preserved-3]: docs/review/366-370.md#369-closed-actual-consumed-quotient-joins-2026-11-16
+[review-366-370-preserved-4]: docs/review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16

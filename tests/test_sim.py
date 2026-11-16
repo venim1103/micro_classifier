@@ -19360,6 +19360,210 @@ def test_native_integration_arithmetic_discrepancies(
     "case",
     (
         "valid",
+        "default",
+        "explicit_off",
+        "detached",
+        "bad_bool",
+        "permission",
+        "missing_sample",
+        "stale",
+        "report_flag",
+        "report_words",
+        "original_changed",
+        "copied_changed",
+        "closing_changed",
+        "final_report_changed",
+        "final_pose",
+        "final_rng",
+    ),
+)
+def test_current_later_period_normalization(
+    c1_native_integration_snapshot_fixture, monkeypatch, case
+):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    segments = deepcopy(owner._integration_sample["segments"])
+    count = len(segments)
+    assert 1 <= count <= 128
+    original_report = diagnostics._native_sinc_argument_division_residuals
+    original_copy = diagnostics.deepcopy
+    original_observation = RoverEnv._observation
+    original_check = diagnostics._check_simulator_receipt_history
+    original_sample = diagnostics._sample_simulator_native_integration_source
+    original_digest = diagnostics._c1_source_binding_digest
+    first = copied = None
+    work = dict.fromkeys(
+        ("report", "observation", "check", "sample", "digest", "forbidden"), 0
+    )
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    if case == "missing_sample":
+        owner._integration_sample = None
+    elif case == "stale":
+        environment.position[0] = math.nextafter(environment.position[0], math.inf)
+
+    def report(*args, **kwargs):
+        nonlocal first
+        work["report"] += 1
+        assert work["report"] <= 2 * count
+        result = original_report(*args, **kwargs)
+        if work["report"] == 1:
+            first = result
+            if case == "report_flag":
+                result["source_qualified"] = True
+            elif case == "report_words":
+                result["input_hex"] = ()
+        elif work["report"] == count + 1:
+            if case == "original_changed":
+                first["source_qualified"] = True
+            elif case == "closing_changed":
+                result["source_qualified"] = True
+        return result
+
+    def copy(value, *args, **kwargs):
+        nonlocal copied
+        result = original_copy(value, *args, **kwargs)
+        if type(value) is dict and "comparison_divisor_source" in value:
+            copied = result
+            if case == "copied_changed":
+                result["entries"][0]["residuals"]["source_qualified"] = True
+        return result
+
+    def observation(self):
+        work["observation"] += 1
+        assert work["observation"] <= 6
+        result = original_observation(self)
+        if work["observation"] == 6:
+            if case == "final_report_changed":
+                copied["entries"][0]["residuals"]["source_qualified"] = True
+            elif case == "final_pose":
+                self.position[0] = math.nextafter(self.position[0], math.inf)
+            elif case == "final_rng":
+                self.rng = original_copy(self.rng)
+                owner._simulator_rng = self.rng
+        return result
+
+    def check(*args, **kwargs):
+        work["check"] += 1
+        assert work["check"] <= 2
+        return original_check(*args, **kwargs)
+
+    def sample(*args, **kwargs):
+        work["sample"] += 1
+        assert work["sample"] <= 2
+        return original_sample(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 96 + 2 * count
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("later-period comparisons must not replay/trig/sinc/draw")
+
+    monkeypatch.setattr(diagnostics, "_native_sinc_argument_division_residuals", report)
+    monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", sample
+    )
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(np, "sinc", forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    options = {"synthetic_test_only": case != "permission"}
+    if case != "default":
+        options["include_native_normalization_division"] = (
+            1 if case == "bad_bool" else case != "explicit_off"
+        )
+    if case in ("permission", "bad_bool"):
+        with pytest.raises(ValueError):
+            owner.snapshot_native_integration_source(**options)
+        assert work["report"] == work["observation"] == 0
+    else:
+        result = owner.snapshot_native_integration_source(**options)
+        valid = case in ("valid", "default", "explicit_off", "detached")
+        assert result["snapshot_available"] is valid
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if case in ("default", "explicit_off"):
+            assert "later_period_normalization_comparison" not in result
+            assert work["report"] == 0
+        elif valid:
+            group = result["later_period_normalization_comparison"]
+            assert group["comparison_divisor_source"] == (
+                "later_heading_period_word_not_consumed_sinc_divisor"
+            )
+            assert group["source_epoch"] == owner._epoch
+            assert group["source_binding"] == original_digest(result["source"])
+            assert len(group["entries"]) == count
+            for index, entry in enumerate(group["entries"]):
+                values = segments[index]["values"]
+                exact = Fraction.from_float(values["angle_rad"]) / Fraction.from_float(
+                    values["period_rad"]
+                )
+                residual = Fraction.from_float(values["sinc_argument"]) - exact
+                assert entry["segment_index"] == index
+                assert entry["segment_source_binding"] == original_digest(
+                    segments[index]
+                )
+                assert (
+                    entry["residuals"]["exact_quotient_ratio"]
+                    == exact.as_integer_ratio()
+                )
+                assert (
+                    entry["residuals"]["signed_residual_ratio"]
+                    == residual.as_integer_ratio()
+                )
+            assert work["report"] == 2 * count
+            assert work["observation"] == 6
+            assert work["sample"] == work["check"] == 2
+            if case == "detached":
+                group["entries"][0]["residuals"]["input_hex"] = ()
+                assert first["input_hex"]
+                assert owner._integration_sample["segments"] == segments
+        else:
+            assert result["status"] == "unknown"
+            assert result["reason"]
+            for key in (
+                "source",
+                "current_frame",
+                "later_period_normalization_comparison",
+            ):
+                assert key not in result
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
         "missing_sample",
         "missing_cache",
         "epoch",

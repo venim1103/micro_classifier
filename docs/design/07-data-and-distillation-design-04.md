@@ -2544,6 +2544,27 @@ physical or command qualification follows.
 The [supplied normalization checkpoint][normalization-division-review] records
 bounded direct rational controls and the required gate.
 
+##### Current Later-Period Comparison (2026-11-16)
+
+The native source reader's literal default-off `include_native_normalization_division`
+adds a separate `later_period_normalization_comparison`, not an eleventh supported
+integration stage. Each entry joins its source/segment binding to the supplied-word
+diagnostic above using retained angle, **later heading period** and sinc-argument
+words. `comparison_divisor_source` explicitly names
+`later_heading_period_word_not_consumed_sinc_divisor`; equal words or zero residual
+do not establish the earlier consumed divisor, pi correctness or sinc behavior.
+
+Original/copied/closing groups and source words bind before final producer/owner
+closure and are rechecked after the last producer sample, with original RNG
+identities pinned. Changed/unsupported input yields unknown without source/frame/
+comparison publication. At most two scalar report passes over the existing128
+segments; no producer or primitive replay, extra RNG or new retained intermediate.
+Default output and ten-stage arithmetic remain unchanged. All eight flags false;
+no native uniform error, accepted geometry/source/clock or command permission.
+The [current comparison checkpoint][current-normalization-comparison-review]
+records bounded rational and closing-mutation controls.
+
 [current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
 [normalization-division-review]: ../../REVIEW.md#365-supplied-normalization-division-residuals-2026-11-16
+[current-normalization-comparison-review]: ../../REVIEW.md#366-closed-current-later-period-comparisons-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §365 for supplied normalization division residuals;
+Read [REVIEW.md][review] §366 for closed current later-period comparisons;
+§365 records supplied normalization division residuals;
 §364 records intact initial-source checkpoint archival;
 §363 records conditional owned initial-rest startup;
 §362 records bounded retained initial-source reading;
@@ -212,8 +213,11 @@ Supplied angle/divisor/normalized-argument quotient residuals and their required
 gate are complete. The divisor is explicitly caller-supplied, not pi or a captured
 earlier native operand; later period_rad is not that capture. Existing ten-stage
 integration diagnostics remain unchanged and unsupported normalization/pi/sinc
-obligations are not adopted. Next trace supportable source correspondence without
-replaying native primitives, duplicating reports or qualifying error.
+obligations are not adopted. Independent default-off current later-period
+comparisons and their required gate are complete, with original/copy/closing/final
+bindings and pinned RNG identities. The comparison labels the later heading-period
+word, not the earlier consumed sinc divisor. Next trace the missing actual consumed
+divisor at its owning expression, without replay, extra arithmetic or qualification.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

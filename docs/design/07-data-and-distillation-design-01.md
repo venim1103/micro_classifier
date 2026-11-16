@@ -967,6 +967,11 @@ cache and producer words after each observation and rejects malformed original/
 closing current owners before indexing; source/arithmetic readers preserve their
 existing work limits and unknown-without-partial-output behavior.
 
+The optional [later-period comparison][current-normalization-comparison-design]
+uses a separate default-off output, with original/copy/closing reports bound again
+after final producer sampling. It explicitly does not identify the earlier
+consumed sinc divisor or extend the ten supported arithmetic stages.
+
 
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
 
@@ -2361,6 +2366,7 @@ figure is not an established minimum.
 [native-tof-timing-delivery-review]: ../review/183-220.md#216-retained-tof-timing-delivery-correspondence-2026-11-09
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
+[current-normalization-comparison-design]: 07-data-and-distillation-design-04.md#current-later-period-comparison-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

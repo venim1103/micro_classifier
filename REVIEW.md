@@ -480,6 +480,34 @@ download/hardware action. Ignored `.git/returns-365-*` focused/root/hash evidenc
 retained. Next trace independently supportable native source correspondence; no
 later-period substitution, duplicate integration report or guessed error bound.
 
+## 366. Closed Current Later-Period Comparisons (2026-11-16)
+
+Begin pushed01f592b; two in-scope source/test edits retained across compaction.
+Add literal default-off include_native_normalization_division to the existing
+native source reader. Its separate later_period_normalization_comparison uses
+retained angle/argument and explicitly labels
+later_heading_period_word_not_consumed_sinc_divisor. This is a comparison with a
+later word, not earlier consumed-divisor capture or pi/sinc/normalization evidence.
+Original/copied/closing reports and sampled source bind before receipt closure,
+then close again after the last producer sample; original RNG identities pinned.
+Unsupported/changed data stays unknown without partial source/frame/report output.
+
+Fresh16/60s, necessary repair reserve16/60s, root360s. First16 PASS4.39s/
+5072 deselected; root PASS6011/known QDQ1 xfail/77 warnings210.20s. Ruff/changed
+format/whitespace/four tested hashes PASS. Exact false-option source AST and all
+unrelated source/control AST conserved; two prior resolved callers compatible.
+No failed or repeated green gate. Reuse existing bounded integration fixture:
+two report passes per segment, at most128 segments/256 scalar calls, six
+observations/two native samples/two receipt validations, at most96+2N digests.
+Direct Fraction oracle and copy/final report/pose/RNG faults checked; default/off
+adds no report group/calls. No replay, extra RNG, sinc/trig or clock execution.
+
+Eight flags false; ten-stage arithmetic and unsupported obligations unchanged.
+No source/numerical/geometry/error/clock acceptance or permission. No C/Arm/model/
+study/dependency/download/hardware action. Ignored `.git/returns-366-*` logs/hashes
+retained. Next trace the actual earlier divisor at its owning expression without
+new arithmetic or relabeling this later comparison as consumed-source evidence.
+
 ## Sources
 
 Hardware and tools:

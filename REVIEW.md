@@ -81,8 +81,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 356-360][chapter-review-36]
 - [Checkpoints 361-365][chapter-review-37]
 - [Checkpoints 366-370][chapter-review-38]
+- [Checkpoints 371-375][chapter-review-39]
 
-Checkpoints 371 onward and the source bibliography remain below.
+Checkpoints 376 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -370,136 +371,38 @@ repeated historical handoffs.
 
 ## 371. Supplied Heading Shift and Return Residuals (2026-11-16)
 
-Begin clean pushede64c279. Add standalone _native_heading_offset_residuals for
-supplied heading increment/shift offset/shifted result and wrapped heading/return
-offset/next yaw words. Exact addition/subtraction and signed observed-minus-exact
-ratios use existing bounded C1 arithmetic; no source read, pi/modulo/floor/trig/
-sinc/rounding law or extension of ten-stage integration arithmetic.
-Extract the unchanged normalization canonical-word parser for shared use, preserving
-its exact errors and raw canonical nonfinite behavior.
-
-Fresh16/60s, necessary repair reserve16/60s, root360s. First16 plus16 affected parser
-controls PASS32/5123 deselected5.53s. First root EXIT124 at360s near86%/5293 result
-markers, intact5877-byte log/no NUL and four hashes unchanged. No assertion summary
-or pass; this position stays spent/unknown. No pytest process remained. One bounded
-collection query6079 items located the next unchanged top-relative work-limit
-control; isolated PASS0.53s/elapsed0.944s. Host visible/affinity20 CPUs, load
-9.90/12.00/7.51, no cgroup CPU quota/throttling; no cause/OOM attribution.
-One fresh necessary recovery at the SAME360s deadline PASS6078/known QDQ1 xfail/
-77 warnings283.40s, with Ruff/format/whitespace/four hashes PASS. Exact parser
-extraction/unrelated source/control AST PASS; no source repair, relaxed deadlines
-or repeated green gate.
-
-Finite work6 conversions/4 binaries under4096-bit growth/32-character word limits.
-Fraction controls cover rounded/negative/distinct offsets, signed-zero words and
-subnormal residuals. Any canonical nonfinite word leaves both stages' ratios None
-with zero arithmetic, not partial success. Malformed/overlong/noncanonical/non-string/
-permission/budget faults raise explicit errors. Eight flags false; no pi/heading-wrap/
-uniform native error/source/geometry/clock acceptance or permission. Producer/C/
-Arm/model/study/dependency/download/hardware unchanged. All failed/unknown positions
-and `.git/returns-371-*` logs/hashes retained. Next a separate default-off actual
-heading-word join, not a new wrap/floor law or ten-stage report extension.
+[Complete unchanged checkpoint][review-371-375-preserved-0] is preserved in the archive.
 
 ## 372. Intact Normalization Checkpoint Archival (2026-11-16)
 
-Begin clean pushed022fbc1. Move whole366-370 blocks with consumed-source repros,
-archival checker/premature commit sequencing failure and per-family digest-ceiling
-oversight/repair intact. Five historical headings/anchors remain; five chapter01/04
-links rebased. No new qualification, authority or source/consumer change.
-One bounded bulk transform; exact blocks/old heading order/topic changes, eleven
-local targets, whitespace and four previously tested source hashes PASS.
-Root843/archive140 lines before this note. Code suite not rerun for documentation-
-only work. Ignored before-layout snapshots/utility remain in the session folder,
-not portable test evidence. Next the distinct default-off actual heading-word join;
-preserve standalone supplied-word and existing ten-stage limits.
+[Complete unchanged checkpoint][review-371-375-preserved-1] is preserved in the archive.
 
 ## 373. Closed Current Heading-Offset Reports (2026-11-16)
 
-Begin clean pushede43bc50. Add independent literal default-off
-include_native_heading_offsets to the native source reader. native_heading_offsets
-joins the six retained heading/shift/return/result words to the supplied diagnostic,
-explicitly naming consumed owned words, not pi/modulo qualification.
-Reuse local bounded report creation/metadata checks and original/copied/closing/
-final bindings for every enabled group. No producer/capture/primitive replay or
-ten-stage extension; prior default/later/consumed outputs unchanged.
-
-Fresh21/60s, necessary repair reserve21/60s, root360s. First21
-PASS6.01s/5155 deselected; root PASS6099/known QDQ1 xfail/77 warnings240.81s.
-Ruff/changed format/whitespace/four tested hashes/default-core/unrelated source/
-control AST PASS; Pylance2 prior resolved callers compatible. No failed or repeated
-green gate. Reuse existing harness/fixture, covering all eight enabling combinations,
-Fraction shift/return oracles, original/copy/closing/final report/pose/RNG faults,
-distinct operands and missing-word unknown without partial publication.
-Prior single96+2N/paired128+4N digests preserved; only all3 uses160+6N.
-At most128 segments/768 scalar report calls,6 observations/2 samples/2 receipt
-validations. Distinct matching cache words are synthetic field-selection controls,
-not independent source/domain acceptance.
-
-Eight flags false; no pi/modulo/heading-wrap/uniform native error/source/geometry/
-clock/application acceptance or permission. Producer/C/Arm/model/study/dependency/
-download/hardware unchanged; `.git/returns-373-*` logs/hashes retained.
-Next test the concrete default-reader closing RNG identity boundary already pinned
-by the optional modes; no general audit, invented bound or new arithmetic stage.
+[Complete unchanged checkpoint][review-371-375-preserved-2] is preserved in the archive.
 
 ## 374. Closed Default Native Reader Epoch Identities (2026-11-16)
 
-Begin clean pushedde5a194. Concrete default-reader closure question reproduced
-false source/arithmetic availability after coordinated producer/owner/native-cache/
-motion-cache RNG or odometry reference replacement at final observation, and after
-the first source read during arithmetic. Equal generator state is not the original
-epoch object. Make native source original-reference checks unconditional; pin the
-arithmetic wrapper's original bound references across both reads/probe and recheck
-producer/owner references with a type guard at closing. Valid default output,
-report shapes/flags, words and ten-stage arithmetic remain unchanged.
-
-Fresh6/60s, affected controls<=64/90s, necessary repair reserve6/60s, root360s.
-First6 FAIL11.32s false availability; source/outer wrapper repair, only failed6
-PASS1.12s. Existing24 closing controls PASS5.07s/5158 deselected.
-Root PASS6105/known QDQ1 xfail/77 warnings276.04s. Ruff/changed format/whitespace/
-four tested hashes/pin-only source change/unrelated source/control AST PASS.
-No signature change, relaxed work limits or repeated green gate. Reuse existing
-fixture without new producer steps; source/arithmetic6/12 observations,2/4 samples/
-receipt validations,64/160 digests and one arithmetic probe remain bounded.
-
-All flags false; two-point identity closure is not adversarial/concurrent atomicity,
-epoch authenticity, clock/application/source acceptance, uniform numerical/physical
-qualification or permission. No producer/C/Arm/model/study/dependency/download/
-hardware action. External mutations are not rolled back. Failed positions and
-`.git/returns-374-*` logs/hashes retained. Next trace the directly invoked receipt
-reader's owning epoch closure, not a general audit or new arithmetic stage.
+[Complete unchanged checkpoint][review-371-375-preserved-3] is preserved in the archive.
 
 ## 375. Closed Owning Receipt Epoch Identities (2026-11-16)
 
-Begin pushed7682aba with the owned untested receipt test expansion recovered after
-compaction. Verify main/origin-main0/0, Python3.12.3 at /opt/venv/bin/python,
-Ruff0.17.0 and existing cc/Arm compiler; shared environment, not a task sandbox.
-The directly invoked receipt reader falsely returned availability after coordinated
-producer/owner/receipt-cache/native-cache RNG or odometry object replacement during
-its final observation, in all eight report combinations. A malformed bool producer
-raised AttributeError before its guarded read. Check actual producer type before
-attribute access; pin original producer references before observations and require
-them at closing. Valid outputs, report shapes, words and flags remain unchanged.
+[Complete unchanged checkpoint][review-371-375-preserved-4] is preserved in the archive.
 
-Fresh17/60s, necessary repair reserve17/60s, affected controls<=64/90s, root360s.
-First17 FAIL15.62s:16 false availabilities plus the uncaught exception. Narrow source
-repair, only failed17 PASS0.94s; existing10 current/content-closing controls
-PASS4.98s/5189 deselected. Root PASS6122/known QDQ1 xfail/77 warnings209.96s.
-Ruff/changed format/whitespace/four tested hashes/pin-and-type-guard-only source
-change/unrelated source/control AST PASS. No signature change, relaxed fixture/work
-limits or repeated unchanged green gate. Reuse the existing fixture without added
-producer steps/draws; <=2 observations/one history validation,32+16 digests per
-enabled family (max80), <=2 calls per scalar report helper. External mutations are
-not rolled back. The default root's existing C controls passed with no skips; this
-is not linked firmware, board execution, fit or task-quality evidence.
+## 376. Intact Heading and Receipt Checkpoint Archival (2026-11-16)
 
-All eight flags false; pointwise identity closure is not atomicity against
-concurrent/adversarial mutation, epoch/source authenticity, clock/application/
-one-use/admitted-predecessor acceptance, uniform numerical or physical qualification,
-or permission. No producer/C/Arm/model/study/dependency/download/hardware action.
-Failed positions remain spent; `.git/returns-375-*` logs/hashes retained locally.
-Next archive whole371-375 before further review growth, then trace the directly
-receipt-dependent live request consumer's between-read epoch closure. No general
-audit, duplicate arithmetic stage, replay or invented acceptance.
+Begin clean pushed47cd7d3. Move whole371-375, retaining supplied/current heading
+limits, the spent/unknown root timeout and same-deadline recovery, native/receipt
+epoch repros, failed positions and repair gates. Five historical anchors and four
+topic links point to the byte-exact archive; no evidence or authority is renewed.
+
+Bounded one layout query/transformation/conservation check. Exact blocks/heading
+order/topic content, ten local targets, unchanged tested source hashes and whitespace
+PASS before fail-fast scoped commit. No failed checker or transformation, code
+edit, code-suite rerun, qualification or protected study/model/dependency/download/
+hardware action. Local before-layout copies retained in session files.
+Next trace the directly receipt-dependent live request consumer's between-read
+epoch closure; keep all flags false and actual independent acceptance missing.
 
 ## Sources
 
@@ -880,6 +783,7 @@ Methods and measurements:
 [chapter-review-36]: docs/review/356-360.md
 [chapter-review-37]: docs/review/361-365.md
 [chapter-review-38]: docs/review/366-370.md
+[chapter-review-39]: docs/review/371-375.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -942,3 +846,8 @@ Methods and measurements:
 [review-366-370-preserved-2]: docs/review/366-370.md#368-intact-initial-source-checkpoint-archival-2026-11-16
 [review-366-370-preserved-3]: docs/review/366-370.md#369-closed-actual-consumed-quotient-joins-2026-11-16
 [review-366-370-preserved-4]: docs/review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
+[review-371-375-preserved-0]: docs/review/371-375.md#371-supplied-heading-shift-and-return-residuals-2026-11-16
+[review-371-375-preserved-1]: docs/review/371-375.md#372-intact-normalization-checkpoint-archival-2026-11-16
+[review-371-375-preserved-2]: docs/review/371-375.md#373-closed-current-heading-offset-reports-2026-11-16
+[review-371-375-preserved-3]: docs/review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
+[review-371-375-preserved-4]: docs/review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §375 for closed owning receipt epoch identities;
+Read [REVIEW.md][review] §376 for intact heading/receipt checkpoint archival;
+§375 records closed owning receipt epoch identities;
 §374 records closed default native epoch identities;
 §373 records closed current heading-offset reports;
 §372 records intact normalization checkpoint archival;
@@ -253,6 +254,8 @@ Next trace the receipt-dependent live request consumer's between-read epoch
 closure, not a general audit, replay or qualification.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
+Whole371-375 checkpoints are archived intact, including the spent/unknown root
+timeout, same-deadline recovery and native/receipt closing repros and repairs.
 Whole361-365 checkpoint archival is complete, including failed fixtures and the
 spent/unknown interrupted root; historical anchors and topic links remain intact.
 Named source/setup auditors and motion/registration/request consumers remain

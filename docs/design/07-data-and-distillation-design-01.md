@@ -2402,7 +2402,7 @@ figure is not an established minimum.
 [receipt-history-review]: ../review/183-220.md#190-bounded-source-linked-receipt-history-2026-11-09
 [receipt-pairing-review]: ../review/183-220.md#191-full-retained-source-history-pairing-checks-2026-11-09
 [receipt-snapshot-review]: ../review/183-220.md#192-read-time-actual-producer-history-snapshots-2026-11-09
-[receipt-epoch-review]: ../../REVIEW.md#375-closed-owning-receipt-epoch-identities-2026-11-16
+[receipt-epoch-review]: ../review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16
 [integration-source-review]: ../review/183-220.md#193-actual-native-integration-source-intermediates-2026-11-09
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09
@@ -2435,7 +2435,7 @@ figure is not an established minimum.
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-design]: 07-data-and-distillation-design-04.md#supplied-heading-shift-and-return-words-2026-11-16
 [current-heading-offset-design]: 07-data-and-distillation-design-04.md#current-heading-shift-and-return-reports-2026-11-16
-[native-default-epoch-review]: ../../REVIEW.md#374-closed-default-native-reader-epoch-identities-2026-11-16
+[native-default-epoch-review]: ../review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

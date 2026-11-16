@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §377 for closed live request consumer epochs;
+Read [REVIEW.md][review] §378 for supplied heading remainder discrepancies;
+§377 records closed live request consumer epochs;
 §376 records intact heading/receipt checkpoint archival;
 §375 records closed owning receipt epoch identities;
 §374 records closed default native epoch identities;
@@ -255,8 +256,14 @@ Opt-in live request preparation/rechecking original producer and RNG epoch joins
 and their required gate are complete across both reads and after the closing
 reader returns. The failed initial recheck pin placement is preserved with its
 repair; default-off fixture behavior and work limits remain unchanged.
-Next trace the receipt helper's conditional initial-startup consumer epoch closure,
-not a general audit, replay or qualification.
+The receipt helper's conditional initial-startup consumer already pins producer,
+RNG and retained-source identities through closing reads and consumer work;
+its unchanged green gate was not separately rerun.
+Bounded supplied heading remainder residuals and their required gate are complete,
+including raw nonfinite unknowns and exact large integer quotients. This compares
+caller words to an ideal rational remainder, not a native modulo/pi/error law.
+Next add a separate default-off current-source remainder join with original/copy/
+closing/final ownership checks, without extending the ten-stage report.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole371-375 checkpoints are archived intact, including the spent/unknown root

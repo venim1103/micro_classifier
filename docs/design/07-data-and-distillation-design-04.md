@@ -2614,6 +2614,29 @@ error/source/geometry/clock qualification or permission. The
 [supplied heading checkpoint][supplied-heading-offset-review] records bounded
 Fraction controls and the spent timed-out root plus same-deadline recovery.
 
+##### Supplied Heading Remainder Words (2026-11-16)
+
+Private `_native_heading_remainder_residuals` accepts canonical supplied shifted
+heading, period and wrapped-result words. Its reference is the exact rational
+dividend minus the floor of the exact quotient times the supplied period; it
+reports the reference integer quotient, exact remainder and observed-minus-exact
+ratios. This definition does not adopt a native `%`, floor, rounding or pi law.
+The period is caller-supplied, not consumed-source evidence by itself.
+
+Finite work is three conversions/four bounded rational binaries and one exact
+integer division under the unchanged4096-bit budget. The integer quotient is
+constructed as a Fraction directly, never converted through float; a finite-word
+quotient can exceed floating-point range. Any canonical nonfinite word retains
+raw inputs but leaves all three results None with zero arithmetic. Zero periods,
+malformed words, permission and budget faults raise explicitly. Different zero
+words stay distinct; rational equality does not predict a native zero sign.
+
+No native integration, modulo/floor primitive, trig/sinc, capture or RNG replay;
+existing ground-plane floor reports and the ten-stage integration report are
+unchanged. All eight flags false; no uniform numerical/source/geometry/clock or
+command qualification. The [remainder checkpoint][supplied-heading-remainder-review]
+records a rounded-to-period discrepancy and exact large-quotient controls.
+
 ##### Current Heading Shift and Return Reports (2026-11-16)
 
 The source reader's independent literal default-off `include_native_heading_offsets`
@@ -2644,5 +2667,6 @@ field-selection, combined and final-closure controls.
 [consumed-normalization-join-review]: ../review/366-370.md#369-closed-actual-consumed-quotient-joins-2026-11-16
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-review]: ../review/371-375.md#371-supplied-heading-shift-and-return-residuals-2026-11-16
+[supplied-heading-remainder-review]: ../../REVIEW.md#378-supplied-heading-remainder-word-residuals-2026-11-16
 [current-heading-offset-review]: ../review/371-375.md#373-closed-current-heading-offset-reports-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

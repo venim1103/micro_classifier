@@ -9199,6 +9199,70 @@ def _native_sinc_argument_division_residuals(
     }
 
 
+def _native_heading_remainder_residuals(
+    *,
+    shifted_heading_rad_hex,
+    period_rad_hex,
+    wrapped_heading_rad_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError("heading remainder requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("heading remainder rational budget unsupported")
+    words = (shifted_heading_rad_hex, period_rad_hex, wrapped_heading_rad_hex)
+    values = _canonical_native_word_values(words, "heading remainder")
+    if values[1] == 0:
+        raise ValueError("heading remainder requires a nonzero supplied period")
+    quotient_floor = exact = residual = None
+    if all(math.isfinite(value) for value in values):
+        arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+        try:
+            dividend, divisor, observed = map(arithmetic.value, values)
+            quotient = arithmetic.binary(dividend, divisor, "div")
+            quotient_floor = quotient.numerator // quotient.denominator
+            exact = arithmetic.binary(
+                dividend,
+                arithmetic.binary(Fraction(quotient_floor), divisor, "mul"),
+                "sub",
+            )
+            residual = arithmetic.binary(observed, exact, "sub")
+        except ArithmeticError as error:
+            raise ValueError("heading remainder rational budget exhausted") from error
+    return {
+        "schema": "micro-classifier/native-heading-remainder-residuals/1",
+        "allowed_use": "offline_supplied_heading_remainder_words_only",
+        "status": "computed_exact_supplied_heading_remainder_residual"
+        if residual is not None
+        else "unknown_nonfinite_supplied_heading_remainder_words",
+        "reason": "supplied_remainder_relationship_not_native_modulo_law"
+        if residual is not None
+        else "nonfinite_supplied_heading_period_or_remainder",
+        "comparison_basis": "exact_rational_dividend_minus_floor_quotient_times_supplied_period",
+        "period_basis": "caller_supplied_word_not_pi_or_consumed_period_evidence",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "input_hex": words,
+        "reference_floor_quotient": quotient_floor,
+        "exact_remainder_ratio": None if exact is None else exact.as_integer_ratio(),
+        "signed_residual_ratio": None
+        if residual is None
+        else residual.as_integer_ratio(),
+    }
+
+
 def _native_heading_offset_residuals(
     *,
     heading_increment_rad_hex,

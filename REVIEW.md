@@ -438,6 +438,39 @@ firmware/board/fit evidence. `.git/returns-377-*` logs/hashes retained locally.
 Next trace the receipt helper's conditional initial-startup consumer epoch closure,
 without a general audit, duplicate arithmetic, replay or acceptance invention.
 
+## 378. Supplied Heading Remainder Word Residuals (2026-11-16)
+
+Begin clean pushed2a56062. The six resolved receipt-helper calls include conditional
+initial startup; its producer/RNG/retained identities already pin across both reads
+and final consumer work, so no repair or separate unchanged gate was needed.
+Next compatible Q2 prerequisite: standalone supplied shifted-heading/period/
+wrapped-word residuals against the exact rational ideal remainder. Existing
+ground-plane floor reports, native capture and ten-stage arithmetic are untouched.
+Reuse canonical parser and bounded arithmetic; no native modulo replay or law.
+
+Bounded one synthetic arithmetic snippet: (-minsubnormal)%1 returns1.0, while
+the ideal rational remainder is1-2^-1074 and signed discrepancy2^-1074. This
+pointwise observation is not a rounding law, uniform bound or source acceptance.
+Fresh12/60s, necessary repair reserve12/60s, root360s. First12 PASS4.65s/
+5211 deselected. Add one necessary integer-boundary control/60s: the largest finite
+dividend divided by the smallest subnormal has a >1024-bit floor quotient, which
+must remain exact rather than pass through float conversion. Only new1 PASS5.00s/
+5223 deselected; prior12 not separately rerun. Root PASS6147/known QDQ1 xfail/
+77 warnings202.02s. Ruff/changed format/whitespace/four tested hashes/existing
+source and control AST conservation PASS. No failed attempt or relaxed work/
+bit/deadline/assertion limit. Finite3 conversions/4 rational binaries/one bounded
+exact integer division; nonfinite any-position inputs leave None results with
+zero arithmetic. Explicit zero-period/malformed/permission/budget errors.
+
+All eight flags false; caller period is not consumed-source/pi evidence and zero
+rational residual does not predict word equality or signed-zero selection.
+No uniform native modulo/error, source/geometry/clock/application/one-use/physical
+qualification or permission. Producer/C/Arm/model/study/dependency/download/
+hardware unchanged; existing root C controls passed without skips, not linked
+firmware/board/fit evidence. `.git/returns-378-*` logs/hashes retained locally.
+Next add a separate default-off current-source remainder join, preserving all
+original/copy/closing/final epoch/report bindings and existing per-family ceilings.
+
 ## Sources
 
 Hardware and tools:

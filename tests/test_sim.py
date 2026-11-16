@@ -36229,6 +36229,152 @@ def test_native_action_clipping_diagnostics(
     "case",
     (
         "exact",
+        "negative_period",
+        "round_to_period",
+        "large_quotient",
+        "zero_words",
+        "discrepancy",
+        "nonfinite_heading",
+        "nonfinite_period",
+        "nan_output",
+        "zero_period",
+        "malformed",
+        "permission",
+        "budget",
+    ),
+)
+def test_native_heading_remainder_residuals(monkeypatch, case):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    values = (0.75, 0.5, 0.25)
+    if case == "negative_period":
+        values = (0.75, -0.5, -0.25)
+    elif case == "round_to_period":
+        values = (-float.fromhex("0x0.0000000000001p-1022"), 1.0, 1.0)
+    elif case == "large_quotient":
+        values = (
+            float.fromhex("0x1.fffffffffffffp+1023"),
+            float.fromhex("0x0.0000000000001p-1022"),
+            0.0,
+        )
+    elif case == "zero_words":
+        values = (0.0, 1.0, -0.0)
+    elif case == "discrepancy":
+        values = (*values[:2], 0.5)
+    elif case == "nonfinite_heading":
+        values = (math.inf, *values[1:])
+    elif case == "nonfinite_period":
+        values = (values[0], -math.inf, values[2])
+    elif case == "nan_output":
+        values = (*values[:2], math.nan)
+    elif case == "zero_period":
+        values = (values[0], -0.0, values[2])
+    elif case == "budget":
+        values = (0.1, 0.5, 0.1)
+        monkeypatch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 32)
+    words = tuple(value.hex() for value in values)
+    if case == "malformed":
+        words = ("not-a-word", *words[1:])
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = dict.fromkeys(("value", "binary", "forbidden"), 0)
+
+    def value(self, *args, **kwargs):
+        work["value"] += 1
+        assert work["value"] <= 3
+        return original_value(self, *args, **kwargs)
+
+    def binary(self, *args, **kwargs):
+        work["binary"] += 1
+        assert work["binary"] <= 4
+        return original_binary(self, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("remainder residuals must not evaluate/replay native laws")
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(np, "sinc", forbidden)
+    for name in (
+        "capture_synthetic_c1_views",
+        "_sample_simulator_dynamics_source",
+        "_sample_simulator_native_integration_source",
+        "_native_tof_floor_division_residuals",
+        "_probe_native_integration_arithmetic",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    options = dict(
+        zip(
+            ("shifted_heading_rad_hex", "period_rad_hex", "wrapped_heading_rad_hex"),
+            words,
+            strict=True,
+        ),
+        synthetic_test_only=case != "permission",
+    )
+    if case in ("zero_period", "malformed", "permission", "budget"):
+        with pytest.raises(ValueError):
+            diagnostics._native_heading_remainder_residuals(**options)
+    else:
+        result = diagnostics._native_heading_remainder_residuals(**options)
+        assert result["input_hex"] == words
+        finite = all(math.isfinite(item) for item in values)
+        assert result["status"] == (
+            "computed_exact_supplied_heading_remainder_residual"
+            if finite
+            else "unknown_nonfinite_supplied_heading_remainder_words"
+        )
+        if finite:
+            dividend, divisor, observed = map(Fraction.from_float, values)
+            exact = dividend % divisor
+            quotient = (dividend - exact) / divisor
+            assert quotient.denominator == 1
+            if case == "large_quotient":
+                assert quotient.numerator.bit_length() > 1024
+            assert result["reference_floor_quotient"] == quotient.numerator
+            assert result["exact_remainder_ratio"] == exact.as_integer_ratio()
+            assert (
+                result["signed_residual_ratio"] == (observed - exact).as_integer_ratio()
+            )
+        else:
+            for key in (
+                "reference_floor_quotient",
+                "exact_remainder_ratio",
+                "signed_residual_ratio",
+            ):
+                assert result[key] is None
+        assert (work["value"], work["binary"]) == ((3, 4) if finite else (0, 0))
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "exact",
         "rounded",
         "negative",
         "zero_words",

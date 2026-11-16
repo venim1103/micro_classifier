@@ -22150,7 +22150,8 @@ class _SyntheticC1SourceRecorder:
         from interface.protocol import State
 
         if (
-            type(self._current) is not tuple
+            not isinstance(producer, RoverEnv)
+            or type(self._current) is not tuple
             or len(self._current) != 4
             or not isinstance(self._current[2], State)
             or type(self._current[3]) is not bytes
@@ -22158,6 +22159,7 @@ class _SyntheticC1SourceRecorder:
         ):
             result["reason"] = "unsupported_current_receipt_owner"
             return result
+        rng_before, odometry_before = producer.rng, producer.odometry_rng
         if (
             producer.rng is not self._simulator_rng
             or producer.odometry_rng is not self._simulator_odometry_rng
@@ -22443,6 +22445,8 @@ class _SyntheticC1SourceRecorder:
                 final_sampled_binding != sampled_binding
                 or owner_binding() != binding
                 or self._simulator is not producer
+                or producer.rng is not rng_before
+                or producer.odometry_rng is not odometry_before
                 or producer.rng is not self._simulator_rng
                 or producer.odometry_rng is not self._simulator_odometry_rng
                 or producer._motion_receipt_source is not receipt_source

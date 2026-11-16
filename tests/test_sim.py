@@ -20577,35 +20577,130 @@ def test_synthetic_c1_owned_receipt_history(
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
-@pytest.mark.parametrize("mutation", ("pose", "history"))
+@pytest.mark.parametrize(
+    "mode,mutation",
+    ((0, "pose"), (0, "history"))
+    + tuple(
+        (mode, mutation) for mode in range(8) for mutation in ("rng", "odometry_rng")
+    )
+    + ((0, "producer_type"),),
+)
 def test_synthetic_c1_receipt_snapshot_final_observation(
-    c1_receipt_snapshot_fixture, monkeypatch, mutation
+    c1_receipt_snapshot_fixture, monkeypatch, mode, mutation
 ):
-    _environment, owner = deepcopy(c1_receipt_snapshot_fixture)
+    from functools import partial
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_receipt_snapshot_fixture)
     original_observation = RoverEnv._observation
-    calls = 0
+    original_digest = diagnostics._c1_source_binding_digest
+    original_check = diagnostics._check_simulator_receipt_history
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    work = dict.fromkeys(("observation", "digest", "check", "forbidden"), 0)
+    if mutation == "producer_type":
+        owner._simulator = True
 
     def observation(self):
-        nonlocal calls
-        calls += 1
-        assert calls <= 2
+        work["observation"] += 1
+        assert work["observation"] <= 2
         result = original_observation(self)
-        if calls == 2:
+        if work["observation"] == 2:
             if mutation == "pose":
                 self.position[0] = np.nextafter(self.position[0], math.inf)
-            else:
+            elif mutation == "history":
                 owner._receipt_history[0]["motion_receipt"]["submitted_action"] = (
                     0.25,
                     0.3,
                 )
+            else:
+                replacement = deepcopy(getattr(self, mutation))
+                setattr(self, mutation, replacement)
+                setattr(owner, f"_simulator_{mutation}", replacement)
+                self._motion_receipt_source[mutation] = replacement
+                self._integration_source[mutation] = replacement
         return result
 
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 32 + 16 * mode.bit_count()
+        return original_digest(*args, **kwargs)
+
+    def check(*args, **kwargs):
+        work["check"] += 1
+        assert work["check"] <= 1
+        return original_check(*args, **kwargs)
+
+    def report(name, probe, *args, **kwargs):
+        work[name] = work.get(name, 0) + 1
+        assert work[name] <= 2
+        return probe(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("receipt epoch reads must not replay/capture/draw/clock")
+
     monkeypatch.setattr(RoverEnv, "_observation", observation)
-    result = owner.snapshot_receipt_history(synthetic_test_only=True)
-    assert calls == 2
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
+    for name in (
+        "_native_action_clipping_diagnostics",
+        "_native_speed_update_residuals",
+        "_native_interval_division_residuals",
+        "_native_segment_selection_diagnostics",
+    ):
+        monkeypatch.setattr(
+            diagnostics, name, partial(report, name, getattr(diagnostics, name))
+        )
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(np, "sinc", forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    result = owner.snapshot_receipt_history(
+        include_native_motion_update=bool(mode & 1),
+        include_native_interval_division=bool(mode & 2),
+        include_native_segment_selection=bool(mode & 4),
+        synthetic_test_only=True,
+    )
+    assert work["observation"] == (0 if mutation == "producer_type" else 2)
     assert result["snapshot_available"] is False
-    assert result["reason"] == "producer_or_history_changed_during_snapshot"
-    assert "history" not in result and "current_frame" not in result
+    assert result["reason"] == (
+        "unsupported_current_receipt_owner"
+        if mutation == "producer_type"
+        else "producer_or_history_changed_during_snapshot"
+    )
+    for flag in (
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    ):
+        assert result[flag] is False
+    for key in (
+        "history",
+        "current_frame",
+        "native_motion_update",
+        "native_interval_division",
+        "native_segment_selection",
+    ):
+        assert key not in result
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+    assert work["forbidden"] == 0
 
 
 @pytest.mark.parametrize(

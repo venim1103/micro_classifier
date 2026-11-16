@@ -884,6 +884,12 @@ must match the retained source sample. The complete bounded history is checked,
 copied, then producer/owner content, object identities and source files are
 rechecked before returning `snapshot_available=True`. Stale, missing, unsupported
 or changed data yields unknown without history/current-frame publication.
+The actual producer type is checked before attribute access. Original producer RNG
+and odometry objects are pinned before observations and must still be those same
+objects at closing, not merely agree with mutable owner/cache references.
+Coordinated equal-state replacements stay unknown in every report combination,
+without partial reports; the [epoch checkpoint][receipt-epoch-review] records the
+reproduced false availability, malformed-owner exception and bounded repair gate.
 
 Snapshots are read-only owned diagnostic copies: no step/reset/C1 capture/guard
 query or RNG change. The result names an offline source-history use and leaves
@@ -2396,6 +2402,7 @@ figure is not an established minimum.
 [receipt-history-review]: ../review/183-220.md#190-bounded-source-linked-receipt-history-2026-11-09
 [receipt-pairing-review]: ../review/183-220.md#191-full-retained-source-history-pairing-checks-2026-11-09
 [receipt-snapshot-review]: ../review/183-220.md#192-read-time-actual-producer-history-snapshots-2026-11-09
+[receipt-epoch-review]: ../../REVIEW.md#375-closed-owning-receipt-epoch-identities-2026-11-16
 [integration-source-review]: ../review/183-220.md#193-actual-native-integration-source-intermediates-2026-11-09
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09

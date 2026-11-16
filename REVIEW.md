@@ -468,6 +468,39 @@ hardware action. External mutations are not rolled back. Failed positions and
 `.git/returns-374-*` logs/hashes retained. Next trace the directly invoked receipt
 reader's owning epoch closure, not a general audit or new arithmetic stage.
 
+## 375. Closed Owning Receipt Epoch Identities (2026-11-16)
+
+Begin pushed7682aba with the owned untested receipt test expansion recovered after
+compaction. Verify main/origin-main0/0, Python3.12.3 at /opt/venv/bin/python,
+Ruff0.17.0 and existing cc/Arm compiler; shared environment, not a task sandbox.
+The directly invoked receipt reader falsely returned availability after coordinated
+producer/owner/receipt-cache/native-cache RNG or odometry object replacement during
+its final observation, in all eight report combinations. A malformed bool producer
+raised AttributeError before its guarded read. Check actual producer type before
+attribute access; pin original producer references before observations and require
+them at closing. Valid outputs, report shapes, words and flags remain unchanged.
+
+Fresh17/60s, necessary repair reserve17/60s, affected controls<=64/90s, root360s.
+First17 FAIL15.62s:16 false availabilities plus the uncaught exception. Narrow source
+repair, only failed17 PASS0.94s; existing10 current/content-closing controls
+PASS4.98s/5189 deselected. Root PASS6122/known QDQ1 xfail/77 warnings209.96s.
+Ruff/changed format/whitespace/four tested hashes/pin-and-type-guard-only source
+change/unrelated source/control AST PASS. No signature change, relaxed fixture/work
+limits or repeated unchanged green gate. Reuse the existing fixture without added
+producer steps/draws; <=2 observations/one history validation,32+16 digests per
+enabled family (max80), <=2 calls per scalar report helper. External mutations are
+not rolled back. The default root's existing C controls passed with no skips; this
+is not linked firmware, board execution, fit or task-quality evidence.
+
+All eight flags false; pointwise identity closure is not atomicity against
+concurrent/adversarial mutation, epoch/source authenticity, clock/application/
+one-use/admitted-predecessor acceptance, uniform numerical or physical qualification,
+or permission. No producer/C/Arm/model/study/dependency/download/hardware action.
+Failed positions remain spent; `.git/returns-375-*` logs/hashes retained locally.
+Next archive whole371-375 before further review growth, then trace the directly
+receipt-dependent live request consumer's between-read epoch closure. No general
+audit, duplicate arithmetic stage, replay or invented acceptance.
+
 ## Sources
 
 Hardware and tools:

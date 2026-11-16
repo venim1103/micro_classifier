@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §374 for closed default native epoch identities;
+Read [REVIEW.md][review] §375 for closed owning receipt epoch identities;
+§374 records closed default native epoch identities;
 §373 records closed current heading-offset reports;
 §372 records intact normalization checkpoint archival;
 §371 records supplied heading shift/return residuals;
@@ -244,8 +245,12 @@ The ten-stage report and pi/modulo/floor/error obligations remain unchanged.
 Default native source/arithmetic closing epoch repairs and their required gate are
 complete. Coordinated producer/owner/cache reference replacement and between-read
 replacement stay unknown; matching RNG states are not original object identity.
-Next trace the directly used receipt reader's owning epoch closure, not a general
-audit, replay or qualification.
+Owning receipt closing epoch repairs and their required gate are complete across
+all eight report combinations, including malformed producer rejection before
+attribute access. Original producer references are pinned; coordinated equal-state
+owner/cache replacement stays unknown without partial reports.
+Next trace the receipt-dependent live request consumer's between-read epoch
+closure, not a general audit, replay or qualification.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole361-365 checkpoint archival is complete, including failed fixtures and the

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §382 for the fresh remaining evidence blockers;
+Read [REVIEW.md][review] §383 for closed current native-ToF source sampling;
+§382 records the former remaining evidence assessment;
 §381 records intact consumer/remainder checkpoint archival;
 §380 records intact native-word topic relocation;
 §379 records closed current heading remainder joins;
@@ -275,8 +276,14 @@ Native-word/source topic relocation is complete with24 historical anchors;
 the NF1 body is intact and no premise or authority is adopted. Whole376-380
 archival is complete, including source/consumer repros, arithmetic boundaries and
 both relocation failures/repairs.
-Fresh bounded source/consumer and milestone reassessment found no further justified
-nonduplicative local edit with the current inputs. Q0 accepted setup/source/return/
+The fresh actual continuation found and repaired a current native-ToF source
+closing gap. Both observations precede source-word sampling; closing dynamics
+words are refreshed after the last native intake without another observation.
+Original cache/RNG/odometry/owner identities close after that work. Malformed
+producers stay unknown;2 observations/2 intakes/64 digests and all false flags remain.
+The late-intake pose regression and its repair are retained. Next trace the
+corresponding delivered/pending reader's closing report work, not duplicate reports.
+Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/
 one-use/receipt/predecessor evidence remain absent. Current words and hashes do not

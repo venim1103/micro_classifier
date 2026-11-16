@@ -456,6 +456,39 @@ evidence with actual protected authority where needed, or a new concrete compati
 correctness issue. This is an input/evidence blocker, not missing routine planning/
 testing approval, a renewed historical pause or a permanent no-prerequisite claim.
 
+## 383. Closed Current Native ToF Source Sampling (2026-11-16)
+
+Fresh actual continuation from clean pushed7836428 resumes the queue, not §382's
+former no-identified-edit conclusion. The named S2 current native-ToF snapshot
+copied dynamics words before observing and ran identity/content checks before
+its final observation. Bounded6 new controls reproduced5 false available results
+after final pose/cache/owner/equal-state RNG/odometry changes and1 bool-producer
+AttributeError: first6 FAIL8.35s.
+
+Reuse the existing owning sampler, observe before both native intakes and move
+final producer/owner/cache/epoch/content closure after them. Reject unsupported
+producer type before attribute access. Repaired6 PASS0.73s. Necessary new native
+action control plus prior12:12 PASS/1 old late-intake-pose FAIL5.47s. Moving the last
+observation before the closing intake missed that intake's post-return pose change.
+Extract the unchanged dynamics word builder; refresh closing dynamics using the
+same actual observation after the last intake. Only failed1 PASS0.97s. The combined
+formatter command's shell0 did not make that failed pytest a pass; preserve the
+actual failure and use fail-fast validation before committing.
+
+Necessary exact-source controls add an in-place fresh sample-word bit change and
+pin coordinated odometry replacement to the actual cache as well as owner/producer:
+only these2 PASS4.85s. Total8 new controls; observation/intake/digest and forbidden
+geometry/read/retain/replay/RNG/clock limits remain2/2/64/zero. No new arithmetic,
+capture, admitted command or qualification. All eight flags false.
+
+Required root360s gate:6180 PASS/known QDQ1 xfail/77 warnings196.15s; Ruff/root
+whitespace/changed-file format and Pylance syntax PASS. Exact shared word-builder
+body and unrelated source/test AST conservation, scoped reference and four
+source-hash bracket checks PASS. No C/runtime/wire/default arithmetic change.
+Local pre-source/hash/failure/result logs remain under .git/returns-383-*;
+historical spent positions are not refunded. Next trace corresponding ToF
+delivery closing work under the same conservative source/evidence boundaries.
+
 ## Sources
 
 Hardware and tools:

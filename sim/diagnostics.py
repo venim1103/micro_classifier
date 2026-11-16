@@ -9935,6 +9935,10 @@ def _probe_native_integration_arithmetic(
 
 def _sample_simulator_dynamics_source(environment):
     observation = environment._observation()
+    return _simulator_dynamics_source_words(environment, observation)
+
+
+def _simulator_dynamics_source_words(environment, observation):
     return {
         "tick": environment.tick,
         "pose_m_rad": (*map(float, environment.position), float(environment.yaw)),
@@ -19366,21 +19370,7 @@ class _SyntheticC1SourceRecorder:
             return result
 
         def producer():
-            return {
-                "tick": environment.tick,
-                "pose_m_rad": (
-                    *map(float, environment.position),
-                    float(environment.yaw),
-                ),
-                "native_action": (
-                    float(environment.speed),
-                    float(environment.turn_rate),
-                ),
-                "native_goal_source": deepcopy(environment._native_goal_source),
-                "observation": environment._observation(),
-                "config": asdict(environment.config),
-                "scenario": asdict(environment.scenario),
-            }
+            return _sample_simulator_dynamics_source(environment)
 
         def ownership():
             current = self._current
@@ -19402,6 +19392,8 @@ class _SyntheticC1SourceRecorder:
             )
 
         try:
+            if type(environment) is not RoverEnv:
+                raise TypeError("unsupported native ToF producer")
             if (
                 self._simulator_rng is not environment.rng
                 or self._simulator_odometry_rng is not environment.odometry_rng
@@ -19411,12 +19403,12 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("native ToF producer epoch/tick/files changed")
             rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
             cache_before = environment._native_tof_source
+            observed = producer()
             live_before = _sample_simulator_native_tof_source(environment, self._epoch)
             _check_native_tof_history_layout(self._tof_history, live_before)
             history_binding = _c1_source_binding_digest(self._tof_history)
             if not _native_tof_word_copy_matches(retained, live_before):
                 raise ValueError("native ToF retained words differ from current source")
-            observed = producer()
             producer_binding = _c1_source_binding_digest(observed)
             if producer_binding != _c1_source_binding_digest(
                 {key: dynamics_before.get(key) for key in observed}
@@ -19427,7 +19419,11 @@ class _SyntheticC1SourceRecorder:
             if not _native_tof_word_copy_matches(copied, live_before):
                 raise ValueError("native ToF copy changed during snapshot")
             copied_binding = _c1_source_binding_digest(copied)
+            observed_after = producer()
             live_after = _sample_simulator_native_tof_source(environment, self._epoch)
+            observed_after = _simulator_dynamics_source_words(
+                environment, observed_after["observation"]
+            )
             if (
                 self._simulator is not environment
                 or self._tof_sample is not retained
@@ -19448,7 +19444,7 @@ class _SyntheticC1SourceRecorder:
                 _c1_source_binding_digest(copied) != copied_binding
                 or _c1_source_binding_digest(self._tof_history) != history_binding
                 or ownership() != owner_binding
-                or _c1_source_binding_digest(producer()) != producer_binding
+                or _c1_source_binding_digest(observed_after) != producer_binding
                 or self._source_files() != self._identities
             ):
                 raise ValueError("native ToF source content changed during snapshot")

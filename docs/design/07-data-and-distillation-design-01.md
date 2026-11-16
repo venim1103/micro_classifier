@@ -1086,6 +1086,12 @@ enforced atomicity, scan/history coverage, selected-hit/range/native/physical
 proof, source authority, one-use execution or admission. The
 [snapshot checkpoint][native-tof-snapshot-review] records copied-word, prehash,
 stale/epoch/cache and late-copy/pose mutation controls and remaining obligations.
+Both observations now precede native intakes, using the unchanged owning dynamics
+word builder. Closing dynamics words are refreshed after the last native intake
+without another observation, then original cache/RNG/odometry/owner/content closure
+runs. Malformed producers stay unknown. The same2 observations/2 intakes/64 digest
+ceiling and all false flags remain; [closing controls][native-tof-closing-review]
+include in-place captured-word changes and equal-state epoch replacement.
 
 
 ##### Bounded Native ToF Acquisition History (2026-11-09)
@@ -2241,6 +2247,7 @@ figure is not an established minimum.
 [native-tof-intake-review]: ../review/183-220.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
+[native-tof-closing-review]: ../../REVIEW.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09
 [native-tof-delivery-review]: ../review/183-220.md#207-retained-native-tof-delivered-array-correspondence-2026-11-09
 [native-tof-delivery-snapshot-review]: ../review/183-220.md#208-current-recorder-native-tof-delivery-snapshot-2026-11-09

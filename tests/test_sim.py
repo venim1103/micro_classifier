@@ -11642,6 +11642,14 @@ def test_recorder_native_tof_source(
         "copied_after",
         "late_pose",
         "owner_context",
+        "final_pose",
+        "final_action",
+        "final_cache",
+        "final_raw_word",
+        "final_rng",
+        "final_odometry_rng",
+        "final_owner",
+        "producer_type",
     ),
 )
 def test_native_tof_current_snapshot(
@@ -11661,6 +11669,8 @@ def test_native_tof_current_snapshot(
         owner._tof_sample = None
     elif case == "producer_missing":
         owner._simulator = None
+    elif case == "producer_type":
+        owner._simulator = True
     elif case == "stale_tick":
         environment.tick += 1
     elif case == "pose":
@@ -11672,8 +11682,36 @@ def test_native_tof_current_snapshot(
     original_intake = diagnostics._sample_simulator_native_tof_source
     original_copy = diagnostics.deepcopy
     original_binding = diagnostics._c1_source_binding_digest
-    work = {"intake": 0, "binding": 0, "forbidden": 0}
+    work = {"intake": 0, "binding": 0, "forbidden": 0, "observations": 0}
+    original_observation = environment._observation
     outgoing = {}
+
+    def observation():
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        actual = original_observation()
+        if work["observations"] == 2:
+            if case == "final_pose":
+                environment.position[0] += 0.125
+            elif case == "final_action":
+                environment.speed += 0.125
+            elif case == "final_cache":
+                environment._native_tof_source = dict(environment._native_tof_source)
+            elif case == "final_raw_word":
+                environment._native_tof_source["tof_m"].view(np.uint32).flat[0] ^= 1
+            elif case == "final_rng":
+                environment.rng = deepcopy(environment.rng)
+                owner._simulator_rng = environment.rng
+                environment._native_tof_source["rng"] = environment.rng
+            elif case == "final_odometry_rng":
+                environment.odometry_rng = deepcopy(environment.odometry_rng)
+                owner._simulator_odometry_rng = environment.odometry_rng
+                environment._native_tof_source["odometry_rng"] = (
+                    environment.odometry_rng
+                )
+            elif case == "final_owner":
+                owner._current = (*owner._current,)
+        return actual
 
     def intake(*args, **kwargs):
         work["intake"] += 1
@@ -11712,6 +11750,7 @@ def test_native_tof_current_snapshot(
         )
 
     monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    monkeypatch.setattr(environment, "_observation", observation)
     monkeypatch.setattr(diagnostics, "deepcopy", copied)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
     for name in ("record_environment_tick", "record_native_tof_source"):
@@ -11750,6 +11789,8 @@ def test_native_tof_current_snapshot(
             assert "source" not in result and "frame" not in result
     assert owner._current[0] == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
+    if case.startswith("final_"):
+        assert work["observations"] == 2
     assert work["intake"] <= 2 and work["forbidden"] == 0
 
 

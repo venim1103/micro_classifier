@@ -561,8 +561,8 @@ field-selection, combined and final-closure controls.
 [consumed-normalization-join-review]: ../review/366-370.md#369-closed-actual-consumed-quotient-joins-2026-11-16
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-review]: ../review/371-375.md#371-supplied-heading-shift-and-return-residuals-2026-11-16
-[supplied-heading-remainder-review]: ../../REVIEW.md#378-supplied-heading-remainder-word-residuals-2026-11-16
-[current-heading-remainder-review]: ../../REVIEW.md#379-closed-current-heading-remainder-joins-2026-11-16
+[supplied-heading-remainder-review]: ../review/376-380.md#378-supplied-heading-remainder-word-residuals-2026-11-16
+[current-heading-remainder-review]: ../review/376-380.md#379-closed-current-heading-remainder-joins-2026-11-16
 [current-heading-offset-review]: ../review/371-375.md#373-closed-current-heading-offset-reports-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13
 [consumed-divisor-review]: ../review/366-370.md#367-actual-consumed-normalization-divisor-retention-2026-11-16

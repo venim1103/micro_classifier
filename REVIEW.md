@@ -82,8 +82,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 361-365][chapter-review-37]
 - [Checkpoints 366-370][chapter-review-38]
 - [Checkpoints 371-375][chapter-review-39]
+- [Checkpoints 376-380][chapter-review-40]
 
-Checkpoints 376 onward and the source bibliography remain below.
+Checkpoints 381 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -391,143 +392,38 @@ repeated historical handoffs.
 
 ## 376. Intact Heading and Receipt Checkpoint Archival (2026-11-16)
 
-Begin clean pushed47cd7d3. Move whole371-375, retaining supplied/current heading
-limits, the spent/unknown root timeout and same-deadline recovery, native/receipt
-epoch repros, failed positions and repair gates. Five historical anchors and four
-topic links point to the byte-exact archive; no evidence or authority is renewed.
-
-Bounded one layout query/transformation/conservation check. Exact blocks/heading
-order/topic content, ten local targets, unchanged tested source hashes and whitespace
-PASS before fail-fast scoped commit. No failed checker or transformation, code
-edit, code-suite rerun, qualification or protected study/model/dependency/download/
-hardware action. Local before-layout copies retained in session files.
-Next trace the directly receipt-dependent live request consumer's between-read
-epoch closure; keep all flags false and actual independent acceptance missing.
+[Complete unchanged checkpoint][review-376-380-preserved-0] is preserved in the archive.
 
 ## 377. Closed Live Request Consumer Epochs (2026-11-16)
 
-Begin clean pushed923ac0b. Pylance's receipt-reference trace resolves the existing
-native readers and _owned_request_current_receipt, then the owned prepare/recheck
-methods. Each reader's own pins did not close the outer consumers' original epoch:
-equal-state producer or RNG/odometry replacement during preparation or after the
-second reader returned falsely published fixture success. Pin original producer
-and bound RNG references before first read; check actual producer/owner originals
-after closing receipt and payload work, gated by include_current_receipt.
-Default-off fixture output, request/receipt shapes, guard UNKNOWN and flags unchanged.
-
-Fresh12/60s, necessary repair reserve12/60s, affected controls<=64/90s, root360s.
-First12 FAIL11.91s false success. First repair12:6 prepare PASS,6 recheck FAIL4.26s.
-Diff diagnosis: recheck pins landed in the earlier ungated request/event condition,
-changing the rejection reason and missing post-second-read replacements; disabled
-mode could access unbound pins. Move the same six checks into the final opt-in
-receipt condition. Narrow necessary reserve6/60s, only failed6 PASS0.80s; the six
-prepare passes were not separately rerun. Prior36 controls PASS0.82s/5175 deselected.
-Root PASS6134/known QDQ1 xfail/77 warnings197.25s; Ruff/changed format/whitespace/
-four tested hashes/pin-only source and unrelated source/control AST PASS.
-No signature change or relaxed assertions, reasons, work limits or deadline.
-Reuse existing fixture: <=2 reads/4 observations/2 history checks, one low-level
-preparation and96/128 total digests for prepare/recheck; no producer steps/draws.
-Both failed positions remain spent, not refunded. No unchanged green gate rerun.
-
-All eight flags false; these are owned diagnostic joins, not epoch authenticity,
-atomicity against concurrent/adversarial mutation, source/clock/application/
-one-use/predecessor acceptance, uniform numerical/physical bounds or permission.
-External mutations remain visible. Producer/C/Arm/model/study/dependency/download/
-hardware unchanged; existing root C controls passed with no skips, not linked
-firmware/board/fit evidence. `.git/returns-377-*` logs/hashes retained locally.
-Next trace the receipt helper's conditional initial-startup consumer epoch closure,
-without a general audit, duplicate arithmetic, replay or acceptance invention.
+[Complete unchanged checkpoint][review-376-380-preserved-1] is preserved in the archive.
 
 ## 378. Supplied Heading Remainder Word Residuals (2026-11-16)
 
-Begin clean pushed2a56062. The six resolved receipt-helper calls include conditional
-initial startup; its producer/RNG/retained identities already pin across both reads
-and final consumer work, so no repair or separate unchanged gate was needed.
-Next compatible Q2 prerequisite: standalone supplied shifted-heading/period/
-wrapped-word residuals against the exact rational ideal remainder. Existing
-ground-plane floor reports, native capture and ten-stage arithmetic are untouched.
-Reuse canonical parser and bounded arithmetic; no native modulo replay or law.
-
-Bounded one synthetic arithmetic snippet: (-minsubnormal)%1 returns1.0, while
-the ideal rational remainder is1-2^-1074 and signed discrepancy2^-1074. This
-pointwise observation is not a rounding law, uniform bound or source acceptance.
-Fresh12/60s, necessary repair reserve12/60s, root360s. First12 PASS4.65s/
-5211 deselected. Add one necessary integer-boundary control/60s: the largest finite
-dividend divided by the smallest subnormal has a >1024-bit floor quotient, which
-must remain exact rather than pass through float conversion. Only new1 PASS5.00s/
-5223 deselected; prior12 not separately rerun. Root PASS6147/known QDQ1 xfail/
-77 warnings202.02s. Ruff/changed format/whitespace/four tested hashes/existing
-source and control AST conservation PASS. No failed attempt or relaxed work/
-bit/deadline/assertion limit. Finite3 conversions/4 rational binaries/one bounded
-exact integer division; nonfinite any-position inputs leave None results with
-zero arithmetic. Explicit zero-period/malformed/permission/budget errors.
-
-All eight flags false; caller period is not consumed-source/pi evidence and zero
-rational residual does not predict word equality or signed-zero selection.
-No uniform native modulo/error, source/geometry/clock/application/one-use/physical
-qualification or permission. Producer/C/Arm/model/study/dependency/download/
-hardware unchanged; existing root C controls passed without skips, not linked
-firmware/board/fit evidence. `.git/returns-378-*` logs/hashes retained locally.
-Next add a separate default-off current-source remainder join, preserving all
-original/copy/closing/final epoch/report bindings and existing per-family ceilings.
+[Complete unchanged checkpoint][review-376-380-preserved-2] is preserved in the archive.
 
 ## 379. Closed Current Heading Remainder Joins (2026-11-16)
 
-Begin clean pushedde1834b. Add independent literal default-off
-include_native_heading_remainders/native_heading_remainders to the existing source
-reader's bounded group plumbing. Three retained shifted/period/wrapped words join
-the completed supplied diagnostic; the basis names consumed owned words, not
-modulo/pi qualification. Original/copied/closing groups and source words close
-again after the final sample with original RNG identities pinned. Default/prior
-groups, native capture, words, flags and ten-stage arithmetic remain unchanged.
-
-Fresh25/60s, necessary repair reserve25/60s, prior56<=64/90s, root360s.
-First25 PASS5.09s/5224 deselected; prior56 PASS5.31s/5193 deselected.
-Root PASS6172/known QDQ1 xfail/77 warnings194.10s; Ruff/changed format/whitespace/
-four tested hashes/default-and-prior-mode source core/unrelated source/control
-AST PASS. Pylance2 resolved prior callers compatible before/after; dynamic fixture
-call dictionaries are covered by runtime controls, not that static result.
-No failed or repeated unchanged green gate, signature incompatibility or relaxed
-per-family ceiling. Reuse existing fixture/harness, all sixteen combinations,
-field-selection/zero-period/default/off/literal-bool/permission and original/copy/
-closing/final report/pose/RNG faults. Single96+2N/paired128+4N/triple160+6N preserved;
-only all four use192+8N. <=128 segments/two passes/mode,1024 scalar calls combined,
-6 observations/2 samples/2 history checks. Synthetic distinct-period controls
-verify selected fields, not actual native operation independence.
-
-All eight flags false; no native modulo/pi/uniform-error/source/geometry/clock/
-application/one-use/predecessor or physical qualification, permission or replay.
-Producer/C/Arm/model/study/dependency/download/hardware unchanged; existing root
-C controls passed without skips, not linked firmware/board/fit evidence.
-`.git/returns-379-*` logs/hashes retained locally. Next organize the directly
-changed native-word/source topic blocks losslessly within existing reading maps,
-then reassess compatible prerequisites without duplicating completed reports.
+[Complete unchanged checkpoint][review-376-380-preserved-3] is preserved in the archive.
 
 ## 380. Intact Native-Word Topic Relocation (2026-11-16)
 
-Begin clean pushed938d0c4. Move complete native motion/integration source blocks
-and supplied/current motion-word contracts to linked chapter06. Chapter01/04 retain
-all24 historical headings as reading links; existing source01 motion-reading stubs
-stay separate to avoid duplicate new-topic anchors. Rebase local references and
-the design reading map. NF1 prefix is byte-intact; no premise/authority is adopted.
-Topic sizes2752/2698 become2575/2462 plus584 in chapter06, around the approximate
-organization targets, not a product/resource requirement.
+[Complete unchanged checkpoint][review-376-380-preserved-4] is preserved in the archive.
 
-Bounded layout/transformation/conservation with one diagnosed mechanical repair.
-First transform failed its expected23-heading assertion before any repository or
-snapshot writes. Bounded heading inspection found the owning Actual-Source
-Integration Ingestion section too: actual24. Correct only the expectation; repaired
-transform PASS, with before-layout copies retained in session files.
-Full verification then failed because24 moved reference definitions were still
-used by the NF1 prefix. Restore those exact definitions in chapter04; its preexisting
-code-example `[2]` is not a new unresolved Markdown reference. One narrow necessary
-reference/conservation repair retained; neither failure was bypassed or committed.
-Exact planned bodies/old heading order/NF1 prefix and24 reference meanings PASS;
-117 local targets/four unchanged tested source hashes/whitespace PASS before commit.
-No code edit or unchanged code-suite rerun; failure remains spent, not refunded.
-No qualification/study/model/dependency/download/hardware action. Next archive
-whole376-380 before further root growth, then reassess compatible prerequisites
-without duplicating reports or inventing acceptance.
+## 381. Intact Consumer and Remainder Checkpoint Archival (2026-11-16)
+
+Begin clean pushed88424c4. Move whole376-380 without dropping request epoch repros,
+the misplaced recheck guard failure/repair, supplied/current remainder limits,
+or heading-count/shared-reference relocation failures and repairs. Five historical
+anchors and three topic links preserve the unchanged records and evidence limits.
+
+Bounded one layout query/transformation/conservation check; exact blocks/heading
+order/topic content, nine local targets, unchanged tested source hashes and whitespace
+PASS before fail-fast commit. NF1 body/reference meanings stay untouched; no code
+edit, unchanged suite rerun, failed checker, qualification or protected action.
+Local before-layout copies remain in session files. Next reassess remaining
+compatible source/coverage/error/consumer prerequisites, not duplicate reports,
+new studies, arithmetic-law adoption or permission from hashes.
 
 ## Sources
 
@@ -909,6 +805,7 @@ Methods and measurements:
 [chapter-review-37]: docs/review/361-365.md
 [chapter-review-38]: docs/review/366-370.md
 [chapter-review-39]: docs/review/371-375.md
+[chapter-review-40]: docs/review/376-380.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -976,3 +873,8 @@ Methods and measurements:
 [review-371-375-preserved-2]: docs/review/371-375.md#373-closed-current-heading-offset-reports-2026-11-16
 [review-371-375-preserved-3]: docs/review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
 [review-371-375-preserved-4]: docs/review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16
+[review-376-380-preserved-0]: docs/review/376-380.md#376-intact-heading-and-receipt-checkpoint-archival-2026-11-16
+[review-376-380-preserved-1]: docs/review/376-380.md#377-closed-live-request-consumer-epochs-2026-11-16
+[review-376-380-preserved-2]: docs/review/376-380.md#378-supplied-heading-remainder-word-residuals-2026-11-16
+[review-376-380-preserved-3]: docs/review/376-380.md#379-closed-current-heading-remainder-joins-2026-11-16
+[review-376-380-preserved-4]: docs/review/376-380.md#380-intact-native-word-topic-relocation-2026-11-16

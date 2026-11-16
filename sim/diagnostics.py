@@ -9123,6 +9123,79 @@ def _native_interval_division_residuals(
     }
 
 
+def _native_sinc_argument_division_residuals(
+    *,
+    angle_rad_hex,
+    normalization_divisor_hex,
+    sinc_argument_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError("sinc argument division requires synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("sinc argument division rational budget unsupported")
+    words = (angle_rad_hex, normalization_divisor_hex, sinc_argument_hex)
+    values = []
+    for word in words:
+        if type(word) is not str or len(word) > 32:
+            raise ValueError("sinc argument division word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(
+                "sinc argument division words must be canonical"
+            ) from error
+        if value.hex() != word:
+            raise ValueError("sinc argument division words must be canonical")
+        values.append(value)
+    angle, divisor, observed = values
+    if divisor == 0:
+        raise ValueError("sinc argument division requires a nonzero supplied divisor")
+    exact = residual = None
+    if all(math.isfinite(value) for value in values):
+        arithmetic = _C1CommandArithmetic(0, bit_limit, {})
+        try:
+            exact = arithmetic.binary(
+                arithmetic.value(angle), arithmetic.value(divisor), "div"
+            )
+            residual = arithmetic.binary(arithmetic.value(observed), exact, "sub")
+        except ArithmeticError as error:
+            raise ValueError(
+                "sinc argument division rational budget exhausted"
+            ) from error
+    return {
+        "schema": "micro-classifier/native-sinc-argument-division-residuals/1",
+        "allowed_use": "offline_supplied_normalization_division_words_only",
+        "status": "computed_exact_supplied_normalization_residual"
+        if residual is not None
+        else "unknown_nonfinite_supplied_normalization_words",
+        "reason": "supplied_quotient_relationship_not_normalization_law"
+        if residual is not None
+        else "nonfinite_supplied_angle_divisor_or_argument",
+        "comparison_basis": "unrounded_supplied_angle_divided_by_supplied_divisor",
+        "divisor_basis": "caller_supplied_word_not_pi_or_consumed_divisor_evidence",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "input_hex": words,
+        "exact_quotient_ratio": None if exact is None else exact.as_integer_ratio(),
+        "signed_residual_ratio": None
+        if residual is None
+        else residual.as_integer_ratio(),
+    }
+
+
 def _native_action_clipping_diagnostics(*, input_hex, synthetic_test_only=False):
     if synthetic_test_only is not True:
         raise ValueError("native action clipping requires synthetic_test_only=True")

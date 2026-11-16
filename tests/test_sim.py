@@ -35558,6 +35558,147 @@ def test_native_action_clipping_diagnostics(
 @pytest.mark.parametrize(
     "case",
     (
+        "exact",
+        "rounded",
+        "negative_angle",
+        "negative_divisor",
+        "negative_zero",
+        "positive_zero",
+        "subnormal",
+        "nonfinite_angle",
+        "nonfinite_divisor",
+        "nonfinite_output",
+        "nan_output",
+        "zero_divisor",
+        "malformed",
+        "long_word",
+        "permission",
+        "budget",
+    ),
+)
+def test_native_sinc_argument_division_residuals(monkeypatch, case):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    values = (0.1, 2 * math.pi, 0.1 / (2 * math.pi))
+    if case == "exact":
+        values = (0.75, 3.0, 0.25)
+    elif case == "negative_angle":
+        values = (-values[0], values[1], -values[2])
+    elif case == "negative_divisor":
+        values = (values[0], -values[1], -values[2])
+    elif case == "negative_zero":
+        values = (-0.0, 2.0, 0.0)
+    elif case == "positive_zero":
+        values = (0.0, 2.0, -0.0)
+    elif case == "subnormal":
+        values = (float.fromhex("0x0.0000000000001p-1022"), 2.0, 0.0)
+    elif case == "nonfinite_angle":
+        values = (math.inf, values[1], values[2])
+    elif case == "nonfinite_divisor":
+        values = (values[0], math.inf, values[2])
+    elif case == "nonfinite_output":
+        values = (values[0], values[1], math.inf)
+    elif case == "nan_output":
+        values = (values[0], values[1], math.nan)
+    elif case == "zero_divisor":
+        values = (values[0], -0.0, values[2])
+    words = tuple(value.hex() for value in values)
+    if case == "malformed":
+        words = ("0.1", *words[1:])
+    elif case == "long_word":
+        words = ("x" * 33, *words[1:])
+    elif case == "budget":
+        monkeypatch.setattr(diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 32)
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = dict.fromkeys(("value", "binary", "forbidden"), 0)
+
+    def value(self, *args, **kwargs):
+        work["value"] += 1
+        assert work["value"] <= 3
+        return original_value(self, *args, **kwargs)
+
+    def binary(self, *args, **kwargs):
+        work["binary"] += 1
+        assert work["binary"] <= 2
+        return original_binary(self, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("supplied normalization must not replay/evaluate/read")
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(np, "sinc", forbidden)
+    for name in (
+        "capture_synthetic_c1_views",
+        "_sample_simulator_dynamics_source",
+        "_probe_native_integration_arithmetic",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    options = {
+        "angle_rad_hex": words[0],
+        "normalization_divisor_hex": words[1],
+        "sinc_argument_hex": words[2],
+        "synthetic_test_only": case != "permission",
+    }
+    if case in ("zero_divisor", "malformed", "long_word", "permission", "budget"):
+        with pytest.raises(ValueError):
+            diagnostics._native_sinc_argument_division_residuals(**options)
+    else:
+        result = diagnostics._native_sinc_argument_division_residuals(**options)
+        assert result["input_hex"] == words
+        finite = all(math.isfinite(value) for value in values)
+        if finite:
+            exact = Fraction.from_float(values[0]) / Fraction.from_float(values[1])
+            residual = Fraction.from_float(values[2]) - exact
+            assert result["exact_quotient_ratio"] == exact.as_integer_ratio()
+            assert result["signed_residual_ratio"] == residual.as_integer_ratio()
+            assert result["status"] == "computed_exact_supplied_normalization_residual"
+            assert work["value"] == 3
+            assert work["binary"] == 2
+            if case == "rounded":
+                assert residual != 0
+            elif case in ("positive_zero", "negative_zero"):
+                assert result["input_hex"][0] != result["input_hex"][2]
+        else:
+            assert result["status"] == "unknown_nonfinite_supplied_normalization_words"
+            assert result["exact_quotient_ratio"] is None
+            assert result["signed_residual_ratio"] is None
+            assert work["value"] == work["binary"] == 0
+        assert result["divisor_basis"] == (
+            "caller_supplied_word_not_pi_or_consumed_divisor_evidence"
+        )
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "actual",
         "divisible",
         "nondivisible",

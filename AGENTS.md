@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §364 for intact initial-source checkpoint archival;
+Read [REVIEW.md][review] §365 for supplied normalization division residuals;
+§364 records intact initial-source checkpoint archival;
 §363 records conditional owned initial-rest startup;
 §362 records bounded retained initial-source reading;
 §361 records bounded initial-source retention;
@@ -207,6 +208,12 @@ all flags false and guard UNKNOWN. No current initial-tick claim, reset receipt,
 one-use or setup/source/geometry/clock acceptance follows. Next reassess the
 remaining named source/coverage/native-error prerequisites without duplicating
 completed reports or inventing bounds.
+Supplied angle/divisor/normalized-argument quotient residuals and their required
+gate are complete. The divisor is explicitly caller-supplied, not pi or a captured
+earlier native operand; later period_rad is not that capture. Existing ten-stage
+integration diagnostics remain unchanged and unsupported normalization/pi/sinc
+obligations are not adopted. Next trace supportable source correspondence without
+replaying native primitives, duplicating reports or qualifying error.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

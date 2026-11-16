@@ -2522,5 +2522,28 @@ all combinations, mutations and the required gate.
 [native-interval-division-review]: ../review/346-350.md#346-supplied-captured-interval-division-residuals-2026-11-13
 [current-interval-division-review]: ../review/346-350.md#349-closed-current-receipt-interval-reports-2026-11-13
 [native-segment-selection-review]: ../review/346-350.md#350-supplied-unrounded-segment-count-comparison-2026-11-13
+##### Supplied Normalization Division Words (2026-11-16)
+
+Private `_native_sinc_argument_division_residuals` compares supplied canonical
+angle/divisor/normalized-argument words using the existing bounded rational
+arithmetic. It reports the unrounded quotient and signed observed-minus-exact
+residual; finite work is three value conversions/two binary operations under the
+existing4096-bit cap. Zero divisors, malformed/overlong words and exhausted work
+raise explicit errors. Canonical nonfinite words, including `nan`, stay raw unknown
+with no exact/residual publication or arithmetic; no nonfinite law is inferred.
+Signed-zero words remain distinct even when the rational discrepancy is zero.
+
+The divisor is explicitly caller-supplied, not pi evidence, a certified
+normalization constant or a captured earlier operand. Native integrate computes
+the argument using `angle / (2 * math.pi)` but retains `period_rad` only from a
+later expression; this report does not relabel that later word as earlier capture.
+It does not evaluate sinc/trig, read/replay integration, extend the existing
+ten-stage report or adopt its unsupported normalization/pi/sinc/heading/accumulation
+obligations. All eight flags false; no uniform native error, source/geometry/clock,
+physical or command qualification follows.
+The [supplied normalization checkpoint][normalization-division-review] records
+bounded direct rational controls and the required gate.
+
 [current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
+[normalization-division-review]: ../../REVIEW.md#365-supplied-normalization-division-residuals-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

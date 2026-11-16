@@ -455,6 +455,31 @@ supplied-word normalization quotient prerequisite; do not relabel the later
 period word as a captured earlier divisor, extend the existing ten-stage contract,
 adopt pi/trig/sinc laws or invent a uniform error bound.
 
+## 365. Supplied Normalization Division Residuals (2026-11-16)
+
+Begin clean pushed1006705. Q2 native integration retains angle and normalized
+sinc argument, but the divisor expression's earlier word is not separately
+captured; later period_rad must not be relabeled as that capture. Add only a
+standalone supplied-angle/divisor/argument quotient comparison using existing
+bounded _C1CommandArithmetic. No pi/normalization/sinc/trig law or native replay.
+Existing ten-stage integration source/arithmetic/unsupported contracts unchanged.
+
+Fresh16/60s, one necessary repair reserve16/60s, root360s. First16 PASS4.59s/
+5056 deselected; root PASS5995/known QDQ1 xfail/77 warnings215.68s. Root Ruff/
+changed format/whitespace/four tested hashes/all prior source/API/default/consumer/
+control AST PASS. No failed or repeated green gate. Finite work exactly3 values/
+2 binary operations with existing4096-bit growth cap and32-character canonical
+words. Direct Fraction oracles cover nonzero residual, negative words, opposite
+zero words and subnormal quotient underflow. Zero divisor/malformed/overlong/
+permission/budget faults raise; canonical raw infinities/nan stay unknown with
+both ratios None and zero arithmetic, not a success fallback.
+
+All eight flags false; no consumed-divisor identity, accepted source/numerical/
+geometry/error/clock or admission follows. No native/Arm/model/study/dependency/
+download/hardware action. Ignored `.git/returns-365-*` focused/root/hash evidence
+retained. Next trace independently supportable native source correspondence; no
+later-period substitution, duplicate integration report or guessed error bound.
+
 ## Sources
 
 Hardware and tools:

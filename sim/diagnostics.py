@@ -9123,6 +9123,21 @@ def _native_interval_division_residuals(
     }
 
 
+def _canonical_native_word_values(words, context):
+    values = []
+    for word in words:
+        if type(word) is not str or len(word) > 32:
+            raise ValueError(f"{context} word budget exhausted")
+        try:
+            value = float.fromhex(word)
+        except (ValueError, OverflowError) as error:
+            raise ValueError(f"{context} words must be canonical") from error
+        if value.hex() != word:
+            raise ValueError(f"{context} words must be canonical")
+        values.append(value)
+    return values
+
+
 def _native_sinc_argument_division_residuals(
     *,
     angle_rad_hex,
@@ -9136,19 +9151,7 @@ def _native_sinc_argument_division_residuals(
     if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
         raise ValueError("sinc argument division rational budget unsupported")
     words = (angle_rad_hex, normalization_divisor_hex, sinc_argument_hex)
-    values = []
-    for word in words:
-        if type(word) is not str or len(word) > 32:
-            raise ValueError("sinc argument division word budget exhausted")
-        try:
-            value = float.fromhex(word)
-        except (ValueError, OverflowError) as error:
-            raise ValueError(
-                "sinc argument division words must be canonical"
-            ) from error
-        if value.hex() != word:
-            raise ValueError("sinc argument division words must be canonical")
-        values.append(value)
+    values = _canonical_native_word_values(words, "sinc argument division")
     angle, divisor, observed = values
     if divisor == 0:
         raise ValueError("sinc argument division requires a nonzero supplied divisor")
@@ -9193,6 +9196,90 @@ def _native_sinc_argument_division_residuals(
         "signed_residual_ratio": None
         if residual is None
         else residual.as_integer_ratio(),
+    }
+
+
+def _native_heading_offset_residuals(
+    *,
+    heading_increment_rad_hex,
+    heading_shift_offset_rad_hex,
+    shifted_heading_rad_hex,
+    wrapped_heading_rad_hex,
+    heading_return_offset_rad_hex,
+    next_yaw_rad_hex,
+    synthetic_test_only=False,
+):
+    if synthetic_test_only is not True:
+        raise ValueError("heading offset residuals require synthetic_test_only=True")
+    bit_limit = _SYNTHETIC_ARITHMETIC_BITS
+    if type(bit_limit) is not int or not 1 <= bit_limit <= 4096:
+        raise ValueError("heading offset rational budget unsupported")
+    words = (
+        heading_increment_rad_hex,
+        heading_shift_offset_rad_hex,
+        shifted_heading_rad_hex,
+        wrapped_heading_rad_hex,
+        heading_return_offset_rad_hex,
+        next_yaw_rad_hex,
+    )
+    values = _canonical_native_word_values(words, "heading offset")
+    finite = all(math.isfinite(value) for value in values)
+    arithmetic = _C1CommandArithmetic(0, bit_limit, {}) if finite else None
+    entries = []
+    for index, stage, operation in (
+        (0, "heading_shift", "add"),
+        (3, "heading_return", "sub"),
+    ):
+        exact = residual = None
+        if arithmetic is not None:
+            left, right, observed = values[index : index + 3]
+            try:
+                exact = arithmetic.binary(
+                    arithmetic.value(left), arithmetic.value(right), operation
+                )
+                residual = arithmetic.binary(arithmetic.value(observed), exact, "sub")
+            except ArithmeticError as error:
+                raise ValueError("heading offset rational budget exhausted") from error
+        entries.append(
+            {
+                "stage": stage,
+                "operation": operation,
+                "input_hex": words[index : index + 2],
+                "output_hex": words[index + 2],
+                "exact_result_ratio": None
+                if exact is None
+                else exact.as_integer_ratio(),
+                "signed_residual_ratio": None
+                if residual is None
+                else residual.as_integer_ratio(),
+            }
+        )
+    return {
+        "schema": "micro-classifier/native-heading-offset-residuals/1",
+        "allowed_use": "offline_supplied_heading_offset_words_only",
+        "status": "computed_exact_supplied_heading_offset_residuals"
+        if finite
+        else "unknown_nonfinite_supplied_heading_offset_words",
+        "reason": "supplied_shift_and_return_not_heading_wrap_law"
+        if finite
+        else "nonfinite_supplied_heading_or_offset",
+        "comparison_basis": "supplied_shift_addition_and_return_subtraction_not_modulo_or_pi_law",
+        "offset_basis": "caller_supplied_words_not_pi_or_consumed_operand_evidence",
+        **dict.fromkeys(
+            (
+                "fixture_permission_granted",
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            ),
+            False,
+        ),
+        "input_hex": words,
+        "entries": tuple(entries),
     }
 
 

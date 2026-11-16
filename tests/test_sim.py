@@ -35975,6 +35975,171 @@ def test_native_action_clipping_diagnostics(
     (
         "exact",
         "rounded",
+        "negative",
+        "zero_words",
+        "subnormal",
+        "distinct_offsets",
+        "nonfinite_input",
+        "nonfinite_output",
+        "nan_return",
+        "malformed",
+        "long_word",
+        "noncanonical",
+        "type",
+        "permission",
+        "budget",
+        "bad_budget",
+    ),
+)
+def test_native_heading_offset_residuals(monkeypatch, case):
+    from fractions import Fraction
+
+    from sim import diagnostics, rover
+
+    values = (0.1, 3.0, 0.1 + 3.0, 6.0, 3.0, 3.0)
+    if case == "exact":
+        values = (0.5, 3.0, 3.5, 6.0, 3.0, 3.0)
+    elif case == "negative":
+        values = (-0.1, -3.0, -0.1 - 3.0, -6.0, -3.0, -3.0)
+    elif case == "zero_words":
+        values = (0.0, -0.0, -0.0, -0.0, 0.0, 0.0)
+    elif case == "subnormal":
+        tiny = float.fromhex("0x0.0000000000001p-1022")
+        values = (tiny, tiny, 0.0, tiny, -tiny, 0.0)
+    elif case == "distinct_offsets":
+        values = (0.5, 3.0, 3.5, 6.0, 2.0, 4.0)
+    elif case == "nonfinite_input":
+        values = (math.inf, *values[1:])
+    elif case == "nonfinite_output":
+        values = (*values[:2], math.inf, *values[3:])
+    elif case == "nan_return":
+        values = (*values[:5], math.nan)
+    words = tuple(value.hex() for value in values)
+    if case == "malformed":
+        words = ("bad", *words[1:])
+    elif case == "long_word":
+        words = ("x" * 33, *words[1:])
+    elif case == "noncanonical":
+        words = ("0x1.0000000000000p+01", *words[1:])
+    elif case == "type":
+        words = (1, *words[1:])
+    elif case in ("budget", "bad_budget"):
+        monkeypatch.setattr(
+            diagnostics, "_SYNTHETIC_ARITHMETIC_BITS", 32 if case == "budget" else True
+        )
+    original_value = diagnostics._C1CommandArithmetic.value
+    original_binary = diagnostics._C1CommandArithmetic.binary
+    work = dict.fromkeys(("value", "binary", "forbidden"), 0)
+
+    def value(self, *args, **kwargs):
+        work["value"] += 1
+        assert work["value"] <= 6
+        return original_value(self, *args, **kwargs)
+
+    def binary(self, *args, **kwargs):
+        work["binary"] += 1
+        assert work["binary"] <= 4
+        return original_binary(self, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "heading residuals must not evaluate/replay/read native laws"
+        )
+
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "value", value)
+    monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(np, "sinc", forbidden)
+    for name in (
+        "capture_synthetic_c1_views",
+        "_sample_simulator_dynamics_source",
+        "_sample_simulator_native_integration_source",
+        "_native_tof_floor_division_residuals",
+        "_probe_native_integration_arithmetic",
+    ):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    options = dict(
+        zip(
+            (
+                "heading_increment_rad_hex",
+                "heading_shift_offset_rad_hex",
+                "shifted_heading_rad_hex",
+                "wrapped_heading_rad_hex",
+                "heading_return_offset_rad_hex",
+                "next_yaw_rad_hex",
+            ),
+            words,
+            strict=True,
+        ),
+        synthetic_test_only=case != "permission",
+    )
+    if case in (
+        "malformed",
+        "long_word",
+        "noncanonical",
+        "type",
+        "permission",
+        "budget",
+        "bad_budget",
+    ):
+        with pytest.raises(ValueError):
+            diagnostics._native_heading_offset_residuals(**options)
+    else:
+        result = diagnostics._native_heading_offset_residuals(**options)
+        assert result["input_hex"] == words
+        finite = all(math.isfinite(value) for value in values)
+        assert result["status"] == (
+            "computed_exact_supplied_heading_offset_residuals"
+            if finite
+            else "unknown_nonfinite_supplied_heading_offset_words"
+        )
+        assert result["offset_basis"] == (
+            "caller_supplied_words_not_pi_or_consumed_operand_evidence"
+        )
+        assert len(result["entries"]) == 2
+        for index, entry in zip((0, 3), result["entries"], strict=True):
+            assert entry["input_hex"] == words[index : index + 2]
+            assert entry["output_hex"] == words[index + 2]
+            if not finite:
+                assert entry["exact_result_ratio"] is None
+                assert entry["signed_residual_ratio"] is None
+                continue
+            left, right, observed = map(Fraction.from_float, values[index : index + 3])
+            exact = left + right if index == 0 else left - right
+            residual = observed - exact
+            assert entry["exact_result_ratio"] == exact.as_integer_ratio()
+            assert entry["signed_residual_ratio"] == residual.as_integer_ratio()
+        assert (work["value"], work["binary"]) == ((6, 4) if finite else (0, 0))
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+    assert work["forbidden"] == 0
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "exact",
+        "rounded",
         "negative_angle",
         "negative_divisor",
         "negative_zero",

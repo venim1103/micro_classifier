@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §370 for actual heading operand retention;
+Read [REVIEW.md][review] §371 for supplied heading shift/return residuals;
+§370 records actual heading operand retention;
 §369 records closed actual-consumed quotient joins;
 §368 records intact initial-source checkpoint archival;
 §367 records actual consumed-divisor retention;
@@ -231,8 +232,11 @@ Actual heading shift/return offset retention and its required gate are complete,
 including missing/nonfinite words and current/closing joins. The two pi reads
 remain distinct source words; no modulo/rounding/pi law follows. Single-mode
 normalization digest ceilings are restored; only combined mode uses the larger cap.
-Next add bounded supplied heading shift/return residuals without duplicating floor
-reports, replaying primitives or adopting heading-wrap/uniform-error obligations.
+Bounded supplied heading shift/return residuals and their recovery gate are complete.
+The first root timeout remains spent/unknown; recovery used the same360s deadline.
+Canonical nonfinite inputs block both ratios with zero arithmetic. Next add the
+separate default-off actual-source heading join, without duplicating floor reports,
+replaying primitives or adopting heading-wrap/uniform-error obligations.
 Whole361-365 checkpoint archival is complete, including failed fixtures and the
 spent/unknown interrupted root; historical anchors and topic links remain intact.
 Named source/setup auditors and motion/registration/request consumers remain

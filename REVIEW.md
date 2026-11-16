@@ -485,6 +485,38 @@ study/dependency/download/hardware work. Failed positions and `.git/returns-370-
 evidence retained. Next supplied-word shift/return comparisons, not floor-law
 duplication or extension of the ten-stage report.
 
+## 371. Supplied Heading Shift and Return Residuals (2026-11-16)
+
+Begin clean pushede64c279. Add standalone _native_heading_offset_residuals for
+supplied heading increment/shift offset/shifted result and wrapped heading/return
+offset/next yaw words. Exact addition/subtraction and signed observed-minus-exact
+ratios use existing bounded C1 arithmetic; no source read, pi/modulo/floor/trig/
+sinc/rounding law or extension of ten-stage integration arithmetic.
+Extract the unchanged normalization canonical-word parser for shared use, preserving
+its exact errors and raw canonical nonfinite behavior.
+
+Fresh16/60s, necessary repair reserve16/60s, root360s. First16 plus16 affected parser
+controls PASS32/5123 deselected5.53s. First root EXIT124 at360s near86%/5293 result
+markers, intact5877-byte log/no NUL and four hashes unchanged. No assertion summary
+or pass; this position stays spent/unknown. No pytest process remained. One bounded
+collection query6079 items located the next unchanged top-relative work-limit
+control; isolated PASS0.53s/elapsed0.944s. Host visible/affinity20 CPUs, load
+9.90/12.00/7.51, no cgroup CPU quota/throttling; no cause/OOM attribution.
+One fresh necessary recovery at the SAME360s deadline PASS6078/known QDQ1 xfail/
+77 warnings283.40s, with Ruff/format/whitespace/four hashes PASS. Exact parser
+extraction/unrelated source/control AST PASS; no source repair, relaxed deadlines
+or repeated green gate.
+
+Finite work6 conversions/4 binaries under4096-bit growth/32-character word limits.
+Fraction controls cover rounded/negative/distinct offsets, signed-zero words and
+subnormal residuals. Any canonical nonfinite word leaves both stages' ratios None
+with zero arithmetic, not partial success. Malformed/overlong/noncanonical/non-string/
+permission/budget faults raise explicit errors. Eight flags false; no pi/heading-wrap/
+uniform native error/source/geometry/clock acceptance or permission. Producer/C/
+Arm/model/study/dependency/download/hardware unchanged. All failed/unknown positions
+and `.git/returns-371-*` logs/hashes retained. Next a separate default-off actual
+heading-word join, not a new wrap/floor law or ten-stage report extension.
+
 ## Sources
 
 Hardware and tools:

@@ -425,6 +425,37 @@ Local before-layout copies remain in session files. Next reassess remaining
 compatible source/coverage/error/consumer prerequisites, not duplicate reports,
 new studies, arithmetic-law adoption or permission from hashes.
 
+## 382. Fresh Remaining Evidence Blockers (2026-11-16)
+
+Begin clean pusheda260170 after the completed bounded source/receipt/request epoch
+repairs, supplied/current remainder joins and lossless topic/checkpoint moves.
+Reassess the current [S1-S5 and Q0-Q5 dependency map][admission-dependencies], named
+consumer trace and agreed milestone queue, rather than reusing §355's former
+blanket conclusion. No justified remaining nonduplicative local source/word/consumer
+edit is identified with current inputs; extra hashes or repeat green gates would
+not supply the missing independent evidence.
+
+- Q0: accepted setup/source/return/coverage provenance for the named consumers.
+- Q1: propagated source-to-decoded state enclosures, not only word discrepancies.
+- Q2: independent uniform full-command/braking native program/domain and accumulated
+  error evidence, including unresolved pi/sinc/trig/wrapping operations.
+- Q3: pose/range/time/native-transform enclosures and point-error propagation.
+- Q4: qualified clocks/application/serialized consumption, actual receipts and
+  admitted predecessor continuity. Matching identity or nominal ticks is not this.
+- Q5/D4, models/learning, general audits/SC18 and changed bounds/domains remain
+  protected or deferred. stedgeai/stm32ai/STM32_Programmer_CLI are not on PATH;
+  licence/board/hardware work is still user-side and not authorized here.
+
+Bounded read-only dependency/milestone/tool/worktree checks; no code edit or
+unchanged suite rerun. Scoped references/whitespace and four unchanged tested
+source hashes PASS; main/upstream synchronized and no owned job left running.
+The latest source gate remains6172/known QDQ1 xfail/77 warnings194.10s.
+All eight flags false; no qualification or admitted command.
+Pending next action is independent Q0/source or named numerical/transform/timing
+evidence with actual protected authority where needed, or a new concrete compatible
+correctness issue. This is an input/evidence blocker, not missing routine planning/
+testing approval, a renewed historical pause or a permanent no-prerequisite claim.
+
 ## Sources
 
 Hardware and tools:

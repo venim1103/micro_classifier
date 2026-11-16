@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §381 for intact consumer/remainder checkpoint archival;
+Read [REVIEW.md][review] §382 for the fresh remaining evidence blockers;
+§381 records intact consumer/remainder checkpoint archival;
 §380 records intact native-word topic relocation;
 §379 records closed current heading remainder joins;
 §378 records supplied heading remainder discrepancies;
@@ -273,7 +274,18 @@ unchanged; only all four groups use the new combined work cap.
 Native-word/source topic relocation is complete with24 historical anchors;
 the NF1 body is intact and no premise or authority is adopted. Whole376-380
 archival is complete, including source/consumer repros, arithmetic boundaries and
-both relocation failures/repairs. Next reassess compatible source/error prerequisites.
+both relocation failures/repairs.
+Fresh bounded source/consumer and milestone reassessment found no further justified
+nonduplicative local edit with the current inputs. Q0 accepted setup/source/return/
+coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
+Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/
+one-use/receipt/predecessor evidence remain absent. Current words and hashes do not
+replace those inputs. ST tools are not on PATH; licence/board work stays user-side.
+Qualification studies, SC18, learned/D4 work and changed bounds/domains remain
+protected or deferred. This is not an old pause, missing routine test approval
+or a permanent assertion that no prerequisite can ever exist. A new concrete
+source/consumer issue or independent evidence can resume compatible local work
+under standing authority; no command is admitted.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole371-375 checkpoints are archived intact, including the spent/unknown root

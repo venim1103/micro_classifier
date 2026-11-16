@@ -2362,9 +2362,9 @@ figure is not an established minimum.
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
-[actual-intake-closing-review]: ../../REVIEW.md#356-actual-intake-closing-observation-repairs-2026-11-13
-[initial-setup-source-review]: ../../REVIEW.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
-[initial-setup-report-review]: ../../REVIEW.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
+[actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
+[initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
+[initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-source-retention-review]: ../../REVIEW.md#361-bounded-initial-source-retention-2026-11-13
 [retained-initial-source-review]: ../../REVIEW.md#362-bounded-retained-initial-source-reading-2026-11-16
 [owned-initial-startup-review]: ../../REVIEW.md#363-conditional-owned-initial-rest-startup-2026-11-16

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §363 for conditional owned initial-rest startup;
+Read [REVIEW.md][review] §364 for intact initial-source checkpoint archival;
+§363 records conditional owned initial-rest startup;
 §362 records bounded retained initial-source reading;
 §361 records bounded initial-source retention;
 §360 records intact source/consumer checkpoint archival;
@@ -186,6 +187,7 @@ rejects malformed original/closing owners; its fresh gate is complete.
 The prior§355 no-further-prerequisite conclusion is not a continuation stop.
 Whole346-350 archival is complete.
 Whole351-355 archival is complete. Strict opt-in actual initial-tick/setup source
+Whole356-360 archival is complete. Strict opt-in actual initial-tick/setup source
 correspondence and its required gate are complete, with original/closing producer
 and owner RNG identities pinned. It is not a reset execution receipt, accepted
 setup/geometry/source authority or permission. Its setup-report validator now

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §357 for intact motion checkpoint archival;
+Read [REVIEW.md][review] §358 for closed actual initial-tick/setup correspondence;
+§357 records intact motion checkpoint archival;
 §356 records actual intake closing-observation repairs;
 §355 records the prior remaining acceptance-blocker assessment;
 §354 records closed live-receipt owned request joins;
@@ -178,8 +179,11 @@ continues smaller compatible prerequisites. Q0's owning intake sampler now
 observes before collecting original/closing pose/action/goal/profile words and
 rejects malformed original/closing owners; its fresh gate is complete.
 The prior§355 no-further-prerequisite conclusion is not a continuation stop.
-Whole346-350 archival is complete. Next trace a bounded actual initial-tick/
-setup source join without inventing reset execution, geometry or authority.
+Whole346-350 archival is complete. Strict opt-in actual initial-tick/setup source
+correspondence and its required gate are complete, with original/closing producer
+and owner RNG identities pinned. It is not a reset execution receipt, accepted
+setup/geometry/source authority or permission. Next trace the named initial-setup
+consumer for a compatible owned-source prerequisite without inventing acceptance.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

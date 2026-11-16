@@ -10213,6 +10213,244 @@ def c1_simulator_source_fixture(request):
 
 
 @pytest.fixture(scope="module")
+def c1_initial_setup_source_fixture():
+    from sim import diagnostics
+
+    scenario = Scenario(start=(2.0, 2.0, 0.0), obstacles=())
+    environment = RoverEnv(scenario=scenario, config=diagnostics._c1_config(None))
+    owner = diagnostics._SyntheticC1SourceRecorder(scenario, synthetic_test_only=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    return environment, owner
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "detached",
+        "permission",
+        "missing_producer",
+        "wrong_producer_type",
+        "missing_current",
+        "missing_dynamics",
+        "owner_shape",
+        "owner_state",
+        "owner_frame",
+        "stale_pose",
+        "stale_action",
+        "stale_goal",
+        "stale_config",
+        "later_tick",
+        "rng_epoch",
+        "odometry_epoch",
+        "report_flag",
+        "report_binding",
+        "report_mutated",
+        "closing_pose",
+        "closing_owner",
+        "original_source_mutated",
+        "copied_source_mutated",
+        "closing_rng_pair",
+        "closing_odometry_pair",
+        "owner_pose_words",
+        "owner_state_words",
+        "owner_frame_words",
+    ),
+)
+def test_initial_setup_source(c1_initial_setup_source_fixture, monkeypatch, case):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_initial_setup_source_fixture)
+    original_sample = diagnostics._sample_simulator_dynamics_source
+    original_setup = diagnostics._check_synthetic_c1_initial_setup
+    original_observation = RoverEnv._observation
+    original_digest = diagnostics._c1_source_binding_digest
+    original_copy = diagnostics.deepcopy
+    first = report = copied = None
+    work = dict.fromkeys(("sample", "setup", "observation", "digest", "forbidden"), 0)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    if case == "missing_producer":
+        owner._simulator = None
+    elif case == "wrong_producer_type":
+        owner._simulator = True
+    elif case == "missing_current":
+        owner._current = None
+    elif case == "missing_dynamics":
+        owner._dynamics_sample = None
+    elif case == "owner_shape":
+        owner._current = ()
+    elif case == "owner_state":
+        owner._current = (*owner._current[:2], Config(), owner._current[3])
+    elif case == "owner_frame":
+        owner._current = (*owner._current[:3], None)
+    elif case == "owner_pose_words":
+        owner._current = (
+            owner._current[0],
+            (2.1, 2.0, 0.0),
+            *owner._current[2:],
+        )
+    elif case == "owner_state_words":
+        owner._current = (
+            *owner._current[:2],
+            replace(owner._current[2], sequence=1),
+            owner._current[3],
+        )
+    elif case == "owner_frame_words":
+        owner._current = (*owner._current[:3], b"invalid")
+    elif case == "stale_pose":
+        environment.position[0] = math.nextafter(environment.position[0], math.inf)
+    elif case == "stale_action":
+        environment.speed = 0.01
+    elif case == "stale_goal":
+        environment._native_goal_source["goal_m"] = (0.0, 0.0)
+    elif case == "stale_config":
+        environment.config = replace(environment.config, max_speed=0.5)
+    elif case == "later_tick":
+        environment.tick = 1
+    elif case == "rng_epoch":
+        owner._simulator_rng = object()
+    elif case == "odometry_epoch":
+        owner._simulator_odometry_rng = object()
+
+    def sample(*args, **kwargs):
+        nonlocal first
+        work["sample"] += 1
+        assert work["sample"] <= 2
+        result = original_sample(*args, **kwargs)
+        if work["sample"] == 1:
+            first = result
+        elif case == "report_mutated":
+            report["source_qualified"] = True
+        elif case == "original_source_mutated":
+            first["native_action"] = (0.01, 0.0)
+        elif case == "copied_source_mutated":
+            copied["native_action"] = (0.01, 0.0)
+        return result
+
+    def setup(*args, **kwargs):
+        nonlocal report
+        work["setup"] += 1
+        assert work["setup"] <= 1
+        report = original_setup(*args, **kwargs)
+        if case == "report_flag":
+            report["source_qualified"] = True
+        elif case == "report_binding":
+            report["binding"]["epoch"] = "f" * 32
+        return report
+
+    def copy(value, *args, **kwargs):
+        nonlocal copied
+        result = original_copy(value, *args, **kwargs)
+        if value is first:
+            copied = result
+        return result
+
+    def observation(self):
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        result = original_observation(self)
+        if work["observation"] == 2:
+            if case == "closing_pose":
+                self.position[0] = math.nextafter(self.position[0], math.inf)
+            elif case == "closing_owner":
+                owner._current = ()
+            elif case == "closing_rng_pair":
+                self.rng = original_copy(self.rng)
+                owner._simulator_rng = self.rng
+            elif case == "closing_odometry_pair":
+                self.odometry_rng = original_copy(self.odometry_rng)
+                owner._simulator_odometry_rng = self.odometry_rng
+        return result
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 32
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError(
+            "initial source snapshots must not replay/capture/draw/clock"
+        )
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_dynamics_source", sample)
+    monkeypatch.setattr(diagnostics, "_check_synthetic_c1_initial_setup", setup)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    if case == "permission":
+        with pytest.raises(ValueError, match="synthetic_test_only=True"):
+            owner.snapshot_initial_setup_source()
+        assert work["sample"] == work["setup"] == work["observation"] == 0
+    else:
+        result = owner.snapshot_initial_setup_source(synthetic_test_only=True)
+        valid = case in ("valid", "detached")
+        assert result["snapshot_available"] is valid
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if valid:
+            assert (
+                result["origin_basis"]
+                == "owned_actual_tick_zero_sample_not_reset_receipt"
+            )
+            assert result["source_epoch"] == owner._epoch
+            assert result["initial_tick"] == 0
+            assert result["initial_frame"] == owner._current[3]
+            assert original_digest(result["source"]) == original_digest(
+                owner._dynamics_sample
+            )
+            assert result["source_binding"] == original_digest(result["source"])
+            assert result["setup"] == report
+            assert (
+                result["setup"]["binding"]["scenario"] == result["source"]["scenario"]
+            )
+            assert work["sample"] == work["observation"] == 2
+            assert work["setup"] == 1
+            if case == "detached":
+                result["source"]["native_action"] = ()
+                result["setup"]["binding"]["epoch"] = "f" * 32
+                assert owner._dynamics_sample["native_action"] == (0.0, 0.0)
+                assert report["binding"]["epoch"] == owner._epoch
+        else:
+            assert result["status"] == "unknown"
+            for key in (
+                "source",
+                "setup",
+                "source_epoch",
+                "initial_tick",
+                "initial_frame",
+            ):
+                assert key not in result
+    assert work["forbidden"] == 0
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
+@pytest.fixture(scope="module")
 def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
     environment, owner = deepcopy(c1_simulator_source_fixture[:2])
     owner.record_environment_tick(environment, synthetic_test_only=True)

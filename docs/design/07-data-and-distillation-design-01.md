@@ -686,6 +686,33 @@ indexing; failed reads retain prior published data and do not undo external
 mutations. The [intake closure repair][actual-intake-closing-review] preserves
 existing observation/source/capture work without new authority or replay.
 
+##### Actual Initial-Tick Setup Correspondence (2026-11-13)
+
+The private recorder's strict opt-in `snapshot_initial_setup_source` reads its
+already captured actual tick0 dynamics and joins them to the existing bounded
+declared-setup auditor. Native pose/start and zero action words, observation,
+goal source, profile, State/frame, epoch and source files must correspond.
+Missing, later-tick, malformed, stale or unsupported input returns unknown without
+partial source/setup/frame publication. Legacy fixture defaults are unchanged.
+
+Original and detached source/setup bindings close after the second producer
+observation; original producer and owner RNG/odometry identities must both remain
+unchanged, including when both are replaced by equal-state copies. The read uses
+at most two observations, one setup audit (32 obstacles/4096-bit existing bounds)
+and32 digests. No reset, step, native arithmetic, capture, RNG draw or clock is
+replayed. Actual intake reuses the extracted seven-field dynamics sampler with
+unchanged observation-before-word order. Its existing native State/frame
+reconstruction is shared, so original owner pose/State/frame must also match the
+captured source, not merely remain unchanged during the read.
+
+The detached output explicitly labels its origin as an owned actual tick-zero
+sample, not a reset execution receipt. All eight qualification/permission flags
+stay false. Two-point ownership and word correspondence do not establish
+concurrent atomicity, accepted setup/source/coverage, geometry, uniform numerical
+error, qualified timing, one-use execution or an admitted predecessor.
+The [initial-source checkpoint][initial-setup-source-review] retains the introduced
+closing-RNG regression, necessary repair and bounded verification history.
+
 ##### Producer-Owned Receipt Retention (2026-11-09)
 
 The opt-in simulator retains one private deep copy of its completed receipt
@@ -2253,6 +2280,7 @@ figure is not an established minimum.
 [native-integration-closing-review]: ../../REVIEW.md#352-native-integration-closing-observation-repairs-2026-11-13
 [owned-current-receipt-review]: ../../REVIEW.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../../REVIEW.md#356-actual-intake-closing-observation-repairs-2026-11-13
+[initial-setup-source-review]: ../../REVIEW.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

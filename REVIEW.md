@@ -497,6 +497,52 @@ and the bulk utility remain in the session folder; committed text/links, not
 local recovery files, are portable. Next continue the actual initial-tick/setup
 source prerequisite without an invented reset receipt or accepted authority.
 
+## 358. Closed Actual Initial-Tick Setup Correspondence (2026-11-13)
+
+Begin clean pushed5aba765. Implement strict opt-in read-only
+snapshot_initial_setup_source using the owned actual tick0 dynamics and existing
+declared-setup auditor, not an invented reset execution receipt. Extract the
+seven-field observation-first sampler from actual intake without changing its
+semantics. Require native pose/start/zero-action words, source/profile/frame/
+epoch/file correspondence and original/detached/closing source/setup/owner joins.
+Missing/stale/malformed/later-tick/unsupported evidence stays unknown without
+partial publication. All eight flags remain false; no consumer accepts authority.
+
+Fresh24 controls/60s, one necessary repair reserve24/60s, root/360s. First24
+PASS4.67s/4973 deselected; first root PASS5920/known QDQ1 xfail/77 warnings204.59s,
+root Ruff/format/whitespace/four hashes/exact sampler extraction and unrelated AST
+PASS. A subsequent concrete closing-epoch question exposed an introduced bug:
+simultaneous producer/owner equal-state RNG replacement escaped current-reference
+comparison. Two added controls FAIL5.52s/4997 deselected (snapshot_available True).
+Pin both original RNG references and require producer and owner references remain
+those originals after closing work. Narrow necessary repair2/60s PASS0.67s; do not
+repeat the green24. Required substantive-repair root/360s PASS5922/known1 xfail/
+77 warnings212.81s. Root Ruff/changed format/whitespace/new four-hash bracket/exact
+extraction and unrelated AST PASS. Both root positions and failures stay spent.
+
+Before checkpointing, the named startup consumer trace exposed a second concrete
+gap: owner pose/State/frame could remain unchanged but disagree with captured
+initial words. Three controls FAIL7.23s/4999 deselected (snapshot_available True).
+Extract existing actual-intake State/native-goal/frame reconstruction unchanged
+and compare original owner pose words, complete native State content and emitted
+frame against it. Necessary repair3/60s PASS0.84s. Format check rejected one wrapped
+guard; formatter repaired it, without another green focused run. Necessary
+substantive-repair root/360s PASS5925/known1 xfail/77 warnings194.45s; root Ruff/
+changed format/whitespace/fresh four-hash bracket/exact dynamics and State helper
+extraction/unrelated AST PASS. All three root positions remain separately spent;
+no fixture or safety threshold changed.
+
+Bounds: two observations, one existing setup audit (32 obstacles/4096 bits),
+32 digests; no reset/step/capture/arithmetic replay, trig, RNG draw or clock.
+No protected study/model/dependency/download/native/Arm/hardware action. Initial
+correspondence is not reset execution, accepted setup/source/geometry/coverage,
+numerical or physical bounds, qualified clocks, permission or predecessor
+admission. Ignored `.git/returns-358-*` first/failure/repair/root/hash evidence
+retained separately. Main/upstream0/0 and terminal Python3.12.3 at /opt/venv/Ruff
+reverified; explicit-workspace Pylance environment also reports /opt/venv/bin/python.
+Next trace the
+named initial-setup consumer for compatible owned-source prerequisites.
+
 ## Sources
 
 Hardware and tools:

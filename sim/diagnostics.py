@@ -9702,6 +9702,57 @@ def _probe_native_integration_arithmetic(
     return result
 
 
+def _sample_simulator_dynamics_source(environment):
+    observation = environment._observation()
+    return {
+        "tick": environment.tick,
+        "pose_m_rad": (*map(float, environment.position), float(environment.yaw)),
+        "native_action": (float(environment.speed), float(environment.turn_rate)),
+        "native_goal_source": deepcopy(
+            getattr(environment, "_native_goal_source", None)
+        ),
+        "observation": observation,
+        "config": asdict(environment.config),
+        "scenario": asdict(environment.scenario),
+    }
+
+
+def _state_from_simulator_dynamics_source(snapshot):
+    from interface.protocol import encode_state
+    from sim.rover import state_from_observation
+
+    state = state_from_observation(snapshot["observation"])
+    emitted_frame = encode_state(state)
+    goal_source = snapshot["native_goal_source"]
+    if type(goal_source) is not dict or set(goal_source) != {
+        "tick",
+        "position_m",
+        "yaw_rad",
+        "goal_m",
+    }:
+        raise ValueError("unsupported native goal source")
+    goal_pose = _c1_array(
+        (*goal_source["position_m"], goal_source["yaw_rad"]), (3,)
+    ).astype(float)
+    if (
+        type(goal_source["tick"]) is not int
+        or goal_source["tick"] != snapshot["tick"]
+        or tuple(float(value).hex() for value in goal_pose)
+        != tuple(value.hex() for value in snapshot["pose_m_rad"])
+    ):
+        raise ValueError("native goal sample does not match current simulator pose")
+    native_goal = _c1_array(goal_source["goal_m"], (2,)).astype(float)
+    state = replace(
+        state,
+        velocity_m_s=(snapshot["native_action"][0], 0.0, 0.0),
+        angular_velocity_rad_s=(0.0, 0.0, snapshot["native_action"][1]),
+        goal_m=(*map(float, native_goal), 0.0),
+    )
+    if encode_state(state) != emitted_frame:
+        raise ValueError("native simulator words and emitted observation disagree")
+    return state, emitted_frame
+
+
 def _sample_simulator_native_integration_source(environment, receipt, source_epoch):
     source = environment._integration_source
     if type(source) is not dict or set(source) != {
@@ -17708,8 +17759,7 @@ class _SyntheticC1SourceRecorder:
         """Read one actual simulator snapshot, without stepping or qualifying it."""
         from copy import copy
 
-        from interface.protocol import encode_state
-        from sim.rover import RoverEnv, Scenario, state_from_observation
+        from sim.rover import RoverEnv, Scenario
 
         if synthetic_test_only is not True:
             raise ValueError("simulator source requires synthetic_test_only=True")
@@ -17783,24 +17833,7 @@ class _SyntheticC1SourceRecorder:
         )
 
         def sample():
-            observation = environment._observation()
-            snapshot = {
-                "tick": environment.tick,
-                "pose_m_rad": (
-                    *map(float, environment.position),
-                    float(environment.yaw),
-                ),
-                "native_action": (
-                    float(environment.speed),
-                    float(environment.turn_rate),
-                ),
-                "native_goal_source": deepcopy(
-                    getattr(environment, "_native_goal_source", None)
-                ),
-                "observation": observation,
-                "config": asdict(environment.config),
-                "scenario": asdict(environment.scenario),
-            }
+            snapshot = _sample_simulator_dynamics_source(environment)
             if capture_native_tof_pending_source:
                 snapshot["native_tof_pending_queue"] = _copy_native_tof_pending_queue(
                     environment
@@ -17927,35 +17960,7 @@ class _SyntheticC1SourceRecorder:
         recorder_odometry_rng_before = self._simulator_odometry_rng
         recorder_pending_before = self._simulator_pending
         binding_before = self._binding
-        state = state_from_observation(snapshot["observation"])
-        emitted_frame = encode_state(state)
-        goal_source = snapshot["native_goal_source"]
-        if type(goal_source) is not dict or set(goal_source) != {
-            "tick",
-            "position_m",
-            "yaw_rad",
-            "goal_m",
-        }:
-            raise ValueError("unsupported native goal source")
-        goal_pose = _c1_array(
-            (*goal_source["position_m"], goal_source["yaw_rad"]), (3,)
-        ).astype(float)
-        if (
-            type(goal_source["tick"]) is not int
-            or goal_source["tick"] != snapshot["tick"]
-            or tuple(float(value).hex() for value in goal_pose)
-            != tuple(value.hex() for value in snapshot["pose_m_rad"])
-        ):
-            raise ValueError("native goal sample does not match current simulator pose")
-        native_goal = _c1_array(goal_source["goal_m"], (2,)).astype(float)
-        state = replace(
-            state,
-            velocity_m_s=(snapshot["native_action"][0], 0.0, 0.0),
-            angular_velocity_rad_s=(0.0, 0.0, snapshot["native_action"][1]),
-            goal_m=(*map(float, native_goal), 0.0),
-        )
-        if encode_state(state) != emitted_frame:
-            raise ValueError("native simulator words and emitted observation disagree")
+        state, emitted_frame = _state_from_simulator_dynamics_source(snapshot)
         receipt_history = []
         if capture_motion_receipt_source:
             if self._receipt_history:
@@ -22457,6 +22462,159 @@ class _SyntheticC1SourceRecorder:
             source_binding=source_binding,
             source=deepcopy(before["source"]),
             arithmetic=copied_arithmetic,
+        )
+        return result
+
+    def snapshot_initial_setup_source(self, *, synthetic_test_only=False):
+        if synthetic_test_only is not True:
+            raise ValueError("initial setup source requires synthetic_test_only=True")
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        result = {
+            "schema": "micro-classifier/synthetic-c1-initial-setup-source/1",
+            "allowed_use": "offline_initial_tick_source_setup_correspondence_only",
+            "status": "unknown",
+            "reason": "missing_actual_initial_source",
+            "snapshot_available": False,
+            **dict.fromkeys(flags, False),
+        }
+        producer = self._simulator
+        if producer is None or self._current is None or self._dynamics_sample is None:
+            return result
+        if type(producer) is not RoverEnv:
+            result["reason"] = "unsupported_initial_source_owner"
+            return result
+        rng_before, odometry_rng_before = producer.rng, producer.odometry_rng
+
+        def owner_binding():
+            from interface.protocol import State
+
+            current = self._current
+            if (
+                type(current) is not tuple
+                or len(current) != 4
+                or not isinstance(current[2], State)
+                or type(current[3]) is not bytes
+                or type(self._dynamics_sample) is not dict
+            ):
+                raise ValueError("unsupported initial source recorder layout")
+            return _c1_source_binding_digest(
+                {
+                    "epoch": self._epoch,
+                    "current": (current[0], current[1], asdict(current[2]), current[3]),
+                    "dynamics_sample": self._dynamics_sample,
+                    "config": asdict(self._config),
+                    "scenario": asdict(self._scenario),
+                    "identities": self._identities,
+                }
+            )
+
+        try:
+            binding = owner_binding()
+            if (
+                type(producer.tick) is not int
+                or producer.tick != 0
+                or type(self._current[0]) is not int
+                or self._current[0] != 0
+                or producer.rng is not self._simulator_rng
+                or producer.odometry_rng is not self._simulator_odometry_rng
+                or self._source_files() != self._identities
+            ):
+                result["reason"] = "initial_source_epoch_tick_or_files_changed"
+                return result
+            source = _sample_simulator_dynamics_source(producer)
+            source_binding = _c1_source_binding_digest(source)
+            expected_profile = {
+                "epoch": self._epoch,
+                "config": asdict(self._config),
+                "scenario": asdict(self._scenario),
+            }
+            if (
+                source_binding != _c1_source_binding_digest(self._dynamics_sample)
+                or source["config"] != expected_profile["config"]
+                or source["scenario"] != expected_profile["scenario"]
+                or tuple(value.hex() for value in source["pose_m_rad"])
+                != tuple(float(value).hex() for value in self._scenario.start)
+                or tuple(value.hex() for value in source["native_action"])
+                != ((0.0).hex(), (0.0).hex())
+            ):
+                result["reason"] = "initial_source_words_or_profile_mismatch"
+                return result
+            state, frame = _state_from_simulator_dynamics_source(source)
+            if (
+                tuple(float(value).hex() for value in _c1_array(self._current[1], (3,)))
+                != tuple(value.hex() for value in source["pose_m_rad"])
+                or _c1_source_binding_digest(asdict(self._current[2]))
+                != _c1_source_binding_digest(asdict(state))
+                or self._current[3] != frame
+            ):
+                result["reason"] = "initial_owner_pose_state_or_frame_mismatch"
+                return result
+            setup = _check_synthetic_c1_initial_setup(
+                deepcopy(self._scenario),
+                epoch=self._epoch,
+                config=deepcopy(self._config),
+                synthetic_test_only=True,
+            )
+            if (
+                type(setup) is not dict
+                or setup.get("schema")
+                != "micro-classifier/synthetic-c1-initial-setup/1"
+                or setup.get("allowed_use")
+                != "offline_declared_initial_setup_fixture_only"
+                or setup.get("status") != "checked_declared_initial_fixture"
+                or setup.get("fixture_initial_body_clear") is not True
+                or setup.get("fixture_controlled_envelope") is not True
+                or setup.get("binding") != expected_profile
+                or setup.get("setup_sha256")
+                != _c1_source_binding_digest(expected_profile)
+                or setup.get("config_sha256")
+                != _c1_source_binding_digest(expected_profile["config"])
+                or any(setup.get(flag) is not False for flag in flags[1:])
+            ):
+                result["reason"] = "unsupported_initial_setup_report"
+                return result
+            setup_binding = _c1_source_binding_digest(setup)
+            copied_source, copied_setup = deepcopy(source), deepcopy(setup)
+            closing_source = _sample_simulator_dynamics_source(producer)
+            if (
+                _c1_source_binding_digest(source) != source_binding
+                or _c1_source_binding_digest(copied_source) != source_binding
+                or _c1_source_binding_digest(closing_source) != source_binding
+                or _c1_source_binding_digest(setup) != setup_binding
+                or _c1_source_binding_digest(copied_setup) != setup_binding
+                or owner_binding() != binding
+                or self._simulator is not producer
+                or producer.rng is not rng_before
+                or producer.odometry_rng is not odometry_rng_before
+                or self._simulator_rng is not rng_before
+                or self._simulator_odometry_rng is not odometry_rng_before
+                or self._source_files() != self._identities
+            ):
+                result["reason"] = "initial_source_or_setup_changed_during_snapshot"
+                return result
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            result["reason"] = str(error)
+            return result
+        result.update(
+            status="recorded_initial_tick_setup_correspondence",
+            reason="matched_actual_initial_words_setup_unqualified",
+            snapshot_available=True,
+            origin_basis="owned_actual_tick_zero_sample_not_reset_receipt",
+            source_epoch=self._epoch,
+            initial_tick=0,
+            initial_frame=self._current[3],
+            source_binding=source_binding,
+            source=copied_source,
+            setup=copied_setup,
         )
         return result
 

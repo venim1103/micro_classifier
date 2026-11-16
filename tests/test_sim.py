@@ -10462,6 +10462,176 @@ def test_initial_setup_source(c1_initial_setup_source_fixture, monkeypatch, case
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "permission",
+        "duplicate",
+        "old_layout",
+        "old_mismatch",
+        "closing_pose",
+        "closing_rng_pair",
+        "closing_owner_slot",
+        "original_mutated",
+        "copied_mutated",
+        "late_tick",
+        "reader_extra",
+    ),
+)
+def test_initial_setup_source_retention(
+    c1_initial_setup_source_fixture, monkeypatch, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_initial_setup_source_fixture)
+    original_read = diagnostics._SyntheticC1SourceRecorder.snapshot_initial_setup_source
+    original_copy = diagnostics.deepcopy
+    original_digest = diagnostics._c1_source_binding_digest
+    original_observation = RoverEnv._observation
+    original_setup = diagnostics._check_synthetic_c1_initial_setup
+    work = dict.fromkeys(("read", "observation", "setup", "digest", "forbidden"), 0)
+    first = None
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    assert owner._initial_setup_source is None
+    if case == "old_layout":
+        owner._initial_setup_source = ()
+    elif case == "old_mismatch":
+        owner._initial_setup_source = (
+            environment.rng,
+            environment.odometry_rng,
+            {},
+        )
+    elif case == "late_tick":
+        environment.tick = 1
+    retained_before = owner._initial_setup_source
+
+    def read(self, *args, **kwargs):
+        nonlocal first
+        work["read"] += 1
+        assert work["read"] <= 4
+        result = original_read(self, *args, **kwargs)
+        if work["read"] == 1:
+            first = result
+            if case == "closing_rng_pair":
+                environment.rng = original_copy(environment.rng)
+                owner._simulator_rng = environment.rng
+            elif case == "reader_extra":
+                result["unrecognized"] = True
+        elif work["read"] == 2:
+            if case == "closing_owner_slot":
+                owner._initial_setup_source = ()
+            elif case == "original_mutated":
+                first["setup"]["reason"] = "unsupported"
+        return result
+
+    def copy(value, *args, **kwargs):
+        result = original_copy(value, *args, **kwargs)
+        if first is not None and value is first and case == "copied_mutated":
+            result["source"]["native_action"] = (0.01, 0.0)
+        return result
+
+    def observation(self):
+        work["observation"] += 1
+        assert work["observation"] <= 8
+        result = original_observation(self)
+        if work["observation"] == 4 and case == "closing_pose":
+            self.position[0] = math.nextafter(self.position[0], math.inf)
+        return result
+
+    def setup(*args, **kwargs):
+        work["setup"] += 1
+        assert work["setup"] <= 4
+        return original_setup(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 168
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("initial retention must not replay/draw/capture/clock")
+
+    monkeypatch.setattr(
+        diagnostics._SyntheticC1SourceRecorder, "snapshot_initial_setup_source", read
+    )
+    monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "_check_synthetic_c1_initial_setup", setup)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin", "ceil", "floor"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    if case == "permission":
+        with pytest.raises(ValueError, match="synthetic_test_only=True"):
+            owner.retain_initial_setup_source()
+        assert work["read"] == work["digest"] == 0
+    else:
+        result = owner.retain_initial_setup_source(synthetic_test_only=True)
+        valid = case in ("valid", "duplicate")
+        assert result["retention_available"] is valid
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        assert work["read"] <= 2
+        assert work["observation"] <= 4
+        assert work["setup"] <= 2
+        assert work["digest"] <= 84
+        if valid:
+            retained = owner._initial_setup_source
+            assert retained[0] is environment.rng
+            assert retained[1] is environment.odometry_rng
+            assert retained[2] is not first
+            assert result["retained_now"] is True
+            assert result["retained_count"] == 1
+            assert result["source_epoch"] == owner._epoch
+            assert result["initial_frame"] == owner._current[3]
+            assert result["initial_snapshot_binding"] == original_digest(retained[2])
+            first["setup"]["reason"] = "caller mutation"
+            assert retained[2]["setup"]["reason"] != "caller mutation"
+            if case == "duplicate":
+                before = dict(work)
+                duplicate = owner.retain_initial_setup_source(synthetic_test_only=True)
+                assert duplicate["retention_available"] is True
+                assert duplicate["retained_now"] is False
+                assert owner._initial_setup_source is retained
+                assert work["read"] - before["read"] <= 2
+                assert work["observation"] - before["observation"] <= 4
+                assert work["setup"] - before["setup"] <= 2
+                assert work["digest"] - before["digest"] <= 84
+        else:
+            assert result["status"] == "unknown"
+            assert result["reason"]
+            assert "initial_frame" not in result
+            assert "source_epoch" not in result
+            if case == "closing_owner_slot":
+                assert owner._initial_setup_source == ()
+            else:
+                assert owner._initial_setup_source is retained_before
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+    assert work["forbidden"] == 0
+
+
 @pytest.fixture(scope="module")
 def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
     environment, owner = deepcopy(c1_simulator_source_fixture[:2])

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §360 for intact source/consumer checkpoint archival;
+Read [REVIEW.md][review] §361 for bounded initial-source retention;
+§360 records intact source/consumer checkpoint archival;
 §359 records closed setup-report consumer metadata;
 §358 records closed actual initial-tick/setup correspondence;
 §357 records intact motion checkpoint archival;
@@ -188,8 +189,12 @@ and owner RNG identities pinned. It is not a reset execution receipt, accepted
 setup/geometry/source authority or permission. Its setup-report validator now
 shares the unchanged named startup consumer predicate, including exact root,
 reason and bounded integer work. Its required gate is complete. Next trace
-conditional owned initial-source consumption
-without inventing acceptance or a later-tick reset receipt.
+conditional owned initial-source consumption without inventing acceptance.
+Frozen C1 ToF latency2 leaves no delivered capture at tick0; it is not goal's
+odometry latency0. Explicit opt-in <=1 initial source snapshot retention and its
+required gate are complete, including exact deduplication and pinned epoch joins.
+Next add bounded retained initial-source reading before conditional later delivery
+composition; no current initial-tick claim or reset receipt follows from retention.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

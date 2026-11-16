@@ -435,6 +435,39 @@ lines. Three original document snapshots and the utility remain in the session
 folder, not assumed portable evidence. Next trace conditional owned initial-source
 consumption without accepting setup, geometry, clocks or permission.
 
+## 361. Bounded Initial Source Retention (2026-11-13)
+
+Begin clean pushed38ab59e. One bounded explicit-workspace compatibility probe of
+actual initial setup/frame and delivered startup history fails IndexError before
+consumer entry: history empty. A narrow actual-layout diagnostic PASS shows C1
+ToF latency2,current0,history0,latestNone,pending delivery[2]. Goal odometry latency0
+is a different source; do not generalize it or retimestamp/implicitly advance.
+Both finite probe positions remain spent; no native/command consumer ran.
+
+Implement separate strict opt-in retain_initial_setup_source: at most one
+detached complete initial snapshot, original pinned producer/owner RNG identities,
+exact supported metadata and original/copy/closing source/setup/frame/profile
+joins. Exact repeated content deduplicates without replacement; wrong/stale/
+changed content rejects and preserves prior published data except external
+mutations, which are not rolled back. Ordinary intake/snapshot output unchanged.
+
+Fresh12 controls/60s, one necessary repair reserve12/60s, root/360s. First12
+PASS4.09s/5006 deselected, root PASS5941/known QDQ1 xfail/77 warnings199.41s.
+Root Ruff/whitespace/four tested hashes/exact default-empty slot/unrelated
+source/control AST PASS. Changed format rejects two new wrapped lines; existing
+formatter repairs them, final format PASS; no repeated green focused controls.
+Per call<=2 initial reads/4 observations/2 setup audits/84 digests; duplicates
+are bounded separately. RNG states unchanged, forbidden calls0. All positions
+spent; no fixture/work/safety limit relaxed.
+
+All eight flags false; no replay/draw/capture/clock/model/study/dependency/download/
+native/Arm/hardware work. One private snapshot is not accepted setup/geometry/
+coverage/error/timing or measured memory fit, a reset receipt, current initial
+state, later delivery or an admitted predecessor. Ignored `.git/returns-361-*`
+focused/root/hash logs retained; tool-returned compatibility/layout evidence is
+summarized here, not assumed portable editor memory. Next implement bounded
+retained initial-source reading before conditional later-delivery consumption.
+
 ## Sources
 
 Hardware and tools:

@@ -17695,6 +17695,7 @@ class _SyntheticC1SourceRecorder:
         self._tof_postprocessing_history = []
         self._goal_computation_history = []
         self._receipt_history = []
+        self._initial_setup_source = None
 
     @staticmethod
     def _source_files():
@@ -22610,6 +22611,146 @@ class _SyntheticC1SourceRecorder:
             source_binding=source_binding,
             source=copied_source,
             setup=copied_setup,
+        )
+        return result
+
+    def retain_initial_setup_source(self, *, synthetic_test_only=False):
+        if synthetic_test_only is not True:
+            raise ValueError(
+                "initial source retention requires synthetic_test_only=True"
+            )
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        result = {
+            "schema": "micro-classifier/synthetic-c1-initial-source-retention/1",
+            "allowed_use": "offline_initial_source_retention_only",
+            "status": "unknown",
+            "reason": "missing_actual_initial_source",
+            "retention_available": False,
+            **dict.fromkeys(flags, False),
+        }
+        producer = self._simulator
+        if type(producer) is not RoverEnv:
+            return result
+        rng_before, odometry_before = producer.rng, producer.odometry_rng
+        retained_before = self._initial_setup_source
+
+        def snapshot_binding(snapshot):
+            if (
+                type(snapshot) is not dict
+                or set(snapshot)
+                != set(flags)
+                | {
+                    "schema",
+                    "allowed_use",
+                    "status",
+                    "reason",
+                    "snapshot_available",
+                    "origin_basis",
+                    "source_epoch",
+                    "initial_tick",
+                    "initial_frame",
+                    "source_binding",
+                    "source",
+                    "setup",
+                }
+                or snapshot.get("schema")
+                != "micro-classifier/synthetic-c1-initial-setup-source/1"
+                or snapshot.get("allowed_use")
+                != "offline_initial_tick_source_setup_correspondence_only"
+                or snapshot.get("status")
+                != "recorded_initial_tick_setup_correspondence"
+                or snapshot.get("reason")
+                != "matched_actual_initial_words_setup_unqualified"
+                or snapshot.get("snapshot_available") is not True
+                or snapshot.get("origin_basis")
+                != "owned_actual_tick_zero_sample_not_reset_receipt"
+                or snapshot.get("source_epoch") != self._epoch
+                or type(snapshot.get("initial_tick")) is not int
+                or snapshot["initial_tick"] != 0
+                or any(snapshot.get(flag) is not False for flag in flags)
+                or not _c1_supported_initial_setup_report(snapshot.get("setup"))
+            ):
+                raise ValueError("unsupported initial source retention snapshot")
+            if (
+                type(self._current) is not tuple
+                or len(self._current) != 4
+                or snapshot.get("initial_frame") != self._current[3]
+                or snapshot["setup"]["binding"]
+                != {
+                    "epoch": self._epoch,
+                    "config": asdict(self._config),
+                    "scenario": asdict(self._scenario),
+                }
+                or snapshot["setup"]["setup_sha256"]
+                != _c1_source_binding_digest(snapshot["setup"]["binding"])
+                or snapshot["setup"]["config_sha256"]
+                != _c1_source_binding_digest(snapshot["setup"]["binding"]["config"])
+                or snapshot.get("source_binding")
+                != _c1_source_binding_digest(snapshot.get("source"))
+                or snapshot["source_binding"]
+                != _c1_source_binding_digest(self._dynamics_sample)
+            ):
+                raise ValueError("initial retention source owner words mismatch")
+            return _c1_source_binding_digest(snapshot)
+
+        try:
+            if retained_before is not None and (
+                type(retained_before) is not tuple
+                or len(retained_before) != 3
+                or retained_before[0] is not rng_before
+                or retained_before[1] is not odometry_before
+            ):
+                raise ValueError("unsupported retained initial source owner")
+            before = self.snapshot_initial_setup_source(synthetic_test_only=True)
+            binding = snapshot_binding(before)
+            if (
+                retained_before is not None
+                and snapshot_binding(retained_before[2]) != binding
+            ):
+                raise ValueError("retained initial source content mismatch")
+            copied = deepcopy(before)
+            closing = self.snapshot_initial_setup_source(synthetic_test_only=True)
+            if (
+                snapshot_binding(before) != binding
+                or snapshot_binding(copied) != binding
+                or snapshot_binding(closing) != binding
+                or (
+                    retained_before is not None
+                    and snapshot_binding(retained_before[2]) != binding
+                )
+                or self._initial_setup_source is not retained_before
+                or self._simulator is not producer
+                or producer.rng is not rng_before
+                or producer.odometry_rng is not odometry_before
+                or self._simulator_rng is not rng_before
+                or self._simulator_odometry_rng is not odometry_before
+                or self._source_files() != self._identities
+            ):
+                raise ValueError("initial source changed during retention")
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            result["reason"] = str(error)
+            return result
+        if retained_before is None:
+            self._initial_setup_source = rng_before, odometry_before, copied
+        result.update(
+            status="retained_initial_tick_source",
+            reason="owned_initial_snapshot_retained_setup_unqualified",
+            retention_available=True,
+            retained_now=retained_before is None,
+            retained_count=1,
+            source_epoch=before["source_epoch"],
+            initial_tick=0,
+            initial_frame=before["initial_frame"],
+            initial_snapshot_binding=binding,
         )
         return result
 

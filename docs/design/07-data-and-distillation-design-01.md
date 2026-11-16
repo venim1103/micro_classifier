@@ -704,6 +704,11 @@ replayed. Actual intake reuses the extracted seven-field dynamics sampler with
 unchanged observation-before-word order. Its existing native State/frame
 reconstruction is shared, so original owner pose/State/frame must also match the
 captured source, not merely remain unchanged during the read.
+Setup metadata uses the named startup consumer's unchanged exact report validator:
+root fields, declared-only reason, canonical hashes and bounded integer work all
+must be supported. Extra fields, missing work or boolean work counters reject
+before publication. The [consumer metadata repair][initial-setup-report-review]
+changes no setup threshold, startup default or authority.
 
 The detached output explicitly labels its origin as an owned actual tick-zero
 sample, not a reset execution receipt. All eight qualification/permission flags
@@ -2281,6 +2286,7 @@ figure is not an established minimum.
 [owned-current-receipt-review]: ../../REVIEW.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../../REVIEW.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../../REVIEW.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
+[initial-setup-report-review]: ../../REVIEW.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

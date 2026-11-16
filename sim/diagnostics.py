@@ -5821,58 +5821,8 @@ def _probe_synthetic_c1_command_path_enclosure(
     return result
 
 
-def _probe_synthetic_c1_startup_path_enclosure(
-    history,
-    startup_evidence,
-    *,
-    reference_tick,
-    reference_pose_m_rad,
-    error_evidence=None,
-    profile=None,
-    config=None,
-    max_braking_ticks=16,
-    max_chords=128,
-    max_terms=16,
-    max_cells=32768,
-    max_depth=10,
-    radius_bands=8,
-    synthetic_test_only=False,
-):
-    """Join rechecked initial setup and exact-rest fixtures, never issue a permit."""
-    from interface.protocol import State
-    from sim.rover import Scenario
-
-    if synthetic_test_only is not True:
-        raise ValueError("startup path fixture requires synthetic_test_only=True")
-    work = {"setup_entries": 0, "rest_binding_entries": 0, "command_entries": 0}
-    result = {
-        "schema": "micro-classifier/synthetic-c1-startup-path-enclosure/1",
-        "allowed_use": "conditional_initial_setup_startup_fixture_only",
-        **{
-            flag: False
-            for flag in (
-                "training_approved",
-                "real_input_qualified",
-                "free_space_qualified",
-                "numerically_certified",
-                "source_qualified",
-                "native_execution_qualified",
-                "command_admission_qualified",
-            )
-        },
-        "fixture_startup_path_excluded": False,
-        "status": "unknown",
-        "reason": "unsupported_startup_evidence",
-        "work": work,
-    }
-    if type(startup_evidence) is not dict or set(startup_evidence) != {
-        "epoch",
-        "initial_setup",
-        "point_error_evidence",
-    }:
-        return result
-    setup = startup_evidence["initial_setup"]
-    if (
+def _c1_supported_initial_setup_report(setup):
+    return not (
         type(setup) is not dict
         or set(setup)
         != {
@@ -5927,7 +5877,61 @@ def _probe_synthetic_c1_startup_path_enclosure(
         )
         or type(setup["binding"]) is not dict
         or set(setup["binding"]) != {"epoch", "config", "scenario"}
-    ):
+    )
+
+
+def _probe_synthetic_c1_startup_path_enclosure(
+    history,
+    startup_evidence,
+    *,
+    reference_tick,
+    reference_pose_m_rad,
+    error_evidence=None,
+    profile=None,
+    config=None,
+    max_braking_ticks=16,
+    max_chords=128,
+    max_terms=16,
+    max_cells=32768,
+    max_depth=10,
+    radius_bands=8,
+    synthetic_test_only=False,
+):
+    """Join rechecked initial setup and exact-rest fixtures, never issue a permit."""
+    from interface.protocol import State
+    from sim.rover import Scenario
+
+    if synthetic_test_only is not True:
+        raise ValueError("startup path fixture requires synthetic_test_only=True")
+    work = {"setup_entries": 0, "rest_binding_entries": 0, "command_entries": 0}
+    result = {
+        "schema": "micro-classifier/synthetic-c1-startup-path-enclosure/1",
+        "allowed_use": "conditional_initial_setup_startup_fixture_only",
+        **{
+            flag: False
+            for flag in (
+                "training_approved",
+                "real_input_qualified",
+                "free_space_qualified",
+                "numerically_certified",
+                "source_qualified",
+                "native_execution_qualified",
+                "command_admission_qualified",
+            )
+        },
+        "fixture_startup_path_excluded": False,
+        "status": "unknown",
+        "reason": "unsupported_startup_evidence",
+        "work": work,
+    }
+    if type(startup_evidence) is not dict or set(startup_evidence) != {
+        "epoch",
+        "initial_setup",
+        "point_error_evidence",
+    }:
+        return result
+    setup = startup_evidence["initial_setup"]
+    if not _c1_supported_initial_setup_report(setup):
         return result
     binding = setup["binding"]
     if (
@@ -22565,20 +22569,11 @@ class _SyntheticC1SourceRecorder:
                 synthetic_test_only=True,
             )
             if (
-                type(setup) is not dict
-                or setup.get("schema")
-                != "micro-classifier/synthetic-c1-initial-setup/1"
-                or setup.get("allowed_use")
-                != "offline_declared_initial_setup_fixture_only"
-                or setup.get("status") != "checked_declared_initial_fixture"
-                or setup.get("fixture_initial_body_clear") is not True
-                or setup.get("fixture_controlled_envelope") is not True
-                or setup.get("binding") != expected_profile
-                or setup.get("setup_sha256")
-                != _c1_source_binding_digest(expected_profile)
-                or setup.get("config_sha256")
+                not _c1_supported_initial_setup_report(setup)
+                or setup["binding"] != expected_profile
+                or setup["setup_sha256"] != _c1_source_binding_digest(expected_profile)
+                or setup["config_sha256"]
                 != _c1_source_binding_digest(expected_profile["config"])
-                or any(setup.get(flag) is not False for flag in flags[1:])
             ):
                 result["reason"] = "unsupported_initial_setup_report"
                 return result

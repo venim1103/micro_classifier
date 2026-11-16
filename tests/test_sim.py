@@ -10255,6 +10255,10 @@ def c1_initial_setup_source_fixture():
         "owner_pose_words",
         "owner_state_words",
         "owner_frame_words",
+        "report_reason",
+        "report_extra",
+        "report_work",
+        "report_missing_work",
     ),
 )
 def test_initial_setup_source(c1_initial_setup_source_fixture, monkeypatch, case):
@@ -10339,6 +10343,14 @@ def test_initial_setup_source(c1_initial_setup_source_fixture, monkeypatch, case
             report["source_qualified"] = True
         elif case == "report_binding":
             report["binding"]["epoch"] = "f" * 32
+        elif case == "report_reason":
+            report["reason"] = "unsupported"
+        elif case == "report_extra":
+            report["unrecognized"] = True
+        elif case == "report_work":
+            report["work"]["body_checks"] = True
+        elif case == "report_missing_work":
+            del report["work"]
         return report
 
     def copy(value, *args, **kwargs):

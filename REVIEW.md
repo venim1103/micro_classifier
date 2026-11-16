@@ -543,6 +543,31 @@ reverified; explicit-workspace Pylance environment also reports /opt/venv/bin/py
 Next trace the
 named initial-setup consumer for compatible owned-source prerequisites.
 
+## 359. Closed Initial Setup Report Consumer Metadata (2026-11-13)
+
+Begin clean pushed00fd933. Explicit-workspace Pylance references identify the
+declared setup auditor's source and conditional startup consumers. The new source
+reader validated only part of the startup consumer's exact metadata contract.
+Four reason/extra-root-key/boolean-work/missing-work controls reproduce unsupported
+report publication:4 FAIL6.87s/5002 deselected (snapshot_available True).
+Extract the existing consumer predicate unchanged and share it with actual
+initial-source reading. Original/detached/closing joins and defaults remain.
+
+Fresh repro4/60s, necessary focused4/60s, one substantive repair reserve4/60s,
+root/360s. Focused4 PASS0.84s; root PASS5929/known QDQ1 xfail/77 warnings181.90s,
+root Ruff/whitespace/four tested hashes PASS. Changed format initially rejects
+one wrapped hash guard; formatter repairs it, final format PASS, no repeated
+green focused controls. Exact original predicate/whole startup consumer/unrelated
+source AST PASS. All positions spent; no threshold/assertion/work cap relaxed.
+
+Two observations/one existing setup audit/32 digests and all eight false flags
+remain. This closes diagnostic consumer shape, not independently accepted
+setup/source/geometry/coverage/error/clock/admission or execution. No replay/draw/
+clock/study/model/dependency/download/native/Arm/hardware work. Ignored
+`.git/returns-359-*` failure/focused/root/hash evidence retained. Next archive
+whole351-355, then trace conditional owned initial-source consumption; later-tick
+initial correspondence cannot be invented from tick0-only source storage.
+
 ## Sources
 
 Hardware and tools:

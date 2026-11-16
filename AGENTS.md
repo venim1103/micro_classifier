@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §358 for closed actual initial-tick/setup correspondence;
+Read [REVIEW.md][review] §359 for closed setup-report consumer metadata;
+§358 records closed actual initial-tick/setup correspondence;
 §357 records intact motion checkpoint archival;
 §356 records actual intake closing-observation repairs;
 §355 records the prior remaining acceptance-blocker assessment;
@@ -182,8 +183,11 @@ The prior§355 no-further-prerequisite conclusion is not a continuation stop.
 Whole346-350 archival is complete. Strict opt-in actual initial-tick/setup source
 correspondence and its required gate are complete, with original/closing producer
 and owner RNG identities pinned. It is not a reset execution receipt, accepted
-setup/geometry/source authority or permission. Next trace the named initial-setup
-consumer for a compatible owned-source prerequisite without inventing acceptance.
+setup/geometry/source authority or permission. Its setup-report validator now
+shares the unchanged named startup consumer predicate, including exact root,
+reason and bounded integer work. Its required gate is complete. Next archive
+whole351-355 before growth, then trace conditional owned initial-source consumption
+without inventing acceptance or a later-tick reset receipt.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

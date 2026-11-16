@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §362 for bounded retained initial-source reading;
+Read [REVIEW.md][review] §363 for conditional owned initial-rest startup;
+§362 records bounded retained initial-source reading;
 §361 records bounded initial-source retention;
 §360 records intact source/consumer checkpoint archival;
 §359 records closed setup-report consumer metadata;
@@ -196,9 +197,14 @@ odometry latency0. Explicit opt-in <=1 initial source snapshot retention and its
 required gate are complete, including exact deduplication and pinned epoch joins.
 Bounded retained initial-source reading and its recovery gate are complete,
 including original/copy/current/closing source and pinned epoch joins. The first
-interrupted root remains spent/unknown. Next trace conditional later delivery and
-complete owned initial-rest State/frame history; no current initial-tick claim,
-reset receipt or acceptance follows from retention or reading.
+interrupted root remains spent/unknown. Conditional owned initial-rest startup and its required gate are complete at
+ticks2-3 using actual retained initial source, current receipt State/frame history
+and delivered C1 event. Copied consumer evidence/capture bindings close after
+consumer work. Explicit point/error/history assumptions remain unaccepted;
+all flags false and guard UNKNOWN. No current initial-tick claim, reset receipt,
+one-use or setup/source/geometry/clock acceptance follows. Next reassess the
+remaining named source/coverage/native-error prerequisites without duplicating
+completed reports or inventing bounds.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

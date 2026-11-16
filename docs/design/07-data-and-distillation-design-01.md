@@ -2048,6 +2048,36 @@ expiry/executor or allow a trial. [Review §164][initial-setup-review] records t
 sixteen controls and retained reason-literal failures. No normal controller,
 wire, task-data/study or physical behavior changes.
 
+##### Owned Conditional Initial-Rest Startup (2026-11-16)
+
+Strict opt-in recorder `probe_initial_startup_path` derives initial setup/epoch/
+pose, the delivered tick0 C1 capture and complete native State/frame history from
+retained initial source plus live receipt history. Its local domain is current
+tick2-3; initial0/current3 is explicitly supported, tick4 or missing/changed receipt
+history rejects. No caller setup, capture, tick, pose or State/frame override is
+accepted. Caller-supplied point/history/error/profile evidence remains explicit
+conditional fixture evidence, not accepted range/pose/clock/native-transform bounds.
+
+The unchanged initial-rest consumer checks all supplied native/decoded twist
+intervals are exactly zero and keeps its fixed 0.125/zero-turn request. Actual
+nonrest history, missing error evidence or unsupported premises remain unknown.
+Original/copied/closing initial/current receipt/event/input/report bindings and
+pinned RNG identities close after consumer work, including the derived State/frame
+evidence and copied capture passed to the consumer. Returned diagnostic content
+is detached; it remains guard UNKNOWN/no permission with all eight flags false.
+
+At most two retained reads/two receipt reads/eight observations/two receipt-history
+checks/one setup audit/one startup consumer/256 digests are used. Existing one
+command/path and cell/work limits remain. The old consumer's single history
+inspection computes eight source-free reference direction arrays; these are
+conditional transforms, not replayed producer acquisition or qualified numerical
+laws. No simulator step/reset, acquisition/capture, draw, clock or collection runs
+inside the join. Frozen two-tick ToF latency is preserved; no retimestamping or
+zero-latency substitution. No reset receipt, one-use, admitted predecessor, accepted
+setup/source/coverage/error/timing or actual launch follows.
+The [owned startup checkpoint][owned-initial-startup-review] retains the fixture
+fault, introduced consumer-copy closure bug and both necessary root positions.
+
 ##### Conditional Normal-Command Mapping (2026-11-06)
 
 The private `_map_synthetic_c1_normal_command` in the existing rules module
@@ -2337,6 +2367,7 @@ figure is not an established minimum.
 [initial-setup-report-review]: ../../REVIEW.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-source-retention-review]: ../../REVIEW.md#361-bounded-initial-source-retention-2026-11-13
 [retained-initial-source-review]: ../../REVIEW.md#362-bounded-retained-initial-source-reading-2026-11-16
+[owned-initial-startup-review]: ../../REVIEW.md#363-conditional-owned-initial-rest-startup-2026-11-16
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

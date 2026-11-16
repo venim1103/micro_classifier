@@ -10815,6 +10815,276 @@ def test_retained_initial_setup_source(
 
 
 @pytest.fixture(scope="module")
+def c1_owned_initial_startup_fixture(c1_retained_initial_setup_source_fixture):
+    initial, later = c1_retained_initial_setup_source_fixture
+    moving = deepcopy(initial)
+    for _ in range(2):
+        moving[0].step([0.125, 0.0], capture_motion_receipt=True)
+        moving[1].record_environment_tick(
+            moving[0], capture_motion_receipt_source=True, synthetic_test_only=True
+        )
+    upper = deepcopy(later)
+    upper[0].step([0.0, 0.0], capture_motion_receipt=True)
+    upper[1].record_environment_tick(
+        upper[0], capture_motion_receipt_source=True, synthetic_test_only=True
+    )
+    return later, moving, upper
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        "valid",
+        "detached",
+        "permission",
+        "missing_retained",
+        "missing_receipts",
+        "unknown_errors",
+        "history_assumption",
+        "caller_override",
+        "nonrest",
+        "closing_event",
+        "closing_current",
+        "closing_rng_pair",
+        "initial_flag",
+        "receipt_mutated",
+        "copied_report_mutated",
+        "input_mutated",
+        "valid_upper",
+        "late_tick",
+        "consumer_evidence_mutated",
+        "consumer_capture_mutated",
+    ),
+)
+def test_owned_initial_startup_path(
+    c1_owned_initial_startup_fixture, monkeypatch, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(
+        c1_owned_initial_startup_fixture[
+            2 if case == "valid_upper" else int(case == "nonrest")
+        ]
+    )
+    points = {
+        "history_assumptions": dict.fromkeys(
+            (
+                "starting_pose_exact",
+                "nominal_tick_binding_exact",
+                "stored_word_dt_exact",
+                "interval_ending_twist_exact",
+            ),
+            True,
+        ),
+        "prefix_history_binding_exact": True,
+        "remaining_point_error_m": 1e-8,
+        "point_radius_m": 4.0,
+    }
+    errors = {"position_error_m": 0.0, "heading_error_rad": 0.0, "profile_exact": True}
+    if case == "missing_retained":
+        owner._initial_setup_source = None
+    elif case == "missing_receipts":
+        owner._receipt_history = []
+    elif case == "unknown_errors":
+        errors = None
+    elif case == "history_assumption":
+        points["history_assumptions"]["starting_pose_exact"] = False
+    elif case == "caller_override":
+        points["source_states"] = []
+    elif case == "late_tick":
+        owner._current = (4, *owner._current[1:])
+    original_initial = (
+        diagnostics._SyntheticC1SourceRecorder.snapshot_retained_initial_setup_source
+    )
+    original_receipt = diagnostics._SyntheticC1SourceRecorder.snapshot_receipt_history
+    original_consumer = diagnostics._probe_synthetic_c1_startup_path_enclosure
+    original_copy = diagnostics.deepcopy
+    original_observation = RoverEnv._observation
+    original_setup = diagnostics._check_synthetic_c1_initial_setup
+    original_history = diagnostics._check_simulator_receipt_history
+    original_digest = diagnostics._c1_source_binding_digest
+    original_inspection = diagnostics.inspect_synthetic_c1_history
+    original_directions = diagnostics.tof_directions
+    report = receipt = None
+    work = dict.fromkeys(
+        (
+            "initial",
+            "receipt",
+            "consumer",
+            "observation",
+            "setup",
+            "history",
+            "digest",
+            "inspection",
+            "directions",
+            "forbidden",
+        ),
+        0,
+    )
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+
+    def initial_read(self, *args, **kwargs):
+        work["initial"] += 1
+        assert work["initial"] <= 2
+        result = original_initial(self, *args, **kwargs)
+        if case == "initial_flag":
+            result["source_qualified"] = True
+        return result
+
+    def receipt_read(self, *args, **kwargs):
+        nonlocal receipt
+        work["receipt"] += 1
+        assert work["receipt"] <= 2
+        result = original_receipt(self, *args, **kwargs)
+        if work["receipt"] == 1:
+            receipt = result
+        return result
+
+    def consumer(*args, **kwargs):
+        nonlocal report
+        work["consumer"] += 1
+        assert work["consumer"] <= 1
+        report = original_consumer(*args, **kwargs)
+        if case == "closing_event":
+            owner._latest["delivery_tick"] = 3
+        elif case == "closing_current":
+            owner._current = ()
+        elif case == "closing_rng_pair":
+            environment.rng = original_copy(environment.rng)
+            owner._simulator_rng = environment.rng
+        elif case == "receipt_mutated":
+            receipt["history"][0]["initial_frame"] = b"invalid"
+        elif case == "input_mutated":
+            points["point_radius_m"] = 4.1
+        elif case == "consumer_evidence_mutated":
+            args[1]["point_error_evidence"]["state_frames"][0] = b"invalid"
+        elif case == "consumer_capture_mutated":
+            args[0][0]["capture_ticks"][0] = 1
+        return report
+
+    def copy(value, *args, **kwargs):
+        result = original_copy(value, *args, **kwargs)
+        if report is not None and value is report and case == "copied_report_mutated":
+            result["source_qualified"] = True
+        return result
+
+    def observation(self):
+        work["observation"] += 1
+        assert work["observation"] <= 8
+        return original_observation(self)
+
+    def setup(*args, **kwargs):
+        work["setup"] += 1
+        assert work["setup"] <= 1
+        return original_setup(*args, **kwargs)
+
+    def history(*args, **kwargs):
+        work["history"] += 1
+        assert work["history"] <= 2
+        return original_history(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 256
+        return original_digest(*args, **kwargs)
+
+    def inspection(*args, **kwargs):
+        work["inspection"] += 1
+        assert work["inspection"] <= 1
+        return original_inspection(*args, **kwargs)
+
+    def directions(*args, **kwargs):
+        work["directions"] += 1
+        assert work["directions"] <= 8
+        assert kwargs.get("source") is None
+        return original_directions(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        work["forbidden"] += 1
+        raise AssertionError("owned startup must not capture/replay/draw/clock")
+
+    monkeypatch.setattr(
+        diagnostics._SyntheticC1SourceRecorder,
+        "snapshot_retained_initial_setup_source",
+        initial_read,
+    )
+    monkeypatch.setattr(
+        diagnostics._SyntheticC1SourceRecorder, "snapshot_receipt_history", receipt_read
+    )
+    monkeypatch.setattr(
+        diagnostics, "_probe_synthetic_c1_startup_path_enclosure", consumer
+    )
+    monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(diagnostics, "_check_synthetic_c1_initial_setup", setup)
+    monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", history)
+    monkeypatch.setattr(diagnostics, "inspect_synthetic_c1_history", inspection)
+    monkeypatch.setattr(diagnostics, "tof_directions", directions)
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "write_episode"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if case == "permission":
+        with pytest.raises(ValueError, match="synthetic_test_only=True"):
+            owner.probe_initial_startup_path(points, error_evidence=errors)
+        assert work["observation"] == work["digest"] == 0
+    else:
+        result = owner.probe_initial_startup_path(
+            points, error_evidence=errors, synthetic_test_only=True
+        )
+        valid = case in ("valid", "detached", "valid_upper")
+        assert result["fixture_owned_startup_path_excluded"] is valid
+        assert result["guard_status"] == "UNKNOWN"
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        ):
+            assert result[flag] is False
+        if valid:
+            assert result["current_tick"] == 2 + int(case == "valid_upper")
+            assert result["current_frame"] == owner._current[3]
+            assert result["source_epoch"] == owner._epoch
+            assert result["startup_path"]["fixture_startup_path_excluded"] is True
+            assert work["initial"] == work["receipt"] == work["history"] == 2
+            assert work["observation"] == 8
+            assert work["consumer"] == work["setup"] == 1
+            assert work["inspection"] == 1
+            assert work["directions"] == 8
+            if case == "detached":
+                result["startup_path"]["initial_setup"]["binding"]["epoch"] = "f" * 32
+                assert (
+                    owner._initial_setup_source[2]["setup"]["binding"]["epoch"]
+                    == owner._epoch
+                )
+                assert report["initial_setup"]["binding"]["epoch"] == owner._epoch
+        else:
+            assert result["status"] == "unknown"
+            assert result["reason"]
+            for key in ("startup_path", "current_frame", "source_epoch"):
+                assert key not in result
+            if case == "nonrest":
+                assert result["reason"] == "initial_history_not_exact_rest"
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+    assert work["forbidden"] == 0
+
+
+@pytest.fixture(scope="module")
 def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
     environment, owner = deepcopy(c1_simulator_source_fixture[:2])
     owner.record_environment_tick(environment, synthetic_test_only=True)

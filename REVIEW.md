@@ -504,6 +504,51 @@ focused/interrupted/root/recovery/hash records retained, never assumed portable.
 Next trace conditional later delivery and complete owned initial-rest State/frame
 history without inventing missing accepted evidence.
 
+## 363. Conditional Owned Initial-Rest Startup (2026-11-16)
+
+Begin clean pushed82d04b7. Fresh bounded compatibility probe PASS0.195267s:
+actual retained initial source/current receipts available, native State sequences
+0/1/2, unchanged consumer conditionally excludes fixed startup with work1 setup/
+3 rest/1 command; all seven consumer flags false. Zero fixture error/margin/history
+premises are assumptions, not evidence acceptance.
+
+Implement strict opt-in probe_initial_startup_path deriving actual owned initial
+setup/epoch/pose, delivered tick0 C1 event and complete State/frame history from
+validated live receipts. No caller setup/capture/tick/pose/frame/history override.
+Keep existing conditional point/error/profile premises, fixed request, exact-rest
+rejection and all source/clock/geometry/error/admission limits. Original/copied/
+closing source/receipt/event/evidence/report bindings and pinned epoch references
+must close before detached publication. All eight flags false, guard UNKNOWN.
+
+Fresh16/60s, necessary fixture repair<=16/60s, root360s. First16:8 PASS/8 FAIL18.58s,
+overbroad global math monkeypatch catches existing history inspection's reference
+tof_directions -> math.cos, not producer replay. Read owning code; fixture-only
+repair counts one existing inspection/eight source=None reference directions.
+Producer step/reset/integration/ToF acquisition/capture/clock/collection still
+forbidden; no reference/native-transform law adopted. Rerun only failed8:
+PASS5.47s/5044 deselected. Fresh actualtick3/rejectedtick4 endpoints2/60s
+PASS4.80s/5052 deselected. Fixture preparation totals five bounded receipt steps:
+two original at-rest, two additional moving controls, one additional upper-domain
+at-rest; not study episodes. First required root PASS5977/known QDQ1 xfail/
+77 warnings198.51s; hashes/style/unrelated source/API/default/consumer/control AST
+PASS. No unchanged green focused gate repeated.
+
+Before checkpoint, a concrete consumer-input closure question exposes introduced
+false success: derived State/frame evidence or detached capture mutates after
+consumer return without binding recheck. Two controls FAIL5.61s/5054 deselected.
+Bind both copied consumer inputs before work and after closing live source reads;
+necessary repair2/60s PASS0.84s/5054 deselected. Substantive-repair root360s
+PASS5979/known1 xfail/77 warnings185.89s; root Ruff/changed format/whitespace/fresh
+four-hash bracket PASS. Both root/failure positions remain spent; no tolerance,
+assertion or safety/work threshold relaxed.
+
+Bounds per join: two retained/two receipt reads/eight observations/two history
+checks/one setup audit/one consumer/256 digests, existing command/path/cell limits.
+No native/Arm/model/study/dependency/download/hardware action or admitted launch.
+Ignored `.git/returns-363-*` focused/failure/repair/endpoint/root/hash evidence
+retained separately. Next reassess named source/coverage/native-error prerequisites,
+not a matching-hash permit, repeated successful gate or general audit.
+
 ## Sources
 
 Hardware and tools:

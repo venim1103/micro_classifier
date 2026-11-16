@@ -22971,6 +22971,272 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("owned_request_receipt_metadata_or_frame_mismatch")
         return snapshot
 
+    def probe_initial_startup_path(
+        self,
+        point_error_evidence,
+        *,
+        error_evidence=None,
+        profile=None,
+        max_braking_ticks=16,
+        max_chords=128,
+        max_terms=16,
+        max_cells=32768,
+        max_depth=10,
+        radius_bands=8,
+        synthetic_test_only=False,
+    ):
+        from interface.protocol import State
+
+        if synthetic_test_only is not True:
+            raise ValueError("owned startup path requires synthetic_test_only=True")
+        flags = (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+        result = {
+            "schema": "micro-classifier/synthetic-c1-owned-initial-startup/1",
+            "allowed_use": "offline_owned_initial_rest_startup_fixture_only",
+            "status": "unknown",
+            "reason": "missing_owned_initial_startup_source",
+            "fixture_owned_startup_path_excluded": False,
+            "guard_status": "UNKNOWN",
+            **dict.fromkeys(flags, False),
+        }
+        if type(point_error_evidence) is not dict or set(point_error_evidence) != {
+            "history_assumptions",
+            "prefix_history_binding_exact",
+            "remaining_point_error_m",
+            "point_radius_m",
+        }:
+            result["reason"] = "unsupported_owned_startup_point_evidence"
+            return result
+
+        def owner_binding():
+            current, event = self._current, self._latest
+            if (
+                type(current) is not tuple
+                or len(current) != 4
+                or type(current[0]) is not int
+                or not 2 <= current[0] <= 3
+                or not isinstance(current[2], State)
+                or type(current[3]) is not bytes
+                or type(event) is not dict
+                or set(event)
+                != {"clock_epoch", "capture_id", "delivery_tick", "capture"}
+                or event["clock_epoch"] != self._epoch
+                or event["capture_id"] != f"{self._epoch}:0"
+                or type(event["delivery_tick"]) is not int
+                or event["delivery_tick"] != self._config.latency_ticks
+                or event["delivery_tick"] > current[0]
+                or type(event["capture"]) is not dict
+                or type(self._history) is not list
+                or not 1 <= len(self._history) <= 2
+                or type(self._receipt_history) is not list
+                or len(self._receipt_history) != current[0]
+            ):
+                raise ValueError("unsupported_owned_initial_startup_layout_or_delivery")
+            ticks = event["capture"].get("capture_ticks")
+            if (
+                type(ticks) is not np.ndarray
+                or ticks.shape != (8,)
+                or ticks.dtype != np.dtype(np.uint32)
+                or not np.all(ticks == 0)
+            ):
+                raise ValueError("unsupported_owned_initial_startup_capture_ticks")
+            return _c1_source_binding_digest(
+                {
+                    "epoch": self._epoch,
+                    "current": (current[0], current[1], asdict(current[2]), current[3]),
+                    "latest": event,
+                    "history": self._history,
+                    "receipt_history": self._receipt_history,
+                    "dynamics_sample": self._dynamics_sample,
+                    "config": asdict(self._config),
+                    "scenario": asdict(self._scenario),
+                    "identities": self._identities,
+                }
+            )
+
+        def initial_read(tick, frame):
+            snapshot = self.snapshot_retained_initial_setup_source(
+                synthetic_test_only=True
+            )
+            if (
+                type(snapshot) is not dict
+                or snapshot.get("schema")
+                != "micro-classifier/synthetic-c1-retained-initial-source/1"
+                or snapshot.get("allowed_use")
+                != "offline_retained_initial_source_correspondence_only"
+                or snapshot.get("status") != "recorded_retained_initial_source"
+                or snapshot.get("reason")
+                != "retained_initial_and_current_words_setup_unqualified"
+                or snapshot.get("snapshot_available") is not True
+                or snapshot.get("source_epoch") != self._epoch
+                or type(snapshot.get("current_tick")) is not int
+                or snapshot["current_tick"] != tick
+                or snapshot.get("current_frame") != frame
+                or any(snapshot.get(flag) is not False for flag in flags)
+                or snapshot.get("initial_snapshot_binding")
+                != _c1_initial_setup_snapshot_binding(
+                    snapshot.get("initial_snapshot"),
+                    epoch=self._epoch,
+                    config=self._config,
+                    scenario=self._scenario,
+                )
+            ):
+                raise ValueError("unsupported_owned_startup_initial_snapshot")
+            return snapshot
+
+        try:
+            binding = owner_binding()
+            producer = self._simulator
+            if type(producer) is not RoverEnv:
+                raise TypeError("missing_owned_startup_actual_producer")
+            rng_before, odometry_before = producer.rng, producer.odometry_rng
+            retained_before = self._initial_setup_source
+            tick, _, _, frame = self._current
+            initial_before = initial_read(tick, frame)
+            initial_binding = _c1_source_binding_digest(initial_before)
+            receipt_before = self._owned_request_current_receipt(tick, frame)
+            receipt_binding = _c1_source_binding_digest(receipt_before)
+            receipts = receipt_before["history"]
+            initial = initial_before["initial_snapshot"]
+            state, initial_frame = _state_from_simulator_dynamics_source(
+                initial["source"]
+            )
+            if (
+                type(receipts) is not list
+                or len(receipts) != tick
+                or receipts[0]["motion_receipt"]["tick_before"] != 0
+                or receipts[-1]["motion_receipt"]["tick_after"] != tick
+                or _c1_source_binding_digest(receipts[0]["initial_state"])
+                != _c1_source_binding_digest(asdict(state))
+                or receipts[0]["initial_frame"] != initial_frame
+                or tuple(
+                    float(value).hex()
+                    for value in _c1_array(
+                        receipts[0]["motion_receipt"]["initial_pose_m_rad"], (3,)
+                    )
+                )
+                != tuple(value.hex() for value in initial["source"]["pose_m_rad"])
+            ):
+                raise ValueError("owned_initial_startup_receipt_origin_mismatch")
+            inputs = {
+                "points": point_error_evidence,
+                "error": error_evidence,
+                "profile": profile,
+            }
+            inputs_binding = _c1_source_binding_digest(inputs)
+            owned_inputs = deepcopy(inputs)
+            evidence = {
+                "epoch": self._epoch,
+                "initial_setup": deepcopy(initial["setup"]),
+                "point_error_evidence": {
+                    **owned_inputs["points"],
+                    "source_states": [state]
+                    + [State(**entry["final_state"]) for entry in receipts],
+                    "state_frames": [initial_frame]
+                    + [entry["final_frame"] for entry in receipts],
+                },
+            }
+            capture_history = [deepcopy(self._latest["capture"])]
+
+            def consumer_binding():
+                points = evidence["point_error_evidence"]
+                return _c1_source_binding_digest(
+                    {
+                        **evidence,
+                        "point_error_evidence": {
+                            **points,
+                            "source_states": [
+                                asdict(value) for value in points["source_states"]
+                            ],
+                        },
+                        "capture_history": capture_history,
+                    }
+                )
+
+            consumer_before = consumer_binding()
+            checked = _probe_synthetic_c1_startup_path_enclosure(
+                capture_history,
+                evidence,
+                reference_tick=tick,
+                reference_pose_m_rad=initial["source"]["pose_m_rad"],
+                error_evidence=owned_inputs["error"],
+                profile=owned_inputs["profile"],
+                config=self._config,
+                max_braking_ticks=max_braking_ticks,
+                max_chords=max_chords,
+                max_terms=max_terms,
+                max_cells=max_cells,
+                max_depth=max_depth,
+                radius_bands=radius_bands,
+                synthetic_test_only=True,
+            )
+            if type(checked) is not dict:
+                raise ValueError("unsupported_owned_startup_report")
+            if checked.get("fixture_startup_path_excluded") is not True:
+                result["reason"] = checked.get("reason", "unsupported_startup_report")
+                return result
+            if (
+                checked.get("schema")
+                != "micro-classifier/synthetic-c1-startup-path-enclosure/1"
+                or checked.get("allowed_use")
+                != "conditional_initial_setup_startup_fixture_only"
+                or checked.get("status")
+                != "excluded_from_rechecked_initial_rest_fixture"
+                or checked.get("reason")
+                != "fixed_startup_path_and_braking_conditionally_excluded"
+                or checked.get("epoch") != self._epoch
+                or any(checked.get(flag) is not False for flag in flags[1:])
+            ):
+                raise ValueError("unsupported_owned_startup_report")
+            checked_binding = _c1_source_binding_digest(checked)
+            copied = deepcopy(checked)
+            closing_receipt = self._owned_request_current_receipt(tick, frame)
+            closing_initial = initial_read(tick, frame)
+            if (
+                _c1_source_binding_digest(initial_before) != initial_binding
+                or _c1_source_binding_digest(closing_initial) != initial_binding
+                or _c1_source_binding_digest(receipt_before) != receipt_binding
+                or _c1_source_binding_digest(closing_receipt) != receipt_binding
+                or _c1_source_binding_digest(inputs) != inputs_binding
+                or _c1_source_binding_digest(owned_inputs) != inputs_binding
+                or consumer_binding() != consumer_before
+                or _c1_source_binding_digest(checked) != checked_binding
+                or _c1_source_binding_digest(copied) != checked_binding
+                or owner_binding() != binding
+                or self._simulator is not producer
+                or self._initial_setup_source is not retained_before
+                or producer.rng is not rng_before
+                or producer.odometry_rng is not odometry_before
+                or self._simulator_rng is not rng_before
+                or self._simulator_odometry_rng is not odometry_before
+                or self._source_files() != self._identities
+            ):
+                raise ValueError("owned_initial_startup_changed_during_consumer")
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            result["reason"] = str(error)
+            return result
+        result.update(
+            status="excluded_owned_initial_rest_startup_fixture",
+            reason="owned_initial_delivery_rest_path_conditionally_excluded",
+            fixture_owned_startup_path_excluded=True,
+            source_epoch=self._epoch,
+            current_tick=tick,
+            current_frame=frame,
+            initial_snapshot_binding=initial_binding,
+            receipt_snapshot_binding=receipt_binding,
+            startup_path=copied,
+        )
+        return result
+
     def prepare_normal_request(
         self,
         decision_frame,

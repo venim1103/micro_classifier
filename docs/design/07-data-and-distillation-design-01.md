@@ -1016,6 +1016,11 @@ The separate [supplied shift/return diagnostic][supplied-heading-offset-design]
 compares explicit addition/subtraction words, not pi or heading-wrap correctness.
 Source linkage remains distinct from its supplied-word arithmetic.
 
+The separate [current heading report mode][current-heading-offset-design] now
+provides that bounded source linkage under existing currentness/closure checks.
+It remains default-off, distinct from the ten-stage arithmetic report, and does
+not adopt pi/modulo/heading-wrap or uniform-error obligations.
+
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
 
 The private arithmetic probe consumes copied diagnostic native-source words,
@@ -2414,6 +2419,7 @@ figure is not an established minimum.
 [consumed-normalization-join-design]: 07-data-and-distillation-design-04.md#current-actual-consumed-normalization-quotient-2026-11-16
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-design]: 07-data-and-distillation-design-04.md#supplied-heading-shift-and-return-words-2026-11-16
+[current-heading-offset-design]: 07-data-and-distillation-design-04.md#current-heading-shift-and-return-reports-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

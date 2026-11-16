@@ -19516,7 +19516,7 @@ def test_current_consumed_divisor_source(
     "mode,case",
     tuple(
         (mode, case)
-        for mode in ("later", "consumed")
+        for mode in ("later", "consumed", "heading")
         for case in (
             "valid",
             "default",
@@ -19540,29 +19540,60 @@ def test_current_consumed_divisor_source(
         ("combined", "valid"),
         ("consumed", "divisors_distinct"),
         ("consumed", "zero_divisor"),
+        ("later_heading", "valid"),
+        ("consumed_heading", "valid"),
+        ("all", "valid"),
+        ("heading", "operands_distinct"),
+        ("heading", "missing_word"),
     ),
 )
 def test_current_later_period_normalization(
     c1_native_integration_snapshot_fixture, monkeypatch, mode, case
 ):
     from fractions import Fraction
+    from functools import partial
 
     from sim import diagnostics, rover
 
     environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
-    if case in ("divisors_distinct", "zero_divisor"):
+    if case in (
+        "divisors_distinct",
+        "zero_divisor",
+        "operands_distinct",
+        "missing_word",
+    ):
         for source in (environment._integration_source, owner._integration_sample):
             values = source["segments"][0]["values"]
             if case == "divisors_distinct":
                 values["period_rad"] = math.nextafter(values["period_rad"], math.inf)
-            else:
+            elif case == "zero_divisor":
                 values["sinc_divisor_rad"] = 0.0
+            elif case == "operands_distinct":
+                values["heading_return_offset_rad"] = math.nextafter(
+                    values["heading_return_offset_rad"], math.inf
+                )
+            else:
+                values.pop("heading_return_offset_rad")
     segments = deepcopy(owner._integration_sample["segments"])
     count = len(segments)
     assert 1 <= count <= 128
-    report_passes = 4 if mode == "combined" else 2
-    digest_limit = 128 + 4 * count if mode == "combined" else 96 + 2 * count
+    modes = {
+        "later": ("later",),
+        "consumed": ("consumed",),
+        "heading": ("heading",),
+        "combined": ("later", "consumed"),
+        "later_heading": ("later", "heading"),
+        "consumed_heading": ("consumed", "heading"),
+        "all": ("later", "consumed", "heading"),
+    }[mode]
+    report_passes = 2 * len(modes)
+    digest_limit = {
+        1: 96 + 2 * count,
+        2: 128 + 4 * count,
+        3: 160 + 6 * count,
+    }[len(modes)]
     original_report = diagnostics._native_sinc_argument_division_residuals
+    original_heading = diagnostics._native_heading_offset_residuals
     original_copy = diagnostics.deepcopy
     original_observation = RoverEnv._observation
     original_check = diagnostics._check_simulator_receipt_history
@@ -19579,11 +19610,11 @@ def test_current_later_period_normalization(
     elif case == "stale":
         environment.position[0] = math.nextafter(environment.position[0], math.inf)
 
-    def report(*args, **kwargs):
+    def report(probe, *args, **kwargs):
         nonlocal first
         work["report"] += 1
         assert work["report"] <= report_passes * count
-        result = original_report(*args, **kwargs)
+        result = probe(*args, **kwargs)
         if work["report"] == 1:
             first = result
             if case == "report_flag":
@@ -19600,7 +19631,9 @@ def test_current_later_period_normalization(
     def copy(value, *args, **kwargs):
         nonlocal copied
         result = original_copy(value, *args, **kwargs)
-        if type(value) is dict and "comparison_divisor_source" in value:
+        if type(value) is dict and (
+            "comparison_divisor_source" in value or "operand_source_basis" in value
+        ):
             copied = result
             if case == "copied_changed":
                 result["entries"][0]["residuals"]["source_qualified"] = True
@@ -19639,7 +19672,16 @@ def test_current_later_period_normalization(
         work["forbidden"] += 1
         raise AssertionError("later-period comparisons must not replay/trig/sinc/draw")
 
-    monkeypatch.setattr(diagnostics, "_native_sinc_argument_division_residuals", report)
+    monkeypatch.setattr(
+        diagnostics,
+        "_native_sinc_argument_division_residuals",
+        partial(report, original_report),
+    )
+    monkeypatch.setattr(
+        diagnostics,
+        "_native_heading_offset_residuals",
+        partial(report, original_heading),
+    )
     monkeypatch.setattr(diagnostics, "deepcopy", copy)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
     monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
@@ -19662,14 +19704,13 @@ def test_current_later_period_normalization(
     monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
     options = {"synthetic_test_only": case != "permission"}
     if case != "default":
-        option = (
-            "include_native_normalization_division"
-            if mode == "later"
-            else "include_native_consumed_normalization_division"
-        )
-        options[option] = 1 if case == "bad_bool" else case != "explicit_off"
-        if mode == "combined":
-            options["include_native_normalization_division"] = True
+        for selected in modes:
+            option = {
+                "later": "include_native_normalization_division",
+                "consumed": "include_native_consumed_normalization_division",
+                "heading": "include_native_heading_offsets",
+            }[selected]
+            options[option] = 1 if case == "bad_bool" else case != "explicit_off"
     if case in ("permission", "bad_bool"):
         with pytest.raises(ValueError):
             owner.snapshot_native_integration_source(**options)
@@ -19682,6 +19723,7 @@ def test_current_later_period_normalization(
             "explicit_off",
             "detached",
             "divisors_distinct",
+            "operands_distinct",
         )
         assert result["snapshot_available"] is valid
         for flag in (
@@ -19698,6 +19740,7 @@ def test_current_later_period_normalization(
         if case in ("default", "explicit_off"):
             assert "later_period_normalization_comparison" not in result
             assert "consumed_normalization_division" not in result
+            assert "native_heading_offsets" not in result
             assert work["report"] == 0
         elif valid:
             for group_mode, key, divisor_key, basis in (
@@ -19713,41 +19756,85 @@ def test_current_later_period_normalization(
                     "sinc_divisor_rad",
                     "consumed_sinc_divisor_word_from_owned_native_source_not_pi_qualification",
                 ),
+                (
+                    "heading",
+                    "native_heading_offsets",
+                    None,
+                    "consumed_heading_shift_and_return_words_from_owned_native_source_not_pi_or_modulo_qualification",
+                ),
             ):
-                if mode != "combined" and group_mode != mode:
+                if group_mode not in modes:
                     assert key not in result
                     continue
                 group = result[key]
-                assert group["comparison_divisor_source"] == basis
+                basis_key = (
+                    "operand_source_basis"
+                    if group_mode == "heading"
+                    else "comparison_divisor_source"
+                )
+                assert group[basis_key] == basis
                 assert group["source_epoch"] == owner._epoch
                 assert group["source_binding"] == original_digest(result["source"])
                 assert len(group["entries"]) == count
                 for index, entry in enumerate(group["entries"]):
                     values = segments[index]["values"]
-                    exact = Fraction.from_float(
-                        values["angle_rad"]
-                    ) / Fraction.from_float(values[divisor_key])
-                    residual = Fraction.from_float(values["sinc_argument"]) - exact
                     assert entry["segment_index"] == index
                     assert entry["segment_source_binding"] == original_digest(
                         segments[index]
                     )
-                    assert entry["residuals"]["input_hex"] == (
-                        values["angle_rad"].hex(),
-                        values[divisor_key].hex(),
-                        values["sinc_argument"].hex(),
-                    )
-                    assert (
-                        entry["residuals"]["exact_quotient_ratio"]
-                        == exact.as_integer_ratio()
-                    )
-                    assert (
-                        entry["residuals"]["signed_residual_ratio"]
-                        == residual.as_integer_ratio()
-                    )
+                    if group_mode == "heading":
+                        names = (
+                            "heading_increment_rad",
+                            "heading_shift_offset_rad",
+                            "shifted_heading_rad",
+                            "wrapped_heading_rad",
+                            "heading_return_offset_rad",
+                            "next_yaw_rad",
+                        )
+                        assert entry["residuals"]["input_hex"] == tuple(
+                            values[name].hex() for name in names
+                        )
+                        assert len(entry["residuals"]["entries"]) == 2
+                        for offset, stage in zip(
+                            (0, 3), entry["residuals"]["entries"], strict=True
+                        ):
+                            left, right, observed = (
+                                Fraction.from_float(values[name])
+                                for name in names[offset : offset + 3]
+                            )
+                            exact = left + right if offset == 0 else left - right
+                            assert (
+                                stage["exact_result_ratio"] == exact.as_integer_ratio()
+                            )
+                            assert (
+                                stage["signed_residual_ratio"]
+                                == (observed - exact).as_integer_ratio()
+                            )
+                    else:
+                        exact = Fraction.from_float(
+                            values["angle_rad"]
+                        ) / Fraction.from_float(values[divisor_key])
+                        residual = Fraction.from_float(values["sinc_argument"]) - exact
+                        assert entry["residuals"]["input_hex"] == (
+                            values["angle_rad"].hex(),
+                            values[divisor_key].hex(),
+                            values["sinc_argument"].hex(),
+                        )
+                        assert (
+                            entry["residuals"]["exact_quotient_ratio"]
+                            == exact.as_integer_ratio()
+                        )
+                        assert (
+                            entry["residuals"]["signed_residual_ratio"]
+                            == residual.as_integer_ratio()
+                        )
             if case == "divisors_distinct":
                 assert segments[0]["values"]["sinc_divisor_rad"].hex() != (
                     segments[0]["values"]["period_rad"].hex()
+                )
+            elif case == "operands_distinct":
+                assert segments[0]["values"]["heading_shift_offset_rad"].hex() != (
+                    segments[0]["values"]["heading_return_offset_rad"].hex()
                 )
             assert work["report"] == report_passes * count
             assert work["observation"] == 6
@@ -19764,6 +19851,7 @@ def test_current_later_period_normalization(
                 "current_frame",
                 "later_period_normalization_comparison",
                 "consumed_normalization_division",
+                "native_heading_offsets",
             ):
                 assert key not in result
     assert environment.rng.bit_generator.state == rng_before

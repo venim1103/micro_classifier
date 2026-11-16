@@ -413,6 +413,34 @@ only work. Ignored before-layout snapshots/utility remain in the session folder,
 not portable test evidence. Next the distinct default-off actual heading-word join;
 preserve standalone supplied-word and existing ten-stage limits.
 
+## 373. Closed Current Heading-Offset Reports (2026-11-16)
+
+Begin clean pushede43bc50. Add independent literal default-off
+include_native_heading_offsets to the native source reader. native_heading_offsets
+joins the six retained heading/shift/return/result words to the supplied diagnostic,
+explicitly naming consumed owned words, not pi/modulo qualification.
+Reuse local bounded report creation/metadata checks and original/copied/closing/
+final bindings for every enabled group. No producer/capture/primitive replay or
+ten-stage extension; prior default/later/consumed outputs unchanged.
+
+Fresh21/60s, necessary repair reserve21/60s, root360s. First21
+PASS6.01s/5155 deselected; root PASS6099/known QDQ1 xfail/77 warnings240.81s.
+Ruff/changed format/whitespace/four tested hashes/default-core/unrelated source/
+control AST PASS; Pylance2 prior resolved callers compatible. No failed or repeated
+green gate. Reuse existing harness/fixture, covering all eight enabling combinations,
+Fraction shift/return oracles, original/copy/closing/final report/pose/RNG faults,
+distinct operands and missing-word unknown without partial publication.
+Prior single96+2N/paired128+4N digests preserved; only all3 uses160+6N.
+At most128 segments/768 scalar report calls,6 observations/2 samples/2 receipt
+validations. Distinct matching cache words are synthetic field-selection controls,
+not independent source/domain acceptance.
+
+Eight flags false; no pi/modulo/heading-wrap/uniform native error/source/geometry/
+clock/application acceptance or permission. Producer/C/Arm/model/study/dependency/
+download/hardware unchanged; `.git/returns-373-*` logs/hashes retained.
+Next test the concrete default-reader closing RNG identity boundary already pinned
+by the optional modes; no general audit, invented bound or new arithmetic stage.
+
 ## Sources
 
 Hardware and tools:

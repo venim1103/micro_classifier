@@ -2614,6 +2614,29 @@ error/source/geometry/clock qualification or permission. The
 [supplied heading checkpoint][supplied-heading-offset-review] records bounded
 Fraction controls and the spent timed-out root plus same-deadline recovery.
 
+##### Current Heading Shift and Return Reports (2026-11-16)
+
+The source reader's independent literal default-off `include_native_heading_offsets`
+adds `native_heading_offsets` from the six retained native operand/result words.
+Its `operand_source_basis` names
+`consumed_heading_shift_and_return_words_from_owned_native_source_not_pi_or_modulo_qualification`.
+It is a source-bound use of the supplied diagnostic above, not a pi/modulo/error law
+or extension of the ten-stage report.
+
+Local report creation, metadata validation and original/copy/closing/final bindings
+are shared with the two independent normalization groups. Every enabled group is
+rechecked after the last producer sample with original RNG identities pinned;
+unsupported/changed input yields unknown without partial source/frame/group output.
+All eight enabling combinations retain their distinct group labels and default
+output. At most128 segments/two report passes per enabled mode,768 combined scalar
+calls,6 observations/2 samples/2 receipt validations. Single96+2N/paired128+4N
+digest ceilings are unchanged; only all3 modes uses160+6N.
+
+Eight flags false; no replay, extra RNG, native pi/modulo/sinc/trig qualification,
+uniform error, accepted source/geometry/clock or permission. The
+[current heading checkpoint][current-heading-offset-review] records bounded rational,
+field-selection, combined and final-closure controls.
+
 [current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
 [normalization-division-review]: ../review/361-365.md#365-supplied-normalization-division-residuals-2026-11-16
 [current-normalization-comparison-review]: ../review/366-370.md#366-closed-current-later-period-comparisons-2026-11-16
@@ -2621,4 +2644,5 @@ Fraction controls and the spent timed-out root plus same-deadline recovery.
 [consumed-normalization-join-review]: ../review/366-370.md#369-closed-actual-consumed-quotient-joins-2026-11-16
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-review]: ../../REVIEW.md#371-supplied-heading-shift-and-return-residuals-2026-11-16
+[current-heading-offset-review]: ../../REVIEW.md#373-closed-current-heading-offset-reports-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

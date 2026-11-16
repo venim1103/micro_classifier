@@ -22477,6 +22477,7 @@ class _SyntheticC1SourceRecorder:
         *,
         include_native_normalization_division=False,
         include_native_consumed_normalization_division=False,
+        include_native_heading_offsets=False,
         synthetic_test_only=False,
     ):
         if synthetic_test_only is not True:
@@ -22491,6 +22492,8 @@ class _SyntheticC1SourceRecorder:
             raise ValueError(
                 "include_native_consumed_normalization_division must be a literal boolean"
             )
+        if type(include_native_heading_offsets) is not bool:
+            raise ValueError("include_native_heading_offsets must be a literal boolean")
         result = {
             "schema": "micro-classifier/synthetic-c1-native-integration-snapshot/1",
             "allowed_use": "offline_native_integration_diagnostics_only",
@@ -22570,31 +22573,55 @@ class _SyntheticC1SourceRecorder:
             }
             return native_source, _c1_source_binding_digest(producer_source)
 
-        def normalization_reports(source, divisor_key, divisor_basis):
+        def arithmetic_reports(source, kind, divisor_key, source_basis):
             reports = []
             for index, segment in enumerate(source["segments"]):
                 values = segment["values"]
-                words = tuple(
-                    values[key].hex()
-                    for key in ("angle_rad", divisor_key, "sinc_argument")
-                )
-                report = _native_sinc_argument_division_residuals(
-                    angle_rad_hex=words[0],
-                    normalization_divisor_hex=words[1],
-                    sinc_argument_hex=words[2],
-                    synthetic_test_only=True,
-                )
+                if kind == "heading":
+                    names = (
+                        "heading_increment_rad",
+                        "heading_shift_offset_rad",
+                        "shifted_heading_rad",
+                        "wrapped_heading_rad",
+                        "heading_return_offset_rad",
+                        "next_yaw_rad",
+                    )
+                    words = tuple(values[name].hex() for name in names)
+                    report = _native_heading_offset_residuals(
+                        **{
+                            f"{name}_hex": word
+                            for name, word in zip(names, words, strict=True)
+                        },
+                        synthetic_test_only=True,
+                    )
+                    expected = {
+                        "schema": "micro-classifier/native-heading-offset-residuals/1",
+                        "allowed_use": "offline_supplied_heading_offset_words_only",
+                        "status": "computed_exact_supplied_heading_offset_residuals",
+                        "offset_basis": "caller_supplied_words_not_pi_or_consumed_operand_evidence",
+                        "input_hex": words,
+                    }
+                else:
+                    words = tuple(
+                        values[key].hex()
+                        for key in ("angle_rad", divisor_key, "sinc_argument")
+                    )
+                    report = _native_sinc_argument_division_residuals(
+                        angle_rad_hex=words[0],
+                        normalization_divisor_hex=words[1],
+                        sinc_argument_hex=words[2],
+                        synthetic_test_only=True,
+                    )
+                    expected = {
+                        "schema": "micro-classifier/native-sinc-argument-division-residuals/1",
+                        "allowed_use": "offline_supplied_normalization_division_words_only",
+                        "status": "computed_exact_supplied_normalization_residual",
+                        "divisor_basis": "caller_supplied_word_not_pi_or_consumed_divisor_evidence",
+                        "input_hex": words,
+                    }
                 if (
                     type(report) is not dict
-                    or report.get("schema")
-                    != "micro-classifier/native-sinc-argument-division-residuals/1"
-                    or report.get("allowed_use")
-                    != "offline_supplied_normalization_division_words_only"
-                    or report.get("status")
-                    != "computed_exact_supplied_normalization_residual"
-                    or report.get("divisor_basis")
-                    != "caller_supplied_word_not_pi_or_consumed_divisor_evidence"
-                    or report.get("input_hex") != words
+                    or any(report.get(key) != value for key, value in expected.items())
                     or any(
                         report.get(flag) is not False
                         for flag in (
@@ -22609,7 +22636,7 @@ class _SyntheticC1SourceRecorder:
                         )
                     )
                 ):
-                    raise ValueError("unsupported_normalization_division_report")
+                    raise ValueError("unsupported_native_word_arithmetic_report")
                 reports.append(
                     {
                         "segment_index": index,
@@ -22620,7 +22647,9 @@ class _SyntheticC1SourceRecorder:
             return {
                 "source_epoch": self._epoch,
                 "source_binding": _c1_source_binding_digest(source),
-                "comparison_divisor_source": divisor_basis,
+                "operand_source_basis"
+                if kind == "heading"
+                else "comparison_divisor_source": source_basis,
                 "entries": tuple(reports),
             }
 
@@ -22640,50 +22669,57 @@ class _SyntheticC1SourceRecorder:
             if sampled_binding != retained_binding:
                 result["reason"] = "native_integration_source_content_changed"
                 return result
-            normalization_groups = {}
-            for enabled, key, divisor_key, divisor_basis in (
+            report_groups = {}
+            for enabled, key, kind, divisor_key, source_basis in (
                 (
                     include_native_normalization_division,
                     "later_period_normalization_comparison",
+                    "normalization",
                     "period_rad",
                     "later_heading_period_word_not_consumed_sinc_divisor",
                 ),
                 (
                     include_native_consumed_normalization_division,
                     "consumed_normalization_division",
+                    "normalization",
                     "sinc_divisor_rad",
                     "consumed_sinc_divisor_word_from_owned_native_source_not_pi_qualification",
+                ),
+                (
+                    include_native_heading_offsets,
+                    "native_heading_offsets",
+                    "heading",
+                    None,
+                    "consumed_heading_shift_and_return_words_from_owned_native_source_not_pi_or_modulo_qualification",
                 ),
             ):
                 if not enabled:
                     continue
-                normalization = normalization_reports(
-                    native_sample, divisor_key, divisor_basis
+                group = arithmetic_reports(
+                    native_sample, kind, divisor_key, source_basis
                 )
-                normalization_binding = _c1_source_binding_digest(normalization)
-                copied_normalization = deepcopy(normalization)
-                closing_normalization = normalization_reports(
-                    deepcopy(native_sample), divisor_key, divisor_basis
+                group_binding = _c1_source_binding_digest(group)
+                copied_group = deepcopy(group)
+                closing_group = arithmetic_reports(
+                    deepcopy(native_sample), kind, divisor_key, source_basis
                 )
                 if (
-                    _c1_source_binding_digest(normalization) != normalization_binding
-                    or _c1_source_binding_digest(copied_normalization)
-                    != normalization_binding
-                    or _c1_source_binding_digest(closing_normalization)
-                    != normalization_binding
+                    _c1_source_binding_digest(group) != group_binding
+                    or _c1_source_binding_digest(copied_group) != group_binding
+                    or _c1_source_binding_digest(closing_group) != group_binding
                     or _c1_source_binding_digest(native_sample) != sampled_binding
                 ):
                     result["reason"] = (
                         "later_period_comparison_changed_during_snapshot"
                         if key == "later_period_normalization_comparison"
-                        else "consumed_normalization_division_changed_during_snapshot"
+                        else f"{key}_changed_during_snapshot"
                     )
                     return result
-                normalization_groups[key] = (
-                    normalization,
-                    copied_normalization,
-                    closing_normalization,
-                    normalization_binding,
+                report_groups[key] = (
+                    group,
+                    copied_group,
+                    closing_group,
+                    group_binding,
                 )
             receipt_snapshot = self.snapshot_receipt_history(synthetic_test_only=True)
             if not receipt_snapshot["snapshot_available"]:
@@ -22694,12 +22730,12 @@ class _SyntheticC1SourceRecorder:
                 _c1_source_binding_digest(final_native_sample) != sampled_binding
                 or final_producer_binding != producer_binding
                 or (
-                    normalization_groups
+                    report_groups
                     and (
                         _c1_source_binding_digest(native_sample) != sampled_binding
                         or any(
                             _c1_source_binding_digest(group) != binding
-                            for original, copied, closing, binding in normalization_groups.values()
+                            for original, copied, closing, binding in report_groups.values()
                             for group in (original, copied, closing)
                         )
                         or producer.rng is not rng_before
@@ -22726,7 +22762,7 @@ class _SyntheticC1SourceRecorder:
             current_frame=receipt_snapshot["current_frame"],
             source=native_sample,
         )
-        for key, (_, copied, _, _) in normalization_groups.items():
+        for key, (_, copied, _, _) in report_groups.items():
             result[key] = copied
         return result
 

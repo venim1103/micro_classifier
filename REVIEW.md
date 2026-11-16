@@ -415,7 +415,12 @@ headings/anchors remain in this reading map; four chapter01/04 links rebased.
 No source/consumer changes or renewed authority/qualification. One bounded bulk
 transform; exact blocks/heading order/topic changes, ten local targets, whitespace
 and four previously tested source hashes PASS. Root843/archive156 lines before
-this note. Code suite not rerun for documentation-only work. Ignored before-layout
+this note. The first post-note checker failed an incorrect expectation that368
+follow Sources; the archive bytes/old heading order were intact. Shell semicolon
+sequencing still committed/pushed1224ed7 before the remaining assertions ran.
+Corrected bibliography-order validation then passed all conservation/target checks;
+this follow-up retains the failed check and premature sequencing, without rewriting
+history. Code suite not rerun for documentation-only work. Ignored before-layout
 snapshots/bulk utility remain in the session folder, not portable test evidence.
 Next add the separate actual-consumed quotient join under existing source closure;
 no later-period substitution or new arithmetic stages.

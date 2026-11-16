@@ -9694,9 +9694,11 @@ def _probe_native_integration_arithmetic(
                     "sin_midpoint",
                     "displacement_m",
                     "heading_increment_rad",
+                    "heading_shift_offset_rad",
                     "shifted_heading_rad",
                     "period_rad",
                     "wrapped_heading_rad",
+                    "heading_return_offset_rad",
                     "next_yaw_rad",
                     "next_position_m",
                 }
@@ -9971,9 +9973,11 @@ def _sample_simulator_native_integration_source(environment, receipt, source_epo
         "sin_midpoint",
         "displacement_m",
         "heading_increment_rad",
+        "heading_shift_offset_rad",
         "shifted_heading_rad",
         "period_rad",
         "wrapped_heading_rad",
+        "heading_return_offset_rad",
         "next_yaw_rad",
         "next_position_m",
     }

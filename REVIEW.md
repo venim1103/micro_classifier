@@ -455,6 +455,36 @@ Arm/model/study/dependency/download/hardware changes. Ignored `.git/returns-369-
 logs/hashes retained. Next trace remaining native heading consumed operands, without
 inventing modulo/rounding laws, duplicating floor reports or accepting error bounds.
 
+## 370. Actual Heading Shift and Return Operand Retention (2026-11-16)
+
+Begin pushedf44fa41. A concrete review found369's shared test harness had broadened
+single-mode digest96+2N to combined128+4N. Restore the original per-family ceiling;
+only combined mode retains the larger cap. Immediate repaired later-valid/
+consumed-valid2 PASS6.84s; retain the oversight, not a claim of the earlier stricter
+gate. Then name/retain the two actual pi reads used by heading shift and return
+subtraction as heading_shift_offset_rad/heading_return_offset_rad. No new arithmetic,
+modulo replay, RNG or changed native output. Closed source validators require both
+finite builtin words; ten-stage arithmetic/unsupported obligations unchanged.
+
+Fresh16/60s, affected controls<=64/90s, necessary repair reserve16/60s, root360s.
+First4 FAIL7.19s missing shift operand; bounded addition instrumentation already
+distinguished the earlier/later lookup. Source repair; only failed4 PASS0.47s.
+Remaining12 plus46 affected controls PASS58/5081 deselected5.49s. Root PASS6062/
+known QDQ1 xfail/77 warnings233.33s. Ruff/changed format/whitespace/four tested hashes
+PASS; inlining two named reads/removing two fields and four validator keys gives
+exact owning-operation/source AST, with unrelated source/control AST unchanged.
+No signature change. Existing Python-C/host/sanitizer/M55 hard-float controls ran
+in the root with no skips; C source unchanged, not firmware/board/fit evidence.
+
+Four direct producer calls, one synthetic traced addition in the distinct-offset
+control; no new episode beyond existing fixtures. Missing/nonfinite/current/final
+offset faults checked; current read<=6 observations/2 samples/64 digests preserved.
+All flags false; operand words do not establish pi/modulo/rounding correctness,
+uniform native error, geometry/clock/source acceptance or permission. No model/
+study/dependency/download/hardware work. Failed positions and `.git/returns-370-*`
+evidence retained. Next supplied-word shift/return comparisons, not floor-law
+duplication or extension of the ten-stage report.
+
 ## Sources
 
 Hardware and tools:

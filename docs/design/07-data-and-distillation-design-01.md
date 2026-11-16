@@ -995,6 +995,23 @@ Both close all copied reports after final producer sampling; neither adopts
 the existing unsupported pi/sinc/normalization obligations.
 
 
+##### Actual Heading Shift and Return Operands (2026-11-16)
+
+The existing native integration source separately retains
+`heading_shift_offset_rad` from the pi read consumed by the heading-shift addition
+and `heading_return_offset_rad` from the later read consumed by the final
+subtraction. Naming those two reads adds no arithmetic, modulo/trig/sinc replay or
+RNG; default output words remain unchanged. Both finite builtin words are required
+by the closed intake/arithmetic validators and participate in existing source,
+copied/current/closing bindings. Missing/nonfinite words stay explicitly unknown.
+
+Matching offsets do not prove a shared captured read or pi correctness. These
+are distinct native consumed words, not a modulo/rounding law, error bound or
+extension of the ten-stage report. All flags false; no source/geometry/clock or
+command qualification. The [heading operand checkpoint][heading-operands-review]
+records synthetic read differentiation, output/operation conservation, closing
+faults and the required gate.
+
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
 
 The private arithmetic probe consumes copied diagnostic native-source words,
@@ -2391,6 +2408,7 @@ figure is not an established minimum.
 [current-normalization-comparison-design]: 07-data-and-distillation-design-04.md#current-later-period-comparison-2026-11-16
 [consumed-divisor-review]: ../../REVIEW.md#367-actual-consumed-normalization-divisor-retention-2026-11-16
 [consumed-normalization-join-design]: 07-data-and-distillation-design-04.md#current-actual-consumed-normalization-quotient-2026-11-16
+[heading-operands-review]: ../../REVIEW.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

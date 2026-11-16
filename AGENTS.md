@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §369 for closed actual-consumed quotient joins;
+Read [REVIEW.md][review] §370 for actual heading operand retention;
+§369 records closed actual-consumed quotient joins;
 §368 records intact initial-source checkpoint archival;
 §367 records actual consumed-divisor retention;
 §366 records closed current later-period comparisons;
@@ -225,9 +226,13 @@ arithmetic or changed output words. Closed source/arithmetic readers retain the
 finite builtin word; missing/unsupported words stay unknown. Independent default-off
 actual-consumed quotient joins and their required gate are complete, including
 combined later-period mode. Both groups close after the last producer sample with
-pinned epochs; default output and ten-stage arithmetic remain unchanged. Next trace
-remaining native heading operand retention without replay, invented modulo/rounding
-laws or qualification.
+pinned epochs; default output and ten-stage arithmetic remain unchanged.
+Actual heading shift/return offset retention and its required gate are complete,
+including missing/nonfinite words and current/closing joins. The two pi reads
+remain distinct source words; no modulo/rounding/pi law follows. Single-mode
+normalization digest ceilings are restored; only combined mode uses the larger cap.
+Next add bounded supplied heading shift/return residuals without duplicating floor
+reports, replaying primitives or adopting heading-wrap/uniform-error obligations.
 Whole361-365 checkpoint archival is complete, including failed fixtures and the
 spent/unknown interrupted root; historical anchors and topic links remain intact.
 Named source/setup auditors and motion/registration/request consumers remain

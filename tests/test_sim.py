@@ -19357,9 +19357,20 @@ def test_native_integration_arithmetic_discrepancies(
 
 
 @pytest.mark.parametrize("consumer", ("intake", "arithmetic"))
-@pytest.mark.parametrize("fault", ("missing", "bool", "nonfinite", "numpy"))
+@pytest.mark.parametrize(
+    "word_key,fault",
+    tuple(
+        ("sinc_divisor_rad", fault)
+        for fault in ("missing", "bool", "nonfinite", "numpy")
+    )
+    + tuple(
+        (word_key, fault)
+        for word_key in ("heading_shift_offset_rad", "heading_return_offset_rad")
+        for fault in ("missing", "nonfinite")
+    ),
+)
 def test_native_consumed_divisor_closed_consumers(
-    c1_native_integration_snapshot_fixture, monkeypatch, consumer, fault
+    c1_native_integration_snapshot_fixture, monkeypatch, consumer, word_key, fault
 ):
     from sim import diagnostics, rover
 
@@ -19371,12 +19382,12 @@ def test_native_consumed_divisor_closed_consumers(
     )
     values = source["segments"][0]["values"]
     if fault == "missing":
-        values.pop("sinc_divisor_rad")
+        values.pop(word_key)
     else:
-        values["sinc_divisor_rad"] = {
+        values[word_key] = {
             "bool": True,
             "nonfinite": math.inf,
-            "numpy": np.float64(values["sinc_divisor_rad"]),
+            "numpy": np.float64(values[word_key]),
         }[fault]
     before = deepcopy(source["segments"])
 
@@ -19412,14 +19423,25 @@ def test_native_consumed_divisor_closed_consumers(
     assert source["segments"] == before
 
 
-@pytest.mark.parametrize("case", ("retained", "detached", "changed", "final_changed"))
+@pytest.mark.parametrize(
+    "word_key,case",
+    tuple(
+        ("sinc_divisor_rad", case)
+        for case in ("retained", "detached", "changed", "final_changed")
+    )
+    + tuple(
+        (word_key, case)
+        for word_key in ("heading_shift_offset_rad", "heading_return_offset_rad")
+        for case in ("changed", "final_changed")
+    ),
+)
 def test_current_consumed_divisor_source(
-    c1_native_integration_snapshot_fixture, monkeypatch, case
+    c1_native_integration_snapshot_fixture, monkeypatch, word_key, case
 ):
     from sim import diagnostics, rover
 
     environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
-    word = environment._integration_source["segments"][0]["values"]["sinc_divisor_rad"]
+    word = environment._integration_source["segments"][0]["values"][word_key]
     original_observation = RoverEnv._observation
     original_digest = diagnostics._c1_source_binding_digest
     original_sample = diagnostics._sample_simulator_native_integration_source
@@ -19427,7 +19449,7 @@ def test_current_consumed_divisor_source(
     rng_before = deepcopy(environment.rng.bit_generator.state)
     odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
     if case == "changed":
-        environment._integration_source["segments"][0]["values"]["sinc_divisor_rad"] = (
+        environment._integration_source["segments"][0]["values"][word_key] = (
             math.nextafter(word, math.inf)
         )
 
@@ -19436,7 +19458,7 @@ def test_current_consumed_divisor_source(
         assert work["observation"] <= 6
         result = original_observation(self)
         if case == "final_changed" and work["observation"] == 6:
-            owner._integration_sample["segments"][0]["values"]["sinc_divisor_rad"] = (
+            owner._integration_sample["segments"][0]["values"][word_key] = (
                 math.nextafter(word, math.inf)
             )
         return result
@@ -19475,17 +19497,12 @@ def test_current_consumed_divisor_source(
     assert result["snapshot_available"] is (case in ("retained", "detached"))
     if result["snapshot_available"]:
         recorded = result["source"]["segments"][0]["values"]
-        assert recorded["sinc_divisor_rad"].hex() == word.hex()
+        assert recorded[word_key].hex() == word.hex()
         if case == "detached":
-            recorded["sinc_divisor_rad"] = math.nextafter(word, math.inf)
+            recorded[word_key] = math.nextafter(word, math.inf)
+            assert owner._integration_sample["segments"][0]["values"][word_key] == word
             assert (
-                owner._integration_sample["segments"][0]["values"]["sinc_divisor_rad"]
-                == word
-            )
-            assert (
-                environment._integration_source["segments"][0]["values"][
-                    "sinc_divisor_rad"
-                ]
+                environment._integration_source["segments"][0]["values"][word_key]
                 == word
             )
     else:
@@ -19544,6 +19561,7 @@ def test_current_later_period_normalization(
     count = len(segments)
     assert 1 <= count <= 128
     report_passes = 4 if mode == "combined" else 2
+    digest_limit = 128 + 4 * count if mode == "combined" else 96 + 2 * count
     original_report = diagnostics._native_sinc_argument_division_residuals
     original_copy = diagnostics.deepcopy
     original_observation = RoverEnv._observation
@@ -19614,7 +19632,7 @@ def test_current_later_period_normalization(
 
     def digest(*args, **kwargs):
         work["digest"] += 1
-        assert work["digest"] <= 128 + 4 * count
+        assert work["digest"] <= digest_limit
         return original_digest(*args, **kwargs)
 
     def forbidden(*args, **kwargs):
@@ -43836,6 +43854,52 @@ def test_swept_collision_prevents_tunneling_and_checks_arena_boundary():
     assert swept_collision([1, 2], [5, 2], 0.2, ((3, 2, 0.1),), (6, 6))
     assert not swept_collision([1, 1], [5, 1], 0.2, ((3, 2, 0.1),), (6, 6))
     assert swept_collision([1, 1], [0.1, 1], 0.2, (), (6, 6))
+
+
+@pytest.mark.parametrize(
+    "case", ("ordinary", "negative", "signed_zero", "offsets_distinct")
+)
+def test_native_integration_consumed_heading_offsets(monkeypatch, case):
+    from sim import rover
+
+    earlier_pi = math.pi
+    additions = []
+    turn = -1.5 if case == "negative" else -0.0 if case == "signed_zero" else 1.5
+
+    class TracedPi(float):
+        def __radd__(self, left):
+            additions.append((float(left).hex(), float(self).hex()))
+            assert len(additions) <= 1
+            monkeypatch.setattr(rover.math, "pi", math.nextafter(earlier_pi, math.inf))
+            return left + float(self)
+
+    if case == "offsets_distinct":
+        monkeypatch.setattr(rover.math, "pi", TracedPi(earlier_pi))
+    source = {}
+    position, yaw = integrate([1.0, 1.0], 0.0, 0.5, turn, 0.05, source=source)
+    values = source["values"]
+    if case == "offsets_distinct":
+        assert additions == [(values["heading_increment_rad"].hex(), earlier_pi.hex())]
+    assert values["heading_shift_offset_rad"].hex() == earlier_pi.hex()
+    assert values["heading_return_offset_rad"].hex() == float(math.pi).hex()
+    assert (
+        values["heading_shift_offset_rad"].hex()
+        != values["heading_return_offset_rad"].hex()
+    ) is (case == "offsets_distinct")
+    assert (
+        values["shifted_heading_rad"].hex()
+        == float(
+            values["heading_increment_rad"] + values["heading_shift_offset_rad"]
+        ).hex()
+    )
+    assert (
+        values["next_yaw_rad"].hex()
+        == float(
+            values["wrapped_heading_rad"] - values["heading_return_offset_rad"]
+        ).hex()
+    )
+    assert values["next_position_m"] == tuple(map(float, position))
+    assert values["next_yaw_rad"].hex() == float(yaw).hex()
 
 
 @pytest.mark.parametrize(

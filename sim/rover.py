@@ -1702,10 +1702,12 @@ def integrate(position, yaw, speed, turn_rate, seconds, *, source=None):
     displacement = distance * np.array([cosine, sine])
     next_position = initial_position + displacement
     heading_increment = yaw + angle
-    shifted_heading = heading_increment + math.pi
+    heading_shift_offset = math.pi
+    shifted_heading = heading_increment + heading_shift_offset
     period = 2 * math.pi
     wrapped_heading = shifted_heading % period
-    next_yaw = wrapped_heading - math.pi
+    heading_return_offset = math.pi
+    next_yaw = wrapped_heading - heading_return_offset
     if source is not None:
         source.update(
             schema="micro-classifier/native-integration-source/1",
@@ -1733,9 +1735,11 @@ def integrate(position, yaw, speed, turn_rate, seconds, *, source=None):
                 "sin_midpoint": float(sine),
                 "displacement_m": tuple(map(float, displacement)),
                 "heading_increment_rad": float(heading_increment),
+                "heading_shift_offset_rad": float(heading_shift_offset),
                 "shifted_heading_rad": float(shifted_heading),
                 "period_rad": float(period),
                 "wrapped_heading_rad": float(wrapped_heading),
+                "heading_return_offset_rad": float(heading_return_offset),
                 "next_yaw_rad": float(next_yaw),
                 "next_position_m": tuple(map(float, next_position)),
             },

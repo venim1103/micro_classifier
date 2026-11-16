@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §373 for closed current heading-offset reports;
+Read [REVIEW.md][review] §374 for closed default native epoch identities;
+§373 records closed current heading-offset reports;
 §372 records intact normalization checkpoint archival;
 §371 records supplied heading shift/return residuals;
 §370 records actual heading operand retention;
@@ -240,8 +241,11 @@ Canonical nonfinite inputs block both ratios with zero arithmetic. Next add the
 separate default-off actual-source heading join and its required gate are complete,
 including all report combinations and original/copy/closing/final bindings.
 The ten-stage report and pi/modulo/floor/error obligations remain unchanged.
-Next check the concrete default-reader closing epoch-identity boundary, not a
-general audit or replay/qualification.
+Default native source/arithmetic closing epoch repairs and their required gate are
+complete. Coordinated producer/owner/cache reference replacement and between-read
+replacement stay unknown; matching RNG states are not original object identity.
+Next trace the directly used receipt reader's owning epoch closure, not a general
+audit, replay or qualification.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole361-365 checkpoint archival is complete, including failed fixtures and the

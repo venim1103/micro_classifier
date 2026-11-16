@@ -967,6 +967,14 @@ cache and producer words after each observation and rejects malformed original/
 closing current owners before indexing; source/arithmetic readers preserve their
 existing work limits and unknown-without-partial-output behavior.
 
+The [default epoch repair][native-default-epoch-review] pins original producer RNG/
+odometry references even with all report modes off. The arithmetic wrapper also
+pins its original bound references across both source reads and the intervening
+probe, closing producer and owner identities before publication. Coordinated
+equal-state reference replacement is unknown without partial source/frame/arithmetic;
+it is not the original epoch. Valid default output and existing work limits remain
+unchanged. This two-point closure is not concurrent/adversarial attestation.
+
 The optional [later-period comparison][current-normalization-comparison-design]
 uses a separate default-off output, with original/copy/closing reports bound again
 after final producer sampling. It explicitly does not identify the earlier
@@ -2420,6 +2428,7 @@ figure is not an established minimum.
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-design]: 07-data-and-distillation-design-04.md#supplied-heading-shift-and-return-words-2026-11-16
 [current-heading-offset-design]: 07-data-and-distillation-design-04.md#current-heading-shift-and-return-reports-2026-11-16
+[native-default-epoch-review]: ../../REVIEW.md#374-closed-default-native-reader-epoch-identities-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

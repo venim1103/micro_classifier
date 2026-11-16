@@ -441,6 +441,33 @@ download/hardware unchanged; `.git/returns-373-*` logs/hashes retained.
 Next test the concrete default-reader closing RNG identity boundary already pinned
 by the optional modes; no general audit, invented bound or new arithmetic stage.
 
+## 374. Closed Default Native Reader Epoch Identities (2026-11-16)
+
+Begin clean pushedde5a194. Concrete default-reader closure question reproduced
+false source/arithmetic availability after coordinated producer/owner/native-cache/
+motion-cache RNG or odometry reference replacement at final observation, and after
+the first source read during arithmetic. Equal generator state is not the original
+epoch object. Make native source original-reference checks unconditional; pin the
+arithmetic wrapper's original bound references across both reads/probe and recheck
+producer/owner references with a type guard at closing. Valid default output,
+report shapes/flags, words and ten-stage arithmetic remain unchanged.
+
+Fresh6/60s, affected controls<=64/90s, necessary repair reserve6/60s, root360s.
+First6 FAIL11.32s false availability; source/outer wrapper repair, only failed6
+PASS1.12s. Existing24 closing controls PASS5.07s/5158 deselected.
+Root PASS6105/known QDQ1 xfail/77 warnings276.04s. Ruff/changed format/whitespace/
+four tested hashes/pin-only source change/unrelated source/control AST PASS.
+No signature change, relaxed work limits or repeated green gate. Reuse existing
+fixture without new producer steps; source/arithmetic6/12 observations,2/4 samples/
+receipt validations,64/160 digests and one arithmetic probe remain bounded.
+
+All flags false; two-point identity closure is not adversarial/concurrent atomicity,
+epoch authenticity, clock/application/source acceptance, uniform numerical/physical
+qualification or permission. No producer/C/Arm/model/study/dependency/download/
+hardware action. External mutations are not rolled back. Failed positions and
+`.git/returns-374-*` logs/hashes retained. Next trace the directly invoked receipt
+reader's owning epoch closure, not a general audit or new arithmetic stage.
+
 ## Sources
 
 Hardware and tools:

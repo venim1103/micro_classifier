@@ -20007,22 +20007,31 @@ def test_synthetic_c1_native_integration_snapshot(
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
-@pytest.mark.parametrize("reader", ("source", "arithmetic"))
 @pytest.mark.parametrize(
-    "case",
-    (
-        "valid",
-        "final_pose",
-        "final_native",
-        "final_receipt",
-        "final_profile",
-        "current_empty",
-        "current_short",
-        "current_frame",
-        "current_state",
-        "current_type",
-        "closing_current_empty",
-        "producer_type",
+    "reader,case",
+    tuple(
+        (reader, case)
+        for reader in ("source", "arithmetic")
+        for case in (
+            "valid",
+            "final_pose",
+            "final_native",
+            "final_receipt",
+            "final_profile",
+            "current_empty",
+            "current_short",
+            "current_frame",
+            "current_state",
+            "current_type",
+            "closing_current_empty",
+            "producer_type",
+            "final_rng_pair",
+            "final_odometry_pair",
+        )
+    )
+    + (
+        ("arithmetic", "between_rng_pair"),
+        ("arithmetic", "between_odometry_pair"),
     ),
 )
 def test_native_integration_final_observation(
@@ -20037,11 +20046,14 @@ def test_native_integration_final_observation(
     original_digest = diagnostics._c1_source_binding_digest
     original_sample = diagnostics._sample_simulator_native_integration_source
     original_check = diagnostics._check_simulator_receipt_history
+    original_arithmetic = diagnostics._probe_native_integration_arithmetic
     last_observation = 6 if reader == "source" else 12
     rng_before = deepcopy(environment.rng.bit_generator.state)
     odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
     retained = deepcopy(owner._integration_sample)
-    work = dict.fromkeys(("observation", "sample", "check", "digest", "forbidden"), 0)
+    work = dict.fromkeys(
+        ("observation", "sample", "check", "digest", "arithmetic", "forbidden"), 0
+    )
     if case == "current_empty":
         owner._current = ()
     elif case == "current_short":
@@ -20054,6 +20066,23 @@ def test_native_integration_final_observation(
         owner._current = list(owner._current)
     elif case == "producer_type":
         owner._simulator = True
+
+    def replace_epoch(self, attribute):
+        replacement = deepcopy(getattr(self, attribute))
+        setattr(self, attribute, replacement)
+        setattr(owner, f"_simulator_{attribute}", replacement)
+        self._integration_source[attribute] = replacement
+        self._motion_receipt_source[attribute] = replacement
+
+    def arithmetic(*args, **kwargs):
+        work["arithmetic"] += 1
+        assert work["arithmetic"] <= 1
+        result = original_arithmetic(*args, **kwargs)
+        if case in ("between_rng_pair", "between_odometry_pair"):
+            replace_epoch(
+                environment, "rng" if case == "between_rng_pair" else "odometry_rng"
+            )
+        return result
 
     def observation(self):
         work["observation"] += 1
@@ -20075,6 +20104,10 @@ def test_native_integration_final_observation(
                 self.config = replace(self.config, max_speed=0.5)
             elif case == "closing_current_empty":
                 owner._current = ()
+            elif case in ("final_rng_pair", "final_odometry_pair"):
+                replace_epoch(
+                    self, "rng" if case == "final_rng_pair" else "odometry_rng"
+                )
         return result
 
     def sample(*args, **kwargs):
@@ -20102,6 +20135,7 @@ def test_native_integration_final_observation(
         diagnostics, "_sample_simulator_native_integration_source", sample
     )
     monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
+    monkeypatch.setattr(diagnostics, "_probe_native_integration_arithmetic", arithmetic)
     for name in ("step", "reset"):
         monkeypatch.setattr(RoverEnv, name, forbidden)
     for name in (

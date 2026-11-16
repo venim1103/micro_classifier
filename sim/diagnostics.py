@@ -22738,10 +22738,10 @@ class _SyntheticC1SourceRecorder:
                             for original, copied, closing, binding in report_groups.values()
                             for group in (original, copied, closing)
                         )
-                        or producer.rng is not rng_before
-                        or producer.odometry_rng is not odometry_before
                     )
                 )
+                or producer.rng is not rng_before
+                or producer.odometry_rng is not odometry_before
                 or owner_binding() != binding_before
                 or self._simulator is not producer
                 or producer._integration_source is not source_before
@@ -22796,6 +22796,10 @@ class _SyntheticC1SourceRecorder:
             **{flag: False for flag in flags},
         }
         producer_before = self._simulator
+        rng_before, odometry_before = (
+            self._simulator_rng,
+            self._simulator_odometry_rng,
+        )
 
         def owner_binding():
             from interface.protocol import State
@@ -22881,6 +22885,11 @@ class _SyntheticC1SourceRecorder:
                 snapshot_binding(after) != snapshot_before
                 or owner_binding() != binding_before
                 or self._simulator is not producer_before
+                or not isinstance(producer_before, RoverEnv)
+                or producer_before.rng is not rng_before
+                or producer_before.odometry_rng is not odometry_before
+                or self._simulator_rng is not rng_before
+                or self._simulator_odometry_rng is not odometry_before
                 or _c1_source_binding_digest(arithmetic) != arithmetic_binding
                 or _c1_source_binding_digest(copied_arithmetic) != arithmetic_binding
             ):

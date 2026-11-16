@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §359 for closed setup-report consumer metadata;
+Read [REVIEW.md][review] §360 for intact source/consumer checkpoint archival;
+§359 records closed setup-report consumer metadata;
 §358 records closed actual initial-tick/setup correspondence;
 §357 records intact motion checkpoint archival;
 §356 records actual intake closing-observation repairs;
@@ -180,13 +181,14 @@ continues smaller compatible prerequisites. Q0's owning intake sampler now
 observes before collecting original/closing pose/action/goal/profile words and
 rejects malformed original/closing owners; its fresh gate is complete.
 The prior§355 no-further-prerequisite conclusion is not a continuation stop.
-Whole346-350 archival is complete. Strict opt-in actual initial-tick/setup source
+Whole346-350 archival is complete.
+Whole351-355 archival is complete. Strict opt-in actual initial-tick/setup source
 correspondence and its required gate are complete, with original/closing producer
 and owner RNG identities pinned. It is not a reset execution receipt, accepted
 setup/geometry/source authority or permission. Its setup-report validator now
 shares the unchanged named startup consumer predicate, including exact root,
-reason and bounded integer work. Its required gate is complete. Next archive
-whole351-355 before growth, then trace conditional owned initial-source consumption
+reason and bounded integer work. Its required gate is complete. Next trace
+conditional owned initial-source consumption
 without inventing acceptance or a later-tick reset receipt.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/

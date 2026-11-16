@@ -2522,5 +2522,5 @@ all combinations, mutations and the required gate.
 [native-interval-division-review]: ../review/346-350.md#346-supplied-captured-interval-division-residuals-2026-11-13
 [current-interval-division-review]: ../review/346-350.md#349-closed-current-receipt-interval-reports-2026-11-13
 [native-segment-selection-review]: ../review/346-350.md#350-supplied-unrounded-segment-count-comparison-2026-11-13
-[current-segment-selection-review]: ../../REVIEW.md#351-closed-current-segment-selection-reports-2026-11-13
+[current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

@@ -77,8 +77,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 336-340][chapter-review-32]
 - [Checkpoints 341-345][chapter-review-33]
 - [Checkpoints 346-350][chapter-review-34]
+- [Checkpoints 351-355][chapter-review-35]
 
-Checkpoints 351 onward and the source bibliography remain below.
+Checkpoints 356 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -286,171 +287,23 @@ repeated historical handoffs.
 
 ## 351. Closed Current Segment-Selection Reports (2026-11-13)
 
-Begin clean pushedaad0ae8. Add independent literal default-off
-include_native_segment_selection to the current receipt reader, supporting
-selection-only and all combinations with motion/interval reports. No caller
-source/divisor/tick/epoch override. Bind captured clipped-rate/duration/count
-words to the existing0.1 program operand, explicitly labeled as a program
-divisor, not a captured intermediate. Detached reports preserve current
-receipt/epoch/transition/frame joins; original/closing metadata/operand/output
-checks precede final producer sampling and owner closure. Changed, unsupported
-or nonfinite evidence is unknown without partial fields. Old modes/default
-shape/report work unchanged; no native rounding/branch/error/source/clock/
-physical/execution/admission law, all eight flags false.
-
-Fresh48/60s (12 cases x selection/motion-selection/interval-selection/all),
-necessary repair48/60s reserve, root/360s. First48 PASS4.78s/4841 deselected,
-no repair or unchanged-mode focused rerun. Per family <=2 reports/6 decodes/
-6 rational values/4 rational operations/2 bounded integer ceilings/6 reference/
-count comparisons; fixed type/profile prevalidation remains separate from
-the reference bookkeeping limits, including§350's three comparisons.
-Original2 observations/one history check/32 digests unchanged; all-mode<=22
-rational values/16 rational arithmetic operations plus4 speed comparisons.
-Controls cover source/closing-pose/report/metadata/program-word mutations,
-unknown output, independent inclusion, permission/type/default-off/detachment.
-Root PASS5812, known QDQ1 xfail/77 warnings174.65s; root Ruff/changed format/
-whitespace/four hashes, unrelated module/function/control/decorator AST and
-scoped references PASS; two resolved existing callers remain compatible.
-Executed positions spent; unused repair not authority. Ignored
-`.git/returns-351-*` logs/hashes retained; no source/controller change, replay/
-draw/trig/native ceil/clock/geometry, protected study/model/dependency/
-download/hardware/native/Arm or extra opt-in work. Next reassess the remaining
-Q0-Q5 acceptance and request/guard/executor source prerequisites without
-duplicating completed reports or treating matching words as qualification.
+[Complete unchanged checkpoint][review-351-355-preserved-0] is preserved in the archive.
 
 ## 352. Native Integration Closing-Observation Repairs (2026-11-13)
 
-Begin clean pushed61381bc. Q0-Q5/request reassessment found a concrete owning-code
-currentness gap, not new acceptance evidence: native source samples read cache/
-pose/receipt/profile words before their last observation, unlike the repaired
-receipt reader. Four source/arithmetic final-pose/native-cache controls reproduce
-stale successful publication:4 FAIL7.03s/4909 deselected. Move observation before
-both actual native-cache and producer-word sampling. Guard actual producer and
-tuple/State/frame/dynamics owner layout before indexing/asdict; malformed closing
-owners are unknown, not IndexError. Existing arithmetic stages, unsupported
-obligations, source acquisition, simulator/receipt/wire/controller words unchanged.
-
-Fresh repro4/60s, required new24+affected controls <=64/60s, one necessary
-repair reserve <=64/60s, root/360s. Required52 ran:50 PASS/2 FAIL3.12s/4861
-deselected; both profile fixtures lacked local dataclasses.replace. Fixture-only
-import repair reran only those2:PASS4.42s/4911 deselected. Green50 not repeated.
-Changed format initially rejected three long new lines; existing formatter
-repaired them, changed format/root Ruff/whitespace PASS. Root PASS5836, known
-QDQ1 xfail/77 warnings200.90s. Four tested hashes and unrelated source/control/
-decorator AST conservation PASS. Executed/rejected positions spent; no cap or
-semantic assertion relaxed. Two readers keep6/12 observations,2/4 native samples,
-2/4 history checks,64/160 digests; no extra probe, replay/capture/draw/trig/ceil/
-clock. New controls cover final pose/cache/receipt/profile mutations and malformed
-original/closing owner layouts, without partial source/arithmetic/frame output.
-
-All eight flags false; no uniform native error, source/coverage/clock/physical/
-one-use/execution/admission qualification. Existing Q0-Q5 independent acceptance,
-ST/board and prospective task-quality boundaries remain missing; no studies,
-models/dependencies/downloads/hardware/native/Arm opt-ins. Ignored
-`.git/returns-352-*` repro/focused/repair/root/hash records retained. Next archive
-whole341-345 before more root growth, then advance only a concrete supported
-remaining source prerequisite; no duplicated floor/integration reports.
+[Complete unchanged checkpoint][review-351-355-preserved-1] is preserved in the archive.
 
 ## 353. Intact Motion and Goal Checkpoint Archival (2026-11-13)
 
-Begin clean pushed6b3dd84. Before further root growth, archive complete341-345
-blocks/headings/separators in the existing review family, not reconstructed
-summaries. Preserve five root anchors, four chapter03/04 references and the
-copied relatively rebased331-335 archive label. Keep§342's failed Ruff bindings
-and§345's failed/no-op profile fixture, repairs, spent positions and evidence
-limits intact; relocation renews neither authority nor qualifications.
-One bounded exact-content/11-target/anchor/whitespace/four-tested-hash check
-PASS. Root now893 lines, archive158; no code edit or suite rerun. Three original
-document snapshots and bulk utility retained in the session folder; committed
-archive/links are portable, local recovery files are not. Next assess remaining
-independent source/setup/coverage/error/timing acceptance and conditional
-request/guard/executor dependencies; do not manufacture duplicate arithmetic
-packages or turn matching words into qualified simulation operation.
+[Complete unchanged checkpoint][review-351-355-preserved-2] is preserved in the archive.
 
 ## 354. Closed Live-Receipt Owned Request Joins (2026-11-13)
 
-Begin clean pushed70edad1. Read actual Q1 source-word/motion, Q3 conditional
-registration/straight-pose and Q4 owned request consumers. Their independent
-acceptance remains missing, but Q0/Q4 have a supported non-arithmetic source
-prerequisite: existing prepare/recheck bind owned metadata, not live producer
-currentness. Add independent literal default-off include_current_receipt to
-both. A shared private reader joins actual current receipt epoch/tick/frame and
-closed all-false metadata. Original/closing receipt and detached output copies
-close after request/capture/content work; received/retained/prepared request
-mutations and changed producer/owner evidence reject without partial semantic
-publication. Old defaults, schema, fixture error assumptions, UNKNOWN guard/
-permission/qualification state, controller and wire/producer words unchanged.
-
-Fresh32/60s, one necessary repair <=32/60s reserve, root/360s. First32 PASS4.27s/
-4913 deselected. Preceding Ruff rejected TRY004 for ValueError on the invalid
-producer type; use TypeError, already handled by public wrappers, without
-rerunning green32. Inspection of opt-in indexing found original/closing owner
-layout gaps: early optional tuple guard plus existing receipt closing-binding
-validation. Four necessary added controls/60s PASS4.05s/4945 deselected; no prior
-fixture/control expansion or unchanged successful focused rerun. Per prepare/
-recheck <=2 receipt reads/4 observations/2 history checks/64 receipt digests plus
-existing request work, total digest controls <=96/128; recheck keeps one default
-inner preparation, not nested receipt reads. No new arithmetic/guard queries,
-step/reset/capture/draw/trig/ceil/clock; both RNG states unchanged.
-
-Root PASS5872, known QDQ1 xfail/77 warnings177.40s. Root Ruff/changed format/
-whitespace/four tested hashes/unrelated source/control/decorator AST/scoped
-references PASS. One resolved prepare caller compatible; recheck has no
-resolved static callers, dynamic controls ran. Executed/rejected positions
-spent; no bound, deadline, safety or semantic assertion relaxed. Ignored
-`.git/returns-354-*` focused/owner/root/hash records retained; no protected
-study/model/dependency/download/hardware/native/Arm opt-in or acceptance.
-All eight flags false; matching current source and requests is not source/
-coverage/native-error/registration/clock/one-use/physical/admission evidence.
-Next reassess only remaining named-consumer acceptance dependencies, without
-duplicating completed source/arithmetic packages or inventing a release verdict.
+[Complete unchanged checkpoint][review-351-355-preserved-3] is preserved in the archive.
 
 ## 355. Checked Remaining Acceptance Blockers (2026-11-13)
 
-Begin clean pushed1821397; the active continuation was not replaced by an old
-pause or a checkpoint. After§354, check the remaining agreed queue against Q0-Q5
-and actual setup, source-word/motion, history/straight-pose, native arithmetic and
-owned request consumers. Available necessary source/currentness prerequisites
-are implemented and verified; no further necessary non-duplicative routine
-increment was identified. Further qualification/release work reaches these
-concrete unsupported inputs:
-
-- Q0 needs independently accepted actual setup/source/return/coverage provenance.
-  The setup auditor checks declared geometry; current source/receipt/request
-  joins check bounded correspondence, neither supplies that authority.
-- Q1/Q2 need propagated source-to-wire discrepancies and independent uniform
-  computed-program error/domain closure over command plus braking. Ideal motion
-  requires explicit error_evidence; native word reports do not furnish it.
-  Sinc argument/value, cos/sin, pi/wrapping and accumulated-motion obligations
-  remain unsupported in the native arithmetic contract; no invented zero/
-  sampled epsilon, duplicate arithmetic or source-scale reset follows.
-- Q3 needs accepted pose/range/clock/native-transform enclosures for all retained
-  prefixes/points. Current history tooling is conditional on exact-start/
-  nominal-tick/stored-dt/interval-ending-twist assumptions; the isolated pose
-  checker supports straight motion only. Do not narrow commands to reuse it.
-- Q4 needs qualified clock/application/receipt/error lineage and serialized
-  consume/admitted predecessor continuity. Current owned methods still emit
-  UNKNOWN/no permission; nominal tick/expiry and matching hashes are not these
-  obligations. Q5 then needs admission and separately authorized prospective D4.
-
-No accepted packet/result/decision supplying these independent obligations is
-present in the checked path. Adopting bounds/authority, protected qualification/
-task studies or hardware/ST work is not routine fixture authority. Existing
-compatible local checks are not blocked by missing historical accounting; all
-spent/rejected/aborted positions remain intact, no green gates repeated.
-Read-only tool check: stedgeai/stm32ai absent from PATH, /opt/st-tools empty;
-arm-none-eabi-gcc available, no new native/Arm/hardware run. ST licences/board
-readiness remain user-side; no licence/physical attachment claim was probed.
-
-Documentation-only blocker checkpoint: scoped content/references/whitespace/
-four tested hashes PASS; suite not rerun. All eight flags false, no usable
-command admitted. Latest source gate remains5872/known QDQ1 xfail/77 warnings.
-The next useful action needs a concrete independent Q0-Q4 claim/domain/producer/
-method/result/acceptance packet or a changed authorized scope; do not manufacture
-an acceptance token, duplicate diagnostics or renew exhausted protected work.
-Source/artifacts and logs remain as§354; main clean and synchronized before this
-checkpoint, no owned background process. This is a genuine evidence blocker,
-not a request for routine planning/testing permission or a user pause.
+[Complete unchanged checkpoint][review-351-355-preserved-4] is preserved in the archive.
 
 ## 356. Actual Intake Closing-Observation Repairs (2026-11-13)
 
@@ -567,6 +420,20 @@ clock/study/model/dependency/download/native/Arm/hardware work. Ignored
 `.git/returns-359-*` failure/focused/root/hash evidence retained. Next archive
 whole351-355, then trace conditional owned initial-source consumption; later-tick
 initial correspondence cannot be invented from tick0-only source storage.
+
+## 360. Intact Source and Consumer Checkpoint Archival (2026-11-13)
+
+Begin clean pushed6d2f7df. Archive whole351-355 blocks/headings/separators,
+including every failed/focused/root position and§355's historical blanket
+no-further-prerequisite conclusion. That conclusion stays historical;§356 and
+the actual renewed user request continue compatible prerequisites. Five old
+root anchors and three chapter01/04 references remain/rebase to the archive;
+these blocks have no copied reference labels or inline body links.
+One bounded exact-block/historical-heading/nine-target/anchor/whitespace/four
+tested-hash check PASS; no source edit or suite rerun. Root remains below1,000
+lines. Three original document snapshots and the utility remain in the session
+folder, not assumed portable evidence. Next trace conditional owned initial-source
+consumption without accepting setup, geometry, clocks or permission.
 
 ## Sources
 
@@ -943,6 +810,7 @@ Methods and measurements:
 [chapter-review-32]: docs/review/336-340.md
 [chapter-review-33]: docs/review/341-345.md
 [chapter-review-34]: docs/review/346-350.md
+[chapter-review-35]: docs/review/351-355.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -985,3 +853,8 @@ Methods and measurements:
 [review-346-350-preserved-2]: docs/review/346-350.md#348-intact-reviewed-goal-expression-checkpoint-archival-2026-11-13
 [review-346-350-preserved-3]: docs/review/346-350.md#349-closed-current-receipt-interval-reports-2026-11-13
 [review-346-350-preserved-4]: docs/review/346-350.md#350-supplied-unrounded-segment-count-comparison-2026-11-13
+[review-351-355-preserved-0]: docs/review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
+[review-351-355-preserved-1]: docs/review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
+[review-351-355-preserved-2]: docs/review/351-355.md#353-intact-motion-and-goal-checkpoint-archival-2026-11-13
+[review-351-355-preserved-3]: docs/review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
+[review-351-355-preserved-4]: docs/review/351-355.md#355-checked-remaining-acceptance-blockers-2026-11-13

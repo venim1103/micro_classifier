@@ -2282,8 +2282,8 @@ figure is not an established minimum.
 [native-tof-timing-retention-review]: ../review/183-220.md#215-opt-in-recorder-owned-native-tof-timing-retention-2026-11-09
 [native-tof-timing-delivery-review]: ../review/183-220.md#216-retained-tof-timing-delivery-correspondence-2026-11-09
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
-[native-integration-closing-review]: ../../REVIEW.md#352-native-integration-closing-observation-repairs-2026-11-13
-[owned-current-receipt-review]: ../../REVIEW.md#354-closed-live-receipt-owned-request-joins-2026-11-13
+[native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
+[owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../../REVIEW.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../../REVIEW.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-setup-report-review]: ../../REVIEW.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13

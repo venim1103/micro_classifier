@@ -22546,6 +22546,7 @@ class _SyntheticC1SourceRecorder:
         include_native_normalization_division=False,
         include_native_consumed_normalization_division=False,
         include_native_heading_offsets=False,
+        include_native_heading_remainders=False,
         synthetic_test_only=False,
     ):
         if synthetic_test_only is not True:
@@ -22562,6 +22563,10 @@ class _SyntheticC1SourceRecorder:
             )
         if type(include_native_heading_offsets) is not bool:
             raise ValueError("include_native_heading_offsets must be a literal boolean")
+        if type(include_native_heading_remainders) is not bool:
+            raise ValueError(
+                "include_native_heading_remainders must be a literal boolean"
+            )
         result = {
             "schema": "micro-classifier/synthetic-c1-native-integration-snapshot/1",
             "allowed_use": "offline_native_integration_diagnostics_only",
@@ -22669,6 +22674,27 @@ class _SyntheticC1SourceRecorder:
                         "offset_basis": "caller_supplied_words_not_pi_or_consumed_operand_evidence",
                         "input_hex": words,
                     }
+                elif kind == "remainder":
+                    names = (
+                        "shifted_heading_rad",
+                        "period_rad",
+                        "wrapped_heading_rad",
+                    )
+                    words = tuple(values[name].hex() for name in names)
+                    report = _native_heading_remainder_residuals(
+                        **{
+                            f"{name}_hex": word
+                            for name, word in zip(names, words, strict=True)
+                        },
+                        synthetic_test_only=True,
+                    )
+                    expected = {
+                        "schema": "micro-classifier/native-heading-remainder-residuals/1",
+                        "allowed_use": "offline_supplied_heading_remainder_words_only",
+                        "status": "computed_exact_supplied_heading_remainder_residual",
+                        "period_basis": "caller_supplied_word_not_pi_or_consumed_period_evidence",
+                        "input_hex": words,
+                    }
                 else:
                     words = tuple(
                         values[key].hex()
@@ -22716,7 +22742,7 @@ class _SyntheticC1SourceRecorder:
                 "source_epoch": self._epoch,
                 "source_binding": _c1_source_binding_digest(source),
                 "operand_source_basis"
-                if kind == "heading"
+                if kind in ("heading", "remainder")
                 else "comparison_divisor_source": source_basis,
                 "entries": tuple(reports),
             }
@@ -22759,6 +22785,13 @@ class _SyntheticC1SourceRecorder:
                     "heading",
                     None,
                     "consumed_heading_shift_and_return_words_from_owned_native_source_not_pi_or_modulo_qualification",
+                ),
+                (
+                    include_native_heading_remainders,
+                    "native_heading_remainders",
+                    "remainder",
+                    None,
+                    "consumed_shift_period_and_wrapped_words_from_owned_native_source_not_modulo_or_pi_qualification",
                 ),
             ):
                 if not enabled:

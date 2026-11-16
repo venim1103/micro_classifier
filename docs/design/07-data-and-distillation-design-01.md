@@ -1041,6 +1041,9 @@ The separate [current heading report mode][current-heading-offset-design] now
 provides that bounded source linkage under existing currentness/closure checks.
 It remains default-off, distinct from the ten-stage arithmetic report, and does
 not adopt pi/modulo/heading-wrap or uniform-error obligations.
+The independent [current remainder mode][current-heading-remainder-design] joins
+retained shifted/period/wrapped words to the supplied ideal-remainder comparison,
+with the same ownership closure and unchanged unsupported obligations.
 
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
 
@@ -2443,6 +2446,7 @@ figure is not an established minimum.
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-design]: 07-data-and-distillation-design-04.md#supplied-heading-shift-and-return-words-2026-11-16
 [current-heading-offset-design]: 07-data-and-distillation-design-04.md#current-heading-shift-and-return-reports-2026-11-16
+[current-heading-remainder-design]: 07-data-and-distillation-design-04.md#current-heading-remainder-reports-2026-11-16
 [native-default-epoch-review]: ../review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13

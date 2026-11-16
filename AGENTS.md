@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §378 for supplied heading remainder discrepancies;
+Read [REVIEW.md][review] §379 for closed current heading remainder joins;
+§378 records supplied heading remainder discrepancies;
 §377 records closed live request consumer epochs;
 §376 records intact heading/receipt checkpoint archival;
 §375 records closed owning receipt epoch identities;
@@ -262,8 +263,12 @@ its unchanged green gate was not separately rerun.
 Bounded supplied heading remainder residuals and their required gate are complete,
 including raw nonfinite unknowns and exact large integer quotients. This compares
 caller words to an ideal rational remainder, not a native modulo/pi/error law.
-Next add a separate default-off current-source remainder join with original/copy/
-closing/final ownership checks, without extending the ten-stage report.
+Independent default-off current-source remainder joins and their required gate
+are complete across all sixteen report combinations, with original/copy/closing/
+final ownership checks. Prior per-family ceilings and ten-stage output are
+unchanged; only all four groups use the new combined work cap.
+Next organize the directly changed native-word/source topic blocks losslessly
+within the existing reading maps, then reassess compatible source/error prerequisites.
 Whole366-370 checkpoints are archived intact, including the archival checker/
 premature sequencing failure and the single-mode digest-ceiling oversight/repair.
 Whole371-375 checkpoints are archived intact, including the spent/unknown root

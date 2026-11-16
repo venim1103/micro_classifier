@@ -471,6 +471,38 @@ firmware/board/fit evidence. `.git/returns-378-*` logs/hashes retained locally.
 Next add a separate default-off current-source remainder join, preserving all
 original/copy/closing/final epoch/report bindings and existing per-family ceilings.
 
+## 379. Closed Current Heading Remainder Joins (2026-11-16)
+
+Begin clean pushedde1834b. Add independent literal default-off
+include_native_heading_remainders/native_heading_remainders to the existing source
+reader's bounded group plumbing. Three retained shifted/period/wrapped words join
+the completed supplied diagnostic; the basis names consumed owned words, not
+modulo/pi qualification. Original/copied/closing groups and source words close
+again after the final sample with original RNG identities pinned. Default/prior
+groups, native capture, words, flags and ten-stage arithmetic remain unchanged.
+
+Fresh25/60s, necessary repair reserve25/60s, prior56<=64/90s, root360s.
+First25 PASS5.09s/5224 deselected; prior56 PASS5.31s/5193 deselected.
+Root PASS6172/known QDQ1 xfail/77 warnings194.10s; Ruff/changed format/whitespace/
+four tested hashes/default-and-prior-mode source core/unrelated source/control
+AST PASS. Pylance2 resolved prior callers compatible before/after; dynamic fixture
+call dictionaries are covered by runtime controls, not that static result.
+No failed or repeated unchanged green gate, signature incompatibility or relaxed
+per-family ceiling. Reuse existing fixture/harness, all sixteen combinations,
+field-selection/zero-period/default/off/literal-bool/permission and original/copy/
+closing/final report/pose/RNG faults. Single96+2N/paired128+4N/triple160+6N preserved;
+only all four use192+8N. <=128 segments/two passes/mode,1024 scalar calls combined,
+6 observations/2 samples/2 history checks. Synthetic distinct-period controls
+verify selected fields, not actual native operation independence.
+
+All eight flags false; no native modulo/pi/uniform-error/source/geometry/clock/
+application/one-use/predecessor or physical qualification, permission or replay.
+Producer/C/Arm/model/study/dependency/download/hardware unchanged; existing root
+C controls passed without skips, not linked firmware/board/fit evidence.
+`.git/returns-379-*` logs/hashes retained locally. Next organize the directly
+changed native-word/source topic blocks losslessly within existing reading maps,
+then reassess compatible prerequisites without duplicating completed reports.
+
 ## Sources
 
 Hardware and tools:

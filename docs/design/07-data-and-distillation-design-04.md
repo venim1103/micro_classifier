@@ -2637,6 +2637,31 @@ unchanged. All eight flags false; no uniform numerical/source/geometry/clock or
 command qualification. The [remainder checkpoint][supplied-heading-remainder-review]
 records a rounded-to-period discrepancy and exact large-quotient controls.
 
+##### Current Heading Remainder Reports (2026-11-16)
+
+The source reader's independent literal default-off
+`include_native_heading_remainders` adds `native_heading_remainders` from the
+retained shifted-heading, consumed period and wrapped-result words. Its
+`operand_source_basis` names
+`consumed_shift_period_and_wrapped_words_from_owned_native_source_not_modulo_or_pi_qualification`.
+It joins the supplied diagnostic, not a native modulo/pi/uniform-error law or
+an extension of the ten-stage report.
+
+The four independent groups share bounded creation/metadata checks and
+original/copy/closing/final bindings. All reports close again after the last
+producer sample with original RNG identities pinned. Changed/unsupported words,
+reports or a zero period yield unknown without partial source/frame/group output.
+Default and explicit-off output remain unchanged; all sixteen enabling combinations
+retain distinct labels and field selection.
+
+At most128 segments/two passes per enabled mode,1024 scalar calls with all four,
+6 observations/2 samples/2 receipt validations. Prior single96+2N/paired128+4N/
+triple160+6N digest ceilings remain unchanged; only four groups use192+8N.
+No replay, native modulo/floor/trig/sinc evaluation or extra RNG; all eight flags
+false. No source/geometry/clock/application/one-use/physical qualification or
+permission. The [current remainder checkpoint][current-heading-remainder-review]
+records bounded field-selection, combined and final-closure controls.
+
 ##### Current Heading Shift and Return Reports (2026-11-16)
 
 The source reader's independent literal default-off `include_native_heading_offsets`
@@ -2650,7 +2675,7 @@ Local report creation, metadata validation and original/copy/closing/final bindi
 are shared with the two independent normalization groups. Every enabled group is
 rechecked after the last producer sample with original RNG identities pinned;
 unsupported/changed input yields unknown without partial source/frame/group output.
-All eight enabling combinations retain their distinct group labels and default
+The prior eight enabling combinations retain their distinct group labels and default
 output. At most128 segments/two report passes per enabled mode,768 combined scalar
 calls,6 observations/2 samples/2 receipt validations. Single96+2N/paired128+4N
 digest ceilings are unchanged; only all3 modes uses160+6N.
@@ -2668,5 +2693,6 @@ field-selection, combined and final-closure controls.
 [heading-operands-review]: ../review/366-370.md#370-actual-heading-shift-and-return-operand-retention-2026-11-16
 [supplied-heading-offset-review]: ../review/371-375.md#371-supplied-heading-shift-and-return-residuals-2026-11-16
 [supplied-heading-remainder-review]: ../../REVIEW.md#378-supplied-heading-remainder-word-residuals-2026-11-16
+[current-heading-remainder-review]: ../../REVIEW.md#379-closed-current-heading-remainder-joins-2026-11-16
 [current-heading-offset-review]: ../review/371-375.md#373-closed-current-heading-offset-reports-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

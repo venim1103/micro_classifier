@@ -19516,7 +19516,7 @@ def test_current_consumed_divisor_source(
     "mode,case",
     tuple(
         (mode, case)
-        for mode in ("later", "consumed", "heading")
+        for mode in ("later", "consumed", "heading", "remainder")
         for case in (
             "valid",
             "default",
@@ -19545,6 +19545,15 @@ def test_current_consumed_divisor_source(
         ("all", "valid"),
         ("heading", "operands_distinct"),
         ("heading", "missing_word"),
+        ("later_remainder", "valid"),
+        ("consumed_remainder", "valid"),
+        ("heading_remainder", "valid"),
+        ("combined_remainder", "valid"),
+        ("later_heading_remainder", "valid"),
+        ("consumed_heading_remainder", "valid"),
+        ("all_remainder", "valid"),
+        ("remainder", "periods_distinct"),
+        ("remainder", "zero_period"),
     ),
 )
 def test_current_later_period_normalization(
@@ -19561,6 +19570,8 @@ def test_current_later_period_normalization(
         "zero_divisor",
         "operands_distinct",
         "missing_word",
+        "periods_distinct",
+        "zero_period",
     ):
         for source in (environment._integration_source, owner._integration_sample):
             values = source["segments"][0]["values"]
@@ -19572,6 +19583,10 @@ def test_current_later_period_normalization(
                 values["heading_return_offset_rad"] = math.nextafter(
                     values["heading_return_offset_rad"], math.inf
                 )
+            elif case == "periods_distinct":
+                values["period_rad"] = math.nextafter(values["period_rad"], math.inf)
+            elif case == "zero_period":
+                values["period_rad"] = 0.0
             else:
                 values.pop("heading_return_offset_rad")
     segments = deepcopy(owner._integration_sample["segments"])
@@ -19581,19 +19596,29 @@ def test_current_later_period_normalization(
         "later": ("later",),
         "consumed": ("consumed",),
         "heading": ("heading",),
+        "remainder": ("remainder",),
         "combined": ("later", "consumed"),
         "later_heading": ("later", "heading"),
         "consumed_heading": ("consumed", "heading"),
         "all": ("later", "consumed", "heading"),
+        "later_remainder": ("later", "remainder"),
+        "consumed_remainder": ("consumed", "remainder"),
+        "heading_remainder": ("heading", "remainder"),
+        "combined_remainder": ("later", "consumed", "remainder"),
+        "later_heading_remainder": ("later", "heading", "remainder"),
+        "consumed_heading_remainder": ("consumed", "heading", "remainder"),
+        "all_remainder": ("later", "consumed", "heading", "remainder"),
     }[mode]
     report_passes = 2 * len(modes)
     digest_limit = {
         1: 96 + 2 * count,
         2: 128 + 4 * count,
         3: 160 + 6 * count,
+        4: 192 + 8 * count,
     }[len(modes)]
     original_report = diagnostics._native_sinc_argument_division_residuals
     original_heading = diagnostics._native_heading_offset_residuals
+    original_remainder = diagnostics._native_heading_remainder_residuals
     original_copy = diagnostics.deepcopy
     original_observation = RoverEnv._observation
     original_check = diagnostics._check_simulator_receipt_history
@@ -19682,6 +19707,11 @@ def test_current_later_period_normalization(
         "_native_heading_offset_residuals",
         partial(report, original_heading),
     )
+    monkeypatch.setattr(
+        diagnostics,
+        "_native_heading_remainder_residuals",
+        partial(report, original_remainder),
+    )
     monkeypatch.setattr(diagnostics, "deepcopy", copy)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
     monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
@@ -19709,6 +19739,7 @@ def test_current_later_period_normalization(
                 "later": "include_native_normalization_division",
                 "consumed": "include_native_consumed_normalization_division",
                 "heading": "include_native_heading_offsets",
+                "remainder": "include_native_heading_remainders",
             }[selected]
             options[option] = 1 if case == "bad_bool" else case != "explicit_off"
     if case in ("permission", "bad_bool"):
@@ -19724,6 +19755,7 @@ def test_current_later_period_normalization(
             "detached",
             "divisors_distinct",
             "operands_distinct",
+            "periods_distinct",
         )
         assert result["snapshot_available"] is valid
         for flag in (
@@ -19741,6 +19773,7 @@ def test_current_later_period_normalization(
             assert "later_period_normalization_comparison" not in result
             assert "consumed_normalization_division" not in result
             assert "native_heading_offsets" not in result
+            assert "native_heading_remainders" not in result
             assert work["report"] == 0
         elif valid:
             for group_mode, key, divisor_key, basis in (
@@ -19762,6 +19795,12 @@ def test_current_later_period_normalization(
                     None,
                     "consumed_heading_shift_and_return_words_from_owned_native_source_not_pi_or_modulo_qualification",
                 ),
+                (
+                    "remainder",
+                    "native_heading_remainders",
+                    None,
+                    "consumed_shift_period_and_wrapped_words_from_owned_native_source_not_modulo_or_pi_qualification",
+                ),
             ):
                 if group_mode not in modes:
                     assert key not in result
@@ -19769,7 +19808,7 @@ def test_current_later_period_normalization(
                 group = result[key]
                 basis_key = (
                     "operand_source_basis"
-                    if group_mode == "heading"
+                    if group_mode in ("heading", "remainder")
                     else "comparison_divisor_source"
                 )
                 assert group[basis_key] == basis
@@ -19810,6 +19849,31 @@ def test_current_later_period_normalization(
                                 stage["signed_residual_ratio"]
                                 == (observed - exact).as_integer_ratio()
                             )
+                    elif group_mode == "remainder":
+                        names = (
+                            "shifted_heading_rad",
+                            "period_rad",
+                            "wrapped_heading_rad",
+                        )
+                        dividend, divisor, observed = (
+                            Fraction.from_float(values[name]) for name in names
+                        )
+                        exact = dividend % divisor
+                        quotient = (dividend - exact) / divisor
+                        residuals = entry["residuals"]
+                        assert residuals["input_hex"] == tuple(
+                            values[name].hex() for name in names
+                        )
+                        assert residuals["reference_floor_quotient"] == (
+                            quotient.numerator
+                        )
+                        assert residuals["exact_remainder_ratio"] == (
+                            exact.as_integer_ratio()
+                        )
+                        assert (
+                            residuals["signed_residual_ratio"]
+                            == (observed - exact).as_integer_ratio()
+                        )
                     else:
                         exact = Fraction.from_float(
                             values["angle_rad"]
@@ -19836,6 +19900,10 @@ def test_current_later_period_normalization(
                 assert segments[0]["values"]["heading_shift_offset_rad"].hex() != (
                     segments[0]["values"]["heading_return_offset_rad"].hex()
                 )
+            elif case == "periods_distinct":
+                assert segments[0]["values"]["period_rad"].hex() != (
+                    segments[0]["values"]["sinc_divisor_rad"].hex()
+                )
             assert work["report"] == report_passes * count
             assert work["observation"] == 6
             assert work["sample"] == work["check"] == 2
@@ -19852,6 +19920,7 @@ def test_current_later_period_normalization(
                 "later_period_normalization_comparison",
                 "consumed_normalization_division",
                 "native_heading_offsets",
+                "native_heading_remainders",
             ):
                 assert key not in result
     assert environment.rng.bit_generator.state == rng_before

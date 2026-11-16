@@ -742,6 +742,30 @@ old words as a current/reset execution receipt. All eight flags stay false.
 The [retention checkpoint][initial-source-retention-review] records the failed
 compatibility probe, actual latency evidence and necessary bounded controls.
 
+##### Retained Initial Source Reading (2026-11-16)
+
+Strict opt-in `snapshot_retained_initial_setup_source` reads one retained tick0
+record under its actual current owner. It validates the complete initial metadata,
+source/start/zero-action/native-goal/observation/frame and setup bindings without
+replaying the setup auditor. Initial metadata and original owner-word predicates
+are shared with current initial reading and retention.
+
+Current tick/pose/native State/frame/profile/dynamics must also correspond; receipt
+and other optional intake groups remain in the full owner binding but do not become
+invented basic-source fields. Original/detached/closing retained content, two live
+observations, source files and pinned producer/owner RNG identities close before
+publication. Unsupported/stale/malformed/changed content returns unknown without
+partial initial/current frame or source publication. The read uses at most two
+observations/64 digests and no setup audit, capture, replay, RNG draw or clock.
+
+Output distinguishes `initial_tick` and `initial_frame` from actual `current_tick`
+and `current_frame`. Its detached `initial_snapshot` is retained diagnostic
+correspondence, not a current initial state, reset receipt, admitted history,
+later exact-rest claim or delivery. All eight flags remain false; no setup/source/
+geometry/error/clock/one-use/predecessor acceptance follows.
+The [retained-reader checkpoint][retained-initial-source-review] preserves the
+interrupted/unknown root attempt and separate bounded recovery gate.
+
 ##### Producer-Owned Receipt Retention (2026-11-09)
 
 The opt-in simulator retains one private deep copy of its completed receipt
@@ -2312,6 +2336,7 @@ figure is not an established minimum.
 [initial-setup-source-review]: ../../REVIEW.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-setup-report-review]: ../../REVIEW.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-source-retention-review]: ../../REVIEW.md#361-bounded-initial-source-retention-2026-11-13
+[retained-initial-source-review]: ../../REVIEW.md#362-bounded-retained-initial-source-reading-2026-11-16
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

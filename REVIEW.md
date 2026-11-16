@@ -468,6 +468,42 @@ focused/root/hash logs retained; tool-returned compatibility/layout evidence is
 summarized here, not assumed portable editor memory. Next implement bounded
 retained initial-source reading before conditional later-delivery consumption.
 
+## 362. Bounded Retained Initial Source Reading (2026-11-16)
+
+Begin clean pushedcbc52f7. Add strict opt-in snapshot_retained_initial_setup_source
+for one actual tick0 record under its actual current owner. Share exact initial
+metadata/source/frame validation with retention and unchanged original owner-word
+predicate with initial reading. Close original/copy/closing retained source and
+current dynamics/pose/native State/frame/profile, source files and pinned producer/
+owner RNG references. Full owned dynamics closure preserves optional intake groups;
+basic current sampling projects only its existing seven fields. Output separately
+labels initial/current tick/frame; all eight flags stay false.
+
+Fresh18 controls/60s, one necessary repair reserve18/60s, root/360s. First18
+PASS4.35s/5018 deselected; exact owner-word predicate/unrelated source/control AST
+PASS. Fixture preparation uses one retained initial environment and exactly two
+at-rest receipt steps for one actual delivered environment, not study episodes.
+Read bounds: two observations/64 digests/no setup auditor, replay, capture, draw
+or clock. Original/closing equal-state RNG replacement, malformed owners, stale
+pose, retained/copy/frame/flag mutations and detached output covered. Ruff PASS;
+format rejects new wraps, formatter repairs them, final format/whitespace PASS;
+no repeated green focused gate.
+
+First root tool interrupted: no live tool session or pytest/timeout/tee process
+remains;5549-byte log ends around82% with NUL tail. It is spent/unknown, not a
+pass, successful chain exit or refunded position. Four tested source hashes and
+format/whitespace still PASS. Fresh required recovery root/360s with separate
+hash/log PASS5959/known QDQ1 xfail/77 warnings209.56s; root Ruff/whitespace/four
+hashes PASS. Both root positions retained separately; no protected allowance or
+assertion/work limit changed.
+
+No accepted setup/geometry/coverage/error/clock, later exact-rest/delivery,
+reset receipt, one-use executor or admitted predecessor follows. No native/Arm/
+model/study/dependency/download/hardware action. Ignored `.git/returns-362-*`
+focused/interrupted/root/recovery/hash records retained, never assumed portable.
+Next trace conditional later delivery and complete owned initial-rest State/frame
+history without inventing missing accepted evidence.
+
 ## Sources
 
 Hardware and tools:

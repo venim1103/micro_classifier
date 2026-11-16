@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §361 for bounded initial-source retention;
+Read [REVIEW.md][review] §362 for bounded retained initial-source reading;
+§361 records bounded initial-source retention;
 §360 records intact source/consumer checkpoint archival;
 §359 records closed setup-report consumer metadata;
 §358 records closed actual initial-tick/setup correspondence;
@@ -193,8 +194,11 @@ conditional owned initial-source consumption without inventing acceptance.
 Frozen C1 ToF latency2 leaves no delivered capture at tick0; it is not goal's
 odometry latency0. Explicit opt-in <=1 initial source snapshot retention and its
 required gate are complete, including exact deduplication and pinned epoch joins.
-Next add bounded retained initial-source reading before conditional later delivery
-composition; no current initial-tick claim or reset receipt follows from retention.
+Bounded retained initial-source reading and its recovery gate are complete,
+including original/copy/current/closing source and pinned epoch joins. The first
+interrupted root remains spent/unknown. Next trace conditional later delivery and
+complete owned initial-rest State/frame history; no current initial-tick claim,
+reset receipt or acceptance follows from retention or reading.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

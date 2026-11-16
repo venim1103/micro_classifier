@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §366 for closed current later-period comparisons;
+Read [REVIEW.md][review] §367 for actual consumed-divisor retention;
+§366 records closed current later-period comparisons;
 §365 records supplied normalization division residuals;
 §364 records intact initial-source checkpoint archival;
 §363 records conditional owned initial-rest startup;
@@ -210,14 +211,18 @@ one-use or setup/source/geometry/clock acceptance follows. Next reassess the
 remaining named source/coverage/native-error prerequisites without duplicating
 completed reports or inventing bounds.
 Supplied angle/divisor/normalized-argument quotient residuals and their required
-gate are complete. The divisor is explicitly caller-supplied, not pi or a captured
-earlier native operand; later period_rad is not that capture. Existing ten-stage
+gate are complete. The diagnostic divisor is caller-supplied, not source or pi
+evidence by itself; later period_rad is not earlier capture. Existing ten-stage
 integration diagnostics remain unchanged and unsupported normalization/pi/sinc
 obligations are not adopted. Independent default-off current later-period
 comparisons and their required gate are complete, with original/copy/closing/final
 bindings and pinned RNG identities. The comparison labels the later heading-period
-word, not the earlier consumed sinc divisor. Next trace the missing actual consumed
-divisor at its owning expression, without replay, extra arithmetic or qualification.
+word, not the earlier consumed sinc divisor. Actual earlier sinc_divisor_rad
+retention and its required gate are complete at the owning expression, without new
+arithmetic or changed output words. Closed source/arithmetic readers retain the
+finite builtin word; missing/unsupported words stay unknown. Next add a separate
+default-off actual-consumed quotient join, without repurposing the later comparison
+or extending the existing ten-stage contract.
 Named source/setup auditors and motion/registration/request consumers remain
 conditional; uniform native error, pose/range transform, clock/application/
 one-use and admitted predecessor evidence is not accepted.

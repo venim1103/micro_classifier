@@ -2537,6 +2537,8 @@ The divisor is explicitly caller-supplied, not pi evidence, a certified
 normalization constant or a captured earlier operand. Native integrate computes
 the argument using `angle / (2 * math.pi)` but retains `period_rad` only from a
 later expression; this report does not relabel that later word as earlier capture.
+The [actual consumed-divisor source][consumed-divisor-design] is retained separately;
+this supplied-word diagnostic alone does not establish that linkage.
 It does not evaluate sinc/trig, read/replay integration, extend the existing
 ten-stage report or adopt its unsupported normalization/pi/sinc/heading/accumulation
 obligations. All eight flags false; no uniform native error, source/geometry/clock,
@@ -2567,4 +2569,5 @@ records bounded rational and closing-mutation controls.
 [current-segment-selection-review]: ../review/351-355.md#351-closed-current-segment-selection-reports-2026-11-13
 [normalization-division-review]: ../../REVIEW.md#365-supplied-normalization-division-residuals-2026-11-16
 [current-normalization-comparison-review]: ../../REVIEW.md#366-closed-current-later-period-comparisons-2026-11-16
+[consumed-divisor-design]: 07-data-and-distillation-design-01.md#actual-consumed-normalization-divisor-2026-11-16
 [native-speed-update-review]: ../review/341-345.md#342-supplied-pre-integration-speed-update-residuals-2026-11-13

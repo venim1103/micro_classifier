@@ -19356,6 +19356,145 @@ def test_native_integration_arithmetic_discrepancies(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize("consumer", ("intake", "arithmetic"))
+@pytest.mark.parametrize("fault", ("missing", "bool", "nonfinite", "numpy"))
+def test_native_consumed_divisor_closed_consumers(
+    c1_native_integration_snapshot_fixture, monkeypatch, consumer, fault
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    source = (
+        environment._integration_source
+        if consumer == "intake"
+        else owner._integration_sample
+    )
+    values = source["segments"][0]["values"]
+    if fault == "missing":
+        values.pop("sinc_divisor_rad")
+    else:
+        values["sinc_divisor_rad"] = {
+            "bool": True,
+            "nonfinite": math.inf,
+            "numpy": np.float64(values["sinc_divisor_rad"]),
+        }[fault]
+    before = deepcopy(source["segments"])
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("divisor consumers must not replay or infer pi/sinc")
+
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    monkeypatch.setattr(np, "sinc", forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if consumer == "intake":
+        with pytest.raises(ValueError, match="source metadata|source words"):
+            diagnostics._sample_simulator_native_integration_source(
+                environment, environment._motion_receipt_source["receipt"], owner._epoch
+            )
+    else:
+        result = diagnostics._probe_native_integration_arithmetic(
+            source, synthetic_test_only=True
+        )
+        assert result["discrepancies_available"] is False
+        assert result["status"] == "unknown"
+        assert result["reason"] == "unsupported_native_source"
+        assert "segments" not in result
+        assert result["work"] == {"stages": 0, "binary_operations": 0}
+    assert source["segments"] == before
+
+
+@pytest.mark.parametrize("case", ("retained", "detached", "changed", "final_changed"))
+def test_current_consumed_divisor_source(
+    c1_native_integration_snapshot_fixture, monkeypatch, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    word = environment._integration_source["segments"][0]["values"]["sinc_divisor_rad"]
+    original_observation = RoverEnv._observation
+    original_digest = diagnostics._c1_source_binding_digest
+    original_sample = diagnostics._sample_simulator_native_integration_source
+    work = dict.fromkeys(("observation", "digest", "sample"), 0)
+    rng_before = deepcopy(environment.rng.bit_generator.state)
+    odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
+    if case == "changed":
+        environment._integration_source["segments"][0]["values"]["sinc_divisor_rad"] = (
+            math.nextafter(word, math.inf)
+        )
+
+    def observation(self):
+        work["observation"] += 1
+        assert work["observation"] <= 6
+        result = original_observation(self)
+        if case == "final_changed" and work["observation"] == 6:
+            owner._integration_sample["segments"][0]["values"]["sinc_divisor_rad"] = (
+                math.nextafter(word, math.inf)
+            )
+        return result
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 64
+        return original_digest(*args, **kwargs)
+
+    def sample(*args, **kwargs):
+        work["sample"] += 1
+        assert work["sample"] <= 2
+        return original_sample(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("current divisor source must not recalculate or replay")
+
+    monkeypatch.setattr(RoverEnv, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", sample
+    )
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    monkeypatch.setattr(np, "sinc", forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    result = owner.snapshot_native_integration_source(synthetic_test_only=True)
+    assert result["snapshot_available"] is (case in ("retained", "detached"))
+    if result["snapshot_available"]:
+        recorded = result["source"]["segments"][0]["values"]
+        assert recorded["sinc_divisor_rad"].hex() == word.hex()
+        if case == "detached":
+            recorded["sinc_divisor_rad"] = math.nextafter(word, math.inf)
+            assert (
+                owner._integration_sample["segments"][0]["values"]["sinc_divisor_rad"]
+                == word
+            )
+            assert (
+                environment._integration_source["segments"][0]["values"][
+                    "sinc_divisor_rad"
+                ]
+                == word
+            )
+    else:
+        assert result["status"] == "unknown" and result["reason"]
+        assert "source" not in result and "current_frame" not in result
+    assert environment.rng.bit_generator.state == rng_before
+    assert environment.odometry_rng.bit_generator.state == odometry_before
+
+
 @pytest.mark.parametrize(
     "case",
     (
@@ -43643,6 +43782,42 @@ def test_swept_collision_prevents_tunneling_and_checks_arena_boundary():
     assert swept_collision([1, 2], [5, 2], 0.2, ((3, 2, 0.1),), (6, 6))
     assert not swept_collision([1, 1], [5, 1], 0.2, ((3, 2, 0.1),), (6, 6))
     assert swept_collision([1, 1], [0.1, 1], 0.2, (), (6, 6))
+
+
+@pytest.mark.parametrize(
+    "case", ("ordinary", "negative", "signed_zero", "later_period_changed")
+)
+def test_native_integration_consumed_divisor(monkeypatch, case):
+    from sim import rover
+
+    earlier_pi = math.pi
+    divisor = 2 * earlier_pi
+    original_sinc = np.sinc
+    arguments = []
+    turn = -1.5 if case == "negative" else -0.0 if case == "signed_zero" else 1.5
+    angle = turn * 0.05
+
+    def sinc(argument):
+        arguments.append(float(argument).hex())
+        assert len(arguments) <= 1
+        result = original_sinc(argument)
+        if case == "later_period_changed":
+            monkeypatch.setattr(rover.math, "pi", math.nextafter(earlier_pi, math.inf))
+        return result
+
+    monkeypatch.setattr(np, "sinc", sinc)
+    source = {}
+    position, yaw = integrate([1.0, 1.0], 0.0, 0.5, turn, 0.05, source=source)
+    values = source["values"]
+    assert arguments == [float(angle / divisor).hex()]
+    assert values["sinc_divisor_rad"].hex() == divisor.hex()
+    assert values["sinc_argument"].hex() == arguments[0]
+    assert values["period_rad"].hex() == float(2 * math.pi).hex()
+    assert (values["sinc_divisor_rad"].hex() != values["period_rad"].hex()) is (
+        case == "later_period_changed"
+    )
+    assert values["next_position_m"] == tuple(map(float, position))
+    assert values["next_yaw_rad"].hex() == float(yaw).hex()
 
 
 @pytest.mark.parametrize("case", ("straight", "left", "right", "signed_zero"))

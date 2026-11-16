@@ -972,6 +972,23 @@ uses a separate default-off output, with original/copy/closing reports bound aga
 after final producer sampling. It explicitly does not identify the earlier
 consumed sinc divisor or extend the ten supported arithmetic stages.
 
+##### Actual Consumed Normalization Divisor (2026-11-16)
+
+The existing integration source now also retains `sinc_divisor_rad` from the
+**earlier** `2 * math.pi` expression actually consumed by the argument division.
+Naming that value does not add arithmetic or replay; the later `period_rad`
+remains a distinct expression/source word. Default two-value return and output
+words remain unchanged. The existing source intake and ten-stage diagnostic
+require the new finite builtin word and include it in their source binding.
+Old/missing or unsupported source layouts remain explicitly unknown, not silently
+upgraded from the later period.
+
+This is consumed-operand retention, not pi correctness, sinc behavior or a
+uniform native error bound. Ten-stage arithmetic and all unsupported obligations
+remain unchanged; all flags false. The [retention checkpoint][consumed-divisor-review]
+records exact operation conservation, synthetic earlier/later differentiation,
+current/closing source checks and the required regression gate.
+
 
 ##### Supported Native-Word Arithmetic Discrepancies (2026-11-09)
 
@@ -2367,6 +2384,7 @@ figure is not an established minimum.
 [native-tof-floor-residual-review]: ../review/183-220.md#217-bounded-native-tof-floor-division-residuals-2026-11-09
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
 [current-normalization-comparison-design]: 07-data-and-distillation-design-04.md#current-later-period-comparison-2026-11-16
+[consumed-divisor-review]: ../../REVIEW.md#367-actual-consumed-normalization-divisor-retention-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

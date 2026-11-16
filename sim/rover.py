@@ -1693,7 +1693,8 @@ def integrate(position, yaw, speed, turn_rate, seconds, *, source=None):
     half_angle = angle / 2
     midpoint = yaw + half_angle
     speed_interval = speed * seconds
-    sinc_argument = angle / (2 * math.pi)
+    sinc_divisor = 2 * math.pi
+    sinc_argument = angle / sinc_divisor
     sinc_value = np.sinc(sinc_argument)
     distance = speed_interval * sinc_value
     initial_position = np.asarray(position)
@@ -1724,6 +1725,7 @@ def integrate(position, yaw, speed, turn_rate, seconds, *, source=None):
                 "half_angle_rad": float(half_angle),
                 "midpoint_rad": float(midpoint),
                 "speed_interval_m": float(speed_interval),
+                "sinc_divisor_rad": float(sinc_divisor),
                 "sinc_argument": float(sinc_argument),
                 "sinc_value": float(sinc_value),
                 "distance_m": float(distance),

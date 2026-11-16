@@ -508,6 +508,37 @@ study/dependency/download/hardware action. Ignored `.git/returns-366-*` logs/has
 retained. Next trace the actual earlier divisor at its owning expression without
 new arithmetic or relabeling this later comparison as consumed-source evidence.
 
+## 367. Actual Consumed Normalization Divisor Retention (2026-11-16)
+
+Begin clean pushed41d3e41. Name the existing earlier 2*pi value at integrate's
+normalization expression, consume it once and retain sinc_divisor_rad in the
+already opt-in computed source. No new multiplication/division/sinc/trig, RNG,
+receipt/wire contract or changed two-value result. Two closed source validators
+require its finite builtin float; ten-stage arithmetic stays ten-stage with the
+same explicitly unsupported normalization/pi/sinc obligations.
+
+Fresh16/60s, affected existing controls<=256/90s, one diagnosed necessary repair
+reserve16/60s, root360s. First4 FAIL10.61s KeyError missing divisor, including
+synthetic later-period differentiation; after source repair, only failed4
+PASS0.53s. Remaining12 plus34 affected controls PASS46/5058 deselected5.39s.
+Root PASS6027/known QDQ1 xfail/77 warnings233.47s. Ruff/changed format/whitespace/
+four tested hashes PASS. Inlining the named divisor and removing the one source
+field/two validator keys gives exact prior owning-operation/source AST; all
+unrelated source/control AST unchanged. Pylance actual integrate references traced;
+no API signature change. The root includes existing host/Python-C parity,
+ASan/UBSan and Cortex-M55 hard-float object controls, with no skips. C source
+unchanged; these controls are not linked firmware or board/fit evidence.
+
+Four direct owning-expression controls use one existing sinc call each; the
+later-period probe changes only a synthetic later pi lookup, not a pi/error law.
+Existing fixtures supply remaining source words, with no additional episode.
+Current reads stay<=6 observations/2 native samples/64 digests; source/copy/retained/
+final joins and missing/nonfinite/bool/numpy faults checked without replay.
+All flags false; no uniform native error, accepted source/geometry/clock or
+permission. Failed positions and `.git/returns-367-*` logs/hashes retained.
+Next add a distinct default-off actual-consumed quotient join; preserve the later
+comparison's explicit provenance limit and unchanged ten-stage report.
+
 ## Sources
 
 Hardware and tools:

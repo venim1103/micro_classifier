@@ -19988,6 +19988,124 @@ def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
 
 @pytest.mark.parametrize("mode", ("receipt", "source", "arithmetic"))
 @pytest.mark.parametrize("phase", ("initial", "closing"))
+@pytest.mark.parametrize("case", ("long", "array"))
+def test_receipt_snapshot_history_extent(
+    c1_native_integration_snapshot_fixture, monkeypatch, mode, phase, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    history = owner._receipt_history
+    malformed = [history[-1]] * 9 if case == "long" else np.zeros(9)
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    observation_limit = {"receipt": 2, "source": 6, "arithmetic": 12}[mode]
+    native_limit = {"receipt": 0, "source": 2, "arithmetic": 4}[mode]
+    binding_limit = {"receipt": 32, "source": 64, "arithmetic": 160}[mode]
+    work = dict.fromkeys(("observation", "native", "binding", "source"), 0)
+    original_observation = environment._observation
+    original_native = diagnostics._sample_simulator_native_integration_source
+    original_source = owner.snapshot_native_integration_source
+    original_binding = diagnostics._c1_source_binding_digest
+    if phase == "initial":
+        owner._receipt_history = malformed
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= observation_limit
+        actual = original_observation()
+        if (
+            phase == "closing"
+            and mode != "arithmetic"
+            and work["observation"] == observation_limit
+        ):
+            owner._receipt_history = malformed
+        return actual
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= native_limit
+        return original_native(*args, **kwargs)
+
+    def source(*args, **kwargs):
+        work["source"] += 1
+        assert work["source"] <= 2
+        actual = original_source(*args, **kwargs)
+        if phase == "closing" and work["source"] == 2:
+            owner._receipt_history = malformed
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= binding_limit
+        if type(record) is dict and "history" in record:
+            assert type(record["history"]) is list and len(record["history"]) <= 8
+        return original_binding(record)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("history extent preflight must not replay/draw/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", native
+    )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    if mode == "arithmetic":
+        monkeypatch.setattr(owner, "snapshot_native_integration_source", source)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    if mode == "receipt":
+        result = owner.snapshot_receipt_history(synthetic_test_only=True)
+    elif mode == "source":
+        result = owner.snapshot_native_integration_source(synthetic_test_only=True)
+    else:
+        result = owner.snapshot_native_integration_arithmetic(synthetic_test_only=True)
+    available = (
+        "discrepancies_available" if mode == "arithmetic" else "snapshot_available"
+    )
+    assert result[available] is False and result["status"] == "unknown"
+    assert result["reason"]
+    assert all(
+        result[flag] is False
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+    for key in ("source", "history", "current_frame", "current_tick", "arithmetic"):
+        assert key not in result
+    assert owner._receipt_history is malformed
+    assert work["observation"] == (observation_limit if phase == "closing" else 0)
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
+@pytest.mark.parametrize("mode", ("receipt", "source", "arithmetic"))
+@pytest.mark.parametrize("phase", ("initial", "closing"))
 @pytest.mark.parametrize(
     "case",
     (

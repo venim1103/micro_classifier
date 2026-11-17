@@ -733,6 +733,39 @@ prerequisite can exist; new concrete source/consumer evidence can resume compati
 local work. Pending action is an independently supported named qualification
 packet or a concrete compatible issue; tool/licence/board work stays user-side.
 
+## 415. Bounded Receipt History Prehash Validation (2026-11-17)
+
+Fresh actual continuation from clean pushedd33335f found the receipt/source/
+arithmetic owner binders hashed receipt history before checking its exact list/
+<=8 root extent. Receipt's early truth test also raised on an ndarray root.
+One shared cheap predicate now runs before entry truth-testing and original/
+closing owner hashing; the full history checker reuses it and still rejects
+empty history. Legitimate missing-source states keep their previous behavior.
+No entry/content validation or qualified evidence is inferred from this guard.
+
+Fresh routine plan:12 synthetic repro/repaired controls<=60s, existing related
+selectors<=60s, one root<=360s, syntax/format/AST/API/call/hash/link checks.
+Three readers x original/closing x nine entries/ndarray9:12FAIL7.33s, then
+12PASS0.90s. The arithmetic closing case mutates after its final source reader
+returns, exercising its own binder. Existing history/pairing/snapshot/report-mode
+controls280PASS4.81s. All false flags, no partial payload, unchanged tick/RNG and
+original observation/native-intake/digest ceilings are checked.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6488/known QDQ1 xfail/77 warnings263.24s,
+then Ruff/whitespace PASS. Pylance syntax, changed-file format, four-source hashes,
+unchanged signatures/nonextent calls/return expressions/full semantic body and
+all prior test AST PASS. The first static checker guessed the wrong recorder
+class name; its assertion failed, then the actual reported name fixed the checker.
+No source or test change/rerun followed that tooling-only failure.
+
+No new sampling, native read, encoding/copy/digest/report, arithmetic, RNG/clock,
+work cap, domain or qualification. Eight flags false, guard UNKNOWN; Q0-Q4
+independent inputs and protected boundaries remain as in414. Local .git logs/
+hash bracket are nonportable; committed controls preserve results/spent positions.
+Next trace the owning intake's corresponding receipt-history prehash binding,
+without duplicating reports or treating this compatible repair as acceptance.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

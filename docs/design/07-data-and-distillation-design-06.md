@@ -237,6 +237,17 @@ atomicity against concurrent/adversarial mutation; consumers need their own
 currentness/qualification dependencies. The [snapshot checkpoint][receipt-snapshot-review]
 records bounded stale/content/mutation controls and remaining source gates.
 
+Receipt, native-source and arithmetic readers preflight the receipt-history root
+before original/closing owner hashes: exact builtin list, at most eight entries.
+The receipt reader also checks before truth-testing an unsupported root. Empty
+lists remain allowed by this extent-only guard for legitimate missing-source
+states; the unchanged full semantic checker still requires nonempty history.
+This does not validate entry contents or make compound hashes authoritative.
+No new observation, native read, copy, digest or report call follows; existing
+work caps and all qualification flags remain unchanged. The
+[extent checkpoint][receipt-history-extent-review] preserves the twelve reproduced
+prehash/truth-test failures and repair.
+
 
 ##### Owned Conditional Initial-Rest Startup (2026-11-16)
 
@@ -867,6 +878,7 @@ field-selection, combined and final-closure controls.
 [native-word-nf1-topic]: 07-data-and-distillation-design-04.md
 [native-word-design-map]: ../../DESIGN.md
 [native-owner-preflight-review]: ../../REVIEW.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
+[receipt-history-extent-review]: ../../REVIEW.md#415-bounded-receipt-history-prehash-validation-2026-11-17
 [initial-retention-owner-review]: ../../REVIEW.md#413-closed-initial-retention-owner-word-joins-2026-11-17
 [initial-owner-preflight-review]: ../../REVIEW.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13

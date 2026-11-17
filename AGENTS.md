@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §414 for the fresh named-queue evidence/tool blockers;
+Read [REVIEW.md][review] §415 for bounded receipt-history prehash validation;
+§414 records the prior named-queue evidence/tool blockers;
 §413 records closed initial retention owner-word joins;
 §412 records intact initial-source/receipt/startup topic relocation;
 §411 records closed opted-in request owner preflight;
@@ -434,8 +435,16 @@ passed. A changed native State word can retain the same encoded frame; the
 existing exact source-owner helper distinguishes it. Its bounded State/frame
 reconstruction and two owner-word digests fit the unchanged84-digest ceiling;
 two reads/four observations/two setup audits and all flags remain unchanged.
-Fresh named-queue reassessment is complete against design §§1/2/12 and the Q0-Q5
-packet. This concrete source/consumer trace yields no further local edit; independent
+The fresh actual continuation found a concrete receipt-history prehash gap after
+the §414 reassessment. Receipt/source/arithmetic readers now validate exact list/
+<=8 root extent before original/closing owner hashes; receipt entry rejects arrays
+before truth-testing. The full history checker still requires nonempty history.
+Twelve red/repaired controls and280 prior controls passed; root6488/known QDQ1
+xfail passed. Existing calls, source words, missing-source behavior and work caps
+are unchanged. Next trace the owning intake's corresponding history-root binding;
+this is not another completed report or acceptance evidence.
+Named-queue reassessment against design §§1/2/12 and the Q0-Q5 packet still lacks
+independent
 Q0 setup/source/return/coverage, Q1 propagated state, Q2 uniform native/accumulated
 error, Q3 pose/range/time/transform and Q4 clock/application/one-use/predecessor
 evidence remain absent. Guard/executor composition cannot bypass those inputs.

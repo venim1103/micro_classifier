@@ -17858,6 +17858,13 @@ def _check_simulator_motion_receipt_chain(receipt):
         )
 
 
+def _check_simulator_receipt_history_extent(history):
+    if type(history) is not list or len(history) > 8:
+        raise ValueError(
+            "simulator receipt history anchor mismatch: unsupported history shape or budget"
+        )
+
+
 def _check_simulator_receipt_history(history, *, source_epoch, current, config):
     """Check retained pairings against a source anchor, not qualify execution."""
     from interface.protocol import State, encode_state
@@ -17865,7 +17872,8 @@ def _check_simulator_receipt_history(history, *, source_epoch, current, config):
     def reject(reason):
         raise ValueError(f"simulator receipt history anchor mismatch: {reason}")
 
-    if type(history) is not list or not 1 <= len(history) <= 8:
+    _check_simulator_receipt_history_extent(history)
+    if not history:
         reject("unsupported history shape or budget")
     previous_state = previous_frame = previous_pose = previous_tick = None
     previous_clock = None
@@ -22259,7 +22267,14 @@ class _SyntheticC1SourceRecorder:
             },
         }
         producer = self._simulator
-        if producer is None or self._current is None or not self._receipt_history:
+        if producer is None or self._current is None:
+            return result
+        try:
+            _check_simulator_receipt_history_extent(self._receipt_history)
+        except ValueError:
+            result["reason"] = "unsupported_or_changed_receipt_history"
+            return result
+        if not self._receipt_history:
             return result
         from interface.protocol import State
 
@@ -22308,6 +22323,7 @@ class _SyntheticC1SourceRecorder:
             }
 
         def owner_binding():
+            _check_simulator_receipt_history_extent(self._receipt_history)
             if type(self._dynamics_sample) is not dict:
                 raise ValueError("unsupported closing current receipt owner")
             _check_native_recorder_current_owner(self._current)
@@ -22648,6 +22664,7 @@ class _SyntheticC1SourceRecorder:
         rng_before, odometry_before = producer.rng, producer.odometry_rng
 
         def owner_binding():
+            _check_simulator_receipt_history_extent(self._receipt_history)
             if type(self._dynamics_sample) is not dict:
                 raise ValueError("unsupported current native integration owner")
             _check_native_recorder_current_owner(self._current)
@@ -22954,6 +22971,7 @@ class _SyntheticC1SourceRecorder:
         )
 
         def owner_binding():
+            _check_simulator_receipt_history_extent(self._receipt_history)
             if self._current is not None:
                 if type(self._dynamics_sample) is not dict:
                     raise ValueError("unsupported current native arithmetic owner")

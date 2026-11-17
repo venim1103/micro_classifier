@@ -19391,6 +19391,9 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
+            if current is not current_before:
+                raise ValueError("native ToF snapshot current owner changed")
+            validate_state(current[2])
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19399,9 +19402,7 @@ class _SyntheticC1SourceRecorder:
                         "scenario": asdict(self._scenario),
                     },
                     "identities": self._identities,
-                    "current": None
-                    if current is None
-                    else (current[0], current[1], asdict(current[2]), current[3]),
+                    "current": (current[0], current[1], asdict(current[2]), current[3]),
                     "dynamics_sample": self._dynamics_sample,
                     "tof_sample": self._tof_sample,
                     "binding": self._binding,

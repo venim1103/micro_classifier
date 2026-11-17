@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §404 for closed native goal owner prevalidation;
+Read [REVIEW.md][review] §405 for closed current-ToF post-observation owners;
+§404 records closed native goal owner prevalidation;
 §403 records intact401-402/original bibliography archival;
 §402 records codec State prevalidation before owner copying;
 §401 records intact399-400 archival;
@@ -374,6 +375,12 @@ intake or digest. The tuple-only test assertion repair is retained; root6321/
 known QDQ1 xfail passed. Disabled no-op/eight report combinations/zero-latency
 domain remain unchanged. Next trace remaining named source consumers without
 inventing independent acceptance inputs or duplicating completed reports.
+Current-ToF snapshot ownership now pins the already validated current tuple and
+revalidates State before original/closing copies after observations. Six focused
+and74 prior controls plus root6327/known QDQ1 xfail passed. The two failed delivery
+fixture attempts are retained; delivery already checks companion State/frame and
+is unchanged. No new intake/digest/copy/encoding or false-flag/domain change.
+Next follow bounded owner-pose serialization on these same recorder paths.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

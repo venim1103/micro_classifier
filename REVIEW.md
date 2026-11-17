@@ -549,6 +549,39 @@ Logs/hashes remain in .git; no temporary data/downloads or new study. All flags
 false, guard UNKNOWN. Next trace remaining named source/consumer prerequisites;
 accepted Q0-Q4 setup/source/coverage/error/clock/one-use inputs remain absent.
 
+## 405. Closed Current ToF Post-Observation Owners (2026-11-17)
+
+From clean pushedc876ab5, current-source ownership still copied State after early
+preflight without revalidation. Six actual cases exposed first-observation empty
+current IndexError/frame91 hashing and first/closing ages6/velocity4 copying.
+Frozen State permits mutable nested sequences; prepared list-valued State encodes
+to the unchanged original frame before mutation. Tuple identity alone is not
+nested State validity. Ownership now pins the already prevalidated immutable
+current tuple, then reuses validate_state before each owner copy. Fixed tuple/
+State/frame layout/extent are inherited from that pin; no new wire rule or bound.
+
+Finite plan first10/repaired10/related74<=60s and one root<=360s; earlier query/
+matrix proposals were narrowed before execution. First10 FAIL13.91s: six actual
+current repros and four delivery preparation errors at held/no-capture ticks.
+Existing non-None capture guard repaired the setup; necessary delivery-only4
+FAIL6.37s/6 deselected at expected observations (actual0), since pending publication
+also needs explicit original pending capture. Both attempts remain spent.
+Further owning-code trace shows delivery already encode-validates companion State
+before asdict after both observations and requires exact tuple words. Caller-
+injected list vectors do not satisfy that reader; no third attempt or delivery
+edit. Removed those four unsupported cases, keeping six demonstrated current
+regressions. Six repaired PASS4.72s; prior74 PASS2.20s, including unchanged delivery.
+<=2 observations/intakes/64 digests; exact history words/identities and both RNG
+states remain unchanged; explicit unknown omits source/frame/epoch/tick.
+
+One360s root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6327/known QDQ1 xfail/77 warnings213.85s, Ruff/whitespace PASS. Pylance syntax2/
+format/AST/signature/call/hash/reference checks PASS. Only current-source body/
+one6-case test change; +1 validate_state/+1 ValueError; no new intake/encoding/
+copy/digest/arithmetic calls. Logs/hashes retained in .git; no data/downloads or
+qualification. All flags false/guard UNKNOWN. Next bounded owner-pose serialization
+trace on these named paths; missing independent Q0-Q4 inputs remain unaccepted.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

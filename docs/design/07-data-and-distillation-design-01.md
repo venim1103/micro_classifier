@@ -1096,6 +1096,11 @@ including retention's closing owner. Thus unsupported nested age/vector fields
 cannot reach the dataclass copy first. The [codec preflight checkpoint][native-tof-owner-state-review]
 preserves bounded short/long controls without new State rules, encoding or source
 qualification; the existing wire predicate is not actual-state acceptance.
+The current-source reader also pins that prevalidated current tuple and reruns the
+codec predicate before original/closing owner copies after producer observations.
+The [closing-owner checkpoint][native-tof-current-owner-closing-review] preserves
+post-preflight replacement/mutable-State repros and rejected delivery fixtures;
+the delivered reader's existing companion State/frame checks remain unchanged.
 
 Two-point content and identity checks are not perpetual freshness, enforced
 atomicity, live-callee/source authority, shared clock/epoch support, one-use
@@ -2315,6 +2320,7 @@ figure is not an established minimum.
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17
 [native-tof-owner-state-review]: ../review/401-402.md#402-codec-state-prevalidation-before-tof-owner-copying-2026-11-17
+[native-tof-current-owner-closing-review]: ../../REVIEW.md#405-closed-current-tof-post-observation-owners-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 [native-tof-closing-review]: ../review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09

@@ -12127,6 +12127,120 @@ def test_native_tof_owner_state_layout(
 
 
 @pytest.mark.parametrize(
+    "phase,field",
+    (
+        (1, "current"),
+        (1, "frame"),
+        (1, "ages_us"),
+        (2, "ages_us"),
+        (1, "velocity_m_s"),
+        (2, "velocity_m_s"),
+    ),
+)
+def test_native_tof_current_owner_closure(
+    monkeypatch, c1_motion_receipt_source_fixture, phase, field
+):
+    from dataclasses import replace
+
+    from interface.protocol import CRC, HEADER, STATE, State, encode_state
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    owner.record_native_tof_source(environment, synthetic_test_only=True)
+    current = owner._current
+    if field in ("ages_us", "velocity_m_s"):
+        state = replace(current[2], **{field: list(getattr(current[2], field))})
+        current = (*current[:2], state, current[3])
+        owner._current = current
+    assert encode_state(current[2]) == current[3]
+    sample, history = owner._tof_sample, owner._tof_history
+    contents = deepcopy(tuple(history))
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "native": 0, "binding": 0}
+    original_observation = environment._observation
+    original_native = diagnostics._sample_simulator_native_tof_source
+    original_binding, original_asdict = (
+        diagnostics._c1_source_binding_digest,
+        diagnostics.asdict,
+    )
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        actual = original_observation()
+        if work["observation"] == phase:
+            if field == "current":
+                owner._current = ()
+            elif field == "frame":
+                owner._current = (*current[:3], current[3][:-1])
+            else:
+                getattr(current[2], field).append(0)
+        return actual
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if type(record) is dict and record.get("current") is not None:
+            assert len(record["current"][3]) == HEADER.size + STATE.size + CRC.size
+        return original_binding(record)
+
+    def copied(value, *args, **kwargs):
+        if type(value) is State:
+            assert len(value.ages_us) == 5
+            assert all(
+                len(vector) == 3
+                for vector in (
+                    value.velocity_m_s,
+                    value.angular_velocity_rad_s,
+                    value.goal_m,
+                )
+            )
+        return original_asdict(value, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("ToF owner closure must not replay/draw/trig/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "asdict", copied)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    result = owner.snapshot_native_tof_source(synthetic_test_only=True)
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"]
+    for key in ("source", "frame", "tick", "source_epoch"):
+        assert key not in result
+    assert work["observation"] == work["native"] == phase
+    assert owner._tof_sample is sample and owner._tof_history is history
+    assert diagnostics._native_tof_word_copy_matches(tuple(history), contents)
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
+@pytest.mark.parametrize(
     "case",
     (
         "copy",

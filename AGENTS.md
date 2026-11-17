@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §402 for codec State prevalidation before owner copying;
+Read [REVIEW.md][review] §403 for intact401-402/original bibliography archival;
+§402 records codec State prevalidation before owner copying;
 §401 records intact399-400 archival;
 §400 records fixed State-frame prehash extent checks;
 §399 records intact397-398 archival;
@@ -362,7 +363,11 @@ Whole399-400 archival is complete with historical anchors and the topic target i
 Nested ToF owner State fields now pass the existing codec predicate before asdict,
 including closing retention;16 short/long ages/vector controls and the required gate
 are complete. Root6297 plus known QDQ xfail; no extra copies/encodings/source reads.
-Next trace the corresponding goal-source owner path without adopting new limits.
+Whole401-402 and the original source bibliography are archived intact. The root
+keeps every historical heading and its used reference definitions with unchanged
+first-definition behavior; this is organization, not new evidence or scope.
+The corresponding goal-source trace now checks State copying and fixed frame extent
+before owner hashing, preserving disabled no-op/report/domain behavior.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

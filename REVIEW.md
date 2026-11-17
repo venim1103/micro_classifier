@@ -89,8 +89,10 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 395-396][chapter-review-44]
 - [Checkpoints 397-398][chapter-review-45]
 - [Checkpoints 399-400][chapter-review-46]
+- [Checkpoints 401-402][chapter-review-47]
 
-Checkpoints 401 onward and the source bibliography remain below.
+Checkpoints 403 onward remain below. The original source bibliography is linked
+under Sources.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -498,139 +500,30 @@ repeated historical handoffs.
 
 ## 401. Intact Frame Boundary Checkpoint Archival (2026-11-17)
 
-From clean pusheda212a78, archive whole399-400 before further root growth.
-One30s transform/two snapshots PASS exact body/inverse root/topic conservation;
-two historical headings/one topic target and all spent ledgers remain intact.
-Scoped links/whitespace/four400 hashes PASS; no code change or suite rerun.
-Latest gate6281/known QDQ1 xfail/77 warnings227.04s; session layouts/script retained.
-Next test nested State ages/vector prevalidation before owner asdict; no new bounds.
+[Complete unchanged checkpoint][review-401-402-preserved-0] is preserved in the archive.
 
 ## 402. Codec State Prevalidation Before ToF Owner Copying (2026-11-17)
 
-From clean pushed449e66a,16 FAIL30.46s: short/long ages4/6 and velocity2/4 reach asdict.
-Reuse protocol validate_state before initial/closing retention and current/delivered
-owner copying; no new wire/numerical/physical rule, encoding/copy/digest/source read.
-Finite16 repro/16 repair/72 prior each<=60s;2 observations/native/64 digests, no RNG/
-replay/clock after prep. Repaired16 PASS1.57s; prior18 retain/20 current/18 delivered/
-16 timing PASS3.79s. One360s root with --durations=10 PASS6297/known QDQ1 xfail/
-77 warnings231.44s; Ruff/format/Pylance syntax/whitespace/tested hashes/links PASS.
-AST/signatures conserved outside three methods/one test; only4 codec validator calls
-added. Logs remain in .git/returns-402-*; all failed/unknown historical positions spent.
-All eight flags false, guard UNKNOWN; no qualification or command. Next trace the
-corresponding goal-source owner path; this checkpoint is not a continuation stop.
+[Complete unchanged checkpoint][review-401-402-preserved-1] is preserved in the archive.
+
+## 403. Intact State Checkpoints and Original Sources (2026-11-17)
+
+From clean pushed7e9f189, one30s whole401-402 transform/two snapshots PASS body/inverse
+root/topic conservation; two historical headings/one chapter01 target remain intact.
+Then one30s whole Sources relocation with a third snapshot preserves all432 ordered
+definitions and the full bibliography, rebasing local targets only. Root Sources
+heading remains;141 root-used labels retain their exact first targets/order.
+Exact inverse/path/first-definition checks PASS; root989->653 lines before this note.
+This avoids repeated two-checkpoint churn without dropping ledgers or old anchors.
+Scoped references/whitespace/four402 hashes PASS; no code change or suite rerun.
+Latest gate6297/known QDQ1 xfail/77 warnings231.44s; scripts/layouts remain in session
+files and logs in .git. This neither adds sources nor accepts evidence/permissions.
+Next bounded goal-source State/frame preflight; all flags false, guard UNKNOWN.
 
 ## Sources
 
-Hardware and tools:
+[Complete original bibliography and reference definitions][original-review-sources].
 
-- [STM32N657 product page][st-n657]
-- [ST Neural-ART NPU concepts][st-concepts]
-- [Neural-ART operators][st-operators] and [compiler][st-compiler]
-- [Memory initializers][st-initializers] and [runtime-loadable models][st-reloc]
-- [STM32N6 example projects][st-projects] and [quantization guide][st-quant]
-- [STM32N6 image-classification getting started][st-gs-ic]
-
-Jev and Jev-style models:
-
-- TypeSafe [API][typesafe-api], [models][typesafe-models],
-  [confidence][typesafe-confidence], [customer agreement][typesafe-mca]
-- [Vela 2.0 overview][vela-blog]; Vela 0.3B [card][vela-03b],
-  [usage][vela-03b-usage], [config][vela-03b-config], [code][vela-03b-code];
-  [Vela 0.8B][vela-08b]; Vela 9B [usage][vela-9b-usage], [config][vela-9b-config],
-  and [code][vela-9b-code]
-- [Decision 3.0 collection][d3-collection], [d3][d3], [d3-flash][d3-flash],
-  [d3-mini][d3-mini], [d3-nano][d3-nano], [d3-lite][d3-lite], [d3-edge][d3-edge],
-  and the [Decision paper][decision-paper]
-- [Crivo-150M][crivo-150m], [Crivo-32M][crivo-32m], [JEV-35B][jev-35b],
-  [JEV-27B-VL][jev-27b-vl], [jev-distill-corpus-v3][jev-corpus],
-  [Decision Index][decision-index], [Vela 9B evaluation][vela-9b-eval], and
-  [Mistral Small 3.1][mistral-small]
-
-Robot integration (Update 2):
-
-- [PX4 offboard mode][px4-offboard], [PX4 Gazebo simulation][px4-gazebo],
-  [DAgger][dagger], [Infineon PSoC Edge E84][psoc-edge-e84], and the
-  [EASA drone framework][easa-drones]
-
-Code, design and process review (Update 3):
-
-- [VL53L8CX product page][vl53l8cx-page] and [ULD driver API][vl53l8cx-uld],
-  [GCC Arm options][gcc-arm-options], [COBS][cobs], and
-  [Learning by Cheating][lbc]
-
-Methods and measurements:
-
-- [EmbBERT][embbert], [pQRNN/PRADO][pqrnn], [Model2Vec][model2vec],
-  [Tang et al.][tang]
-- STM32N6 studies: [eye tracking][eye-tracking], [CubeSat][cubesat],
-  [speech enhancement][speech], [line segments][nplsd], [ARGO][argo],
-  [Gideon][gideon], [edge processor review][edge-review]
-- Alternatives: [Arm Ethos-U85][ethos-u85], [Alif E4][alif-e4],
-  [Alif E8][alif-e8], [NXP i.MX RT700][nxp-rt700]
-
-[lbc]: https://arxiv.org/abs/1912.12294
-[vl53l8cx-page]: https://www.st.com/en/imaging-and-photonics-solutions/vl53l8cx.html
-[vl53l8cx-uld]: https://github.com/stm32duino/VL53L8CX/blob/main/src/vl53l8cx_api.h
-[gcc-arm-options]: https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
-[cobs]: https://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
-[st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
-[st-concepts]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-programming-model.html
-[st-operators]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-operators.html
-[st-compiler]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
-[st-initializers]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-memory-initializers.html
-[st-reloc]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-reloc-mode.html
-[st-projects]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-stm32n6-projects.html
-[st-quant]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-quantization.html
-[st-gs-ic]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification
-[typesafe-api]: https://docs.typesafe.ai/api
-[typesafe-models]: https://docs.typesafe.ai/models
-[typesafe-confidence]: https://docs.typesafe.ai/confidence
-[typesafe-mca]: https://typesafe.ai/legal/mca
-[vela-blog]: https://vllm-sr.ai/blog/vela-2-0-open-foundation-routing-models/
-[vela-03b]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B
-[vela-03b-usage]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/USAGE.md
-[vela-03b-config]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/config.json
-[vela-03b-code]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/modeling_vela2.py
-[vela-08b]: https://huggingface.co/vllm-sr/Vela-2.0-0.8B
-[vela-9b-usage]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/USAGE.md
-[vela-9b-config]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/config.json
-[vela-9b-code]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/modeling_vela2.py
-[d3-collection]: https://huggingface.co/collections/vllm-sr/decision-30
-[d3-edge]: https://huggingface.co/vllm-sr/d3-edge
-[d3-flash]: https://huggingface.co/vllm-sr/d3-flash
-[d3]: https://huggingface.co/vllm-sr/d3
-[d3-mini]: https://huggingface.co/vllm-sr/d3-mini
-[d3-nano]: https://huggingface.co/vllm-sr/d3-nano
-[d3-lite]: https://huggingface.co/vllm-sr/d3-lite
-[decision-paper]: https://vllm-sr.ai/decision-paper
-[jev-27b-vl]: https://huggingface.co/autotrust/JEV-27B-VL
-[jev-corpus]: https://huggingface.co/datasets/SargeDev/jev-distill-corpus-v3
-[vela-9b-eval]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/EVALUATION.md
-[mistral-small]: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503
-[px4-offboard]: https://docs.px4.io/main/en/flight_modes/offboard.html
-[px4-gazebo]: https://docs.px4.io/main/en/sim_gazebo_gz/
-[dagger]: https://arxiv.org/abs/1011.0686
-[psoc-edge-e84]: https://www.infineon.com/products/microcontroller/32-bit-psoc-arm-cortex/32-bit-psoc-edge-arm/psoc-edge-e84
-[easa-drones]: https://www.easa.europa.eu/en/the-agency/faqs/drones-uas
-[jev-35b]: https://huggingface.co/autotrust/JEV-35B
-[crivo-150m]: https://huggingface.co/tardellirs/crivo-150m
-[crivo-32m]: https://huggingface.co/tardellirs/crivo-32m
-[decision-index]: https://huggingface.co/spaces/multimodalart/jev-decision-index
-[embbert]: https://arxiv.org/abs/2502.10001
-[pqrnn]: https://research.google/blog/advancing-nlp-with-efficient-projection-based-model-architectures/
-[model2vec]: https://github.com/MinishLab/model2vec
-[tang]: https://arxiv.org/abs/1903.12136
-[eye-tracking]: https://arxiv.org/abs/2508.13244
-[cubesat]: https://arxiv.org/abs/2603.20174
-[speech]: https://arxiv.org/abs/2609.29867
-[nplsd]: https://arxiv.org/abs/2609.25022
-[argo]: https://arxiv.org/abs/2607.16222
-[gideon]: https://arxiv.org/abs/2605.04282
-[edge-review]: https://arxiv.org/abs/2603.08725
-[ethos-u85]: https://www.arm.com/products/silicon-ip-cpu/ethos/ethos-u85
-[alif-e4]: https://alifsemi.com/ensemble-e4-series/
-[alif-e8]: https://alifsemi.com/ensemble-e8-series/
-[nxp-rt700]: https://www.nxp.com/products/i.MX-RT700
 [chapter-review-00]: docs/review/001-041.md
 [chapter-review-01]: docs/review/042-078.md
 [chapter-review-02]: docs/review/079-102.md
@@ -643,234 +536,6 @@ Methods and measurements:
 [chapter-review-09]: docs/review/221-225.md
 [chapter-review-10]: docs/review/226-230.md
 [chapter-review-11]: docs/review/231-235.md
-
-[wire-python]: interface/protocol.py
-[wire-header]: firmware/include/micro_classifier_protocol.h
-[wire-golden]: interface/golden_vectors.json
-[m1a-script]: export/m1a.py
-[m1a-report]: export/reports/m1a-cpu-20261015.json
-[st-compile-script]: export/st_compile.py
-[st-cli-401]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-cli.html
-[sim-catalogue-draft]: sim/catalogue.json
-[sim-label-draft]: sim/labels.py
-[sim-label-smoke-report]: sim/reports/label-smoke-20261016.json
-[teacher-label-pipeline]: teacher/label_pipeline.py
-[teacher-pipeline-tests]: tests/test_label_pipeline.py
-[teacher-evaluation]: teacher/evaluation.py
-[synthetic-evaluation-report]: teacher/reports/evaluation-synthetic-20261016.json
-[evaluation-tests]: tests/test_evaluation.py
-[prompt-budget]: teacher/prompt_budget.py
-[prompt-budget-flash]: teacher/reports/prompt-budget-d3-flash-20261016.json
-[prompt-budget-mini]: teacher/reports/prompt-budget-d3-mini-20261016.json
-[prompt-budget-tests]: tests/test_prompt_budget.py
-[row-draft-flash]: teacher/reports/row-draft-budget-d3-flash-20261016.json
-[row-draft-mini]: teacher/reports/row-draft-budget-d3-mini-20261016.json
-[float32-draft-flash]: teacher/reports/float32-draft-budget-d3-flash-20261016.json
-[float32-draft-mini]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
-[sim-label-coverage-report]: sim/reports/label-coverage-20261016.json
-[input-cost-flash]: teacher/reports/input-cost-d3-flash-20261016.json
-[input-cost-mini]: teacher/reports/input-cost-d3-mini-20261016.json
-[mini-int8-parity]: teacher/reports/d3-mini-int8-parity-capped-20261016.json
-[mini-context-resource]: teacher/reports/d3-mini-context-resource-capped-20261016.json
-[mini-context-parity]: teacher/reports/d3-mini-context-parity-capped-20261016.json
-[blind-review-tool]: teacher/review.py
-[blind-review-report]: teacher/reports/review-preparation-20261016.json
-[sensor-diagnostics]: sim/diagnostics.py
-[sensor-diagnostics-report]: sim/reports/sensor-diagnostics-20261019.json
-[readiness-tool]: teacher/readiness.py
-[readiness-report]: teacher/reports/readiness-pilot-20261019.json
-[wire-codec-api]: firmware/include/micro_classifier_codec.h
-[wire-codec-source]: firmware/micro_classifier_codec.c
-[state-history-api]: firmware/include/micro_classifier_history.h
-[state-history-source]: firmware/micro_classifier_history.c
-[decision-math-api]: firmware/include/micro_classifier_math.h
-[decision-math-source]: firmware/micro_classifier_math.c
-[head-reference-api]: firmware/include/micro_classifier_heads.h
-[head-reference-source]: firmware/micro_classifier_heads.c
-[native-verifier]: interface/native_verify.py
-[native-head-report]: interface/reports/native-heads-20261019.json
-[reference-build-audit]: interface/build_audit.py
-[reference-build-audit-report]: interface/reports/reference-build-audit-20261019.json
-[assembly-api]: firmware/include/micro_classifier_assembly.h
-[assembly-source]: firmware/micro_classifier_assembly.c
-[assembly-report]: interface/reports/native-assembly-20261019.json
-[assembly-build-report]: interface/reports/assembly-build-audit-20261019.json
-[review70-rover]: sim/rover.py
-[review70-navigation]: sim/navigation.py
-[review70-d3]: teacher/d3_int8.py
-[lbc]: https://arxiv.org/abs/1912.12294
-[vl53l8cx-page]: https://www.st.com/en/imaging-and-photonics-solutions/vl53l8cx.html
-[vl53l8cx-uld]: https://github.com/stm32duino/VL53L8CX/blob/main/src/vl53l8cx_api.h
-[gcc-arm-options]: https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
-[cobs]: https://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
-[floor-rules]: sim/rules.py
-[floor-rules-report]: sim/reports/rules-baseline-20261020.json
-[primitive-integrator]: sim/rover.py
-[primitive-owner]: sim/diagnostics.py
-[primitive-cpython-float]: https://github.com/python/cpython/blob/v3.12.3/Objects/floatobject.c
-[primitive-numpy-sinc]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/lib/_function_base_impl.py
-[primitive-cpython-math]: https://github.com/python/cpython/blob/v3.12.3/Modules/mathmodule.c
-[primitive-python-math-doc]: https://docs.python.org/3.12/library/math.html
-[primitive-numpy-sinc-doc]: https://numpy.org/doc/2.2/reference/generated/numpy.sinc.html
-[primitive-numpy-asarray-doc]: https://numpy.org/doc/2.2/reference/generated/numpy.asarray.html
-[primitive-numpy-promotion-doc]: https://numpy.org/doc/2.2/reference/arrays.promotion.html
-[primitive-numpy-scalar]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/_core/src/umath/scalarmath.c.src
-[primitive-numpy-arithmetic]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/_core/src/umath/loops_arithm_fp.dispatch.c.src
-[primitive-numpy-trig]: https://github.com/numpy/numpy/blob/v2.2.6/numpy/_core/src/umath/loops_trigonometric.dispatch.cpp
-[primitive-glibc-errors]: https://sourceware.org/glibc/manual/2.39/html_node/Errors-in-Math-Functions.html
-[primitive-glibc-sincos]: https://github.com/bminor/glibc/blob/glibc-2.39/sysdeps/x86_64/fpu/multiarch/s_sin.c
-[primitive-glibc-selector]: https://github.com/bminor/glibc/blob/glibc-2.39/sysdeps/x86_64/fpu/multiarch/ifunc-avx-fma4.h
-[primitive-ubuntu-python]: https://launchpad.net/ubuntu/+source/python3.12/3.12.3-1ubuntu0.17
-[primitive-ubuntu-glibc]: https://launchpad.net/ubuntu/+source/glibc/2.39-0ubuntu8.4
-[primitive-protocol-design]: DESIGN.md
-[cpython-correspondence-build]: https://launchpad.net/~ubuntu-security-proposed/+archive/ubuntu/ppa/+build/33562858
-[cpython-correspondence-changes]: https://launchpadlibrarian.net/875581834/python3.12_3.12.3-1ubuntu0.17_amd64.changes
-[cpython-correspondence-buildinfo]: https://launchpadlibrarian.net/875581836/python3.12_3.12.3-1ubuntu0.17_amd64.buildinfo
-[cpython-correspondence-applied]: https://git.launchpad.net/ubuntu/+source/python3.12/commit/?id=f641d3123029c88838179c83a972bc2be28e6e60
-[cpython-correspondence-series]: https://git.launchpad.net/ubuntu/+source/python3.12/plain/debian/patches/series?h=applied/3.12.3-1ubuntu0.17
-[cpython-correspondence-float]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Objects/floatobject.c?id=f641d3123029c88838179c83a972bc2be28e6e60
-[cpython-correspondence-math]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Modules/mathmodule.c?id=f641d3123029c88838179c83a972bc2be28e6e60
-[cpython-correspondence-pymath]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Include/pymath.h?id=f641d3123029c88838179c83a972bc2be28e6e60
-[cpython-correspondence-rules]: https://git.launchpad.net/ubuntu/+source/python3.12/plain/debian/rules?id=f641d3123029c88838179c83a972bc2be28e6e60
-[cpython-static-cases]: https://git.launchpad.net/ubuntu/+source/python3.12/tree/Python/generated_cases.c.h?id=f641d3123029c88838179c83a972bc2be28e6e60
-[controlled-arithmetic-design]: DESIGN.md
-[arithmetic-prototype]: sim/diagnostics.py
-[arithmetic-tests]: tests/test_sim.py
-[arithmetic-dossier-design]: DESIGN.md
-[arithmetic-trusted-design]: DESIGN.md
-[arithmetic-paper-design]: DESIGN.md
-[scalar-compatibility-tests]: tests/test_sim.py
-[controlled-owner-contract-design]: DESIGN.md
-[controlled-owner-prototype-design]: DESIGN.md
-[controlled-candidate-audit-design]: DESIGN.md
-[controlled-auditor-source]: sim/diagnostics.py
-[controlled-auditor-tests]: tests/test_sim.py
-[native-gap-plan-design]: DESIGN.md
-[sinc-contract-design]: DESIGN.md
-[sinc-prototype-design]: DESIGN.md
-[sinc-correctness-design]: DESIGN.md
-[sinc-bridge-design]: DESIGN.md
-[sinc-path-design]: DESIGN.md
-[sinc-route-design]: DESIGN.md
-[sinc-cell-design]: DESIGN.md
-[sinc-word-design]: DESIGN.md
-[sinc-word-proof-design]: DESIGN.md
-[sinc-certificate-plan-design]: DESIGN.md
-[sinc-cell-check-design]: DESIGN.md
-[sinc-checker-paper-design]: DESIGN.md
-[sinc-bind-contract-design]: DESIGN.md
-[sinc-bind-budget-design]: DESIGN.md
-[sinc-bind-implementation-design]: DESIGN.md
-[sinc-bind-paper-design]: DESIGN.md
-[sinc-composition-design]: DESIGN.md
-[sinc-composition-prototype-design]: DESIGN.md
-[sinc-composition-paper-design]: DESIGN.md
-[sinc-target-contract-design]: DESIGN.md
-[sinc-target-prototype-design]: DESIGN.md
-[sinc-target-paper-design]: DESIGN.md
-[sinc-target-join-design]: DESIGN.md
-[sinc-target-join-prototype-design]: DESIGN.md
-[sinc-target-join-paper-design]: DESIGN.md
-[sinc-join-worksheet-design]: DESIGN.md
-[sinc-binding-identity-design]: DESIGN.md
-[sinc-compile-comparison-design]: DESIGN.md
-[sinc-structural-protocol-design]: DESIGN.md
-[priority-reset-design]: DESIGN.md
-[baseline-admission-design]: DESIGN.md
-[c1-wire-rejection-source]: sim/diagnostics.py
-[concurrent-architecture-review]: docs/review/147-170.md#149-standalone-review-removal-2026-11-05
-[architecture-validation-source]: docs/review/147-170.md#149-standalone-review-removal-2026-11-05
-[architecture-prompt-source]: teacher/label_pipeline.py
-[architecture-rover-source]: sim/rover.py
-[architecture-arm-build]: interface/build_audit.py
-[architecture-head-source]: firmware/micro_classifier_heads.c
-[architecture-head-tests]: tests/test_interface.py
-[architecture-head-audit]: interface/reports/reference-build-audit-20261019.json
-[architecture-row-budget]: teacher/reports/float32-draft-budget-d3-mini-20261016.json
-[architecture-context-parity]: teacher/reports/d3-mini-context-parity-capped-20261016.json
-[architecture-public-readme]: README.md
-[architecture-validation-plan]: DESIGN.md
-[architecture-sensor-spec]: https://www.st.com/en/imaging-and-photonics-solutions/vl53l8cx.html
-[source-command-admission-design]: DESIGN.md
-[admission-requirements-design]: DESIGN.md
-[discrete-motion-source]: sim/diagnostics.py
-[discrete-motion-tests]: tests/test_sim.py
-[autonomy-workflow]: AGENTS.md
-[path-cell-source]: sim/diagnostics.py
-[path-cell-tests]: tests/test_sim.py
-[path-source-implementation]: sim/diagnostics.py
-[path-source-controls]: tests/test_sim.py
-[state-motion-source]: sim/diagnostics.py
-[state-motion-controls]: tests/test_sim.py
-[history-registration-source]: sim/diagnostics.py
-[history-registration-controls]: tests/test_sim.py
-[registered-prefix-source]: sim/diagnostics.py
-[registered-prefix-controls]: tests/test_sim.py
-[path-point-error-source]: sim/diagnostics.py
-[path-point-error-controls]: tests/test_sim.py
-[command-path-source]: sim/diagnostics.py
-[command-path-controls]: tests/test_sim.py
-[continuation-workflow]: AGENTS.md#continuation-and-stopping
-[admission-dependencies]: docs/design/07-data-and-distillation-design-01.md#admission-evidence-dependencies-2026-11-06
-[python-monotonic-clock-doc]: https://docs.python.org/3.12/library/time.html#time.monotonic_ns
-[st-n657]: https://www.st.com/en/microcontrollers-microprocessors/stm32n657a0.html
-[st-concepts]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-programming-model.html
-[st-operators]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-operators.html
-[st-compiler]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-compiler.html
-[st-initializers]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-memory-initializers.html
-[st-reloc]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-reloc-mode.html
-[st-projects]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-neural-art-stm32n6-projects.html
-[st-quant]: https://dev.st.com/edge-ai-docs/st-edge-ai-core/4.0.1/en/docs/user-manual/core-quantization.html
-[st-gs-ic]: https://github.com/STMicroelectronics/STM32N6-GettingStarted-ImageClassification
-[typesafe-api]: https://docs.typesafe.ai/api
-[typesafe-models]: https://docs.typesafe.ai/models
-[typesafe-confidence]: https://docs.typesafe.ai/confidence
-[typesafe-mca]: https://typesafe.ai/legal/mca
-[vela-blog]: https://vllm-sr.ai/blog/vela-2-0-open-foundation-routing-models/
-[vela-03b]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B
-[vela-03b-usage]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/USAGE.md
-[vela-03b-config]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/config.json
-[vela-03b-code]: https://huggingface.co/vllm-sr/Vela-2.0-0.3B/blob/main/modeling_vela2.py
-[vela-08b]: https://huggingface.co/vllm-sr/Vela-2.0-0.8B
-[vela-9b-usage]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/USAGE.md
-[vela-9b-config]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/config.json
-[vela-9b-code]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/modeling_vela2.py
-[d3-collection]: https://huggingface.co/collections/vllm-sr/decision-30
-[d3-edge]: https://huggingface.co/vllm-sr/d3-edge
-[d3-flash]: https://huggingface.co/vllm-sr/d3-flash
-[d3]: https://huggingface.co/vllm-sr/d3
-[d3-mini]: https://huggingface.co/vllm-sr/d3-mini
-[d3-nano]: https://huggingface.co/vllm-sr/d3-nano
-[d3-lite]: https://huggingface.co/vllm-sr/d3-lite
-[decision-paper]: https://vllm-sr.ai/decision-paper
-[jev-27b-vl]: https://huggingface.co/autotrust/JEV-27B-VL
-[jev-corpus]: https://huggingface.co/datasets/SargeDev/jev-distill-corpus-v3
-[vela-9b-eval]: https://huggingface.co/vllm-sr/Vela-2.0-9B/blob/main/EVALUATION.md
-[mistral-small]: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503
-[px4-offboard]: https://docs.px4.io/main/en/flight_modes/offboard.html
-[px4-gazebo]: https://docs.px4.io/main/en/sim_gazebo_gz/
-[dagger]: https://arxiv.org/abs/1011.0686
-[psoc-edge-e84]: https://www.infineon.com/products/microcontroller/32-bit-psoc-arm-cortex/32-bit-psoc-edge-arm/psoc-edge-e84
-[easa-drones]: https://www.easa.europa.eu/en/the-agency/faqs/drones-uas
-[jev-35b]: https://huggingface.co/autotrust/JEV-35B
-[crivo-150m]: https://huggingface.co/tardellirs/crivo-150m
-[crivo-32m]: https://huggingface.co/tardellirs/crivo-32m
-[decision-index]: https://huggingface.co/spaces/multimodalart/jev-decision-index
-[embbert]: https://arxiv.org/abs/2502.10001
-[pqrnn]: https://research.google/blog/advancing-nlp-with-efficient-projection-based-model-architectures/
-[model2vec]: https://github.com/MinishLab/model2vec
-[tang]: https://arxiv.org/abs/1903.12136
-[eye-tracking]: https://arxiv.org/abs/2508.13244
-[cubesat]: https://arxiv.org/abs/2603.20174
-[speech]: https://arxiv.org/abs/2609.29867
-[nplsd]: https://arxiv.org/abs/2609.25022
-[argo]: https://arxiv.org/abs/2607.16222
-[gideon]: https://arxiv.org/abs/2605.04282
-[edge-review]: https://arxiv.org/abs/2603.08725
-[ethos-u85]: https://www.arm.com/products/silicon-ip-cpu/ethos/ethos-u85
-[alif-e4]: https://alifsemi.com/ensemble-e4-series/
-[alif-e8]: https://alifsemi.com/ensemble-e8-series/
-[nxp-rt700]: https://www.nxp.com/products/i.MX-RT700
 [chapter-review-12]: docs/review/236-240.md
 [chapter-review-13]: docs/review/241-245.md
 [chapter-review-14]: docs/review/246-250.md
@@ -906,7 +571,7 @@ Methods and measurements:
 [chapter-review-44]: docs/review/395-396.md
 [chapter-review-45]: docs/review/397-398.md
 [chapter-review-46]: docs/review/399-400.md
-[native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
+[chapter-review-47]: docs/review/401-402.md
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-1]: docs/review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
@@ -998,3 +663,6 @@ Methods and measurements:
 [review-397-398-preserved-1]: docs/review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [review-399-400-preserved-0]: docs/review/399-400.md#399-intact-snapshot-ownership-checkpoint-archival-2026-11-17
 [review-399-400-preserved-1]: docs/review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17
+[review-401-402-preserved-0]: docs/review/401-402.md#401-intact-frame-boundary-checkpoint-archival-2026-11-17
+[review-401-402-preserved-1]: docs/review/401-402.md#402-codec-state-prevalidation-before-tof-owner-copying-2026-11-17
+[original-review-sources]: docs/review/sources.md#sources

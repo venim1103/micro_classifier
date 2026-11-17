@@ -2314,7 +2314,7 @@ figure is not an established minimum.
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17
-[native-tof-owner-state-review]: ../../REVIEW.md#402-codec-state-prevalidation-before-tof-owner-copying-2026-11-17
+[native-tof-owner-state-review]: ../review/401-402.md#402-codec-state-prevalidation-before-tof-owner-copying-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 [native-tof-closing-review]: ../review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09

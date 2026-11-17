@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §400 for fixed State-frame prehash extent checks;
+Read [REVIEW.md][review] §401 for intact399-400 archival;
+§400 records fixed State-frame prehash extent checks;
 §399 records intact397-398 archival;
 §398 records closed native-ToF snapshot owner layouts;
 §397 records intact395-396 archival;
@@ -356,10 +357,11 @@ same-deadline recovery. Initial/closing ToF retention and current/delivered snap
 owners now require the existing fixed State-frame extent before owner hashing.
 Eight short/long prehash repros and their required gate are complete; root6281 plus
 the known QDQ xfail. No new frame encoding/copy/digest/read, wire or physical bound.
-Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. The bounded
-named source/consumer trace finds no further concrete edit; new independent evidence
-or a concrete source/consumer issue can change this assessment. Autonomy does not
-supply qualification or protected study/hardware authority.
+Whole399-400 archival is complete with historical anchors and the topic target intact.
+The fresh actual continuation now traces nested State ages/vector validation before
+owner asdict, reusing the existing codec predicate rather than new limits or encoding.
+Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
+does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

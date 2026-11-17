@@ -88,8 +88,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 391-394][chapter-review-43]
 - [Checkpoints 395-396][chapter-review-44]
 - [Checkpoints 397-398][chapter-review-45]
+- [Checkpoints 399-400][chapter-review-46]
 
-Checkpoints 399 onward and the source bibliography remain below.
+Checkpoints 401 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -489,38 +490,20 @@ repeated historical handoffs.
 
 ## 399. Intact Snapshot Ownership Checkpoint Archival (2026-11-17)
 
-From clean pushed04ca156, archive whole397-398 before further999-line root growth.
-One30s transform/two snapshots PASS exact whole-body/inverse root/topic conservation;
-two historical headings and one topic target remain. Keep all failed repros, checker
-repair, spent360s root timeout and same-deadline recovery without refund.
-Scoped links/anchors, staged whitespace and four398 source hashes PASS; no code
-edit or unchanged suite rerun. Latest gate6273/known QDQ1 xfail/77 warnings200.05s.
-Layouts/script remain in session files;398 logs stay in .git. Next test fixed State
-frame extent before owner hashing; no new wire/physical bound or qualification.
+[Complete unchanged checkpoint][review-399-400-preserved-0] is preserved in the archive.
 
 ## 400. Fixed Native-ToF Owner Frame Extents (2026-11-17)
 
-From clean pushed23dd3ec, follow398's bytes-type guard into the owner digest, which
-hex-encodes arbitrary bytes without its own extent cap. Eight short/long controls
-FAIL15.01s because malformed frames reach that digest, including closing retention.
-Require existing HEADER.size + STATE.size + CRC.size before initial/closing retention
-and current/delivered owner hashing; actual fixed State frame is92 bytes. This is
-the frozen wire extent, not a new domain/physical bound or checksum/source proof.
-No new encoding/math/copy/digest/read, signature, schema or successful-output change.
+[Complete unchanged checkpoint][review-399-400-preserved-1] is preserved in the archive.
 
-Finite routine plan:8 repro/8 repair/72 prior each<=60s;2 observations/native reads/
-64 digests, no RNG/replay/clock after prep. Repaired8 PASS0.98s, with0 early reads/
-digests and closing malformed frames never passed to binding. Prior18 retain/
-20 current/18 delivered/16 timing PASS2.91s. One root<=360s with --durations=10
-PASS6281/known QDQ1 xfail/77 warnings227.04s; Ruff/format/Pylance syntax/whitespace,
-four-source tested hashes and scoped links PASS. AST/signature conservation outside
-three methods/one test PASS; only4 len/1 closing bytes-type calls added. Logs stay
-in .git/returns-400-*; all failed/unknown historical positions remain spent.
+## 401. Intact Frame Boundary Checkpoint Archival (2026-11-17)
 
-Named queue recheck still lacks independent Q0-Q4 acceptance; ST tools not on PATH,
-licence/board work user-side; studies/SC18/D4/learned work protected/deferred.
-No further concrete edit identified; new source/consumer evidence can change this.
-All eight flags false, guard UNKNOWN; no command or qualification follows.
+From clean pusheda212a78, archive whole399-400 before further root growth.
+One30s transform/two snapshots PASS exact body/inverse root/topic conservation;
+two historical headings/one topic target and all spent ledgers remain intact.
+Scoped links/whitespace/four400 hashes PASS; no code change or suite rerun.
+Latest gate6281/known QDQ1 xfail/77 warnings227.04s; session layouts/script retained.
+Next test nested State ages/vector prevalidation before owner asdict; no new bounds.
 
 ## Sources
 
@@ -908,6 +891,7 @@ Methods and measurements:
 [chapter-review-43]: docs/review/391-394.md
 [chapter-review-44]: docs/review/395-396.md
 [chapter-review-45]: docs/review/397-398.md
+[chapter-review-46]: docs/review/399-400.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -998,3 +982,5 @@ Methods and measurements:
 [review-395-396-preserved-1]: docs/review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [review-397-398-preserved-0]: docs/review/397-398.md#397-intact-retentionlayout-checkpoint-archival-2026-11-17
 [review-397-398-preserved-1]: docs/review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
+[review-399-400-preserved-0]: docs/review/399-400.md#399-intact-snapshot-ownership-checkpoint-archival-2026-11-17
+[review-399-400-preserved-1]: docs/review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

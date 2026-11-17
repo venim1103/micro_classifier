@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §411 for closed opted-in request owner preflight;
+Read [REVIEW.md][review] §412 for intact initial-source/receipt/startup topic relocation;
+§411 records closed opted-in request owner preflight;
 §410 records closed initial-source/startup owner preflight;
 §409 records closed receipt/integration snapshot owner preflight;
 §408 records intact403-407 checkpoint archival;
@@ -419,9 +420,13 @@ metadata returns explicit unknown without partial request/receipt publication;
 default fixture-only branches and error behavior are conserved. Twenty-one
 failing/repaired controls and94 prior controls passed; root6466/known QDQ1 xfail
 passed after the retained test-only Ruff C408 repair and necessary fresh gate.
-No new receipt/native read, request preparation, copy or digest. Next relocate
-the oversized initial-source topic intact, then reassess the named queue without
-inventing independent Q0-Q4 acceptance or duplicating completed reports.
+No new receipt/native read, request preparation, copy or digest.
+Ten complete initial-source/receipt/startup contracts now live in chapter06;
+chapter01 retains historical anchors/reading links. Exact257-line bodies, both
+inverse layouts, first-definition meanings and24 scoped references passed;
+chapter01/06 are2482/874 lines. Tested411 code hashes are unchanged; no suite rerun.
+Next trace initial retention's own current-owner closure after its snapshot
+readers return, without inventing Q0-Q4 acceptance or duplicating reports.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

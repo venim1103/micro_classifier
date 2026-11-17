@@ -650,6 +650,27 @@ spent positions. Next relocate oversized chapter01 initial-source contracts
 intact, then reassess remaining named prerequisites without another general audit
 or duplicate report.
 
+## 412. Intact Initial Source and Receipt Topic Relocation (2026-11-17)
+
+From clean pushedf091ea1, one30s guarded transform/two original snapshots moved
+ten whole initial-source/receipt/startup contracts from chapter01 to existing
+chapter06. The257-line body, all ten historical chapter01 headings/anchors,
+both exact inverse layouts and every original first-definition meaning PASS.
+Fourteen moved labels retain their original targets; ten reading links point
+to the preserved target headings. No existing body/limit/premise was rewritten.
+Chapter01 2689->2482 lines; chapter06 604->874 lines. One bounded checker PASS24
+scoped references/local targets/anchors and whitespace. Four411 tested source
+hashes unchanged; documentation-only, no code suite rerun. Latest gate6466/
+known QDQ1 xfail/77 warnings245.85s remains the actual source gate.
+
+Session transform/original layouts remain local; committed contracts preserve
+the portable bodies and historical links. No qualification or scope is adopted;
+all flags false/guard UNKNOWN and independent Q0-Q4 inputs remain absent.
+Next trace `retain_initial_setup_source`'s own owner closure after snapshot
+readers return: its frame/dynamics-only join may miss changed current State/pose.
+This is a falsifiable named-source prerequisite, not another report or general
+audit; bound and reproduce it before changing code.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

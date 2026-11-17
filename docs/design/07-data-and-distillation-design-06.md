@@ -5,6 +5,263 @@ original ownership, work budgets and evidence limits. They adopt neither
 [NF1 premises][native-word-nf1-topic] nor source/numerical/physical permission.
 Return to the [design reading map][native-word-design-map].
 
+##### Actual Initial-Tick Setup Correspondence (2026-11-13)
+
+The private recorder's strict opt-in `snapshot_initial_setup_source` reads its
+already captured actual tick0 dynamics and joins them to the existing bounded
+declared-setup auditor. Native pose/start and zero action words, observation,
+goal source, profile, State/frame, epoch and source files must correspond.
+Missing, later-tick, malformed, stale or unsupported input returns unknown without
+partial source/setup/frame publication. Legacy fixture defaults are unchanged.
+
+Original and detached source/setup bindings close after the second producer
+observation; original producer and owner RNG/odometry identities must both remain
+unchanged, including when both are replaced by equal-state copies. The read uses
+at most two observations, one setup audit (32 obstacles/4096-bit existing bounds)
+and32 digests. No reset, step, native arithmetic, capture, RNG draw or clock is
+replayed. Actual intake reuses the extracted seven-field dynamics sampler with
+unchanged observation-before-word order. Its existing native State/frame
+reconstruction is shared, so original owner pose/State/frame must also match the
+captured source, not merely remain unchanged during the read.
+Setup metadata uses the named startup consumer's unchanged exact report validator:
+root fields, declared-only reason, canonical hashes and bounded integer work all
+must be supported. Extra fields, missing work or boolean work counters reject
+before publication. The [consumer metadata repair][initial-setup-report-review]
+changes no setup threshold, startup default or authority.
+
+Initial-source, retained-initial and conditional startup owner bindings reuse the
+shared exact current tuple/builtin tick/actual State/codec, fixed92-byte frame
+extent and native three-coordinate pose preflight before original/closing
+copying/hashing. Each consumer closes its own owner even after nested readers
+return. Frame extent is not CRC/content/source acceptance. Existing sampling,
+setup/consumer calls, nullable-owner behavior and conditional assumptions remain;
+the [owner preflight checkpoint][initial-owner-preflight-review] retains the
+bounded reproductions and repair.
+
+The detached output explicitly labels its origin as an owned actual tick-zero
+sample, not a reset execution receipt. All eight qualification/permission flags
+stay false. Two-point ownership and word correspondence do not establish
+concurrent atomicity, accepted setup/source/coverage, geometry, uniform numerical
+error, qualified timing, one-use execution or an admitted predecessor.
+The [initial-source checkpoint][initial-setup-source-review] retains the introduced
+closing-RNG regression, necessary repair and bounded verification history.
+
+##### Bounded Initial Source Retention (2026-11-13)
+
+The private recorder's `retain_initial_setup_source` is a separate strict opt-in
+operation. It retains at most one detached complete actual initial-tick snapshot
+with the original producer RNG/odometry identities. Original/copy/closing source,
+setup, frame, profile and owner joins precede publication. The exact supported
+snapshot root and setup metadata are prevalidated; an identical retained record
+deduplicates without replacing it. A malformed, mismatched or changed retained
+record stays unknown and is not overwritten. Failed reads do not undo external
+mutations or publish staged content.
+
+Each call uses at most two initial-source reads/four observations/two existing
+setup audits/84 digests. Ordinary intake and snapshots do not automatically retain
+or expose this record; their defaults and output shapes remain unchanged. No reset,
+step, source capture, native arithmetic, RNG draw or clock is replayed. Retention
+adds no future-history, delivery, source-qualification or consumer verdict.
+
+Frozen C1 ToF latency is two ticks: actual tick0 has a pending acquisition and no
+delivered capture. Initial source retention is a prerequisite for later diagnostic
+joins, not permission to retimestamp a capture, assume later exact rest or label
+old words as a current/reset execution receipt. All eight flags stay false.
+The [retention checkpoint][initial-source-retention-review] records the failed
+compatibility probe, actual latency evidence and necessary bounded controls.
+
+##### Retained Initial Source Reading (2026-11-16)
+
+Strict opt-in `snapshot_retained_initial_setup_source` reads one retained tick0
+record under its actual current owner. It validates the complete initial metadata,
+source/start/zero-action/native-goal/observation/frame and setup bindings without
+replaying the setup auditor. Initial metadata and original owner-word predicates
+are shared with current initial reading and retention.
+
+Current tick/pose/native State/frame/profile/dynamics must also correspond; receipt
+and other optional intake groups remain in the full owner binding but do not become
+invented basic-source fields. Original/detached/closing retained content, two live
+observations, source files and pinned producer/owner RNG identities close before
+publication. Unsupported/stale/malformed/changed content returns unknown without
+partial initial/current frame or source publication. The read uses at most two
+observations/64 digests and no setup audit, capture, replay, RNG draw or clock.
+
+Output distinguishes `initial_tick` and `initial_frame` from actual `current_tick`
+and `current_frame`. Its detached `initial_snapshot` is retained diagnostic
+correspondence, not a current initial state, reset receipt, admitted history,
+later exact-rest claim or delivery. All eight flags remain false; no setup/source/
+geometry/error/clock/one-use/predecessor acceptance follows.
+The [retained-reader checkpoint][retained-initial-source-review] preserves the
+interrupted/unknown root attempt and separate bounded recovery gate.
+
+##### Producer-Owned Receipt Retention (2026-11-09)
+
+The opt-in simulator retains one private deep copy of its completed receipt
+alongside its actual RNG/odometry RNG object references. Returned segment,
+configuration and clock dictionaries are separate caller-owned diagnostics.
+Reset clears retained data; the next preflight-approved transition clears it
+before motion, including when receipt capture is disabled. Preflight rejection
+does not invalidate the still-current receipt. Deepcopy of the entire simulator
+preserves its internal epoch-reference correspondence, not identity with the
+original simulator. Replacing a generator by an equal-state copy is a different
+epoch reference, not continued execution identity.
+
+Unexpected failures after transition begins do not roll back motion and cannot
+make a previous receipt current. Retention is neither atomic publication nor
+adversarial tamper protection, source acceptance, native execution or one-use
+permission. One capped receipt is not a measured RAM/stack bound. Actual source
+tick/pose/profile linkage still needs its own opt-in consumer. The [retention
+checkpoint][receipt-retention-review] records lifecycle and nested ownership
+controls; all admission/qualification flags stay false.
+
+
+##### Opt-In Receipt and Source-Pose Linkage (2026-11-09)
+
+Actual simulator source reading has a literal-false-by-default
+`capture_motion_receipt_source` option. When enabled it requires retained
+producer RNG/odometry epoch identity and at most 128 receipt segments before
+copying; previous/current consecutive ticks, config and exact native initial/
+final pose/action words must correspond to the owned source samples. Required
+receipt permission/qualification flags and clock qualification remain false.
+Staged source capture is followed by snapshot/content and retained-object
+identity rechecks before publication. Missing, stale, mismatched, over-budget or
+changed data rejects without publishing the staged current/pending source.
+
+Only opted-in snapshots add `motion_receipt` and `receipt_source_epoch`; normal
+source State/frame/capture behavior is unchanged. This recorder epoch is not the
+unspecified monotonic clock reference. Copy ownership and correspondence are not
+atomic publication, adversarial source attestation, numerical/clock bounds,
+segment-chain validation, one-use execution or predecessor admission. Consumers
+must still independently check the claimed realized segment chain, nominal
+duration and evidence before using it; no usable command follows. The [linkage
+checkpoint][receipt-source-pose-review] retains failures, controls and limits.
+
+
+##### Receipt Segment-Chain Consistency (2026-11-09)
+
+Opt-in actual-source receipt ingestion checks the closed receipt root and
+segment shapes before copying. Planned/attempted segments remain bounded by the
+existing 128 cap; indices and commit flags have exact builtin types. Initial,
+successive and final native pose words must form the claimed realized chain.
+Completed receipts require all planned segments committed; incomplete receipts
+must end in exactly one rejected candidate after any committed prefix. Rejected
+candidate endpoints do not become traveled positions. Final action matches the
+recorded updated speed/turn for completion or the recorded collision stop.
+
+Nominal duration matches configured dt and the recorded per-segment stored-word
+division; neither is elapsed physical time. Recorded swept radius must support
+the configured body scalar, not prove sagitta, whole-body clearance or a native
+error allowance. The checker neither replays integration nor supplies a permit/
+qualified report; actual source epoch/tick/pose binding remains separately
+required. All flags remain false. The [chain checkpoint][receipt-chain-review]
+records independent structural copy controls, unchanged multi-segment/collision
+producer controls, failures and gates, not source/numerical/clock acceptance.
+
+
+##### Bounded Source-Linked Receipt History (2026-11-09)
+
+The actual-source recorder retains at most eight consecutive opted-in transition
+entries. Each owns copied receipt content, original initial/final State words,
+the emitted initial/final frames and recorder source epoch. A new entry must
+anchor to the recorder's current original State/frame/epoch; the oldest entry
+is trimmed at the existing eight-tick history cap. A default source read clears
+the receipt window instead of bridging an unrecorded transition. Producer and
+latest source-snapshot receipt dictionaries are not aliases of history entries.
+
+History joins the pre/post capture owner binding and is published only with
+successful staged source publication. Rejection preserves the existing window,
+including externally introduced changes rather than undoing caller mutations.
+This is not atomic/adversarial ownership, a setup/body-clear origin, native or
+clock qualification, an uncertainty reset, one-use execution or an admitted
+predecessor chain. Consumers still need full history and actual-current-source
+validation before using retention; trimming does not erase accumulated error
+obligations. All qualification/admission flags remain false. The [history
+checkpoint][receipt-history-review] records finite retention/gap/copy controls
+and preserved style failure, not board/RAM/latency/task-quality evidence.
+
+
+##### Full Retained History Pairings (2026-11-09)
+
+Opt-in receipt ingestion validates every entry in the old bounded history before
+append, then validates the planned window against the newly sampled current
+source before staged capture. Each entry requires its matching recorder epoch,
+closed original State/frame/tick data, native action correspondence, coherent
+receipt chain and literal-false permission/qualification metadata. Consecutive
+entries must match original States, frames, ticks and native pose words. The
+last entry must match the owning current source's original State/frame/pose/tick;
+all receipt configs must match the current declared profile. Existing actual
+source/owner post-capture checks still precede publication.
+
+This closes contradictory-old-entry retention, not source attestation: mutually
+consistent fabricated records may still match. Reencoding original words binds
+emitted frames, not native numerical or physical correctness. The checker does
+not validate every clock primitive, accept clock bounds, reset uncertainty,
+admit predecessors or issue permission. A later offline reader must recheck
+actual producer currentness at read time; ingestion checks are not perpetual
+freshness. The [pairing checkpoint][receipt-pairing-review] records bounded
+controls and remaining gates; all qualification/admission flags stay false.
+
+
+##### Read-Time Producer History Snapshots (2026-11-09)
+
+The private source recorder's opt-in `snapshot_receipt_history` reads only its
+bound simulator. It accepts no caller current tick/environment/receipt override.
+Epoch object identity, current tick and source files must remain unchanged;
+fresh native pose/action/goal-source/observation/config/scenario/receipt content
+must match the retained source sample. The complete bounded history is checked,
+copied, then producer/owner content, object identities and source files are
+rechecked before returning `snapshot_available=True`. Stale, missing, unsupported
+or changed data yields unknown without history/current-frame publication.
+The actual producer type is checked before attribute access. Original producer RNG
+and odometry objects are pinned before observations and must still be those same
+objects at closing, not merely agree with mutable owner/cache references.
+Coordinated equal-state replacements stay unknown in every report combination,
+without partial reports; the [epoch checkpoint][receipt-epoch-review] records the
+reproduced false availability, malformed-owner exception and bounded repair gate.
+
+Snapshots are read-only owned diagnostic copies: no step/reset/C1 capture/guard
+query or RNG change. The result names an offline source-history use and leaves
+all admission/qualification flags false. Availability is not a usable command,
+clock/one-use qualification, body-clear origin, native numerical evidence,
+admitted predecessor or perpetual freshness. Two-point checks do not guarantee
+atomicity against concurrent/adversarial mutation; consumers need their own
+currentness/qualification dependencies. The [snapshot checkpoint][receipt-snapshot-review]
+records bounded stale/content/mutation controls and remaining source gates.
+
+
+##### Owned Conditional Initial-Rest Startup (2026-11-16)
+
+Strict opt-in recorder `probe_initial_startup_path` derives initial setup/epoch/
+pose, the delivered tick0 C1 capture and complete native State/frame history from
+retained initial source plus live receipt history. Its local domain is current
+tick2-3; initial0/current3 is explicitly supported, tick4 or missing/changed receipt
+history rejects. No caller setup, capture, tick, pose or State/frame override is
+accepted. Caller-supplied point/history/error/profile evidence remains explicit
+conditional fixture evidence, not accepted range/pose/clock/native-transform bounds.
+
+The unchanged initial-rest consumer checks all supplied native/decoded twist
+intervals are exactly zero and keeps its fixed 0.125/zero-turn request. Actual
+nonrest history, missing error evidence or unsupported premises remain unknown.
+Original/copied/closing initial/current receipt/event/input/report bindings and
+pinned RNG identities close after consumer work, including the derived State/frame
+evidence and copied capture passed to the consumer. Returned diagnostic content
+is detached; it remains guard UNKNOWN/no permission with all eight flags false.
+The [startup cache join][owned-startup-cache-review] pins the original producer
+receipt cache before the first source/receipt reads through consumer work and
+closing reads; equal-word cache replacement returns unknown without path output.
+
+At most two retained reads/two receipt reads/eight observations/two receipt-history
+checks/one setup audit/one startup consumer/256 digests are used. Existing one
+command/path and cell/work limits remain. The old consumer's single history
+inspection computes eight source-free reference direction arrays; these are
+conditional transforms, not replayed producer acquisition or qualified numerical
+laws. No simulator step/reset, acquisition/capture, draw, clock or collection runs
+inside the join. Frozen two-tick ToF latency is preserved; no retimestamping or
+zero-latency substitution. No reset receipt, one-use, admitted predecessor, accepted
+setup/source/coverage/error/timing or actual launch follows.
+The [owned startup checkpoint][owned-initial-startup-review] retains the fixture
+fault, introduced consumer-copy closure bug and both necessary root positions.
+
 ##### Native Motion Source Words (2026-11-09)
 
 The recorder's actual-owner path now encodes the existing observation State first,
@@ -601,3 +858,17 @@ field-selection, combined and final-closure controls.
 [native-word-nf1-topic]: 07-data-and-distillation-design-04.md
 [native-word-design-map]: ../../DESIGN.md
 [native-owner-preflight-review]: ../../REVIEW.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
+[initial-owner-preflight-review]: ../../REVIEW.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
+[initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
+[initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
+[initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13
+[owned-initial-startup-review]: ../review/361-365.md#363-conditional-owned-initial-rest-startup-2026-11-16
+[owned-startup-cache-review]: ../review/391-394.md#391-closed-conditional-startup-receipt-cache-identity-2026-11-17
+[receipt-chain-review]: ../review/183-220.md#189-retained-receipt-segment-chain-consistency-2026-11-09
+[receipt-epoch-review]: ../review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16
+[receipt-history-review]: ../review/183-220.md#190-bounded-source-linked-receipt-history-2026-11-09
+[receipt-pairing-review]: ../review/183-220.md#191-full-retained-source-history-pairing-checks-2026-11-09
+[receipt-retention-review]: ../review/183-220.md#187-producer-owned-receipt-retention-2026-11-09
+[receipt-snapshot-review]: ../review/183-220.md#192-read-time-actual-producer-history-snapshots-2026-11-09
+[receipt-source-pose-review]: ../review/183-220.md#188-opt-in-producer-receipt-and-source-pose-linkage-2026-11-09
+[retained-initial-source-review]: ../review/361-365.md#362-bounded-retained-initial-source-reading-2026-11-16

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §393 for closed owning intake original/final sampling;
+Read [REVIEW.md][review] §394 for closed post-native receipt/pending copies;
+§393 records closed owning intake original/final sampling;
 §392 records intact386-390 archival and remaining evidence;
 §391 records closed conditional startup receipt cache identity;
 §390 records closed live request receipt cache identity;
@@ -328,9 +329,12 @@ The fresh actual continuation closes owning intake's original/final sampling.
 Existing owner/producer/RNG/binding pins now precede its first observation; native
 dynamics words are collected after receipt/native work from that same observation.
 Nine first-epoch and two post-intake pose/action repros and their gate are complete;
-two observations and existing intake/digest/math work ceilings remain. Next follow
-combined native/pending intake's closing queue-word correspondence, without new
-acquisition, reports, bounds or source/clock/permission adoption.
+two observations and existing intake/digest/math work ceilings remain.
+Combined intake now copies receipt words/flags and pending sample words/masks after
+the native intake. Four late receipt/queue repros and their required gate are
+complete; only existing blocks moved, without another read/copy/digest or changed
+ceiling. Next archive whole391-394 before further root growth, preserving failed
+checks and no source/clock/one-use/admission authority.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

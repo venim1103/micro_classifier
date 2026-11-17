@@ -550,6 +550,40 @@ changed bound/domain. All eight flags false, guard UNKNOWN; independent Q0-Q4
 acceptance remains absent. Next follow combined native/pending intake closing
 queue-word correspondence, not another report or source/clock/one-use authority.
 
+## 394. Closed Post-Native Receipt And Pending Copies (2026-11-17)
+
+Begin clean pushed9e5a3bb. Continue the named Q0/S2 owning intake's combined native/
+pending source trace. Its queue words were copied before native integration intake.
+Two raw pending sample-bit/mask controls mutate after the second native sample:
+first2 FAIL6.54s, DID NOT RAISE. Move the existing queue-copy block after native
+intake; failed2 PASS0.65s, prior49 intake/native/default controls PASS0.88s.
+
+The same boundary also left the earlier receipt copy stale. Two additional
+submitted-action-word/source-qualified-flag controls first FAIL5.76s, DID NOT RAISE.
+Move the existing receipt copy/epoch assignment after native intake; failed2
+PASS0.77s. Format check then fails on one new assignment line wrap; fail-fast
+prevents prior18 from running. Apply the exact Ruff format repair, format PASS;
+still-pending prior18 native/pending controls PASS5.23s. No unchanged runtime rerun
+for formatting. Actual external mutations are not undone; rejected captures do
+not publish staged source/history/currentness.
+
+Routine ledger: first/repaired pending2<=45s, prior49<=60s; first/repaired receipt2
+<=45s, prior18<=60s; one fail-fast root<=360s, all positions spent. Root
+`python -m pytest -q && ruff check . && git diff --check` PASS6251/known QDQ1
+xfail/77 warnings193.08s. Changed-file format/Pylance syntax, exact existing-block
+reordering/call multiset/signatures/unrelated AST, four tested hashes and scoped
+links/whitespace PASS. New combined controls enforce two native reads/two queue
+copies and actual nonempty<=8 pending acquisitions; no observation/intake/copy/
+digest/math call or work ceiling is added. No C/runtime source change; root host/
+parity/sanitizer/Arm controls run with no skips, not linked firmware/board/fit/
+task-quality evidence.
+
+Local .git/returns-394-* source/repro/repair/root/hash records retained; no user
+data removed or new dependency/download/study/hardware/environment work.
+All eight flags false, guard UNKNOWN, independent Q0-Q4 acceptance absent.
+Next archive whole391-394 intact before further root growth; this correspondence
+does not qualify source/coverage/error/clock/one-use or admit a command.
+
 ## Sources
 
 Hardware and tools:

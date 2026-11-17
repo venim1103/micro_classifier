@@ -618,6 +618,10 @@ producer/RNG/binding identities before the first observation. Both samples obser
 perform opted-in receipt/native intake, then collect dynamics words from that same
 observation. Closing native work cannot leave earlier pose/action words published;
 the existing two observations and intake/digest/math ceilings remain.
+The [post-native copy repair][owning-intake-copies-review] collects receipt words/
+flags and pending sample words/masks after optional native integration intake.
+Late receipt/queue changes reject before staged publication, with the existing
+copies, observations, native reads and digest ceilings unchanged.
 
 An owned dynamics sample retains the original native speed/yaw separately from
 the State derived by state_from_observation. That existing exporter has already
@@ -2252,6 +2256,7 @@ figure is not an established minimum.
 [realized-receipt-review]: ../review/181-182.md#182-opt-in-simulator-realized-motion-receipts-2026-11-09
 [simulator-source-read-review]: ../review/183-220.md#183-recorder-reads-from-the-actual-simulator-owner-2026-11-09
 [owning-intake-epoch-review]: ../../REVIEW.md#393-closed-owning-intake-original-and-final-sampling-2026-11-17
+[owning-intake-copies-review]: ../../REVIEW.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
 [native-motion-source-review]: ../review/183-220.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09
 [native-goal-source-review]: ../review/183-220.md#185-native-goal-producer-words-and-source-pose-2026-11-09
 [receipt-clock-review]: ../review/183-220.md#186-diagnostic-monotonic-receipt-windows-2026-11-09

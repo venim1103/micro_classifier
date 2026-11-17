@@ -21745,6 +21745,10 @@ def test_synthetic_c1_simulator_motion_receipt_source(
         "without_receipt",
         "closing_pose",
         "closing_action",
+        "closing_pending_word",
+        "closing_pending_mask",
+        "closing_receipt_word",
+        "closing_receipt_flag",
     ),
 )
 def test_synthetic_c1_native_integration_source(
@@ -21763,7 +21767,9 @@ def test_synthetic_c1_native_integration_source(
     original_capture = diagnostics.capture_synthetic_c1_views
     original_digest = diagnostics._c1_source_binding_digest
     original_sample = diagnostics._sample_simulator_native_integration_source
+    original_queue = diagnostics._copy_native_tof_pending_queue
     native_reads = 0
+    queue_reads = 0
     options = {
         "capture_motion_receipt_source": True,
         "capture_native_integration_source": True,
@@ -21796,7 +21802,18 @@ def test_synthetic_c1_native_integration_source(
     elif case == "work_limit":
         source["segments"] *= 129
         expected = "source budget"
-    elif case in ("mutated", "replaced", "closing_pose", "closing_action"):
+    elif case in (
+        "mutated",
+        "replaced",
+        "closing_pose",
+        "closing_action",
+        "closing_receipt_word",
+        "closing_receipt_flag",
+    ):
+        expected = "changed during source capture"
+    elif case in ("closing_pending_word", "closing_pending_mask"):
+        assert 1 <= len(environment.pending) <= 8
+        options["capture_native_tof_pending_source"] = True
         expected = "changed during source capture"
     elif case == "bad_option":
         options["capture_native_integration_source"] = 1
@@ -21835,7 +21852,27 @@ def test_synthetic_c1_native_integration_source(
                 )
             elif case == "closing_action":
                 environment.speed = math.nextafter(environment.speed, math.inf)
+            elif case == "closing_pending_word":
+                environment.pending[0][2].view(np.uint32)[0, 0] ^= np.uint32(1)
+            elif case == "closing_pending_mask":
+                mask = environment.pending[0][3]
+                mask[0, 0] = not bool(mask[0, 0])
+            elif case == "closing_receipt_word":
+                receipt = environment._motion_receipt_source["receipt"]
+                speed, yaw_rate = receipt["submitted_action"]
+                receipt["submitted_action"] = (
+                    math.nextafter(speed, math.inf),
+                    yaw_rate,
+                )
+            elif case == "closing_receipt_flag":
+                environment._motion_receipt_source["receipt"]["source_qualified"] = True
         return result
+
+    def queue(*args, **kwargs):
+        nonlocal queue_reads
+        queue_reads += 1
+        assert queue_reads <= 2
+        return original_queue(*args, **kwargs)
 
     def read(recorder, **kwargs):
         ledger["reads"] += 1
@@ -21855,6 +21892,7 @@ def test_synthetic_c1_native_integration_source(
     monkeypatch.setattr(
         diagnostics, "_sample_simulator_native_integration_source", sample
     )
+    monkeypatch.setattr(diagnostics, "_copy_native_tof_pending_queue", queue)
     for name in ("step", "reset"):
         monkeypatch.setattr(RoverEnv, name, forbidden)
     monkeypatch.setattr("sim.rover.integrate", forbidden)
@@ -21892,8 +21930,15 @@ def test_synthetic_c1_native_integration_source(
         np.testing.assert_array_equal(owner._current[1], before_current[1])
         assert original_digest(owner._dynamics_sample) == original_digest(before_sample)
         assert owner._integration_sample == before_integration
-    if case in ("closing_pose", "closing_action"):
+    if case in (
+        "closing_pose",
+        "closing_action",
+        "closing_receipt_word",
+        "closing_receipt_flag",
+    ):
         assert native_reads == 2
+    elif case in ("closing_pending_word", "closing_pending_mask"):
+        assert native_reads == queue_reads == 2
     assert environment.rng.bit_generator.state == rng_before
     assert environment.odometry_rng.bit_generator.state == odometry_before
     assert ledger["forbidden"] == 0

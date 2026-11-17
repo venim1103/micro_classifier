@@ -18179,10 +18179,6 @@ class _SyntheticC1SourceRecorder:
         def sample():
             observation = environment._observation()
             snapshot = {}
-            if capture_native_tof_pending_source:
-                snapshot["native_tof_pending_queue"] = _copy_native_tof_pending_queue(
-                    environment
-                )
             if capture_motion_receipt_source:
                 source = environment._motion_receipt_source
                 if (
@@ -18207,14 +18203,18 @@ class _SyntheticC1SourceRecorder:
                         "unsupported or over-budget producer motion receipt"
                     )
                 _check_simulator_motion_receipt_chain(receipt)
-                snapshot["motion_receipt"] = deepcopy(receipt)
-                snapshot["receipt_source_epoch"] = self._epoch
                 if capture_native_integration_source:
                     snapshot["native_integration_source"] = (
                         _sample_simulator_native_integration_source(
                             environment, receipt, self._epoch
                         )
                     )
+                snapshot["motion_receipt"] = deepcopy(receipt)
+                snapshot["receipt_source_epoch"] = self._epoch
+            if capture_native_tof_pending_source:
+                snapshot["native_tof_pending_queue"] = _copy_native_tof_pending_queue(
+                    environment
+                )
             return {
                 **_simulator_dynamics_source_words(environment, observation),
                 **snapshot,

@@ -2386,6 +2386,9 @@ Both retention and delivery prevalidate original/closing State with the existing
 codec predicate and require the fixed State-frame byte extent before owner copying/
 hashing. [Owner preflight controls][native-goal-owner-preflight-review] retain explicit
 rejection/unknown without new encoding/intake/digests or frame-content qualification.
+The [shared owner-pose guard][native-recorder-owner-pose-review] likewise checks
+the native ndarray/three-coordinate C1 producer shape before original/closing
+owner serialization, without a new pose truth, geometry or native-error premise.
 
 #### Exact Retained Native Goal Matching (2026-11-12)
 
@@ -2515,6 +2518,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../../REVIEW.md#404-closed-native-goal-owner-prevalidation-2026-11-17
+[native-recorder-owner-pose-review]: ../../REVIEW.md#406-bounded-native-recorder-owner-poses-2026-11-17
 [c1-motion-source]: ../../sim/rover.py
 [native-goal-match-review]: ../review/331-335.md#331-exact-retained-native-goal-matching-2026-11-12
 [native-goal-retention-review]: ../review/326-330.md#330-default-off-native-goal-recorder-retention-2026-11-12

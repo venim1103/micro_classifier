@@ -582,6 +582,38 @@ copy/digest/arithmetic calls. Logs/hashes retained in .git; no data/downloads or
 qualification. All flags false/guard UNKNOWN. Next bounded owner-pose serialization
 trace on these named paths; missing independent Q0-Q4 inputs remain unaccepted.
 
+## 406. Bounded Native Recorder Owner Poses (2026-11-17)
+
+From clean pushed8dd4404, bounded source trace confirms record_tick constructs a
+detached three-coordinate native pose via unchanged _c1_array(...,(3,)) and float
+copy. Yet five native retention/current/delivery owners sent arbitrary array
+extents or non-array replacements to the generic binder. Original/closing owner
+pose now uses one shared guard: exact native ndarray first, then existing C1
+array shape/type/finite predicate. Shape rejects before object conversion; valid
+metadata validation remains three coordinates. Generic binder/predicate stay
+unchanged. This restores the existing producer shape, not a physical/numerical
+bound, pose truth, transform or permitted-command claim.
+
+Finite25/repaired25/related94<=60s each and one root<=360s; earlier spent
+positions remain spent. First25 FAIL31.55s at prehash spies across five paths:
+initial/closing2/4-element arrays plus initial list replacement. Repaired25
+PASS1.44s; prior94 PASS2.62s/208 deselected, including eight goal report modes.
+Delivery uses existing four-tick pending fixture/original capture/held-source
+guard, not the rejected405 mutable-State fixture. <=4 preparation ticks and
+<=2 observations/per-family intakes/matches; goal12/ToF64 digests unchanged.
+History identity/exact words and both RNG states stay unchanged on rejection;
+no partial outgoing source/frame/goal/pending/epoch/tick.
+
+One360s root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6352/known QDQ1 xfail/77 warnings203.20s, Ruff/whitespace PASS. Pylance syntax2/
+format/AST/signature/call/hash/reference checks PASS. One four-line shared guard,
+five owner bodies/one25-case test only; +1 guard call per body, other encoding/
+intake/deepcopy/digest/report call censuses unchanged. Reused metadata validation
+is not a new native expression stage. Logs/hashes retained in .git; no study,
+data/dependency/download or C/runtime/board work. All flags false/guard UNKNOWN.
+Next trace owning intake current-owner pre-copy/serialization correspondence;
+independent accepted Q0-Q4 setup/source/coverage/error/clock/one-use inputs remain absent.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

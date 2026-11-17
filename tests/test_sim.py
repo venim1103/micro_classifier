@@ -12241,6 +12241,161 @@ def test_native_tof_current_owner_closure(
 
 
 @pytest.mark.parametrize(
+    "mode",
+    ("tof_retain", "goal_retain", "tof_current", "goal_delivery", "tof_delivery"),
+)
+@pytest.mark.parametrize(
+    "phase,extent",
+    (
+        ("initial", "short"),
+        ("initial", "long"),
+        ("closing", "short"),
+        ("closing", "long"),
+        ("initial", "list"),
+    ),
+)
+def test_native_recorder_owner_pose_extent(
+    monkeypatch, c1_motion_receipt_source_fixture, mode, phase, extent
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    tof = mode.startswith("tof")
+    for _ in range(4 if mode == "tof_delivery" else 1):
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=tof,
+            capture_native_goal_computation=not tof,
+        )
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=mode == "tof_delivery",
+        )
+        if (
+            mode in ("tof_current", "tof_delivery")
+            and environment._native_tof_source is not None
+        ):
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+        elif mode == "goal_delivery":
+            owner.record_native_goal_computation_source(
+                environment, synthetic_test_only=True, include_goal_computation=True
+            )
+    current = owner._current
+    pose = current[1]
+    assert type(pose) is np.ndarray and pose.shape == (3,)
+    history_name = "_tof_history" if tof else "_goal_computation_history"
+    history = getattr(owner, history_name)
+    contents = deepcopy(tuple(history))
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    if phase == "initial":
+        if extent == "list":
+            owner._current = (current[0], pose.tolist(), *current[2:])
+        else:
+            pose.resize((2 if extent == "short" else 4,), refcheck=False)
+    work = {"observation": 0, "native": 0, "match": 0, "binding": 0}
+    original_observation = environment._observation
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        actual = original_observation()
+        if phase == "closing" and work["observation"] == 2:
+            pose.resize((2 if extent == "short" else 4,), refcheck=False)
+        return actual
+
+    def tracked(original, kind):
+        def call(*args, **kwargs):
+            work[kind] += 1
+            assert work[kind] <= 2
+            return original(*args, **kwargs)
+
+        return call
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= (64 if tof else 12)
+        if type(record) is dict and record.get("current") is not None:
+            actual_pose = record["current"][1]
+            assert type(actual_pose) is np.ndarray and actual_pose.shape == (3,)
+        return original_binding(record)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("owner pose preflight must not replay/draw/trig/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in (
+        "_sample_simulator_native_tof_source",
+        "_sample_simulator_native_goal_computation_source",
+    ):
+        monkeypatch.setattr(
+            diagnostics, name, tracked(getattr(diagnostics, name), "native")
+        )
+    for name in (
+        "_match_native_tof_delivered_source",
+        "_match_native_goal_retained_computation",
+    ):
+        monkeypatch.setattr(
+            diagnostics, name, tracked(getattr(diagnostics, name), "match")
+        )
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    kwargs = {"synthetic_test_only": True}
+    if not tof:
+        kwargs["include_goal_computation"] = True
+    if mode.endswith("retain"):
+        retain = (
+            owner.record_native_tof_source
+            if tof
+            else owner.record_native_goal_computation_source
+        )
+        with pytest.raises(ValueError):
+            retain(environment, **kwargs)
+    else:
+        if mode == "tof_current":
+            result = owner.snapshot_native_tof_source(**kwargs)
+        elif mode == "tof_delivery":
+            result = owner.snapshot_native_tof_delivery(
+                **kwargs, include_pending_sources=True
+            )
+        else:
+            result = owner.snapshot_native_goal_delivery(**kwargs)
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert result["reason"]
+        for key in (
+            "source",
+            "delivered_goal",
+            "frame",
+            "tick",
+            "source_epoch",
+            "pending_sources",
+        ):
+            assert key not in result
+    assert phase != "closing" or work["observation"] == 2
+    assert getattr(owner, history_name) is history
+    assert diagnostics._native_tof_word_copy_matches(tuple(history), contents)
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
+@pytest.mark.parametrize(
     "case",
     (
         "copy",

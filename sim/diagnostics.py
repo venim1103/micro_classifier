@@ -18450,6 +18450,7 @@ class _SyntheticC1SourceRecorder:
                     "native goal recorder ownership changed during retention"
                 )
             validate_state(current[2])
+            _check_native_recorder_owner_pose(current[1])
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -18621,6 +18622,7 @@ class _SyntheticC1SourceRecorder:
                     "native ToF recorder ownership changed during retention"
                 )
             validate_state(current[2])
+            _check_native_recorder_owner_pose(current[1])
             _check_native_tof_history_layout(self._tof_history, template)
             if include_postprocessing or self._tof_postprocessing_history:
                 _check_native_tof_archive_words(self._tof_history, template)
@@ -19185,6 +19187,7 @@ class _SyntheticC1SourceRecorder:
             ):
                 raise ValueError("native goal snapshot owner cleared")
             validate_state(state[2])
+            _check_native_recorder_owner_pose(state[1])
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19394,6 +19397,7 @@ class _SyntheticC1SourceRecorder:
             if current is not current_before:
                 raise ValueError("native ToF snapshot current owner changed")
             validate_state(current[2])
+            _check_native_recorder_owner_pose(current[1])
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19824,6 +19828,8 @@ class _SyntheticC1SourceRecorder:
                 _check_native_tof_postprocessing_history(
                     self._tof_postprocessing_history, self._tof_history, self._epoch
                 )
+            if current is not None:
+                _check_native_recorder_owner_pose(current[1])
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -24181,6 +24187,12 @@ class _SyntheticC1SourceRecorder:
                 reason="recorder_identity_or_binding_mismatch",
             )
         return result
+
+
+def _check_native_recorder_owner_pose(pose):
+    if type(pose) is not np.ndarray:
+        raise ValueError("native recorder owner pose must be an ndarray")
+    _c1_array(pose, (3,))
 
 
 def _c1_source_binding_digest(record):

@@ -23250,6 +23250,8 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("retained initial source content mismatch")
             copied = deepcopy(before)
             closing = self.snapshot_initial_setup_source(synthetic_test_only=True)
+            _check_native_recorder_current_owner(self._current)
+            _check_simulator_dynamics_owner_source(self._current, closing["source"])
             if (
                 snapshot_binding(before) != binding
                 or snapshot_binding(copied) != binding

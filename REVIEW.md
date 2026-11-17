@@ -671,6 +671,39 @@ readers return: its frame/dynamics-only join may miss changed current State/pose
 This is a falsifiable named-source prerequisite, not another report or general
 audit; bound and reproduce it before changing code.
 
+## 413. Closed Initial Retention Owner Word Joins (2026-11-17)
+
+From clean pushed438be5f, the named initial retainer's own closing join compared
+only current frame/cached dynamics after snapshot-reader return. Changed current
+State/pose could still report fresh or deduplicated retention. Two shared checks
+now validate actual current metadata and source pose/native State/frame words
+after the closing reader returns, before existing final packet/epoch closure.
+Malformed schema and contradictory valid-shape words remain unknown without
+publishing or replacing retention; externally changed owner metadata is preserved.
+
+Fresh routine plan:10 bounded synthetic repro/repaired controls<=60s, existing
+initial/retention/startup selectors<=60s, one root<=360s; retain failed positions,
+no protected actions. Fresh/dedup x ages6/State subclass/pose4/State word/pose word:
+10FAIL6.66s (false availability), then10PASS0.96s. Existing86 PASS3.15s under all
+unchanged work limits. Added an exact wire-identity assertion: the two changed
+native State-word cases retain identical encode_state output;2PASS5.37s. This
+shows why frame equality alone was insufficient, not native numerical error.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6476/known QDQ1 xfail/77 warnings240.78s,
+then Ruff/whitespace PASS. Pylance syntax, changed-file format, exact source AST
+with only two added shared calls, unchanged signatures/returns/samples and all
+existing test AST/four-source tested hashes PASS. The existing owner helper adds
+one bounded State/frame reconstruction/two owner-word digests, within unchanged84
+digest ceiling. Two snapshot reads/four observations/two setup audits remain;
+no producer read/native integration/RNG draw/clock or domain change.
+
+Eight flags false, guard UNKNOWN; no reset receipt, physical/native error,
+setup/source/coverage/clock acceptance, one-use or command permission follows.
+Local .git logs/hash bracket are nonportable; committed controls preserve all
+results and spent positions. Next reassess the named independent-input queue/
+actual tool blockers rather than invent acceptance or another completed report.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

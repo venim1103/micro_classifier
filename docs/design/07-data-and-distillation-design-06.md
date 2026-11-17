@@ -70,6 +70,15 @@ old words as a current/reset execution receipt. All eight flags stay false.
 The [retention checkpoint][initial-source-retention-review] records the failed
 compatibility probe, actual latency evidence and necessary bounded controls.
 
+After its closing snapshot reader returns, retention also validates actual current
+metadata and reuses source-owner pose/native State/frame correspondence before
+final packet/epoch closure. Matching frames alone cannot establish equal native
+State words. The existing bounded State/frame reconstruction and two owner-word
+digests fit the unchanged84-digest ceiling; no producer read, setup audit, native
+integration or RNG/clock work is added. The
+[closing owner checkpoint][initial-retention-owner-review] records fresh/dedup
+late mutations, including a changed native word with identical frame encoding.
+
 ##### Retained Initial Source Reading (2026-11-16)
 
 Strict opt-in `snapshot_retained_initial_setup_source` reads one retained tick0
@@ -858,6 +867,7 @@ field-selection, combined and final-closure controls.
 [native-word-nf1-topic]: 07-data-and-distillation-design-04.md
 [native-word-design-map]: ../../DESIGN.md
 [native-owner-preflight-review]: ../../REVIEW.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
+[initial-retention-owner-review]: ../../REVIEW.md#413-closed-initial-retention-owner-word-joins-2026-11-17
 [initial-owner-preflight-review]: ../../REVIEW.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

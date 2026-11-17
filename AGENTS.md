@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §412 for intact initial-source/receipt/startup topic relocation;
+Read [REVIEW.md][review] §413 for closed initial retention owner-word joins;
+§412 records intact initial-source/receipt/startup topic relocation;
 §411 records closed opted-in request owner preflight;
 §410 records closed initial-source/startup owner preflight;
 §409 records closed receipt/integration snapshot owner preflight;
@@ -425,8 +426,15 @@ Ten complete initial-source/receipt/startup contracts now live in chapter06;
 chapter01 retains historical anchors/reading links. Exact257-line bodies, both
 inverse layouts, first-definition meanings and24 scoped references passed;
 chapter01/06 are2482/874 lines. Tested411 code hashes are unchanged; no suite rerun.
-Next trace initial retention's own current-owner closure after its snapshot
-readers return, without inventing Q0-Q4 acceptance or duplicating reports.
+Initial retention now closes actual current metadata and source pose/State/frame
+words after the final snapshot reader returns, before final binding/epoch checks.
+Ten fresh/dedup repros and86 prior controls passed; root6476/known QDQ1 xfail
+passed. A changed native State word can retain the same encoded frame; the
+existing exact source-owner helper distinguishes it. Its bounded State/frame
+reconstruction and two owner-word digests fit the unchanged84-digest ceiling;
+two reads/four observations/two setup audits and all flags remain unchanged.
+Next reassess the named independent-input queue and actual tool blockers, without
+inventing Q0-Q4 acceptance or duplicating completed reports.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

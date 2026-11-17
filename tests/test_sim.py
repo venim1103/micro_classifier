@@ -10632,6 +10632,122 @@ def test_initial_setup_source_retention(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize("retained", (False, True))
+@pytest.mark.parametrize(
+    "case", ("ages", "state_extra", "pose", "state_word", "pose_word")
+)
+def test_initial_retention_closing_owner(
+    c1_initial_setup_source_fixture, monkeypatch, retained, case
+):
+    from dataclasses import asdict, dataclass, replace
+
+    from interface.protocol import State, encode_state
+    from sim import diagnostics, rover
+
+    @dataclass(frozen=True)
+    class ExtendedState(State):
+        extra: tuple = (0,)
+
+    environment, owner = deepcopy(c1_initial_setup_source_fixture)
+    if retained:
+        assert (
+            owner.retain_initial_setup_source(synthetic_test_only=True)[
+                "retention_available"
+            ]
+            is True
+        )
+    retained_before = owner._initial_setup_source
+    current = owner._current
+    if case.startswith("pose"):
+        pose = np.zeros(4) if case == "pose" else current[1].copy()
+        if case == "pose_word":
+            pose[0] = np.nextafter(pose[0], math.inf)
+        bad_current = (current[0], pose, *current[2:])
+    else:
+        if case == "state_extra":
+            state = ExtendedState(**asdict(current[2]))
+        elif case == "ages":
+            state = replace(current[2], ages_us=(*current[2].ages_us, 0))
+        else:
+            velocity = current[2].velocity_m_s
+            state = replace(
+                current[2],
+                velocity_m_s=(
+                    float(np.nextafter(velocity[0], math.inf)),
+                    *velocity[1:],
+                ),
+            )
+            assert state.velocity_m_s[0].hex() != current[2].velocity_m_s[0].hex()
+            assert encode_state(state) == current[3]
+        bad_current = (*current[:2], state, current[3])
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = dict.fromkeys(("read", "observation", "binding"), 0)
+    original_read = owner.snapshot_initial_setup_source
+    original_observation = environment._observation
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def read(*args, **kwargs):
+        work["read"] += 1
+        assert work["read"] <= 2
+        actual = original_read(*args, **kwargs)
+        if work["read"] == 2:
+            owner._current = bad_current
+        return actual
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 4
+        return original_observation()
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 84
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("initial retention closure must not replay/draw/clock")
+
+    monkeypatch.setattr(owner, "snapshot_initial_setup_source", read)
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    result = owner.retain_initial_setup_source(synthetic_test_only=True)
+    assert result["retention_available"] is False
+    assert result["status"] == "unknown" and result["reason"]
+    for key in (
+        "initial_frame",
+        "initial_snapshot_binding",
+        "source_epoch",
+        "retained_now",
+    ):
+        assert key not in result
+    assert owner._initial_setup_source is retained_before
+    assert owner._current is bad_current
+    assert work["read"] == 2 and work["observation"] == 4
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.fixture(scope="module")
 def c1_retained_initial_setup_source_fixture(c1_initial_setup_source_fixture):
     initial = deepcopy(c1_initial_setup_source_fixture)

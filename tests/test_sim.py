@@ -11687,6 +11687,109 @@ def test_recorder_native_tof_source(
 @pytest.mark.parametrize(
     "case",
     (
+        "producer",
+        "empty",
+        "short",
+        "list",
+        "state",
+        "frame",
+        "dynamics",
+        "closing_empty",
+        "closing_short",
+        "closing_list",
+    ),
+)
+def test_native_tof_retention_owner_layout(
+    monkeypatch, c1_motion_receipt_source_fixture, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    current = owner._current
+    malformed = {
+        "empty": (),
+        "short": current[:1],
+        "list": list(current),
+        "state": (*current[:2], {}, current[3]),
+        "frame": (*current[:3], None),
+    }
+    argument = environment
+    if case == "producer":
+        owner._simulator = argument = True
+    elif case == "dynamics":
+        owner._dynamics_sample = []
+    elif case in malformed:
+        owner._current = malformed[case]
+    fields = (
+        "_tof_sample",
+        "_tof_history",
+        "_tof_timing_history",
+        "_tof_selection_history",
+        "_tof_wall_history",
+        "_tof_cylinder_history",
+        "_tof_direction_history",
+        "_tof_postprocessing_history",
+    )
+    retained = deepcopy(tuple(getattr(owner, name) for name in fields))
+    epochs = deepcopy(
+        (
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observations": 0, "native": 0, "binding": 0}
+    original_observation = environment._observation
+    original_native = diagnostics._sample_simulator_native_tof_source
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observation():
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        result = original_observation()
+        if case.startswith("closing_") and work["observations"] == 2:
+            owner._current = malformed[case.removeprefix("closing_")]
+        return result
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("malformed ToF ownership must not replay/draw/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    with pytest.raises(ValueError, match="native ToF"):
+        owner.record_native_tof_source(argument, synthetic_test_only=True)
+    assert (
+        work["observations"]
+        == work["native"]
+        == (2 if case.startswith("closing_") else 0)
+    )
+    assert tuple(getattr(owner, name) for name in fields) == retained
+    assert (
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
         "copy",
         "flag",
         "no_retention",

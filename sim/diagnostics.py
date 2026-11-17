@@ -18540,6 +18540,8 @@ class _SyntheticC1SourceRecorder:
         include_postprocessing=False,
     ):
         """Retain fresh acquisition words without repeating synthetic C1 staging."""
+        from interface.protocol import State
+
         if synthetic_test_only is not True:
             raise ValueError("native ToF retention requires synthetic_test_only=True")
         if type(include_timing) is not bool:
@@ -18555,9 +18557,14 @@ class _SyntheticC1SourceRecorder:
         if type(include_postprocessing) is not bool:
             raise ValueError("include_postprocessing must be a literal bool")
         if (
-            self._simulator is not environment
-            or self._current is None
-            or self._dynamics_sample is None
+            type(environment) is not RoverEnv
+            or self._simulator is not environment
+            or type(self._current) is not tuple
+            or len(self._current) != 4
+            or type(self._current[0]) is not int
+            or type(self._current[2]) is not State
+            or type(self._current[3]) is not bytes
+            or type(self._dynamics_sample) is not dict
         ):
             raise ValueError("native ToF retention requires a current bound producer")
         if (
@@ -18596,6 +18603,14 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
+            if (
+                type(current) is not tuple
+                or len(current) != 4
+                or type(current[2]) is not State
+            ):
+                raise ValueError(
+                    "native ToF recorder ownership changed during retention"
+                )
             _check_native_tof_history_layout(self._tof_history, template)
             if include_postprocessing or self._tof_postprocessing_history:
                 _check_native_tof_archive_words(self._tof_history, template)

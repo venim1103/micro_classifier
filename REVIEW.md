@@ -500,6 +500,29 @@ compatible source/consumer issue, not routine approval/accounting. Autonomy and
 passing fixtures do not supply acceptance. All eight flags false, guard UNKNOWN;
 no command is admitted, host fail-safes remain independent.
 
+## 396. Closed Native-ToF Retention Owner Layouts (2026-11-17)
+
+Fresh actual continuation from clean pushed73f0f78 verifies upstream0/0,
+Python3.12.3/Ruff0.17.0 and host/Arm compilers. The named optional timing trace
+finds its cache joins already closed; no timing logic changes. Its enclosing
+fresh-retention method lacks goal-retention's producer/current-owner guards.
+Ten bounded repros FAIL14.50s: seven incidental AttributeError/IndexError/TypeError
+failures and three false retentions of list-current or missing-frame owners.
+Reuse exact producer/tuple/tick/State/frame/dynamics prevalidation and closing
+tuple/State checks before indexing/asdict. Reject without staged publication;
+external mutations are not rolled back. No replay/RNG/clock or extra source,
+observation/intake/copy/digest call; existing history/gap/trim/work limits remain.
+
+Finite routine plan:10 repro/10 repair/30 prior controls each<=60s, one root<=360s;
+2 observations/2 native reads/64 digests per new closing control,0 reads for early
+rejects. Repaired10 PASS0.89s; prior18 base plus12 optional retain/default/combined
+controls PASS1.44s. Root6261/known QDQ1 xfail/77 warnings232.79s; Ruff, changed format,
+Pylance syntax, whitespace and four-source tested hash bracket PASS. AST/signature
+conservation PASS outside the named method/test; only8 type/2 len/1 error calls added.
+Logs stay in .git/returns-396-*; failed positions remain spent. All eight flags false,
+guard UNKNOWN; no qualification/admission or board/native-error claim follows.
+Next trace corresponding timing-retention consumer ownership, not duplicate reports.
+
 ## Sources
 
 Hardware and tools:

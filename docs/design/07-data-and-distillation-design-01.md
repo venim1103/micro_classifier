@@ -2300,7 +2300,7 @@ figure is not an established minimum.
 [simulator-source-read-review]: ../review/183-220.md#183-recorder-reads-from-the-actual-simulator-owner-2026-11-09
 [owning-intake-epoch-review]: ../review/391-394.md#393-closed-owning-intake-original-and-final-sampling-2026-11-17
 [owning-intake-copies-review]: ../review/391-394.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
-[owning-intake-owner-preflight-review]: ../../REVIEW.md#407-owning-intake-owner-prevalidation-2026-11-17
+[owning-intake-owner-preflight-review]: ../review/403-407.md#407-owning-intake-owner-prevalidation-2026-11-17
 [native-motion-source-review]: ../review/183-220.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09
 [native-goal-source-review]: ../review/183-220.md#185-native-goal-producer-words-and-source-pose-2026-11-09
 [receipt-clock-review]: ../review/183-220.md#186-diagnostic-monotonic-receipt-windows-2026-11-09
@@ -2331,8 +2331,8 @@ figure is not an established minimum.
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17
 [native-tof-owner-state-review]: ../review/401-402.md#402-codec-state-prevalidation-before-tof-owner-copying-2026-11-17
-[native-tof-current-owner-closing-review]: ../../REVIEW.md#405-closed-current-tof-post-observation-owners-2026-11-17
-[native-recorder-owner-pose-review]: ../../REVIEW.md#406-bounded-native-recorder-owner-poses-2026-11-17
+[native-tof-current-owner-closing-review]: ../review/403-407.md#405-closed-current-tof-post-observation-owners-2026-11-17
+[native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 [native-tof-closing-review]: ../review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09

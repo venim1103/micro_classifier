@@ -614,6 +614,39 @@ data/dependency/download or C/runtime/board work. All flags false/guard UNKNOWN.
 Next trace owning intake current-owner pre-copy/serialization correspondence;
 independent accepted Q0-Q4 setup/source/coverage/error/clock/one-use inputs remain absent.
 
+## 407. Owning Intake Owner Prevalidation (2026-11-17)
+
+From clean pushed4036175, owning record_environment_tick indexed current[0]
+before layout validation; original/closing owner_binding then copied malformed/
+extended State and hashed unsupported frame/pose metadata. Add a cheap current
+tuple/tick preflight before indexing; exact actual State, existing92-byte frame
+ABI, codec predicate and shared pose guard precede original/closing serialization.
+Current=None initialization remains legal. Strict State matches actual live
+producer output; generic fixture/codec subclass behavior is unchanged.
+
+Finite21/repaired21<=60s, collected related69<=60s and one root<=360s; prior spent
+positions remain spent. First21 FAIL4.60s: fixture confused read/step keywords.
+Runtime step signature confirms capture_motion_receipt=True supplies integration;
+there is no capture_motion_receipt_source/native-integration step keyword.
+Corrected21 FAIL6.45s: eleven actual initial prehash/copy/IndexError repros; ten
+closing cases hit a wrongly forbidden existing staged ideal-view fixture.
+Owning code already stages one capture_synthetic_c1_views; scoped fixture guard
+allows only that <=1 capture/<=16 combined range/direction calls inside it, still
+forbidding actual environment step/reset/history and clock/native replay.
+Necessary closing-only10 FAIL5.14s/11 deselected at intended pre-copy/prehash
+spies. No unchanged eleven reds repeated. Repaired21 PASS0.92s; prior69 PASS0.89s.
+<=2 observations/native intakes/32 digests; no partial recorder/receipt/integration
+publication and both RNG states remain unchanged after explicit rejection.
+
+One360s root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6373/known QDQ1 xfail/77 warnings209.32s, Ruff/whitespace PASS. Disk AST syntax2/
+format/signature/scope/call/hash/reference checks PASS. One existing method/
+one21-case test only; +4 type/+2 len/+1 ValueError/+1 codec/+1 pose-guard,
+-1 isinstance. Existing sampling/staging/encoding/deepcopy/digest calls unchanged.
+Logs/hashes remain in .git; no study/dependency/download or C/runtime/board work.
+All flags false/guard UNKNOWN. Next named receipt snapshot current-owner trace;
+independent accepted Q0-Q4 setup/source/coverage/error/clock/one-use inputs remain absent.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

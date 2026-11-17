@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §406 for bounded native recorder owner poses;
+Read [REVIEW.md][review] §407 for owning intake owner prevalidation;
+§406 records bounded native recorder owner poses;
 §405 records closed current-ToF post-observation owners;
 §404 records closed native goal owner prevalidation;
 §403 records intact401-402/original bibliography archival;
@@ -387,7 +388,13 @@ including closing in-place resize. One shared guard reuses the unchanged C1
 array predicate; no new native read/report stage or general binder change.
 Its25 prehash controls and94 prior controls passed; root6352/known QDQ1 xfail
 passed. No geometry/error/source/clock/one-use/admission claim follows.
-Next trace the owning intake's corresponding current-owner serializer.
+Owning intake now validates current tuple/tick layout before indexing and actual
+State/fixed frame extent/codec/pose before original/closing serialization.
+Legitimate current=None startup and existing staged ideal-view fixture work remain.
+The Step keyword and over-broad fixture prohibition failures are retained;21
+focused/69 prior controls and root6373/known QDQ1 xfail passed. No new sample,
+encoding, copy, digest or native report stage. Next trace the receipt snapshot's
+corresponding current-owner serializer without duplicating closed reports.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

@@ -18128,6 +18128,12 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("simulator source epoch changed")
         if self._simulator is None and self._current is not None:
             raise ValueError("fixture source cannot become a simulator source")
+        if self._current is not None and (
+            type(self._current) is not tuple
+            or len(self._current) != 4
+            or type(self._current[0]) is not int
+        ):
+            raise ValueError("unsupported current simulator source owner")
         if (
             type(environment.tick) is not int
             or not 0 <= environment.tick <= 0xFFFFFFFF // 50000
@@ -18221,16 +18227,21 @@ class _SyntheticC1SourceRecorder:
             }
 
         def owner_binding():
-            from interface.protocol import State
+            from interface.protocol import CRC, HEADER, STATE, State, validate_state
 
             current = self._current
             if current is not None and (
                 type(current) is not tuple
                 or len(current) != 4
-                or not isinstance(current[2], State)
+                or type(current[0]) is not int
+                or type(current[2]) is not State
                 or type(current[3]) is not bytes
+                or len(current[3]) != HEADER.size + STATE.size + CRC.size
             ):
                 raise ValueError("unsupported current simulator source owner")
+            if current is not None:
+                validate_state(current[2])
+                _check_native_recorder_owner_pose(current[1])
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,

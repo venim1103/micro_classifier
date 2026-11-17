@@ -622,6 +622,11 @@ The [post-native copy repair][owning-intake-copies-review] collects receipt word
 flags and pending sample words/masks after optional native integration intake.
 Late receipt/queue changes reject before staged publication, with the existing
 copies, observations, native reads and digest ceilings unchanged.
+The [owner preflight repair][owning-intake-owner-preflight-review] checks current
+tuple/tick layout before indexing, then actual State/codec/fixed frame extent and
+the shared native pose predicate before original/closing owner serialization.
+Current=None initial binding and existing staged ideal-view fixture work remain;
+explicit rejection precedes unsupported copies/hashes, not source acceptance.
 
 An owned dynamics sample retains the original native speed/yaw separately from
 the State derived by state_from_observation. That existing exporter has already
@@ -2295,6 +2300,7 @@ figure is not an established minimum.
 [simulator-source-read-review]: ../review/183-220.md#183-recorder-reads-from-the-actual-simulator-owner-2026-11-09
 [owning-intake-epoch-review]: ../review/391-394.md#393-closed-owning-intake-original-and-final-sampling-2026-11-17
 [owning-intake-copies-review]: ../review/391-394.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
+[owning-intake-owner-preflight-review]: ../../REVIEW.md#407-owning-intake-owner-prevalidation-2026-11-17
 [native-motion-source-review]: ../review/183-220.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09
 [native-goal-source-review]: ../review/183-220.md#185-native-goal-producer-words-and-source-pose-2026-11-09
 [receipt-clock-review]: ../review/183-220.md#186-diagnostic-monotonic-receipt-windows-2026-11-09

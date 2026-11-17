@@ -719,6 +719,15 @@ must be supported. Extra fields, missing work or boolean work counters reject
 before publication. The [consumer metadata repair][initial-setup-report-review]
 changes no setup threshold, startup default or authority.
 
+Initial-source, retained-initial and conditional startup owner bindings reuse the
+shared exact current tuple/builtin tick/actual State/codec, fixed92-byte frame
+extent and native three-coordinate pose preflight before original/closing
+copying/hashing. Each consumer closes its own owner even after nested readers
+return. Frame extent is not CRC/content/source acceptance. Existing sampling,
+setup/consumer calls, nullable-owner behavior and conditional assumptions remain;
+the [owner preflight checkpoint][initial-owner-preflight-review] retains the
+bounded reproductions and repair.
+
 The detached output explicitly labels its origin as an owned actual tick-zero
 sample, not a reset execution receipt. All eight qualification/permission flags
 stay false. Two-point ownership and word correspondence do not establish
@@ -2364,6 +2373,7 @@ figure is not an established minimum.
 [initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13
 [retained-initial-source-review]: ../review/361-365.md#362-bounded-retained-initial-source-reading-2026-11-16
 [owned-initial-startup-review]: ../review/361-365.md#363-conditional-owned-initial-rest-startup-2026-11-16
+[initial-owner-preflight-review]: ../../REVIEW.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

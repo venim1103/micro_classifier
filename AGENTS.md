@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §409 for closed receipt/integration snapshot owner preflight;
+Read [REVIEW.md][review] §410 for closed initial-source/startup owner preflight;
+§409 records closed receipt/integration snapshot owner preflight;
 §408 records intact403-407 checkpoint archival;
 §407 records owning intake owner prevalidation;
 §406 records bounded native recorder owner poses;
@@ -404,8 +405,14 @@ closing copying/hashing. Forty-eight reproduced controls and266 prior controls
 passed; root6421/known QDQ1 xfail passed. The initial counter error is retained:
 receipt/source/arithmetic make2/6/12 observations, not2/2/4, because source readers
 include receipt reads. Existing native intakes/digest ceilings/report combinations,
-ten-stage output and missing-current behavior are unchanged. Next trace the named
-owned request/startup consumers' own metadata serialization, not duplicate reports.
+ten-stage output and missing-current behavior are unchanged.
+Initial, retained-initial and conditional startup owner serialization now reuses
+the same current-owner preflight before original/closing copies/hashes. Its24
+red/repaired controls and86 prior controls passed; root6445/known QDQ1 xfail
+passed. Startup's closing control mutates after the final retained reader returns,
+so its own outer binder is exercised. No new sample/setup/consumer/copy/hash call,
+domain, assumption or qualification. Next close opted-in owned request metadata
+after receipt-reader return; preserve default fixture-only request behavior.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

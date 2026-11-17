@@ -10831,6 +10831,180 @@ def c1_owned_initial_startup_fixture(c1_retained_initial_setup_source_fixture):
     return later, moving, upper
 
 
+@pytest.mark.parametrize("mode", ("initial", "retained", "startup"))
+@pytest.mark.parametrize("phase", ("initial", "closing"))
+@pytest.mark.parametrize("case", ("frame", "ages", "pose", "state_extra"))
+def test_initial_source_owner_preflight(
+    c1_initial_setup_source_fixture,
+    c1_retained_initial_setup_source_fixture,
+    c1_owned_initial_startup_fixture,
+    monkeypatch,
+    mode,
+    phase,
+    case,
+):
+    from dataclasses import asdict, dataclass, replace
+
+    from interface.protocol import CRC, HEADER, STATE, State
+    from sim import diagnostics, rover
+
+    @dataclass(frozen=True)
+    class ExtendedState(State):
+        extra: tuple = (0,)
+
+    environment, owner = deepcopy(
+        {
+            "initial": c1_initial_setup_source_fixture,
+            "retained": c1_retained_initial_setup_source_fixture[1],
+            "startup": c1_owned_initial_startup_fixture[0],
+        }[mode]
+    )
+    current = owner._current
+    if case == "frame":
+        bad_current = (*current[:3], current[3][:-1])
+    elif case == "pose":
+        bad_current = (current[0], np.zeros(4), *current[2:])
+    else:
+        state = (
+            ExtendedState(**asdict(current[2]))
+            if case == "state_extra"
+            else replace(current[2], ages_us=(*current[2].ages_us, 0))
+        )
+        bad_current = (*current[:2], state, current[3])
+    retained = owner._initial_setup_source
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = dict.fromkeys(
+        ("sample", "initial", "observation", "binding", "directions"), 0
+    )
+    original_sample = diagnostics._sample_simulator_dynamics_source
+    original_initial = owner.snapshot_retained_initial_setup_source
+    original_observation = environment._observation
+    original_binding, original_asdict = (
+        diagnostics._c1_source_binding_digest,
+        diagnostics.asdict,
+    )
+    original_directions = diagnostics.tof_directions
+    if phase == "initial":
+        owner._current = bad_current
+
+    def sample(*args, **kwargs):
+        work["sample"] += 1
+        assert work["sample"] <= (4 if mode == "startup" else 2)
+        actual = original_sample(*args, **kwargs)
+        if phase == "closing" and mode != "startup" and work["sample"] == 2:
+            owner._current = bad_current
+        return actual
+
+    def initial(*args, **kwargs):
+        work["initial"] += 1
+        assert work["initial"] <= 2
+        actual = original_initial(*args, **kwargs)
+        if phase == "closing" and mode == "startup" and work["initial"] == 2:
+            owner._current = bad_current
+        return actual
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= (8 if mode == "startup" else 2)
+        return original_observation()
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= {"initial": 32, "retained": 64, "startup": 256}[mode]
+        if type(record) is dict and "current" in record:
+            value = record["current"]
+            assert type(value[1]) is np.ndarray and value[1].shape == (3,)
+            assert len(value[3]) == HEADER.size + STATE.size + CRC.size
+        return original_binding(record)
+
+    def copied(value, *args, **kwargs):
+        if isinstance(value, State):
+            assert type(value) is State and len(value.ages_us) == 5
+        return original_asdict(value, *args, **kwargs)
+
+    def directions(*args, **kwargs):
+        work["directions"] += 1
+        assert work["directions"] <= 8 and kwargs.get("source") is None
+        return original_directions(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("initial owner preflight must not replay/draw/clock")
+
+    monkeypatch.setattr(diagnostics, "_sample_simulator_dynamics_source", sample)
+    monkeypatch.setattr(owner, "snapshot_retained_initial_setup_source", initial)
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "asdict", copied)
+    monkeypatch.setattr(diagnostics, "tof_directions", directions)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("capture_synthetic_c1_views", "write_episode"):
+        monkeypatch.setattr(diagnostics, name, forbidden)
+    if mode == "startup":
+        points = {
+            "history_assumptions": dict.fromkeys(
+                (
+                    "starting_pose_exact",
+                    "nominal_tick_binding_exact",
+                    "stored_word_dt_exact",
+                    "interval_ending_twist_exact",
+                ),
+                True,
+            ),
+            "prefix_history_binding_exact": True,
+            "remaining_point_error_m": 1e-8,
+            "point_radius_m": 4.0,
+        }
+        result = owner.probe_initial_startup_path(
+            points,
+            error_evidence={
+                "position_error_m": 0.0,
+                "heading_error_rad": 0.0,
+                "profile_exact": True,
+            },
+            synthetic_test_only=True,
+        )
+        assert result["fixture_owned_startup_path_excluded"] is False
+        assert result["guard_status"] == "UNKNOWN"
+    else:
+        method = owner.snapshot_initial_setup_source if mode == "initial" else initial
+        result = method(synthetic_test_only=True)
+        assert result["snapshot_available"] is False
+    assert result["status"] == "unknown" and result["reason"]
+    for key in (
+        "source",
+        "setup",
+        "initial_frame",
+        "current_frame",
+        "initial_snapshot",
+        "source_epoch",
+        "startup_path",
+    ):
+        assert key not in result
+    assert owner._initial_setup_source is retained and owner._current is bad_current
+    assert work["observation"] == (
+        0 if phase == "initial" else 8 if mode == "startup" else 2
+    )
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.mark.parametrize(
     "case",
     (

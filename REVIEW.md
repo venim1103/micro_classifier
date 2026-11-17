@@ -579,6 +579,40 @@ reference uses; the actual checker reported20. History is not amended. Next trac
 the named owned request/startup consumers' own metadata serialization, preserving
 their conditional assumptions and without another completed native report.
 
+## 410. Closed Initial Source and Startup Owner Preflight (2026-11-17)
+
+From clean pusheddef6c09, the named startup path exposed three remaining own
+serializers: actual initial source, retained initial source and conditional
+startup copied/hash-bound unsupported current State/frame/pose before preflight.
+All three now reuse409's shared current-owner predicate inside their existing
+conservative exception handling. Original and closing owners must pass. Startup's
+closing control changes metadata after the second retained reader returns, so
+validation of a child alone cannot mask its own outer gap.
+
+Fresh routine plan:24 bounded synthetic controls<=60s, repaired24<=60s, existing
+initial/retention/startup selectors<=60s, one root<=360s; retain failures/logs,
+no protected actions. Three readers x original/closing x frame91/ages6/pose4/
+State subclass:24FAIL4.77s at intended pre-copy/prehash spies, then24PASS1.22s.
+Existing86 PASS1.93s under unchanged per-reader observation/sample/digest and
+startup direction-call ceilings. Required root `python -m pytest -q --durations=10
+&& ruff check . && git diff --check`, one360s wrapper PASS6445/known QDQ1 xfail/
+77 warnings224.02s, then Ruff/whitespace PASS. Pylance syntax, changed-file format,
+exact unrelated AST, three signatures/copy/hash/sample/setup/consumer calls/
+return conservation and four-source tested hashes PASS.
+First doc checker incorrectly imposed a strict2500-line topic cap: chapter01 was
+already2670 lines and this contract/reference adds10. Corrected scoped checks
+retain the exact delta; topic organization remains a follow-up, not a source
+test failure or an experiment/safety limit to relax.
+
+No new source, setup, consumer, encoding, copy or digest call; no arithmetic,
+RNG/clock, native output, startup domain/assumption or generic codec change.
+All eight flags false, guard UNKNOWN; Q0-Q4 acceptance remains absent. Local
+.git logs/hash bracket are nonportable; committed controls preserve all results
+and spent positions. def6c09's commit-body bullets used literal newline escape
+separators; subsequent bodies use actual lines, without rewriting history.
+Next close the opted-in request/recheck event binding after receipt-reader return;
+keep default fixture-only APIs unchanged and do not duplicate completed reports.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

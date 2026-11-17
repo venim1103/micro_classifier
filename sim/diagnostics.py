@@ -23089,17 +23089,10 @@ class _SyntheticC1SourceRecorder:
         rng_before, odometry_rng_before = producer.rng, producer.odometry_rng
 
         def owner_binding():
-            from interface.protocol import State
-
             current = self._current
-            if (
-                type(current) is not tuple
-                or len(current) != 4
-                or not isinstance(current[2], State)
-                or type(current[3]) is not bytes
-                or type(self._dynamics_sample) is not dict
-            ):
+            if type(self._dynamics_sample) is not dict:
                 raise ValueError("unsupported initial source recorder layout")
+            _check_native_recorder_current_owner(current)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -23293,8 +23286,6 @@ class _SyntheticC1SourceRecorder:
         return result
 
     def snapshot_retained_initial_setup_source(self, *, synthetic_test_only=False):
-        from interface.protocol import State
-
         if synthetic_test_only is not True:
             raise ValueError(
                 "retained initial source requires synthetic_test_only=True"
@@ -23323,15 +23314,9 @@ class _SyntheticC1SourceRecorder:
 
         def owner_binding():
             current = self._current
-            if (
-                type(current) is not tuple
-                or len(current) != 4
-                or type(current[0]) is not int
-                or not isinstance(current[2], State)
-                or type(current[3]) is not bytes
-                or type(self._dynamics_sample) is not dict
-            ):
+            if type(self._dynamics_sample) is not dict:
                 raise ValueError("unsupported retained initial current owner")
+            _check_native_recorder_current_owner(current)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -23507,13 +23492,9 @@ class _SyntheticC1SourceRecorder:
 
         def owner_binding():
             current, event = self._current, self._latest
+            _check_native_recorder_current_owner(current)
             if (
-                type(current) is not tuple
-                or len(current) != 4
-                or type(current[0]) is not int
-                or not 2 <= current[0] <= 3
-                or not isinstance(current[2], State)
-                or type(current[3]) is not bytes
+                not 2 <= current[0] <= 3
                 or type(event) is not dict
                 or set(event)
                 != {"clock_epoch", "capture_id", "delivery_tick", "capture"}

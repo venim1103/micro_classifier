@@ -520,6 +520,35 @@ Latest gate6297/known QDQ1 xfail/77 warnings231.44s; scripts/layouts remain in s
 files and logs in .git. This neither adds sources nor accepts evidence/permissions.
 Next bounded goal-source State/frame preflight; all flags false, guard UNKNOWN.
 
+## 404. Closed Native Goal Owner Prevalidation (2026-11-17)
+
+From clean pushed6bb2273, named goal retention/delivery still copied malformed
+nested State and hashed unsupported frame extents before rejection, including
+closing owners. Reuse unchanged codec validate_state and the existing92-byte
+HEADER+STATE+CRC ABI, not a new State rule/bound or frame checksum/content claim.
+Four preflights/four extent checks now precede owner asdict/digests; original/
+closing identities, zero-latency domain, disabled no-op and eight report
+combinations remain unchanged. No new encoding/intake/copy/digest/arithmetic.
+
+Finite plan24/repaired24/related82<=60s each and one root<=360s; prior spent
+positions remain spent. First24 FAIL34.67s at pre-copy/prehash spies. First
+repaired24 FAIL16.54s only in the final history assertion: strict word-copy
+comparison intentionally rejects list roots, even []/[], unlike tuples used
+by existing retention controls. Test-only tuple repair preserves exact words;
+necessary24 PASS5.08s. Prior82 PASS2.20s/168 deselected, including six snapshot
+cases across all eight report modes. <=2 observations/intakes/matches/12 digests;
+history identity/words and both RNG states stay unchanged on rejection.
+
+One360s root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6321/known QDQ1 xfail/77 warnings207.15s, then Ruff/whitespace PASS.
+Format/Pylance syntax/signature/AST/call/hash/reference checks PASS. Only two
+method bodies and one24-case test change; added four validate_state/four len/two
+type calls, other call censuses unchanged. Root includes existing host/sanitizer/
+Arm controls; no C/runtime edit or firmware/board/fit/physical qualification.
+Logs/hashes remain in .git; no temporary data/downloads or new study. All flags
+false, guard UNKNOWN. Next trace remaining named source/consumer prerequisites;
+accepted Q0-Q4 setup/source/coverage/error/clock/one-use inputs remain absent.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

@@ -38696,6 +38696,153 @@ def test_native_goal_owner_layout(c1_motion_receipt_source_fixture, operation, c
 
 
 @pytest.mark.parametrize(
+    "mode", ("retain", "retain_closing", "snapshot", "snapshot_closing")
+)
+@pytest.mark.parametrize("field", ("frame", "ages_us", "velocity_m_s"))
+@pytest.mark.parametrize("extent", ("short", "long"))
+def test_native_goal_owner_preflight(
+    monkeypatch, c1_motion_receipt_source_fixture, mode, field, extent
+):
+    from dataclasses import replace
+
+    from interface.protocol import CRC, HEADER, STATE, State
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    if mode.startswith("snapshot"):
+        owner.record_native_goal_computation_source(
+            environment, synthetic_test_only=True, include_goal_computation=True
+        )
+    current = owner._current
+    frame_size = HEADER.size + STATE.size + CRC.size
+    if field == "frame":
+        bad_frame = current[3][:-1] if extent == "short" else current[3] + b"\x00"
+        bad_current = (*current[:3], bad_frame)
+    else:
+        values = getattr(current[2], field)
+        bad_values = values[:-1] if extent == "short" else (*values, 0)
+        bad_current = (
+            *current[:2],
+            replace(current[2], **{field: bad_values}),
+            current[3],
+        )
+    closing = mode.endswith("_closing")
+    if not closing:
+        owner._current = bad_current
+    retained = owner._goal_computation_history
+    contents = deepcopy(tuple(retained))
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "native": 0, "binding": 0, "match": 0}
+    original_observation = environment._observation
+    original_native = diagnostics._sample_simulator_native_goal_computation_source
+    original_match = diagnostics._match_native_goal_retained_computation
+    original_binding, original_asdict = (
+        diagnostics._c1_source_binding_digest,
+        diagnostics.asdict,
+    )
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        return original_observation()
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= 2
+        actual = original_native(*args, **kwargs)
+        if closing and work["native"] == 2:
+            owner._current = bad_current
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 12
+        if type(record) is dict and record.get("current") is not None:
+            assert len(record["current"][3]) == frame_size
+        return original_binding(record)
+
+    def match(*args, **kwargs):
+        work["match"] += 1
+        assert work["match"] <= 2
+        return original_match(*args, **kwargs)
+
+    def copied(value, *args, **kwargs):
+        if type(value) is State:
+            assert len(value.ages_us) == 5
+            assert all(
+                len(vector) == 3
+                for vector in (
+                    value.velocity_m_s,
+                    value.angular_velocity_rad_s,
+                    value.goal_m,
+                )
+            )
+        return original_asdict(value, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("goal owner preflight must not replay/draw/trig/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_goal_computation_source", native
+    )
+    monkeypatch.setattr(diagnostics, "_match_native_goal_retained_computation", match)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "asdict", copied)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if mode.startswith("retain"):
+        with pytest.raises(ValueError):
+            owner.record_native_goal_computation_source(
+                environment, synthetic_test_only=True, include_goal_computation=True
+            )
+    else:
+        result = owner.snapshot_native_goal_delivery(
+            synthetic_test_only=True, include_goal_computation=True
+        )
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert result["reason"]
+        for key in (
+            "frame",
+            "delivered_goal",
+            "goal_delta_residuals",
+            "goal_expression_residuals",
+            "goal_storage_residuals",
+            "source_epoch",
+            "tick",
+        ):
+            assert key not in result
+        assert all(
+            value is False
+            for key, value in result.items()
+            if key.endswith("_qualified")
+        )
+    assert work["observation"] == work["native"] == (2 if closing else 0)
+    assert closing or work["binding"] == work["match"] == 0
+    assert owner._goal_computation_history is retained
+    assert diagnostics._native_tof_word_copy_matches(tuple(retained), contents)
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
+@pytest.mark.parametrize(
     "case", ("literal", "dependency", "closing_output", "closing_coefficients")
 )
 def test_native_goal_expression_delivery_options(

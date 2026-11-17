@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §403 for intact401-402/original bibliography archival;
+Read [REVIEW.md][review] §404 for closed native goal owner prevalidation;
+§403 records intact401-402/original bibliography archival;
 §402 records codec State prevalidation before owner copying;
 §401 records intact399-400 archival;
 §400 records fixed State-frame prehash extent checks;
@@ -366,8 +367,13 @@ are complete. Root6297 plus known QDQ xfail; no extra copies/encodings/source re
 Whole401-402 and the original source bibliography are archived intact. The root
 keeps every historical heading and its used reference definitions with unchanged
 first-definition behavior; this is organization, not new evidence or scope.
-The corresponding goal-source trace now checks State copying and fixed frame extent
-before owner hashing, preserving disabled no-op/report/domain behavior.
+Corresponding native goal original/closing State/frame preflight and its required
+gate are complete in retention/delivery. The existing codec predicate and92-byte
+wire ABI reject unsupported owners before copying/hashing; no new encoding,
+intake or digest. The tuple-only test assertion repair is retained; root6321/
+known QDQ1 xfail passed. Disabled no-op/eight report combinations/zero-latency
+domain remain unchanged. Next trace remaining named source consumers without
+inventing independent acceptance inputs or duplicating completed reports.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

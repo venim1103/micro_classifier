@@ -18392,7 +18392,7 @@ class _SyntheticC1SourceRecorder:
         self, environment, *, synthetic_test_only=False, include_goal_computation=False
     ):
         """Retain bounded goal source words without staging or qualifying them."""
-        from interface.protocol import State
+        from interface.protocol import CRC, HEADER, STATE, State, validate_state
 
         if synthetic_test_only is not True:
             raise ValueError("native goal retention requires synthetic_test_only=True")
@@ -18408,12 +18408,14 @@ class _SyntheticC1SourceRecorder:
             or type(self._current[0]) is not int
             or type(self._current[2]) is not State
             or type(self._current[3]) is not bytes
+            or len(self._current[3]) != HEADER.size + STATE.size + CRC.size
             or type(self._dynamics_sample) is not dict
             or self._current[0] != environment.tick
             or self._simulator_rng is not environment.rng
             or self._simulator_odometry_rng is not environment.odometry_rng
         ):
             raise ValueError("native goal retention requires a current bound producer")
+        validate_state(self._current[2])
         retained = self._goal_computation_history
         if type(retained) is not list or len(retained) > 8:
             raise ValueError("native goal retention history budget exhausted")
@@ -18441,10 +18443,13 @@ class _SyntheticC1SourceRecorder:
                 type(current) is not tuple
                 or len(current) != 4
                 or type(current[2]) is not State
+                or type(current[3]) is not bytes
+                or len(current[3]) != HEADER.size + STATE.size + CRC.size
             ):
                 raise ValueError(
                     "native goal recorder ownership changed during retention"
                 )
+            validate_state(current[2])
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19065,7 +19070,14 @@ class _SyntheticC1SourceRecorder:
         include_goal_expression_residuals=False,
         include_goal_storage_residuals=False,
     ):
-        from interface.protocol import State, encode_state
+        from interface.protocol import (
+            CRC,
+            HEADER,
+            STATE,
+            State,
+            encode_state,
+            validate_state,
+        )
         from sim.rover import RoverEnv
 
         if synthetic_test_only is not True:
@@ -19168,8 +19180,11 @@ class _SyntheticC1SourceRecorder:
                 type(state) is not tuple
                 or len(state) != 4
                 or type(state[2]) is not State
+                or type(state[3]) is not bytes
+                or len(state[3]) != HEADER.size + STATE.size + CRC.size
             ):
                 raise ValueError("native goal snapshot owner cleared")
+            validate_state(state[2])
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19198,9 +19213,11 @@ class _SyntheticC1SourceRecorder:
                 or type(current[0]) is not int
                 or type(current[2]) is not State
                 or type(current[3]) is not bytes
+                or len(current[3]) != HEADER.size + STATE.size + CRC.size
                 or type(dynamics) is not dict
             ):
                 raise ValueError("native goal snapshot owner layout unsupported")
+            validate_state(current[2])
             if (
                 type(history) is not list
                 or not 1 <= len(history) <= 8

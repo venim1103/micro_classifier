@@ -2382,6 +2382,10 @@ first observation. The shared owning sampler collects native words after observi
 and closing dynamics refresh after the last intake using that same observation.
 The [dynamics closure checkpoint][native-goal-dynamics-closing-review] preserves
 equal-state first-epoch and late native-action repros; work limits remain unchanged.
+Both retention and delivery prevalidate original/closing State with the existing
+codec predicate and require the fixed State-frame byte extent before owner copying/
+hashing. [Owner preflight controls][native-goal-owner-preflight-review] retain explicit
+rejection/unknown without new encoding/intake/digests or frame-content qualification.
 
 #### Exact Retained Native Goal Matching (2026-11-12)
 
@@ -2510,6 +2514,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-delta-review]: ../review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
+[native-goal-owner-preflight-review]: ../../REVIEW.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [c1-motion-source]: ../../sim/rover.py
 [native-goal-match-review]: ../review/331-335.md#331-exact-retained-native-goal-matching-2026-11-12
 [native-goal-retention-review]: ../review/326-330.md#330-default-off-native-goal-recorder-retention-2026-11-12

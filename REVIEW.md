@@ -550,6 +550,38 @@ Q0-Q4 independent acceptance remains absent; this repairs ownership corresponden
 not source/numerical/clock/one-use authority. Next follow the live request
 consumer's receipt cache join, without duplicating reports or protected work.
 
+## 390. Closed Live Request Receipt Cache Identity (2026-11-17)
+
+From clean pushedba52f6a, follow the named Q4 live request consumer, not a general
+audit. Both opt-in owned request preparation/recheck pin producer/RNG epochs but
+could accept an equal-word receipt-cache replacement between individually valid
+receipt snapshots. Six new existing-harness controls replace the cache after the
+first reader, during request preparation or after the closing reader returns,
+across both methods. First6 FAIL8.58s with false prepared/rechecked availability.
+
+Both opt-in branches now pin the original receipt cache before the first reader
+and recheck identity after the second reader and consumer/payload checks.
+Missing or replaced ownership returns explicit unknown without request/receipt
+publication. Failed6 after repair PASS0.72s; prior88 live/default/preparation/
+recheck/delivery controls PASS1.42s. Default fixture behavior, two receipt reads/
+four observations/two history checks,96/128 digest ceilings and default inner
+recheck preparation remain unchanged. No new read/digest/report/capture/RNG work.
+
+Routine ledger: first6<=45s, repaired failed6<=45s, prior88<=60s, root<=360s;
+all attempts spent. Fail-fast root `python -m pytest -q && ruff check . &&
+git diff --check` PASS6233/known QDQ1 xfail/77 warnings195.61s. Changed-file
+format/Pylance syntax, unchanged unrelated AST/signatures and existing request/
+source/read/digest calls PASS; only one existing-type guard per opt-in method is
+added. Four-file tested hashes and scoped reference/whitespace checks PASS.
+Python diagnostics/tests only; root host/parity/sanitizer/Arm controls run with no
+skips, not linked firmware/board/fit/task-quality evidence.
+
+Local .git/returns-390-* logs/pre-source/hash evidence retained; no user files
+removed or environment/dependency/download/study/hardware work. All eight flags
+false, guard UNKNOWN; independent Q0-Q4 evidence remains absent, no command or
+one-use/predecessor authority follows. Next trace the receipt cache through
+conditional owned initial-startup composition; no unchanged green gate rerun.
+
 ## Sources
 
 Hardware and tools:

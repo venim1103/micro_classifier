@@ -22620,6 +22620,9 @@ def c1_actual_request_fixture(c1_native_integration_snapshot_fixture):
         "closing_rng_epoch",
         "closing_odometry_rng_epoch",
         "closing_producer_epoch",
+        "initial_receipt_cache_epoch",
+        "prepare_receipt_cache_epoch",
+        "closing_receipt_cache_epoch",
     ),
 )
 def test_owned_request_current_receipt(
@@ -22651,7 +22654,11 @@ def test_owned_request_current_receipt(
         environment.position[0] = math.nextafter(environment.position[0], math.inf)
 
     def replace_epoch():
-        if case.endswith("producer_epoch"):
+        if case.endswith("receipt_cache_epoch"):
+            environment._motion_receipt_source = dict(
+                environment._motion_receipt_source
+            )
+        elif case.endswith("producer_epoch"):
             replacement = deepcopy(environment)
             owner._simulator = replacement
             owner._simulator_rng = replacement.rng
@@ -22677,6 +22684,8 @@ def test_owned_request_current_receipt(
                 result["current_frame"] = b"changed"
             elif case == "flag_metadata":
                 result["source_qualified"] = True
+            elif case == "initial_receipt_cache_epoch":
+                replace_epoch()
         elif case == "original_snapshot_changed":
             first["reason"] = "changed_original_snapshot"
         elif case == "closing_snapshot_changed":

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §389 for closed composed native/receipt cache identities;
+Read [REVIEW.md][review] §390 for closed live request receipt cache identity;
+§389 records closed composed native/receipt cache identities;
 §388 records the former source-queue evidence assessment;
 §387 records closed native goal dynamics sampling;
 §386 records intact source-pipeline checkpoint archival;
@@ -309,8 +310,12 @@ its original receipt cache across both receipt reads; the arithmetic wrapper pin
 both native and receipt caches across source reads and its intervening probe.
 Four false-availability repros and their required gate are complete; no source/
 observation/report/math call or work ceiling changed. Current words and cache
-identity are still not source authority, propagated error or permission. Next
-trace the corresponding opt-in live request consumer's receipt cache join.
+identity are still not source authority, propagated error or permission.
+Opt-in live request preparation/rechecking now also pin the original receipt cache
+before the first receipt read through consumer work and after the closing reader
+returns. Six initial/between/closing equal-word replacement repros and their gate
+are complete; defaults and existing read/digest/work limits are unchanged.
+Next trace the same receipt cache in conditional owned initial-startup composition.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

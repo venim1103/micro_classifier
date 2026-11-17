@@ -23757,6 +23757,11 @@ class _SyntheticC1SourceRecorder:
 
         if include_current_receipt:
             producer_before = self._simulator
+            receipt_source_before = (
+                producer_before._motion_receipt_source
+                if isinstance(producer_before, RoverEnv)
+                else None
+            )
             rng_before = self._simulator_rng
             odometry_before = self._simulator_odometry_rng
             try:
@@ -23822,6 +23827,8 @@ class _SyntheticC1SourceRecorder:
                     or digest(event_binding()) != binding
                     or self._simulator is not producer_before
                     or not isinstance(producer_before, RoverEnv)
+                    or producer_before._motion_receipt_source
+                    is not receipt_source_before
                     or producer_before.rng is not rng_before
                     or producer_before.odometry_rng is not odometry_before
                     or self._simulator_rng is not rng_before
@@ -23920,6 +23927,11 @@ class _SyntheticC1SourceRecorder:
 
         if include_current_receipt:
             producer_before = self._simulator
+            receipt_source_before = (
+                producer_before._motion_receipt_source
+                if isinstance(producer_before, RoverEnv)
+                else None
+            )
             rng_before = self._simulator_rng
             odometry_before = self._simulator_odometry_rng
             try:
@@ -23976,6 +23988,8 @@ class _SyntheticC1SourceRecorder:
                     or digest(received_request) != expected_digest
                     or self._simulator is not producer_before
                     or not isinstance(producer_before, RoverEnv)
+                    or producer_before._motion_receipt_source
+                    is not receipt_source_before
                     or producer_before.rng is not rng_before
                     or producer_before.odometry_rng is not odometry_before
                     or self._simulator_rng is not rng_before

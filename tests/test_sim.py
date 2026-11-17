@@ -35511,6 +35511,10 @@ def test_native_goal_computation_history(
         "closing_current",
         "files",
         "held",
+        "first_rng",
+        "first_odometry",
+        "closing_producer_action",
+        "closing_intake_action",
     ),
 )
 def test_native_goal_recorder_retention(
@@ -35592,10 +35596,18 @@ def test_native_goal_recorder_retention(
         if work["inside"]:
             observations += 1
             assert observations <= 2
+            if observations == 1 and case in ("first_rng", "first_odometry"):
+                name = "rng" if case == "first_rng" else "odometry_rng"
+                replacement = deepcopy(getattr(environment, name))
+                setattr(environment, name, replacement)
+                setattr(owner, f"_simulator_{name}", replacement)
+                environment._native_goal_computation_source[name] = replacement
             if observations == 2 and case == "closing_producer_cache":
                 environment._native_goal_computation_source["computation"]["values"][
                     "delta_m"
                 ][0] = np.inf
+            elif observations == 2 and case == "closing_producer_action":
+                environment.speed += 0.125
         return original_observation(self)
 
     def intake(*args):
@@ -35617,7 +35629,10 @@ def test_native_goal_recorder_retention(
                 changed = ("0x0.0p+0", saved["source"]["goal_m"][1])
                 saved["source"]["goal_m"] = changed
                 saved["computation"]["values"]["native_goal_m"] = changed
-        return original_intake(*args)
+        result = original_intake(*args)
+        if work["intake"] == 2 and case == "closing_intake_action":
+            environment.speed += 0.125
+        return result
 
     def check(*args):
         if work["inside"]:
@@ -37611,6 +37626,8 @@ def test_native_goal_retained_matching(
         "closing_producer_history",
         "closing_producer_cache",
         "closing_producer_pose",
+        "closing_producer_action",
+        "closing_intake_action",
     ),
 )
 @pytest.mark.parametrize(
@@ -37780,6 +37797,8 @@ def test_native_goal_delivery_snapshot(
             ][0] = np.inf
         elif work["observations"] == 2 and case == "closing_producer_pose":
             environment.position[0] += 0.125
+        elif work["observations"] == 2 and case == "closing_producer_action":
+            environment.speed += 0.125
         return original_observation(self)
 
     def intake(*args):
@@ -37800,7 +37819,10 @@ def test_native_goal_delivery_snapshot(
                 environment._native_goal_computation_source["computation"]["values"][
                     "delta_m"
                 ][0] += 1
-        return original_intake(*args)
+        result = original_intake(*args)
+        if work["intake"] == 2 and case == "closing_intake_action":
+            environment.speed += 0.125
+        return result
 
     def match(*args):
         work["matches"] += 1

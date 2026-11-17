@@ -2377,6 +2377,11 @@ expired-row trimming on a repeat. No replay/draw/trig/clock/geometry, publicatio
 or numerical/noise/physical/source/clock/execution/admission qualification;
 all eight flags false. [Checkpoint §330][native-goal-retention-review] records
 the finite controls and necessary fixture/closing-guard repairs.
+Original producer/cache/native/RNG/odometry and owner content now pin before the
+first observation. The shared owning sampler collects native words after observing,
+and closing dynamics refresh after the last intake using that same observation.
+The [dynamics closure checkpoint][native-goal-dynamics-closing-review] preserves
+equal-state first-epoch and late native-action repros; work limits remain unchanged.
 
 #### Exact Retained Native Goal Matching (2026-11-12)
 
@@ -2405,6 +2410,9 @@ indexing or consumption. The final closed native-source intake follows the
 last producer observation and optional report calculation, so late in-place
 source/pose mutations fail closed without another intake or broader catches.
 Retention uses the same final-observation-before-source-closure order.
+The same shared post-observation sampler and final dynamics-word refresh now
+reject native-action changes during the last observation or after closing intake
+across all eight report combinations, without another observation/intake/digest.
 
 The frozen C1 profile has zero odometry latency; this delivered-only method
 does not create a positive-latency/pending domain. Pending publication remains
@@ -2501,6 +2509,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-wip]: ../review/331-335.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12
 [native-goal-delta-review]: ../review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
+[native-goal-dynamics-closing-review]: ../../REVIEW.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [c1-motion-source]: ../../sim/rover.py
 [native-goal-match-review]: ../review/331-335.md#331-exact-retained-native-goal-matching-2026-11-12
 [native-goal-retention-review]: ../review/326-330.md#330-default-off-native-goal-recorder-retention-2026-11-12

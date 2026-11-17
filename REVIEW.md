@@ -450,6 +450,35 @@ Next follow the remaining named source path with all flags false, no admitted
 command and independent setup/source/coverage/error/clock/one-use evidence absent.
 No new report, arithmetic law, study/model/dependency/download or hardware action.
 
+## 387. Closed Native Goal Dynamics Sampling (2026-11-17)
+
+Begin clean pushed69fc69b. The named Q1 native goal source uses the same current
+owner as ToF: retention pinned epoch identities after its first observation;
+retention/delivery copied native dynamics before observing and did not refresh
+after closing source intake. Bounded20 controls reproduced4 retained publication
+successes and16 available delivery snapshots across all eight report combinations:
+first20 FAIL14.76s. Equal-state coordinated first RNG/odometry replacement is not
+the original epoch; native-action changes after observation/intake are not current
+dynamics correspondence even if the cached observation encodes the same frame.
+
+Reuse the unchanged owning sampler in both methods, pin original retention
+producer/cache/native/RNG/odometry and owner content before observation, then
+refresh closing dynamics words after the last intake from that actual observation.
+Only failed20 PASS0.97s; prior226 PASS4.51s, including unchanged defaults, retention/
+dedup/trim/gaps and eight delivery-report combinations. No repair failure.
+
+Finite routine plan: first/repaired20 <=45s, prior226 <=60s, root <=360s.
+Existing2 observations/2 source intakes/12 digests/2 file checks and per-report math
+ceilings remain. No replay/read/draw/trig/clock/geometry, new report or numerical/
+source/coverage/physical/timing/one-use qualification. All eight flags false,
+no admitted command. Required root360s gate:6223 PASS/known QDQ1 xfail/77 warnings
+180.92s; Ruff/root whitespace/changed-file format/Pylance syntax PASS. Exact goal
+intake/matcher/report/validator calls, unchanged unrelated source/test AST/signatures
+and scoped reference checks PASS; four tested source hashes match the gate bracket.
+Local original-source/hash/repro/result evidence stays .git/returns-387-*;
+spent attempts are not refunded. Next reassess the remaining named source/consumer
+queue, with independent setup/source/coverage/error/clock evidence still missing.
+
 ## Sources
 
 Hardware and tools:

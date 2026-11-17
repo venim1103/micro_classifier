@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §386 for intact source-pipeline checkpoint archival;
+Read [REVIEW.md][review] §387 for closed native goal dynamics sampling;
+§386 records intact source-pipeline checkpoint archival;
 §385 records closed fresh native-ToF retention sampling;
 §384 records closed native-ToF delivery report work;
 §383 records closed current native-ToF source sampling;
@@ -295,7 +296,12 @@ after closing source work. Eight original-epoch/final native/trace repros and it
 required gate are complete; dedup/trim/gap and per-family work limits are unchanged.
 Whole381-385 archival is complete, retaining the former blocker assessment,
 fresh continuation/pause/resume and source/delivery/retention repros and repairs.
-Next trace the remaining named source path without duplicating completed reports.
+The same Q1 goal-source trace now pins retention epochs before its first
+observation and shares post-observation native dynamics sampling in retention/
+delivery. Closing dynamics refresh follows the last native intake without another
+observation/intake/digest;20 epoch/native-action repros and its gate are complete.
+All eight report combinations/defaults and prior goal controls remain unchanged.
+Next reassess the remaining named source/consumer queue without duplicating reports.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

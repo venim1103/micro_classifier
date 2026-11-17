@@ -18429,21 +18429,7 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("native goal retention source files changed")
 
         def producer():
-            return {
-                "tick": environment.tick,
-                "pose_m_rad": (
-                    *map(float, environment.position),
-                    float(environment.yaw),
-                ),
-                "native_action": (
-                    float(environment.speed),
-                    float(environment.turn_rate),
-                ),
-                "native_goal_source": deepcopy(environment._native_goal_source),
-                "observation": environment._observation(),
-                "config": asdict(environment.config),
-                "scenario": asdict(environment.scenario),
-            }
+            return _sample_simulator_dynamics_source(environment)
 
         def ownership():
             current = self._current
@@ -18468,12 +18454,6 @@ class _SyntheticC1SourceRecorder:
                 "binding": self._binding,
             }
 
-        observed = producer()
-        producer_binding = _c1_source_binding_digest(observed)
-        if producer_binding != _c1_source_binding_digest(
-            {key: self._dynamics_sample.get(key) for key in observed}
-        ):
-            raise ValueError("native goal producer changed after recorder read")
         owner_binding = _c1_source_binding_digest(ownership())
         simulator = self._simulator
         rng, odometry_rng = environment.rng, environment.odometry_rng
@@ -18481,6 +18461,12 @@ class _SyntheticC1SourceRecorder:
             environment._native_goal_computation_source,
             environment._native_goal_source,
         )
+        observed = producer()
+        producer_binding = _c1_source_binding_digest(observed)
+        if producer_binding != _c1_source_binding_digest(
+            {key: self._dynamics_sample.get(key) for key in observed}
+        ):
+            raise ValueError("native goal producer changed after recorder read")
         live = _sample_simulator_native_goal_computation_source(
             environment, self._epoch
         )
@@ -18504,12 +18490,17 @@ class _SyntheticC1SourceRecorder:
             )
         _check_native_goal_computation_history(history, live)
         copied_binding = _c1_source_binding_digest({"live": live, "history": history})
-        closing_producer_binding = _c1_source_binding_digest(producer())
+        closing_observed = producer()
         closing = _sample_simulator_native_goal_computation_source(
             environment, self._epoch
         )
         _check_native_goal_computation_history(self._goal_computation_history, closing)
         _check_native_goal_computation_history(history, closing)
+        closing_producer_binding = _c1_source_binding_digest(
+            _simulator_dynamics_source_words(
+                environment, closing_observed["observation"]
+            )
+        )
         if (
             not _native_tof_word_copy_matches(live, closing)
             or _c1_source_binding_digest({"live": live, "history": history})
@@ -19145,21 +19136,7 @@ class _SyntheticC1SourceRecorder:
             }
 
         def producer():
-            return {
-                "tick": environment.tick,
-                "pose_m_rad": (
-                    *map(float, environment.position),
-                    float(environment.yaw),
-                ),
-                "native_action": (
-                    float(environment.speed),
-                    float(environment.turn_rate),
-                ),
-                "native_goal_source": deepcopy(environment._native_goal_source),
-                "observation": environment._observation(),
-                "config": asdict(environment.config),
-                "scenario": asdict(environment.scenario),
-            }
+            return _sample_simulator_dynamics_source(environment)
 
         def ownership():
             state = self._current
@@ -19269,12 +19246,17 @@ class _SyntheticC1SourceRecorder:
             closing_report = delta_report(closing_match)
             closing_expression = expression_report(closing_match)
             closing_storage = storage_report(closing_match)
-            closing_producer_binding = _c1_source_binding_digest(producer())
+            closing_observed = producer()
             closing = _sample_simulator_native_goal_computation_source(
                 environment, self._epoch
             )
             _check_native_goal_computation_history(
                 self._goal_computation_history, closing
+            )
+            closing_producer_binding = _c1_source_binding_digest(
+                _simulator_dynamics_source_words(
+                    environment, closing_observed["observation"]
+                )
             )
             if (
                 not _native_tof_word_copy_matches(live, closing)

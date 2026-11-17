@@ -1058,6 +1058,13 @@ views are not the fresh acquisition's native source, delivered-State lineage
 or scan coverage. The first failed control exposed this distinction; the
 [retention checkpoint][native-tof-retention-review] preserves the failure,
 separate-operation repair, copied-result mutation control and finite gates.
+Original producer/RNG/odometry/cache references and owner content are now pinned
+before the first observation. Both observations precede native intakes; final
+dynamics words are refreshed after closing intake work from the same observation.
+Only after source/optional trace/outgoing/owner closure does retention publish.
+The [closing checkpoint][native-tof-retention-closing-review] records equal-state
+first-observation epoch replacement and final native/trace changes. Existing2
+observations and per-family intake/digest/history/dedup/trim/gap limits remain.
 
 Two-point content and identity checks are not perpetual freshness, enforced
 atomicity, live-callee/source authority, shared clock/epoch support, one-use
@@ -2256,6 +2263,7 @@ figure is not an established minimum.
 [native-tof-sampling-review]: ../review/183-220.md#202-actual-native-tof-sampling-source-retention-2026-11-09
 [native-tof-intake-review]: ../review/183-220.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
+[native-tof-retention-closing-review]: ../../REVIEW.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 [native-tof-closing-review]: ../../REVIEW.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09

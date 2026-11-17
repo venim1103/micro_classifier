@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §384 for closed native-ToF delivery report work;
+Read [REVIEW.md][review] §385 for closed fresh native-ToF retention sampling;
+§384 records closed native-ToF delivery report work;
 §383 records closed current native-ToF source sampling;
 §382 records the former remaining evidence assessment;
 §381 records intact consumer/remainder checkpoint archival;
@@ -287,7 +288,12 @@ delivered/pending reader now observes after all closing scalar reports, prefligh
 archive layout before dependent validators, then closes pending words and final
 delivered words/mask/sensor tick. Existing observation/matcher/queue/digest limits
 remain; the preflight repair and failed cadence fixture are retained.
-Next follow the fresh acquisition recorder's closing work, not duplicate reports.
+Fresh acquisition retention now pins original epochs/owner content before its
+first observation, observes before both intake groups and refreshes final dynamics
+after closing source work. Eight original-epoch/final native/trace repros and its
+required gate are complete; dedup/trim/gap and per-family work limits are unchanged.
+Next archive whole381-385 checkpoints before further review growth, then trace
+the remaining named source path without duplicating completed reports.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

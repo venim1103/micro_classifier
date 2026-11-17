@@ -11517,6 +11517,10 @@ def test_native_tof_source_intake(monkeypatch, c1_motion_receipt_source_fixture,
         "pending_word",
         "qualified",
         "pose_after",
+        "final_native_action",
+        "final_native_word",
+        "first_rng",
+        "first_odometry",
     ),
 )
 def test_recorder_native_tof_source(
@@ -11556,9 +11560,31 @@ def test_recorder_native_tof_source(
     held_tick, held_frame = owner._current[0], owner._current[3]
     held_dynamics = diagnostics._c1_source_binding_digest(owner._dynamics_sample)
     original_intake = diagnostics._sample_simulator_native_tof_source
+    original_observation = environment._observation
+    observations = 0
     original_step = RoverEnv.step
     original_tof, original_directions = rover.tof_ranges, rover.tof_directions
     returned = []
+
+    def observation():
+        nonlocal observations
+        observations += 1
+        assert observations <= 2
+        result = original_observation()
+        if observations == 1:
+            if case == "first_rng":
+                environment.rng = deepcopy(environment.rng)
+                owner._simulator_rng = environment.rng
+                cache["rng"] = environment.rng
+            elif case == "first_odometry":
+                environment.odometry_rng = deepcopy(environment.odometry_rng)
+                owner._simulator_odometry_rng = environment.odometry_rng
+                cache["odometry_rng"] = environment.odometry_rng
+        elif case == "final_native_action":
+            environment.speed += 0.125
+        elif case == "final_native_word":
+            cache["tof_m"].view(np.uint32).flat[0] ^= 1
+        return result
 
     def intake(*args, **kwargs):
         work["intake"] += 1
@@ -11582,6 +11608,8 @@ def test_recorder_native_tof_source(
         raise AssertionError("recorder ToF reads must not replay/step/reset/clock")
 
     monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    if case.startswith(("final_", "first_")):
+        monkeypatch.setattr(environment, "_observation", observation)
     for name in ("step", "reset"):
         monkeypatch.setattr(RoverEnv, name, forbidden)
     monkeypatch.setattr(rover, "tof_ranges", forbidden)
@@ -14677,6 +14705,7 @@ def test_native_tof_selection_retention(
         "wall_identity",
         "combined",
         "noncanonical_pair",
+        "final_trace",
     ),
 )
 @pytest.mark.parametrize("cylinder", (False, True, None, "postprocessing"))
@@ -14775,6 +14804,8 @@ def test_native_tof_wall_retention(
     if case == "default":
         getattr(environment, cache_name)["source_qualified"] = True
     original_intake = getattr(diagnostics, intake_name)
+    original_observation = environment._observation
+    observations = 0
     original_native, original_copy = (
         diagnostics._sample_simulator_native_tof_source,
         diagnostics.deepcopy,
@@ -14782,6 +14813,15 @@ def test_native_tof_wall_retention(
     original_binding = diagnostics._c1_source_binding_digest
     mutation = {"active": True}
     outgoing = {}
+
+    def observation():
+        nonlocal observations
+        observations += 1
+        assert observations <= 2
+        result = original_observation()
+        if observations == 2:
+            getattr(environment, cache_name)[kind]["source_qualified"] = True
+        return result
 
     def intake(*args, **kwargs):
         work["intake"] += 1
@@ -14886,6 +14926,8 @@ def test_native_tof_wall_retention(
         return result
 
     monkeypatch.setattr(diagnostics, intake_name, intake)
+    if case == "final_trace":
+        monkeypatch.setattr(environment, "_observation", observation)
     monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
     monkeypatch.setattr(diagnostics, "deepcopy", copied)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
@@ -14898,6 +14940,7 @@ def test_native_tof_wall_retention(
         "owner_context",
         "wall_identity",
         "history_identity",
+        "final_trace",
     }
     if case in rejected:
         with pytest.raises(ValueError):

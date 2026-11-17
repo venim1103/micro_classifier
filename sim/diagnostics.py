@@ -18597,21 +18597,7 @@ class _SyntheticC1SourceRecorder:
         )
 
         def producer():
-            return {
-                "tick": environment.tick,
-                "pose_m_rad": (
-                    *map(float, environment.position),
-                    float(environment.yaw),
-                ),
-                "native_action": (
-                    float(environment.speed),
-                    float(environment.turn_rate),
-                ),
-                "native_goal_source": deepcopy(environment._native_goal_source),
-                "observation": environment._observation(),
-                "config": asdict(environment.config),
-                "scenario": asdict(environment.scenario),
-            }
+            return _sample_simulator_dynamics_source(environment)
 
         def ownership():
             current = self._current
@@ -18659,12 +18645,6 @@ class _SyntheticC1SourceRecorder:
                 }
             )
 
-        observed = producer()
-        producer_binding = _c1_source_binding_digest(observed)
-        if producer_binding != _c1_source_binding_digest(
-            {key: self._dynamics_sample.get(key) for key in observed}
-        ):
-            raise ValueError("native ToF producer changed after recorder read")
         owner_binding = ownership()
         simulator_before = self._simulator
         rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
@@ -18694,6 +18674,12 @@ class _SyntheticC1SourceRecorder:
         )
         postprocessing_history_before = self._tof_postprocessing_history
         timing_history_binding = _c1_source_binding_digest(self._tof_timing_history)
+        observed = producer()
+        producer_binding = _c1_source_binding_digest(observed)
+        if producer_binding != _c1_source_binding_digest(
+            {key: self._dynamics_sample.get(key) for key in observed}
+        ):
+            raise ValueError("native ToF producer changed after recorder read")
         if include_postprocessing:
             postprocessing = _sample_simulator_native_tof_postprocessing_source(
                 environment, self._epoch
@@ -18865,6 +18851,7 @@ class _SyntheticC1SourceRecorder:
                 "postprocessing_history": postprocessing_history,
             }
         )
+        observed_after = producer()
         if include_timing:
             timing_after = _sample_simulator_native_tof_timing_source(
                 environment, self._epoch
@@ -19009,6 +18996,9 @@ class _SyntheticC1SourceRecorder:
         _check_native_tof_postprocessing_history(
             postprocessing_history, history, self._epoch
         )
+        observed_after = _simulator_dynamics_source_words(
+            environment, observed_after["observation"]
+        )
         if (
             not _native_tof_word_copy_matches(copied, live_after)
             or _c1_source_binding_digest(
@@ -19028,7 +19018,7 @@ class _SyntheticC1SourceRecorder:
             or _c1_source_binding_digest(self._tof_timing_history)
             != timing_history_binding
             or ownership() != owner_binding
-            or _c1_source_binding_digest(producer()) != producer_binding
+            or _c1_source_binding_digest(observed_after) != producer_binding
             or self._simulator is not simulator_before
             or self._tof_wall_history is not wall_history_before
             or self._tof_cylinder_history is not cylinder_history_before

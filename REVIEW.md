@@ -528,6 +528,36 @@ All eight flags false; no numerical/source/coverage/clock/one-use acceptance or
 admitted command. Next follow fresh acquisition recorder closing work under the
 same named S2 source prerequisites, not new reports or protected studies.
 
+## 385. Closed Fresh Native ToF Retention Sampling (2026-11-17)
+
+Begin clean pushed7c9f3ae. The same named S2 fresh-acquisition retention path
+pinned epochs after its first observation, copied dynamics before observing
+and ran source/output/owner comparisons before its last observation.
+Eight bounded new controls reproduced unexpected publication: final native
+action/sample-word changes, equal-state coordinated first-observation RNG and
+odometry replacements, and final raw metadata changes across wall/cylinder/
+direction/postprocessing retention. First8 FAIL9.15s.
+
+Reuse the owning post-observation sampler. Pin original producer/cache/RNG/
+odometry and owner content before observation; move the second observation before
+existing closing source intakes and refresh final dynamics using that same actual
+observation after intake work. Source/optional trace/outgoing/owner closure still
+precedes all publication. Only failed8 PASS0.81s; prior82 PASS6.78s including
+unchanged defaults, combined retention, dedup/trim/gaps. No repair failure.
+
+Finite routine plan: first/repaired8 <=45s, prior82 <=60s, root <=360s.
+Existing2 observations, per-family intake/digest ceilings and <=8 histories remain.
+No geometry/read/retain replay, RNG draw, clock, new report or numerical/source/
+coverage/clock/one-use acceptance; all eight flags false, no admitted command.
+Required root360s gate:6203 PASS/known QDQ1 xfail/77 warnings204.21s; Ruff/root
+whitespace/changed-file format/Pylance syntax PASS. Exact per-family source intake/
+validator call conservation, unchanged unrelated source/test AST/signature and
+scoped reference checks PASS; four tested source hashes match the gate bracket.
+Local original-source/hash/repro/result evidence stays .git/returns-385-*;
+spent attempts remain historical. Next archive whole381-385 without dropping
+blockers, pause/resume, failures, repairs or limits, then follow remaining named
+source prerequisites rather than duplicate reports or launch protected work.
+
 ## Sources
 
 Hardware and tools:

@@ -18177,7 +18177,8 @@ class _SyntheticC1SourceRecorder:
         )
 
         def sample():
-            snapshot = _sample_simulator_dynamics_source(environment)
+            observation = environment._observation()
+            snapshot = {}
             if capture_native_tof_pending_source:
                 snapshot["native_tof_pending_queue"] = _copy_native_tof_pending_queue(
                     environment
@@ -18214,7 +18215,10 @@ class _SyntheticC1SourceRecorder:
                             environment, receipt, self._epoch
                         )
                     )
-            return snapshot
+            return {
+                **_simulator_dynamics_source_words(environment, observation),
+                **snapshot,
+            }
 
         def owner_binding():
             from interface.protocol import State
@@ -18247,6 +18251,13 @@ class _SyntheticC1SourceRecorder:
                 }
             )
 
+        recorder_binding = owner_binding()
+        simulator_before = self._simulator
+        rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
+        recorder_rng_before = self._simulator_rng
+        recorder_odometry_rng_before = self._simulator_odometry_rng
+        recorder_pending_before = self._simulator_pending
+        binding_before = self._binding
         snapshot = sample()
         if capture_motion_receipt_source:
             receipt = snapshot["motion_receipt"]
@@ -18297,13 +18308,6 @@ class _SyntheticC1SourceRecorder:
                         "motion receipt pose/action does not match source transition"
                     )
         snapshot_binding = _c1_source_binding_digest(snapshot)
-        recorder_binding = owner_binding()
-        simulator_before = self._simulator
-        rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
-        recorder_rng_before = self._simulator_rng
-        recorder_odometry_rng_before = self._simulator_odometry_rng
-        recorder_pending_before = self._simulator_pending
-        binding_before = self._binding
         state, emitted_frame = _state_from_simulator_dynamics_source(snapshot)
         receipt_history = []
         if capture_motion_receipt_source:

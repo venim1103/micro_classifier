@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §392 for intact386-390 archival and remaining evidence;
+Read [REVIEW.md][review] §393 for closed owning intake original/final sampling;
+§392 records intact386-390 archival and remaining evidence;
 §391 records closed conditional startup receipt cache identity;
 §390 records closed live request receipt cache identity;
 §389 records closed composed native/receipt cache identities;
@@ -323,9 +324,13 @@ its gate are complete; eight observations/256 digests and all prior work limits
 remain. Whole386-390 archival is complete, including former evidence assessments,
 failed archival checking, source/cache repros, repairs and spent ledgers. All six
 live-receipt helper calls are within the repaired startup/prepare/recheck consumers.
-The fresh bounded trace identifies no further concrete compatible local edit.
-Next actual independent source/coverage/error/timing evidence, or a new concrete
-compatible source/consumer issue, is needed; do not invent acceptance or studies.
+The fresh actual continuation closes owning intake's original/final sampling.
+Existing owner/producer/RNG/binding pins now precede its first observation; native
+dynamics words are collected after receipt/native work from that same observation.
+Nine first-epoch and two post-intake pose/action repros and their gate are complete;
+two observations and existing intake/digest/math work ceilings remain. Next follow
+combined native/pending intake's closing queue-word correspondence, without new
+acquisition, reports, bounds or source/clock/permission adoption.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

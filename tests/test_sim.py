@@ -11127,6 +11127,9 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
         "closing_owner_empty",
         "closing_owner_state",
         "original_owner_short",
+        "initial_rng_epoch",
+        "initial_odometry_epoch",
+        "initial_producer_epoch",
     ),
 )
 def test_actual_source_intake_closing_observation(
@@ -11158,6 +11161,18 @@ def test_actual_source_intake_closing_observation(
         work["observations"] += 1
         assert work["observations"] <= 2
         result = original_observation(self)
+        if work["observations"] == 1:
+            if case in ("initial_rng_epoch", "initial_odometry_epoch"):
+                name = "rng" if case == "initial_rng_epoch" else "odometry_rng"
+                replacement = deepcopy(getattr(self, name))
+                setattr(self, name, replacement)
+                setattr(owner, f"_simulator_{name}", replacement)
+                self._motion_receipt_source[name] = replacement
+                self._integration_source[name] = replacement
+            elif case == "initial_producer_epoch":
+                owner._simulator = deepcopy(self)
+                owner._simulator_rng = owner._simulator.rng
+                owner._simulator_odometry_rng = owner._simulator.odometry_rng
         if work["observations"] == 2:
             if case == "closing_pose":
                 self.position[0] = math.nextafter(self.position[0], math.inf)
@@ -21728,6 +21743,8 @@ def test_synthetic_c1_simulator_motion_receipt_source(
         "replaced",
         "bad_option",
         "without_receipt",
+        "closing_pose",
+        "closing_action",
     ),
 )
 def test_synthetic_c1_native_integration_source(
@@ -21745,6 +21762,8 @@ def test_synthetic_c1_native_integration_source(
     ledger = dict.fromkeys(("reads", "capture", "digest", "forbidden"), 0)
     original_capture = diagnostics.capture_synthetic_c1_views
     original_digest = diagnostics._c1_source_binding_digest
+    original_sample = diagnostics._sample_simulator_native_integration_source
+    native_reads = 0
     options = {
         "capture_motion_receipt_source": True,
         "capture_native_integration_source": True,
@@ -21777,7 +21796,7 @@ def test_synthetic_c1_native_integration_source(
     elif case == "work_limit":
         source["segments"] *= 129
         expected = "source budget"
-    elif case in ("mutated", "replaced"):
+    elif case in ("mutated", "replaced", "closing_pose", "closing_action"):
         expected = "changed during source capture"
     elif case == "bad_option":
         options["capture_native_integration_source"] = 1
@@ -21804,6 +21823,20 @@ def test_synthetic_c1_native_integration_source(
         assert ledger["digest"] <= 32
         return original_digest(*args, **kwargs)
 
+    def sample(*args, **kwargs):
+        nonlocal native_reads
+        native_reads += 1
+        assert native_reads <= 2
+        result = original_sample(*args, **kwargs)
+        if native_reads == 2:
+            if case == "closing_pose":
+                environment.position[0] = math.nextafter(
+                    environment.position[0], math.inf
+                )
+            elif case == "closing_action":
+                environment.speed = math.nextafter(environment.speed, math.inf)
+        return result
+
     def read(recorder, **kwargs):
         ledger["reads"] += 1
         assert ledger["reads"] <= 2
@@ -21819,6 +21852,9 @@ def test_synthetic_c1_native_integration_source(
 
     monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", capture)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", sample
+    )
     for name in ("step", "reset"):
         monkeypatch.setattr(RoverEnv, name, forbidden)
     monkeypatch.setattr("sim.rover.integrate", forbidden)
@@ -21856,6 +21892,8 @@ def test_synthetic_c1_native_integration_source(
         np.testing.assert_array_equal(owner._current[1], before_current[1])
         assert original_digest(owner._dynamics_sample) == original_digest(before_sample)
         assert owner._integration_sample == before_integration
+    if case in ("closing_pose", "closing_action"):
+        assert native_reads == 2
     assert environment.rng.bit_generator.state == rng_before
     assert environment.odometry_rng.bit_generator.state == odometry_before
     assert ledger["forbidden"] == 0

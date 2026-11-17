@@ -514,6 +514,42 @@ deferred. Next actual independent evidence or a new concrete compatible source/
 consumer issue; not routine approval/accounting or a permanent no-prerequisite
 claim. All eight flags false, guard UNKNOWN; no command is admitted.
 
+## 393. Closed Owning Intake Original And Final Sampling (2026-11-17)
+
+Fresh actual continue starts clean main426dfb1/upstream0/0, verified Python3.12.3/
+Ruff0.17.0/host and Arm compilers. Named Q0/Q2 owning intake took its original
+owner/producer/RNG/binding pins after its first observation. Nine default/receipt/
+integration first-observation coordinated RNG/odometry/producer controls first
+FAIL10.06s, DID NOT RAISE. Move the existing seven pins before sampling; failed9
+PASS0.78s, prior64 actual/native/default intake controls PASS0.95s.
+
+The same bounded trace finds closing dynamics words copied before native intake.
+Two late native-sample pose/action controls first FAIL5.63s, DID NOT RAISE.
+Split the unchanged shared sampler into observation, existing queue/receipt/native
+work, then the existing dynamics-word builder using that observation. Failed2
+PASS0.59s; required post-sampler prior26 PASS0.61s, including nine original epochs,
+three valid source modes and fourteen native/default intake controls.
+No new observation/intake/digest/math call or work ceiling; owner digest now occurs
+before source prevalidation rather than after it. Staging still publishes only
+after closing checks and does not undo external mutations.
+
+Routine ledger: first/repaired9<=60s, prior64<=60s; first/repaired2<=45s, prior26
+<=60s; one fail-fast root<=360s, all positions spent. Required root
+`python -m pytest -q && ruff check . && git diff --check` PASS6247/known QDQ1
+xfail/77 warnings216.48s. Changed-file format/Pylance syntax, exact seven-pin
+movement, sampler expansion/call conservation, unchanged unrelated AST/signatures,
+four-file tested hashes and scoped links/whitespace PASS. Python diagnostics/tests
+only; root host/parity/sanitizer/Arm controls run with no skips, not linked firmware,
+board/fit/task-quality evidence. First documentation patch used a wrong historical
+anchor; only its AGENTS prefix applied. Inspect actual targets, then apply only
+remaining hunks; no source edit or suite rerun for that documentation repair.
+
+Local .git/returns-393-* original source/test/closing snapshots and logs retained.
+No user data removed, new dependency/download/study/hardware/environment work or
+changed bound/domain. All eight flags false, guard UNKNOWN; independent Q0-Q4
+acceptance remains absent. Next follow combined native/pending intake closing
+queue-word correspondence, not another report or source/clock/one-use authority.
+
 ## Sources
 
 Hardware and tools:

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §410 for closed initial-source/startup owner preflight;
+Read [REVIEW.md][review] §411 for closed opted-in request owner preflight;
+§410 records closed initial-source/startup owner preflight;
 §409 records closed receipt/integration snapshot owner preflight;
 §408 records intact403-407 checkpoint archival;
 §407 records owning intake owner prevalidation;
@@ -411,8 +412,16 @@ the same current-owner preflight before original/closing copies/hashes. Its24
 red/repaired controls and86 prior controls passed; root6445/known QDQ1 xfail
 passed. Startup's closing control mutates after the final retained reader returns,
 so its own outer binder is exercised. No new sample/setup/consumer/copy/hash call,
-domain, assumption or qualification. Next close opted-in owned request metadata
-after receipt-reader return; preserve default fixture-only request behavior.
+domain, assumption or qualification.
+Opted-in request/recheck owner metadata now closes before original/closing event
+serialization, including after both receipt readers return. Known unsupported
+metadata returns explicit unknown without partial request/receipt publication;
+default fixture-only branches and error behavior are conserved. Twenty-one
+failing/repaired controls and94 prior controls passed; root6466/known QDQ1 xfail
+passed after the retained test-only Ruff C408 repair and necessary fresh gate.
+No new receipt/native read, request preparation, copy or digest. Next relocate
+the oversized initial-source topic intact, then reassess the named queue without
+inventing independent Q0-Q4 acceptance or duplicating completed reports.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

@@ -23747,11 +23747,12 @@ class _SyntheticC1SourceRecorder:
         }
         if self._current is None or self._latest is None:
             return result
-        if include_current_receipt and (
-            type(self._current) is not tuple or len(self._current) != 4
-        ):
-            result["reason"] = "unsupported_owned_request_current_layout"
-            return result
+        if include_current_receipt:
+            try:
+                _check_native_recorder_current_owner(self._current)
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                result["reason"] = str(error)
+                return result
         if self._source_files() != self._identities:
             result["reason"] = "owned_source_files_changed"
             return result
@@ -23795,6 +23796,8 @@ class _SyntheticC1SourceRecorder:
             return _c1_source_binding_digest(value)
 
         def event_binding():
+            if include_current_receipt:
+                _check_native_recorder_current_owner(self._current)
             current_tick, _, current_state, current_frame = self._current
             return {
                 "epoch": self._epoch,
@@ -23821,7 +23824,13 @@ class _SyntheticC1SourceRecorder:
             except (KeyError, TypeError, ValueError, OverflowError) as error:
                 result["reason"] = str(error)
                 return result
-        binding = digest(event_binding())
+        try:
+            binding = digest(event_binding())
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            if not include_current_receipt:
+                raise
+            result["reason"] = str(error)
+            return result
         context = {
             "epoch": self._epoch,
             "source_identity": digest(self._identities),
@@ -23857,11 +23866,17 @@ class _SyntheticC1SourceRecorder:
         if matched["fixture_capture_content_matched"] is not True:
             result["reason"] = matched["reason"]
             return result
-        if (
-            self._source_files() != self._identities
-            or digest(event_binding()) != binding
-        ):
-            result["reason"] = "owned_event_changed_during_preparation"
+        try:
+            if (
+                self._source_files() != self._identities
+                or digest(event_binding()) != binding
+            ):
+                result["reason"] = "owned_event_changed_during_preparation"
+                return result
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            if not include_current_receipt:
+                raise
+            result["reason"] = str(error)
             return result
         if include_current_receipt:
             try:
@@ -23940,11 +23955,12 @@ class _SyntheticC1SourceRecorder:
         }
         if self._current is None or self._latest is None:
             return result
-        if include_current_receipt and (
-            type(self._current) is not tuple or len(self._current) != 4
-        ):
-            result["reason"] = "unsupported_owned_recheck_current_layout"
-            return result
+        if include_current_receipt:
+            try:
+                _check_native_recorder_current_owner(self._current)
+            except (KeyError, TypeError, ValueError, OverflowError) as error:
+                result["reason"] = str(error)
+                return result
         tick = self._current[0]
         work["binding_entries"] += 1
         initial = _check_synthetic_c1_normal_request_binding(
@@ -23965,6 +23981,8 @@ class _SyntheticC1SourceRecorder:
             return _c1_source_binding_digest(value)
 
         def event_binding():
+            if include_current_receipt:
+                _check_native_recorder_current_owner(self._current)
             current_tick, _, state, frame = self._current
             return {
                 "epoch": self._epoch,
@@ -23993,7 +24011,13 @@ class _SyntheticC1SourceRecorder:
             except (KeyError, TypeError, ValueError, OverflowError) as error:
                 result["reason"] = str(error)
                 return result
-        binding = digest(event_binding())
+        try:
+            binding = digest(event_binding())
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            if not include_current_receipt:
+                raise
+            result["reason"] = str(error)
+            return result
         work["preparation_entries"] += 1
         current = self.prepare_normal_request(
             bytes.fromhex(request["decision_frame_hex"]),
@@ -24016,13 +24040,19 @@ class _SyntheticC1SourceRecorder:
         if matched["fixture_request_matched"] is not True:
             result["reason"] = matched["reason"]
             return result
-        if (
-            self._source_files() != self._identities
-            or digest(event_binding()) != binding
-            or digest(retained_request["request"]) != expected_digest
-            or digest(received_request) != expected_digest
-        ):
-            result["reason"] = "owned_request_or_event_changed_during_recheck"
+        try:
+            if (
+                self._source_files() != self._identities
+                or digest(event_binding()) != binding
+                or digest(retained_request["request"]) != expected_digest
+                or digest(received_request) != expected_digest
+            ):
+                result["reason"] = "owned_request_or_event_changed_during_recheck"
+                return result
+        except (KeyError, TypeError, ValueError, OverflowError) as error:
+            if not include_current_receipt:
+                raise
+            result["reason"] = str(error)
             return result
         if include_current_receipt:
             try:

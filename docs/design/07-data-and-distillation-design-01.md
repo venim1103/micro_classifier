@@ -515,6 +515,14 @@ The [receipt-cache repair][owned-receipt-cache-review] also pins the original
 producer receipt cache before the first receipt read and closes its identity after
 the second read, rejecting equal-word replacement without extra reads/digests.
 
+Opted-in entry and each event binding share actual-current State/codec, fixed
+frame extent and native pose preflight, including after receipt readers return.
+Unsupported metadata produces explicit unknown before copying/hashing or partial
+publication. Default-off fixture branches and their error behavior are unchanged;
+no extra receipt/request/copy/digest work follows. The
+[owner preflight checkpoint][owned-request-preflight-review] retains late
+State/frame and final-pose regressions and the required lint repair.
+
 Each method adds at most two receipt reads/four observations/two history checks/
 64 receipt digests; recheck retains one default inner request preparation, not
 nested source reads. A detached `current_receipt` group is diagnostic source
@@ -2367,6 +2375,7 @@ figure is not an established minimum.
 [current-heading-remainder-design]: 07-data-and-distillation-design-06.md#current-heading-remainder-reports-2026-11-16
 [native-default-epoch-review]: ../review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
+[owned-request-preflight-review]: ../../REVIEW.md#411-closed-opted-in-request-owner-preflight-2026-11-17
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13

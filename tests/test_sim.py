@@ -23922,6 +23922,182 @@ def c1_actual_request_fixture(c1_native_integration_snapshot_fixture):
     return environment, owner, decision, errors, baseline
 
 
+@pytest.mark.parametrize(
+    "mode,phase,case",
+    tuple(
+        (mode, phase, case)
+        for mode in ("prepare", "recheck")
+        for phase in ("original_receipt", "consumer", "closing_receipt")
+        for case in ("frame", "ages", "state_extra")
+    )
+    + (
+        ("prepare", "closing_receipt", "pose"),
+        ("recheck", "closing_receipt", "pose"),
+        ("prepare", "entry", "tick_array"),
+    ),
+)
+def test_owned_request_owner_preflight(
+    c1_actual_request_fixture, monkeypatch, mode, phase, case
+):
+    from dataclasses import asdict, dataclass, replace
+
+    from interface.protocol import CRC, HEADER, STATE, State
+    from sim import diagnostics, rover
+
+    @dataclass(frozen=True)
+    class ExtendedState(State):
+        extra: tuple = (0,)
+
+    environment, owner, decision, errors, baseline = deepcopy(c1_actual_request_fixture)
+    retained = deepcopy(baseline["prepared_request"])
+    received = deepcopy(retained["request"])
+    current = owner._current
+    if case == "frame":
+        bad_current = (*current[:3], current[3][:-1])
+    elif case == "tick_array":
+        bad_current = (np.full(3, current[0]), *current[1:])
+    elif case == "pose":
+        bad_current = (current[0], np.zeros(4), *current[2:])
+    else:
+        state = (
+            ExtendedState(**asdict(current[2]))
+            if case == "state_extra"
+            else replace(current[2], ages_us=(*current[2].ages_us, 0))
+        )
+        bad_current = (*current[:2], state, current[3])
+    if phase == "entry":
+        owner._current = bad_current
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    history = owner._receipt_history
+    work = dict.fromkeys(("receipt", "consumer", "observation", "binding"), 0)
+    original_receipt = owner._owned_request_current_receipt
+    original_prepare = owner.prepare_normal_request
+    original_consumer = diagnostics._check_synthetic_c1_request_capture_content
+    original_observation = environment._observation
+    original_binding, original_asdict = (
+        diagnostics._c1_source_binding_digest,
+        diagnostics.asdict,
+    )
+
+    def receipt(*args, **kwargs):
+        work["receipt"] += 1
+        assert work["receipt"] <= 2
+        actual = original_receipt(*args, **kwargs)
+        if (phase, work["receipt"]) in (
+            ("original_receipt", 1),
+            ("closing_receipt", 2),
+        ):
+            owner._current = bad_current
+        return actual
+
+    def prepare(*args, **kwargs):
+        actual = original_prepare(*args, **kwargs)
+        if phase == "consumer":
+            owner._current = bad_current
+        return actual
+
+    def consumer(*args, **kwargs):
+        work["consumer"] += 1
+        assert work["consumer"] <= 1
+        actual = original_consumer(*args, **kwargs)
+        if phase == "consumer" and mode == "prepare":
+            owner._current = bad_current
+        return actual
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 4
+        return original_observation()
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= (96 if mode == "prepare" else 128)
+        if type(record) is dict and "latest_event" in record:
+            assert len(record["frame"]) == HEADER.size + STATE.size + CRC.size
+        return original_binding(record)
+
+    def copied(value, *args, **kwargs):
+        if isinstance(value, State):
+            assert type(value) is State and len(value.ages_us) == 5
+        return original_asdict(value, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("request owner preflight must not replay/draw/clock")
+
+    monkeypatch.setattr(owner, "_owned_request_current_receipt", receipt)
+    if mode == "recheck":
+        monkeypatch.setattr(owner, "prepare_normal_request", prepare)
+    monkeypatch.setattr(
+        diagnostics, "_check_synthetic_c1_request_capture_content", consumer
+    )
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "asdict", copied)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in (
+        "integrate",
+        "tof_ranges",
+        "tof_directions",
+        "_motion_receipt_clock_ns",
+    ):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    options = {
+        "include_current_receipt": True,
+        "error_evidence": errors,
+        "synthetic_test_only": True,
+    }
+    if mode == "prepare":
+        result = owner.prepare_normal_request(decision, request_id="d" * 32, **options)
+    else:
+        result = owner.recheck_normal_request(retained, received, **options)
+    available = (
+        "fixture_owned_request_prepared"
+        if mode == "prepare"
+        else "fixture_owned_request_rechecked"
+    )
+    assert result[available] is False and result["status"] == "unknown"
+    assert result["reason"] and result["guard_status"] == "UNKNOWN"
+    assert all(
+        result[flag] is False
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+    for key in (
+        "current_receipt",
+        "prepared_request",
+        "request_sha256",
+        "current_tick",
+    ):
+        assert key not in result
+    assert owner._current is bad_current and owner._receipt_history is history
+    assert work["observation"] == (
+        0 if phase == "entry" else 4 if phase == "closing_receipt" else 2
+    )
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.mark.parametrize("mode", ("prepare", "recheck"))
 @pytest.mark.parametrize(
     "case",

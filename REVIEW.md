@@ -613,6 +613,43 @@ separators; subsequent bodies use actual lines, without rewriting history.
 Next close the opted-in request/recheck event binding after receipt-reader return;
 keep default fixture-only APIs unchanged and do not duplicate completed reports.
 
+## 411. Closed Opted-In Request Owner Preflight (2026-11-17)
+
+From clean pushed7f1ff8b, opted-in prepare/recheck event bindings still copied
+malformed State or hashed unsupported frame metadata after receipt-reader return
+and consumer work. A final-return pose replacement could still publish a fixture
+request/recheck. Entry and event bindings now reuse the bounded actual-current
+preflight only under include_current_receipt. Known errors produce explicit
+unknown/reason without partial request/receipt data; default fixture-only paths
+retain their original results and error behavior. Their exact default-branch AST
+is conserved after constant-folding the opt-in flag and transparent rethrows.
+
+Fresh routine plan: bounded synthetic repro/repaired controls<=60s, existing
+request/default selectors<=60s and one root<=360s; retain failures, no protected
+actions. Initial22:21FAIL/1PASS8.01s. Entry recheck already rejected array ticks,
+so removed that unchanged-green case; remaining21 cover three late State/frame
+phases, both final-return poses and prepare's uncaught entry array tick.
+Repaired21 PASS5.49s;94 existing controls PASS1.74s, with original request/recheck/
+delivery ledgers, two receipt reads/four observations and96/128 digest ceilings.
+
+Root attempt1 pytest6466/known QDQ1 xfail/77 warnings246.04s PASS, then Ruff C408
+on the new test's options=dict(...) FAIL; chain/whitespace was not green.
+One literal-dict repair; cheap global Ruff/format and21 controls PASS7.16s.
+Necessary revised finite plan: one fresh root<=360s, two total root attempts.
+The repaired root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6466/known QDQ1 xfail/77 warnings245.85s, then Ruff/whitespace
+PASS. No production ceiling/tolerance/deadline was relaxed. Pylance syntax,
+format, exact unrelated AST, both signatures/copy/hash/request/receipt calls,
+default-branch conservation and four-source tested hashes PASS.
+
+No new preparation, receipt/native read, copy, digest, encoding, native arithmetic,
+RNG/clock, domain, assumption or qualification. Eight flags false, guard UNKNOWN;
+no command admitted and independent Q0-Q4 acceptance remains absent. Local .git
+logs/hash brackets are nonportable; committed controls preserve all results and
+spent positions. Next relocate oversized chapter01 initial-source contracts
+intact, then reassess remaining named prerequisites without another general audit
+or duplicate report.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

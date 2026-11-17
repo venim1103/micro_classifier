@@ -489,6 +489,45 @@ Local pre-source/hash/failure/result logs remain under .git/returns-383-*;
 historical spent positions are not refunded. Next trace corresponding ToF
 delivery closing work under the same conservative source/evidence boundaries.
 
+## 384. Closed Native ToF Delivery Report Work (2026-11-17)
+
+Fresh actual resume after the explicit Nov16 pause verifies clean pushed2d83804
+apart from the retained delivery repro test patch, main/upstream0/0, Python3.12.3
+at /opt/venv, Ruff0.17.0, installed host/Arm compilers, complete retained logs and
+no owned pytest. No spent repro is repeated. First15 from Nov16:14 false-available
+failures/1 already-supported malformed-producer PASS16.48s. The passing new control
+is removed as redundant; no producer-type implementation repair is needed.
+
+The existing delivered/pending reader sampled native words before observation
+and observed before closing report work. Reuse the owning post-observation sampler;
+move all closing scalar report generation before closing observation/frame work,
+then close pending queue words and final delivered64 words/mask/sensor tick.
+Extract the unchanged delivered-array validator rather than a third matcher.
+Refresh final dynamics words from the same observation, after closing validators.
+Only failed14 PASS1.71s across default and12 report families.
+
+Necessary standalone last-storage-report pending-word mutation fixture first
+FAIL4.61s before mutation: it assumed2 pending acquisitions, but the actual cadence
+at tick6 leaves1. Correct downward to1 pending/4 reports; only failed1 PASS3.99s.
+Related140 controls:134 PASS/6 late-owner FAIL20.65s. Moving frame work later let
+removed native inputs reach dependent direction/postprocessing validators as
+KeyError. Add immediate bounded layout preflight after the closing frame check,
+not a broad catch. Only failed6 PASS1.23s.
+
+Finite routine plan: initial/repaired/necessary focused checks <=45s each,
+related gate <=90s and root gate <=360s; failures remain spent. Retain2 observations,
+2 frame checks,2 delivered/2 pending matches,4 queue copies and per-mode digest/
+scalar ceilings. Added bounded work is one <=8-record shape/metadata preflight
+and one64-word/mask validation; no geometry/read/retain/replay/RNG/clock work.
+Required root360s gate:6195 PASS/known QDQ1 xfail/77 warnings197.91s; Ruff/root
+whitespace/changed-file format/Pylance syntax PASS. Exact extracted array validator,
+four moved report bodies, unchanged unrelated source/test AST/signature and scoped
+reference checks PASS; four tested source hashes match the gate bracket.
+Local source/hash/repro/result logs remain .git/returns-384-*.
+All eight flags false; no numerical/source/coverage/clock/one-use acceptance or
+admitted command. Next follow fresh acquisition recorder closing work under the
+same named S2 source prerequisites, not new reports or protected studies.
+
 ## Sources
 
 Hardware and tools:

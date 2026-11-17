@@ -1151,6 +1151,16 @@ preflights the bounded archive before hashing, fingerprints current ownership
 before matching, compares the live producer with its original recorder read,
 then repeats delivered-word matching and rechecks archive, outgoing copy,
 producer/recorder content, original object/RNG identities and source files.
+The shared owning sampler collects native words after each observation. All
+original/closing report generation precedes the closing observation/frame check,
+followed by a bounded archive-layout preflight and closing pending queue copy.
+Final delivered words/mask and sensor tick are rechecked directly, without a third
+matcher; closing dynamics words reuse the actual observation after that work.
+This adds one bounded <=8-record layout pass and one64-word/mask validation, not
+observations, matches, queue copies, digests or scalar reports. Existing2
+observations/2 frame checks/2 delivered matches/2 pending matches/4 queue copies
+and per-mode work ceilings remain. The [closing checkpoint][native-tof-delivery-closing-review]
+preserves report-time mutations, the required preflight repair and fixture failure.
 
 Success supplies a detached acquisition, its delivered `sensor_tick`, current
 recorder tick and frame context. A held observation keeps its acquisition ID;
@@ -2251,6 +2261,7 @@ figure is not an established minimum.
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09
 [native-tof-delivery-review]: ../review/183-220.md#207-retained-native-tof-delivered-array-correspondence-2026-11-09
 [native-tof-delivery-snapshot-review]: ../review/183-220.md#208-current-recorder-native-tof-delivery-snapshot-2026-11-09
+[native-tof-delivery-closing-review]: ../../REVIEW.md#384-closed-native-tof-delivery-report-work-2026-11-17
 [native-tof-companion-frame-review]: ../review/183-220.md#209-native-tof-companion-original-stateframe-correspondence-2026-11-09
 [native-tof-pending-review]: ../review/183-220.md#210-retained-native-tof-pending-queue-correspondence-2026-11-09
 [native-tof-pending-snapshot-review]: ../review/183-220.md#211-opt-in-current-recorder-native-tof-pending-snapshot-2026-11-09

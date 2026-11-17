@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §383 for closed current native-ToF source sampling;
+Read [REVIEW.md][review] §384 for closed native-ToF delivery report work;
+§383 records closed current native-ToF source sampling;
 §382 records the former remaining evidence assessment;
 §381 records intact consumer/remainder checkpoint archival;
 §380 records intact native-word topic relocation;
@@ -281,8 +282,12 @@ closing gap. Both observations precede source-word sampling; closing dynamics
 words are refreshed after the last native intake without another observation.
 Original cache/RNG/odometry/owner identities close after that work. Malformed
 producers stay unknown;2 observations/2 intakes/64 digests and all false flags remain.
-The late-intake pose regression and its repair are retained. Next trace the
-corresponding delivered/pending reader's closing report work, not duplicate reports.
+The late-intake pose regression and its repair are retained. The corresponding
+delivered/pending reader now observes after all closing scalar reports, preflights
+archive layout before dependent validators, then closes pending words and final
+delivered words/mask/sensor tick. Existing observation/matcher/queue/digest limits
+remain; the preflight repair and failed cadence fixture are retained.
+Next follow the fresh acquisition recorder's closing work, not duplicate reports.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

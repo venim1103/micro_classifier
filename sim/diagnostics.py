@@ -14819,6 +14819,12 @@ def _match_native_tof_delivered_source(environment, history, source_epoch):
     matches = [entry for entry in history if entry["tick"] == tick]
     if len(matches) != 1 or matches[0]["delivery_tick"] > environment.tick:
         raise ValueError("native ToF delivered acquisition lineage missing")
+    selected = matches[0]
+    _check_native_tof_delivered_words(environment, selected)
+    return deepcopy(selected)
+
+
+def _check_native_tof_delivered_words(environment, selected):
     sampled, valid = environment.tof, environment.valid
     if (
         type(sampled) is not np.ndarray
@@ -14830,12 +14836,10 @@ def _match_native_tof_delivered_source(environment, history, source_epoch):
         or valid.dtype != np.dtype(bool)
     ):
         raise ValueError("unsupported native ToF delivered arrays")
-    selected = matches[0]
     if selected["sample_words"] != tuple(
         map(int, sampled.view(np.uint32).flat)
     ) or selected["valid_mask"] != tuple(map(bool, valid.flat)):
         raise ValueError("native ToF delivered words or mask mismatch")
-    return deepcopy(selected)
 
 
 def _copy_native_tof_pending_queue(environment):
@@ -19754,21 +19758,7 @@ class _SyntheticC1SourceRecorder:
             return result
 
         def producer():
-            return {
-                "tick": environment.tick,
-                "pose_m_rad": (
-                    *map(float, environment.position),
-                    float(environment.yaw),
-                ),
-                "native_action": (
-                    float(environment.speed),
-                    float(environment.turn_rate),
-                ),
-                "native_goal_source": deepcopy(environment._native_goal_source),
-                "observation": environment._observation(),
-                "config": asdict(environment.config),
-                "scenario": asdict(environment.scenario),
-            }
+            return _sample_simulator_dynamics_source(environment)
 
         def ownership():
             current = self._current
@@ -20974,8 +20964,6 @@ class _SyntheticC1SourceRecorder:
                 environment, self._tof_history, self._epoch
             )
             _check_native_tof_history_layout(self._tof_history, template)
-            observed_after = producer()
-            _check_native_tof_delivery_frame(observed_after, self._current)
             if include_postprocessing:
                 _check_native_tof_archive_words(self._tof_history, template)
             if include_pending_sources:
@@ -21296,8 +21284,6 @@ class _SyntheticC1SourceRecorder:
                     if include_pending_sources
                     else ()
                 )
-            if include_pending_sources:
-                pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_postprocessing:
                 _check_native_tof_archive_words(self._tof_history, template)
                 _check_native_tof_postprocessing_history(
@@ -21364,6 +21350,43 @@ class _SyntheticC1SourceRecorder:
                     direction_up_copy_probe(record)
                     for record in pending_direction_after
                 )
+            if include_postprocessing_noise_addition_residuals:
+                postprocessing_noise_addition_after = (
+                    postprocessing_noise_addition_probe(postprocessing_after)
+                )
+                pending_postprocessing_noise_addition_after = tuple(
+                    postprocessing_noise_addition_probe(record)
+                    for record in pending_postprocessing_after
+                )
+            if include_postprocessing_dropout_diagnostics:
+                postprocessing_dropout_after = postprocessing_dropout_probe(
+                    postprocessing_after
+                )
+                pending_postprocessing_dropout_after = tuple(
+                    postprocessing_dropout_probe(record)
+                    for record in pending_postprocessing_after
+                )
+            if include_postprocessing_clip_selection_diagnostics:
+                postprocessing_clip_selection_after = (
+                    postprocessing_clip_selection_probe(postprocessing_after)
+                )
+                pending_postprocessing_clip_selection_after = tuple(
+                    postprocessing_clip_selection_probe(record)
+                    for record in pending_postprocessing_after
+                )
+            if include_postprocessing_storage_residuals:
+                postprocessing_storage_after = postprocessing_storage_probe(
+                    postprocessing_after
+                )
+                pending_postprocessing_storage_after = tuple(
+                    postprocessing_storage_probe(record)
+                    for record in pending_postprocessing_after
+                )
+            observed_after = producer()
+            _check_native_tof_delivery_frame(observed_after, self._current)
+            _check_native_tof_history_layout(self._tof_history, template)
+            if include_pending_sources:
+                pending_queue_after = _copy_native_tof_pending_queue(environment)
             if include_pending_sources and (
                 environment.pending is not pending_before
                 or self._simulator_pending is not pending_before
@@ -21385,38 +21408,6 @@ class _SyntheticC1SourceRecorder:
                     self._tof_history,
                     self._epoch,
                 )
-                if include_postprocessing_noise_addition_residuals:
-                    postprocessing_noise_addition_after = (
-                        postprocessing_noise_addition_probe(postprocessing_after)
-                    )
-                    pending_postprocessing_noise_addition_after = tuple(
-                        postprocessing_noise_addition_probe(record)
-                        for record in pending_postprocessing_after
-                    )
-                if include_postprocessing_dropout_diagnostics:
-                    postprocessing_dropout_after = postprocessing_dropout_probe(
-                        postprocessing_after
-                    )
-                    pending_postprocessing_dropout_after = tuple(
-                        postprocessing_dropout_probe(record)
-                        for record in pending_postprocessing_after
-                    )
-                if include_postprocessing_clip_selection_diagnostics:
-                    postprocessing_clip_selection_after = (
-                        postprocessing_clip_selection_probe(postprocessing_after)
-                    )
-                    pending_postprocessing_clip_selection_after = tuple(
-                        postprocessing_clip_selection_probe(record)
-                        for record in pending_postprocessing_after
-                    )
-                if include_postprocessing_storage_residuals:
-                    postprocessing_storage_after = postprocessing_storage_probe(
-                        postprocessing_after
-                    )
-                    pending_postprocessing_storage_after = tuple(
-                        postprocessing_storage_probe(record)
-                        for record in pending_postprocessing_after
-                    )
                 if (
                     self._tof_postprocessing_history is not postprocessing_before
                     or not _native_tof_word_copy_matches(
@@ -21933,6 +21924,10 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF direction norm source or outgoing records changed"
                 )
+            _check_native_tof_delivered_words(environment, copied)
+            observed_after = _simulator_dynamics_source_words(
+                environment, observed_after["observation"]
+            )
             if (
                 self._simulator is not environment
                 or self._tof_history is not history_before
@@ -21942,6 +21937,8 @@ class _SyntheticC1SourceRecorder:
                 or environment.odometry_rng is not odometry_rng_before
                 or self._simulator_rng is not rng_before
                 or self._simulator_odometry_rng is not odometry_rng_before
+                or type(environment.sensor_tick) is not int
+                or environment.sensor_tick != copied["tick"]
                 or not _native_tof_word_copy_matches(copied, live_after)
                 or _c1_source_binding_digest(copied) != copied_binding
                 or _c1_source_binding_digest(self._tof_history) != history_binding

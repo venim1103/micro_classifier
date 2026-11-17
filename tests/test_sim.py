@@ -12007,6 +12007,8 @@ def test_native_tof_delivered_correspondence(
         "early_owner",
         "late_history",
         "files",
+        "final_action",
+        "final_received_word",
     ),
 )
 def test_native_tof_delivery_snapshot(
@@ -12043,8 +12045,20 @@ def test_native_tof_delivery_snapshot(
         owner._identities = {**owner._identities, "unexpected": "0" * 64}
     original_match = diagnostics._match_native_tof_delivered_source
     original_binding = diagnostics._c1_source_binding_digest
-    work = {"match": 0, "binding": 0, "forbidden": 0}
+    work = {"match": 0, "binding": 0, "forbidden": 0, "observations": 0}
+    original_observation = environment._observation
     outgoing = {}
+
+    def observation():
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        actual = original_observation()
+        if work["observations"] == 2:
+            if case == "final_action":
+                environment.speed += 0.125
+            elif case == "final_received_word":
+                environment.tof.view(np.uint32).flat[0] ^= 1
+        return actual
 
     def matched(*args, **kwargs):
         work["match"] += 1
@@ -12084,6 +12098,7 @@ def test_native_tof_delivery_snapshot(
         )
 
     monkeypatch.setattr(diagnostics, "_match_native_tof_delivered_source", matched)
+    monkeypatch.setattr(environment, "_observation", observation)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
     for name in ("record_environment_tick", "record_native_tof_source"):
         monkeypatch.setattr(type(owner), name, forbidden)
@@ -12122,6 +12137,8 @@ def test_native_tof_delivery_snapshot(
     assert owner._current[0] == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
     assert environment.odometry_rng.bit_generator.state == before_odometry_rng
+    if case.startswith("final_"):
+        assert work["observations"] == 2
     assert work["match"] <= 2 and work["forbidden"] == 0
 
 
@@ -15743,6 +15760,7 @@ def test_native_tof_selection_snapshot(
         "late_wall_budget",
         "late_selection_budget",
         "late_timing_budget",
+        "closing_native_action",
     ),
 )
 @pytest.mark.parametrize(
@@ -15991,7 +16009,9 @@ def test_native_tof_wall_snapshot(
         actual = original_wall(*args, **kwargs)
         outgoing.setdefault("wall", actual)
         if work["wall"] == closing_match_count:
-            if case == "late_probe":
+            if case == "closing_native_action":
+                environment.speed += 0.125
+            elif case == "late_probe":
                 outgoing["timing"]["clock"]["begin_ns"] += 1
                 outgoing["timing"]["clock"]["end_ns"] += 1
             elif case == "late_selection":
@@ -17023,9 +17043,108 @@ def test_native_tof_wall_snapshot(
             "late_wall_budget",
             "late_selection_budget",
             "late_timing_budget",
+            "closing_native_action",
         )
     )
     assert work["forbidden"] == 0
+
+
+def test_native_tof_delivery_closes_pending_after_storage(
+    monkeypatch, c1_motion_receipt_source_fixture
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(
+        environment,
+        synthetic_test_only=True,
+        capture_native_tof_pending_source=True,
+    )
+    for _ in range(3):
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_postprocessing=True,
+        )
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(
+                environment, include_postprocessing=True, synthetic_test_only=True
+            )
+    assert len(environment.pending) == 1
+    original_probe = diagnostics._native_tof_postprocessing_storage_residuals
+    original_observation = environment._observation
+    original_queue = diagnostics._copy_native_tof_pending_queue
+    original_digest = diagnostics._c1_source_binding_digest
+    work = dict.fromkeys(("probe", "observations", "queue", "digest"), 0)
+
+    def probe(*args, **kwargs):
+        work["probe"] += 1
+        assert work["probe"] <= 4
+        result = original_probe(*args, **kwargs)
+        if work["probe"] == 4:
+            environment.pending[0][2].view(np.uint32).flat[0] ^= 1
+        return result
+
+    def observation():
+        work["observations"] += 1
+        assert work["observations"] <= 2
+        return original_observation()
+
+    def queue(*args, **kwargs):
+        work["queue"] += 1
+        assert work["queue"] <= 4
+        return original_queue(*args, **kwargs)
+
+    def digest(*args, **kwargs):
+        work["digest"] += 1
+        assert work["digest"] <= 64
+        return original_digest(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("delivery must not read/retain/step/reset/replay/clock")
+
+    monkeypatch.setattr(
+        diagnostics, "_native_tof_postprocessing_storage_residuals", probe
+    )
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_copy_native_tof_pending_queue", queue)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    result = owner.snapshot_native_tof_delivery(
+        synthetic_test_only=True,
+        include_pending_sources=True,
+        include_postprocessing=True,
+        include_postprocessing_storage_residuals=True,
+    )
+    assert result["status"] == "unknown"
+    assert result["snapshot_available"] is False
+    assert result["reason"] == "native ToF pending context or outgoing sources changed"
+    assert "source" not in result and "pending_sources" not in result
+    assert "postprocessing_storage_residuals" not in result
+    assert not any(
+        result[flag]
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+    assert (work["probe"], work["observations"], work["queue"]) == (4, 2, 4)
 
 
 @pytest.mark.parametrize("case", ("flag", "dependency", "flag_without_postprocessing"))

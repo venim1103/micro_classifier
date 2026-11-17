@@ -91,8 +91,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 399-400][chapter-review-46]
 - [Checkpoints 401-402][chapter-review-47]
 - [Checkpoints 403-407][chapter-review-48]
+- [Checkpoints 408-412][chapter-review-49]
 
-Checkpoints 408 onward remain below. The original source bibliography is linked
+Checkpoints 413 onward remain below. The original source bibliography is linked
 under Sources.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
@@ -529,147 +530,23 @@ repeated historical handoffs.
 
 ## 408. Intact Owner Preflight Checkpoint Archival (2026-11-17)
 
-From clean pushed71b2904, one30s whole403-407 transform/three original snapshots
-PASS exact body/inverse-root/two-topic conservation. Five historical headings
-remain; chapter01's three/chapter03's two targets rebase to intact146-line archive.
-Root795->681 lines before this note. Script now supports both old/relocated
-bibliography reading-map forms and one/two topic files; old five-argument calls
-remain compatible. Bibliography/ordered definitions and Sources anchor unchanged.
-Scoped references/whitespace/four407 tested hashes PASS; no code or suite rerun.
-Latest gate6373/known QDQ1 xfail/77 warnings209.32s. Session scripts/layouts and
-.git logs remain local; committed records preserve all failed/spent positions.
-This is organization only; all flags false/guard UNKNOWN. Next named receipt
-snapshot current-owner pre-copy/serialization trace, not another native report
-or adoption of absent independent Q0-Q4 setup/source/coverage/error/clock evidence.
+[Complete unchanged checkpoint][review-408-412-preserved-0] is preserved in the archive.
 
 ## 409. Closed Receipt and Integration Snapshot Owner Preflight (2026-11-17)
 
-From clean pusheda734cd6, the named receipt/source/arithmetic owner serializers
-still copied malformed State and hashed unsupported frame/pose metadata. A shared
-preflight now checks exact tuple/builtin tick/actual State, existing codec,
-fixed92-byte frame and existing native pose predicate before original/closing
-copy/hash. Receipt rejects array ticks before epoch comparison rather than escaping
-with ValueError. Arithmetic preserves legitimate current=None behavior; all
-return shapes, signatures, ten-stage arithmetic and report flags are unchanged.
-
-Fresh routine plan:42 synthetic controls<=60s, repaired controls<=60s, related
-selectors<=60s, one root<=360s; retain logs/failures, no protected actions.
-First42:39FAIL/3PASS6.20s, including one wrong observation counter. One diagnostic
-FAIL3.88s traced nested receipt calls: actual receipt/source/arithmetic observations
-are2/6/12, native intakes0/2/4, existing digest ceilings32/64/160. Correcting final
-mutation timing and adding six array-tick cases gave48FAIL7.79s at intended
-pre-copy/prehash guards or the uncaught tick comparison. One formatting-context
-patch did not apply; no partial edit. Repaired48PASS1.44s;266 unchanged mode/
-ownership/sampling/budget controls PASS4.24s, including all report combinations.
-No production ceiling, assertion, tolerance or deadline was relaxed.
-
-Required root chain from repository root: `python -m pytest -q --durations=10 &&
-ruff check . && git diff --check`, one360s wrapper PASS6421/known QDQ1 xfail/
-77 warnings221.27s, then Ruff/whitespace PASS. Existing host/sanitizer/Arm controls
-ran; no board/firmware/fit qualification follows. Pylance syntax, changed-file
-format, exact unrelated AST, three signatures/copy/hash/sample/report calls/
-return conservation and four-source tested hashes PASS. No native arithmetic,
-new sampling/encoding/copy/digest, RNG/clock, source domain or general binder change.
-
-All eight flags false, guard UNKNOWN; current metadata does not supply independent
-Q0-Q4 setup/source/coverage/error/clock acceptance. No command admitted. Local
-.git logs/hash bracket are nonportable; committed controls/checkpoints retain the
-results and all spent positions. Bookkeeping:408's commit body said19 scoped
-reference uses; the actual checker reported20. History is not amended. Next trace
-the named owned request/startup consumers' own metadata serialization, preserving
-their conditional assumptions and without another completed native report.
+[Complete unchanged checkpoint][review-408-412-preserved-1] is preserved in the archive.
 
 ## 410. Closed Initial Source and Startup Owner Preflight (2026-11-17)
 
-From clean pusheddef6c09, the named startup path exposed three remaining own
-serializers: actual initial source, retained initial source and conditional
-startup copied/hash-bound unsupported current State/frame/pose before preflight.
-All three now reuse409's shared current-owner predicate inside their existing
-conservative exception handling. Original and closing owners must pass. Startup's
-closing control changes metadata after the second retained reader returns, so
-validation of a child alone cannot mask its own outer gap.
-
-Fresh routine plan:24 bounded synthetic controls<=60s, repaired24<=60s, existing
-initial/retention/startup selectors<=60s, one root<=360s; retain failures/logs,
-no protected actions. Three readers x original/closing x frame91/ages6/pose4/
-State subclass:24FAIL4.77s at intended pre-copy/prehash spies, then24PASS1.22s.
-Existing86 PASS1.93s under unchanged per-reader observation/sample/digest and
-startup direction-call ceilings. Required root `python -m pytest -q --durations=10
-&& ruff check . && git diff --check`, one360s wrapper PASS6445/known QDQ1 xfail/
-77 warnings224.02s, then Ruff/whitespace PASS. Pylance syntax, changed-file format,
-exact unrelated AST, three signatures/copy/hash/sample/setup/consumer calls/
-return conservation and four-source tested hashes PASS.
-First doc checker incorrectly imposed a strict2500-line topic cap: chapter01 was
-already2670 lines and this contract/reference adds10. Corrected scoped checks
-retain the exact delta; topic organization remains a follow-up, not a source
-test failure or an experiment/safety limit to relax.
-
-No new source, setup, consumer, encoding, copy or digest call; no arithmetic,
-RNG/clock, native output, startup domain/assumption or generic codec change.
-All eight flags false, guard UNKNOWN; Q0-Q4 acceptance remains absent. Local
-.git logs/hash bracket are nonportable; committed controls preserve all results
-and spent positions. def6c09's commit-body bullets used literal newline escape
-separators; subsequent bodies use actual lines, without rewriting history.
-Next close the opted-in request/recheck event binding after receipt-reader return;
-keep default fixture-only APIs unchanged and do not duplicate completed reports.
+[Complete unchanged checkpoint][review-408-412-preserved-2] is preserved in the archive.
 
 ## 411. Closed Opted-In Request Owner Preflight (2026-11-17)
 
-From clean pushed7f1ff8b, opted-in prepare/recheck event bindings still copied
-malformed State or hashed unsupported frame metadata after receipt-reader return
-and consumer work. A final-return pose replacement could still publish a fixture
-request/recheck. Entry and event bindings now reuse the bounded actual-current
-preflight only under include_current_receipt. Known errors produce explicit
-unknown/reason without partial request/receipt data; default fixture-only paths
-retain their original results and error behavior. Their exact default-branch AST
-is conserved after constant-folding the opt-in flag and transparent rethrows.
-
-Fresh routine plan: bounded synthetic repro/repaired controls<=60s, existing
-request/default selectors<=60s and one root<=360s; retain failures, no protected
-actions. Initial22:21FAIL/1PASS8.01s. Entry recheck already rejected array ticks,
-so removed that unchanged-green case; remaining21 cover three late State/frame
-phases, both final-return poses and prepare's uncaught entry array tick.
-Repaired21 PASS5.49s;94 existing controls PASS1.74s, with original request/recheck/
-delivery ledgers, two receipt reads/four observations and96/128 digest ceilings.
-
-Root attempt1 pytest6466/known QDQ1 xfail/77 warnings246.04s PASS, then Ruff C408
-on the new test's options=dict(...) FAIL; chain/whitespace was not green.
-One literal-dict repair; cheap global Ruff/format and21 controls PASS7.16s.
-Necessary revised finite plan: one fresh root<=360s, two total root attempts.
-The repaired root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6466/known QDQ1 xfail/77 warnings245.85s, then Ruff/whitespace
-PASS. No production ceiling/tolerance/deadline was relaxed. Pylance syntax,
-format, exact unrelated AST, both signatures/copy/hash/request/receipt calls,
-default-branch conservation and four-source tested hashes PASS.
-
-No new preparation, receipt/native read, copy, digest, encoding, native arithmetic,
-RNG/clock, domain, assumption or qualification. Eight flags false, guard UNKNOWN;
-no command admitted and independent Q0-Q4 acceptance remains absent. Local .git
-logs/hash brackets are nonportable; committed controls preserve all results and
-spent positions. Next relocate oversized chapter01 initial-source contracts
-intact, then reassess remaining named prerequisites without another general audit
-or duplicate report.
+[Complete unchanged checkpoint][review-408-412-preserved-3] is preserved in the archive.
 
 ## 412. Intact Initial Source and Receipt Topic Relocation (2026-11-17)
 
-From clean pushedf091ea1, one30s guarded transform/two original snapshots moved
-ten whole initial-source/receipt/startup contracts from chapter01 to existing
-chapter06. The257-line body, all ten historical chapter01 headings/anchors,
-both exact inverse layouts and every original first-definition meaning PASS.
-Fourteen moved labels retain their original targets; ten reading links point
-to the preserved target headings. No existing body/limit/premise was rewritten.
-Chapter01 2689->2482 lines; chapter06 604->874 lines. One bounded checker PASS24
-scoped references/local targets/anchors and whitespace. Four411 tested source
-hashes unchanged; documentation-only, no code suite rerun. Latest gate6466/
-known QDQ1 xfail/77 warnings245.85s remains the actual source gate.
-
-Session transform/original layouts remain local; committed contracts preserve
-the portable bodies and historical links. No qualification or scope is adopted;
-all flags false/guard UNKNOWN and independent Q0-Q4 inputs remain absent.
-Next trace `retain_initial_setup_source`'s own owner closure after snapshot
-readers return: its frame/dynamics-only join may miss changed current State/pose.
-This is a falsifiable named-source prerequisite, not another report or general
-audit; bound and reproduce it before changing code.
+[Complete unchanged checkpoint][review-408-412-preserved-4] is preserved in the archive.
 
 ## 413. Closed Initial Retention Owner Word Joins (2026-11-17)
 
@@ -827,6 +704,35 @@ clock/RNG or qualification change. Eight flags false, guard UNKNOWN; independent
 Q0-Q4 inputs remain absent. Next archive whole408-412 before further root-review
 growth, then reassess named input blockers without a general audit/new reports.
 
+## 418. Intact History Checkpoints and Named Input Blockers (2026-11-17)
+
+From clean pushed2c1d02e, one30s guarded transform/three original snapshots move
+whole408-412 checkpoints to the linked archive. Exact144-line body, all five
+historical root headings/anchors, three inverse layouts, four chapter01/06
+targets and148 original first-definition meanings PASS. Root981->864 lines before
+this note; failures, spent positions and evidence limits are preserved.
+Scoped references/targets/anchors, whitespace and all four417 tested hashes
+PASS. Documentation-only; no code suite rerun. Latest root remains6498/known QDQ1
+xfail/77 warnings209.46s, with Ruff/format/syntax/whitespace and scoped controls.
+
+Rechecked actual design §§1/12 and S1-S5/Q0-Q5 dependencies after the bounded
+history-root trace. All identified intake/reader root prehash and first-consumption
+gaps are closed; no further concrete compatible edit is identified in that trace.
+Q0 independent setup/source/return/coverage, Q1 propagated actual-state error,
+Q2 uniform full-command native/accumulated error, Q3 pose/range/time/transform and
+Q4 qualified clock/application/serialized one-use/receipt/predecessor inputs remain
+absent. Conditional tools cannot supply their acceptance or a command permit.
+stedgeai/stm32ai/STM32_Programmer_CLI are not on PATH; cc/arm-none-eabi-gcc are.
+Licence/tools/board work stays user-side; new qualification studies, SC18/general
+audits, D4/learned/model/dependency/download/hardware work remain protected/deferred.
+
+Eight flags false, guard UNKNOWN. Current blockers are actual independent inputs/
+authority, not routine approval/accounting or a permanent no-prerequisite claim.
+Next is an independently supported named packet or concrete compatible issue,
+not more completed reports, dummy work or an unchanged green gate. Session layouts/
+transform and .git logs remain nonportable; committed bodies/controls carry the
+handoff without renewing authority or qualifying metadata.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].
@@ -880,6 +786,7 @@ growth, then reassess named input blockers without a general audit/new reports.
 [chapter-review-46]: docs/review/399-400.md
 [chapter-review-47]: docs/review/401-402.md
 [chapter-review-48]: docs/review/403-407.md
+[chapter-review-49]: docs/review/408-412.md
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-1]: docs/review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
@@ -979,3 +886,8 @@ growth, then reassess named input blockers without a general audit/new reports.
 [review-403-407-preserved-2]: docs/review/403-407.md#405-closed-current-tof-post-observation-owners-2026-11-17
 [review-403-407-preserved-3]: docs/review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17
 [review-403-407-preserved-4]: docs/review/403-407.md#407-owning-intake-owner-prevalidation-2026-11-17
+[review-408-412-preserved-0]: docs/review/408-412.md#408-intact-owner-preflight-checkpoint-archival-2026-11-17
+[review-408-412-preserved-1]: docs/review/408-412.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
+[review-408-412-preserved-2]: docs/review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
+[review-408-412-preserved-3]: docs/review/408-412.md#411-closed-opted-in-request-owner-preflight-2026-11-17
+[review-408-412-preserved-4]: docs/review/408-412.md#412-intact-initial-source-and-receipt-topic-relocation-2026-11-17

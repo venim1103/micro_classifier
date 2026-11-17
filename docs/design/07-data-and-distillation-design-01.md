@@ -2158,14 +2158,14 @@ figure is not an established minimum.
 [current-heading-remainder-design]: 07-data-and-distillation-design-06.md#current-heading-remainder-reports-2026-11-16
 [native-default-epoch-review]: ../review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
 [owned-current-receipt-review]: ../review/351-355.md#354-closed-live-receipt-owned-request-joins-2026-11-13
-[owned-request-preflight-review]: ../../REVIEW.md#411-closed-opted-in-request-owner-preflight-2026-11-17
+[owned-request-preflight-review]: ../review/408-412.md#411-closed-opted-in-request-owner-preflight-2026-11-17
 [actual-intake-closing-review]: ../review/356-360.md#356-actual-intake-closing-observation-repairs-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13
 [retained-initial-source-review]: ../review/361-365.md#362-bounded-retained-initial-source-reading-2026-11-16
 [owned-initial-startup-review]: ../review/361-365.md#363-conditional-owned-initial-rest-startup-2026-11-16
-[initial-owner-preflight-review]: ../../REVIEW.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
+[initial-owner-preflight-review]: ../review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [native-tof-owned-floor-review]: ../review/183-220.md#218-current-source-native-tof-floor-residual-composition-2026-11-09
 [native-tof-owned-sampling-review]: ../review/183-220.md#220-current-source-ideal-tof-sampling-composition-2026-11-09
 [native-tof-ray-norm-review]: ../review/221-225.md#221-native-tof-direction-squared-norm-residuals-2026-11-09

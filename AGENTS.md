@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §417 for closed post-observation history consumption;
+Read [REVIEW.md][review] §418 for intact408-412 archival and named input blockers;
+§417 records closed post-observation history consumption;
 §416 records closed owning intake history-root hashes;
 §415 records bounded receipt-history prehash validation;
 §414 records the prior named-queue evidence/tool blockers;
@@ -452,8 +453,16 @@ truth-testing/copying. Four red/repaired controls and74 prior controls passed;
 root6498/known QDQ1 xfail passed. Empty dicts previously reached copying; this
 NumPy runtime rejects empty-array truth before copying, not through the named
 history predicate. Default-off source AST and all prior test AST are unchanged.
-Next archive whole408-412 checkpoints before further root-review growth, then
-reassess named inputs without inventing reports, acceptance or a general audit.
+Whole408-412 checkpoints are now archived intact: exact144-line body, all five
+historical headings, three inverse layouts, four topic targets and148 original
+first-definition meanings passed. Root review shrank981->864 lines before the
+new note;417 tested code hashes remain unchanged and no suite was rerun.
+The same history-root trace is closed through intake and all named readers;
+no further concrete compatible edit is identified. The actual S1-S5/Q0-Q5 packet
+still lacks independent Q0-Q4 inputs; no matching-hash guard/executor follows.
+ST tools remain absent from PATH; licence/board and protected studies stay
+user-side/deferred. New actual evidence or a concrete compatible issue can resume
+local work; no qualification or usable command is admitted.
 Named-queue reassessment against design §§1/2/12 and the Q0-Q5 packet still lacks
 independent
 Q0 setup/source/return/coverage, Q1 propagated state, Q2 uniform native/accumulated

@@ -704,6 +704,35 @@ Local .git logs/hash bracket are nonportable; committed controls preserve all
 results and spent positions. Next reassess the named independent-input queue/
 actual tool blockers rather than invent acceptance or another completed report.
 
+## 414. Fresh Named Queue Evidence and Tool Blockers (2026-11-17)
+
+From clean pushedc10e80b, reread design §§1/2/12's active priority/safety boundaries,
+the named S1-S5 dependency map and Q0-Q5 packet after the concrete408-413 source/
+consumer work. One guessed milestone filename did not exist; the actual reading
+map resolved12-implementation-milestones.md. No implementation or run was launched
+from historical per-checkpoint approval language.
+
+| Ordered path | Current prerequisite result / remaining blocker |
+| --- | --- |
+| Native acquisition/retention/delivery correspondence | Existing bounded source/history/delivery and fresh owner/layout/word joins are implemented and verified. This named trace identifies no further concrete compatible edit; matching words still do not accept source/physics. |
+| Named setup/source/coverage/error/timing consumers | Q0 independent setup/source/return/coverage, Q1 propagated actual-state error, Q2 full-domain uniform native/accumulated error, Q3 pose/range/time/native-transform enclosures and Q4 clock/application/receipt/serialized-one-use/predecessor evidence remain absent. Existing conditional tools and supplied-word residuals are not those inputs. |
+| Request/guard/executor composition | Actual-owner request/receipt/startup metadata prerequisites are closed; guard remains UNKNOWN. Without the prior independent inputs, a permit, one-use consumer or admitted predecessor would invent authority. No usable command is emitted. |
+| Toolchain/board and task quality | stedgeai, stm32ai and STM32_Programmer_CLI are not on PATH; cc and arm-none-eabi-gcc are. ST licence/tools/board work stays user-side. New qualification studies, SC18/general audits, D4/learning/models/dependencies/downloads/hardware remain protected/deferred, not substitute work. |
+
+Actual disk362GiB available; main clean/upstream0/0. Four413 tested hashes remain
+unchanged. No suite rerun: latest root6476/known QDQ1 xfail/77 warnings240.78s,
+Ruff/format/syntax/whitespace and scoped controls remain the recorded source gate.
+Eight flags false, guard UNKNOWN. No new bounds, domain/policy or accepted
+evidence; metadata does not qualify clocks, physical clearance or error.
+
+All currently identified useful authorized paths are blocked on those actual
+inputs/authorities after closing the concrete trace, not on routine test/planning
+approval or historical accounting. No dummy work, repeat diagnostics or unchanged
+green gate is warranted. This is not a permanent assertion that no smaller
+prerequisite can exist; new concrete source/consumer evidence can resume compatible
+local work. Pending action is an independently supported named qualification
+packet or a concrete compatible issue; tool/licence/board work stays user-side.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

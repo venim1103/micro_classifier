@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §413 for closed initial retention owner-word joins;
+Read [REVIEW.md][review] §414 for the fresh named-queue evidence/tool blockers;
+§413 records closed initial retention owner-word joins;
 §412 records intact initial-source/receipt/startup topic relocation;
 §411 records closed opted-in request owner preflight;
 §410 records closed initial-source/startup owner preflight;
@@ -433,8 +434,16 @@ passed. A changed native State word can retain the same encoded frame; the
 existing exact source-owner helper distinguishes it. Its bounded State/frame
 reconstruction and two owner-word digests fit the unchanged84-digest ceiling;
 two reads/four observations/two setup audits and all flags remain unchanged.
-Next reassess the named independent-input queue and actual tool blockers, without
-inventing Q0-Q4 acceptance or duplicating completed reports.
+Fresh named-queue reassessment is complete against design §§1/2/12 and the Q0-Q5
+packet. This concrete source/consumer trace yields no further local edit; independent
+Q0 setup/source/return/coverage, Q1 propagated state, Q2 uniform native/accumulated
+error, Q3 pose/range/time/transform and Q4 clock/application/one-use/predecessor
+evidence remain absent. Guard/executor composition cannot bypass those inputs.
+stedgeai/stm32ai/STM32_Programmer_CLI are not on PATH; host/Arm compilers exist,
+but licence/board and protected studies remain user-side/deferred. This is a
+current input/authority blocker, not routine approval/accounting or a permanent
+no-prerequisite claim. A concrete compatible issue or independent evidence can
+resume local work; no qualification or usable command is admitted.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

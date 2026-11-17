@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §387 for closed native goal dynamics sampling;
+Read [REVIEW.md][review] §388 for the current source-queue evidence blockers;
+§387 records closed native goal dynamics sampling;
 §386 records intact source-pipeline checkpoint archival;
 §385 records closed fresh native-ToF retention sampling;
 §384 records closed native-ToF delivery report work;
@@ -301,7 +302,13 @@ observation and shares post-observation native dynamics sampling in retention/
 delivery. Closing dynamics refresh follows the last native intake without another
 observation/intake/digest;20 epoch/native-action repros and its gate are complete.
 All eight report combinations/defaults and prior goal controls remain unchanged.
-Next reassess the remaining named source/consumer queue without duplicating reports.
+Fresh post387 reassessment traced remaining shared-sampler callers and initial/
+retained source closure, then the agreed three-part queue. No further concrete
+compatible local issue or independent acceptance input was identified. Bounded
+source correspondence is not source authority, propagated error or permission;
+the next supported guard/executor composition still needs the actual evidence
+listed below. This is a current input blocker, not a permanent no-prerequisite
+claim, old pause or routine testing/planning gate.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

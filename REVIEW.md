@@ -479,6 +479,43 @@ Local original-source/hash/repro/result evidence stays .git/returns-387-*;
 spent attempts are not refunded. Next reassess the remaining named source/consumer
 queue, with independent setup/source/coverage/error/clock evidence still missing.
 
+## 388. Current Source Queue Evidence Blockers (2026-11-17)
+
+Begin clean pushed0288b59 after the paused delivery repro was repaired and fresh
+ToF retention/goal dynamics issues were completed. Reassess, rather than reuse
+§382's former no-identified-edit conclusion. Pylance resolves shared dynamics
+sampler callers to owning intake, ToF retention/current/delivery, goal retention/
+delivery and initial/retained source readers. The latter already pin original
+epochs and close original/copied/current source after observations; no further
+concrete compatible issue is identified from this bounded named-source trace.
+No unchanged green control is rerun and no general audit is started.
+
+The [admission dependencies][admission-dependencies] and agreed milestone queue
+still require independent Q0 setup/source/return/coverage provenance, Q1 propagated
+source-to-decoded allowances, Q2 uniform full-command native/accumulated error,
+Q3 pose/range/time/transform enclosures and Q4 qualified clock/application/serialized
+one-use/receipt/predecessor evidence. Queue1's bounded local source correspondence
+does not supply queue2's acceptance; queue3's supported guard/executor composition
+cannot bypass those missing inputs. Extra hashes or fixture permission would not
+be a compatible prerequisite. No new justified unblocked local task is identified
+with current inputs; this is not a permanent claim that none can ever exist.
+
+Qualification studies, changed bounds/domains, SC18, D4/learned/model work remain
+protected/deferred; ST licence/board/hardware work stays user-side.
+stedgeai/stm32ai/STM32_Programmer_CLI are again not on PATH. No dependency/download/
+environment/hardware change, new study or accepted requirement follows.
+The pending next action is actual independent Q0/source or named numerical/
+transform/timing evidence, with protected authority where necessary, or a new
+concrete compatible source/consumer issue. Missing routine test/planning approval
+or an old pause is not the blocker.
+
+Scoped reference/whitespace and four unchanged tested source hashes PASS; main
+clean/upstream0/0 before this documentation-only checkpoint. Latest source gate
+remains6223/known QDQ1 xfail/77 warnings180.92s. No code-suite rerun or owned job
+left running; local bounded logs retained .git/returns-384/385/387-* and original
+archive layouts in session files. All eight flags false, guard UNKNOWN; no command
+is admitted. Host actuation and independent fail-safes remain untouched.
+
 ## Sources
 
 Hardware and tools:

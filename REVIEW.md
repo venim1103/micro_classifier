@@ -494,6 +494,36 @@ present. Next run bounded current/delivered snapshot owner-layout repros before
 early indexing/dict access; no timing report duplication or new catch-all fallback.
 Q0-Q4 acceptance is still absent; all flags false, guard UNKNOWN, no command.
 
+## 398. Closed Native-ToF Snapshot Owner Layouts (2026-11-17)
+
+From clean pushed80a6fe2, the named timing consumer trace reaches current/delivered
+snapshot wrappers. First12 FAIL18.82s: nine uncaught IndexError/AttributeError paths
+and three false current-source availabilities for list-current/Config-State/list-frame.
+Reuse strict tuple/tick/State/bytes-frame/dict-dynamics prevalidation before access.
+Unknown has an explicit reason and no source/frame/pending/timing payload; no new
+catch-all, report/math/encoding/copy/digest/source read or changed valid output.
+Finite routine plan:12 repro/12 repair/54 prior each<=60s;2 observations/native/frame/
+delivered/pending matches,6 timing matches/64 digests, no RNG/replay/clock after prep.
+Repaired12 PASS5.93s with0 source/hash/read work; prior20 current/18 delivered/16 timing
+PASS3.22s. Format/Pylance syntax PASS. AST checker first wrongly expects6 new type
+calls per method; correct to5 type/1 len/1 error and finish full signature/catch/
+outside-two-method/one-test conservation. Runtime controls are not rerun for that.
+
+First root360s exits124 at89%, without summary or assertion failure; later Ruff/
+whitespace did not run. Preserve spent/unknown position and log, not a pass.
+No owned pytest child remains; shared-resource snapshot does not establish a cause
+or OOM. Four-source hashes unchanged. One fresh recovery uses the SAME360s deadline
+and identical tests with --durations=10:6273/known QDQ1 xfail/77 warnings200.05s;
+Ruff/whitespace and tested source hashes PASS. Logs remain in .git/returns-398-*.
+No C/runtime edits; host/sanitizer/Arm controls pass within the root, not board proof.
+
+Rechecked milestones/named packet: Q0 setup/source/return/coverage, Q1 propagated
+state, Q2 uniform native/accumulated error, Q3 pose/range/time/transform and Q4 clock/
+application/one-use/predecessor acceptance remain absent. ST executables not on PATH;
+licence/board work stays user-side, studies/SC18/D4/learned work protected/deferred.
+The named source/consumer trace finds no further justified local edit; new concrete
+evidence can change this assessment. All flags false, guard UNKNOWN; no command.
+
 ## Sources
 
 Hardware and tools:

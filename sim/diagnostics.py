@@ -19387,8 +19387,19 @@ class _SyntheticC1SourceRecorder:
             )
 
         try:
+            from interface.protocol import State
+
             if type(environment) is not RoverEnv:
                 raise TypeError("unsupported native ToF producer")
+            if (
+                type(current_before) is not tuple
+                or len(current_before) != 4
+                or type(current_before[0]) is not int
+                or type(current_before[2]) is not State
+                or type(current_before[3]) is not bytes
+                or type(dynamics_before) is not dict
+            ):
+                raise ValueError("unsupported native ToF current owner layout")
             if (
                 self._simulator_rng is not environment.rng
                 or self._simulator_odometry_rng is not environment.odometry_rng
@@ -20470,6 +20481,17 @@ class _SyntheticC1SourceRecorder:
             return report
 
         try:
+            from interface.protocol import State
+
+            if (
+                type(current_before) is not tuple
+                or len(current_before) != 4
+                or type(current_before[0]) is not int
+                or type(current_before[2]) is not State
+                or type(current_before[3]) is not bytes
+                or type(dynamics_before) is not dict
+            ):
+                raise ValueError("unsupported native ToF delivery owner layout")
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
             if include_postprocessing:

@@ -1118,6 +1118,12 @@ runs. Malformed producers stay unknown. The same2 observations/2 intakes/64 dige
 ceiling and all false flags remain; [closing controls][native-tof-closing-review]
 include in-place captured-word changes and equal-state epoch replacement.
 
+Current tuple/tick/State/frame and dynamics-dict layouts are prevalidated before
+indexing, serialization, observation or native intake. Unsupported owners yield
+an explicit unknown without source/frame payload, rather than incidental errors
+or normalized malformed frames. The [owner-layout repair][native-tof-snapshot-owner-review]
+preserves false-availability repros and the spent root timeout/same-deadline recovery.
+
 
 ##### Bounded Native ToF Acquisition History (2026-11-09)
 
@@ -1186,6 +1192,9 @@ observations, matches, queue copies, digests or scalar reports. Existing2
 observations/2 frame checks/2 delivered matches/2 pending matches/4 queue copies
 and per-mode work ceilings remain. The [closing checkpoint][native-tof-delivery-closing-review]
 preserves report-time mutations, the required preflight repair and fixture failure.
+The same [early owner-layout prevalidation][native-tof-snapshot-owner-review]
+precedes template/hash/pending access in default and optional timing/pending modes;
+malformed owners return unknown without source/frame/pending/timing payload.
 
 Success supplies a detached acquisition, its delivered `sensor_tick`, current
 recorder tick and frame context. A held observation keeps its acquisition ID;
@@ -2290,6 +2299,7 @@ figure is not an established minimum.
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
 [native-tof-retention-closing-review]: ../review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
+[native-tof-snapshot-owner-review]: ../../REVIEW.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 [native-tof-closing-review]: ../review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09

@@ -11788,6 +11788,143 @@ def test_native_tof_retention_owner_layout(
 
 
 @pytest.mark.parametrize(
+    "mode,case",
+    (
+        ("current", "empty"),
+        ("current", "short"),
+        ("current", "list"),
+        ("current", "state"),
+        ("current", "frame"),
+        ("current", "dynamics"),
+        ("delivery", "empty"),
+        ("delivery", "short"),
+        ("delivery", "dynamics"),
+        ("timing", "empty"),
+        ("timing", "short"),
+        ("timing", "dynamics"),
+    ),
+)
+def test_native_tof_snapshot_owner_layout(
+    monkeypatch, c1_motion_receipt_source_fixture, mode, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    counters = iter(range(100, 1000, 10))
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", lambda: next(counters))
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    for _ in range(1 if mode == "current" else 3):
+        environment.step(
+            [0.125, 0.3],
+            capture_native_tof_source=True,
+            capture_native_tof_timing=mode == "timing",
+        )
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=mode == "timing",
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(
+                environment, synthetic_test_only=True, include_timing=mode == "timing"
+            )
+    current = owner._current
+    malformed = {
+        "empty": (),
+        "short": current[:1],
+        "list": list(current),
+        "state": (*current[:2], environment.config, current[3]),
+        "frame": (*current[:3], []),
+    }
+    if case == "dynamics":
+        owner._dynamics_sample = []
+    else:
+        owner._current = malformed[case]
+    fields = ("_tof_sample", "_tof_history", "_tof_timing_history")
+    retained = tuple(getattr(owner, name) for name in fields)
+    epochs = deepcopy(
+        (
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {}
+
+    def counted(name, original, limit):
+        work[name] = 0
+
+        def call(*args, **kwargs):
+            work[name] += 1
+            assert work[name] <= limit
+            return original(*args, **kwargs)
+
+        return call
+
+    monkeypatch.setattr(
+        environment, "_observation", counted("observation", environment._observation, 2)
+    )
+    for name, limit in (
+        ("_sample_simulator_native_tof_source", 2),
+        ("_match_native_tof_delivered_source", 2),
+        ("_match_native_tof_pending_sources", 2),
+        ("_match_native_tof_retained_timing", 6),
+        ("_check_native_tof_delivery_frame", 2),
+        ("_c1_source_binding_digest", 64),
+    ):
+        monkeypatch.setattr(
+            diagnostics, name, counted(name, getattr(diagnostics, name), limit)
+        )
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError(
+            "malformed ToF snapshots must not read/retain/replay/clock"
+        )
+
+    for name in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), name, forbidden)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    result = (
+        owner.snapshot_native_tof_source(synthetic_test_only=True)
+        if mode == "current"
+        else owner.snapshot_native_tof_delivery(
+            synthetic_test_only=True,
+            include_pending_sources=mode == "timing",
+            include_timing=mode == "timing",
+        )
+    )
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"]
+    for key in (
+        "source",
+        "frame",
+        "tick",
+        "sensor_tick",
+        "source_epoch",
+        "pending_sources",
+        "timing",
+        "pending_timing",
+    ):
+        assert key not in result
+    assert not any(work.values())
+    assert all(
+        getattr(owner, name) is value
+        for name, value in zip(fields, retained, strict=True)
+    )
+    assert (
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+    assert not any(
+        value
+        for key, value in result.items()
+        if key.endswith(("_qualified", "_certified", "_approved", "_granted"))
+    )
+
+
+@pytest.mark.parametrize(
     "case",
     (
         "copy",

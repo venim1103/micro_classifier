@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §397 for intact395-396 archival;
+Read [REVIEW.md][review] §398 for closed native-ToF snapshot owner layouts;
+§397 records intact395-396 archival;
 §396 records closed native-ToF retention owner layouts;
 §395 records intact391-394 archival and current evidence limits;
 §394 records closed post-native receipt/pending copies;
@@ -344,8 +345,14 @@ Ten failing controls and their required gate are complete; prior30 controls and
 per-family work ceilings remain. Timing cache joins were already closed; no timing
 logic changed. Whole395-396 archival is complete with historical anchors and the
 topic target intact. Timing-delivery history/output joins are already closed.
-Next test current/delivered snapshot owner prevalidation before indexing or dict
-access, without duplicating reports or inventing acceptance.
+Current/delivered snapshot owner prevalidation now rejects malformed tuple/tick/
+State/frame/dynamics before indexing/dict access or source work. Twelve failing
+controls and54 prior controls pass. The first360s root timeout remains spent/
+unknown; one fresh same360s recovery passes6273 tests plus the known QDQ xfail.
+The named timing/source/retention/delivery trace identifies no further justified
+local edit. Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH.
+New concrete source/consumer evidence can change this assessment; autonomy does
+not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

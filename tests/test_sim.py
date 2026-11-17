@@ -11924,6 +11924,98 @@ def test_native_tof_snapshot_owner_layout(
     )
 
 
+@pytest.mark.parametrize("mode", ("retain", "closing", "current", "delivery"))
+@pytest.mark.parametrize("extent", ("short", "long"))
+def test_native_tof_owner_frame_extent(
+    monkeypatch, c1_motion_receipt_source_fixture, mode, extent
+):
+    from interface.protocol import CRC, HEADER, STATE
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    for _ in range(3 if mode == "delivery" else 1):
+        environment.step([0.125, 0.3], capture_native_tof_source=True)
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+        if (
+            mode in ("current", "delivery")
+            and environment._native_tof_source is not None
+        ):
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+    current = owner._current
+    frame_size = HEADER.size + STATE.size + CRC.size
+    assert len(current[3]) == frame_size
+    bad_frame = current[3][:-1] if extent == "short" else current[3] + b"\x00"
+    if mode != "closing":
+        owner._current = (*current[:3], bad_frame)
+    fields = ("_tof_sample", "_tof_history", "_tof_timing_history")
+    retained = tuple(getattr(owner, name) for name in fields)
+    epochs = deepcopy(
+        (
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "native": 0, "binding": 0}
+    original_observation = environment._observation
+    original_native = diagnostics._sample_simulator_native_tof_source
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        return original_observation()
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= 2
+        actual = original_native(*args, **kwargs)
+        if mode == "closing" and work["native"] == 2:
+            owner._current = (*current[:3], bad_frame)
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if type(record) is dict and record.get("current") is not None:
+            assert len(record["current"][3]) == frame_size
+        return original_binding(record)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("unsupported ToF frame extent must not replay/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    if mode in ("retain", "closing"):
+        with pytest.raises(ValueError, match="native ToF"):
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+    else:
+        result = (
+            owner.snapshot_native_tof_source(synthetic_test_only=True)
+            if mode == "current"
+            else owner.snapshot_native_tof_delivery(synthetic_test_only=True)
+        )
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert result["reason"]
+        assert "source" not in result and "frame" not in result
+    assert work["observation"] == work["native"] == (2 if mode == "closing" else 0)
+    assert mode == "closing" or work["binding"] == 0
+    assert all(
+        getattr(owner, name) is value
+        for name, value in zip(fields, retained, strict=True)
+    )
+    assert (
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.mark.parametrize(
     "case",
     (

@@ -18540,7 +18540,7 @@ class _SyntheticC1SourceRecorder:
         include_postprocessing=False,
     ):
         """Retain fresh acquisition words without repeating synthetic C1 staging."""
-        from interface.protocol import State
+        from interface.protocol import CRC, HEADER, STATE, State
 
         if synthetic_test_only is not True:
             raise ValueError("native ToF retention requires synthetic_test_only=True")
@@ -18564,6 +18564,7 @@ class _SyntheticC1SourceRecorder:
             or type(self._current[0]) is not int
             or type(self._current[2]) is not State
             or type(self._current[3]) is not bytes
+            or len(self._current[3]) != HEADER.size + STATE.size + CRC.size
             or type(self._dynamics_sample) is not dict
         ):
             raise ValueError("native ToF retention requires a current bound producer")
@@ -18607,6 +18608,8 @@ class _SyntheticC1SourceRecorder:
                 type(current) is not tuple
                 or len(current) != 4
                 or type(current[2]) is not State
+                or type(current[3]) is not bytes
+                or len(current[3]) != HEADER.size + STATE.size + CRC.size
             ):
                 raise ValueError(
                     "native ToF recorder ownership changed during retention"
@@ -19387,7 +19390,7 @@ class _SyntheticC1SourceRecorder:
             )
 
         try:
-            from interface.protocol import State
+            from interface.protocol import CRC, HEADER, STATE, State
 
             if type(environment) is not RoverEnv:
                 raise TypeError("unsupported native ToF producer")
@@ -19397,6 +19400,7 @@ class _SyntheticC1SourceRecorder:
                 or type(current_before[0]) is not int
                 or type(current_before[2]) is not State
                 or type(current_before[3]) is not bytes
+                or len(current_before[3]) != HEADER.size + STATE.size + CRC.size
                 or type(dynamics_before) is not dict
             ):
                 raise ValueError("unsupported native ToF current owner layout")
@@ -20481,7 +20485,7 @@ class _SyntheticC1SourceRecorder:
             return report
 
         try:
-            from interface.protocol import State
+            from interface.protocol import CRC, HEADER, STATE, State
 
             if (
                 type(current_before) is not tuple
@@ -20489,6 +20493,7 @@ class _SyntheticC1SourceRecorder:
                 or type(current_before[0]) is not int
                 or type(current_before[2]) is not State
                 or type(current_before[3]) is not bytes
+                or len(current_before[3]) != HEADER.size + STATE.size + CRC.size
                 or type(dynamics_before) is not dict
             ):
                 raise ValueError("unsupported native ToF delivery owner layout")

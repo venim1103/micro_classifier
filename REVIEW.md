@@ -498,6 +498,30 @@ edit or unchanged suite rerun. Latest gate6273/known QDQ1 xfail/77 warnings200.0
 Layouts/script remain in session files;398 logs stay in .git. Next test fixed State
 frame extent before owner hashing; no new wire/physical bound or qualification.
 
+## 400. Fixed Native-ToF Owner Frame Extents (2026-11-17)
+
+From clean pushed23dd3ec, follow398's bytes-type guard into the owner digest, which
+hex-encodes arbitrary bytes without its own extent cap. Eight short/long controls
+FAIL15.01s because malformed frames reach that digest, including closing retention.
+Require existing HEADER.size + STATE.size + CRC.size before initial/closing retention
+and current/delivered owner hashing; actual fixed State frame is92 bytes. This is
+the frozen wire extent, not a new domain/physical bound or checksum/source proof.
+No new encoding/math/copy/digest/read, signature, schema or successful-output change.
+
+Finite routine plan:8 repro/8 repair/72 prior each<=60s;2 observations/native reads/
+64 digests, no RNG/replay/clock after prep. Repaired8 PASS0.98s, with0 early reads/
+digests and closing malformed frames never passed to binding. Prior18 retain/
+20 current/18 delivered/16 timing PASS2.91s. One root<=360s with --durations=10
+PASS6281/known QDQ1 xfail/77 warnings227.04s; Ruff/format/Pylance syntax/whitespace,
+four-source tested hashes and scoped links PASS. AST/signature conservation outside
+three methods/one test PASS; only4 len/1 closing bytes-type calls added. Logs stay
+in .git/returns-400-*; all failed/unknown historical positions remain spent.
+
+Named queue recheck still lacks independent Q0-Q4 acceptance; ST tools not on PATH,
+licence/board work user-side; studies/SC18/D4/learned work protected/deferred.
+No further concrete edit identified; new source/consumer evidence can change this.
+All eight flags false, guard UNKNOWN; no command or qualification follows.
+
 ## Sources
 
 Hardware and tools:

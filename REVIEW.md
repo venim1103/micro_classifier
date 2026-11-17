@@ -505,6 +505,20 @@ Scoped links/whitespace/four400 hashes PASS; no code change or suite rerun.
 Latest gate6281/known QDQ1 xfail/77 warnings227.04s; session layouts/script retained.
 Next test nested State ages/vector prevalidation before owner asdict; no new bounds.
 
+## 402. Codec State Prevalidation Before ToF Owner Copying (2026-11-17)
+
+From clean pushed449e66a,16 FAIL30.46s: short/long ages4/6 and velocity2/4 reach asdict.
+Reuse protocol validate_state before initial/closing retention and current/delivered
+owner copying; no new wire/numerical/physical rule, encoding/copy/digest/source read.
+Finite16 repro/16 repair/72 prior each<=60s;2 observations/native/64 digests, no RNG/
+replay/clock after prep. Repaired16 PASS1.57s; prior18 retain/20 current/18 delivered/
+16 timing PASS3.79s. One360s root with --durations=10 PASS6297/known QDQ1 xfail/
+77 warnings231.44s; Ruff/format/Pylance syntax/whitespace/tested hashes/links PASS.
+AST/signatures conserved outside three methods/one test; only4 codec validator calls
+added. Logs remain in .git/returns-402-*; all failed/unknown historical positions spent.
+All eight flags false, guard UNKNOWN; no qualification or command. Next trace the
+corresponding goal-source owner path; this checkpoint is not a continuation stop.
+
 ## Sources
 
 Hardware and tools:

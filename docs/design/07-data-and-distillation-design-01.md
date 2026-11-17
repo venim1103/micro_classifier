@@ -1091,6 +1091,12 @@ existing fixed State-frame byte extent before owner hashing
 controls. This bounds frame bytes, not checksum/content correspondence or source
 authority; no encoding/copy/digest/read or wire change.
 
+The owner preflight also reuses codec `validate_state` before State `asdict`,
+including retention's closing owner. Thus unsupported nested age/vector fields
+cannot reach the dataclass copy first. The [codec preflight checkpoint][native-tof-owner-state-review]
+preserves bounded short/long controls without new State rules, encoding or source
+qualification; the existing wire predicate is not actual-state acceptance.
+
 Two-point content and identity checks are not perpetual freshness, enforced
 atomicity, live-callee/source authority, shared clock/epoch support, one-use
 execution, selected-hit correctness, range/native/physical bounds, permission
@@ -2308,6 +2314,7 @@ figure is not an established minimum.
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17
+[native-tof-owner-state-review]: ../../REVIEW.md#402-codec-state-prevalidation-before-tof-owner-copying-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 [native-tof-closing-review]: ../review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09

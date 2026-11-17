@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §401 for intact399-400 archival;
+Read [REVIEW.md][review] §402 for codec State prevalidation before owner copying;
+§401 records intact399-400 archival;
 §400 records fixed State-frame prehash extent checks;
 §399 records intact397-398 archival;
 §398 records closed native-ToF snapshot owner layouts;
@@ -358,8 +359,10 @@ owners now require the existing fixed State-frame extent before owner hashing.
 Eight short/long prehash repros and their required gate are complete; root6281 plus
 the known QDQ xfail. No new frame encoding/copy/digest/read, wire or physical bound.
 Whole399-400 archival is complete with historical anchors and the topic target intact.
-The fresh actual continuation now traces nested State ages/vector validation before
-owner asdict, reusing the existing codec predicate rather than new limits or encoding.
+Nested ToF owner State fields now pass the existing codec predicate before asdict,
+including closing retention;16 short/long ages/vector controls and the required gate
+are complete. Root6297 plus known QDQ xfail; no extra copies/encodings/source reads.
+Next trace the corresponding goal-source owner path without adopting new limits.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

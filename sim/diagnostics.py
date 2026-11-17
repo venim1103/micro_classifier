@@ -18540,7 +18540,7 @@ class _SyntheticC1SourceRecorder:
         include_postprocessing=False,
     ):
         """Retain fresh acquisition words without repeating synthetic C1 staging."""
-        from interface.protocol import CRC, HEADER, STATE, State
+        from interface.protocol import CRC, HEADER, STATE, State, validate_state
 
         if synthetic_test_only is not True:
             raise ValueError("native ToF retention requires synthetic_test_only=True")
@@ -18568,6 +18568,7 @@ class _SyntheticC1SourceRecorder:
             or type(self._dynamics_sample) is not dict
         ):
             raise ValueError("native ToF retention requires a current bound producer")
+        validate_state(self._current[2])
         if (
             self._simulator_rng is not environment.rng
             or self._simulator_odometry_rng is not environment.odometry_rng
@@ -18614,6 +18615,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF recorder ownership changed during retention"
                 )
+            validate_state(current[2])
             _check_native_tof_history_layout(self._tof_history, template)
             if include_postprocessing or self._tof_postprocessing_history:
                 _check_native_tof_archive_words(self._tof_history, template)
@@ -19390,7 +19392,7 @@ class _SyntheticC1SourceRecorder:
             )
 
         try:
-            from interface.protocol import CRC, HEADER, STATE, State
+            from interface.protocol import CRC, HEADER, STATE, State, validate_state
 
             if type(environment) is not RoverEnv:
                 raise TypeError("unsupported native ToF producer")
@@ -19404,6 +19406,7 @@ class _SyntheticC1SourceRecorder:
                 or type(dynamics_before) is not dict
             ):
                 raise ValueError("unsupported native ToF current owner layout")
+            validate_state(current_before[2])
             if (
                 self._simulator_rng is not environment.rng
                 or self._simulator_odometry_rng is not environment.odometry_rng
@@ -20485,7 +20488,7 @@ class _SyntheticC1SourceRecorder:
             return report
 
         try:
-            from interface.protocol import CRC, HEADER, STATE, State
+            from interface.protocol import CRC, HEADER, STATE, State, validate_state
 
             if (
                 type(current_before) is not tuple
@@ -20497,6 +20500,7 @@ class _SyntheticC1SourceRecorder:
                 or type(dynamics_before) is not dict
             ):
                 raise ValueError("unsupported native ToF delivery owner layout")
+            validate_state(current_before[2])
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(history_before, template)
             if include_postprocessing:

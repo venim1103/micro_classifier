@@ -2255,8 +2255,8 @@ figure is not an established minimum.
 [qualification-consumers]: ../../sim/diagnostics.py
 [realized-receipt-review]: ../review/181-182.md#182-opt-in-simulator-realized-motion-receipts-2026-11-09
 [simulator-source-read-review]: ../review/183-220.md#183-recorder-reads-from-the-actual-simulator-owner-2026-11-09
-[owning-intake-epoch-review]: ../../REVIEW.md#393-closed-owning-intake-original-and-final-sampling-2026-11-17
-[owning-intake-copies-review]: ../../REVIEW.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
+[owning-intake-epoch-review]: ../review/391-394.md#393-closed-owning-intake-original-and-final-sampling-2026-11-17
+[owning-intake-copies-review]: ../review/391-394.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
 [native-motion-source-review]: ../review/183-220.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09
 [native-goal-source-review]: ../review/183-220.md#185-native-goal-producer-words-and-source-pose-2026-11-09
 [receipt-clock-review]: ../review/183-220.md#186-diagnostic-monotonic-receipt-windows-2026-11-09
@@ -2269,7 +2269,7 @@ figure is not an established minimum.
 [receipt-epoch-review]: ../review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16
 [owned-receipt-epoch-review]: ../review/376-380.md#377-closed-live-request-consumer-epochs-2026-11-16
 [owned-receipt-cache-review]: ../review/386-390.md#390-closed-live-request-receipt-cache-identity-2026-11-17
-[owned-startup-cache-review]: ../../REVIEW.md#391-closed-conditional-startup-receipt-cache-identity-2026-11-17
+[owned-startup-cache-review]: ../review/391-394.md#391-closed-conditional-startup-receipt-cache-identity-2026-11-17
 [integration-source-review]: ../review/183-220.md#193-actual-native-integration-source-intermediates-2026-11-09
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09

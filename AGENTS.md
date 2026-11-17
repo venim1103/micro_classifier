@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §394 for closed post-native receipt/pending copies;
+Read [REVIEW.md][review] §395 for intact391-394 archival and current evidence limits;
+§394 records closed post-native receipt/pending copies;
 §393 records closed owning intake original/final sampling;
 §392 records intact386-390 archival and remaining evidence;
 §391 records closed conditional startup receipt cache identity;
@@ -333,8 +334,11 @@ two observations and existing intake/digest/math work ceilings remain.
 Combined intake now copies receipt words/flags and pending sample words/masks after
 the native intake. Four late receipt/queue repros and their required gate are
 complete; only existing blocks moved, without another read/copy/digest or changed
-ceiling. Next archive whole391-394 before further root growth, preserving failed
-checks and no source/clock/one-use/admission authority.
+ceiling. Whole391-394 archival is complete, preserving original/final intake
+repros, repairs, failed formatting/documentation and spent ledgers. The fresh
+bounded owning source trace identifies no further concrete compatible local edit.
+Next actual independent Q0-Q4 evidence, or a new concrete compatible source/
+consumer issue, is needed; autonomy is not that evidence or study/hardware authority.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

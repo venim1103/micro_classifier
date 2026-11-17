@@ -85,8 +85,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 376-380][chapter-review-40]
 - [Checkpoints 381-385][chapter-review-41]
 - [Checkpoints 386-390][chapter-review-42]
+- [Checkpoints 391-394][chapter-review-43]
 
-Checkpoints 391 onward and the source bibliography remain below.
+Checkpoints 395 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -454,135 +455,50 @@ repeated historical handoffs.
 
 ## 391. Closed Conditional Startup Receipt Cache Identity (2026-11-17)
 
-Begin clean pushede02e540. Follow the remaining named Q0 startup consumer of the
-same live receipt reader. Producer/RNG/retained-source pins existed, but its two
-individually current receipt reads could straddle an equal-word cache replacement.
-Three added existing-harness controls replace it after the first receipt reader,
-during startup consumer work or after the closing receipt reader. First3
-FAIL6.92s with false conditional path availability.
-
-Pin the original producer receipt cache before the first source/receipt reads;
-close identity with existing final consumer/owner/source checks. Only failed3
-after repair PASS0.85s; prior20 PASS1.38s, including current ticks2/3, rest and
-missing/malformed source/premise/consumer content controls. No extra reads,
-observations, digest, direction, setup or path work. Existing two initial/two
-receipt reads/eight observations/two history checks/256 digests/one setup/
-consumer/inspection/eight source-free directions remain. One reference pin and
-one final identity check; output and frozen latency/rest domains unchanged.
-
-Routine ledger: first3<=45s, repaired failed3<=45s, prior20<=60s, root<=360s;
-all attempts spent. Fail-fast root `python -m pytest -q && ruff check . &&
-git diff --check` PASS6236/known QDQ1 xfail/77 warnings206.35s. Changed-file
-format/Pylance syntax, exact call sequence, unrelated AST/signatures, four-file
-tested hashes and scoped reference/whitespace checks PASS. Python diagnostics/
-tests only; root host/parity/sanitizer/Arm controls run with no skips, not linked
-firmware/board/fit/task-quality evidence.
-
-Local .git/returns-391-* repro/pre-source/root/hash evidence retained; no user
-files removed or protected environment/dependency/download/study/hardware work.
-All eight flags false, guard UNKNOWN; current source/word identity does not accept
-setup/source/coverage/error/clock/one-use evidence or admit any launch/predecessor.
-Next archive whole386-390 intact, retaining failed checks, pause/recovery history
-and former blocker assessments, before further review growth.
+[Complete unchanged checkpoint][review-391-394-preserved-0] is preserved in the archive.
 
 ## 392. Intact Composed Source Checkpoint Archival (2026-11-17)
 
-From clean pushed638eb31, move whole386-390 intact to the linked archive before
-further root review growth. Preserve the earlier archival checker failure, goal
-dynamics controls, former remaining-evidence assessment and newly failed/repaired
-native/receipt/request cache repros with complete spent ledgers. Five historical
-root headings remain; three topic references and the archive admission-dependency
-reference retain their resolved meanings. No status, authority or run is renewed.
-
-One bounded transform with four pre-layout snapshots PASS; exact whole-body/
-heading/topic conservation, ten local reference targets, scoped whitespace and
-four unchanged391 tested source hashes PASS. No transform/check failure or source
-edit; no unchanged successful code-suite rerun. Latest source gate remains
-6236/known QDQ1 xfail/77 warnings206.35s. Original layouts/script stay in session
-files and bounded source logs .git/returns-389/390/391-*; portable ledgers are here.
-
-Pylance confirms all six live-receipt helper calls are the repaired startup/
-prepare/recheck consumers. Recheck the agreed milestone queue and named Q0-Q5
-packet: no further justified unblocked local edit or independent acceptance input
-is identified by this bounded trace. Q0 accepted setup/source/return/coverage,
-Q1 propagated state, Q2 uniform full-command native/accumulated error, Q3 pose/
-range/time/transform and Q4 qualified clock/application/one-use/predecessor evidence
-remain missing. Queue3 guard/executor composition cannot bypass queue2 acceptance.
-ST tools again not on PATH; licences/board stay user-side. New qualification
-studies, changed bounds/domains, SC18, D4/learned/model work remain protected/
-deferred. Next actual independent evidence or a new concrete compatible source/
-consumer issue; not routine approval/accounting or a permanent no-prerequisite
-claim. All eight flags false, guard UNKNOWN; no command is admitted.
+[Complete unchanged checkpoint][review-391-394-preserved-1] is preserved in the archive.
 
 ## 393. Closed Owning Intake Original And Final Sampling (2026-11-17)
 
-Fresh actual continue starts clean main426dfb1/upstream0/0, verified Python3.12.3/
-Ruff0.17.0/host and Arm compilers. Named Q0/Q2 owning intake took its original
-owner/producer/RNG/binding pins after its first observation. Nine default/receipt/
-integration first-observation coordinated RNG/odometry/producer controls first
-FAIL10.06s, DID NOT RAISE. Move the existing seven pins before sampling; failed9
-PASS0.78s, prior64 actual/native/default intake controls PASS0.95s.
-
-The same bounded trace finds closing dynamics words copied before native intake.
-Two late native-sample pose/action controls first FAIL5.63s, DID NOT RAISE.
-Split the unchanged shared sampler into observation, existing queue/receipt/native
-work, then the existing dynamics-word builder using that observation. Failed2
-PASS0.59s; required post-sampler prior26 PASS0.61s, including nine original epochs,
-three valid source modes and fourteen native/default intake controls.
-No new observation/intake/digest/math call or work ceiling; owner digest now occurs
-before source prevalidation rather than after it. Staging still publishes only
-after closing checks and does not undo external mutations.
-
-Routine ledger: first/repaired9<=60s, prior64<=60s; first/repaired2<=45s, prior26
-<=60s; one fail-fast root<=360s, all positions spent. Required root
-`python -m pytest -q && ruff check . && git diff --check` PASS6247/known QDQ1
-xfail/77 warnings216.48s. Changed-file format/Pylance syntax, exact seven-pin
-movement, sampler expansion/call conservation, unchanged unrelated AST/signatures,
-four-file tested hashes and scoped links/whitespace PASS. Python diagnostics/tests
-only; root host/parity/sanitizer/Arm controls run with no skips, not linked firmware,
-board/fit/task-quality evidence. First documentation patch used a wrong historical
-anchor; only its AGENTS prefix applied. Inspect actual targets, then apply only
-remaining hunks; no source edit or suite rerun for that documentation repair.
-
-Local .git/returns-393-* original source/test/closing snapshots and logs retained.
-No user data removed, new dependency/download/study/hardware/environment work or
-changed bound/domain. All eight flags false, guard UNKNOWN; independent Q0-Q4
-acceptance remains absent. Next follow combined native/pending intake closing
-queue-word correspondence, not another report or source/clock/one-use authority.
+[Complete unchanged checkpoint][review-391-394-preserved-2] is preserved in the archive.
 
 ## 394. Closed Post-Native Receipt And Pending Copies (2026-11-17)
 
-Begin clean pushed9e5a3bb. Continue the named Q0/S2 owning intake's combined native/
-pending source trace. Its queue words were copied before native integration intake.
-Two raw pending sample-bit/mask controls mutate after the second native sample:
-first2 FAIL6.54s, DID NOT RAISE. Move the existing queue-copy block after native
-intake; failed2 PASS0.65s, prior49 intake/native/default controls PASS0.88s.
+[Complete unchanged checkpoint][review-391-394-preserved-3] is preserved in the archive.
 
-The same boundary also left the earlier receipt copy stale. Two additional
-submitted-action-word/source-qualified-flag controls first FAIL5.76s, DID NOT RAISE.
-Move the existing receipt copy/epoch assignment after native intake; failed2
-PASS0.77s. Format check then fails on one new assignment line wrap; fail-fast
-prevents prior18 from running. Apply the exact Ruff format repair, format PASS;
-still-pending prior18 native/pending controls PASS5.23s. No unchanged runtime rerun
-for formatting. Actual external mutations are not undone; rejected captures do
-not publish staged source/history/currentness.
+## 395. Intact Owning Intake Checkpoint Archival (2026-11-17)
 
-Routine ledger: first/repaired pending2<=45s, prior49<=60s; first/repaired receipt2
-<=45s, prior18<=60s; one fail-fast root<=360s, all positions spent. Root
-`python -m pytest -q && ruff check . && git diff --check` PASS6251/known QDQ1
-xfail/77 warnings193.08s. Changed-file format/Pylance syntax, exact existing-block
-reordering/call multiset/signatures/unrelated AST, four tested hashes and scoped
-links/whitespace PASS. New combined controls enforce two native reads/two queue
-copies and actual nonempty<=8 pending acquisitions; no observation/intake/copy/
-digest/math call or work ceiling is added. No C/runtime source change; root host/
-parity/sanitizer/Arm controls run with no skips, not linked firmware/board/fit/
-task-quality evidence.
+From clean pushedc881b41, archive whole391-394 before further root growth beyond
+1051 lines. Use the four completed older records rather than invent a fifth
+checkpoint to fill a batch. Preserve original/final source and receipt/pending
+repros, failed checks/partial documentation repair, all passed controls and spent
+ledgers. Four historical root headings and three chapter01 targets remain intact.
 
-Local .git/returns-394-* source/repro/repair/root/hash records retained; no user
-data removed or new dependency/download/study/hardware/environment work.
-All eight flags false, guard UNKNOWN, independent Q0-Q4 acceptance absent.
-Next archive whole391-394 intact before further root growth; this correspondence
-does not qualify source/coverage/error/clock/one-use or admit a command.
+One bounded transform with two pre-layout snapshots PASS; exact whole-body/full
+inverse root layout/topic conservation, nine local targets/anchors, scoped
+whitespace and four unchanged394 tested source hashes PASS. First staged whitespace
+check rejects the preserved separator as a new EOF blank line. Retain the whole
+block and append return navigation; recheck passes without repeating the transform.
+No source change or unchanged green suite rerun. Latest source gate remains6251/
+known QDQ1 xfail/77 warnings193.08s. Original layouts/script stay in session files;
+bounded .git/returns-393/394-* evidence and committed portable ledgers are retained.
+
+The fresh actual continuation completed concrete source prerequisites rather than
+treating old blocker assessments as permanent. Its bounded owning intake trace
+identifies no further justified compatible local edit. Recheck agreed milestones
+and named packet: independent Q0 setup/source/return/coverage, Q1 propagated state,
+Q2 uniform full-command native/accumulated error, Q3 pose/range/time/transform and
+Q4 qualified clock/application/one-use/predecessor evidence remain absent.
+Queue3 guard/executor composition cannot replace those queue2 inputs. ST executables
+again not on PATH; licence/board/hardware work stays user-side. Qualification
+studies, changed bounds/domains, SC18, D4/learned/model work remain protected/deferred.
+The next supported step needs actual independent evidence or a new concrete
+compatible source/consumer issue, not routine approval/accounting. Autonomy and
+passing fixtures do not supply acceptance. All eight flags false, guard UNKNOWN;
+no command is admitted, host fail-safes remain independent.
 
 ## Sources
 
@@ -967,6 +883,7 @@ Methods and measurements:
 [chapter-review-40]: docs/review/376-380.md
 [chapter-review-41]: docs/review/381-385.md
 [chapter-review-42]: docs/review/386-390.md
+[chapter-review-43]: docs/review/391-394.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -1049,3 +966,7 @@ Methods and measurements:
 [review-386-390-preserved-2]: docs/review/386-390.md#388-current-source-queue-evidence-blockers-2026-11-17
 [review-386-390-preserved-3]: docs/review/386-390.md#389-closed-composed-native-and-receipt-cache-identities-2026-11-17
 [review-386-390-preserved-4]: docs/review/386-390.md#390-closed-live-request-receipt-cache-identity-2026-11-17
+[review-391-394-preserved-0]: docs/review/391-394.md#391-closed-conditional-startup-receipt-cache-identity-2026-11-17
+[review-391-394-preserved-1]: docs/review/391-394.md#392-intact-composed-source-checkpoint-archival-2026-11-17
+[review-391-394-preserved-2]: docs/review/391-394.md#393-closed-owning-intake-original-and-final-sampling-2026-11-17
+[review-391-394-preserved-3]: docs/review/391-394.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17

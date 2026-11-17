@@ -582,6 +582,39 @@ false, guard UNKNOWN; independent Q0-Q4 evidence remains absent, no command or
 one-use/predecessor authority follows. Next trace the receipt cache through
 conditional owned initial-startup composition; no unchanged green gate rerun.
 
+## 391. Closed Conditional Startup Receipt Cache Identity (2026-11-17)
+
+Begin clean pushede02e540. Follow the remaining named Q0 startup consumer of the
+same live receipt reader. Producer/RNG/retained-source pins existed, but its two
+individually current receipt reads could straddle an equal-word cache replacement.
+Three added existing-harness controls replace it after the first receipt reader,
+during startup consumer work or after the closing receipt reader. First3
+FAIL6.92s with false conditional path availability.
+
+Pin the original producer receipt cache before the first source/receipt reads;
+close identity with existing final consumer/owner/source checks. Only failed3
+after repair PASS0.85s; prior20 PASS1.38s, including current ticks2/3, rest and
+missing/malformed source/premise/consumer content controls. No extra reads,
+observations, digest, direction, setup or path work. Existing two initial/two
+receipt reads/eight observations/two history checks/256 digests/one setup/
+consumer/inspection/eight source-free directions remain. One reference pin and
+one final identity check; output and frozen latency/rest domains unchanged.
+
+Routine ledger: first3<=45s, repaired failed3<=45s, prior20<=60s, root<=360s;
+all attempts spent. Fail-fast root `python -m pytest -q && ruff check . &&
+git diff --check` PASS6236/known QDQ1 xfail/77 warnings206.35s. Changed-file
+format/Pylance syntax, exact call sequence, unrelated AST/signatures, four-file
+tested hashes and scoped reference/whitespace checks PASS. Python diagnostics/
+tests only; root host/parity/sanitizer/Arm controls run with no skips, not linked
+firmware/board/fit/task-quality evidence.
+
+Local .git/returns-391-* repro/pre-source/root/hash evidence retained; no user
+files removed or protected environment/dependency/download/study/hardware work.
+All eight flags false, guard UNKNOWN; current source/word identity does not accept
+setup/source/coverage/error/clock/one-use evidence or admit any launch/predecessor.
+Next archive whole386-390 intact, retaining failed checks, pause/recovery history
+and former blocker assessments, before further review growth.
+
 ## Sources
 
 Hardware and tools:

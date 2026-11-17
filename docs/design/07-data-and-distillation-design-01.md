@@ -1982,6 +1982,9 @@ Original/copied/closing initial/current receipt/event/input/report bindings and
 pinned RNG identities close after consumer work, including the derived State/frame
 evidence and copied capture passed to the consumer. Returned diagnostic content
 is detached; it remains guard UNKNOWN/no permission with all eight flags false.
+The [startup cache join][owned-startup-cache-review] pins the original producer
+receipt cache before the first source/receipt reads through consumer work and
+closing reads; equal-word cache replacement returns unknown without path output.
 
 At most two retained reads/two receipt reads/eight observations/two receipt-history
 checks/one setup audit/one startup consumer/256 digests are used. Existing one
@@ -2255,6 +2258,7 @@ figure is not an established minimum.
 [receipt-epoch-review]: ../review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16
 [owned-receipt-epoch-review]: ../review/376-380.md#377-closed-live-request-consumer-epochs-2026-11-16
 [owned-receipt-cache-review]: ../../REVIEW.md#390-closed-live-request-receipt-cache-identity-2026-11-17
+[owned-startup-cache-review]: ../../REVIEW.md#391-closed-conditional-startup-receipt-cache-identity-2026-11-17
 [integration-source-review]: ../review/183-220.md#193-actual-native-integration-source-intermediates-2026-11-09
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09

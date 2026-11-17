@@ -23518,6 +23518,7 @@ class _SyntheticC1SourceRecorder:
             producer = self._simulator
             if type(producer) is not RoverEnv:
                 raise TypeError("missing_owned_startup_actual_producer")
+            receipt_source_before = producer._motion_receipt_source
             rng_before, odometry_before = producer.rng, producer.odometry_rng
             retained_before = self._initial_setup_source
             tick, _, _, frame = self._current
@@ -23634,6 +23635,7 @@ class _SyntheticC1SourceRecorder:
                 or owner_binding() != binding
                 or self._simulator is not producer
                 or self._initial_setup_source is not retained_before
+                or producer._motion_receipt_source is not receipt_source_before
                 or producer.rng is not rng_before
                 or producer.odometry_rng is not odometry_before
                 or self._simulator_rng is not rng_before

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §390 for closed live request receipt cache identity;
+Read [REVIEW.md][review] §391 for closed conditional startup receipt cache identity;
+§390 records closed live request receipt cache identity;
 §389 records closed composed native/receipt cache identities;
 §388 records the former source-queue evidence assessment;
 §387 records closed native goal dynamics sampling;
@@ -315,7 +316,11 @@ Opt-in live request preparation/rechecking now also pin the original receipt cac
 before the first receipt read through consumer work and after the closing reader
 returns. Six initial/between/closing equal-word replacement repros and their gate
 are complete; defaults and existing read/digest/work limits are unchanged.
-Next trace the same receipt cache in conditional owned initial-startup composition.
+Conditional owned initial-startup now pins the same original receipt cache across
+both receipt reads/consumer work. Three equal-word cache replacement repros and
+its gate are complete; eight observations/256 digests and all prior work limits
+remain. Next archive whole386-390 before further review growth, then retain the
+independent source/coverage/error/timing blockers without inventing authority.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

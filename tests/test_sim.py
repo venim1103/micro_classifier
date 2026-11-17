@@ -10854,6 +10854,9 @@ def c1_owned_initial_startup_fixture(c1_retained_initial_setup_source_fixture):
         "late_tick",
         "consumer_evidence_mutated",
         "consumer_capture_mutated",
+        "initial_receipt_cache",
+        "consumer_receipt_cache",
+        "closing_receipt_cache",
     ),
 )
 def test_owned_initial_startup_path(
@@ -10939,6 +10942,13 @@ def test_owned_initial_startup_path(
         result = original_receipt(self, *args, **kwargs)
         if work["receipt"] == 1:
             receipt = result
+        if (work["receipt"], case) in (
+            (1, "initial_receipt_cache"),
+            (2, "closing_receipt_cache"),
+        ):
+            environment._motion_receipt_source = dict(
+                environment._motion_receipt_source
+            )
         return result
 
     def consumer(*args, **kwargs):
@@ -10961,6 +10971,10 @@ def test_owned_initial_startup_path(
             args[1]["point_error_evidence"]["state_frames"][0] = b"invalid"
         elif case == "consumer_capture_mutated":
             args[0][0]["capture_ticks"][0] = 1
+        elif case == "consumer_receipt_cache":
+            environment._motion_receipt_source = dict(
+                environment._motion_receipt_source
+            )
         return report
 
     def copy(value, *args, **kwargs):

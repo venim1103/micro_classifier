@@ -18330,6 +18330,7 @@ class _SyntheticC1SourceRecorder:
         state, emitted_frame = _state_from_simulator_dynamics_source(snapshot)
         receipt_history = []
         if capture_motion_receipt_source:
+            _check_simulator_receipt_history_extent(self._receipt_history)
             if self._receipt_history:
                 _check_simulator_receipt_history(
                     self._receipt_history,

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §416 for closed owning intake history-root hashes;
+Read [REVIEW.md][review] §417 for closed post-observation history consumption;
+§416 records closed owning intake history-root hashes;
 §415 records bounded receipt-history prehash validation;
 §414 records the prior named-queue evidence/tool blockers;
 §413 records closed initial retention owner-word joins;
@@ -445,9 +446,14 @@ xfail passed. Existing calls, source words, missing-source behavior and work cap
 are unchanged. The owning intake now runs its unchanged configured-history extent
 guard inside both owner bindings, including after the final observation.
 Six late-root repros passed after repair, plus68 prior controls and root6494/known
-QDQ1 xfail. No sampling/copy/digest call or work cap changed. Next trace that same
-history before post-observation truth-testing/copying, not another completed report
-or acceptance evidence.
+QDQ1 xfail. No sampling/copy/digest call or work cap changed. The same receipt
+branch now reuses the shared root guard after its first observation and before
+truth-testing/copying. Four red/repaired controls and74 prior controls passed;
+root6498/known QDQ1 xfail passed. Empty dicts previously reached copying; this
+NumPy runtime rejects empty-array truth before copying, not through the named
+history predicate. Default-off source AST and all prior test AST are unchanged.
+Next archive whole408-412 checkpoints before further root-review growth, then
+reassess named inputs without inventing reports, acceptance or a general audit.
 Named-queue reassessment against design §§1/2/12 and the Q0-Q5 packet still lacks
 independent
 Q0 setup/source/return/coverage, Q1 propagated state, Q2 uniform native/accumulated

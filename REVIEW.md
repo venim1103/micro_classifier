@@ -796,6 +796,37 @@ Q0-Q4 inputs remain absent. Next trace this same owning history after its first
 observation and before conditional truth-testing/copying; closing hash protection
 alone does not assert that earlier consumption is prevalidated.
 
+## 417. Closed Post-Observation History Consumption (2026-11-17)
+
+From clean pusheddcd9099, the same owning intake's first observation could
+replace history after original binding but before receipt-branch truth/copy.
+Closing hash guards do not prevalidate that earlier consumption. One shared
+extent call now precedes truth-testing; empty-list startup and the full semantic
+checker remain unchanged. Unsupported roots reject explicitly without copying
+them or publishing other recorder fields; external mutation is not undone.
+
+Finite4 synthetic repro/repaired controls<=60s, existing selectors<=60s and one
+root<=360s, with syntax/format/AST/hash/links. Receipt/integration x empty array/
+dict:4FAIL6.61s. Dict roots reached forbidden deepcopy; array error wording did
+not match the named shape/budget rejection. One direct NumPy bool snippet (no
+fixture rerun) confirmed this installed runtime raises on empty-array truth,
+before copy. The initial hypothesis that both always reached copy was refined;
+neither path was prevalidated by the named root guard. Repaired4PASS0.72s;
+existing74PASS1.31s. One observation/<=2 native intakes/32 digests, no staging/
+replay/clock, unchanged tick/RNG and exact retained field identities are checked.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6498/known QDQ1 xfail/77 warnings209.46s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, exact one-call source
+AST delta, unchanged signatures/default branch/all previous test AST and four
+tested hashes PASS. Local .git logs/hash bracket are nonportable; committed
+controls preserve actual results, the refined hypothesis and spent positions.
+
+No sample/native read/encoding/copy/digest/report/arithmetic, work cap, domain,
+clock/RNG or qualification change. Eight flags false, guard UNKNOWN; independent
+Q0-Q4 inputs remain absent. Next archive whole408-412 before further root-review
+growth, then reassess named input blockers without a general audit/new reports.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

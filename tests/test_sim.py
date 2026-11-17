@@ -11562,6 +11562,90 @@ def test_actual_source_intake_closing_observation(
     assert environment.odometry_rng.bit_generator.state == odometry_before
 
 
+@pytest.mark.parametrize("mode", ("receipt", "integration"))
+@pytest.mark.parametrize("case", ("array", "dict"))
+def test_actual_source_intake_history_consumption(
+    c1_motion_receipt_source_fixture, monkeypatch, mode, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    malformed = np.zeros(0) if case == "array" else {}
+    fields = (
+        "_pending",
+        "_history",
+        "_latest",
+        "_current",
+        "_binding",
+        "_dynamics_sample",
+        "_integration_sample",
+    )
+    retained = tuple(getattr(owner, name) for name in fields)
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "native": 0, "binding": 0}
+    original_observation = environment._observation
+    original_copy = diagnostics.deepcopy
+    original_binding = diagnostics._c1_source_binding_digest
+    original_native = diagnostics._sample_simulator_native_integration_source
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        result = original_observation()
+        owner._receipt_history = malformed
+        return result
+
+    def copied(value, *args, **kwargs):
+        assert value is not malformed
+        return original_copy(value, *args, **kwargs)
+
+    def binding(value):
+        work["binding"] += 1
+        assert work["binding"] <= 32
+        return original_binding(value)
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("intake must reject before staging or replay")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", native
+    )
+    monkeypatch.setattr(diagnostics, "capture_synthetic_c1_views", forbidden)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    monkeypatch.setattr(rover, "integrate", forbidden)
+    monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    with pytest.raises(ValueError, match="history.*(shape|budget)"):
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_motion_receipt_source=True,
+            capture_native_integration_source=mode == "integration",
+        )
+    assert work["observation"] == 1
+    assert owner._receipt_history is malformed
+    assert all(getattr(owner, name) is before for name, before in zip(fields, retained))
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.mark.parametrize(
     "case",
     (

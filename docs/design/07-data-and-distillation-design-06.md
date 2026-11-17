@@ -255,6 +255,13 @@ unpublished and the external mutation is not undone. This adds only the closing
 extent check, not sampling, copy or digest calls. The
 [intake checkpoint][intake-history-extent-review] records all three intake modes.
 
+When receipt capture is enabled, the intake also reuses the shared root predicate
+after its first producer sample and before history truth-testing/copying. Empty
+list startup remains valid; unsupported roots reject explicitly without copying
+them or publishing recorder fields. The default-off branch is unchanged. The
+[consumption checkpoint][intake-history-consumption-review] records both receipt/
+integration paths and the installed NumPy empty-array truth behavior.
+
 
 ##### Owned Conditional Initial-Rest Startup (2026-11-16)
 
@@ -887,6 +894,7 @@ field-selection, combined and final-closure controls.
 [native-owner-preflight-review]: ../../REVIEW.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
 [receipt-history-extent-review]: ../../REVIEW.md#415-bounded-receipt-history-prehash-validation-2026-11-17
 [intake-history-extent-review]: ../../REVIEW.md#416-closed-owning-intake-history-root-hashes-2026-11-17
+[intake-history-consumption-review]: ../../REVIEW.md#417-closed-post-observation-history-consumption-2026-11-17
 [initial-retention-owner-review]: ../../REVIEW.md#413-closed-initial-retention-owner-word-joins-2026-11-17
 [initial-owner-preflight-review]: ../../REVIEW.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13

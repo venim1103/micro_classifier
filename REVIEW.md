@@ -87,8 +87,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 386-390][chapter-review-42]
 - [Checkpoints 391-394][chapter-review-43]
 - [Checkpoints 395-396][chapter-review-44]
+- [Checkpoints 397-398][chapter-review-45]
 
-Checkpoints 397 onward and the source bibliography remain below.
+Checkpoints 399 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -480,49 +481,22 @@ repeated historical handoffs.
 
 ## 397. Intact Retention/Layout Checkpoint Archival (2026-11-17)
 
-From clean pushedebf07f0, archive whole395-396 before further root growth.
-Both historical headings, all ten failed ownership repros, gates, spent positions
-and limits remain intact; one chapter01 target is rebased without changing meaning.
-One bounded30s transform/two original snapshots PASS exact whole-body/full inverse
-root/topic conservation. Return navigation follows the intact trailing separator.
-Scoped links/anchors, staged whitespace and four396 tested source hashes PASS.
-No source change or unchanged green suite rerun: latest gate6261/known QDQ1 xfail/
-77 warnings232.79s. Layouts/script remain in session files;396 logs stay in .git.
-
-Timing-delivery original history, matched pairs and outgoing closure are already
-present. Next run bounded current/delivered snapshot owner-layout repros before
-early indexing/dict access; no timing report duplication or new catch-all fallback.
-Q0-Q4 acceptance is still absent; all flags false, guard UNKNOWN, no command.
+[Complete unchanged checkpoint][review-397-398-preserved-0] is preserved in the archive.
 
 ## 398. Closed Native-ToF Snapshot Owner Layouts (2026-11-17)
 
-From clean pushed80a6fe2, the named timing consumer trace reaches current/delivered
-snapshot wrappers. First12 FAIL18.82s: nine uncaught IndexError/AttributeError paths
-and three false current-source availabilities for list-current/Config-State/list-frame.
-Reuse strict tuple/tick/State/bytes-frame/dict-dynamics prevalidation before access.
-Unknown has an explicit reason and no source/frame/pending/timing payload; no new
-catch-all, report/math/encoding/copy/digest/source read or changed valid output.
-Finite routine plan:12 repro/12 repair/54 prior each<=60s;2 observations/native/frame/
-delivered/pending matches,6 timing matches/64 digests, no RNG/replay/clock after prep.
-Repaired12 PASS5.93s with0 source/hash/read work; prior20 current/18 delivered/16 timing
-PASS3.22s. Format/Pylance syntax PASS. AST checker first wrongly expects6 new type
-calls per method; correct to5 type/1 len/1 error and finish full signature/catch/
-outside-two-method/one-test conservation. Runtime controls are not rerun for that.
+[Complete unchanged checkpoint][review-397-398-preserved-1] is preserved in the archive.
 
-First root360s exits124 at89%, without summary or assertion failure; later Ruff/
-whitespace did not run. Preserve spent/unknown position and log, not a pass.
-No owned pytest child remains; shared-resource snapshot does not establish a cause
-or OOM. Four-source hashes unchanged. One fresh recovery uses the SAME360s deadline
-and identical tests with --durations=10:6273/known QDQ1 xfail/77 warnings200.05s;
-Ruff/whitespace and tested source hashes PASS. Logs remain in .git/returns-398-*.
-No C/runtime edits; host/sanitizer/Arm controls pass within the root, not board proof.
+## 399. Intact Snapshot Ownership Checkpoint Archival (2026-11-17)
 
-Rechecked milestones/named packet: Q0 setup/source/return/coverage, Q1 propagated
-state, Q2 uniform native/accumulated error, Q3 pose/range/time/transform and Q4 clock/
-application/one-use/predecessor acceptance remain absent. ST executables not on PATH;
-licence/board work stays user-side, studies/SC18/D4/learned work protected/deferred.
-The named source/consumer trace finds no further justified local edit; new concrete
-evidence can change this assessment. All flags false, guard UNKNOWN; no command.
+From clean pushed04ca156, archive whole397-398 before further999-line root growth.
+One30s transform/two snapshots PASS exact whole-body/inverse root/topic conservation;
+two historical headings and one topic target remain. Keep all failed repros, checker
+repair, spent360s root timeout and same-deadline recovery without refund.
+Scoped links/anchors, staged whitespace and four398 source hashes PASS; no code
+edit or unchanged suite rerun. Latest gate6273/known QDQ1 xfail/77 warnings200.05s.
+Layouts/script remain in session files;398 logs stay in .git. Next test fixed State
+frame extent before owner hashing; no new wire/physical bound or qualification.
 
 ## Sources
 
@@ -909,6 +883,7 @@ Methods and measurements:
 [chapter-review-42]: docs/review/386-390.md
 [chapter-review-43]: docs/review/391-394.md
 [chapter-review-44]: docs/review/395-396.md
+[chapter-review-45]: docs/review/397-398.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -997,3 +972,5 @@ Methods and measurements:
 [review-391-394-preserved-3]: docs/review/391-394.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
 [review-395-396-preserved-0]: docs/review/395-396.md#395-intact-owning-intake-checkpoint-archival-2026-11-17
 [review-395-396-preserved-1]: docs/review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
+[review-397-398-preserved-0]: docs/review/397-398.md#397-intact-retentionlayout-checkpoint-archival-2026-11-17
+[review-397-398-preserved-1]: docs/review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17

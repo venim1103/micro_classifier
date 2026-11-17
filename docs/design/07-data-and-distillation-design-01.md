@@ -2257,7 +2257,7 @@ figure is not an established minimum.
 [receipt-snapshot-review]: ../review/183-220.md#192-read-time-actual-producer-history-snapshots-2026-11-09
 [receipt-epoch-review]: ../review/371-375.md#375-closed-owning-receipt-epoch-identities-2026-11-16
 [owned-receipt-epoch-review]: ../review/376-380.md#377-closed-live-request-consumer-epochs-2026-11-16
-[owned-receipt-cache-review]: ../../REVIEW.md#390-closed-live-request-receipt-cache-identity-2026-11-17
+[owned-receipt-cache-review]: ../review/386-390.md#390-closed-live-request-receipt-cache-identity-2026-11-17
 [owned-startup-cache-review]: ../../REVIEW.md#391-closed-conditional-startup-receipt-cache-identity-2026-11-17
 [integration-source-review]: ../review/183-220.md#193-actual-native-integration-source-intermediates-2026-11-09
 [integration-ingestion-review]: ../review/183-220.md#194-actual-source-native-integration-cache-ingestion-2026-11-09

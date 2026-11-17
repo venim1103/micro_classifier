@@ -2509,7 +2509,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-wip]: ../review/331-335.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12
 [native-goal-delta-review]: ../review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
-[native-goal-dynamics-closing-review]: ../../REVIEW.md#387-closed-native-goal-dynamics-sampling-2026-11-17
+[native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [c1-motion-source]: ../../sim/rover.py
 [native-goal-match-review]: ../review/331-335.md#331-exact-retained-native-goal-matching-2026-11-12
 [native-goal-retention-review]: ../review/326-330.md#330-default-off-native-goal-recorder-retention-2026-11-12

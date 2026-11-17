@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §391 for closed conditional startup receipt cache identity;
+Read [REVIEW.md][review] §392 for intact386-390 archival and remaining evidence;
+§391 records closed conditional startup receipt cache identity;
 §390 records closed live request receipt cache identity;
 §389 records closed composed native/receipt cache identities;
 §388 records the former source-queue evidence assessment;
@@ -319,8 +320,12 @@ are complete; defaults and existing read/digest/work limits are unchanged.
 Conditional owned initial-startup now pins the same original receipt cache across
 both receipt reads/consumer work. Three equal-word cache replacement repros and
 its gate are complete; eight observations/256 digests and all prior work limits
-remain. Next archive whole386-390 before further review growth, then retain the
-independent source/coverage/error/timing blockers without inventing authority.
+remain. Whole386-390 archival is complete, including former evidence assessments,
+failed archival checking, source/cache repros, repairs and spent ledgers. All six
+live-receipt helper calls are within the repaired startup/prepare/recheck consumers.
+The fresh bounded trace identifies no further concrete compatible local edit.
+Next actual independent source/coverage/error/timing evidence, or a new concrete
+compatible source/consumer issue, is needed; do not invent acceptance or studies.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

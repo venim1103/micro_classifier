@@ -582,7 +582,7 @@ field-selection, combined and final-closure controls.
 [native-arithmetic-record-review]: ../review/183-220.md#198-exact-native-arithmetic-record-validation-2026-11-09
 [native-arithmetic-review]: ../review/183-220.md#196-supported-native-word-arithmetic-discrepancies-2026-11-09
 [native-default-epoch-review]: ../review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
-[native-composed-cache-review]: ../../REVIEW.md#389-closed-composed-native-and-receipt-cache-identities-2026-11-17
+[native-composed-cache-review]: ../review/386-390.md#389-closed-composed-native-and-receipt-cache-identities-2026-11-17
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09
 [native-motion-source-review]: ../review/183-220.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09

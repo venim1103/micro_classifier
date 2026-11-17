@@ -84,8 +84,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 371-375][chapter-review-39]
 - [Checkpoints 376-380][chapter-review-40]
 - [Checkpoints 381-385][chapter-review-41]
+- [Checkpoints 386-390][chapter-review-42]
 
-Checkpoints 386 onward and the source bibliography remain below.
+Checkpoints 391 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -433,154 +434,23 @@ repeated historical handoffs.
 
 ## 386. Intact Source Pipeline Checkpoint Archival (2026-11-17)
 
-Begin clean pushed1aa38b6. Move whole381-385, retaining the former remaining-evidence
-assessment, fresh continuation/pause/resume, source/delivery/retention repros,
-late-intake and preflight repairs, failed cadence fixture and spent ledgers.
-Five historical headings and three source-topic references preserve those records;
-the admission dependency reference retains its same resolved target.
-
-Bounded one transformation/conservation run; exact bodies/headings/topic content,
-scoped local references/whitespace and four unchanged tested source hashes PASS.
-First full checker incorrectly expected386 after Sources and failed its heading
-assertion; diagnosis confirmed exact archive bodies and unchanged old headings.
-Correct the checker to expect386 before Sources; no transform repair was needed.
-No failed transform, code edit or unchanged code-suite rerun. Local original
-layouts remain in session files; committed archives carry portable evidence.
-Next follow the remaining named source path with all flags false, no admitted
-command and independent setup/source/coverage/error/clock/one-use evidence absent.
-No new report, arithmetic law, study/model/dependency/download or hardware action.
+[Complete unchanged checkpoint][review-386-390-preserved-0] is preserved in the archive.
 
 ## 387. Closed Native Goal Dynamics Sampling (2026-11-17)
 
-Begin clean pushed69fc69b. The named Q1 native goal source uses the same current
-owner as ToF: retention pinned epoch identities after its first observation;
-retention/delivery copied native dynamics before observing and did not refresh
-after closing source intake. Bounded20 controls reproduced4 retained publication
-successes and16 available delivery snapshots across all eight report combinations:
-first20 FAIL14.76s. Equal-state coordinated first RNG/odometry replacement is not
-the original epoch; native-action changes after observation/intake are not current
-dynamics correspondence even if the cached observation encodes the same frame.
-
-Reuse the unchanged owning sampler in both methods, pin original retention
-producer/cache/native/RNG/odometry and owner content before observation, then
-refresh closing dynamics words after the last intake from that actual observation.
-Only failed20 PASS0.97s; prior226 PASS4.51s, including unchanged defaults, retention/
-dedup/trim/gaps and eight delivery-report combinations. No repair failure.
-
-Finite routine plan: first/repaired20 <=45s, prior226 <=60s, root <=360s.
-Existing2 observations/2 source intakes/12 digests/2 file checks and per-report math
-ceilings remain. No replay/read/draw/trig/clock/geometry, new report or numerical/
-source/coverage/physical/timing/one-use qualification. All eight flags false,
-no admitted command. Required root360s gate:6223 PASS/known QDQ1 xfail/77 warnings
-180.92s; Ruff/root whitespace/changed-file format/Pylance syntax PASS. Exact goal
-intake/matcher/report/validator calls, unchanged unrelated source/test AST/signatures
-and scoped reference checks PASS; four tested source hashes match the gate bracket.
-Local original-source/hash/repro/result evidence stays .git/returns-387-*;
-spent attempts are not refunded. Next reassess the remaining named source/consumer
-queue, with independent setup/source/coverage/error/clock evidence still missing.
+[Complete unchanged checkpoint][review-386-390-preserved-1] is preserved in the archive.
 
 ## 388. Current Source Queue Evidence Blockers (2026-11-17)
 
-Begin clean pushed0288b59 after the paused delivery repro was repaired and fresh
-ToF retention/goal dynamics issues were completed. Reassess, rather than reuse
-§382's former no-identified-edit conclusion. Pylance resolves shared dynamics
-sampler callers to owning intake, ToF retention/current/delivery, goal retention/
-delivery and initial/retained source readers. The latter already pin original
-epochs and close original/copied/current source after observations; no further
-concrete compatible issue is identified from this bounded named-source trace.
-No unchanged green control is rerun and no general audit is started.
-
-The [admission dependencies][admission-dependencies] and agreed milestone queue
-still require independent Q0 setup/source/return/coverage provenance, Q1 propagated
-source-to-decoded allowances, Q2 uniform full-command native/accumulated error,
-Q3 pose/range/time/transform enclosures and Q4 qualified clock/application/serialized
-one-use/receipt/predecessor evidence. Queue1's bounded local source correspondence
-does not supply queue2's acceptance; queue3's supported guard/executor composition
-cannot bypass those missing inputs. Extra hashes or fixture permission would not
-be a compatible prerequisite. No new justified unblocked local task is identified
-with current inputs; this is not a permanent claim that none can ever exist.
-
-Qualification studies, changed bounds/domains, SC18, D4/learned/model work remain
-protected/deferred; ST licence/board/hardware work stays user-side.
-stedgeai/stm32ai/STM32_Programmer_CLI are again not on PATH. No dependency/download/
-environment/hardware change, new study or accepted requirement follows.
-The pending next action is actual independent Q0/source or named numerical/
-transform/timing evidence, with protected authority where necessary, or a new
-concrete compatible source/consumer issue. Missing routine test/planning approval
-or an old pause is not the blocker.
-
-Scoped reference/whitespace and four unchanged tested source hashes PASS; main
-clean/upstream0/0 before this documentation-only checkpoint. Latest source gate
-remains6223/known QDQ1 xfail/77 warnings180.92s. No code-suite rerun or owned job
-left running; local bounded logs retained .git/returns-384/385/387-* and original
-archive layouts in session files. All eight flags false, guard UNKNOWN; no command
-is admitted. Host actuation and independent fail-safes remain untouched.
+[Complete unchanged checkpoint][review-386-390-preserved-2] is preserved in the archive.
 
 ## 389. Closed Composed Native And Receipt Cache Identities (2026-11-17)
 
-Fresh actual continue starts clean main06f39d7/upstream0/0, Python3.12.3/Ruff0.17.0.
-The bounded receipt-to-native source trace finds a composition gap: inner readers
-close their own cache, but a replacement between separate reads can acquire a
-fresh local identity. Four new controls in the existing final-observation harness
-replace equal-word receipt caches at source/arithmetic closing observation, or
-receipt/native caches between arithmetic source reads. All4 first FAIL6.57s with
-false availability. No new arithmetic stage, capture or acceptance is proposed.
-
-The source reader now pins its original receipt cache before its first receipt
-read; the arithmetic wrapper pins both original caches across its source reads/
-intervening probe. Final identity closure returns explicit unknown without partial
-source/frame/arithmetic. Repair4 PASS0.70s; prior125 source/default/closing/report
-controls PASS1.95s, including single/combined optional modes. Existing6/12
-observations,2/4 native samples,2/4 history checks and64/160 or per-family digest
-ceilings remain. All eight flags false, guard UNKNOWN; no command is admitted.
-
-Routine ledger: first4<=45s, repaired failed4<=45s, related125<=60s, one root<=360s;
-all attempts spent. Root `python -m pytest -q && ruff check . && git diff --check`
-PASS6227/known QDQ1 xfail/77 warnings191.93s under fail-fast timeout360s.
-Changed-file format and Pylance syntax, unchanged unrelated AST/signatures and
-source/math/report/read-call conservation PASS; only two existing-type guards
-are added to the wrapper. Four-file tested hash bracket and scoped links/
-whitespace PASS. Python diagnostics/tests only; no native/C/runtime source changed.
-Default root host/parity/sanitizer/Arm controls run with no skips; not linked
-firmware, board execution, fit, timing or task-quality evidence.
-
-Local .git/returns-389-* logs/pre-source/hash evidence retained; no user data
-removed or new dependency/download/study/hardware/environment action.
-Q0-Q4 independent acceptance remains absent; this repairs ownership correspondence,
-not source/numerical/clock/one-use authority. Next follow the live request
-consumer's receipt cache join, without duplicating reports or protected work.
+[Complete unchanged checkpoint][review-386-390-preserved-3] is preserved in the archive.
 
 ## 390. Closed Live Request Receipt Cache Identity (2026-11-17)
 
-From clean pushedba52f6a, follow the named Q4 live request consumer, not a general
-audit. Both opt-in owned request preparation/recheck pin producer/RNG epochs but
-could accept an equal-word receipt-cache replacement between individually valid
-receipt snapshots. Six new existing-harness controls replace the cache after the
-first reader, during request preparation or after the closing reader returns,
-across both methods. First6 FAIL8.58s with false prepared/rechecked availability.
-
-Both opt-in branches now pin the original receipt cache before the first reader
-and recheck identity after the second reader and consumer/payload checks.
-Missing or replaced ownership returns explicit unknown without request/receipt
-publication. Failed6 after repair PASS0.72s; prior88 live/default/preparation/
-recheck/delivery controls PASS1.42s. Default fixture behavior, two receipt reads/
-four observations/two history checks,96/128 digest ceilings and default inner
-recheck preparation remain unchanged. No new read/digest/report/capture/RNG work.
-
-Routine ledger: first6<=45s, repaired failed6<=45s, prior88<=60s, root<=360s;
-all attempts spent. Fail-fast root `python -m pytest -q && ruff check . &&
-git diff --check` PASS6233/known QDQ1 xfail/77 warnings195.61s. Changed-file
-format/Pylance syntax, unchanged unrelated AST/signatures and existing request/
-source/read/digest calls PASS; only one existing-type guard per opt-in method is
-added. Four-file tested hashes and scoped reference/whitespace checks PASS.
-Python diagnostics/tests only; root host/parity/sanitizer/Arm controls run with no
-skips, not linked firmware/board/fit/task-quality evidence.
-
-Local .git/returns-390-* logs/pre-source/hash evidence retained; no user files
-removed or environment/dependency/download/study/hardware work. All eight flags
-false, guard UNKNOWN; independent Q0-Q4 evidence remains absent, no command or
-one-use/predecessor authority follows. Next trace the receipt cache through
-conditional owned initial-startup composition; no unchanged green gate rerun.
+[Complete unchanged checkpoint][review-386-390-preserved-4] is preserved in the archive.
 
 ## 391. Closed Conditional Startup Receipt Cache Identity (2026-11-17)
 
@@ -614,6 +484,35 @@ All eight flags false, guard UNKNOWN; current source/word identity does not acce
 setup/source/coverage/error/clock/one-use evidence or admit any launch/predecessor.
 Next archive whole386-390 intact, retaining failed checks, pause/recovery history
 and former blocker assessments, before further review growth.
+
+## 392. Intact Composed Source Checkpoint Archival (2026-11-17)
+
+From clean pushed638eb31, move whole386-390 intact to the linked archive before
+further root review growth. Preserve the earlier archival checker failure, goal
+dynamics controls, former remaining-evidence assessment and newly failed/repaired
+native/receipt/request cache repros with complete spent ledgers. Five historical
+root headings remain; three topic references and the archive admission-dependency
+reference retain their resolved meanings. No status, authority or run is renewed.
+
+One bounded transform with four pre-layout snapshots PASS; exact whole-body/
+heading/topic conservation, ten local reference targets, scoped whitespace and
+four unchanged391 tested source hashes PASS. No transform/check failure or source
+edit; no unchanged successful code-suite rerun. Latest source gate remains
+6236/known QDQ1 xfail/77 warnings206.35s. Original layouts/script stay in session
+files and bounded source logs .git/returns-389/390/391-*; portable ledgers are here.
+
+Pylance confirms all six live-receipt helper calls are the repaired startup/
+prepare/recheck consumers. Recheck the agreed milestone queue and named Q0-Q5
+packet: no further justified unblocked local edit or independent acceptance input
+is identified by this bounded trace. Q0 accepted setup/source/return/coverage,
+Q1 propagated state, Q2 uniform full-command native/accumulated error, Q3 pose/
+range/time/transform and Q4 qualified clock/application/one-use/predecessor evidence
+remain missing. Queue3 guard/executor composition cannot bypass queue2 acceptance.
+ST tools again not on PATH; licences/board stay user-side. New qualification
+studies, changed bounds/domains, SC18, D4/learned/model work remain protected/
+deferred. Next actual independent evidence or a new concrete compatible source/
+consumer issue; not routine approval/accounting or a permanent no-prerequisite
+claim. All eight flags false, guard UNKNOWN; no command is admitted.
 
 ## Sources
 
@@ -997,6 +896,7 @@ Methods and measurements:
 [chapter-review-39]: docs/review/371-375.md
 [chapter-review-40]: docs/review/376-380.md
 [chapter-review-41]: docs/review/381-385.md
+[chapter-review-42]: docs/review/386-390.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -1074,3 +974,8 @@ Methods and measurements:
 [review-381-385-preserved-2]: docs/review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [review-381-385-preserved-3]: docs/review/381-385.md#384-closed-native-tof-delivery-report-work-2026-11-17
 [review-381-385-preserved-4]: docs/review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
+[review-386-390-preserved-0]: docs/review/386-390.md#386-intact-source-pipeline-checkpoint-archival-2026-11-17
+[review-386-390-preserved-1]: docs/review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
+[review-386-390-preserved-2]: docs/review/386-390.md#388-current-source-queue-evidence-blockers-2026-11-17
+[review-386-390-preserved-3]: docs/review/386-390.md#389-closed-composed-native-and-receipt-cache-identities-2026-11-17
+[review-386-390-preserved-4]: docs/review/386-390.md#390-closed-live-request-receipt-cache-identity-2026-11-17

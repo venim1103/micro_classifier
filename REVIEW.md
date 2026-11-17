@@ -766,6 +766,36 @@ hash bracket are nonportable; committed controls preserve results/spent position
 Next trace the owning intake's corresponding receipt-history prehash binding,
 without duplicating reports or treating this compatible repair as acceptance.
 
+## 416. Closed Owning Intake History Root Hashes (2026-11-17)
+
+From clean pushedb253e95, the corresponding owning intake checked receipt-history
+extent only at entry. Its final observation could replace that root before the
+closing compound owner hash. Move the unchanged exact-list/configured-history
+guard into the existing twice-called owner binding. Both original/closing hashes
+now reject unsupported roots; no new helper, configuration, call or cap is added.
+
+Finite6 synthetic repro/repaired controls<=60s, existing selectors<=60s, one
+root<=360s and syntax/format/AST/hash/links. Extended the existing default/receipt/
+integration closing test with nine-entry/ndarray9 late roots:6FAIL6.43s, then
+6PASS0.68s. Existing68 PASS1.47s. Tightened new cases to the exact budget-error
+family while preserving all old error assertions; necessary6 PASS5.71s.
+No partial recorder data, preserved external mutation, <=2 observations/32 digests,
+no replay/clock draw and unchanged tick/RNG remain checked.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6494/known QDQ1 xfail/77 warnings277.51s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, exact source AST after
+only guard relocation, unchanged signatures/all other test functions and four
+tested hashes PASS. A bounded archive read exceeded its147-line file; corrected
+to110-147, with no execution/source consequence. Local logs/hash bracket remain
+nonportable; committed controls preserve all results and spent positions.
+
+No sample/native read/encoding/copy/digest/report/arithmetic, work limit, domain,
+clock/RNG or qualification change. Eight flags false, guard UNKNOWN; independent
+Q0-Q4 inputs remain absent. Next trace this same owning history after its first
+observation and before conditional truth-testing/copying; closing hash protection
+alone does not assert that earlier consumption is prevalidated.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

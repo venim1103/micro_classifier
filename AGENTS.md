@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §415 for bounded receipt-history prehash validation;
+Read [REVIEW.md][review] §416 for closed owning intake history-root hashes;
+§415 records bounded receipt-history prehash validation;
 §414 records the prior named-queue evidence/tool blockers;
 §413 records closed initial retention owner-word joins;
 §412 records intact initial-source/receipt/startup topic relocation;
@@ -441,8 +442,12 @@ the §414 reassessment. Receipt/source/arithmetic readers now validate exact lis
 before truth-testing. The full history checker still requires nonempty history.
 Twelve red/repaired controls and280 prior controls passed; root6488/known QDQ1
 xfail passed. Existing calls, source words, missing-source behavior and work caps
-are unchanged. Next trace the owning intake's corresponding history-root binding;
-this is not another completed report or acceptance evidence.
+are unchanged. The owning intake now runs its unchanged configured-history extent
+guard inside both owner bindings, including after the final observation.
+Six late-root repros passed after repair, plus68 prior controls and root6494/known
+QDQ1 xfail. No sampling/copy/digest call or work cap changed. Next trace that same
+history before post-observation truth-testing/copying, not another completed report
+or acceptance evidence.
 Named-queue reassessment against design §§1/2/12 and the Q0-Q5 packet still lacks
 independent
 Q0 setup/source/return/coverage, Q1 propagated state, Q2 uniform native/accumulated

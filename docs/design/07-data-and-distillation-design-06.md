@@ -248,6 +248,13 @@ work caps and all qualification flags remain unchanged. The
 [extent checkpoint][receipt-history-extent-review] preserves the twelve reproduced
 prehash/truth-test failures and repair.
 
+The owning `record_environment_tick` intake runs its unchanged exact-list/
+configured-history-count guard inside both owner bindings. A root replaced by
+the final observation rejects before serialization; other recorder fields stay
+unpublished and the external mutation is not undone. This adds only the closing
+extent check, not sampling, copy or digest calls. The
+[intake checkpoint][intake-history-extent-review] records all three intake modes.
+
 
 ##### Owned Conditional Initial-Rest Startup (2026-11-16)
 
@@ -879,6 +886,7 @@ field-selection, combined and final-closure controls.
 [native-word-design-map]: ../../DESIGN.md
 [native-owner-preflight-review]: ../../REVIEW.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
 [receipt-history-extent-review]: ../../REVIEW.md#415-bounded-receipt-history-prehash-validation-2026-11-17
+[intake-history-extent-review]: ../../REVIEW.md#416-closed-owning-intake-history-root-hashes-2026-11-17
 [initial-retention-owner-review]: ../../REVIEW.md#413-closed-initial-retention-owner-word-joins-2026-11-17
 [initial-owner-preflight-review]: ../../REVIEW.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13

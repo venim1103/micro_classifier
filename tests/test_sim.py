@@ -11416,6 +11416,8 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
         "closing_goal",
         "closing_owner_empty",
         "closing_owner_state",
+        "closing_history_long",
+        "closing_history_array",
         "original_owner_short",
         "initial_rng_epoch",
         "initial_odometry_epoch",
@@ -11427,7 +11429,7 @@ def test_actual_source_intake_closing_observation(
 ):
     from dataclasses import replace
 
-    from sim import rover
+    from sim import diagnostics, rover
 
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
     original_observation = RoverEnv._observation
@@ -11444,6 +11446,7 @@ def test_actual_source_intake_closing_observation(
     rng_before = deepcopy(environment.rng.bit_generator.state)
     odometry_before = deepcopy(environment.odometry_rng.bit_generator.state)
     work = {"observations": 0, "forbidden": 0}
+    malformed_history = [{}] * 9 if case == "closing_history_long" else np.zeros(9)
     if case == "original_owner_short":
         owner._current = owner._current[:2]
 
@@ -11484,6 +11487,8 @@ def test_actual_source_intake_closing_observation(
                     Config(),
                     owner._current[3],
                 )
+            elif case in ("closing_history_long", "closing_history_array"):
+                owner._receipt_history = malformed_history
         return result
 
     def forbidden(*args, **kwargs):
@@ -11497,6 +11502,20 @@ def test_actual_source_intake_closing_observation(
     monkeypatch.setattr(RoverEnv, "reset", forbidden)
     monkeypatch.setattr(rover, "integrate", forbidden)
     monkeypatch.setattr(rover, "_motion_receipt_clock_ns", forbidden)
+    if case in ("closing_history_long", "closing_history_array"):
+        original_binding = diagnostics._c1_source_binding_digest
+        work["binding"] = 0
+
+        def binding(record):
+            work["binding"] += 1
+            assert work["binding"] <= 32
+            if type(record) is dict and "receipt_history" in record:
+                history = record["receipt_history"]
+                assert type(history) is list
+                assert len(history) <= owner._config.history_ticks
+            return original_binding(record)
+
+        monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
     options = {
         "synthetic_test_only": True,
         "capture_motion_receipt_source": mode != "default",
@@ -11516,7 +11535,12 @@ def test_actual_source_intake_closing_observation(
         assert (owner._integration_sample is not None) is (mode == "integration")
         assert bool(owner._receipt_history) is (mode != "default")
     else:
-        with pytest.raises(ValueError, match="changed|unsupported"):
+        expected_error = (
+            "budget"
+            if case in ("closing_history_long", "closing_history_array")
+            else "changed|unsupported"
+        )
+        with pytest.raises(ValueError, match=expected_error):
             owner.record_environment_tick(environment, **options)
         current = (
             owner._dynamics_sample,
@@ -11528,6 +11552,10 @@ def test_actual_source_intake_closing_observation(
         )
         from sim.diagnostics import _c1_source_binding_digest
 
+        if case in ("closing_history_long", "closing_history_array"):
+            assert owner._receipt_history is malformed_history
+            assert work["observations"] == 2 and environment.tick == 3
+            current, saved = current[:2] + current[3:], saved[:2] + saved[3:]
         assert _c1_source_binding_digest(current) == _c1_source_binding_digest(saved)
     assert work["forbidden"] == 0
     assert environment.rng.bit_generator.state == rng_before

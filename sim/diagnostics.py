@@ -18171,11 +18171,6 @@ class _SyntheticC1SourceRecorder:
             raise ValueError("simulator source profile or scenario mismatch")
         if self._source_files() != self._identities:
             raise ValueError("simulator source files changed")
-        if (
-            type(self._receipt_history) is not list
-            or len(self._receipt_history) > self._config.history_ticks
-        ):
-            raise ValueError("simulator receipt history budget exhausted")
         receipt_source_before = (
             environment._motion_receipt_source
             if capture_motion_receipt_source
@@ -18237,6 +18232,11 @@ class _SyntheticC1SourceRecorder:
         def owner_binding():
             from interface.protocol import CRC, HEADER, STATE, State, validate_state
 
+            if (
+                type(self._receipt_history) is not list
+                or len(self._receipt_history) > self._config.history_ticks
+            ):
+                raise ValueError("simulator receipt history budget exhausted")
             current = self._current
             if current is not None and (
                 type(current) is not tuple

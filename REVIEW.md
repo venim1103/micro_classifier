@@ -516,6 +516,40 @@ left running; local bounded logs retained .git/returns-384/385/387-* and origina
 archive layouts in session files. All eight flags false, guard UNKNOWN; no command
 is admitted. Host actuation and independent fail-safes remain untouched.
 
+## 389. Closed Composed Native And Receipt Cache Identities (2026-11-17)
+
+Fresh actual continue starts clean main06f39d7/upstream0/0, Python3.12.3/Ruff0.17.0.
+The bounded receipt-to-native source trace finds a composition gap: inner readers
+close their own cache, but a replacement between separate reads can acquire a
+fresh local identity. Four new controls in the existing final-observation harness
+replace equal-word receipt caches at source/arithmetic closing observation, or
+receipt/native caches between arithmetic source reads. All4 first FAIL6.57s with
+false availability. No new arithmetic stage, capture or acceptance is proposed.
+
+The source reader now pins its original receipt cache before its first receipt
+read; the arithmetic wrapper pins both original caches across its source reads/
+intervening probe. Final identity closure returns explicit unknown without partial
+source/frame/arithmetic. Repair4 PASS0.70s; prior125 source/default/closing/report
+controls PASS1.95s, including single/combined optional modes. Existing6/12
+observations,2/4 native samples,2/4 history checks and64/160 or per-family digest
+ceilings remain. All eight flags false, guard UNKNOWN; no command is admitted.
+
+Routine ledger: first4<=45s, repaired failed4<=45s, related125<=60s, one root<=360s;
+all attempts spent. Root `python -m pytest -q && ruff check . && git diff --check`
+PASS6227/known QDQ1 xfail/77 warnings191.93s under fail-fast timeout360s.
+Changed-file format and Pylance syntax, unchanged unrelated AST/signatures and
+source/math/report/read-call conservation PASS; only two existing-type guards
+are added to the wrapper. Four-file tested hash bracket and scoped links/
+whitespace PASS. Python diagnostics/tests only; no native/C/runtime source changed.
+Default root host/parity/sanitizer/Arm controls run with no skips; not linked
+firmware, board execution, fit, timing or task-quality evidence.
+
+Local .git/returns-389-* logs/pre-source/hash evidence retained; no user data
+removed or new dependency/download/study/hardware/environment action.
+Q0-Q4 independent acceptance remains absent; this repairs ownership correspondence,
+not source/numerical/clock/one-use authority. Next follow the live request
+consumer's receipt cache join, without duplicating reports or protected work.
+
 ## Sources
 
 Hardware and tools:

@@ -105,6 +105,12 @@ equal-state reference replacement is unknown without partial source/frame/arithm
 it is not the original epoch. Valid default output and existing work limits remain
 unchanged. This two-point closure is not concurrent/adversarial attestation.
 
+The [composed-cache repair][native-composed-cache-review] also pins the original
+receipt cache across the source reader's receipt reads, and both integration and
+receipt caches across the arithmetic wrapper's source reads and intervening probe.
+Equal-word cache replacement returns unknown without partial source/frame/arithmetic;
+no observation/intake/report/math call or work ceiling is added.
+
 The optional [later-period comparison][current-normalization-comparison-design]
 uses a separate default-off output, with original/copy/closing reports bound again
 after final producer sampling. It explicitly does not identify the earlier
@@ -576,6 +582,7 @@ field-selection, combined and final-closure controls.
 [native-arithmetic-record-review]: ../review/183-220.md#198-exact-native-arithmetic-record-validation-2026-11-09
 [native-arithmetic-review]: ../review/183-220.md#196-supported-native-word-arithmetic-discrepancies-2026-11-09
 [native-default-epoch-review]: ../review/371-375.md#374-closed-default-native-reader-epoch-identities-2026-11-16
+[native-composed-cache-review]: ../../REVIEW.md#389-closed-composed-native-and-receipt-cache-identities-2026-11-17
 [native-integration-closing-review]: ../review/351-355.md#352-native-integration-closing-observation-repairs-2026-11-13
 [native-integration-snapshot-review]: ../review/183-220.md#195-read-time-actual-native-integration-snapshots-2026-11-09
 [native-motion-source-review]: ../review/183-220.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09

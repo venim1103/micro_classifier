@@ -22563,6 +22563,7 @@ class _SyntheticC1SourceRecorder:
             result["reason"] = "unsupported_current_native_integration_owner"
             return result
         source_before = producer._integration_source
+        receipt_before = producer._motion_receipt_source
         rng_before, odometry_before = producer.rng, producer.odometry_rng
 
         def owner_binding():
@@ -22811,6 +22812,7 @@ class _SyntheticC1SourceRecorder:
                 or owner_binding() != binding_before
                 or self._simulator is not producer
                 or producer._integration_source is not source_before
+                or producer._motion_receipt_source is not receipt_before
                 or producer.rng is not self._simulator_rng
                 or producer.odometry_rng is not self._simulator_odometry_rng
             ):
@@ -22862,6 +22864,16 @@ class _SyntheticC1SourceRecorder:
             **{flag: False for flag in flags},
         }
         producer_before = self._simulator
+        source_before = (
+            producer_before._integration_source
+            if isinstance(producer_before, RoverEnv)
+            else None
+        )
+        receipt_before = (
+            producer_before._motion_receipt_source
+            if isinstance(producer_before, RoverEnv)
+            else None
+        )
         rng_before, odometry_before = (
             self._simulator_rng,
             self._simulator_odometry_rng,
@@ -22952,6 +22964,8 @@ class _SyntheticC1SourceRecorder:
                 or owner_binding() != binding_before
                 or self._simulator is not producer_before
                 or not isinstance(producer_before, RoverEnv)
+                or producer_before._integration_source is not source_before
+                or producer_before._motion_receipt_source is not receipt_before
                 or producer_before.rng is not rng_before
                 or producer_before.odometry_rng is not odometry_before
                 or self._simulator_rng is not rng_before

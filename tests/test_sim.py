@@ -20289,6 +20289,7 @@ def test_synthetic_c1_native_integration_snapshot(
             "final_pose",
             "final_native",
             "final_receipt",
+            "final_receipt_cache",
             "final_profile",
             "current_empty",
             "current_short",
@@ -20304,6 +20305,8 @@ def test_synthetic_c1_native_integration_snapshot(
     + (
         ("arithmetic", "between_rng_pair"),
         ("arithmetic", "between_odometry_pair"),
+        ("arithmetic", "between_receipt_cache"),
+        ("arithmetic", "between_native_cache"),
     ),
 )
 def test_native_integration_final_observation(
@@ -20354,6 +20357,12 @@ def test_native_integration_final_observation(
             replace_epoch(
                 environment, "rng" if case == "between_rng_pair" else "odometry_rng"
             )
+        elif case == "between_receipt_cache":
+            environment._motion_receipt_source = dict(
+                environment._motion_receipt_source
+            )
+        elif case == "between_native_cache":
+            environment._integration_source = dict(environment._integration_source)
         return result
 
     def observation(self):
@@ -20372,6 +20381,8 @@ def test_native_integration_final_observation(
                     0.25,
                     0.3,
                 )
+            elif case == "final_receipt_cache":
+                self._motion_receipt_source = dict(self._motion_receipt_source)
             elif case == "final_profile":
                 self.config = replace(self.config, max_speed=0.5)
             elif case == "closing_current_empty":

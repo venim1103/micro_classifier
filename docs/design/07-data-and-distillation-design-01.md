@@ -2263,13 +2263,13 @@ figure is not an established minimum.
 [native-tof-sampling-review]: ../review/183-220.md#202-actual-native-tof-sampling-source-retention-2026-11-09
 [native-tof-intake-review]: ../review/183-220.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
-[native-tof-retention-closing-review]: ../../REVIEW.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
+[native-tof-retention-closing-review]: ../review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
-[native-tof-closing-review]: ../../REVIEW.md#383-closed-current-native-tof-source-sampling-2026-11-16
+[native-tof-closing-review]: ../review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09
 [native-tof-delivery-review]: ../review/183-220.md#207-retained-native-tof-delivered-array-correspondence-2026-11-09
 [native-tof-delivery-snapshot-review]: ../review/183-220.md#208-current-recorder-native-tof-delivery-snapshot-2026-11-09
-[native-tof-delivery-closing-review]: ../../REVIEW.md#384-closed-native-tof-delivery-report-work-2026-11-17
+[native-tof-delivery-closing-review]: ../review/381-385.md#384-closed-native-tof-delivery-report-work-2026-11-17
 [native-tof-companion-frame-review]: ../review/183-220.md#209-native-tof-companion-original-stateframe-correspondence-2026-11-09
 [native-tof-pending-review]: ../review/183-220.md#210-retained-native-tof-pending-queue-correspondence-2026-11-09
 [native-tof-pending-snapshot-review]: ../review/183-220.md#211-opt-in-current-recorder-native-tof-pending-snapshot-2026-11-09

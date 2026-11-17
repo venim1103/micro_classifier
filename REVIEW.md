@@ -542,6 +542,43 @@ This is organization only; all flags false/guard UNKNOWN. Next named receipt
 snapshot current-owner pre-copy/serialization trace, not another native report
 or adoption of absent independent Q0-Q4 setup/source/coverage/error/clock evidence.
 
+## 409. Closed Receipt and Integration Snapshot Owner Preflight (2026-11-17)
+
+From clean pusheda734cd6, the named receipt/source/arithmetic owner serializers
+still copied malformed State and hashed unsupported frame/pose metadata. A shared
+preflight now checks exact tuple/builtin tick/actual State, existing codec,
+fixed92-byte frame and existing native pose predicate before original/closing
+copy/hash. Receipt rejects array ticks before epoch comparison rather than escaping
+with ValueError. Arithmetic preserves legitimate current=None behavior; all
+return shapes, signatures, ten-stage arithmetic and report flags are unchanged.
+
+Fresh routine plan:42 synthetic controls<=60s, repaired controls<=60s, related
+selectors<=60s, one root<=360s; retain logs/failures, no protected actions.
+First42:39FAIL/3PASS6.20s, including one wrong observation counter. One diagnostic
+FAIL3.88s traced nested receipt calls: actual receipt/source/arithmetic observations
+are2/6/12, native intakes0/2/4, existing digest ceilings32/64/160. Correcting final
+mutation timing and adding six array-tick cases gave48FAIL7.79s at intended
+pre-copy/prehash guards or the uncaught tick comparison. One formatting-context
+patch did not apply; no partial edit. Repaired48PASS1.44s;266 unchanged mode/
+ownership/sampling/budget controls PASS4.24s, including all report combinations.
+No production ceiling, assertion, tolerance or deadline was relaxed.
+
+Required root chain from repository root: `python -m pytest -q --durations=10 &&
+ruff check . && git diff --check`, one360s wrapper PASS6421/known QDQ1 xfail/
+77 warnings221.27s, then Ruff/whitespace PASS. Existing host/sanitizer/Arm controls
+ran; no board/firmware/fit qualification follows. Pylance syntax, changed-file
+format, exact unrelated AST, three signatures/copy/hash/sample/report calls/
+return conservation and four-source tested hashes PASS. No native arithmetic,
+new sampling/encoding/copy/digest, RNG/clock, source domain or general binder change.
+
+All eight flags false, guard UNKNOWN; current metadata does not supply independent
+Q0-Q4 setup/source/coverage/error/clock acceptance. No command admitted. Local
+.git logs/hash bracket are nonportable; committed controls/checkpoints retain the
+results and all spent positions. Bookkeeping:408's commit body said19 scoped
+reference uses; the actual checker reported20. History is not amended. Next trace
+the named owned request/startup consumers' own metadata serialization, preserving
+their conditional assumptions and without another completed native report.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

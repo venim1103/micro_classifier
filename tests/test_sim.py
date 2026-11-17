@@ -19696,6 +19696,171 @@ def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
     return environment, owner
 
 
+@pytest.mark.parametrize("mode", ("receipt", "source", "arithmetic"))
+@pytest.mark.parametrize("phase", ("initial", "closing"))
+@pytest.mark.parametrize(
+    "case",
+    (
+        "frame_short",
+        "frame_long",
+        "ages",
+        "velocity",
+        "pose",
+        "pose_list",
+        "state_extra",
+        "tick_array",
+    ),
+)
+def test_native_receipt_snapshot_owner_preflight(
+    monkeypatch, c1_native_integration_snapshot_fixture, mode, phase, case
+):
+    from dataclasses import asdict, dataclass, replace
+
+    from interface.protocol import CRC, HEADER, STATE, State
+    from sim import diagnostics, rover
+
+    @dataclass(frozen=True)
+    class ExtendedState(State):
+        extra: tuple = (0,)
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    current = owner._current
+    if case == "tick_array":
+        bad_current = (np.full(3, current[0]), *current[1:])
+    elif case.startswith("frame"):
+        frame = current[3][:-1] if case.endswith("short") else current[3] + b"\x00"
+        bad_current = (*current[:3], frame)
+    elif case.startswith("pose"):
+        pose = current[1].tolist() if case == "pose_list" else np.zeros(4)
+        bad_current = (current[0], pose, *current[2:])
+    else:
+        if case == "state_extra":
+            state = ExtendedState(**asdict(current[2]))
+        else:
+            field = "ages_us" if case == "ages" else "velocity_m_s"
+            state = replace(current[2], **{field: (*getattr(current[2], field), 0)})
+        bad_current = (*current[:2], state, current[3])
+    if phase == "initial":
+        owner._current = bad_current
+    fields = ("_receipt_history", "_integration_sample", "_dynamics_sample")
+    retained = tuple(getattr(owner, name) for name in fields)
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    observation_limit = {"receipt": 2, "source": 6, "arithmetic": 12}[mode]
+    native_limit = {"receipt": 0, "source": 2, "arithmetic": 4}[mode]
+    binding_limit = {"receipt": 32, "source": 64, "arithmetic": 160}[mode]
+    work = {"observation": 0, "native": 0, "binding": 0}
+    original_observation = environment._observation
+    original_native = diagnostics._sample_simulator_native_integration_source
+    original_binding, original_asdict = (
+        diagnostics._c1_source_binding_digest,
+        diagnostics.asdict,
+    )
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= observation_limit
+        actual = original_observation()
+        if phase == "closing" and work["observation"] == observation_limit:
+            owner._current = bad_current
+        return actual
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= native_limit
+        return original_native(*args, **kwargs)
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= binding_limit
+        if type(record) is dict and record.get("current") is not None:
+            record_current = record["current"]
+            assert type(record_current[0]) is int
+            pose = record_current[1]
+            assert type(pose) is np.ndarray and pose.shape == (3,)
+            assert len(record_current[3]) == HEADER.size + STATE.size + CRC.size
+        return original_binding(record)
+
+    def copied(value, *args, **kwargs):
+        if isinstance(value, State):
+            assert type(value) is State
+            assert len(value.ages_us) == 5
+            assert all(
+                len(vector) == 3
+                for vector in (
+                    value.velocity_m_s,
+                    value.angular_velocity_rad_s,
+                    value.goal_m,
+                )
+            )
+        return original_asdict(value, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("receipt owner preflight must not replay/draw/trig/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", native
+    )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "asdict", copied)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    for name in ("cos", "sin"):
+        monkeypatch.setattr(rover.math, name, forbidden)
+    if mode == "receipt":
+        result = owner.snapshot_receipt_history(synthetic_test_only=True)
+    elif mode == "source":
+        result = owner.snapshot_native_integration_source(synthetic_test_only=True)
+    else:
+        result = owner.snapshot_native_integration_arithmetic(synthetic_test_only=True)
+    available = (
+        "discrepancies_available" if mode == "arithmetic" else "snapshot_available"
+    )
+    assert result["status"] == "unknown" and result[available] is False
+    assert result["reason"]
+    assert all(
+        result[flag] is False
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+    for key in (
+        "source",
+        "history",
+        "current_frame",
+        "current_tick",
+        "source_epoch",
+        "arithmetic",
+    ):
+        assert key not in result
+    assert work["observation"] == (observation_limit if phase == "closing" else 0)
+    assert owner._current is bad_current
+    assert all(
+        getattr(owner, name) is value
+        for name, value in zip(fields, retained, strict=True)
+    )
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.mark.parametrize(
     "case",
     (

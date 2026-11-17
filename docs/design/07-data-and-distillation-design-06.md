@@ -111,6 +111,17 @@ receipt caches across the arithmetic wrapper's source reads and intervening prob
 Equal-word cache replacement returns unknown without partial source/frame/arithmetic;
 no observation/intake/report/math call or work ceiling is added.
 
+Receipt, native-source and arithmetic snapshot owner bindings share a bounded
+current-owner preflight before copying State or hashing pose/frame: exact tuple/
+builtin tick/actual State, existing codec validation, fixed92-byte frame extent
+and native ndarray/three-coordinate pose. Both original and closing owners must
+pass; receipt ticks are checked before epoch comparison. Legitimate missing-current
+behavior is unchanged. Frame extent alone does not establish CRC, contents or
+source correspondence. The [owner preflight checkpoint][native-owner-preflight-review]
+preserves the failed controls and repair. Nested receipt reads keep the existing
+2/6/12 receipt/source/arithmetic observations, 0/2/4 native intakes and per-family
+digest ceilings; no replay, encoding or new copy/hash/report call is introduced.
+
 The optional [later-period comparison][current-normalization-comparison-design]
 uses a separate default-off output, with original/copy/closing reports bound again
 after final producer sampling. It explicitly does not identify the earlier
@@ -589,3 +600,4 @@ field-selection, combined and final-closure controls.
 [supplied-heading-offset-design]: 07-data-and-distillation-design-06.md#supplied-heading-shift-and-return-words-2026-11-16
 [native-word-nf1-topic]: 07-data-and-distillation-design-04.md
 [native-word-design-map]: ../../DESIGN.md
+[native-owner-preflight-review]: ../../REVIEW.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17

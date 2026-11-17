@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §408 for intact403-407 checkpoint archival;
+Read [REVIEW.md][review] §409 for closed receipt/integration snapshot owner preflight;
+§408 records intact403-407 checkpoint archival;
 §407 records owning intake owner prevalidation;
 §406 records bounded native recorder owner poses;
 §405 records closed current-ToF post-observation owners;
@@ -394,10 +395,17 @@ State/fixed frame extent/codec/pose before original/closing serialization.
 Legitimate current=None startup and existing staged ideal-view fixture work remain.
 The Step keyword and over-broad fixture prohibition failures are retained;21
 focused/69 prior controls and root6373/known QDQ1 xfail passed. No new sample,
-encoding, copy, digest or native report stage. Next trace the receipt snapshot's
-corresponding current-owner serializer without duplicating closed reports.
+encoding, copy, digest or native report stage.
 Whole403-407 archival preserves complete failures/ledgers/evidence limits and
 five historical root headings; five topic targets rebase without new evidence.
+Receipt/source/arithmetic snapshot owners now share exact current tuple/tick,
+actual State/codec, fixed92-byte frame and native pose preflight before original/
+closing copying/hashing. Forty-eight reproduced controls and266 prior controls
+passed; root6421/known QDQ1 xfail passed. The initial counter error is retained:
+receipt/source/arithmetic make2/6/12 observations, not2/2/4, because source readers
+include receipt reads. Existing native intakes/digest ceilings/report combinations,
+ten-stage output and missing-current behavior are unchanged. Next trace the named
+owned request/startup consumers' own metadata serialization, not duplicate reports.
 Rechecked named Q0-Q4 evidence remains absent; ST tools are not on PATH. Autonomy
 does not supply qualification or protected study/hardware authority.
 Q0 accepted setup/source/return/

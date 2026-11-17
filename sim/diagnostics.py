@@ -22267,6 +22267,7 @@ class _SyntheticC1SourceRecorder:
             not isinstance(producer, RoverEnv)
             or type(self._current) is not tuple
             or len(self._current) != 4
+            or type(self._current[0]) is not int
             or not isinstance(self._current[2], State)
             or type(self._current[3]) is not bytes
             or type(self._dynamics_sample) is not dict
@@ -22307,14 +22308,9 @@ class _SyntheticC1SourceRecorder:
             }
 
         def owner_binding():
-            if (
-                type(self._current) is not tuple
-                or len(self._current) != 4
-                or not isinstance(self._current[2], State)
-                or type(self._current[3]) is not bytes
-                or type(self._dynamics_sample) is not dict
-            ):
+            if type(self._dynamics_sample) is not dict:
                 raise ValueError("unsupported closing current receipt owner")
+            _check_native_recorder_current_owner(self._current)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22652,16 +22648,9 @@ class _SyntheticC1SourceRecorder:
         rng_before, odometry_before = producer.rng, producer.odometry_rng
 
         def owner_binding():
-            from interface.protocol import State
-
-            if (
-                type(self._current) is not tuple
-                or len(self._current) != 4
-                or not isinstance(self._current[2], State)
-                or type(self._current[3]) is not bytes
-                or type(self._dynamics_sample) is not dict
-            ):
+            if type(self._dynamics_sample) is not dict:
                 raise ValueError("unsupported current native integration owner")
+            _check_native_recorder_current_owner(self._current)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22965,16 +22954,10 @@ class _SyntheticC1SourceRecorder:
         )
 
         def owner_binding():
-            from interface.protocol import State
-
-            if self._current is not None and (
-                type(self._current) is not tuple
-                or len(self._current) != 4
-                or not isinstance(self._current[2], State)
-                or type(self._current[3]) is not bytes
-                or type(self._dynamics_sample) is not dict
-            ):
-                raise ValueError("unsupported current native arithmetic owner")
+            if self._current is not None:
+                if type(self._dynamics_sample) is not dict:
+                    raise ValueError("unsupported current native arithmetic owner")
+                _check_native_recorder_current_owner(self._current)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -24198,6 +24181,22 @@ class _SyntheticC1SourceRecorder:
                 reason="recorder_identity_or_binding_mismatch",
             )
         return result
+
+
+def _check_native_recorder_current_owner(current):
+    from interface.protocol import CRC, HEADER, STATE, State, validate_state
+
+    if (
+        type(current) is not tuple
+        or len(current) != 4
+        or type(current[0]) is not int
+        or type(current[2]) is not State
+        or type(current[3]) is not bytes
+        or len(current[3]) != HEADER.size + STATE.size + CRC.size
+    ):
+        raise ValueError("unsupported native recorder current owner")
+    validate_state(current[2])
+    _check_native_recorder_owner_pose(current[1])
 
 
 def _check_native_recorder_owner_pose(pose):

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §396 for closed native-ToF retention owner layouts;
+Read [REVIEW.md][review] §397 for intact395-396 archival;
+§396 records closed native-ToF retention owner layouts;
 §395 records intact391-394 archival and current evidence limits;
 §394 records closed post-native receipt/pending copies;
 §393 records closed owning intake original/final sampling;
@@ -341,8 +342,10 @@ retention now rejects malformed initial producer/current tuple/State/frame/dynam
 before sampling and closing tuple/State layouts before owner serialization.
 Ten failing controls and their required gate are complete; prior30 controls and
 per-family work ceilings remain. Timing cache joins were already closed; no timing
-logic changed. Next trace the corresponding timing-retention consumer ownership
-without duplicating reports or inventing acceptance.
+logic changed. Whole395-396 archival is complete with historical anchors and the
+topic target intact. Timing-delivery history/output joins are already closed.
+Next test current/delivered snapshot owner prevalidation before indexing or dict
+access, without duplicating reports or inventing acceptance.
 Q0 accepted setup/source/return/
 coverage, Q1 propagated state error, Q2 full-domain native/accumulated error,
 Q3 pose/range/time/native-transform enclosures and Q4 qualified clock/application/

@@ -86,8 +86,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 381-385][chapter-review-41]
 - [Checkpoints 386-390][chapter-review-42]
 - [Checkpoints 391-394][chapter-review-43]
+- [Checkpoints 395-396][chapter-review-44]
 
-Checkpoints 395 onward and the source bibliography remain below.
+Checkpoints 397 onward and the source bibliography remain below.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
 ## Recovery and Document Layout (2026-11-09)
@@ -471,57 +472,27 @@ repeated historical handoffs.
 
 ## 395. Intact Owning Intake Checkpoint Archival (2026-11-17)
 
-From clean pushedc881b41, archive whole391-394 before further root growth beyond
-1051 lines. Use the four completed older records rather than invent a fifth
-checkpoint to fill a batch. Preserve original/final source and receipt/pending
-repros, failed checks/partial documentation repair, all passed controls and spent
-ledgers. Four historical root headings and three chapter01 targets remain intact.
-
-One bounded transform with two pre-layout snapshots PASS; exact whole-body/full
-inverse root layout/topic conservation, nine local targets/anchors, scoped
-whitespace and four unchanged394 tested source hashes PASS. First staged whitespace
-check rejects the preserved separator as a new EOF blank line. Retain the whole
-block and append return navigation; recheck passes without repeating the transform.
-No source change or unchanged green suite rerun. Latest source gate remains6251/
-known QDQ1 xfail/77 warnings193.08s. Original layouts/script stay in session files;
-bounded .git/returns-393/394-* evidence and committed portable ledgers are retained.
-
-The fresh actual continuation completed concrete source prerequisites rather than
-treating old blocker assessments as permanent. Its bounded owning intake trace
-identifies no further justified compatible local edit. Recheck agreed milestones
-and named packet: independent Q0 setup/source/return/coverage, Q1 propagated state,
-Q2 uniform full-command native/accumulated error, Q3 pose/range/time/transform and
-Q4 qualified clock/application/one-use/predecessor evidence remain absent.
-Queue3 guard/executor composition cannot replace those queue2 inputs. ST executables
-again not on PATH; licence/board/hardware work stays user-side. Qualification
-studies, changed bounds/domains, SC18, D4/learned/model work remain protected/deferred.
-The next supported step needs actual independent evidence or a new concrete
-compatible source/consumer issue, not routine approval/accounting. Autonomy and
-passing fixtures do not supply acceptance. All eight flags false, guard UNKNOWN;
-no command is admitted, host fail-safes remain independent.
+[Complete unchanged checkpoint][review-395-396-preserved-0] is preserved in the archive.
 
 ## 396. Closed Native-ToF Retention Owner Layouts (2026-11-17)
 
-Fresh actual continuation from clean pushed73f0f78 verifies upstream0/0,
-Python3.12.3/Ruff0.17.0 and host/Arm compilers. The named optional timing trace
-finds its cache joins already closed; no timing logic changes. Its enclosing
-fresh-retention method lacks goal-retention's producer/current-owner guards.
-Ten bounded repros FAIL14.50s: seven incidental AttributeError/IndexError/TypeError
-failures and three false retentions of list-current or missing-frame owners.
-Reuse exact producer/tuple/tick/State/frame/dynamics prevalidation and closing
-tuple/State checks before indexing/asdict. Reject without staged publication;
-external mutations are not rolled back. No replay/RNG/clock or extra source,
-observation/intake/copy/digest call; existing history/gap/trim/work limits remain.
+[Complete unchanged checkpoint][review-395-396-preserved-1] is preserved in the archive.
 
-Finite routine plan:10 repro/10 repair/30 prior controls each<=60s, one root<=360s;
-2 observations/2 native reads/64 digests per new closing control,0 reads for early
-rejects. Repaired10 PASS0.89s; prior18 base plus12 optional retain/default/combined
-controls PASS1.44s. Root6261/known QDQ1 xfail/77 warnings232.79s; Ruff, changed format,
-Pylance syntax, whitespace and four-source tested hash bracket PASS. AST/signature
-conservation PASS outside the named method/test; only8 type/2 len/1 error calls added.
-Logs stay in .git/returns-396-*; failed positions remain spent. All eight flags false,
-guard UNKNOWN; no qualification/admission or board/native-error claim follows.
-Next trace corresponding timing-retention consumer ownership, not duplicate reports.
+## 397. Intact Retention/Layout Checkpoint Archival (2026-11-17)
+
+From clean pushedebf07f0, archive whole395-396 before further root growth.
+Both historical headings, all ten failed ownership repros, gates, spent positions
+and limits remain intact; one chapter01 target is rebased without changing meaning.
+One bounded30s transform/two original snapshots PASS exact whole-body/full inverse
+root/topic conservation. Return navigation follows the intact trailing separator.
+Scoped links/anchors, staged whitespace and four396 tested source hashes PASS.
+No source change or unchanged green suite rerun: latest gate6261/known QDQ1 xfail/
+77 warnings232.79s. Layouts/script remain in session files;396 logs stay in .git.
+
+Timing-delivery original history, matched pairs and outgoing closure are already
+present. Next run bounded current/delivered snapshot owner-layout repros before
+early indexing/dict access; no timing report duplication or new catch-all fallback.
+Q0-Q4 acceptance is still absent; all flags false, guard UNKNOWN, no command.
 
 ## Sources
 
@@ -907,6 +878,7 @@ Methods and measurements:
 [chapter-review-41]: docs/review/381-385.md
 [chapter-review-42]: docs/review/386-390.md
 [chapter-review-43]: docs/review/391-394.md
+[chapter-review-44]: docs/review/395-396.md
 [native-tof-ray-design]: docs/design/07-data-and-distillation-design-01.md#native-tof-ray-generation-prerequisites-2026-11-11
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
@@ -993,3 +965,5 @@ Methods and measurements:
 [review-391-394-preserved-1]: docs/review/391-394.md#392-intact-composed-source-checkpoint-archival-2026-11-17
 [review-391-394-preserved-2]: docs/review/391-394.md#393-closed-owning-intake-original-and-final-sampling-2026-11-17
 [review-391-394-preserved-3]: docs/review/391-394.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
+[review-395-396-preserved-0]: docs/review/395-396.md#395-intact-owning-intake-checkpoint-archival-2026-11-17
+[review-395-396-preserved-1]: docs/review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17

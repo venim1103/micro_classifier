@@ -2289,7 +2289,7 @@ figure is not an established minimum.
 [native-tof-intake-review]: ../review/183-220.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
 [native-tof-retention-closing-review]: ../review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
-[native-tof-retention-owner-review]: ../../REVIEW.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
+[native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-review]: ../review/183-220.md#205-read-time-current-native-tof-source-snapshot-2026-11-09
 [native-tof-closing-review]: ../review/381-385.md#383-closed-current-native-tof-source-sampling-2026-11-16
 [native-tof-history-review]: ../review/183-220.md#206-bounded-native-tof-acquisition-history-2026-11-09

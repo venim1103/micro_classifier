@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §420 for closed current-ToF original history joins;
+Read [REVIEW.md][review] §421 for closed current-ToF original owner contexts;
+§420 records closed current-ToF original history joins;
 §419 records closed original native-ToF history sampling;
 §418 records intact408-412 archival and named input blockers;
 §417 records closed post-observation history consumption;
@@ -468,8 +469,13 @@ Current-ToF snapshots now independently preflight/fingerprint the same archive
 before their first observation. Two false-availability repros and74 prior controls
 plus root6504/known QDQ1 xfail passed. Delivered snapshots already establish their
 owner/history bindings before observing and are unchanged. Existing2 observations/
-intakes/64 digests remain. Next trace the current snapshot's original owner-context
-binding, which still follows its first producer sample.
+intakes/64 digests remain. Current-ToF owner content is now fingerprinted before
+the first producer sample, after independent retained-source layout validation.
+Two context/profile repros and89 prior controls plus root6506/known QDQ1 xfail
+passed. The first related run exposed four delayed fail-fast rejections; a shared
+mid-read current-owner preflight preserves those checks without extra digests or
+observations. Next close the same current reader's final history-layout preflight
+before its closing hash, then archive whole413-417 checkpoints.
 The actual S1-S5/Q0-Q5 packet still lacks independent Q0-Q4 inputs;
 no matching-hash guard/executor follows.
 ST tools remain absent from PATH; licence/board and protected studies stay

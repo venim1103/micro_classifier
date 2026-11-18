@@ -793,6 +793,37 @@ guard UNKNOWN; no independent Q0-Q4 acceptance or protected action.
 Next trace this current reader's original owner-context binding, which still
 follows its first sample; do not broaden to unrelated audits or invent evidence.
 
+## 421. Closed Current ToF Original Owner Contexts (2026-11-18)
+
+From clean pushed66e8a86, this current-source reader's first observation could
+change recorder binding/profile before its original owner fingerprint. Two new
+cases in the existing snapshot test:2FAIL5.75s (false availability), then
+2PASS1.02s after moving that existing digest before the first observation.
+An independent bounded layout check of the retained source precedes that hash,
+preserving unsupported retained-word rejection before owner serialization.
+
+Finite2 repro/repaired controls<=60s, related owner/prehash controls<=60s, one
+root<=360s and syntax/format/AST/hash/links. First related89:4FAIL/85PASS3.93s.
+Moving the digest had also moved its cheap mid-read owner validation; four
+phase1 current/frame/age/vector controls then rejected only after observation2.
+Do not weaken those assertions. Reuse the shared actual-current preflight and
+original tuple-identity check at the old binding point. Revised necessary
+four failed controls/new2 PASS6/0.63s; related89PASS2.74s. All original fail-fast
+semantics,2 observations/intakes/64 digests, unknown-without-partial source/frame,
+false flags, external mutation retention and unchanged tick/RNG remain.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6506/known QDQ1 xfail/77 warnings173.55s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, exact source/preflight/
+owner-move/mid-read-guard AST delta, unchanged signatures/every other source/test
+function and four tested hashes PASS. No new observation/native read/copy/digest/
+report/math/RNG/clock, work cap, domain or qualification. Eight flags false,
+guard UNKNOWN; independent Q0-Q4 inputs remain absent.
+
+Local .git logs/hash bracket are nonportable; committed controls preserve all
+failures, repairs and spent positions. Next prevalidate this same reader's closing
+history before hashing, then archive whole413-417 before further review growth.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

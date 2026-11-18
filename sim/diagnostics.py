@@ -19461,6 +19461,8 @@ class _SyntheticC1SourceRecorder:
             template = _native_tof_history_template(environment, self._epoch)
             _check_native_tof_history_layout(self._tof_history, template)
             history_binding = _c1_source_binding_digest(self._tof_history)
+            _check_native_tof_history_layout([retained], template)
+            owner_binding = ownership()
             observed = producer()
             live_before = _sample_simulator_native_tof_source(environment, self._epoch)
             if not _native_tof_word_copy_matches(retained, live_before):
@@ -19470,7 +19472,9 @@ class _SyntheticC1SourceRecorder:
                 {key: dynamics_before.get(key) for key in observed}
             ):
                 raise ValueError("native ToF producer changed after recorder read")
-            owner_binding = ownership()
+            if self._current is not current_before:
+                raise ValueError("native ToF snapshot current owner changed")
+            _check_native_recorder_current_owner(self._current)
             copied = deepcopy(retained)
             if not _native_tof_word_copy_matches(copied, live_before):
                 raise ValueError("native ToF copy changed during snapshot")

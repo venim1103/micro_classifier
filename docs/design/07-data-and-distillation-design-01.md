@@ -996,6 +996,13 @@ frame payload. Delivered snapshots already bind history before observing and
 are unchanged. The [checkpoint][native-tof-current-original-history-review] retains
 both false-availability repros; observation/intake/digest counts remain unchanged.
 
+Its original owner fingerprint also precedes the first observation, after
+independently preflighting the retained source layout. A shared current-owner
+preflight at the old binding point preserves malformed-owner fail-fast behavior
+before copying. First-observation context/profile changes stay unknown; the
+[owner checkpoint][native-tof-current-original-owner-review] records the four
+delayed-rejection regressions and repair without another digest or sample.
+
 
 ##### Bounded Native ToF Acquisition History (2026-11-09)
 
@@ -2144,6 +2151,7 @@ figure is not an established minimum.
 [native-tof-retention-closing-review]: ../review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
 [native-tof-original-history-review]: ../../REVIEW.md#419-closed-original-native-tof-history-sampling-2026-11-18
 [native-tof-current-original-history-review]: ../../REVIEW.md#420-closed-current-tof-original-history-joins-2026-11-18
+[native-tof-current-original-owner-review]: ../../REVIEW.md#421-closed-current-tof-original-owner-contexts-2026-11-18
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

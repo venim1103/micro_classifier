@@ -12921,11 +12921,15 @@ def test_native_recorder_owner_pose_extent(
         "producer_type",
         "first_history_drop",
         "first_history_word",
+        "first_binding",
+        "first_profile",
     ),
 )
 def test_native_tof_current_snapshot(
     monkeypatch, c1_motion_receipt_source_fixture, case
 ):
+    from dataclasses import replace
+
     from sim import diagnostics, rover
 
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
@@ -12968,6 +12972,10 @@ def test_native_tof_current_snapshot(
             elif case == "first_history_word":
                 words = history_before[0]["sample_words"]
                 history_before[0]["sample_words"] = (words[0] ^ 1, *words[1:])
+            elif case == "first_binding":
+                owner._binding = {"changed": True}
+            elif case == "first_profile":
+                owner._config = replace(owner._config, max_speed=0.5)
         if work["observations"] == 2:
             if case == "final_pose":
                 environment.position[0] += 0.125
@@ -13067,10 +13075,14 @@ def test_native_tof_current_snapshot(
             assert "source" not in result and "frame" not in result
     assert owner._current[0] == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
-    if case.startswith(("final_", "first_history_")):
+    if case.startswith(("final_", "first_")):
         assert work["observations"] == 2
     if case.startswith("first_history_"):
         assert owner._tof_history is history_before
+    elif case == "first_binding":
+        assert owner._binding == {"changed": True}
+    elif case == "first_profile":
+        assert owner._config.max_speed == 0.5
     assert work["intake"] <= 2 and work["forbidden"] == 0
 
 

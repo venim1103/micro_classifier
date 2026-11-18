@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §421 for closed current-ToF original owner contexts;
+Read [REVIEW.md][review] §422 for closing native history preflight and intact413-417;
+§421 records closed current-ToF original owner contexts;
 §420 records closed current-ToF original history joins;
 §419 records closed original native-ToF history sampling;
 §418 records intact408-412 archival and named input blockers;
@@ -474,8 +475,16 @@ the first producer sample, after independent retained-source layout validation.
 Two context/profile repros and89 prior controls plus root6506/known QDQ1 xfail
 passed. The first related run exposed four delayed fail-fast rejections; a shared
 mid-read current-owner preflight preserves those checks without extra digests or
-observations. Next close the same current reader's final history-layout preflight
-before its closing hash, then archive whole413-417 checkpoints.
+observations. The same current reader now revalidates history layout after the
+last observation/intake and before closing hashes. Two prehash repros,66 prior
+controls and root6508/known QDQ1 xfail passed. No copy/digest/sample/intake or work
+cap changed. Whole413-417 is archived intact:156-line body, two inverse layouts,
+five historical anchors/four topic targets and154 prior first-definition meanings.
+This bounded original/closing ToF owner/history trace identifies no further
+concrete compatible issue. Actual independent Q0-Q4 inputs remain absent;
+ST tools are not on PATH and licence/board/protected studies stay user-side or
+deferred. A concrete issue or independent evidence can resume local work, not
+qualification by metadata or another duplicate report.
 The actual S1-S5/Q0-Q5 packet still lacks independent Q0-Q4 inputs;
 no matching-hash guard/executor follows.
 ST tools remain absent from PATH; licence/board and protected studies stay

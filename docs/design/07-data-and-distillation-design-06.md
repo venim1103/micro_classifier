@@ -892,10 +892,10 @@ field-selection, combined and final-closure controls.
 [native-word-nf1-topic]: 07-data-and-distillation-design-04.md
 [native-word-design-map]: ../../DESIGN.md
 [native-owner-preflight-review]: ../review/408-412.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
-[receipt-history-extent-review]: ../../REVIEW.md#415-bounded-receipt-history-prehash-validation-2026-11-17
-[intake-history-extent-review]: ../../REVIEW.md#416-closed-owning-intake-history-root-hashes-2026-11-17
-[intake-history-consumption-review]: ../../REVIEW.md#417-closed-post-observation-history-consumption-2026-11-17
-[initial-retention-owner-review]: ../../REVIEW.md#413-closed-initial-retention-owner-word-joins-2026-11-17
+[receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17
+[intake-history-extent-review]: ../review/413-417.md#416-closed-owning-intake-history-root-hashes-2026-11-17
+[intake-history-consumption-review]: ../review/413-417.md#417-closed-post-observation-history-consumption-2026-11-17
+[initial-retention-owner-review]: ../review/413-417.md#413-closed-initial-retention-owner-word-joins-2026-11-17
 [initial-owner-preflight-review]: ../review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

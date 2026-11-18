@@ -12923,6 +12923,8 @@ def test_native_recorder_owner_pose_extent(
         "first_history_word",
         "first_binding",
         "first_profile",
+        "final_history_long",
+        "final_history_array",
     ),
 )
 def test_native_tof_current_snapshot(
@@ -12997,6 +12999,10 @@ def test_native_tof_current_snapshot(
                 )
             elif case == "final_owner":
                 owner._current = (*owner._current,)
+            elif case == "final_history_long":
+                owner._tof_history = [history_before[0]] * 9
+            elif case == "final_history_array":
+                owner._tof_history = np.zeros(9)
         return actual
 
     def intake(*args, **kwargs):
@@ -13024,6 +13030,8 @@ def test_native_tof_current_snapshot(
     def binding(record):
         work["binding"] += 1
         assert work["binding"] <= 64
+        if case.startswith("final_history_") and record is owner._tof_history:
+            assert type(record) is list and len(record) <= 8
         if case == "retained_word":
             assert record is not retained
             assert type(record) is not dict or record.get("tof_sample") is not retained

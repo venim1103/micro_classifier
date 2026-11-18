@@ -19500,6 +19500,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError(
                     "native ToF source identities or words changed during snapshot"
                 )
+            _check_native_tof_history_layout(self._tof_history, template)
             if (
                 _c1_source_binding_digest(copied) != copied_binding
                 or _c1_source_binding_digest(self._tof_history) != history_binding

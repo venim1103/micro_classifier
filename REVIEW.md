@@ -92,8 +92,9 @@ Read the relevant chapter and newest checkpoint, not the entire archive.
 - [Checkpoints 401-402][chapter-review-47]
 - [Checkpoints 403-407][chapter-review-48]
 - [Checkpoints 408-412][chapter-review-49]
+- [Checkpoints 413-417][chapter-review-50]
 
-Checkpoints 413 onward remain below. The original source bibliography is linked
+Checkpoints 418 onward remain below. The original source bibliography is linked
 under Sources.
 [Original cloud harness handoff (§311)][cloud-harness-handoff] preserves
 restart context; the newest checkpoint identifies next bounded work.
@@ -550,159 +551,23 @@ repeated historical handoffs.
 
 ## 413. Closed Initial Retention Owner Word Joins (2026-11-17)
 
-From clean pushed438be5f, the named initial retainer's own closing join compared
-only current frame/cached dynamics after snapshot-reader return. Changed current
-State/pose could still report fresh or deduplicated retention. Two shared checks
-now validate actual current metadata and source pose/native State/frame words
-after the closing reader returns, before existing final packet/epoch closure.
-Malformed schema and contradictory valid-shape words remain unknown without
-publishing or replacing retention; externally changed owner metadata is preserved.
-
-Fresh routine plan:10 bounded synthetic repro/repaired controls<=60s, existing
-initial/retention/startup selectors<=60s, one root<=360s; retain failed positions,
-no protected actions. Fresh/dedup x ages6/State subclass/pose4/State word/pose word:
-10FAIL6.66s (false availability), then10PASS0.96s. Existing86 PASS3.15s under all
-unchanged work limits. Added an exact wire-identity assertion: the two changed
-native State-word cases retain identical encode_state output;2PASS5.37s. This
-shows why frame equality alone was insufficient, not native numerical error.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6476/known QDQ1 xfail/77 warnings240.78s,
-then Ruff/whitespace PASS. Pylance syntax, changed-file format, exact source AST
-with only two added shared calls, unchanged signatures/returns/samples and all
-existing test AST/four-source tested hashes PASS. The existing owner helper adds
-one bounded State/frame reconstruction/two owner-word digests, within unchanged84
-digest ceiling. Two snapshot reads/four observations/two setup audits remain;
-no producer read/native integration/RNG draw/clock or domain change.
-
-Eight flags false, guard UNKNOWN; no reset receipt, physical/native error,
-setup/source/coverage/clock acceptance, one-use or command permission follows.
-Local .git logs/hash bracket are nonportable; committed controls preserve all
-results and spent positions. Next reassess the named independent-input queue/
-actual tool blockers rather than invent acceptance or another completed report.
+[Complete unchanged checkpoint][review-413-417-preserved-0] is preserved in the archive.
 
 ## 414. Fresh Named Queue Evidence and Tool Blockers (2026-11-17)
 
-From clean pushedc10e80b, reread design §§1/2/12's active priority/safety boundaries,
-the named S1-S5 dependency map and Q0-Q5 packet after the concrete408-413 source/
-consumer work. One guessed milestone filename did not exist; the actual reading
-map resolved12-implementation-milestones.md. No implementation or run was launched
-from historical per-checkpoint approval language.
-
-| Ordered path | Current prerequisite result / remaining blocker |
-| --- | --- |
-| Native acquisition/retention/delivery correspondence | Existing bounded source/history/delivery and fresh owner/layout/word joins are implemented and verified. This named trace identifies no further concrete compatible edit; matching words still do not accept source/physics. |
-| Named setup/source/coverage/error/timing consumers | Q0 independent setup/source/return/coverage, Q1 propagated actual-state error, Q2 full-domain uniform native/accumulated error, Q3 pose/range/time/native-transform enclosures and Q4 clock/application/receipt/serialized-one-use/predecessor evidence remain absent. Existing conditional tools and supplied-word residuals are not those inputs. |
-| Request/guard/executor composition | Actual-owner request/receipt/startup metadata prerequisites are closed; guard remains UNKNOWN. Without the prior independent inputs, a permit, one-use consumer or admitted predecessor would invent authority. No usable command is emitted. |
-| Toolchain/board and task quality | stedgeai, stm32ai and STM32_Programmer_CLI are not on PATH; cc and arm-none-eabi-gcc are. ST licence/tools/board work stays user-side. New qualification studies, SC18/general audits, D4/learning/models/dependencies/downloads/hardware remain protected/deferred, not substitute work. |
-
-Actual disk362GiB available; main clean/upstream0/0. Four413 tested hashes remain
-unchanged. No suite rerun: latest root6476/known QDQ1 xfail/77 warnings240.78s,
-Ruff/format/syntax/whitespace and scoped controls remain the recorded source gate.
-Eight flags false, guard UNKNOWN. No new bounds, domain/policy or accepted
-evidence; metadata does not qualify clocks, physical clearance or error.
-
-All currently identified useful authorized paths are blocked on those actual
-inputs/authorities after closing the concrete trace, not on routine test/planning
-approval or historical accounting. No dummy work, repeat diagnostics or unchanged
-green gate is warranted. This is not a permanent assertion that no smaller
-prerequisite can exist; new concrete source/consumer evidence can resume compatible
-local work. Pending action is an independently supported named qualification
-packet or a concrete compatible issue; tool/licence/board work stays user-side.
+[Complete unchanged checkpoint][review-413-417-preserved-1] is preserved in the archive.
 
 ## 415. Bounded Receipt History Prehash Validation (2026-11-17)
 
-Fresh actual continuation from clean pushedd33335f found the receipt/source/
-arithmetic owner binders hashed receipt history before checking its exact list/
-<=8 root extent. Receipt's early truth test also raised on an ndarray root.
-One shared cheap predicate now runs before entry truth-testing and original/
-closing owner hashing; the full history checker reuses it and still rejects
-empty history. Legitimate missing-source states keep their previous behavior.
-No entry/content validation or qualified evidence is inferred from this guard.
-
-Fresh routine plan:12 synthetic repro/repaired controls<=60s, existing related
-selectors<=60s, one root<=360s, syntax/format/AST/API/call/hash/link checks.
-Three readers x original/closing x nine entries/ndarray9:12FAIL7.33s, then
-12PASS0.90s. The arithmetic closing case mutates after its final source reader
-returns, exercising its own binder. Existing history/pairing/snapshot/report-mode
-controls280PASS4.81s. All false flags, no partial payload, unchanged tick/RNG and
-original observation/native-intake/digest ceilings are checked.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6488/known QDQ1 xfail/77 warnings263.24s,
-then Ruff/whitespace PASS. Pylance syntax, changed-file format, four-source hashes,
-unchanged signatures/nonextent calls/return expressions/full semantic body and
-all prior test AST PASS. The first static checker guessed the wrong recorder
-class name; its assertion failed, then the actual reported name fixed the checker.
-No source or test change/rerun followed that tooling-only failure.
-
-No new sampling, native read, encoding/copy/digest/report, arithmetic, RNG/clock,
-work cap, domain or qualification. Eight flags false, guard UNKNOWN; Q0-Q4
-independent inputs and protected boundaries remain as in414. Local .git logs/
-hash bracket are nonportable; committed controls preserve results/spent positions.
-Next trace the owning intake's corresponding receipt-history prehash binding,
-without duplicating reports or treating this compatible repair as acceptance.
+[Complete unchanged checkpoint][review-413-417-preserved-2] is preserved in the archive.
 
 ## 416. Closed Owning Intake History Root Hashes (2026-11-17)
 
-From clean pushedb253e95, the corresponding owning intake checked receipt-history
-extent only at entry. Its final observation could replace that root before the
-closing compound owner hash. Move the unchanged exact-list/configured-history
-guard into the existing twice-called owner binding. Both original/closing hashes
-now reject unsupported roots; no new helper, configuration, call or cap is added.
-
-Finite6 synthetic repro/repaired controls<=60s, existing selectors<=60s, one
-root<=360s and syntax/format/AST/hash/links. Extended the existing default/receipt/
-integration closing test with nine-entry/ndarray9 late roots:6FAIL6.43s, then
-6PASS0.68s. Existing68 PASS1.47s. Tightened new cases to the exact budget-error
-family while preserving all old error assertions; necessary6 PASS5.71s.
-No partial recorder data, preserved external mutation, <=2 observations/32 digests,
-no replay/clock draw and unchanged tick/RNG remain checked.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6494/known QDQ1 xfail/77 warnings277.51s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, exact source AST after
-only guard relocation, unchanged signatures/all other test functions and four
-tested hashes PASS. A bounded archive read exceeded its147-line file; corrected
-to110-147, with no execution/source consequence. Local logs/hash bracket remain
-nonportable; committed controls preserve all results and spent positions.
-
-No sample/native read/encoding/copy/digest/report/arithmetic, work limit, domain,
-clock/RNG or qualification change. Eight flags false, guard UNKNOWN; independent
-Q0-Q4 inputs remain absent. Next trace this same owning history after its first
-observation and before conditional truth-testing/copying; closing hash protection
-alone does not assert that earlier consumption is prevalidated.
+[Complete unchanged checkpoint][review-413-417-preserved-3] is preserved in the archive.
 
 ## 417. Closed Post-Observation History Consumption (2026-11-17)
 
-From clean pusheddcd9099, the same owning intake's first observation could
-replace history after original binding but before receipt-branch truth/copy.
-Closing hash guards do not prevalidate that earlier consumption. One shared
-extent call now precedes truth-testing; empty-list startup and the full semantic
-checker remain unchanged. Unsupported roots reject explicitly without copying
-them or publishing other recorder fields; external mutation is not undone.
-
-Finite4 synthetic repro/repaired controls<=60s, existing selectors<=60s and one
-root<=360s, with syntax/format/AST/hash/links. Receipt/integration x empty array/
-dict:4FAIL6.61s. Dict roots reached forbidden deepcopy; array error wording did
-not match the named shape/budget rejection. One direct NumPy bool snippet (no
-fixture rerun) confirmed this installed runtime raises on empty-array truth,
-before copy. The initial hypothesis that both always reached copy was refined;
-neither path was prevalidated by the named root guard. Repaired4PASS0.72s;
-existing74PASS1.31s. One observation/<=2 native intakes/32 digests, no staging/
-replay/clock, unchanged tick/RNG and exact retained field identities are checked.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6498/known QDQ1 xfail/77 warnings209.46s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, exact one-call source
-AST delta, unchanged signatures/default branch/all previous test AST and four
-tested hashes PASS. Local .git logs/hash bracket are nonportable; committed
-controls preserve actual results, the refined hypothesis and spent positions.
-
-No sample/native read/encoding/copy/digest/report/arithmetic, work cap, domain,
-clock/RNG or qualification change. Eight flags false, guard UNKNOWN; independent
-Q0-Q4 inputs remain absent. Next archive whole408-412 before further root-review
-growth, then reassess named input blockers without a general audit/new reports.
+[Complete unchanged checkpoint][review-413-417-preserved-4] is preserved in the archive.
 
 ## 418. Intact History Checkpoints and Named Input Blockers (2026-11-17)
 
@@ -824,6 +689,43 @@ Local .git logs/hash bracket are nonportable; committed controls preserve all
 failures, repairs and spent positions. Next prevalidate this same reader's closing
 history before hashing, then archive whole413-417 before further review growth.
 
+## 422. Closed Current ToF History Prehash and Intact Checkpoints (2026-11-18)
+
+From clean pushedd16119c, the same current-source reader hashed closing history
+without revalidating its layout after the final observation/intake. Two added
+nine-entry/ndarray9 closing roots hit the prehash spy:2FAIL4.43s, then2PASS0.58s.
+Reuse its existing independent template/layout predicate immediately before
+closing hashes. No new sample/intake/copy/digest/report, work cap or domain.
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s
+and syntax/format/AST/hash/links. Existing current/history/delivery/pending
+66PASS3.48s. Unknown omits source/frame, false flags and2 observations/intakes/
+64 digests remain, with no replay/RNG/clock or mutation rollback.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6508/known QDQ1 xfail/77 warnings199.20s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, exact one-call source
+AST delta, unchanged signatures/every other source/test function and four
+tested hashes PASS. Local .git logs retain all spent positions; no gate rerun.
+
+Before adding this note, one30s guarded transform/two original snapshots archive
+whole413-417 intact: exact156-line body, all five root headings/anchors, two inverse
+layouts, four chapter06 targets and154 original first-definition meanings PASS.
+Root984->855 lines before this note. Scoped link/target/anchor/whitespace checks
+and unchanged422 tested hashes PASS; no code suite rerun for documentation.
+Session layouts/transform and local logs remain nonportable; committed contracts,
+controls and complete archived failures/ledgers preserve the portable handoff.
+
+Rechecked actual priority map and Q0-Q5 packet after this original/closing native
+ToF source trace. No further concrete compatible issue identified in that trace.
+Q0 independent setup/source/return/coverage, Q1 propagated actual-state error,
+Q2 uniform full-command native/accumulated error, Q3 pose/range/time/transform and
+Q4 qualified clock/application/serialized one-use/receipt/predecessor inputs remain
+absent. ST executables remain off PATH; licence/tools/board work stays user-side.
+Protected qualification studies/SC18/general audits/D4/learned/dependencies/
+downloads/hardware are not substitute work. Eight flags false, guard UNKNOWN.
+Next is actual independent named evidence or a concrete compatible issue, not
+more report/hash packages, routine approval or an unchanged green gate.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].
@@ -878,6 +780,7 @@ history before hashing, then archive whole413-417 before further review growth.
 [chapter-review-47]: docs/review/401-402.md
 [chapter-review-48]: docs/review/403-407.md
 [chapter-review-49]: docs/review/408-412.md
+[chapter-review-50]: docs/review/413-417.md
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-1]: docs/review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
@@ -982,3 +885,8 @@ history before hashing, then archive whole413-417 before further review growth.
 [review-408-412-preserved-2]: docs/review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [review-408-412-preserved-3]: docs/review/408-412.md#411-closed-opted-in-request-owner-preflight-2026-11-17
 [review-408-412-preserved-4]: docs/review/408-412.md#412-intact-initial-source-and-receipt-topic-relocation-2026-11-17
+[review-413-417-preserved-0]: docs/review/413-417.md#413-closed-initial-retention-owner-word-joins-2026-11-17
+[review-413-417-preserved-1]: docs/review/413-417.md#414-fresh-named-queue-evidence-and-tool-blockers-2026-11-17
+[review-413-417-preserved-2]: docs/review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17
+[review-413-417-preserved-3]: docs/review/413-417.md#416-closed-owning-intake-history-root-hashes-2026-11-17
+[review-413-417-preserved-4]: docs/review/413-417.md#417-closed-post-observation-history-consumption-2026-11-17

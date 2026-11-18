@@ -12086,6 +12086,105 @@ def test_recorder_native_tof_source(
     assert work["intake"] <= 4 and work["forbidden"] == 0
 
 
+@pytest.mark.parametrize("fresh", (False, True))
+@pytest.mark.parametrize("case", ("drop", "word"))
+def test_native_tof_retention_initial_history(
+    monkeypatch, c1_motion_receipt_source_fixture, fresh, case
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    while environment.tick < (8 if fresh else 6):
+        environment.step([0.125, 0.3], capture_native_tof_source=True)
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+        if environment.tick in (4, 6):
+            owner.record_native_tof_source(environment, synthetic_test_only=True)
+    assert [entry["tick"] for entry in owner._tof_history] == [4, 6]
+    fields = (
+        "_tof_sample",
+        "_tof_timing_history",
+        "_tof_selection_history",
+        "_tof_wall_history",
+        "_tof_cylinder_history",
+        "_tof_direction_history",
+        "_tof_postprocessing_history",
+        "_current",
+        "_dynamics_sample",
+    )
+    retained = tuple(getattr(owner, name) for name in fields)
+    history = owner._tof_history
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "native": 0, "binding": 0}
+    original_observation = environment._observation
+    original_native = diagnostics._sample_simulator_native_tof_source
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        actual = original_observation()
+        if work["observation"] == 1:
+            if case == "drop":
+                del history[0]
+            else:
+                words = history[0]["sample_words"]
+                history[0]["sample_words"] = (words[0] ^ 1, *words[1:])
+        return actual
+
+    def native(*args, **kwargs):
+        work["native"] += 1
+        assert work["native"] <= 2
+        return original_native(*args, **kwargs)
+
+    def binding(*args, **kwargs):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        return original_binding(*args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("retention must not replay/step/reset/draw/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", native)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for name in ("step", "reset", "_record_history"):
+        monkeypatch.setattr(RoverEnv, name, forbidden)
+    for name in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, name, forbidden)
+    with pytest.raises(ValueError, match="native ToF.*changed during retention"):
+        owner.record_native_tof_source(environment, synthetic_test_only=True)
+    assert work["observation"] == work["native"] == 2
+    assert owner._tof_history is history
+    assert all(getattr(owner, name) is before for name, before in zip(fields, retained))
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+    assert all(
+        entry["native_source"][flag] is False
+        for entry in history
+        for flag in (
+            "fixture_permission_granted",
+            "training_approved",
+            "real_input_qualified",
+            "free_space_qualified",
+            "numerically_certified",
+            "source_qualified",
+            "native_execution_qualified",
+            "command_admission_qualified",
+        )
+    )
+
+
 @pytest.mark.parametrize(
     "case",
     (

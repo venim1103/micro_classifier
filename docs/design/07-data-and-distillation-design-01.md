@@ -912,6 +912,14 @@ The [closing checkpoint][native-tof-retention-closing-review] records equal-stat
 first-observation epoch replacement and final native/trace changes. Existing2
 observations and per-family intake/digest/history/dedup/trim/gap limits remain.
 
+The base acquisition-history fingerprint also precedes the first producer
+observation, alongside the existing timing-history fingerprint. Otherwise a
+valid-shape deletion or older sample-word change during that observation could
+be adopted as the baseline. Fresh and deduplicated retention reject such changes
+without publishing other recorder fields or undoing external mutations. This
+only moves an existing digest; the [history checkpoint][native-tof-original-history-review]
+preserves bounded repros and unchanged call/work limits.
+
 An exact RoverEnv, four-field current tuple with builtin integer tick, State and
 bytes frame, and dict dynamics are prevalidated before producer access or sampling.
 Closing current tuple/State layout is checked before owner serialization. The
@@ -2127,6 +2135,7 @@ figure is not an established minimum.
 [native-tof-intake-review]: ../review/183-220.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
 [native-tof-retention-closing-review]: ../review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
+[native-tof-original-history-review]: ../../REVIEW.md#419-closed-original-native-tof-history-sampling-2026-11-18
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

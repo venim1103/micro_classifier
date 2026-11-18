@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §418 for intact408-412 archival and named input blockers;
+Read [REVIEW.md][review] §419 for closed original native-ToF history sampling;
+§418 records intact408-412 archival and named input blockers;
 §417 records closed post-observation history consumption;
 §416 records closed owning intake history-root hashes;
 §415 records bounded receipt-history prehash validation;
@@ -457,9 +458,14 @@ Whole408-412 checkpoints are now archived intact: exact144-line body, all five
 historical headings, three inverse layouts, four topic targets and148 original
 first-definition meanings passed. Root review shrank981->864 lines before the
 new note;417 tested code hashes remain unchanged and no suite was rerun.
-The same history-root trace is closed through intake and all named readers;
-no further concrete compatible edit is identified. The actual S1-S5/Q0-Q5 packet
-still lacks independent Q0-Q4 inputs; no matching-hash guard/executor follows.
+The fresh continuation found the native-ToF retainer's base acquisition-history
+fingerprint followed its first observation/intake, allowing changed older entries
+to become the accepted baseline. Moving that existing digest before the first
+observation closes four fresh/dedup deletion/word repros;140 prior controls and
+root6502/known QDQ1 xfail passed. No digest/sample/intake/cap change follows.
+Next trace the corresponding current/delivered snapshot's original history join.
+The actual S1-S5/Q0-Q5 packet still lacks independent Q0-Q4 inputs;
+no matching-hash guard/executor follows.
 ST tools remain absent from PATH; licence/board and protected studies stay
 user-side/deferred. New actual evidence or a concrete compatible issue can resume
 local work; no qualification or usable command is admitted.

@@ -733,6 +733,37 @@ not more completed reports, dummy work or an unchanged green gate. Session layou
 transform and .git logs remain nonportable; committed bodies/controls carry the
 handoff without renewing authority or qualifying metadata.
 
+## 419. Closed Original Native ToF History Sampling (2026-11-18)
+
+Fresh actual continuation from clean pushede1de171 verified main/upstream0:0,
+terminal Python3.12.3 at /opt/venv/bin/python, Ruff0.17.0 and361GiB available.
+Host/Arm compilers remain present; ST executables absent. The native-ToF
+retainer validated base acquisition history at entry but fingerprinted it only
+after the first producer observation/intake. Unlike timing/auxiliary history,
+valid-shape deletion or older sample-word mutation could become its baseline.
+Move that existing digest before the first observation beside timing's digest.
+
+Finite4 synthetic repro/repaired controls<=60s, nearby retention controls<=60s,
+one root<=360s, syntax/format/AST/hash/links. Fresh/dedup x deletion/older word
+mutation:4FAIL5.54s (silent success), then4PASS1.27s. Two bounded prior captures
+at4/6 and optional fresh8 use existing source fixtures. Existing140PASS9.19s,
+including optional trace families, dedup/trim/gap and owner-layout controls.
+Two observations/intakes and64 digests remain the default ceilings; no replay/
+clock/RNG draw, partial recorder publication or rollback of external mutation.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6502/known QDQ1 xfail/77 warnings183.53s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, exact source AST after
+only existing-digest relocation, unchanged signatures/all previous test AST and
+four tested hashes PASS. No code change to source arithmetic, fixture defaults,
+intake/report/copy/digest counts, work limits, retention gaps or qualification.
+
+Eight flags false, guard UNKNOWN; independent Q0-Q4 inputs remain absent and
+protected boundaries unchanged. Local .git logs/hash bracket are nonportable;
+committed controls retain results and spent positions. Next trace corresponding
+current/delivered snapshots' original acquisition-history joins; this is the same
+named source path, not a general audit or another numerical report.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

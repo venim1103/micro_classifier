@@ -18716,6 +18716,7 @@ class _SyntheticC1SourceRecorder:
         )
         postprocessing_history_before = self._tof_postprocessing_history
         timing_history_binding = _c1_source_binding_digest(self._tof_timing_history)
+        history_binding = _c1_source_binding_digest(self._tof_history)
         observed = producer()
         producer_binding = _c1_source_binding_digest(observed)
         if producer_binding != _c1_source_binding_digest(
@@ -18782,7 +18783,6 @@ class _SyntheticC1SourceRecorder:
         else:
             copied = _sample_simulator_native_tof_source(environment, self._epoch)
         _check_native_tof_history_layout(self._tof_history, copied)
-        history_binding = _c1_source_binding_digest(self._tof_history)
         history = deepcopy(self._tof_history)
         if history and history[-1]["tick"] == copied["tick"]:
             if not _native_tof_word_copy_matches(history[-1], copied):

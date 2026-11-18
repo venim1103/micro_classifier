@@ -19458,10 +19458,11 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("native ToF producer epoch/tick/files changed")
             rng_before, odometry_rng_before = environment.rng, environment.odometry_rng
             cache_before = environment._native_tof_source
+            template = _native_tof_history_template(environment, self._epoch)
+            _check_native_tof_history_layout(self._tof_history, template)
+            history_binding = _c1_source_binding_digest(self._tof_history)
             observed = producer()
             live_before = _sample_simulator_native_tof_source(environment, self._epoch)
-            _check_native_tof_history_layout(self._tof_history, live_before)
-            history_binding = _c1_source_binding_digest(self._tof_history)
             if not _native_tof_word_copy_matches(retained, live_before):
                 raise ValueError("native ToF retained words differ from current source")
             producer_binding = _c1_source_binding_digest(observed)

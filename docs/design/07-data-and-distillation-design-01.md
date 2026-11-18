@@ -989,6 +989,13 @@ an explicit unknown without source/frame payload, rather than incidental errors
 or normalized malformed frames. The [owner-layout repair][native-tof-snapshot-owner-review]
 preserves false-availability repros and the spent root timeout/same-deadline recovery.
 
+The current-source snapshot preflights its base archive with the existing
+independent history template and fingerprints it before the first observation.
+First-observation deletion or sample-word mutation stays unknown without source/
+frame payload. Delivered snapshots already bind history before observing and
+are unchanged. The [checkpoint][native-tof-current-original-history-review] retains
+both false-availability repros; observation/intake/digest counts remain unchanged.
+
 
 ##### Bounded Native ToF Acquisition History (2026-11-09)
 
@@ -2136,6 +2143,7 @@ figure is not an established minimum.
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
 [native-tof-retention-closing-review]: ../review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
 [native-tof-original-history-review]: ../../REVIEW.md#419-closed-original-native-tof-history-sampling-2026-11-18
+[native-tof-current-original-history-review]: ../../REVIEW.md#420-closed-current-tof-original-history-joins-2026-11-18
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

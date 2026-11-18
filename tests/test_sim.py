@@ -12919,6 +12919,8 @@ def test_native_recorder_owner_pose_extent(
         "final_odometry_rng",
         "final_owner",
         "producer_type",
+        "first_history_drop",
+        "first_history_word",
     ),
 )
 def test_native_tof_current_snapshot(
@@ -12932,6 +12934,7 @@ def test_native_tof_current_snapshot(
     owner.record_environment_tick(environment, synthetic_test_only=True)
     owner.record_native_tof_source(environment, synthetic_test_only=True)
     retained = owner._tof_sample
+    history_before = owner._tof_history
     before_tick, before_frame = owner._current[0], owner._current[3]
     before_rng = deepcopy(environment.rng.bit_generator.state)
     if case == "no_retention":
@@ -12959,6 +12962,12 @@ def test_native_tof_current_snapshot(
         work["observations"] += 1
         assert work["observations"] <= 2
         actual = original_observation()
+        if work["observations"] == 1:
+            if case == "first_history_drop":
+                history_before.clear()
+            elif case == "first_history_word":
+                words = history_before[0]["sample_words"]
+                history_before[0]["sample_words"] = (words[0] ^ 1, *words[1:])
         if work["observations"] == 2:
             if case == "final_pose":
                 environment.position[0] += 0.125
@@ -13058,8 +13067,10 @@ def test_native_tof_current_snapshot(
             assert "source" not in result and "frame" not in result
     assert owner._current[0] == before_tick and owner._current[3] == before_frame
     assert environment.rng.bit_generator.state == before_rng
-    if case.startswith("final_"):
+    if case.startswith(("final_", "first_history_")):
         assert work["observations"] == 2
+    if case.startswith("first_history_"):
+        assert owner._tof_history is history_before
     assert work["intake"] <= 2 and work["forbidden"] == 0
 
 

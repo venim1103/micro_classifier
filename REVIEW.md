@@ -764,6 +764,35 @@ committed controls retain results and spent positions. Next trace corresponding
 current/delivered snapshots' original acquisition-history joins; this is the same
 named source path, not a general audit or another numerical report.
 
+## 420. Closed Current ToF Original History Joins (2026-11-18)
+
+From clean pushed3c15a9f, the corresponding current-source snapshot also
+fingerprinted base history only after its first producer observation/intake.
+Its existing current snapshot test now clears the archive or mutates a sample
+word during the first observation:2FAIL5.12s (false availability), then2PASS0.59s.
+Reuse the existing independent history template before observing, move the
+existing layout check/hash there, and retain later exact live-source matching.
+Delivered snapshots already establish owner/base/optional-history fingerprints
+before first observation; no delivery code change or new report follows.
+
+Finite2 repro/repaired controls<=60s, existing nearby selectors<=60s, one
+root<=360s and syntax/format/AST/hash/links. Existing current/delivered/pending/
+layout/history74PASS4.09s, including malformed retained-word prehash rejection.
+Original2 observations/intakes/64 digests, unknown without partial source/frame,
+false flags, external mutation retention and unchanged tick/RNG remain checked.
+The only new helper call constructs the already-bounded independent template;
+no observation/intake/copy/digest/report or source arithmetic call is added.
+
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check`, one360s wrapper PASS6504/known QDQ1 xfail/77 warnings194.45s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, exact source/template/
+layout/hash delta, unchanged signatures/every other source/test function and four
+tested hashes PASS. Local .git logs/hash bracket are nonportable; committed
+controls preserve actual results and spent positions. Eight flags false,
+guard UNKNOWN; no independent Q0-Q4 acceptance or protected action.
+Next trace this current reader's original owner-context binding, which still
+follows its first sample; do not broaden to unrelated audits or invent evidence.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

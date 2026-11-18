@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §419 for closed original native-ToF history sampling;
+Read [REVIEW.md][review] §420 for closed current-ToF original history joins;
+§419 records closed original native-ToF history sampling;
 §418 records intact408-412 archival and named input blockers;
 §417 records closed post-observation history consumption;
 §416 records closed owning intake history-root hashes;
@@ -463,7 +464,12 @@ fingerprint followed its first observation/intake, allowing changed older entrie
 to become the accepted baseline. Moving that existing digest before the first
 observation closes four fresh/dedup deletion/word repros;140 prior controls and
 root6502/known QDQ1 xfail passed. No digest/sample/intake/cap change follows.
-Next trace the corresponding current/delivered snapshot's original history join.
+Current-ToF snapshots now independently preflight/fingerprint the same archive
+before their first observation. Two false-availability repros and74 prior controls
+plus root6504/known QDQ1 xfail passed. Delivered snapshots already establish their
+owner/history bindings before observing and are unchanged. Existing2 observations/
+intakes/64 digests remain. Next trace the current snapshot's original owner-context
+binding, which still follows its first producer sample.
 The actual S1-S5/Q0-Q5 packet still lacks independent Q0-Q4 inputs;
 no matching-hash guard/executor follows.
 ST tools remain absent from PATH; licence/board and protected studies stay

@@ -751,43 +751,25 @@ repeated historical handoffs.
 
 ## 463. Intact Pending Cache Checkpoints (2026-11-19)
 
-From clean e7854c4, one30s scoped transform archives whole458-462 at the
-adjacent archive's existing path. Exact71-line body, two inverse layouts,
-five historical headings, four rebased chapter01/03/06 targets and203 prior
-first-definition meanings pass. Root1009->963 lines before this note.
-Scoped links, whitespace and four462 tested hashes pass. Docs only; no
-code suite rerun. Latest root remains6622/known QDQ1 xfail/77 warnings, eight
-flags false and guard UNKNOWN. Next check for any remaining full-cache joins.
+[Complete unchanged checkpoint][review-463-465-preserved-0] is preserved in the archive.
 
 ## 464. Preflight Receipt Segment Extent Before Copying and Hashing (2026-11-19)
 
-From clean pushed4193153, a129-entry motion receipt segment list reached
-three receipt reader cache hashes and both live receipt copies:5FAIL10.77s.
-Share the owning intake's128-segment extent check before those boundaries.
-This is not segment-chain validation or timing/accuracy evidence; missing
-cache receipts keep the old comparison path.
-
-Finite focused/related<=60s, root<=360s:128PASS5.86s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6627/known QDQ1 xfail/77 warnings181.91s, then Ruff/whitespace PASS.
-Pylance syntax, changed format and tested hashes pass. No added read, copy
-or digest; eight flags false, guard UNKNOWN, no command admitted.
-Next trace the outer motion readers' receipt cache hashes.
+[Complete unchanged checkpoint][review-463-465-preserved-1] is preserved in the archive.
 
 ## 465. Preflight Integration Receipt Segment Extent (2026-11-19)
 
-From clean pushed5690b83, a129-entry receipt segment list reached both
-source/arithmetic outer cache hashes and both source copies after native
-intake:6FAIL12.21s. Reuse the receipt extent predicate at those boundaries.
-Nested reads and native intake order are unchanged; missing cached receipts
-keep their existing comparison behavior.
+[Complete unchanged checkpoint][review-463-465-preserved-2] is preserved in the archive.
 
-Finite focused/related<=60s, root<=360s:130PASS5.90s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6633/known QDQ1 xfail/77 warnings178.95s, then Ruff/whitespace PASS.
-Pylance syntax, changed format and tested hashes pass. No added read, copy
-or digest; eight flags false, guard UNKNOWN, no command admitted.
-Next check the corresponding owning intake boundaries.
+## 466. Intact Receipt Preflight Checkpoints (2026-11-19)
+
+From clean 578aa10, one30s scoped transform archives whole463-465 at the
+existing adjacent path. Exact40-line body, two inverse layouts, three
+historical headings, two rebased chapter06 targets and208 first-definition
+meanings pass. Root1003->978 lines before this note. Scoped link, whitespace
+and tested465 hashes pass; docs only, no code suite rerun. Latest root
+remains6633/known QDQ1 xfail/77 warnings; flags false and guard UNKNOWN.
+Next check the recorder's cached receipt and post-intake copy boundaries.
 
 ## Sources
 
@@ -1001,3 +983,6 @@ Next check the corresponding owning intake boundaries.
 [review-458-462-preserved-2]: docs/review/428-432.md#460-intact-motion-and-tof-cache-checkpoints-2026-11-19
 [review-458-462-preserved-3]: docs/review/428-432.md#461-preflight-motion-snapshot-pending-cache-before-hashing-2026-11-19
 [review-458-462-preserved-4]: docs/review/428-432.md#462-preflight-initial-and-startup-pending-cache-before-hashing-2026-11-19
+[review-463-465-preserved-0]: docs/review/428-432.md#463-intact-pending-cache-checkpoints-2026-11-19
+[review-463-465-preserved-1]: docs/review/428-432.md#464-preflight-receipt-segment-extent-before-copying-and-hashing-2026-11-19
+[review-463-465-preserved-2]: docs/review/428-432.md#465-preflight-integration-receipt-segment-extent-2026-11-19

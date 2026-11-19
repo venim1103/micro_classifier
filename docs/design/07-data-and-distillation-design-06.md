@@ -948,8 +948,8 @@ field-selection, combined and final-closure controls.
 [receipt-cached-observation-review]: ../review/428-432.md#443-preflight-cached-receipt-observation-before-owner-hashing-2026-11-19
 [integration-cached-observation-review]: ../review/428-432.md#445-preflight-cached-integration-observation-before-owner-hashing-2026-11-19
 [motion-pending-cache-review]: ../review/428-432.md#461-preflight-motion-snapshot-pending-cache-before-hashing-2026-11-19
-[receipt-segment-extent-review]: ../../REVIEW.md#464-preflight-receipt-segment-extent-before-copying-and-hashing-2026-11-19
-[integration-receipt-segment-extent-review]: ../../REVIEW.md#465-preflight-integration-receipt-segment-extent-2026-11-19
+[receipt-segment-extent-review]: ../review/428-432.md#464-preflight-receipt-segment-extent-before-copying-and-hashing-2026-11-19
+[integration-receipt-segment-extent-review]: ../review/428-432.md#465-preflight-integration-receipt-segment-extent-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17

@@ -750,6 +750,22 @@ references, whitespace and four451 tested hashes pass. Docs only; no code suite
 rerun. Latest root remains6587/known QDQ1 xfail/77 warnings, eight flags false
 and guard UNKNOWN. Next trace native-word conversions in both live motion samplers.
 
+## 453. Preflight Live Motion Snapshot Native Words (2026-11-19)
+
+From clean pushed4541d2d, equal-valued text yaw in receipt and zero-dimensional
+array speed in integration were normalized by `float()` and returned available
+at both live sampling boundaries:4FAIL6.83s. Reuse shared validated dynamics
+assembly, preserving receipt fields, the original observation and native intake
+ordering. Unsupported words yield the existing explicit unknown.
+
+Finite focused/related<=60s, root<=360s. Focused8PASS0.81s including the four
+live observation controls; related159PASS2.21s. Required root `python -m pytest
+-q --durations=10 && ruff check . && git diff --check` PASS6591/known QDQ1 xfail/
+77 warnings176.41s, followed by Ruff/whitespace PASS. Pylance syntax, changed
+format, scoped AST, tested hashes and link PASS. No additional read, copy or
+digest; all eight flags false, guard UNKNOWN. Next trace the detached retained
+initial snapshot's observation before its source verification hash.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

@@ -22424,16 +22424,8 @@ class _SyntheticC1SourceRecorder:
         def producer_sample():
             observation = producer._observation()
             source = producer._motion_receipt_source
-            config = producer.config
-            _check_simulator_dynamics_observation(observation, config)
             return {
-                "tick": producer.tick,
-                "pose_m_rad": (*map(float, producer.position), float(producer.yaw)),
-                "native_action": (float(producer.speed), float(producer.turn_rate)),
-                "native_goal_source": deepcopy(producer._native_goal_source),
-                "observation": observation,
-                "config": asdict(config),
-                "scenario": asdict(producer.scenario),
+                **_simulator_dynamics_source_words(producer, observation),
                 "motion_receipt": deepcopy(source["receipt"]),
                 "receipt_source_epoch": self._epoch,
             }
@@ -22812,16 +22804,8 @@ class _SyntheticC1SourceRecorder:
             native_source = _sample_simulator_native_integration_source(
                 producer, producer._motion_receipt_source["receipt"], self._epoch
             )
-            config = producer.config
-            _check_simulator_dynamics_observation(observation, config)
             producer_source = {
-                "tick": producer.tick,
-                "pose_m_rad": (*map(float, producer.position), float(producer.yaw)),
-                "native_action": (float(producer.speed), float(producer.turn_rate)),
-                "native_goal_source": deepcopy(producer._native_goal_source),
-                "observation": observation,
-                "config": asdict(config),
-                "scenario": asdict(producer.scenario),
+                **_simulator_dynamics_source_words(producer, observation),
                 "motion_receipt": deepcopy(producer._motion_receipt_source["receipt"]),
                 "receipt_source_epoch": self._epoch,
             }

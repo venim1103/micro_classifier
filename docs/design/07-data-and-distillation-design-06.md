@@ -445,6 +445,10 @@ envelopes against the producer profile before hashing dynamics. The integration
 check follows native intake and reuses the same observation. The
 [live-observation checkpoint][motion-live-observation-review] keeps the
 existing sampler and digest limits.
+Both samplers reuse the shared dynamics word assembly so unsupported raw pose,
+action or goal layouts cannot be normalized into equality with cached words.
+The [native-word checkpoint][motion-live-words-review] preserves the receipt
+fields, observation/intake order and existing copy/digest limits.
 
 The optional [later-period comparison][current-normalization-comparison-design]
 uses a separate default-off output, with original/copy/closing reports bound again
@@ -928,6 +932,7 @@ field-selection, combined and final-closure controls.
 [receipt-cached-observation-review]: ../review/428-432.md#443-preflight-cached-receipt-observation-before-owner-hashing-2026-11-19
 [integration-cached-observation-review]: ../review/428-432.md#445-preflight-cached-integration-observation-before-owner-hashing-2026-11-19
 [motion-live-observation-review]: ../../REVIEW.md#451-preflight-live-motion-snapshot-observations-2026-11-19
+[motion-live-words-review]: ../../REVIEW.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17
 [intake-history-extent-review]: ../review/413-417.md#416-closed-owning-intake-history-root-hashes-2026-11-17
 [intake-history-consumption-review]: ../review/413-417.md#417-closed-post-observation-history-consumption-2026-11-17

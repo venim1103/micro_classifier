@@ -20930,6 +20930,47 @@ def test_receipt_snapshot_history_extent(
 
 @pytest.mark.parametrize("mode", ("receipt", "integration"))
 @pytest.mark.parametrize("phase", ("first", "closing"))
+def test_motion_snapshot_rejects_normalizable_native_words(
+    monkeypatch, c1_native_integration_snapshot_fixture, mode, phase
+):
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    sample, current = owner._dynamics_sample, owner._current
+    field = "yaw" if mode == "receipt" else "speed"
+    original_word = getattr(environment, field)
+    malformed = str(original_word) if mode == "receipt" else np.array(original_word)
+    assert float(malformed).hex() == float(original_word).hex()
+    span = 1 if mode == "receipt" else 3
+    target = span if phase == "first" else 2 * span
+    observation_count = 0
+    original_observation = environment._observation
+
+    def observe():
+        nonlocal observation_count
+        observation_count += 1
+        assert observation_count <= 2 * span
+        setattr(environment, field, original_word)
+        observation = original_observation()
+        if observation_count == target:
+            setattr(environment, field, malformed)
+        return observation
+
+    monkeypatch.setattr(environment, "_observation", observe)
+    if mode == "receipt":
+        result = owner.snapshot_receipt_history(synthetic_test_only=True)
+        reason = "unsupported_or_changed_receipt_history"
+    else:
+        result = owner.snapshot_native_integration_source(synthetic_test_only=True)
+        reason = "unsupported_or_changed_native_integration_source"
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"] == reason
+    assert not {"source", "source_epoch", "current_frame", "history"} & result.keys()
+    assert observation_count == target
+    assert getattr(environment, field) is malformed
+    assert owner._dynamics_sample is sample and owner._current is current
+
+
+@pytest.mark.parametrize("mode", ("receipt", "integration"))
+@pytest.mark.parametrize("phase", ("first", "closing"))
 def test_motion_snapshot_preflights_live_observation(
     monkeypatch, c1_native_integration_snapshot_fixture, mode, phase
 ):

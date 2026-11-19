@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §452 for intact443-447 archival;
+Read [REVIEW.md][review] §453 for shared live motion word preflight;
+§452 records intact443-447 archival;
 §451 records live motion observation preflight;
 §450 records startup cached observation preflight;
 §449 records initial retention cached observation preflight;

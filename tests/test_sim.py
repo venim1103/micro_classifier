@@ -37784,6 +37784,8 @@ def test_native_goal_computation_history(
         "closing_intake_action",
         "closing_refresh_fresh",
         "closing_refresh_repeat",
+        "first_equal_current",
+        "closing_equal_dynamics",
     ),
 )
 def test_native_goal_recorder_retention(
@@ -37846,6 +37848,7 @@ def test_native_goal_recorder_retention(
         owner._identities = {**owner._identities, "extra": "0" * 64}
     before_history = owner._goal_computation_history
     before_contents = deepcopy(tuple(before_history))
+    owner_before = (owner._current, owner._dynamics_sample)
     work = {
         "inside": False,
         "intake": 0,
@@ -37888,6 +37891,8 @@ def test_native_goal_recorder_retention(
                 setattr(environment, name, replacement)
                 setattr(owner, f"_simulator_{name}", replacement)
                 environment._native_goal_computation_source[name] = replacement
+            if observations == 1 and case == "first_equal_current":
+                owner._current = deepcopy(owner._current)
             if observations == 2 and case == "closing_producer_cache":
                 environment._native_goal_computation_source["computation"]["values"][
                     "delta_m"
@@ -37918,6 +37923,8 @@ def test_native_goal_recorder_retention(
         result = original_intake(*args)
         if work["intake"] == 2 and case == "closing_intake_action":
             environment.speed += 0.125
+        if work["intake"] == 2 and case == "closing_equal_dynamics":
+            owner._dynamics_sample = deepcopy(owner._dynamics_sample)
         return result
 
     def check(*args):
@@ -38028,6 +38035,18 @@ def test_native_goal_recorder_retention(
             "files",
         ):
             assert work["intake"] == 0
+        if case == "first_equal_current":
+            current = owner._current
+            assert current is not owner_before[0]
+            assert current[0] == owner_before[0][0]
+            np.testing.assert_array_equal(current[1], owner_before[0][1])
+            assert current[2:] == owner_before[0][2:]
+            assert observations == work["intake"] == 2
+        if case == "closing_equal_dynamics":
+            dynamics = owner._dynamics_sample
+            assert dynamics is not owner_before[1]
+            assert original_digest(dynamics) == original_digest(owner_before[1])
+            assert observations == work["intake"] == 2
     else:
         retain(case != "default")
         if case in ("default", "repeat"):

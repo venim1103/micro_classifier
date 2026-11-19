@@ -2378,7 +2378,9 @@ or numerical/noise/physical/source/clock/execution/admission qualification;
 all eight flags false. [Checkpoint §330][native-goal-retention-review] records
 the finite controls and necessary fixture/closing-guard repairs.
 Original producer/cache/native/RNG/odometry and owner content now pin before the
-first observation. The shared owning sampler collects native words after observing,
+first observation. The current tuple and dynamics record must also retain
+their original identities; see the [owner checkpoint][native-goal-retention-owner-identity-review].
+The shared owning sampler collects native words after observing,
 and closing dynamics refresh after the last intake using that same observation.
 The [dynamics closure checkpoint][native-goal-dynamics-closing-review] preserves
 equal-state first-epoch and late native-action repros; work limits remain unchanged.
@@ -2534,6 +2536,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-retention-history-preflight-review]: ../../REVIEW.md#429-preflight-goal-retention-history-after-final-refresh-2026-11-19
 [native-goal-original-owner-review]: ../../REVIEW.md#430-bind-original-goal-delivery-ownership-before-producer-work-2026-11-19
 [native-goal-owner-tick-review]: ../../REVIEW.md#431-preflight-exact-goal-owner-tick-before-serialization-2026-11-19
+[native-goal-retention-owner-identity-review]: ../../REVIEW.md#432-pin-original-goal-retention-owner-objects-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

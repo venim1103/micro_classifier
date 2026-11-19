@@ -774,6 +774,25 @@ Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PA
 No sample/intake/copy/digest or work-ceiling change. Eight flags false,
 guard UNKNOWN; no command is admitted. No new evidence or protected work.
 
+## 432. Pin Original Goal Retention Owner Objects (2026-11-19)
+
+From clean pushed4d95e5c, fresh goal retention accepted an equal-word current
+tuple replacement at the first observation or an equal-word dynamics
+replacement at the closing intake:2FAIL13.50s. Pin the original current and
+dynamics references before producer work; compare them at closure in addition
+to the existing content and layout guards. The producer uses the pinned
+dynamics record as its baseline. Both mutations now reject without publication
+or rollback.
+
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
+Repaired2PASS1.40s, related481PASS13.16s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6537/known QDQ1 xfail/77 warnings259.95s, then Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
+
+No sample/intake/copy/digest or work-ceiling change. Eight flags false,
+guard UNKNOWN; unchanged words do not establish original ownership or qualification.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

@@ -18436,6 +18436,7 @@ class _SyntheticC1SourceRecorder:
         ):
             raise ValueError("native goal retention requires a current bound producer")
         validate_state(self._current[2])
+        current_before, dynamics_before = self._current, self._dynamics_sample
         retained = self._goal_computation_history
         if type(retained) is not list or len(retained) > 8:
             raise ValueError("native goal retention history budget exhausted")
@@ -18483,7 +18484,7 @@ class _SyntheticC1SourceRecorder:
         observed = producer()
         producer_binding = _c1_source_binding_digest(observed)
         if producer_binding != _c1_source_binding_digest(
-            {key: self._dynamics_sample.get(key) for key in observed}
+            {key: dynamics_before.get(key) for key in observed}
         ):
             raise ValueError("native goal producer changed after recorder read")
         live = _sample_simulator_native_goal_computation_source(
@@ -18528,6 +18529,8 @@ class _SyntheticC1SourceRecorder:
             or closing_producer_binding != producer_binding
             or self._simulator is not simulator
             or self._goal_computation_history is not retained
+            or self._current is not current_before
+            or self._dynamics_sample is not dynamics_before
             or environment._native_goal_computation_source is not cache
             or environment._native_goal_source is not native
             or environment.rng is not rng

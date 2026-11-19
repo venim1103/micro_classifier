@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §432 for original goal retention owner identities;
+Read [REVIEW.md][review] §433 for bounded raw goal words before dynamics copying;
+§432 records original goal retention owner identities;
 §431 records shared goal owner layout preflight;
 §430 records original goal delivery ownership;
 §429 records final goal retention history prehash validation;
@@ -517,6 +518,8 @@ Goal retention and delivery now reject non-integer current ticks before closing
 owner serialization. Focused26, related455 and root6535/known QDQ1 xfail passed.
 Goal retention now pins the original current tuple and dynamics object across
 producer work. Two regressions,481 related and root6537/known QDQ1 xfail passed.
+Shared dynamics sampling now validates raw goal words before copying them.
+Two regressions,546 related and root6539/known QDQ1 xfail passed.
 No work cap or qualification change.
 Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or

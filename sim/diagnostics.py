@@ -9939,13 +9939,18 @@ def _sample_simulator_dynamics_source(environment):
 
 
 def _simulator_dynamics_source_words(environment, observation):
+    native_goal = getattr(environment, "_native_goal_source", None)
+    if native_goal is not None and not _native_tof_word_copy_matches(
+        native_goal,
+        {"tick": 0, "position_m": (0.0, 0.0), "yaw_rad": 0.0, "goal_m": (0.0, 0.0)},
+        shape_only=True,
+    ):
+        raise ValueError("unsupported native goal source")
     return {
         "tick": environment.tick,
         "pose_m_rad": (*map(float, environment.position), float(environment.yaw)),
         "native_action": (float(environment.speed), float(environment.turn_rate)),
-        "native_goal_source": deepcopy(
-            getattr(environment, "_native_goal_source", None)
-        ),
+        "native_goal_source": deepcopy(native_goal),
         "observation": observation,
         "config": asdict(environment.config),
         "scenario": asdict(environment.scenario),

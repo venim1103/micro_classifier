@@ -793,6 +793,24 @@ Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PA
 No sample/intake/copy/digest or work-ceiling change. Eight flags false,
 guard UNKNOWN; unchanged words do not establish original ownership or qualification.
 
+## 433. Preflight Raw Native Goal Words Before Dynamics Copy (2026-11-19)
+
+From clean pushedb1f1083, a third raw goal word inserted during the first
+observation reached the shared dynamics copy in goal retention and delivery:
+2FAIL4.68s. Check the existing four-field layout, bounded integer tick and
+finite two-word vectors before the existing copy. Missing `None` handling and
+the independent native-intake and State/frame correspondence checks remain.
+
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
+The parallel format check flagged a test assertion; wrapped it.
+Repaired2PASS4.85s, related546PASS6.69s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6539/known QDQ1 xfail/77 warnings189.61s, then Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
+
+No sample/intake/copy/digest or work-ceiling change. Eight flags false,
+guard UNKNOWN. Archive whole423-427 before further review growth.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

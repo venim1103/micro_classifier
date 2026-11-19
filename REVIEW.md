@@ -767,6 +767,24 @@ No sample/intake/copy/digest or work-ceiling change. Eight flags false,
 guard UNKNOWN. Next check whether the same observation envelope can carry
 unsupported fields or scalar payloads into the digest.
 
+## 437. Preflight Observation Metadata Before Dynamics Hashing (2026-11-19)
+
+From clean pushedf2d3fd8, an unexpected observation field or a list-valued
+ToF age reached the final goal delivery digest despite valid array shapes:
+2FAIL4.58s. Check the exact producer keys/schema and scalar layouts before
+hashing, preserving the configured odometry pair and missing ToF sample tick.
+No new timing correspondence rule or array payload work.
+
+Finite2 repro/4 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Focused4PASS0.65s including both prior array controls; related593PASS8.02s.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6545/known QDQ1 xfail/77 warnings185.68s, then Ruff and
+whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
+checkpoint link PASS. Local logs preserve spent positions.
+
+No sample/intake/copy/digest or work-ceiling change. Eight flags false,
+guard UNKNOWN. Metadata checks do not qualify clocks or source authority.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §436 for observation array preflight;
+Read [REVIEW.md][review] §437 for observation metadata preflight;
+§436 records observation array preflight;
 §435 records bounded dynamics position sampling;
 §434 records intact423-427 archival;
 §433 records bounded raw goal words before dynamics copying;
@@ -529,6 +530,8 @@ Shared dynamics sampling now checks position extent and numeric array type
 before conversion. Four focused,546 related and root6541/known QDQ1 xfail passed.
 Shared dynamics sampling also checks observation array shape and dtype before
 hashing. Two focused,593 related and root6543/known QDQ1 xfail passed.
+It now rejects extra observation keys and nonscalar metadata before hashing.
+Four focused,593 related and root6545/known QDQ1 xfail passed.
 No work cap or qualification change.
 Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or

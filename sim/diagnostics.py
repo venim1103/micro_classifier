@@ -9955,8 +9955,9 @@ def _simulator_dynamics_source_words(environment, observation):
         raise ValueError("unsupported native goal source")
     if type(observation) is not dict:
         raise ValueError("unsupported simulator dynamics observation arrays")
-    count = environment.config.history_ticks
-    for key, shape, dtype in (
+    config = environment.config
+    count = config.history_ticks
+    arrays = (
         ("ego", (4,), np.float32),
         ("goal_body_m", (2,), np.float32),
         ("tof_m", (8, 8), np.float32),
@@ -9965,7 +9966,35 @@ def _simulator_dynamics_source_words(environment, observation):
         ("history_tof_m", (count, 8, 8), np.float32),
         ("history_tof_valid", (count, 8, 8), np.bool_),
         ("history_valid", (count,), np.bool_),
+    )
+    tick_fields = ("tick",)
+    time_fields = ("time_s", "tof_age_s")
+    if config.odometry_latency_ticks:
+        tick_fields += ("ego_sample_tick",)
+        time_fields += ("ego_age_s",)
+    keys = {"schema", "tof_sample_tick", *tick_fields, *time_fields}
+    keys.update(key for key, _, _ in arrays)
+    if (
+        len(observation) != len(keys)
+        or any(type(key) is not str for key in observation)
+        or set(observation) != keys
+        or type(observation["schema"]) is not str
+        or observation["schema"] != "micro-classifier/sim-observation/1"
     ):
+        raise ValueError("unsupported simulator dynamics observation metadata")
+    if observation["tof_sample_tick"] is not None:
+        tick_fields += ("tof_sample_tick",)
+    for key in tick_fields:
+        value = observation[key]
+        if type(value) is not int or value.bit_length() > 32:
+            raise ValueError("unsupported simulator dynamics observation metadata")
+    for key in time_fields:
+        value = observation[key]
+        if type(value) not in (int, float, np.float64) or (
+            type(value) is int and value.bit_length() > 32
+        ):
+            raise ValueError("unsupported simulator dynamics observation metadata")
+    for key, shape, dtype in arrays:
         array = observation.get(key)
         if (
             type(array) is not np.ndarray

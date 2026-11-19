@@ -40685,9 +40685,17 @@ def test_native_goal_dynamics_preflights_before_copy(
     )
 
 
-@pytest.mark.parametrize("phase", ("first_observation", "final_refresh"))
+@pytest.mark.parametrize(
+    "phase,field",
+    (
+        ("first_observation", "history_tof_m"),
+        ("final_refresh", "history_tof_m"),
+        ("final_refresh", "extra"),
+        ("final_refresh", "tof_age_s"),
+    ),
+)
 def test_native_goal_delivery_preflights_observation_arrays(
-    monkeypatch, c1_motion_receipt_source_fixture, phase
+    monkeypatch, c1_motion_receipt_source_fixture, phase, field
 ):
     from sim import diagnostics
 
@@ -40706,13 +40714,16 @@ def test_native_goal_delivery_preflights_observation_arrays(
     original_intake = diagnostics._sample_simulator_native_goal_computation_source
     original_digest = diagnostics._c1_source_binding_digest
 
+    def mutate(packet):
+        packet[field] = oversized if field == "history_tof_m" else [0.0, 0.0]
+
     def observation():
         nonlocal latest
         work["observation"] += 1
         assert work["observation"] <= 2
         latest = original_observation()
         if phase == "first_observation":
-            latest["history_tof_m"] = oversized
+            mutate(latest)
         return latest
 
     def intake(*args, **kwargs):
@@ -40721,14 +40732,17 @@ def test_native_goal_delivery_preflights_observation_arrays(
         actual = original_intake(*args, **kwargs)
         if phase == "final_refresh" and work["intake"] == 2:
             assert latest is not None
-            latest["history_tof_m"] = oversized
+            mutate(latest)
         return actual
 
     def digest(record):
         work["digest"] += 1
         assert work["digest"] <= 12
         if type(record) is dict and "observation" in record:
-            assert record["observation"]["history_tof_m"].shape == expected_shape
+            packet = record["observation"]
+            assert packet["history_tof_m"].shape == expected_shape
+            assert "extra" not in packet
+            assert type(packet["tof_age_s"]) is float
         return original_digest(record)
 
     monkeypatch.setattr(environment, "_observation", observation)
@@ -40738,7 +40752,12 @@ def test_native_goal_delivery_preflights_observation_arrays(
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
     result = owner.snapshot_native_goal_delivery(**options)
     assert result["status"] == "unknown" and result["snapshot_available"] is False
-    assert result["reason"] == "unsupported simulator dynamics observation arrays"
+    expected_reason = (
+        "unsupported simulator dynamics observation arrays"
+        if field == "history_tof_m"
+        else "unsupported simulator dynamics observation metadata"
+    )
+    assert result["reason"] == expected_reason
     assert not {"frame", "delivered_goal", "source_epoch", "tick"} & result.keys()
     assert (
         work["observation"]

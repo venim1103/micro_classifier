@@ -755,6 +755,31 @@ Guard UNKNOWN; Q0-Q4 and user-side ST boundaries remain as in422. Local logs
 retain spent checks and are nonportable. Continue only on a concrete compatible
 source issue or independently supported named evidence.
 
+## 424. Preflight Live ToF Histories Before Retention Staging (2026-11-19)
+
+From clean pushed555771c, the first observation could replace any of six
+optional histories after owner preflight but before the retainer copied entries.
+The staged-list check rejected too late. Move the six redundant entry checks
+to after the first live intake and base history layout check, before staging.
+Original and closing owner preflights remain. Capture-option defaults, gaps,
+deduplication and trimming stay unchanged.
+
+Finite6 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Nine-entry replacements reached forbidden deepcopy in all six families:
+6FAIL4.41s. The first focused chain stopped at formatting before pytest; only a
+blank line was missing. Repaired6PASS0.68s, prior144PASS8.34s. Invalid history
+exits after one observation/intake with no publication or mutation rollback.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6524/known QDQ1 xfail/77 warnings183.54s, then
+Ruff/whitespace PASS. Pylance syntax, changed format, exact six validator moves,
+unchanged prior test AST, tested hashes and scoped reference PASS.
+
+No sample/intake/copy/digest/report or work cap added; no replay, extra RNG,
+clock or qualification. All eight flags false, guard UNKNOWN. Local logs
+retain spent checks and are nonportable. The remaining queue still requires
+independently supported named evidence or another concrete compatible issue;
+no tool, hardware or study scope follows.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

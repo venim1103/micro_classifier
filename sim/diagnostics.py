@@ -18607,24 +18607,6 @@ class _SyntheticC1SourceRecorder:
         _check_native_tof_history_layout(self._tof_history, template)
         if include_postprocessing or self._tof_postprocessing_history:
             _check_native_tof_archive_words(self._tof_history, template)
-        _check_native_tof_timing_history(
-            self._tof_timing_history, self._tof_history, self._epoch
-        )
-        _check_native_tof_selection_history(
-            self._tof_selection_history, self._tof_history, self._epoch
-        )
-        _check_native_tof_wall_history(
-            self._tof_wall_history, self._tof_history, self._epoch
-        )
-        _check_native_tof_cylinder_history(
-            self._tof_cylinder_history, self._tof_history, self._epoch
-        )
-        _check_native_tof_direction_history(
-            self._tof_direction_history, self._tof_history, self._epoch
-        )
-        _check_native_tof_postprocessing_history(
-            self._tof_postprocessing_history, self._tof_history, self._epoch
-        )
 
         def producer():
             return _sample_simulator_dynamics_source(environment)
@@ -18783,6 +18765,24 @@ class _SyntheticC1SourceRecorder:
         else:
             copied = _sample_simulator_native_tof_source(environment, self._epoch)
         _check_native_tof_history_layout(self._tof_history, copied)
+        _check_native_tof_timing_history(
+            self._tof_timing_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_selection_history(
+            self._tof_selection_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_wall_history(
+            self._tof_wall_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_cylinder_history(
+            self._tof_cylinder_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_direction_history(
+            self._tof_direction_history, self._tof_history, self._epoch
+        )
+        _check_native_tof_postprocessing_history(
+            self._tof_postprocessing_history, self._tof_history, self._epoch
+        )
         history = deepcopy(self._tof_history)
         if history and history[-1]["tick"] == copied["tick"]:
             if not _native_tof_word_copy_matches(history[-1], copied):

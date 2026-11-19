@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §423 for closing delivery trace prehash validation;
+Read [REVIEW.md][review] §424 for prevalidation before retention staging;
+§423 records closing delivery trace prehash validation;
 §422 records closing native history preflight and intact413-417;
 §421 records closed current-ToF original owner contexts;
 §420 records closed current-ToF original history joins;
@@ -485,8 +486,11 @@ The fresh continuation closed five optional delivery histories' prehash gap.
 Their individual closing hashes now follow the unchanged late compound owner
 preflight. Ten controls cover final observation and final dynamics refresh; the
 first repair's lost late guard and its spent gate are retained in §423. Final
-related366 and root6518/known QDQ1 xfail passed. No work cap or qualification
-change. Actual independent Q0-Q4 inputs remain absent;
+related366 and root6518/known QDQ1 xfail passed. Retention now also checks all
+six live trace histories after the first intake and before staging copies.
+The original and closing owner checks stay in place; six regressions and
+root6524/known QDQ1 xfail passed. No work cap or qualification change.
+Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or
 deferred. A concrete issue or independent evidence can resume local work, not
 qualification by metadata or another duplicate report.

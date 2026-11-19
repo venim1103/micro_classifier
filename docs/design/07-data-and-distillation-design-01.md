@@ -920,6 +920,12 @@ without publishing other recorder fields or undoing external mutations. This
 only moves an existing digest; the [history checkpoint][native-tof-original-history-review]
 preserves bounded repros and unchanged call/work limits.
 
+After the first live intake, all six optional retained trace histories are
+revalidated before the retainer filters or copies them, including when capture
+options are off. Original and closing owner preflights remain unchanged. The
+[staging checkpoint][native-tof-retention-staging-review] records bounded
+rejections without new validation calls or changed retention semantics.
+
 An exact RoverEnv, four-field current tuple with builtin integer tick, State and
 bytes frame, and dict dynamics are prevalidated before producer access or sampling.
 Closing current tuple/State layout is checked before owner serialization. The
@@ -2164,6 +2170,7 @@ figure is not an established minimum.
 [native-tof-current-original-owner-review]: ../../REVIEW.md#421-closed-current-tof-original-owner-contexts-2026-11-18
 [native-tof-current-closing-history-review]: ../../REVIEW.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18
 [native-tof-delivery-trace-preflight-review]: ../../REVIEW.md#423-prehash-validation-for-closing-tof-delivery-traces-2026-11-19
+[native-tof-retention-staging-review]: ../../REVIEW.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

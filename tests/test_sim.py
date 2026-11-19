@@ -12086,6 +12086,74 @@ def test_recorder_native_tof_source(
     assert work["intake"] <= 4 and work["forbidden"] == 0
 
 
+@pytest.mark.parametrize(
+    "kind", ("timing", "selection", "wall", "cylinder", "direction", "postprocessing")
+)
+def test_native_tof_retention_preflights_live_histories_before_staging(
+    monkeypatch, c1_motion_receipt_source_fixture, kind
+):
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    name = f"_tof_{kind}_history"
+    entry = {"tick": environment.tick}
+    malformed = [entry] * 9
+    before_current, before_history = owner._current, owner._tof_history
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "intake": 0}
+    original_observation = environment._observation
+    original_intake = diagnostics._sample_simulator_native_tof_source
+    original_copy = diagnostics.deepcopy
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] == 1
+        actual = original_observation()
+        setattr(owner, name, malformed)
+        return actual
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] == 1
+        return original_intake(*args, **kwargs)
+
+    def copied(value, *args, **kwargs):
+        assert value is not malformed and value is not entry
+        return original_copy(value, *args, **kwargs)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("retention must not read/step/reset/replay/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_sample_simulator_native_tof_source", intake)
+    monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    monkeypatch.setattr(type(owner), "record_environment_tick", forbidden)
+    for method in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, method, forbidden)
+    for method in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, method, forbidden)
+    with pytest.raises(ValueError, match=f"native ToF {kind} history budget exhausted"):
+        owner.record_native_tof_source(environment, synthetic_test_only=True)
+    assert work["observation"] == work["intake"] == 1
+    assert owner._current is before_current and owner._tof_history is before_history
+    assert owner._tof_sample is None
+    assert getattr(owner, name) is malformed and len(malformed) == 9
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.mark.parametrize("fresh", (False, True))
 @pytest.mark.parametrize("case", ("drop", "word"))
 def test_native_tof_retention_initial_history(

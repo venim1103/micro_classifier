@@ -22435,9 +22435,11 @@ class _SyntheticC1SourceRecorder:
 
         def owner_binding():
             _check_simulator_receipt_history_extent(self._receipt_history)
-            if type(self._dynamics_sample) is not dict:
+            sample = self._dynamics_sample
+            if type(sample) is not dict:
                 raise ValueError("unsupported closing current receipt owner")
             _check_native_recorder_current_owner(self._current)
+            _check_recorded_simulator_dynamics_observation(sample, self._config)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22447,7 +22449,7 @@ class _SyntheticC1SourceRecorder:
                         asdict(self._current[2]),
                         self._current[3],
                     ),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": sample,
                     "history": self._receipt_history,
                     "config": asdict(self._config),
                     "source_files": self._identities,
@@ -22630,8 +22632,10 @@ class _SyntheticC1SourceRecorder:
         try:
             binding = owner_binding()
             sampled = producer_sample()
+            cached = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(cached, self._config)
             sampled_binding = _c1_source_binding_digest(sampled)
-            if sampled_binding != _c1_source_binding_digest(self._dynamics_sample):
+            if sampled_binding != _c1_source_binding_digest(cached):
                 result["reason"] = "producer_content_changed"
                 return result
             _check_simulator_receipt_history(

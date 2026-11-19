@@ -20683,6 +20683,61 @@ def test_receipt_snapshot_history_extent(
     ) == epochs
 
 
+@pytest.mark.parametrize("phase", ("original", "first_observation", "closing"))
+def test_receipt_snapshot_preflights_cached_observation(
+    monkeypatch, c1_native_integration_snapshot_fixture, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    sample, current, history = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._receipt_history,
+    )
+    observation = sample["observation"]
+    count = environment.config.history_ticks
+    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    work = {"observation": 0, "binding": 0}
+    original_observation = environment._observation
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observe():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        actual = original_observation()
+        if work["observation"] == {"first_observation": 1, "closing": 2}.get(phase):
+            observation["history_tof_m"] = oversized
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 32
+        if type(record) is dict:
+            candidate = record.get("dynamics_sample", record)
+            if candidate is sample:
+                assert observation["history_tof_m"].shape == (count, 8, 8)
+        return original_binding(record)
+
+    if phase == "original":
+        observation["history_tof_m"] = oversized
+    monkeypatch.setattr(environment, "_observation", observe)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    result = owner.snapshot_receipt_history(synthetic_test_only=True)
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"] == "unsupported_or_changed_receipt_history"
+    assert (
+        not {"source_epoch", "current_tick", "current_frame", "history"} & result.keys()
+    )
+    assert (
+        work["observation"]
+        == {"original": 0, "first_observation": 1, "closing": 2}[phase]
+    )
+    assert observation["history_tof_m"] is oversized
+    assert owner._dynamics_sample is sample
+    assert owner._current is current and owner._receipt_history is history
+
+
 @pytest.mark.parametrize("mode", ("receipt", "source", "arithmetic"))
 @pytest.mark.parametrize("phase", ("initial", "closing"))
 @pytest.mark.parametrize(

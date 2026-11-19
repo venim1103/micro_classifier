@@ -790,6 +790,25 @@ PASS. No added observation, copy or digest. Publication and existing retention
 and work limits are unchanged; eight flags false, guard UNKNOWN. Next trace
 the cached observation at the other named owning intake/receipt consumers.
 
+## 443. Preflight Cached Receipt Observation Before Owner Hashing (2026-11-19)
+
+From clean pushed13b9b1a, a nine-frame cached observation reached
+`snapshot_receipt_history` digests at original ownership, first observation
+and closing ownership:3FAIL6.98s. Reuse the cached-observation predicate in
+the owner helper and first producer comparison, hashing the checked references.
+Malformed caches return the existing explicit unknown receipt reason without
+publishing receipt history, source epoch, tick or frame.
+
+Finite3 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
+Focused3PASS0.60s and related111PASS1.39s. Ruff flagged two test wraps, fixed;
+the first Pylance calls lacked a workspace root, then syntax passed with it.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6567/known QDQ1 xfail/77 warnings183.52s, followed by
+Ruff and whitespace PASS. Changed format, scoped AST, tested hashes and link
+PASS. No added samples, copies or digests; eight flags false, guard UNKNOWN.
+Archive whole433-437 before further growth, then trace the integration owners
+whose own hashes bracket the nested receipt reads.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

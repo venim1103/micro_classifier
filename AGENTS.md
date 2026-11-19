@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §442 for cached ToF observation preflight;
+Read [REVIEW.md][review] §443 for cached receipt observation preflight;
+§442 records cached ToF observation preflight;
 §441 records cached goal observation preflight;
 §440 records intact428-432 archival;
 §439 records dynamics configuration preflight;

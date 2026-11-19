@@ -19948,6 +19948,19 @@ class _SyntheticC1SourceRecorder:
                 _check_native_recorder_owner_pose(current[1])
             sample = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(sample, self._config)
+            if include_pending_sources or "native_tof_pending_queue" in sample:
+                recorded_pending = sample.get("native_tof_pending_queue")
+                if type(recorded_pending) is not tuple or len(recorded_pending) > 8:
+                    raise ValueError("native ToF pending original-read layout missing")
+                pending_template = ((0, 0, (0,) * 64, (False,) * 64),) * len(
+                    recorded_pending
+                )
+                if not _native_tof_word_copy_matches(
+                    recorded_pending, pending_template, shape_only=True
+                ):
+                    raise ValueError(
+                        "native ToF pending original-read word budget exhausted"
+                    )
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -20670,19 +20683,6 @@ class _SyntheticC1SourceRecorder:
                 for word in entry["sample_words"]
             ):
                 raise ValueError("native ToF delivery sample word budget exhausted")
-            if include_pending_sources:
-                recorded_pending = dynamics_before.get("native_tof_pending_queue")
-                if type(recorded_pending) is not tuple or len(recorded_pending) > 8:
-                    raise ValueError("native ToF pending original-read layout missing")
-                pending_template = ((0, 0, (0,) * 64, (False,) * 64),) * len(
-                    recorded_pending
-                )
-                if not _native_tof_word_copy_matches(
-                    recorded_pending, pending_template, shape_only=True
-                ):
-                    raise ValueError(
-                        "native ToF pending original-read word budget exhausted"
-                    )
             if (
                 self._simulator_rng is not environment.rng
                 or self._simulator_odometry_rng is not environment.odometry_rng

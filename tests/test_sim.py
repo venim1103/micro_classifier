@@ -19007,6 +19007,63 @@ def test_native_tof_wall_snapshot(
     assert work["forbidden"] == 0
 
 
+@pytest.mark.parametrize("phase", ("original_default", "closing_opt_in"))
+def test_native_tof_delivery_preflights_cached_pending(
+    monkeypatch, c1_motion_receipt_source_fixture, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    options = {"synthetic_test_only": True}
+    owner.record_environment_tick(environment, **options)
+    for _ in range(3):
+        environment.step([0.125, 0.3], capture_native_tof_source=True)
+        owner.record_environment_tick(
+            environment, **options, capture_native_tof_pending_source=True
+        )
+        if environment._native_tof_source is not None:
+            owner.record_native_tof_source(environment, **options)
+    sample, current, history = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._tof_history,
+    )
+    oversized = (sample["native_tof_pending_queue"][0],) * 9
+    work = {"words": 0, "binding": 0}
+    original_words = diagnostics._simulator_dynamics_source_words
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def words(*args, **kwargs):
+        work["words"] += 1
+        assert work["words"] <= 3
+        actual = original_words(*args, **kwargs)
+        if phase == "closing_opt_in" and work["words"] == 3:
+            sample["native_tof_pending_queue"] = oversized
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if type(record) is dict and record.get("dynamics_sample") is sample:
+            assert len(sample["native_tof_pending_queue"]) <= 8
+        return original_binding(record)
+
+    if phase == "original_default":
+        sample["native_tof_pending_queue"] = oversized
+    monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    result = owner.snapshot_native_tof_delivery(
+        **options, include_pending_sources=phase == "closing_opt_in"
+    )
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"] == "native ToF pending original-read layout missing"
+    assert not {"source", "pending_sources", "source_epoch", "frame"} & result.keys()
+    assert work["words"] == (3 if phase == "closing_opt_in" else 0)
+    assert sample["native_tof_pending_queue"] is oversized
+    assert owner._dynamics_sample is sample
+    assert owner._current is current and owner._tof_history is history
+
+
 def test_native_tof_delivery_closes_pending_after_storage(
     monkeypatch, c1_motion_receipt_source_fixture
 ):

@@ -782,6 +782,21 @@ hashes and link PASS. No additional read, copy or digest. Eight flags false,
 guard UNKNOWN. Next trace direct uses of the same motion cache outside these
 validated samplers; qualification still requires independent Q0-Q4 evidence.
 
+## 455. Preflight Delivery Pending Cache Before Owner Hashing (2026-11-19)
+
+From clean pushed40b0a51, a nine-entry cached pending queue reached the owner
+digest with pending output off at entry and on after final dynamics refresh:
+2FAIL7.00s. Move the existing tuple/word layout check into the owner helper,
+including present caches when publication is off. Missing opt-in evidence
+still rejects; actual pending copy, matching and publication are unchanged.
+
+Finite focused/related<=60s, root<=360s:2PASS0.76s,65PASS3.17s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6595/known QDQ1 xfail/77 warnings175.46s followed by Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
+No new sample, live queue copy or digest. Eight flags false, guard UNKNOWN.
+Archive whole448-452 before further growth; then trace other ToF owner joins.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

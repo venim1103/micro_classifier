@@ -1190,6 +1190,11 @@ to that original read plus the retained queue identity, and preflights its new
 primitive evidence before ownership hashing. A resnapshot or matching hash is
 not substituted for a missing original read.
 
+Both delivery owner hashes preflight the cached queue when present, including
+when pending publication is off. A requested but missing queue still rejects.
+The [cached queue checkpoint][native-tof-pending-cache-preflight-review] preserves
+the default, original-read correspondence and live copy/digest limits.
+
 The [original-read checkpoint][native-tof-pending-original-read-review] records
 detached data, defaults/clearing, missing/tampered evidence, changed identities,
 bounded pre-hash rejection and failed-read nonpublication. Ordinary reads still
@@ -2208,6 +2213,7 @@ figure is not an established minimum.
 [native-tof-pending-review]: ../review/183-220.md#210-retained-native-tof-pending-queue-correspondence-2026-11-09
 [native-tof-pending-snapshot-review]: ../review/183-220.md#211-opt-in-current-recorder-native-tof-pending-snapshot-2026-11-09
 [native-tof-pending-original-read-review]: ../review/183-220.md#212-original-recorder-read-native-tof-pending-correspondence-2026-11-09
+[native-tof-pending-cache-preflight-review]: ../../REVIEW.md#455-preflight-delivery-pending-cache-before-owner-hashing-2026-11-19
 [native-tof-acquisition-clock-review]: ../review/183-220.md#213-opt-in-native-tof-acquisition-clock-windows-2026-11-09
 [native-tof-timing-intake-review]: ../review/183-220.md#214-bounded-native-tof-timing-source-intake-2026-11-09
 [native-tof-timing-retention-review]: ../review/183-220.md#215-opt-in-recorder-owned-native-tof-timing-retention-2026-11-09

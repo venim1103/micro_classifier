@@ -40731,6 +40731,8 @@ def test_native_goal_delivery_rejects_nonscalar_dynamics(
         ("final_refresh", "history_tof_m"),
         ("final_refresh", "extra"),
         ("final_refresh", "tof_age_s"),
+        ("first_observation", "config"),
+        ("final_refresh", "config"),
     ),
 )
 def test_native_goal_delivery_preflights_observation_arrays(
@@ -40754,7 +40756,10 @@ def test_native_goal_delivery_preflights_observation_arrays(
     original_digest = diagnostics._c1_source_binding_digest
 
     def mutate(packet):
-        packet[field] = oversized if field == "history_tof_m" else [0.0, 0.0]
+        if field == "config":
+            environment.config = None
+        else:
+            packet[field] = oversized if field == "history_tof_m" else [0.0, 0.0]
 
     def observation():
         nonlocal latest
@@ -40791,11 +40796,10 @@ def test_native_goal_delivery_preflights_observation_arrays(
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
     result = owner.snapshot_native_goal_delivery(**options)
     assert result["status"] == "unknown" and result["snapshot_available"] is False
-    expected_reason = (
-        "unsupported simulator dynamics observation arrays"
-        if field == "history_tof_m"
-        else "unsupported simulator dynamics observation metadata"
-    )
+    expected_reason = {
+        "history_tof_m": "unsupported simulator dynamics observation arrays",
+        "config": "unsupported simulator dynamics config",
+    }.get(field, "unsupported simulator dynamics observation metadata")
     assert result["reason"] == expected_reason
     assert not {"frame", "delivered_goal", "source_epoch", "tick"} & result.keys()
     assert (

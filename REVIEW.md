@@ -802,6 +802,21 @@ Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PA
 No sample/intake/copy/digest or work-ceiling change. Eight flags false,
 guard UNKNOWN. Equal converted words do not validate native metadata.
 
+## 439. Preflight Dynamics Config Before Observation Layout Access (2026-11-19)
+
+From clean pushed61a290e, a missing producer config escaped the delivery
+reader at the first observation or final refresh:2FAIL4.15s (AttributeError).
+The prior sampler raised a caught TypeError on `asdict`; the new layout
+checks read config first. Require the actual Config before field access and
+copy that same checked reference. Unknown again omits partial delivery.
+
+Finite2 repro/6 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Focused6PASS0.71s, related595PASS7.16s. Required root `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6549/known QDQ1 xfail/
+77 warnings177.37s, then Ruff/whitespace PASS. Pylance syntax, changed format,
+scoped AST, tested hashes and checkpoint link PASS. Eight flags false,
+guard UNKNOWN. No work-count change. Archive whole428-432 before review growth.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

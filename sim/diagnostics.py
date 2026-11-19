@@ -9965,6 +9965,8 @@ def _simulator_dynamics_source_words(environment, observation):
     if type(observation) is not dict:
         raise ValueError("unsupported simulator dynamics observation arrays")
     config = environment.config
+    if type(config) is not Config:
+        raise ValueError("unsupported simulator dynamics config")
     count = config.history_ticks
     arrays = (
         ("ego", (4,), np.float32),
@@ -10017,7 +10019,7 @@ def _simulator_dynamics_source_words(environment, observation):
         "native_action": (float(speed), float(turn_rate)),
         "native_goal_source": deepcopy(native_goal),
         "observation": observation,
-        "config": asdict(environment.config),
+        "config": asdict(config),
         "scenario": asdict(environment.scenario),
     }
 

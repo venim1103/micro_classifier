@@ -23668,6 +23668,8 @@ class _SyntheticC1SourceRecorder:
                 or not np.all(ticks == 0)
             ):
                 raise ValueError("unsupported_owned_initial_startup_capture_ticks")
+            cached = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -23675,7 +23677,7 @@ class _SyntheticC1SourceRecorder:
                     "latest": event,
                     "history": self._history,
                     "receipt_history": self._receipt_history,
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": cached,
                     "config": asdict(self._config),
                     "scenario": asdict(self._scenario),
                     "identities": self._identities,

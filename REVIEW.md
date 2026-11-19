@@ -777,6 +777,21 @@ format, scoped AST, tested hashes and checkpoint link PASS. No added read,
 copy or digest. Eight flags false, guard UNKNOWN. Next check the conditional
 startup owner's cached observation before and after its nested reads.
 
+## 450. Preflight Startup Cached Observation Before Owner Hashing (2026-11-19)
+
+From clean pusheda826ea5, conditional startup's own digest could hash an
+oversized cached observation before nested reads or after the final retained
+reader returned:2FAIL6.62s. Validate and hash the same cached reference at
+both joins. Unsupported cache returns unknown without a startup path.
+
+Finite2 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
+Focused2PASS0.80s, related52PASS1.73s. Required root `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6583/known QDQ1 xfail/
+77 warnings176.16s, followed by Ruff and whitespace PASS. Pylance syntax,
+changed format, scoped AST, tested hashes and checkpoint link PASS. Existing
+observation/digest ceilings and conditional assumptions remain; eight flags
+false, guard UNKNOWN. Next trace the opted-in live request owner cache.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

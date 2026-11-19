@@ -11078,6 +11078,72 @@ def test_initial_retention_preflights_cached_observation(
     assert owner._initial_setup_source is retained
 
 
+@pytest.mark.parametrize("phase", ("original", "closing"))
+def test_owned_startup_preflights_cached_observation(
+    c1_owned_initial_startup_fixture, monkeypatch, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_owned_initial_startup_fixture[0])
+    sample, current = owner._dynamics_sample, owner._current
+    observation = sample["observation"]
+    count = environment.config.history_ticks
+    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    work = {"initial": 0, "binding": 0}
+    original_initial = owner.snapshot_retained_initial_setup_source
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def initial(**kwargs):
+        work["initial"] += 1
+        assert work["initial"] <= 2
+        actual = original_initial(**kwargs)
+        if phase == "closing" and work["initial"] == 2:
+            assert actual["snapshot_available"] is True
+            observation["history_tof_m"] = oversized
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 256
+        if type(record) is dict and record.get("dynamics_sample") is sample:
+            assert observation["history_tof_m"].shape == (count, 8, 8)
+        return original_binding(record)
+
+    if phase == "original":
+        observation["history_tof_m"] = oversized
+    monkeypatch.setattr(owner, "snapshot_retained_initial_setup_source", initial)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    result = owner.probe_initial_startup_path(
+        {
+            "history_assumptions": dict.fromkeys(
+                (
+                    "starting_pose_exact",
+                    "nominal_tick_binding_exact",
+                    "stored_word_dt_exact",
+                    "interval_ending_twist_exact",
+                ),
+                True,
+            ),
+            "prefix_history_binding_exact": True,
+            "remaining_point_error_m": 1e-8,
+            "point_radius_m": 4.0,
+        },
+        error_evidence={
+            "position_error_m": 0.0,
+            "heading_error_rad": 0.0,
+            "profile_exact": True,
+        },
+        synthetic_test_only=True,
+    )
+    assert result["status"] == "unknown" and result["guard_status"] == "UNKNOWN"
+    assert result["reason"] == "unsupported simulator dynamics observation arrays"
+    assert result["fixture_owned_startup_path_excluded"] is False
+    assert not {"startup_path", "source_epoch", "current_frame"} & result.keys()
+    assert work["initial"] == (2 if phase == "closing" else 0)
+    assert observation["history_tof_m"] is oversized
+    assert owner._dynamics_sample is sample and owner._current is current
+
+
 @pytest.mark.parametrize("mode", ("initial", "retained", "startup"))
 @pytest.mark.parametrize("phase", ("initial", "closing"))
 @pytest.mark.parametrize("case", ("frame", "ages", "pose", "state_extra"))

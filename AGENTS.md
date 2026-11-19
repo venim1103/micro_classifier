@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §449 for initial retention cached observation preflight;
+Read [REVIEW.md][review] §450 for startup cached observation preflight;
+§449 records initial retention cached observation preflight;
 §448 records intact438-442 archival;
 §447 records initial-source cached observation preflight;
 §446 records owning intake cached observation preflight;

@@ -48,6 +48,11 @@ snapshot's source binding. The retained reader checks it at each owner join,
 including after both current observations. The [retention checkpoint][initial-retention-cached-observation-review]
 preserves the existing reads, digest ceilings and retention behavior.
 
+Conditional startup also preflights its cached observation at both owner joins,
+including after the final nested retained reader returns. The
+[startup checkpoint][startup-cached-observation-review] keeps the existing
+work limits and explicit assumptions; cache layout is not startup authority.
+
 The detached output explicitly labels its origin as an owned actual tick-zero
 sample, not a reset execution receipt. All eight qualification/permission flags
 stay false. Two-point ownership and word correspondence do not establish
@@ -923,6 +928,7 @@ field-selection, combined and final-closure controls.
 [initial-owner-preflight-review]: ../review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-cached-observation-review]: ../../REVIEW.md#447-preflight-initial-source-cached-observation-before-owner-hashing-2026-11-19
 [initial-retention-cached-observation-review]: ../../REVIEW.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
+[startup-cached-observation-review]: ../../REVIEW.md#450-preflight-startup-cached-observation-before-owner-hashing-2026-11-19
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13

@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §469 for retained integration extent and intact468 archival;
+Read [REVIEW.md][review] §470 for nested receipt-history extent and intact469 archival;
+§469 records retained integration extent and intact468 archival;
 §468 records shared dynamics cache preflight and intact466-467 archival;
 §467 records owning intake receipt segment extent;
 §466 records intact463-465 archival;

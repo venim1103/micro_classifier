@@ -775,16 +775,21 @@ repeated historical handoffs.
 
 ## 469. Preflight Retained Native Integration Segment Extent (2026-11-19)
 
-From clean pushedeb6c973, a129-entry integration cache reached original and
-closing intake/source/arithmetic hashes:6FAIL12.11s. Share the live
-128-segment extent check at those owners; absent caches keep their behavior.
-Focused/related<=60s:81PASS1.20s; Ruff identified test wraps, corrected.
-Root<=360s `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6658/known QDQ1 xfail/77 warnings217.05s, followed by
-Ruff and whitespace PASS. Pylance syntax, changed format and tested hashes
-pass. Intact468 archived:15 lines, two inverse layouts, historical heading,
-one topic link and unchanged old definitions. No new read/copy/digest;
-all flags false, guard UNKNOWN. Next trace nested receipt-history extents.
+[Complete unchanged checkpoint][review-469-preserved] is preserved in the archive.
+
+## 470. Preflight Nested Receipt History Before Owner Hashing (2026-11-19)
+
+From clean pushedacd95ef, a129-segment receipt inside a bounded history reached
+both intake/receipt/source/arithmetic owner hashes:8FAIL17.47s. Apply the
+existing segment limit before those hashes, after the unchanged history root
+limits. Normal chain validation and missing-history behavior are unchanged.
+Focused/related<=60s:192PASS2.93s. Root<=360s `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6666/known QDQ1
+xfail/77 warnings218.79s. Pylance syntax, changed format, Ruff, whitespace
+and tested hashes pass. Intact469 archived:13 lines, two inverse layouts,
+historical heading, one rebased link and unchanged old definitions. No new
+read/copy/digest; flags false, guard UNKNOWN. Next trace detached receipt
+history consumers for a concrete missing check.
 
 ## Sources
 
@@ -1004,3 +1009,4 @@ all flags false, guard UNKNOWN. Next trace nested receipt-history extents.
 [review-466-467-preserved-0]: docs/review/428-432.md#466-intact-receipt-preflight-checkpoints-2026-11-19
 [review-466-467-preserved-1]: docs/review/428-432.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19
 [review-468-preserved]: docs/review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19
+[review-469-preserved]: docs/review/428-432.md#469-preflight-retained-native-integration-segment-extent-2026-11-19

@@ -466,6 +466,9 @@ The [retained integration checkpoint][retained-integration-extent-review]
 applies the live 128-segment limit to the separate native integration cache
 before the intake, source and arithmetic owner hashes. No capture is required
 when the cache is absent.
+The [nested history checkpoint][receipt-history-segment-extent-review] checks
+the same 128-segment receipt extent inside each retained history entry before
+owner hashing. Root limits and semantic receipt-chain checks still apply.
 
 Receipt and integration source samplers also check both live observation
 envelopes against the producer profile before hashing dynamics. The integration
@@ -963,7 +966,8 @@ field-selection, combined and final-closure controls.
 [integration-receipt-segment-extent-review]: ../review/428-432.md#465-preflight-integration-receipt-segment-extent-2026-11-19
 [intake-receipt-segment-extent-review]: ../review/428-432.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19
 [full-dynamics-cache-preflight-review]: ../review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19
-[retained-integration-extent-review]: ../../REVIEW.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
+[retained-integration-extent-review]: ../review/428-432.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
+[receipt-history-segment-extent-review]: ../../REVIEW.md#470-preflight-nested-receipt-history-before-owner-hashing-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17

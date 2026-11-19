@@ -17988,6 +17988,15 @@ def _check_simulator_receipt_history_extent(history):
         )
 
 
+def _check_simulator_receipt_history_segments(history):
+    for entry in history:
+        if type(entry) is not dict or "motion_receipt" not in entry:
+            raise ValueError(
+                "simulator receipt history anchor mismatch: unsupported entry or epoch"
+            )
+        _check_simulator_motion_receipt_extent(entry["motion_receipt"])
+
+
 def _check_simulator_receipt_history(history, *, source_epoch, current, config):
     """Check retained pairings against a source anchor, not qualify execution."""
     from interface.protocol import State, encode_state
@@ -18348,11 +18357,10 @@ class _SyntheticC1SourceRecorder:
         def owner_binding():
             from interface.protocol import CRC, HEADER, STATE, State, validate_state
 
-            if (
-                type(self._receipt_history) is not list
-                or len(self._receipt_history) > self._config.history_ticks
-            ):
+            history = self._receipt_history
+            if type(history) is not list or len(history) > self._config.history_ticks:
                 raise ValueError("simulator receipt history budget exhausted")
+            _check_simulator_receipt_history_segments(history)
             current = self._current
             if current is not None and (
                 type(current) is not tuple
@@ -18386,7 +18394,7 @@ class _SyntheticC1SourceRecorder:
                     if current is None
                     else (current[0], current[1], asdict(current[2]), current[3]),
                     "dynamics_sample": cached,
-                    "receipt_history": self._receipt_history,
+                    "receipt_history": history,
                     "integration_sample": integration,
                 }
             )
@@ -22458,7 +22466,9 @@ class _SyntheticC1SourceRecorder:
             }
 
         def owner_binding():
-            _check_simulator_receipt_history_extent(self._receipt_history)
+            history = self._receipt_history
+            _check_simulator_receipt_history_extent(history)
+            _check_simulator_receipt_history_segments(history)
             sample = self._dynamics_sample
             if type(sample) is not dict:
                 raise ValueError("unsupported closing current receipt owner")
@@ -22474,7 +22484,7 @@ class _SyntheticC1SourceRecorder:
                         self._current[3],
                     ),
                     "dynamics_sample": sample,
-                    "history": self._receipt_history,
+                    "history": history,
                     "config": asdict(self._config),
                     "source_files": self._identities,
                 }
@@ -22803,7 +22813,9 @@ class _SyntheticC1SourceRecorder:
         rng_before, odometry_before = producer.rng, producer.odometry_rng
 
         def owner_binding():
-            _check_simulator_receipt_history_extent(self._receipt_history)
+            history = self._receipt_history
+            _check_simulator_receipt_history_extent(history)
+            _check_simulator_receipt_history_segments(history)
             cached = self._dynamics_sample
             if type(cached) is not dict:
                 raise ValueError("unsupported current native integration owner")
@@ -22822,7 +22834,7 @@ class _SyntheticC1SourceRecorder:
                         self._current[3],
                     ),
                     "dynamics_sample": cached,
-                    "history": self._receipt_history,
+                    "history": history,
                     "config": asdict(self._config),
                     "source_files": self._identities,
                 }
@@ -23111,7 +23123,9 @@ class _SyntheticC1SourceRecorder:
         )
 
         def owner_binding():
-            _check_simulator_receipt_history_extent(self._receipt_history)
+            history = self._receipt_history
+            _check_simulator_receipt_history_extent(history)
+            _check_simulator_receipt_history_segments(history)
             cached = self._dynamics_sample
             if self._current is not None:
                 if type(cached) is not dict:
@@ -23134,7 +23148,7 @@ class _SyntheticC1SourceRecorder:
                         self._current[3],
                     ),
                     "dynamics_sample": cached,
-                    "history": self._receipt_history,
+                    "history": history,
                     "config": asdict(self._config),
                     "source_files": self._identities,
                 }

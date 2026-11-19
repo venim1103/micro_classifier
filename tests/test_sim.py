@@ -21097,7 +21097,7 @@ def c1_native_integration_snapshot_fixture(c1_motion_receipt_source_fixture):
 
 @pytest.mark.parametrize("mode", ("receipt", "source", "arithmetic"))
 @pytest.mark.parametrize("phase", ("initial", "closing"))
-@pytest.mark.parametrize("case", ("long", "array"))
+@pytest.mark.parametrize("case", ("long", "array", "segments"))
 def test_receipt_snapshot_history_extent(
     c1_native_integration_snapshot_fixture, monkeypatch, mode, phase, case
 ):
@@ -21105,7 +21105,14 @@ def test_receipt_snapshot_history_extent(
 
     environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
     history = owner._receipt_history
-    malformed = [history[-1]] * 9 if case == "long" else np.zeros(9)
+    if case == "long":
+        malformed = [history[-1]] * 9
+    elif case == "array":
+        malformed = np.zeros(9)
+    else:
+        malformed = deepcopy(history)
+        receipt = malformed[-1]["motion_receipt"]
+        receipt["segments"] = [receipt["segments"][0]] * 129
     epochs = deepcopy(
         (
             environment.tick,
@@ -21154,6 +21161,10 @@ def test_receipt_snapshot_history_extent(
         assert work["binding"] <= binding_limit
         if type(record) is dict and "history" in record:
             assert type(record["history"]) is list and len(record["history"]) <= 8
+            assert all(
+                len(entry["motion_receipt"]["segments"]) <= 128
+                for entry in record["history"]
+            )
         return original_binding(record)
 
     def forbidden(*args, **kwargs):
@@ -21211,6 +21222,48 @@ def test_receipt_snapshot_history_extent(
         environment.rng.bit_generator.state,
         environment.odometry_rng.bit_generator.state,
     ) == epochs
+
+
+@pytest.mark.parametrize("phase", ("initial", "closing"))
+def test_actual_source_intake_preflights_receipt_history_segments(
+    c1_native_integration_snapshot_fixture, monkeypatch, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    environment.step([0.125, 0.3])
+    history, current = owner._receipt_history, owner._current
+    receipt = history[-1]["motion_receipt"]
+    oversized = [receipt["segments"][0]] * 129
+    original_observation = environment._observation
+    original_binding = diagnostics._c1_source_binding_digest
+    observations = 0
+
+    def observe():
+        nonlocal observations
+        observations += 1
+        assert observations <= 2
+        result = original_observation()
+        if phase == "closing" and observations == 2:
+            receipt["segments"] = oversized
+        return result
+
+    def binding(record):
+        if type(record) is dict and record.get("receipt_history") is history:
+            assert receipt["segments"] is not oversized
+        return original_binding(record)
+
+    if phase == "initial":
+        receipt["segments"] = oversized
+    monkeypatch.setattr(environment, "_observation", observe)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    with pytest.raises(
+        ValueError, match="unsupported or over-budget producer motion receipt"
+    ):
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+    assert observations == (2 if phase == "closing" else 0)
+    assert receipt["segments"] is oversized
+    assert owner._receipt_history is history and owner._current is current
 
 
 @pytest.mark.parametrize("mode", ("receipt", "integration"))

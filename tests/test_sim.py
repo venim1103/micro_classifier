@@ -13431,9 +13431,14 @@ def test_native_tof_delivered_correspondence(
 
 
 @pytest.mark.parametrize(
-    "kind", ("selection", "wall", "cylinder", "direction", "postprocessing")
+    "kind,phase",
+    [
+        (kind, phase)
+        for kind in ("selection", "wall", "cylinder", "direction", "postprocessing")
+        for phase in ("observation", "refresh")
+    ]
+    + [("base", "refresh")],
 )
-@pytest.mark.parametrize("phase", ("observation", "refresh"))
 def test_native_tof_delivery_closing_history_preflight(
     monkeypatch, c1_motion_receipt_source_fixture, kind, phase
 ):
@@ -13448,19 +13453,18 @@ def test_native_tof_delivery_closing_history_preflight(
         )
         owner = type(owner)(environment.scenario, synthetic_test_only=True)
     owner.record_environment_tick(environment, synthetic_test_only=True)
-    environment.step(
-        [0.125, 0.3],
-        capture_native_tof_source=True,
-        **{f"capture_native_tof_{kind}": True},
-    )
+    capture_options = {} if kind == "base" else {f"capture_native_tof_{kind}": True}
+    environment.step([0.125, 0.3], capture_native_tof_source=True, **capture_options)
     owner.record_environment_tick(environment, synthetic_test_only=True)
-    options = {"synthetic_test_only": True, f"include_{kind}": True}
+    options = {"synthetic_test_only": True}
+    if kind != "base":
+        options[f"include_{kind}"] = True
     owner.record_native_tof_source(environment, **options)
     for _ in range(2):
         environment.step([0.125, 0.3])
         owner.record_environment_tick(environment, synthetic_test_only=True)
     assert environment.tick == 6 and environment.sensor_tick == 4
-    name = f"_tof_{kind}_history"
+    name = "_tof_history" if kind == "base" else f"_tof_{kind}_history"
     history = getattr(owner, name)
     assert len(history) == 1
     current, base_history = owner._current, owner._tof_history
@@ -13516,6 +13520,8 @@ def test_native_tof_delivery_closing_history_preflight(
     result = owner.snapshot_native_tof_delivery(**options)
     assert result["status"] == "unknown" and result["snapshot_available"] is False
     assert result["reason"]
+    if kind == "base":
+        assert result["reason"] == "native ToF acquisition history budget exhausted"
     assert set(result) == {
         "schema",
         "allowed_use",

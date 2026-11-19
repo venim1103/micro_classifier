@@ -1095,6 +1095,10 @@ before their individual closing fingerprints as well as compound owner
 serialization. The [trace preflight checkpoint][native-tof-delivery-trace-preflight-review]
 records over-budget history rejections without extra observations, matches, or
 digests.
+After the final refresh, the closing owner comparison reuses the bounded base
+layout check in every mode before the separate acquisition-history fingerprint.
+The [base-history checkpoint][native-tof-delivery-base-preflight-review] preserves
+the default-path repro and the unchanged timing control.
 
 Success supplies a detached acquisition, its delivered `sensor_tick`, current
 recorder tick and frame context. A held observation keeps its acquisition ID;
@@ -2175,6 +2179,7 @@ figure is not an established minimum.
 [native-tof-current-original-owner-review]: ../../REVIEW.md#421-closed-current-tof-original-owner-contexts-2026-11-18
 [native-tof-current-closing-history-review]: ../../REVIEW.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18
 [native-tof-delivery-trace-preflight-review]: ../../REVIEW.md#423-prehash-validation-for-closing-tof-delivery-traces-2026-11-19
+[native-tof-delivery-base-preflight-review]: ../../REVIEW.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
 [native-tof-retention-staging-review]: ../../REVIEW.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19
 [native-tof-retention-refresh-review]: ../../REVIEW.md#425-preflight-retention-history-after-final-refresh-2026-11-19
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17

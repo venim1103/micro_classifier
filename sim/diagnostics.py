@@ -19817,10 +19817,11 @@ class _SyntheticC1SourceRecorder:
         def producer():
             return _sample_simulator_dynamics_source(environment)
 
-        def ownership():
+        def ownership(*, closing=False):
             current = self._current
             if (
-                include_timing
+                closing
+                or include_timing
                 or include_selection
                 or include_wall
                 or include_cylinder
@@ -22005,8 +22006,8 @@ class _SyntheticC1SourceRecorder:
                 or environment.sensor_tick != copied["tick"]
                 or not _native_tof_word_copy_matches(copied, live_after)
                 or _c1_source_binding_digest(copied) != copied_binding
+                or ownership(closing=True) != owner_binding
                 or _c1_source_binding_digest(self._tof_history) != history_binding
-                or ownership() != owner_binding
                 or (
                     include_postprocessing
                     and _c1_source_binding_digest(self._tof_postprocessing_history)

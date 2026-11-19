@@ -802,6 +802,27 @@ Eight flags false, guard UNKNOWN. No new bounds, samples, reports or qualificati
 Local logs retain all spent checks. Next trace the corresponding delivery
 base/timing hashes downstream of the final refresh.
 
+## 426. Preflight Delivery Base History After Final Refresh (2026-11-19)
+
+From clean pushed70fdae1, default ToF delivery hashed acquisition history after
+the final dynamics refresh without a fresh layout check. A nine-entry in-place
+growth reached the digest spy; the parallel timing case already rejected that
+growth. First format check stopped before pytest; after wrapping,1FAIL/1PASS5.51s.
+Require the existing bounded base-layout check in the closing compound owner
+comparison for every mode, and compare the separate base digest only afterward.
+Timing, earlier observation preflight, and the five trace checks are unchanged.
+
+Finite2 repro/11 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Focused11PASS5.06s, related318PASS24.30s. One extra <=8-entry layout pass on
+default closing paths, no extra observation/match/digest/copy or changed ceiling.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6527/known QDQ1 xfail/77 warnings196.60s, then Ruff and
+whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
+checkpoint link PASS. Local logs preserve the spent checks.
+
+Eight flags false, guard UNKNOWN. No new capture, numerical law or permission.
+Next archive whole418-422 before further review growth.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

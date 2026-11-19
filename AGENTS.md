@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §425 for final retention history prehash validation;
+Read [REVIEW.md][review] §426 for final delivery base-history prehash validation;
+§425 records final retention history prehash validation;
 §424 records prevalidation before retention staging;
 §423 records closing delivery trace prehash validation;
 §422 records closing native history preflight and intact413-417;
@@ -493,6 +494,9 @@ The original and closing owner checks stay in place; six regressions and
 root6524/known QDQ1 xfail passed. The closing owner check now also precedes the
 retainer's two individual live-history hashes after the final dynamics refresh.
 Two regressions,142 prior controls and root6526/known QDQ1 xfail passed.
+Default delivery now also preflights base acquisition history after the final
+refresh before hashing it. Timing already rejected the corresponding mutation.
+Eleven focused and318 related controls and root6527/known QDQ1 xfail passed.
 No work cap or qualification change.
 Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or

@@ -10947,7 +10947,14 @@ def c1_owned_initial_startup_fixture(c1_retained_initial_setup_source_fixture):
     return later, moving, upper
 
 
-def _oversized_initial_cache_word(sample, config, cache_kind):
+def _oversized_dynamics_cache_word(sample, config, cache_kind):
+    if cache_kind == "receipt":
+        return (
+            sample,
+            "motion_receipt",
+            {"segment_limit": 128, "segments": [{}] * 129},
+            "unsupported or over-budget producer motion receipt",
+        )
     if cache_kind == "pending":
         entry = (2, 0, (0,) * 64, (False,) * 64)
         return (
@@ -10965,7 +10972,7 @@ def _oversized_initial_cache_word(sample, config, cache_kind):
 
 
 @pytest.mark.parametrize("phase", ("original", "first_observation", "closing"))
-@pytest.mark.parametrize("cache_kind", ("observation", "pending"))
+@pytest.mark.parametrize("cache_kind", ("observation", "pending", "receipt"))
 def test_initial_source_preflights_cached_observation(
     c1_initial_setup_source_fixture, monkeypatch, phase, cache_kind
 ):
@@ -10973,7 +10980,7 @@ def test_initial_source_preflights_cached_observation(
 
     environment, owner = deepcopy(c1_initial_setup_source_fixture)
     sample, current = owner._dynamics_sample, owner._current
-    cache, key, oversized, reason = _oversized_initial_cache_word(
+    cache, key, oversized, reason = _oversized_dynamics_cache_word(
         sample, environment.config, cache_kind
     )
     work = {"observation": 0, "binding": 0}
@@ -11020,7 +11027,7 @@ def test_initial_source_preflights_cached_observation(
         ("retained", "closing"),
     ),
 )
-@pytest.mark.parametrize("cache_kind", ("observation", "pending"))
+@pytest.mark.parametrize("cache_kind", ("observation", "pending", "receipt"))
 def test_initial_retention_preflights_cached_observation(
     c1_initial_setup_source_fixture,
     c1_retained_initial_setup_source_fixture,
@@ -11042,7 +11049,7 @@ def test_initial_retention_preflights_cached_observation(
         owner._current,
         owner._initial_setup_source,
     )
-    cache, key, oversized, reason = _oversized_initial_cache_word(
+    cache, key, oversized, reason = _oversized_dynamics_cache_word(
         sample, environment.config, cache_kind
     )
     work = {"read": 0, "observation": 0, "binding": 0}
@@ -11158,7 +11165,7 @@ def test_initial_source_preflights_detached_observation(
 
 
 @pytest.mark.parametrize("phase", ("original", "closing"))
-@pytest.mark.parametrize("cache_kind", ("observation", "pending"))
+@pytest.mark.parametrize("cache_kind", ("observation", "pending", "receipt"))
 def test_owned_startup_preflights_cached_observation(
     c1_owned_initial_startup_fixture, monkeypatch, phase, cache_kind
 ):
@@ -11166,7 +11173,7 @@ def test_owned_startup_preflights_cached_observation(
 
     environment, owner = deepcopy(c1_owned_initial_startup_fixture[0])
     sample, current = owner._dynamics_sample, owner._current
-    cache, key, oversized, reason = _oversized_initial_cache_word(
+    cache, key, oversized, reason = _oversized_dynamics_cache_word(
         sample, environment.config, cache_kind
     )
     work = {"initial": 0, "binding": 0}
@@ -12727,9 +12734,17 @@ def test_native_tof_retention_preflights_history_after_final_refresh(
 
 
 @pytest.mark.parametrize("operation", ("retain", "current", "delivery"))
-@pytest.mark.parametrize("phase", ("original", "first_observation", "final_refresh"))
+@pytest.mark.parametrize(
+    ("phase", "cache_kind"),
+    (
+        ("original", "observation"),
+        ("first_observation", "observation"),
+        ("final_refresh", "observation"),
+        ("final_refresh", "receipt"),
+    ),
+)
 def test_native_tof_preflights_cached_observation(
-    monkeypatch, c1_motion_receipt_source_fixture, operation, phase
+    monkeypatch, c1_motion_receipt_source_fixture, operation, phase, cache_kind
 ):
     from sim import diagnostics
 
@@ -12746,9 +12761,10 @@ def test_native_tof_preflights_cached_observation(
             owner.record_environment_tick(environment, **options)
         assert environment.sensor_tick == owner._tof_history[0]["tick"]
     history, current = owner._tof_history, owner._current
-    observation = owner._dynamics_sample["observation"]
-    count = environment.config.history_ticks
-    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    sample = owner._dynamics_sample
+    cache, key, oversized, reason = _oversized_dynamics_cache_word(
+        sample, environment.config, cache_kind
+    )
     work = {"words": 0, "binding": 0}
     original_words = diagnostics._simulator_dynamics_source_words
     original_binding = diagnostics._c1_source_binding_digest
@@ -12759,23 +12775,20 @@ def test_native_tof_preflights_cached_observation(
         actual = original_words(*args, **kwargs)
         target = {"first_observation": 1, "final_refresh": 3}.get(phase)
         if work["words"] == target:
-            observation["history_tof_m"] = oversized
+            cache[key] = oversized
         return actual
 
     def binding(record):
         work["binding"] += 1
         assert work["binding"] <= 64
-        if type(record) is dict:
-            sample = record.get("dynamics_sample", record)
-            if type(sample) is dict and sample.get("observation") is observation:
-                assert observation["history_tof_m"].shape == (count, 8, 8)
+        if type(record) is dict and record.get("dynamics_sample", record) is sample:
+            assert cache.get(key) is not oversized
         return original_binding(record)
 
     if phase == "original":
-        observation["history_tof_m"] = oversized
+        cache[key] = oversized
     monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
-    reason = "unsupported simulator dynamics observation arrays"
     if operation == "retain":
         with pytest.raises(ValueError, match=reason):
             owner.record_native_tof_source(environment, **options)
@@ -12794,7 +12807,7 @@ def test_native_tof_preflights_cached_observation(
         work["words"]
         == {"original": 0, "first_observation": 1, "final_refresh": 3}[phase]
     )
-    assert observation["history_tof_m"] is oversized
+    assert cache[key] is oversized and owner._dynamics_sample is sample
     assert owner._tof_history is history and owner._current is current
 
 
@@ -41788,9 +41801,17 @@ def test_native_goal_delivery_rejects_nonscalar_dynamics(
 
 
 @pytest.mark.parametrize("operation", ("retain", "deliver"))
-@pytest.mark.parametrize("phase", ("original", "first_observation", "final_intake"))
+@pytest.mark.parametrize(
+    ("phase", "cache_kind"),
+    (
+        ("original", "observation"),
+        ("first_observation", "observation"),
+        ("final_intake", "observation"),
+        ("final_intake", "receipt"),
+    ),
+)
 def test_native_goal_preflights_cached_observation(
-    monkeypatch, c1_motion_receipt_source_fixture, operation, phase
+    monkeypatch, c1_motion_receipt_source_fixture, operation, phase, cache_kind
 ):
     from sim import diagnostics
 
@@ -41802,9 +41823,10 @@ def test_native_goal_preflights_cached_observation(
     if operation == "deliver":
         owner.record_native_goal_computation_source(environment, **options)
     history, current = owner._goal_computation_history, owner._current
-    observation = owner._dynamics_sample["observation"]
-    count = environment.config.history_ticks
-    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    sample = owner._dynamics_sample
+    cache, key, oversized, reason = _oversized_dynamics_cache_word(
+        sample, environment.config, cache_kind
+    )
     work = {"observation": 0, "intake": 0, "digest": 0}
     original_observation = environment._observation
     original_intake = diagnostics._sample_simulator_native_goal_computation_source
@@ -41815,7 +41837,7 @@ def test_native_goal_preflights_cached_observation(
         assert work["observation"] <= 2
         actual = original_observation()
         if phase == "first_observation" and work["observation"] == 1:
-            observation["history_tof_m"] = oversized
+            cache[key] = oversized
         return actual
 
     def intake(*args, **kwargs):
@@ -41823,26 +41845,23 @@ def test_native_goal_preflights_cached_observation(
         assert work["intake"] <= 2
         actual = original_intake(*args, **kwargs)
         if phase == "final_intake" and work["intake"] == 2:
-            observation["history_tof_m"] = oversized
+            cache[key] = oversized
         return actual
 
     def digest(record):
         work["digest"] += 1
         assert work["digest"] <= 12
-        if type(record) is dict:
-            sample = record.get("dynamics_sample", record)
-            if sample.get("observation") is observation:
-                assert observation["history_tof_m"].shape == (count, 8, 8)
+        if type(record) is dict and record.get("dynamics_sample", record) is sample:
+            assert cache.get(key) is not oversized
         return original_digest(record)
 
     if phase == "original":
-        observation["history_tof_m"] = oversized
+        cache[key] = oversized
     monkeypatch.setattr(environment, "_observation", observe)
     monkeypatch.setattr(
         diagnostics, "_sample_simulator_native_goal_computation_source", intake
     )
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
-    reason = "unsupported simulator dynamics observation arrays"
     if operation == "retain":
         with pytest.raises(ValueError, match=reason):
             owner.record_native_goal_computation_source(environment, **options)
@@ -41855,7 +41874,7 @@ def test_native_goal_preflights_cached_observation(
         work["observation"]
         == {"original": 0, "first_observation": 1, "final_intake": 2}[phase]
     )
-    assert observation["history_tof_m"] is oversized
+    assert cache[key] is oversized and owner._dynamics_sample is sample
     assert owner._goal_computation_history is history and owner._current is current
 
 

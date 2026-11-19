@@ -17842,7 +17842,9 @@ def _check_simulator_motion_receipt_extent(receipt):
         raise ValueError("unsupported or over-budget producer motion receipt")
 
 
-def _check_recorded_simulator_motion_receipt_extent(sample):
+def _check_recorded_simulator_dynamics_cache(sample, config, *, require_pending=False):
+    _check_recorded_simulator_dynamics_observation(sample, config)
+    _check_recorded_native_tof_pending_queue(sample, required=require_pending)
     if "motion_receipt" in sample:
         _check_simulator_motion_receipt_extent(sample["motion_receipt"])
 
@@ -18358,9 +18360,7 @@ class _SyntheticC1SourceRecorder:
                 _check_native_recorder_owner_pose(current[1])
             cached = self._dynamics_sample
             if cached is not None:
-                _check_recorded_simulator_dynamics_observation(cached, self._config)
-                _check_recorded_native_tof_pending_queue(cached)
-                _check_recorded_simulator_motion_receipt_extent(cached)
+                _check_recorded_simulator_dynamics_cache(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -18573,8 +18573,7 @@ class _SyntheticC1SourceRecorder:
             current = self._current
             _check_native_recorder_current_owner(current)
             dynamics = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(dynamics, self._config)
-            _check_recorded_native_tof_pending_queue(dynamics)
+            _check_recorded_simulator_dynamics_cache(dynamics, self._config)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -18754,8 +18753,7 @@ class _SyntheticC1SourceRecorder:
                 self._tof_postprocessing_history, self._tof_history, self._epoch
             )
             sample = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(sample, self._config)
-            _check_recorded_native_tof_pending_queue(sample)
+            _check_recorded_simulator_dynamics_cache(sample, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19317,8 +19315,7 @@ class _SyntheticC1SourceRecorder:
         def ownership(goal):
             state = check_ownership(goal)
             sample = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(sample, self._config)
-            _check_recorded_native_tof_pending_queue(sample)
+            _check_recorded_simulator_dynamics_cache(sample, self._config)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19527,8 +19524,7 @@ class _SyntheticC1SourceRecorder:
             validate_state(current[2])
             _check_native_recorder_owner_pose(current[1])
             sample = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(sample, self._config)
-            _check_recorded_native_tof_pending_queue(sample)
+            _check_recorded_simulator_dynamics_cache(sample, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19973,9 +19969,8 @@ class _SyntheticC1SourceRecorder:
             if current is not None:
                 _check_native_recorder_owner_pose(current[1])
             sample = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(sample, self._config)
-            _check_recorded_native_tof_pending_queue(
-                sample, required=include_pending_sources
+            _check_recorded_simulator_dynamics_cache(
+                sample, self._config, require_pending=include_pending_sources
             )
             return _c1_source_binding_digest(
                 {
@@ -22458,9 +22453,7 @@ class _SyntheticC1SourceRecorder:
             if type(sample) is not dict:
                 raise ValueError("unsupported closing current receipt owner")
             _check_native_recorder_current_owner(self._current)
-            _check_recorded_simulator_dynamics_observation(sample, self._config)
-            _check_recorded_native_tof_pending_queue(sample)
-            _check_recorded_simulator_motion_receipt_extent(sample)
+            _check_recorded_simulator_dynamics_cache(sample, self._config)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22654,9 +22647,7 @@ class _SyntheticC1SourceRecorder:
             binding = owner_binding()
             sampled = producer_sample()
             cached = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(cached, self._config)
-            _check_recorded_native_tof_pending_queue(cached)
-            _check_recorded_simulator_motion_receipt_extent(cached)
+            _check_recorded_simulator_dynamics_cache(cached, self._config)
             sampled_binding = _c1_source_binding_digest(sampled)
             if sampled_binding != _c1_source_binding_digest(cached):
                 result["reason"] = "producer_content_changed"
@@ -22807,9 +22798,7 @@ class _SyntheticC1SourceRecorder:
             if type(cached) is not dict:
                 raise ValueError("unsupported current native integration owner")
             _check_native_recorder_current_owner(self._current)
-            _check_recorded_simulator_dynamics_observation(cached, self._config)
-            _check_recorded_native_tof_pending_queue(cached)
-            _check_recorded_simulator_motion_receipt_extent(cached)
+            _check_recorded_simulator_dynamics_cache(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -23117,9 +23106,7 @@ class _SyntheticC1SourceRecorder:
                     raise ValueError("unsupported current native arithmetic owner")
                 _check_native_recorder_current_owner(self._current)
             if cached is not None:
-                _check_recorded_simulator_dynamics_observation(cached, self._config)
-                _check_recorded_native_tof_pending_queue(cached)
-                _check_recorded_simulator_motion_receipt_extent(cached)
+                _check_recorded_simulator_dynamics_cache(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -23256,8 +23243,7 @@ class _SyntheticC1SourceRecorder:
             if type(cached) is not dict:
                 raise ValueError("unsupported initial source recorder layout")
             _check_native_recorder_current_owner(current)
-            _check_recorded_simulator_dynamics_observation(cached, self._config)
-            _check_recorded_native_tof_pending_queue(cached)
+            _check_recorded_simulator_dynamics_cache(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -23284,8 +23270,7 @@ class _SyntheticC1SourceRecorder:
                 return result
             source = _sample_simulator_dynamics_source(producer)
             cached = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(cached, self._config)
-            _check_recorded_native_tof_pending_queue(cached)
+            _check_recorded_simulator_dynamics_cache(cached, self._config)
             source_binding = _c1_source_binding_digest(source)
             expected_profile = {
                 "epoch": self._epoch,
@@ -23392,8 +23377,7 @@ class _SyntheticC1SourceRecorder:
                 scenario=self._scenario,
             )
             cached = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(cached, self._config)
-            _check_recorded_native_tof_pending_queue(cached)
+            _check_recorded_simulator_dynamics_cache(cached, self._config)
             if (
                 type(self._current) is not tuple
                 or len(self._current) != 4
@@ -23490,8 +23474,7 @@ class _SyntheticC1SourceRecorder:
             if type(cached) is not dict:
                 raise ValueError("unsupported retained initial current owner")
             _check_native_recorder_current_owner(current)
-            _check_recorded_simulator_dynamics_observation(cached, self._config)
-            _check_recorded_native_tof_pending_queue(cached)
+            _check_recorded_simulator_dynamics_cache(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -23694,8 +23677,7 @@ class _SyntheticC1SourceRecorder:
             ):
                 raise ValueError("unsupported_owned_initial_startup_capture_ticks")
             cached = self._dynamics_sample
-            _check_recorded_simulator_dynamics_observation(cached, self._config)
-            _check_recorded_native_tof_pending_queue(cached)
+            _check_recorded_simulator_dynamics_cache(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,

@@ -763,27 +763,26 @@ repeated historical handoffs.
 
 ## 466. Intact Receipt Preflight Checkpoints (2026-11-19)
 
-From clean 578aa10, one30s scoped transform archives whole463-465 at the
-existing adjacent path. Exact40-line body, two inverse layouts, three
-historical headings, two rebased chapter06 targets and208 first-definition
-meanings pass. Root1003->978 lines before this note. Scoped link, whitespace
-and tested465 hashes pass; docs only, no code suite rerun. Latest root
-remains6633/known QDQ1 xfail/77 warnings; flags false and guard UNKNOWN.
-Next check the recorder's cached receipt and post-intake copy boundaries.
+[Complete unchanged checkpoint][review-466-467-preserved-0] is preserved in the archive.
 
 ## 467. Preflight Owning Intake Receipt Segment Extent (2026-11-19)
 
-From clean pushedf972411, a129-entry receipt reached both old-cache hashes
-with new receipt capture off and both live copies after native intake with
-capture on:4FAIL9.50s. Reuse the receipt extent predicate at the old-cache
-join and recheck after native intake. No staged state is published on rejection.
+[Complete unchanged checkpoint][review-466-467-preserved-1] is preserved in the archive.
 
-Finite focused/related<=60s, root<=360s:83PASS5.44s; one Ruff format wrap
-failed and was corrected. Required root `python -m pytest -q --durations=10 &&
-ruff check . && git diff --check` PASS6637/known QDQ1 xfail/77 warnings189.75s,
-then Ruff/whitespace PASS. Pylance syntax, changed format and tested hashes
-pass. No added read, copy or digest. Eight flags false, guard UNKNOWN, no
-command admitted. Next trace the remaining full-cache consumers.
+## 468. Share Full Dynamics Cache Preflight (2026-11-19)
+
+From clean pushed6eb3abf, a129-entry cached receipt reached full-cache
+hashes in ToF, goal and initial/startup readers:15FAIL23.20s. Share the
+observation, pending-queue and receipt extent checks at full-cache joins;
+producer projections and the opt-in pending requirement are unchanged.
+
+Focused/related<=60s:91PASS2.35s. Root<=360s `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6652/known QDQ1
+xfail/77 warnings215.05s, Ruff/whitespace PASS. Pylance syntax, changed
+format and tested hashes pass. Whole466-467 archived at the adjacent path:
+exact24 lines, two inverse layouts, two headings, one rebased topic target
+and211 first-definition meanings; no code rerun. No new read/copy/digest;
+eight flags false, guard UNKNOWN. Next trace the separate native integration cache.
 
 ## Sources
 
@@ -1000,3 +999,5 @@ command admitted. Next trace the remaining full-cache consumers.
 [review-463-465-preserved-0]: docs/review/428-432.md#463-intact-pending-cache-checkpoints-2026-11-19
 [review-463-465-preserved-1]: docs/review/428-432.md#464-preflight-receipt-segment-extent-before-copying-and-hashing-2026-11-19
 [review-463-465-preserved-2]: docs/review/428-432.md#465-preflight-integration-receipt-segment-extent-2026-11-19
+[review-466-467-preserved-0]: docs/review/428-432.md#466-intact-receipt-preflight-checkpoints-2026-11-19
+[review-466-467-preserved-1]: docs/review/428-432.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19

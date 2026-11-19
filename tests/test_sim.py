@@ -40616,8 +40616,9 @@ def test_native_goal_owner_preflight(
 
 
 @pytest.mark.parametrize("operation", ("retain", "deliver"))
+@pytest.mark.parametrize("field", ("goal_m", "position"))
 def test_native_goal_dynamics_preflights_before_copy(
-    monkeypatch, c1_motion_receipt_source_fixture, operation
+    monkeypatch, c1_motion_receipt_source_fixture, operation, field
 ):
     from sim import diagnostics
 
@@ -40632,15 +40633,25 @@ def test_native_goal_dynamics_preflights_before_copy(
     before_history = tuple(history)
     source = environment._native_goal_source
     oversize = (*source["goal_m"], 0.0)
+    bad_position = np.append(environment.position, 0.0)
+    reason = (
+        "unsupported native goal source"
+        if field == "goal_m"
+        else "unsupported simulator dynamics position"
+    )
     observations = 0
     original_observation = environment._observation
+    original_binding = diagnostics._c1_source_binding_digest
 
     def observation():
         nonlocal observations
         observations += 1
         assert observations == 1
         actual = original_observation()
-        source["goal_m"] = oversize
+        if field == "goal_m":
+            source["goal_m"] = oversize
+        else:
+            environment.position = bad_position
         return actual
 
     def copied(value, *args, **kwargs):
@@ -40648,17 +40659,27 @@ def test_native_goal_dynamics_preflights_before_copy(
             assert len(value["goal_m"]) == 2, "oversize goal words reached deepcopy"
         return deepcopy(value, *args, **kwargs)
 
+    def binding(record):
+        if type(record) is dict and "native_goal_source" in record:
+            assert len(record["pose_m_rad"]) == 3, "oversize position reached digest"
+        return original_binding(record)
+
     monkeypatch.setattr(environment, "_observation", observation)
     monkeypatch.setattr(diagnostics, "deepcopy", copied)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
     if operation == "retain":
-        with pytest.raises(ValueError, match="unsupported native goal source"):
+        with pytest.raises(ValueError, match=reason):
             owner.record_native_goal_computation_source(environment, **options)
     else:
         result = owner.snapshot_native_goal_delivery(**options)
         assert result["status"] == "unknown" and result["snapshot_available"] is False
-        assert result["reason"] == "unsupported native goal source"
+        assert result["reason"] == reason
         assert "frame" not in result and "delivered_goal" not in result
-    assert observations == 1 and source["goal_m"] is oversize
+    assert observations == 1
+    if field == "goal_m":
+        assert source["goal_m"] is oversize
+    else:
+        assert environment.position is bad_position
     assert (
         owner._goal_computation_history is history and tuple(history) == before_history
     )

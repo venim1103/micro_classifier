@@ -731,6 +731,23 @@ limits are unchanged. Scoped links/targets, whitespace and four433 tested hashes
 pass. Docs only; no code suite rerun. Latest root remains6539/known QDQ1 xfail/
 77 warnings, all eight flags false, guard UNKNOWN.
 
+## 435. Preflight Producer Position Before Dynamics Serialization (2026-11-19)
+
+From clean pushed344958d, a three-coordinate producer position introduced
+during observation reached the dynamics digest in both goal paths:2FAIL4.41s.
+Require an exact numeric ndarray of shape `(2,)` before conversion. Reuse
+the original conversion and keep the raw-goal and native-intake checks.
+
+Finite2 repro/4 repaired controls<=60s, nearby selectors<=60s and one root<=360s.
+Focused4PASS0.63s including both raw-goal controls; related546PASS6.90s.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6541/known QDQ1 xfail/77 warnings183.34s, then Ruff and
+whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
+checkpoint link PASS. Local logs preserve spent positions.
+
+No sample/intake/copy/digest or work-ceiling change. Eight flags false,
+guard UNKNOWN. Shape validation supplies no pose or error evidence.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

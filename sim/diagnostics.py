@@ -9939,6 +9939,13 @@ def _sample_simulator_dynamics_source(environment):
 
 
 def _simulator_dynamics_source_words(environment, observation):
+    position = environment.position
+    if (
+        type(position) is not np.ndarray
+        or position.shape != (2,)
+        or position.dtype.kind not in "iuf"
+    ):
+        raise ValueError("unsupported simulator dynamics position")
     native_goal = getattr(environment, "_native_goal_source", None)
     if native_goal is not None and not _native_tof_word_copy_matches(
         native_goal,
@@ -9948,7 +9955,7 @@ def _simulator_dynamics_source_words(environment, observation):
         raise ValueError("unsupported native goal source")
     return {
         "tick": environment.tick,
-        "pose_m_rad": (*map(float, environment.position), float(environment.yaw)),
+        "pose_m_rad": (*map(float, position), float(environment.yaw)),
         "native_action": (float(environment.speed), float(environment.turn_rate)),
         "native_goal_source": deepcopy(native_goal),
         "observation": observation,

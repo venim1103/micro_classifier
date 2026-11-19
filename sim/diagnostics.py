@@ -23368,12 +23368,13 @@ class _SyntheticC1SourceRecorder:
                 config=self._config,
                 scenario=self._scenario,
             )
+            cached = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(cached, self._config)
             if (
                 type(self._current) is not tuple
                 or len(self._current) != 4
                 or snapshot["initial_frame"] != self._current[3]
-                or snapshot["source_binding"]
-                != _c1_source_binding_digest(self._dynamics_sample)
+                or snapshot["source_binding"] != _c1_source_binding_digest(cached)
             ):
                 raise ValueError("initial retention source owner words mismatch")
             return binding
@@ -23461,14 +23462,16 @@ class _SyntheticC1SourceRecorder:
 
         def owner_binding():
             current = self._current
-            if type(self._dynamics_sample) is not dict:
+            cached = self._dynamics_sample
+            if type(cached) is not dict:
                 raise ValueError("unsupported retained initial current owner")
             _check_native_recorder_current_owner(current)
+            _check_recorded_simulator_dynamics_observation(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
                     "current": (current[0], current[1], asdict(current[2]), current[3]),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": cached,
                     "config": asdict(self._config),
                     "scenario": asdict(self._scenario),
                     "identities": self._identities,

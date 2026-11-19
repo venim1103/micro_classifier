@@ -761,6 +761,22 @@ no source suite rerun. Latest root remains6576/known QDQ1 xfail/77 warnings.
 Eight flags false, guard UNKNOWN. Next check the outer initial retention,
 retained-initial and startup cache digests.
 
+## 449. Preflight Initial Retention Cached Observation Before Owner Hashing (2026-11-19)
+
+From clean pushedb48d5ff, oversized cached observation history reached the
+retainer's comparison after either nested tick-zero snapshot returned. The
+retained reader also hashed it at original, first-observation and closing
+owner joins:5FAIL10.29s. Both helpers now validate and hash the same cached
+reference. Rejection leaves retention unchanged and omits partial output.
+
+Finite5 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
+Focused5PASS5.00s, related87PASS2.07s. Required root `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6581/known QDQ1 xfail/
+77 warnings180.03s, then Ruff and whitespace PASS. Pylance syntax, changed
+format, scoped AST, tested hashes and checkpoint link PASS. No added read,
+copy or digest. Eight flags false, guard UNKNOWN. Next check the conditional
+startup owner's cached observation before and after its nested reads.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

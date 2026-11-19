@@ -43,6 +43,11 @@ and closing owner hashes and after the first observation before comparing
 producer words. The [checkpoint][initial-cached-observation-review] records
 explicit rejection without partial setup or source publication.
 
+The outer retainer checks the cached observation before comparing the nested
+snapshot's source binding. The retained reader checks it at each owner join,
+including after both current observations. The [retention checkpoint][initial-retention-cached-observation-review]
+preserves the existing reads, digest ceilings and retention behavior.
+
 The detached output explicitly labels its origin as an owned actual tick-zero
 sample, not a reset execution receipt. All eight qualification/permission flags
 stay false. Two-point ownership and word correspondence do not establish
@@ -917,6 +922,7 @@ field-selection, combined and final-closure controls.
 [initial-retention-owner-review]: ../review/413-417.md#413-closed-initial-retention-owner-word-joins-2026-11-17
 [initial-owner-preflight-review]: ../review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-cached-observation-review]: ../../REVIEW.md#447-preflight-initial-source-cached-observation-before-owner-hashing-2026-11-19
+[initial-retention-cached-observation-review]: ../../REVIEW.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13

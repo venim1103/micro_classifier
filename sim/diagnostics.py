@@ -18332,6 +18332,9 @@ class _SyntheticC1SourceRecorder:
             if current is not None:
                 validate_state(current[2])
                 _check_native_recorder_owner_pose(current[1])
+            cached = self._dynamics_sample
+            if cached is not None:
+                _check_recorded_simulator_dynamics_observation(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -18346,7 +18349,7 @@ class _SyntheticC1SourceRecorder:
                     "current": None
                     if current is None
                     else (current[0], current[1], asdict(current[2]), current[3]),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": cached,
                     "receipt_history": self._receipt_history,
                     "integration_sample": self._integration_sample,
                 }

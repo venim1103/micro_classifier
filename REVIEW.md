@@ -777,6 +777,22 @@ and checkpoint link PASS. The6/12 observation and digest ceilings and all
 publication limits remain; eight flags false, guard UNKNOWN. Next check the
 owning intake's cached observation boundaries, including current-free startup.
 
+## 446. Preflight Owning Intake Cached Observation Before Owner Hashing (2026-11-19)
+
+From clean pushedf2724af, both owning intake hashes accepted an oversized
+cached ToF observation for serialization:2FAIL6.53s. Validate and hash the same
+cached reference in the shared owner helper. The first capture still accepts
+a missing cache, and closing rejection leaves staged changes unpublished.
+
+Finite2 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
+Focused2PASS0.76s, related64PASS5.21s; Ruff found one test wrap, fixed.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6573/known QDQ1 xfail/77 warnings193.65s, then Ruff
+and whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes
+and checkpoint link PASS. Existing two observations and work limits remain;
+eight flags false, guard UNKNOWN. Next trace cached observation hashing in the
+named initial-source/startup/request consumers.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

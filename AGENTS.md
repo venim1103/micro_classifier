@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §463 for intact458-462 archival;
+Read [REVIEW.md][review] §464 for receipt segment extent before copying and hashing;
+§463 records intact458-462 archival;
 §462 records initial-source and startup pending cache preflight;
 §461 records motion snapshot pending cache preflight;
 §460 records intact453-457 archival;

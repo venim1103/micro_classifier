@@ -759,6 +759,21 @@ Scoped links, whitespace and four462 tested hashes pass. Docs only; no
 code suite rerun. Latest root remains6622/known QDQ1 xfail/77 warnings, eight
 flags false and guard UNKNOWN. Next check for any remaining full-cache joins.
 
+## 464. Preflight Receipt Segment Extent Before Copying and Hashing (2026-11-19)
+
+From clean pushed4193153, a129-entry motion receipt segment list reached
+three receipt reader cache hashes and both live receipt copies:5FAIL10.77s.
+Share the owning intake's128-segment extent check before those boundaries.
+This is not segment-chain validation or timing/accuracy evidence; missing
+cache receipts keep the old comparison path.
+
+Finite focused/related<=60s, root<=360s:128PASS5.86s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6627/known QDQ1 xfail/77 warnings181.91s, then Ruff/whitespace PASS.
+Pylance syntax, changed format and tested hashes pass. No added read, copy
+or digest; eight flags false, guard UNKNOWN, no command admitted.
+Next trace the outer motion readers' receipt cache hashes.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

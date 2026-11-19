@@ -21292,6 +21292,71 @@ def test_receipt_snapshot_preflights_cached_observation(
 
 
 @pytest.mark.parametrize(
+    ("source", "read_count"),
+    (("cached", 0), ("cached", 1), ("cached", 2), ("live", 1), ("live", 2)),
+)
+def test_receipt_snapshot_preflights_segment_extent(
+    monkeypatch, c1_receipt_snapshot_fixture, source, read_count
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_receipt_snapshot_fixture)
+    sample, current, history = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._receipt_history,
+    )
+    receipt = (
+        sample["motion_receipt"]
+        if source == "cached"
+        else environment._motion_receipt_source["receipt"]
+    )
+    oversized = [receipt["segments"][0]] * 129
+    work = {"observation": 0, "digest": 0}
+    original_observation = environment._observation
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def observe():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        observation = original_observation()
+        if work["observation"] == read_count:
+            receipt["segments"] = oversized
+        return observation
+
+    def copy(record):
+        if record is receipt:
+            assert receipt["segments"] is not oversized
+        return deepcopy(record)
+
+    def digest(record):
+        work["digest"] += 1
+        assert work["digest"] <= 32
+        if type(record) is dict:
+            candidate = record.get("dynamics_sample", record)
+            if candidate is sample:
+                assert candidate["motion_receipt"]["segments"] is not oversized
+        return original_digest(record)
+
+    if read_count == 0:
+        receipt["segments"] = oversized
+    monkeypatch.setattr(environment, "_observation", observe)
+    monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+
+    result = owner.snapshot_receipt_history(synthetic_test_only=True)
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"] == "unsupported_or_changed_receipt_history"
+    assert (
+        not {"source_epoch", "current_tick", "current_frame", "history"} & result.keys()
+    )
+    assert work["observation"] == read_count
+    assert receipt["segments"] is oversized
+    assert owner._dynamics_sample is sample
+    assert owner._current is current and owner._receipt_history is history
+
+
+@pytest.mark.parametrize(
     ("mode", "phase"),
     (
         ("receipt", "original"),

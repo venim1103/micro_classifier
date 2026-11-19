@@ -771,18 +771,20 @@ repeated historical handoffs.
 
 ## 468. Share Full Dynamics Cache Preflight (2026-11-19)
 
-From clean pushed6eb3abf, a129-entry cached receipt reached full-cache
-hashes in ToF, goal and initial/startup readers:15FAIL23.20s. Share the
-observation, pending-queue and receipt extent checks at full-cache joins;
-producer projections and the opt-in pending requirement are unchanged.
+[Complete unchanged checkpoint][review-468-preserved] is preserved in the archive.
 
-Focused/related<=60s:91PASS2.35s. Root<=360s `python -m pytest -q
---durations=10 && ruff check . && git diff --check` PASS6652/known QDQ1
-xfail/77 warnings215.05s, Ruff/whitespace PASS. Pylance syntax, changed
-format and tested hashes pass. Whole466-467 archived at the adjacent path:
-exact24 lines, two inverse layouts, two headings, one rebased topic target
-and211 first-definition meanings; no code rerun. No new read/copy/digest;
-eight flags false, guard UNKNOWN. Next trace the separate native integration cache.
+## 469. Preflight Retained Native Integration Segment Extent (2026-11-19)
+
+From clean pushedeb6c973, a129-entry integration cache reached original and
+closing intake/source/arithmetic hashes:6FAIL12.11s. Share the live
+128-segment extent check at those owners; absent caches keep their behavior.
+Focused/related<=60s:81PASS1.20s; Ruff identified test wraps, corrected.
+Root<=360s `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6658/known QDQ1 xfail/77 warnings217.05s, followed by
+Ruff and whitespace PASS. Pylance syntax, changed format and tested hashes
+pass. Intact468 archived:15 lines, two inverse layouts, historical heading,
+one topic link and unchanged old definitions. No new read/copy/digest;
+all flags false, guard UNKNOWN. Next trace nested receipt-history extents.
 
 ## Sources
 
@@ -1001,3 +1003,4 @@ eight flags false, guard UNKNOWN. Next trace the separate native integration cac
 [review-463-465-preserved-2]: docs/review/428-432.md#465-preflight-integration-receipt-segment-extent-2026-11-19
 [review-466-467-preserved-0]: docs/review/428-432.md#466-intact-receipt-preflight-checkpoints-2026-11-19
 [review-466-467-preserved-1]: docs/review/428-432.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19
+[review-468-preserved]: docs/review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19

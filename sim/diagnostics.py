@@ -10175,6 +10175,15 @@ def _c1_initial_setup_snapshot_binding(snapshot, *, epoch, config, scenario):
     return _c1_source_binding_digest(snapshot)
 
 
+def _check_simulator_native_integration_extent(source):
+    if source is not None and (
+        type(source) is not dict
+        or type(source.get("segments")) is not list
+        or len(source["segments"]) > 128
+    ):
+        raise ValueError("native integration source budget exhausted")
+
+
 def _sample_simulator_native_integration_source(environment, receipt, source_epoch):
     source = environment._integration_source
     if type(source) is not dict or set(source) != {
@@ -10195,9 +10204,8 @@ def _sample_simulator_native_integration_source(environment, receipt, source_epo
         for key in ("tick_before", "tick_after")
     ):
         raise ValueError("native integration source ticks mismatch")
+    _check_simulator_native_integration_extent(source)
     segments = source["segments"]
-    if type(segments) is not list or len(segments) > 128:
-        raise ValueError("native integration source budget exhausted")
     if len(segments) != len(receipt["segments"]):
         raise ValueError("native integration attempt count mismatch")
     input_keys = {"position_m", "yaw_rad", "speed_m_s", "turn_rate_rad_s", "seconds"}
@@ -18361,6 +18369,8 @@ class _SyntheticC1SourceRecorder:
             cached = self._dynamics_sample
             if cached is not None:
                 _check_recorded_simulator_dynamics_cache(cached, self._config)
+            integration = self._integration_sample
+            _check_simulator_native_integration_extent(integration)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -18377,7 +18387,7 @@ class _SyntheticC1SourceRecorder:
                     else (current[0], current[1], asdict(current[2]), current[3]),
                     "dynamics_sample": cached,
                     "receipt_history": self._receipt_history,
-                    "integration_sample": self._integration_sample,
+                    "integration_sample": integration,
                 }
             )
 
@@ -22799,10 +22809,12 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("unsupported current native integration owner")
             _check_native_recorder_current_owner(self._current)
             _check_recorded_simulator_dynamics_cache(cached, self._config)
+            integration = self._integration_sample
+            _check_simulator_native_integration_extent(integration)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
-                    "integration_sample": self._integration_sample,
+                    "integration_sample": integration,
                     "current": (
                         self._current[0],
                         self._current[1],
@@ -23107,10 +23119,12 @@ class _SyntheticC1SourceRecorder:
                 _check_native_recorder_current_owner(self._current)
             if cached is not None:
                 _check_recorded_simulator_dynamics_cache(cached, self._config)
+            integration = self._integration_sample
+            _check_simulator_native_integration_extent(integration)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
-                    "integration_sample": self._integration_sample,
+                    "integration_sample": integration,
                     "current": None
                     if self._current is None
                     else (

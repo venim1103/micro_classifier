@@ -462,6 +462,10 @@ The [shared cache checkpoint][full-dynamics-cache-preflight-review] uses
 the same observation, pending queue and receipt extent checks when ToF,
 goal or initial/startup readers hash the entire dynamics cache. Projections
 that omit the receipt still check only the words they consume.
+The [retained integration checkpoint][retained-integration-extent-review]
+applies the live 128-segment limit to the separate native integration cache
+before the intake, source and arithmetic owner hashes. No capture is required
+when the cache is absent.
 
 Receipt and integration source samplers also check both live observation
 envelopes against the producer profile before hashing dynamics. The integration
@@ -958,7 +962,8 @@ field-selection, combined and final-closure controls.
 [receipt-segment-extent-review]: ../review/428-432.md#464-preflight-receipt-segment-extent-before-copying-and-hashing-2026-11-19
 [integration-receipt-segment-extent-review]: ../review/428-432.md#465-preflight-integration-receipt-segment-extent-2026-11-19
 [intake-receipt-segment-extent-review]: ../review/428-432.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19
-[full-dynamics-cache-preflight-review]: ../../REVIEW.md#468-share-full-dynamics-cache-preflight-2026-11-19
+[full-dynamics-cache-preflight-review]: ../review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19
+[retained-integration-extent-review]: ../../REVIEW.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17

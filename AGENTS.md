@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §439 for dynamics configuration preflight;
+Read [REVIEW.md][review] §440 for intact428-432 archival;
+§439 records dynamics configuration preflight;
 §438 records native dynamics scalar preflight;
 §437 records observation metadata preflight;
 §436 records observation array preflight;
@@ -538,6 +539,8 @@ Shared dynamics sampling rejects nonnumeric native yaw/action types before
 conversion. Two focused,597 related and root6547/known QDQ1 xfail passed.
 The observation preflight checks the actual Config before accessing its fields.
 Six focused,595 related and root6549/known QDQ1 xfail passed.
+Whole428-432 is archived intact:94-line body, two inverse layouts, five
+historical root headings, five topic targets and172 prior first-definition meanings.
 No work cap or qualification change.
 Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or

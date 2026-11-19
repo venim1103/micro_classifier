@@ -611,97 +611,23 @@ repeated historical handoffs.
 
 ## 428. Preflight Native Goal Delivery History Before Owner Hashes (2026-11-19)
 
-From clean pushed6088e77, goal delivery could hash a nine-entry history after
-the first observation or after the final refresh. Both controls reached the
-digest spy:2FAIL4.11s, then2PASS0.54s. Reuse the existing history predicate in
-the owner helper against the corresponding native intake, retaining the early
-live check and moving the closing check past the refresh. One extra
-<=8-entry pass on original ownership paths; no observation/intake/match/digest/
-copy/report or ceiling changes.
-
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
-Prior473PASS6.01s. Required root `python -m pytest -q --durations=10 &&
-ruff check . && git diff --check` PASS6529/known QDQ1 xfail/77 warnings175.09s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, scoped AST, old test
-AST, tested hashes and checkpoint link PASS. Local logs preserve spent positions.
-
-Unknown omits source/frame/epoch/report fields. Eight flags false, guard UNKNOWN.
-Next trace the companion retainer across its final refresh before publication.
+[Complete unchanged checkpoint][review-428-432-preserved-0] is preserved in the archive.
 
 ## 429. Preflight Goal Retention History After Final Refresh (2026-11-19)
 
-From clean pushed0b25215, fresh and repeated goal retention could hash a
-nine-entry live history after the last dynamics refresh:2FAIL4.06s at the digest
-spy. Move the existing live layout check past that refresh. The staged-history
-check stays in place. The repaired cases reject without publication or rollback;
-two observations/intakes and existing check/digest limits remain.
-
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-The parallel format check found an overlong fixture expression; simplified
-its grouping. Repaired2PASS4.42s, prior475PASS6.32s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6531/known QDQ1 xfail/77 warnings175.14s, then Ruff/whitespace PASS.
-Pylance syntax, changed format, exact source AST move, original test matrix,
-all other test AST, tested hashes and checkpoint link PASS. Local logs preserve
-spent positions. Eight flags false, guard UNKNOWN. Next check whether goal
-delivery's original history fingerprint precedes its first producer work.
+[Complete unchanged checkpoint][review-428-432-preserved-1] is preserved in the archive.
 
 ## 430. Bind Original Goal Delivery Ownership Before Producer Work (2026-11-19)
 
-From clean pushed3a3923c, deleting an older retained goal row at the first
-intake or first observation still yielded available delivery:2FAIL4.42s.
-Move the existing starting owner fingerprint before both boundaries, using the
-already bounded retained template. Reuse its preflight after observation and
-at closing, including §428's final refresh guard. No extra sample, match,
-copy, report or digest; the existing work ceilings remain.
-
-Finite2 repro/4 repaired controls<=60s, nearby selectors<=60s and one root<=360s.
-The parallel format check flagged the test parametrization; wrapped it.
-Focused4PASS4.67s including both prior prehash controls, related475PASS6.24s.
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6533/known QDQ1 xfail/77 warnings185.63s, then Ruff and
-whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
-checkpoint link PASS. Local logs preserve spent positions.
-
-Unknown omits source/frame/epoch/report fields. Eight flags false, guard UNKNOWN.
-No new Q1 evidence or qualification. Next check the remaining named
-goal source/owner boundaries without duplicating reports.
+[Complete unchanged checkpoint][review-428-432-preserved-2] is preserved in the archive.
 
 ## 431. Preflight Exact Goal Owner Tick Before Serialization (2026-11-19)
 
-From clean pushed48d1706, both closing goal owner paths sent an ndarray tick
-to the binding digest, despite requiring a builtin integer at entry. Two
-closing-intake mutations hit the digest spy:2FAIL4.31s. Replace the two
-duplicated serialization preflights with the shared current-owner check;
-entry guards and existing State/frame/pose checks remain intact.
-
-Finite2 repro/26 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Focused26PASS1.13s, related455PASS6.05s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6535/known QDQ1 xfail/77 warnings204.12s, then Ruff/whitespace PASS.
-Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
-
-No sample/intake/copy/digest or work-ceiling change. Eight flags false,
-guard UNKNOWN; no command is admitted. No new evidence or protected work.
+[Complete unchanged checkpoint][review-428-432-preserved-3] is preserved in the archive.
 
 ## 432. Pin Original Goal Retention Owner Objects (2026-11-19)
 
-From clean pushed4d95e5c, fresh goal retention accepted an equal-word current
-tuple replacement at the first observation or an equal-word dynamics
-replacement at the closing intake:2FAIL13.50s. Pin the original current and
-dynamics references before producer work; compare them at closure in addition
-to the existing content and layout guards. The producer uses the pinned
-dynamics record as its baseline. Both mutations now reject without publication
-or rollback.
-
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
-Repaired2PASS1.40s, related481PASS13.16s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6537/known QDQ1 xfail/77 warnings259.95s, then Ruff/whitespace PASS.
-Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
-
-No sample/intake/copy/digest or work-ceiling change. Eight flags false,
-guard UNKNOWN; unchanged words do not establish original ownership or qualification.
+[Complete unchanged checkpoint][review-428-432-preserved-4] is preserved in the archive.
 
 ## 433. Preflight Raw Native Goal Words Before Dynamics Copy (2026-11-19)
 
@@ -817,6 +743,16 @@ Focused6PASS0.71s, related595PASS7.16s. Required root `python -m pytest -q
 scoped AST, tested hashes and checkpoint link PASS. Eight flags false,
 guard UNKNOWN. No work-count change. Archive whole428-432 before review growth.
 
+## 440. Intact Native Goal Ownership Checkpoints (2026-11-19)
+
+From clean pushed807359c, one30s scoped transform archives whole428-432.
+Exact94-line body, five historical root headings/anchors, two inverse layouts,
+five rebased chapter03 targets and172 prior first-definition meanings pass.
+Root995->927 lines before this note. Failed attempts, spent ledgers and evidence
+limits are unchanged. Scoped links/targets, whitespace and four439 tested hashes
+pass. Docs only; no code suite rerun. Latest root remains6549/known QDQ1 xfail/
+77 warnings, all eight flags false, guard UNKNOWN.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].
@@ -874,6 +810,7 @@ guard UNKNOWN. No work-count change. Archive whole428-432 before review growth.
 [chapter-review-50]: docs/review/413-417.md
 [chapter-review-51]: docs/review/418-422.md
 [chapter-review-52]: docs/review/423-427.md
+[chapter-review-53]: docs/review/428-432.md
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-1]: docs/review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
@@ -993,3 +930,8 @@ guard UNKNOWN. No work-count change. Archive whole428-432 before review growth.
 [review-423-427-preserved-2]: docs/review/423-427.md#425-preflight-retention-history-after-final-refresh-2026-11-19
 [review-423-427-preserved-3]: docs/review/423-427.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
 [review-423-427-preserved-4]: docs/review/423-427.md#427-intact-original-and-closing-history-checkpoints-2026-11-19
+[review-428-432-preserved-0]: docs/review/428-432.md#428-preflight-native-goal-delivery-history-before-owner-hashes-2026-11-19
+[review-428-432-preserved-1]: docs/review/428-432.md#429-preflight-goal-retention-history-after-final-refresh-2026-11-19
+[review-428-432-preserved-2]: docs/review/428-432.md#430-bind-original-goal-delivery-ownership-before-producer-work-2026-11-19
+[review-428-432-preserved-3]: docs/review/428-432.md#431-preflight-exact-goal-owner-tick-before-serialization-2026-11-19
+[review-428-432-preserved-4]: docs/review/428-432.md#432-pin-original-goal-retention-owner-objects-2026-11-19

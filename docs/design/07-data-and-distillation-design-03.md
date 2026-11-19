@@ -2549,11 +2549,11 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-wip]: ../review/331-335.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12
 [native-goal-delta-review]: ../review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
-[native-goal-delivery-history-preflight-review]: ../../REVIEW.md#428-preflight-native-goal-delivery-history-before-owner-hashes-2026-11-19
-[native-goal-retention-history-preflight-review]: ../../REVIEW.md#429-preflight-goal-retention-history-after-final-refresh-2026-11-19
-[native-goal-original-owner-review]: ../../REVIEW.md#430-bind-original-goal-delivery-ownership-before-producer-work-2026-11-19
-[native-goal-owner-tick-review]: ../../REVIEW.md#431-preflight-exact-goal-owner-tick-before-serialization-2026-11-19
-[native-goal-retention-owner-identity-review]: ../../REVIEW.md#432-pin-original-goal-retention-owner-objects-2026-11-19
+[native-goal-delivery-history-preflight-review]: ../review/428-432.md#428-preflight-native-goal-delivery-history-before-owner-hashes-2026-11-19
+[native-goal-retention-history-preflight-review]: ../review/428-432.md#429-preflight-goal-retention-history-after-final-refresh-2026-11-19
+[native-goal-original-owner-review]: ../review/428-432.md#430-bind-original-goal-delivery-ownership-before-producer-work-2026-11-19
+[native-goal-owner-tick-review]: ../review/428-432.md#431-preflight-exact-goal-owner-tick-before-serialization-2026-11-19
+[native-goal-retention-owner-identity-review]: ../review/428-432.md#432-pin-original-goal-retention-owner-objects-2026-11-19
 [native-goal-dynamics-copy-preflight-review]: ../../REVIEW.md#433-preflight-raw-native-goal-words-before-dynamics-copy-2026-11-19
 [dynamics-position-preflight-review]: ../../REVIEW.md#435-preflight-producer-position-before-dynamics-serialization-2026-11-19
 [dynamics-observation-preflight-review]: ../../REVIEW.md#436-preflight-observation-arrays-before-dynamics-hashing-2026-11-19

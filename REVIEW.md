@@ -571,160 +571,23 @@ repeated historical handoffs.
 
 ## 418. Intact History Checkpoints and Named Input Blockers (2026-11-17)
 
-From clean pushed2c1d02e, one30s guarded transform/three original snapshots move
-whole408-412 checkpoints to the linked archive. Exact144-line body, all five
-historical root headings/anchors, three inverse layouts, four chapter01/06
-targets and148 original first-definition meanings PASS. Root981->864 lines before
-this note; failures, spent positions and evidence limits are preserved.
-Scoped references/targets/anchors, whitespace and all four417 tested hashes
-PASS. Documentation-only; no code suite rerun. Latest root remains6498/known QDQ1
-xfail/77 warnings209.46s, with Ruff/format/syntax/whitespace and scoped controls.
-
-Rechecked actual design §§1/12 and S1-S5/Q0-Q5 dependencies after the bounded
-history-root trace. All identified intake/reader root prehash and first-consumption
-gaps are closed; no further concrete compatible edit is identified in that trace.
-Q0 independent setup/source/return/coverage, Q1 propagated actual-state error,
-Q2 uniform full-command native/accumulated error, Q3 pose/range/time/transform and
-Q4 qualified clock/application/serialized one-use/receipt/predecessor inputs remain
-absent. Conditional tools cannot supply their acceptance or a command permit.
-stedgeai/stm32ai/STM32_Programmer_CLI are not on PATH; cc/arm-none-eabi-gcc are.
-Licence/tools/board work stays user-side; new qualification studies, SC18/general
-audits, D4/learned/model/dependency/download/hardware work remain protected/deferred.
-
-Eight flags false, guard UNKNOWN. Current blockers are actual independent inputs/
-authority, not routine approval/accounting or a permanent no-prerequisite claim.
-Next is an independently supported named packet or concrete compatible issue,
-not more completed reports, dummy work or an unchanged green gate. Session layouts/
-transform and .git logs remain nonportable; committed bodies/controls carry the
-handoff without renewing authority or qualifying metadata.
+[Complete unchanged checkpoint][review-418-422-preserved-0] is preserved in the archive.
 
 ## 419. Closed Original Native ToF History Sampling (2026-11-18)
 
-Fresh actual continuation from clean pushede1de171 verified main/upstream0:0,
-terminal Python3.12.3 at /opt/venv/bin/python, Ruff0.17.0 and361GiB available.
-Host/Arm compilers remain present; ST executables absent. The native-ToF
-retainer validated base acquisition history at entry but fingerprinted it only
-after the first producer observation/intake. Unlike timing/auxiliary history,
-valid-shape deletion or older sample-word mutation could become its baseline.
-Move that existing digest before the first observation beside timing's digest.
-
-Finite4 synthetic repro/repaired controls<=60s, nearby retention controls<=60s,
-one root<=360s, syntax/format/AST/hash/links. Fresh/dedup x deletion/older word
-mutation:4FAIL5.54s (silent success), then4PASS1.27s. Two bounded prior captures
-at4/6 and optional fresh8 use existing source fixtures. Existing140PASS9.19s,
-including optional trace families, dedup/trim/gap and owner-layout controls.
-Two observations/intakes and64 digests remain the default ceilings; no replay/
-clock/RNG draw, partial recorder publication or rollback of external mutation.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6502/known QDQ1 xfail/77 warnings183.53s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, exact source AST after
-only existing-digest relocation, unchanged signatures/all previous test AST and
-four tested hashes PASS. No code change to source arithmetic, fixture defaults,
-intake/report/copy/digest counts, work limits, retention gaps or qualification.
-
-Eight flags false, guard UNKNOWN; independent Q0-Q4 inputs remain absent and
-protected boundaries unchanged. Local .git logs/hash bracket are nonportable;
-committed controls retain results and spent positions. Next trace corresponding
-current/delivered snapshots' original acquisition-history joins; this is the same
-named source path, not a general audit or another numerical report.
+[Complete unchanged checkpoint][review-418-422-preserved-1] is preserved in the archive.
 
 ## 420. Closed Current ToF Original History Joins (2026-11-18)
 
-From clean pushed3c15a9f, the corresponding current-source snapshot also
-fingerprinted base history only after its first producer observation/intake.
-Its existing current snapshot test now clears the archive or mutates a sample
-word during the first observation:2FAIL5.12s (false availability), then2PASS0.59s.
-Reuse the existing independent history template before observing, move the
-existing layout check/hash there, and retain later exact live-source matching.
-Delivered snapshots already establish owner/base/optional-history fingerprints
-before first observation; no delivery code change or new report follows.
-
-Finite2 repro/repaired controls<=60s, existing nearby selectors<=60s, one
-root<=360s and syntax/format/AST/hash/links. Existing current/delivered/pending/
-layout/history74PASS4.09s, including malformed retained-word prehash rejection.
-Original2 observations/intakes/64 digests, unknown without partial source/frame,
-false flags, external mutation retention and unchanged tick/RNG remain checked.
-The only new helper call constructs the already-bounded independent template;
-no observation/intake/copy/digest/report or source arithmetic call is added.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6504/known QDQ1 xfail/77 warnings194.45s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, exact source/template/
-layout/hash delta, unchanged signatures/every other source/test function and four
-tested hashes PASS. Local .git logs/hash bracket are nonportable; committed
-controls preserve actual results and spent positions. Eight flags false,
-guard UNKNOWN; no independent Q0-Q4 acceptance or protected action.
-Next trace this current reader's original owner-context binding, which still
-follows its first sample; do not broaden to unrelated audits or invent evidence.
+[Complete unchanged checkpoint][review-418-422-preserved-2] is preserved in the archive.
 
 ## 421. Closed Current ToF Original Owner Contexts (2026-11-18)
 
-From clean pushed66e8a86, this current-source reader's first observation could
-change recorder binding/profile before its original owner fingerprint. Two new
-cases in the existing snapshot test:2FAIL5.75s (false availability), then
-2PASS1.02s after moving that existing digest before the first observation.
-An independent bounded layout check of the retained source precedes that hash,
-preserving unsupported retained-word rejection before owner serialization.
-
-Finite2 repro/repaired controls<=60s, related owner/prehash controls<=60s, one
-root<=360s and syntax/format/AST/hash/links. First related89:4FAIL/85PASS3.93s.
-Moving the digest had also moved its cheap mid-read owner validation; four
-phase1 current/frame/age/vector controls then rejected only after observation2.
-Do not weaken those assertions. Reuse the shared actual-current preflight and
-original tuple-identity check at the old binding point. Revised necessary
-four failed controls/new2 PASS6/0.63s; related89PASS2.74s. All original fail-fast
-semantics,2 observations/intakes/64 digests, unknown-without-partial source/frame,
-false flags, external mutation retention and unchanged tick/RNG remain.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6506/known QDQ1 xfail/77 warnings173.55s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, exact source/preflight/
-owner-move/mid-read-guard AST delta, unchanged signatures/every other source/test
-function and four tested hashes PASS. No new observation/native read/copy/digest/
-report/math/RNG/clock, work cap, domain or qualification. Eight flags false,
-guard UNKNOWN; independent Q0-Q4 inputs remain absent.
-
-Local .git logs/hash bracket are nonportable; committed controls preserve all
-failures, repairs and spent positions. Next prevalidate this same reader's closing
-history before hashing, then archive whole413-417 before further review growth.
+[Complete unchanged checkpoint][review-418-422-preserved-3] is preserved in the archive.
 
 ## 422. Closed Current ToF History Prehash and Intact Checkpoints (2026-11-18)
 
-From clean pushedd16119c, the same current-source reader hashed closing history
-without revalidating its layout after the final observation/intake. Two added
-nine-entry/ndarray9 closing roots hit the prehash spy:2FAIL4.43s, then2PASS0.58s.
-Reuse its existing independent template/layout predicate immediately before
-closing hashes. No new sample/intake/copy/digest/report, work cap or domain.
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s
-and syntax/format/AST/hash/links. Existing current/history/delivery/pending
-66PASS3.48s. Unknown omits source/frame, false flags and2 observations/intakes/
-64 digests remain, with no replay/RNG/clock or mutation rollback.
-
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check`, one360s wrapper PASS6508/known QDQ1 xfail/77 warnings199.20s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, exact one-call source
-AST delta, unchanged signatures/every other source/test function and four
-tested hashes PASS. Local .git logs retain all spent positions; no gate rerun.
-
-Before adding this note, one30s guarded transform/two original snapshots archive
-whole413-417 intact: exact156-line body, all five root headings/anchors, two inverse
-layouts, four chapter06 targets and154 original first-definition meanings PASS.
-Root984->855 lines before this note. Scoped link/target/anchor/whitespace checks
-and unchanged422 tested hashes PASS; no code suite rerun for documentation.
-Session layouts/transform and local logs remain nonportable; committed contracts,
-controls and complete archived failures/ledgers preserve the portable handoff.
-
-Rechecked actual priority map and Q0-Q5 packet after this original/closing native
-ToF source trace. No further concrete compatible issue identified in that trace.
-Q0 independent setup/source/return/coverage, Q1 propagated actual-state error,
-Q2 uniform full-command native/accumulated error, Q3 pose/range/time/transform and
-Q4 qualified clock/application/serialized one-use/receipt/predecessor inputs remain
-absent. ST executables remain off PATH; licence/tools/board work stays user-side.
-Protected qualification studies/SC18/general audits/D4/learned/dependencies/
-downloads/hardware are not substitute work. Eight flags false, guard UNKNOWN.
-Next is actual independent named evidence or a concrete compatible issue, not
-more report/hash packages, routine approval or an unchanged green gate.
+[Complete unchanged checkpoint][review-418-422-preserved-4] is preserved in the archive.
 
 ## 423. Prehash Validation for Closing ToF Delivery Traces (2026-11-19)
 
@@ -823,6 +686,19 @@ checkpoint link PASS. Local logs preserve the spent checks.
 Eight flags false, guard UNKNOWN. No new capture, numerical law or permission.
 Next archive whole418-422 before further review growth.
 
+## 427. Intact Original and Closing History Checkpoints (2026-11-19)
+
+From clean pushed8969748, one30s scoped transform archives whole418-422.
+Exact157-line body, five historical root headings/anchors, two inverse layouts,
+four rebased chapter01 targets and160 prior first-definition meanings pass.
+Root989->858 lines before this note. Failed attempts, spent ledgers and
+evidence limits are unchanged. Scoped links/targets, whitespace and four426
+tested hashes pass. Docs only; no code suite rerun. Latest root remains6527/
+known QDQ1 xfail/77 warnings, all eight flags false, guard UNKNOWN.
+
+Next trace the same original/final history preflight on the native goal
+delivery reader, without adding reports or accepting Q1 evidence.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].
@@ -878,6 +754,7 @@ Next archive whole418-422 before further review growth.
 [chapter-review-48]: docs/review/403-407.md
 [chapter-review-49]: docs/review/408-412.md
 [chapter-review-50]: docs/review/413-417.md
+[chapter-review-51]: docs/review/418-422.md
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-1]: docs/review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
@@ -987,3 +864,8 @@ Next archive whole418-422 before further review growth.
 [review-413-417-preserved-2]: docs/review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17
 [review-413-417-preserved-3]: docs/review/413-417.md#416-closed-owning-intake-history-root-hashes-2026-11-17
 [review-413-417-preserved-4]: docs/review/413-417.md#417-closed-post-observation-history-consumption-2026-11-17
+[review-418-422-preserved-0]: docs/review/418-422.md#418-intact-history-checkpoints-and-named-input-blockers-2026-11-17
+[review-418-422-preserved-1]: docs/review/418-422.md#419-closed-original-native-tof-history-sampling-2026-11-18
+[review-418-422-preserved-2]: docs/review/418-422.md#420-closed-current-tof-original-history-joins-2026-11-18
+[review-418-422-preserved-3]: docs/review/418-422.md#421-closed-current-tof-original-owner-contexts-2026-11-18
+[review-418-422-preserved-4]: docs/review/418-422.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18

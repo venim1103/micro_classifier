@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §426 for final delivery base-history prehash validation;
+Read [REVIEW.md][review] §427 for intact418-422 archival;
+§426 records final delivery base-history prehash validation;
 §425 records final retention history prehash validation;
 §424 records prevalidation before retention staging;
 §423 records closing delivery trace prehash validation;
@@ -497,6 +498,8 @@ Two regressions,142 prior controls and root6526/known QDQ1 xfail passed.
 Default delivery now also preflights base acquisition history after the final
 refresh before hashing it. Timing already rejected the corresponding mutation.
 Eleven focused and318 related controls and root6527/known QDQ1 xfail passed.
+Whole418-422 is archived intact:157-line body, two inverse layouts, five
+historical root headings, four topic targets and160 prior first-definition meanings.
 No work cap or qualification change.
 Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or

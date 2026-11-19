@@ -2174,10 +2174,10 @@ figure is not an established minimum.
 [native-tof-intake-review]: ../review/183-220.md#203-bounded-fresh-native-tof-source-intake-2026-11-09
 [native-tof-retention-review]: ../review/183-220.md#204-recorder-owned-fresh-native-tof-intake-2026-11-09
 [native-tof-retention-closing-review]: ../review/381-385.md#385-closed-fresh-native-tof-retention-sampling-2026-11-17
-[native-tof-original-history-review]: ../../REVIEW.md#419-closed-original-native-tof-history-sampling-2026-11-18
-[native-tof-current-original-history-review]: ../../REVIEW.md#420-closed-current-tof-original-history-joins-2026-11-18
-[native-tof-current-original-owner-review]: ../../REVIEW.md#421-closed-current-tof-original-owner-contexts-2026-11-18
-[native-tof-current-closing-history-review]: ../../REVIEW.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18
+[native-tof-original-history-review]: ../review/418-422.md#419-closed-original-native-tof-history-sampling-2026-11-18
+[native-tof-current-original-history-review]: ../review/418-422.md#420-closed-current-tof-original-history-joins-2026-11-18
+[native-tof-current-original-owner-review]: ../review/418-422.md#421-closed-current-tof-original-owner-contexts-2026-11-18
+[native-tof-current-closing-history-review]: ../review/418-422.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18
 [native-tof-delivery-trace-preflight-review]: ../../REVIEW.md#423-prehash-validation-for-closing-tof-delivery-traces-2026-11-19
 [native-tof-delivery-base-preflight-review]: ../../REVIEW.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
 [native-tof-retention-staging-review]: ../../REVIEW.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19

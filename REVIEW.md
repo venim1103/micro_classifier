@@ -651,82 +651,23 @@ repeated historical handoffs.
 
 ## 438. Preflight Native Dynamics Scalars Before Conversion (2026-11-19)
 
-From clean pushed73ddd37, an ndarray speed or text yaw placed after the
-closing goal intake still reported available: `float()` erased the type
-change and produced identical binary64 words. Two controls failed in 4.12s.
-Check native yaw, speed and turn-rate scalar types before conversion; preserve
-the same conversions for Python and real NumPy numerics.
-
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Repaired2PASS4.55s, related597PASS7.00s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6547/known QDQ1 xfail/77 warnings179.71s, then Ruff/whitespace PASS.
-Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
-
-No sample/intake/copy/digest or work-ceiling change. Eight flags false,
-guard UNKNOWN. Equal converted words do not validate native metadata.
+[Complete unchanged checkpoint][review-438-442-preserved-0] is preserved in the archive.
 
 ## 439. Preflight Dynamics Config Before Observation Layout Access (2026-11-19)
 
-From clean pushed61a290e, a missing producer config escaped the delivery
-reader at the first observation or final refresh:2FAIL4.15s (AttributeError).
-The prior sampler raised a caught TypeError on `asdict`; the new layout
-checks read config first. Require the actual Config before field access and
-copy that same checked reference. Unknown again omits partial delivery.
-
-Finite2 repro/6 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Focused6PASS0.71s, related595PASS7.16s. Required root `python -m pytest -q
---durations=10 && ruff check . && git diff --check` PASS6549/known QDQ1 xfail/
-77 warnings177.37s, then Ruff/whitespace PASS. Pylance syntax, changed format,
-scoped AST, tested hashes and checkpoint link PASS. Eight flags false,
-guard UNKNOWN. No work-count change. Archive whole428-432 before review growth.
+[Complete unchanged checkpoint][review-438-442-preserved-1] is preserved in the archive.
 
 ## 440. Intact Native Goal Ownership Checkpoints (2026-11-19)
 
-From clean pushed807359c, one30s scoped transform archives whole428-432.
-Exact94-line body, five historical root headings/anchors, two inverse layouts,
-five rebased chapter03 targets and172 prior first-definition meanings pass.
-Root995->927 lines before this note. Failed attempts, spent ledgers and evidence
-limits are unchanged. Scoped links/targets, whitespace and four439 tested hashes
-pass. Docs only; no code suite rerun. Latest root remains6549/known QDQ1 xfail/
-77 warnings, all eight flags false, guard UNKNOWN.
+[Complete unchanged checkpoint][review-438-442-preserved-2] is preserved in the archive.
 
 ## 441. Preflight Cached Goal Observation Before Owner Hashing (2026-11-19)
 
-From clean pushedd1e5590, live producer checks did not cover the cached
-observation in goal retention or delivery. Six oversized-array mutations
-reached the original owner, first-observation baseline or closing owner hash:
-6FAIL4.81s. Extract the unchanged observation predicate and reuse it against
-the recorder profile before all three cached uses.
-
-Finite6 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Focused6PASS0.57s; Ruff found two formatting edits, now wrapped; related601PASS10.99s.
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6555/known QDQ1 xfail/77 warnings181.67s, then Ruff and
-whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
-checkpoint link PASS. Cached checks inspect metadata only; no extra sample,
-copy or digest. Eight flags false, guard UNKNOWN. Next trace the same cached
-observation at the three native ToF retain/current/delivery consumers.
+[Complete unchanged checkpoint][review-438-442-preserved-3] is preserved in the archive.
 
 ## 442. Preflight Cached ToF Observation Before Owner Hashing (2026-11-19)
 
-From clean pushed4da5d2d, native ToF retention, current-source snapshots and
-delivery snapshots could serialize a cached observation with oversized history.
-Nine controls across original ownership, first-observation comparison and final
-refresh reached the digest:9FAIL4.53s. Reuse the cached-observation predicate
-inside each original/closing owner helper and before each producer comparison.
-The retention comparison validates and consumes the same local sample reference.
-
-Finite9 repro/repaired controls<=60s, related<=60s, one root<=360s.
-Focused9PASS0.74s; Ruff found three wraps, now formatted. Broad related selector
-timed out at60s (exit124, no completed summary; spent/unknown); narrower direct
-owner/history selector47PASS1.76s under the same deadline. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6564/known QDQ1 xfail/77 warnings185.47s; Ruff and whitespace PASS.
-Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link
-PASS. No added observation, copy or digest. Publication and existing retention
-and work limits are unchanged; eight flags false, guard UNKNOWN. Next trace
-the cached observation at the other named owning intake/receipt consumers.
+[Complete unchanged checkpoint][review-438-442-preserved-4] is preserved in the archive.
 
 ## 443. Preflight Cached Receipt Observation Before Owner Hashing (2026-11-19)
 
@@ -808,6 +749,17 @@ format, scoped AST, tested hashes and checkpoint link PASS. The two
 observations and existing setup/digest/work limits remain. Eight flags false,
 guard UNKNOWN. Archive whole438-442 before further growth, then trace the
 outer initial retention, retained reader and startup joins.
+
+## 448. Intact Observation Preflight Checkpoints (2026-11-19)
+
+From clean pushed7296744, one30s scoped transform archives whole438-442 in
+the adjacent archive at its existing path. The exact79-line body, two inverse
+layouts, five historical headings/anchors, four rebased chapter01/03 targets
+and183 prior first-definition meanings pass. Root998->944 lines before this
+note. Scoped references, whitespace and four447 tested hashes pass. Docs only;
+no source suite rerun. Latest root remains6576/known QDQ1 xfail/77 warnings.
+Eight flags false, guard UNKNOWN. Next check the outer initial retention,
+retained-initial and startup cache digests.
 
 ## Sources
 
@@ -996,3 +948,8 @@ outer initial retention, retained reader and startup joins.
 [review-433-437-preserved-2]: docs/review/428-432.md#435-preflight-producer-position-before-dynamics-serialization-2026-11-19
 [review-433-437-preserved-3]: docs/review/428-432.md#436-preflight-observation-arrays-before-dynamics-hashing-2026-11-19
 [review-433-437-preserved-4]: docs/review/428-432.md#437-preflight-observation-metadata-before-dynamics-hashing-2026-11-19
+[review-438-442-preserved-0]: docs/review/428-432.md#438-preflight-native-dynamics-scalars-before-conversion-2026-11-19
+[review-438-442-preserved-1]: docs/review/428-432.md#439-preflight-dynamics-config-before-observation-layout-access-2026-11-19
+[review-438-442-preserved-2]: docs/review/428-432.md#440-intact-native-goal-ownership-checkpoints-2026-11-19
+[review-438-442-preserved-3]: docs/review/428-432.md#441-preflight-cached-goal-observation-before-owner-hashing-2026-11-19
+[review-438-442-preserved-4]: docs/review/428-432.md#442-preflight-cached-tof-observation-before-owner-hashing-2026-11-19

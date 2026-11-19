@@ -2561,9 +2561,9 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [dynamics-position-preflight-review]: ../review/428-432.md#435-preflight-producer-position-before-dynamics-serialization-2026-11-19
 [dynamics-observation-preflight-review]: ../review/428-432.md#436-preflight-observation-arrays-before-dynamics-hashing-2026-11-19
 [dynamics-observation-metadata-review]: ../review/428-432.md#437-preflight-observation-metadata-before-dynamics-hashing-2026-11-19
-[dynamics-native-scalars-review]: ../../REVIEW.md#438-preflight-native-dynamics-scalars-before-conversion-2026-11-19
-[dynamics-config-preflight-review]: ../../REVIEW.md#439-preflight-dynamics-config-before-observation-layout-access-2026-11-19
-[goal-cached-observation-review]: ../../REVIEW.md#441-preflight-cached-goal-observation-before-owner-hashing-2026-11-19
+[dynamics-native-scalars-review]: ../review/428-432.md#438-preflight-native-dynamics-scalars-before-conversion-2026-11-19
+[dynamics-config-preflight-review]: ../review/428-432.md#439-preflight-dynamics-config-before-observation-layout-access-2026-11-19
+[goal-cached-observation-review]: ../review/428-432.md#441-preflight-cached-goal-observation-before-owner-hashing-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

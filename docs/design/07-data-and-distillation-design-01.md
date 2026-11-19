@@ -2191,7 +2191,7 @@ figure is not an established minimum.
 [native-tof-delivery-base-preflight-review]: ../review/423-427.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
 [native-tof-retention-staging-review]: ../review/423-427.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19
 [native-tof-retention-refresh-review]: ../review/423-427.md#425-preflight-retention-history-after-final-refresh-2026-11-19
-[native-tof-cached-observation-review]: ../../REVIEW.md#442-preflight-cached-tof-observation-before-owner-hashing-2026-11-19
+[native-tof-cached-observation-review]: ../review/428-432.md#442-preflight-cached-tof-observation-before-owner-hashing-2026-11-19
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

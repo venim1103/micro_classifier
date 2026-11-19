@@ -17842,6 +17842,11 @@ def _check_simulator_motion_receipt_extent(receipt):
         raise ValueError("unsupported or over-budget producer motion receipt")
 
 
+def _check_recorded_simulator_motion_receipt_extent(sample):
+    if "motion_receipt" in sample:
+        _check_simulator_motion_receipt_extent(sample["motion_receipt"])
+
+
 def _check_simulator_motion_receipt_chain(receipt):
     """Check diagnostic chain structure, not integration accuracy or permission."""
     if (
@@ -22453,8 +22458,7 @@ class _SyntheticC1SourceRecorder:
             _check_native_recorder_current_owner(self._current)
             _check_recorded_simulator_dynamics_observation(sample, self._config)
             _check_recorded_native_tof_pending_queue(sample)
-            if "motion_receipt" in sample:
-                _check_simulator_motion_receipt_extent(sample["motion_receipt"])
+            _check_recorded_simulator_motion_receipt_extent(sample)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22650,8 +22654,7 @@ class _SyntheticC1SourceRecorder:
             cached = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(cached, self._config)
             _check_recorded_native_tof_pending_queue(cached)
-            if "motion_receipt" in cached:
-                _check_simulator_motion_receipt_extent(cached["motion_receipt"])
+            _check_recorded_simulator_motion_receipt_extent(cached)
             sampled_binding = _c1_source_binding_digest(sampled)
             if sampled_binding != _c1_source_binding_digest(cached):
                 result["reason"] = "producer_content_changed"
@@ -22804,6 +22807,7 @@ class _SyntheticC1SourceRecorder:
             _check_native_recorder_current_owner(self._current)
             _check_recorded_simulator_dynamics_observation(cached, self._config)
             _check_recorded_native_tof_pending_queue(cached)
+            _check_recorded_simulator_motion_receipt_extent(cached)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22826,9 +22830,12 @@ class _SyntheticC1SourceRecorder:
             native_source = _sample_simulator_native_integration_source(
                 producer, producer._motion_receipt_source["receipt"], self._epoch
             )
+            words = _simulator_dynamics_source_words(producer, observation)
+            receipt = producer._motion_receipt_source["receipt"]
+            _check_simulator_motion_receipt_extent(receipt)
             producer_source = {
-                **_simulator_dynamics_source_words(producer, observation),
-                "motion_receipt": deepcopy(producer._motion_receipt_source["receipt"]),
+                **words,
+                "motion_receipt": deepcopy(receipt),
                 "receipt_source_epoch": self._epoch,
             }
             return native_source, _c1_source_binding_digest(producer_source)
@@ -23110,6 +23117,7 @@ class _SyntheticC1SourceRecorder:
             if cached is not None:
                 _check_recorded_simulator_dynamics_observation(cached, self._config)
                 _check_recorded_native_tof_pending_queue(cached)
+                _check_recorded_simulator_motion_receipt_extent(cached)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,

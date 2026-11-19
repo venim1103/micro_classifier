@@ -21438,6 +21438,107 @@ def test_motion_snapshot_preflights_cached_pending(
     assert owner._current is current and owner._receipt_history is history
 
 
+@pytest.mark.parametrize(
+    ("mode", "phase"),
+    (
+        ("source", "original"),
+        ("source", "closing"),
+        ("arithmetic", "original"),
+        ("arithmetic", "closing"),
+        ("live", "first"),
+        ("live", "closing"),
+    ),
+)
+def test_integration_snapshot_preflights_receipt_segment_extent(
+    monkeypatch, c1_native_integration_snapshot_fixture, mode, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    sample, current, history = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._receipt_history,
+    )
+    receipt = (
+        environment._motion_receipt_source["receipt"]
+        if mode == "live"
+        else sample["motion_receipt"]
+    )
+    oversized = [receipt["segments"][0]] * 129
+    observation_limit = 12 if mode == "arithmetic" else 6
+    work = {"observation": 0, "source": 0, "intake": 0, "digest": 0}
+    original_observation = environment._observation
+    original_source = owner.snapshot_native_integration_source
+    original_intake = diagnostics._sample_simulator_native_integration_source
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def observe():
+        work["observation"] += 1
+        assert work["observation"] <= observation_limit
+        result = original_observation()
+        if mode == "source" and phase == "closing" and work["observation"] == 6:
+            receipt["segments"] = oversized
+        return result
+
+    def source(**kwargs):
+        work["source"] += 1
+        assert work["source"] <= 2
+        result = original_source(**kwargs)
+        if phase == "closing" and work["source"] == 2:
+            assert result["snapshot_available"] is True
+            receipt["segments"] = oversized
+        return result
+
+    def intake(*args):
+        work["intake"] += 1
+        assert work["intake"] <= 2
+        result = original_intake(*args)
+        if work["intake"] == (1 if phase == "first" else 2):
+            receipt["segments"] = oversized
+        return result
+
+    def copy(record):
+        if record is receipt:
+            assert receipt["segments"] is not oversized
+        return deepcopy(record)
+
+    def digest(record):
+        work["digest"] += 1
+        assert work["digest"] <= (160 if mode == "arithmetic" else 64)
+        if type(record) is dict and record.get("dynamics_sample", record) is sample:
+            assert sample["motion_receipt"]["segments"] is not oversized
+        return original_digest(record)
+
+    if phase == "original":
+        receipt["segments"] = oversized
+    monkeypatch.setattr(environment, "_observation", observe)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    if mode == "live":
+        monkeypatch.setattr(
+            diagnostics, "_sample_simulator_native_integration_source", intake
+        )
+        monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    if mode == "arithmetic":
+        monkeypatch.setattr(owner, "snapshot_native_integration_source", source)
+        result = owner.snapshot_native_integration_arithmetic(synthetic_test_only=True)
+        assert result["discrepancies_available"] is False
+        assert result["reason"] == "unsupported_or_changed_native_arithmetic_snapshot"
+    else:
+        result = original_source(synthetic_test_only=True)
+        assert result["snapshot_available"] is False
+        assert result["reason"] == "unsupported_or_changed_native_integration_source"
+    assert result["status"] == "unknown"
+    assert not {"source", "source_epoch", "current_frame", "history"} & result.keys()
+    expected_reads = 0 if phase == "original" else observation_limit
+    if mode == "live" and phase == "first":
+        expected_reads = 3
+    assert work["observation"] == expected_reads
+    assert receipt["segments"] is oversized
+    assert owner._dynamics_sample is sample
+    assert owner._current is current and owner._receipt_history is history
+
+
 @pytest.mark.parametrize("mode", ("source", "arithmetic"))
 @pytest.mark.parametrize("phase", ("original", "closing"))
 def test_integration_snapshot_preflights_cached_observation(

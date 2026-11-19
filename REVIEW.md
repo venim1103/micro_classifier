@@ -774,6 +774,21 @@ Pylance syntax, changed format and tested hashes pass. No added read, copy
 or digest; eight flags false, guard UNKNOWN, no command admitted.
 Next trace the outer motion readers' receipt cache hashes.
 
+## 465. Preflight Integration Receipt Segment Extent (2026-11-19)
+
+From clean pushed5690b83, a129-entry receipt segment list reached both
+source/arithmetic outer cache hashes and both source copies after native
+intake:6FAIL12.21s. Reuse the receipt extent predicate at those boundaries.
+Nested reads and native intake order are unchanged; missing cached receipts
+keep their existing comparison behavior.
+
+Finite focused/related<=60s, root<=360s:130PASS5.90s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6633/known QDQ1 xfail/77 warnings178.95s, then Ruff/whitespace PASS.
+Pylance syntax, changed format and tested hashes pass. No added read, copy
+or digest; eight flags false, guard UNKNOWN, no command admitted.
+Next check the corresponding owning intake boundaries.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

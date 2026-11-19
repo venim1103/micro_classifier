@@ -726,6 +726,35 @@ downloads/hardware are not substitute work. Eight flags false, guard UNKNOWN.
 Next is actual independent named evidence or a concrete compatible issue, not
 more report/hash packages, routine approval or an unchanged green gate.
 
+## 423. Prehash Validation for Closing ToF Delivery Traces (2026-11-19)
+
+Fresh continuation from clean pushed512d909, main/upstream0:0, verified terminal
+Python3.12.3, Ruff0.17.0 and362GiB available. Final observation could expand a
+retained selection/wall/cylinder/direction/postprocessing list in place, reaching
+its individual closing fingerprint before bounded owner validation. Timing
+already preflights its live retained list and is unchanged. The final repair
+defers exactly those five comparisons until after the unchanged late compound
+preflight. Output/identity checks, default mode, sample/match/copy/digest sites
+and work ceilings stay intact.
+
+Finite focused controls/related selectors<=60s each, roots<=360s each. Five
+nine-entry observation repros FAIL4.95s; first repair5PASS0.82s, related366PASS
+44.60s and root6513/known QDQ1 xfail/77 warnings223.91s with Ruff/whitespace PASS.
+Inspection found that moving preflight earlier lost protection after the final
+dynamics refresh. Five new controls at that boundary FAIL4.35s on the first
+repair. Revised plan defers the hashes instead, preserves the late guard and
+requires fresh focused/related/root gates. Final10PASS0.94s, related366PASS36.21s;
+root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6518/known QDQ1 xfail/77 warnings187.75s, then Ruff/whitespace PASS.
+
+Pylance syntax, changed format, exact five comparison moves/unchanged original
+test AST, tested hashes and scoped reference PASS. Unknown has no partial
+payload, retains all eight false flags and leaves externally changed histories
+untouched. No replay, extra RNG, clocks, new report or independent acceptance.
+Guard UNKNOWN; Q0-Q4 and user-side ST boundaries remain as in422. Local logs
+retain spent checks and are nonportable. Continue only on a concrete compatible
+source issue or independently supported named evidence.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

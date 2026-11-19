@@ -13289,6 +13289,123 @@ def test_native_tof_delivered_correspondence(
 
 
 @pytest.mark.parametrize(
+    "kind", ("selection", "wall", "cylinder", "direction", "postprocessing")
+)
+@pytest.mark.parametrize("phase", ("observation", "refresh"))
+def test_native_tof_delivery_closing_history_preflight(
+    monkeypatch, c1_motion_receipt_source_fixture, kind, phase
+):
+    from dataclasses import replace
+
+    from sim import diagnostics, rover
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    if kind in ("cylinder", "direction"):
+        environment.scenario = replace(
+            environment.scenario, obstacles=((3.0, 3.0, 0.25),)
+        )
+        owner = type(owner)(environment.scenario, synthetic_test_only=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step(
+        [0.125, 0.3],
+        capture_native_tof_source=True,
+        **{f"capture_native_tof_{kind}": True},
+    )
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    options = {"synthetic_test_only": True, f"include_{kind}": True}
+    owner.record_native_tof_source(environment, **options)
+    for _ in range(2):
+        environment.step([0.125, 0.3])
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+    assert environment.tick == 6 and environment.sensor_tick == 4
+    name = f"_tof_{kind}_history"
+    history = getattr(owner, name)
+    assert len(history) == 1
+    current, base_history = owner._current, owner._tof_history
+    epochs = deepcopy(
+        (
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "closing_words": 0, "binding": 0}
+    original_observation = environment._observation
+    original_binding = diagnostics._c1_source_binding_digest
+    original_words = diagnostics._simulator_dynamics_source_words
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        actual = original_observation()
+        if phase == "observation" and work["observation"] == 2:
+            history.extend([history[0]] * 8)
+        return actual
+
+    def words(*args, **kwargs):
+        actual = original_words(*args, **kwargs)
+        if work["observation"] == 2:
+            work["closing_words"] += 1
+            assert work["closing_words"] <= 2
+            if phase == "refresh" and work["closing_words"] == 2:
+                history.extend([history[0]] * 8)
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if record is history or (
+            type(record) is dict and record.get(name[1:]) is history
+        ):
+            assert len(history) <= 8
+        return original_binding(record)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("delivery must not read/retain/replay/step/reset/clock")
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
+    for method in ("record_environment_tick", "record_native_tof_source"):
+        monkeypatch.setattr(type(owner), method, forbidden)
+    for method in ("step", "reset"):
+        monkeypatch.setattr(RoverEnv, method, forbidden)
+    for method in ("tof_ranges", "tof_directions", "_motion_receipt_clock_ns"):
+        monkeypatch.setattr(rover, method, forbidden)
+    result = owner.snapshot_native_tof_delivery(**options)
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"]
+    assert set(result) == {
+        "schema",
+        "allowed_use",
+        "status",
+        "reason",
+        "snapshot_available",
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    }
+    assert all(
+        value is False
+        for key, value in result.items()
+        if key not in {"schema", "allowed_use", "status", "reason"}
+    )
+    assert work["observation"] == 2 and environment.tick == 6
+    if phase == "refresh":
+        assert work["closing_words"] == 2
+    assert getattr(owner, name) is history and len(history) == 9
+    assert owner._current is current and owner._tof_history is base_history
+    assert (
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
+@pytest.mark.parametrize(
     "case",
     (
         "copy",

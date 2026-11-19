@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §422 for closing native history preflight and intact413-417;
+Read [REVIEW.md][review] §423 for closing delivery trace prehash validation;
+§422 records closing native history preflight and intact413-417;
 §421 records closed current-ToF original owner contexts;
 §420 records closed current-ToF original history joins;
 §419 records closed original native-ToF history sampling;
@@ -480,8 +481,12 @@ last observation/intake and before closing hashes. Two prehash repros,66 prior
 controls and root6508/known QDQ1 xfail passed. No copy/digest/sample/intake or work
 cap changed. Whole413-417 is archived intact:156-line body, two inverse layouts,
 five historical anchors/four topic targets and154 prior first-definition meanings.
-This bounded original/closing ToF owner/history trace identifies no further
-concrete compatible issue. Actual independent Q0-Q4 inputs remain absent;
+The fresh continuation closed five optional delivery histories' prehash gap.
+Their individual closing hashes now follow the unchanged late compound owner
+preflight. Ten controls cover final observation and final dynamics refresh; the
+first repair's lost late guard and its spent gate are retained in §423. Final
+related366 and root6518/known QDQ1 xfail passed. No work cap or qualification
+change. Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or
 deferred. A concrete issue or independent evidence can resume local work, not
 qualification by metadata or another duplicate report.

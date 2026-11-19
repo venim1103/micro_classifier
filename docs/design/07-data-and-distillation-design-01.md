@@ -1079,6 +1079,11 @@ preserves report-time mutations, the required preflight repair and fixture failu
 The same [early owner-layout prevalidation][native-tof-snapshot-owner-review]
 precedes template/hash/pending access in default and optional timing/pending modes;
 malformed owners return unknown without source/frame/pending/timing payload.
+Enabled retained trace histories are revalidated after the final observation,
+before their individual closing fingerprints as well as compound owner
+serialization. The [trace preflight checkpoint][native-tof-delivery-trace-preflight-review]
+records over-budget history rejections without extra observations, matches, or
+digests.
 
 Success supplies a detached acquisition, its delivered `sensor_tick`, current
 recorder tick and frame context. A held observation keeps its acquisition ID;
@@ -2158,6 +2163,7 @@ figure is not an established minimum.
 [native-tof-current-original-history-review]: ../../REVIEW.md#420-closed-current-tof-original-history-joins-2026-11-18
 [native-tof-current-original-owner-review]: ../../REVIEW.md#421-closed-current-tof-original-owner-contexts-2026-11-18
 [native-tof-current-closing-history-review]: ../../REVIEW.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18
+[native-tof-delivery-trace-preflight-review]: ../../REVIEW.md#423-prehash-validation-for-closing-tof-delivery-traces-2026-11-19
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

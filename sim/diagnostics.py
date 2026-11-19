@@ -19854,6 +19854,7 @@ class _SyntheticC1SourceRecorder:
                 _check_native_tof_postprocessing_history(
                     self._tof_postprocessing_history, self._tof_history, self._epoch
                 )
+
             if current is not None:
                 _check_native_recorder_owner_pose(current[1])
             return _c1_source_binding_digest(
@@ -21488,8 +21489,6 @@ class _SyntheticC1SourceRecorder:
                     or not _native_tof_word_copy_matches(
                         pending_postprocessing, pending_postprocessing_after
                     )
-                    or _c1_source_binding_digest(self._tof_postprocessing_history)
-                    != postprocessing_binding
                     or _c1_source_binding_digest(
                         {
                             "postprocessing": postprocessing,
@@ -21516,8 +21515,6 @@ class _SyntheticC1SourceRecorder:
                     or not _native_tof_word_copy_matches(
                         pending_direction, pending_direction_after
                     )
-                    or _c1_source_binding_digest(self._tof_direction_history)
-                    != direction_binding
                     or _c1_source_binding_digest(
                         {"direction": direction, "pending_direction": pending_direction}
                     )
@@ -21539,7 +21536,6 @@ class _SyntheticC1SourceRecorder:
                     or not _native_tof_word_copy_matches(
                         pending_wall, pending_wall_after
                     )
-                    or _c1_source_binding_digest(self._tof_wall_history) != wall_binding
                     or _c1_source_binding_digest(
                         {"wall": wall, "pending_wall": pending_wall}
                     )
@@ -21563,8 +21559,6 @@ class _SyntheticC1SourceRecorder:
                     or not _native_tof_word_copy_matches(
                         pending_cylinder, pending_cylinder_after
                     )
-                    or _c1_source_binding_digest(self._tof_cylinder_history)
-                    != cylinder_binding
                     or _c1_source_binding_digest(
                         {"cylinder": cylinder, "pending_cylinder": pending_cylinder}
                     )
@@ -21588,8 +21582,6 @@ class _SyntheticC1SourceRecorder:
                     or not _native_tof_word_copy_matches(
                         pending_selection, pending_selection_after
                     )
-                    or _c1_source_binding_digest(self._tof_selection_history)
-                    != selection_binding
                     or _c1_source_binding_digest(
                         {"selection": selection, "pending_selection": pending_selection}
                     )
@@ -22015,6 +22007,31 @@ class _SyntheticC1SourceRecorder:
                 or _c1_source_binding_digest(copied) != copied_binding
                 or _c1_source_binding_digest(self._tof_history) != history_binding
                 or ownership() != owner_binding
+                or (
+                    include_postprocessing
+                    and _c1_source_binding_digest(self._tof_postprocessing_history)
+                    != postprocessing_binding
+                )
+                or (
+                    include_direction
+                    and _c1_source_binding_digest(self._tof_direction_history)
+                    != direction_binding
+                )
+                or (
+                    include_wall
+                    and _c1_source_binding_digest(self._tof_wall_history)
+                    != wall_binding
+                )
+                or (
+                    include_cylinder
+                    and _c1_source_binding_digest(self._tof_cylinder_history)
+                    != cylinder_binding
+                )
+                or (
+                    include_selection
+                    and _c1_source_binding_digest(self._tof_selection_history)
+                    != selection_binding
+                )
                 or _c1_source_binding_digest(observed_after) != producer_binding
                 or self._source_files() != self._identities
             ):

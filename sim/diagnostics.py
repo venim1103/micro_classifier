@@ -22780,9 +22780,11 @@ class _SyntheticC1SourceRecorder:
 
         def owner_binding():
             _check_simulator_receipt_history_extent(self._receipt_history)
-            if type(self._dynamics_sample) is not dict:
+            cached = self._dynamics_sample
+            if type(cached) is not dict:
                 raise ValueError("unsupported current native integration owner")
             _check_native_recorder_current_owner(self._current)
+            _check_recorded_simulator_dynamics_observation(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22793,7 +22795,7 @@ class _SyntheticC1SourceRecorder:
                         asdict(self._current[2]),
                         self._current[3],
                     ),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": cached,
                     "history": self._receipt_history,
                     "config": asdict(self._config),
                     "source_files": self._identities,
@@ -23087,10 +23089,13 @@ class _SyntheticC1SourceRecorder:
 
         def owner_binding():
             _check_simulator_receipt_history_extent(self._receipt_history)
+            cached = self._dynamics_sample
             if self._current is not None:
-                if type(self._dynamics_sample) is not dict:
+                if type(cached) is not dict:
                     raise ValueError("unsupported current native arithmetic owner")
                 _check_native_recorder_current_owner(self._current)
+            if cached is not None:
+                _check_recorded_simulator_dynamics_observation(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -23103,7 +23108,7 @@ class _SyntheticC1SourceRecorder:
                         asdict(self._current[2]),
                         self._current[3],
                     ),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": cached,
                     "history": self._receipt_history,
                     "config": asdict(self._config),
                     "source_files": self._identities,

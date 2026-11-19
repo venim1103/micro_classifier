@@ -419,6 +419,12 @@ cache returns unknown without a partial snapshot; the
 [cached-observation checkpoint][receipt-cached-observation-review] keeps the
 same two-observation and digest limits.
 
+The outer integration source and arithmetic owner hashes independently
+preflight the cached observation before and after their nested reads. The
+[integration checkpoint][integration-cached-observation-review] covers closing
+cache mutation even after the arithmetic reader's final source snapshot has
+returned. Missing-cache behavior and the nested read limits are unchanged.
+
 The optional [later-period comparison][current-normalization-comparison-design]
 uses a separate default-off output, with original/copy/closing reports bound again
 after final producer sampling. It explicitly does not identify the earlier
@@ -899,6 +905,7 @@ field-selection, combined and final-closure controls.
 [native-word-design-map]: ../../DESIGN.md
 [native-owner-preflight-review]: ../review/408-412.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
 [receipt-cached-observation-review]: ../../REVIEW.md#443-preflight-cached-receipt-observation-before-owner-hashing-2026-11-19
+[integration-cached-observation-review]: ../../REVIEW.md#445-preflight-cached-integration-observation-before-owner-hashing-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17
 [intake-history-extent-review]: ../review/413-417.md#416-closed-owning-intake-history-root-hashes-2026-11-17
 [intake-history-consumption-review]: ../review/413-417.md#417-closed-post-observation-history-consumption-2026-11-17

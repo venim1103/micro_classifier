@@ -20738,6 +20738,88 @@ def test_receipt_snapshot_preflights_cached_observation(
     assert owner._current is current and owner._receipt_history is history
 
 
+@pytest.mark.parametrize("mode", ("source", "arithmetic"))
+@pytest.mark.parametrize("phase", ("original", "closing"))
+def test_integration_snapshot_preflights_cached_observation(
+    monkeypatch, c1_native_integration_snapshot_fixture, mode, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    sample, current, history, retained = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._receipt_history,
+        owner._integration_sample,
+    )
+    observation = sample["observation"]
+    count = environment.config.history_ticks
+    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    limit = 6 if mode == "source" else 12
+    binding_limit = 64 if mode == "source" else 160
+    work = {"observation": 0, "source": 0, "binding": 0}
+    original_observation = environment._observation
+    original_source = type(owner).snapshot_native_integration_source
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observe():
+        work["observation"] += 1
+        assert work["observation"] <= limit
+        actual = original_observation()
+        if mode == "source" and phase == "closing" and work["observation"] == limit:
+            observation["history_tof_m"] = oversized
+        return actual
+
+    def read_source(self, **kwargs):
+        work["source"] += 1
+        assert work["source"] <= 2
+        result = original_source(self, **kwargs)
+        if phase == "closing" and work["source"] == 2:
+            assert result["snapshot_available"] is True
+            observation["history_tof_m"] = oversized
+        return result
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= binding_limit
+        if type(record) is dict and record.get("dynamics_sample") is sample:
+            assert observation["history_tof_m"].shape == (count, 8, 8)
+        return original_binding(record)
+
+    if phase == "original":
+        observation["history_tof_m"] = oversized
+    monkeypatch.setattr(environment, "_observation", observe)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    if mode == "source":
+        result = owner.snapshot_native_integration_source(synthetic_test_only=True)
+        available = "snapshot_available"
+        reason = "unsupported_or_changed_native_integration_source"
+    else:
+        monkeypatch.setattr(
+            type(owner), "snapshot_native_integration_source", read_source
+        )
+        result = owner.snapshot_native_integration_arithmetic(synthetic_test_only=True)
+        available = "discrepancies_available"
+        reason = "unsupported_or_changed_native_arithmetic_snapshot"
+        assert work["source"] == (2 if phase == "closing" else 0)
+    assert result["status"] == "unknown" and result[available] is False
+    assert result["reason"] == reason
+    assert (
+        not {
+            "source_epoch",
+            "current_tick",
+            "current_frame",
+            "source",
+            "arithmetic",
+        }
+        & result.keys()
+    )
+    assert work["observation"] == (limit if phase == "closing" else 0)
+    assert observation["history_tof_m"] is oversized
+    assert owner._dynamics_sample is sample and owner._current is current
+    assert owner._receipt_history is history and owner._integration_sample is retained
+
+
 @pytest.mark.parametrize("mode", ("receipt", "source", "arithmetic"))
 @pytest.mark.parametrize("phase", ("initial", "closing"))
 @pytest.mark.parametrize(

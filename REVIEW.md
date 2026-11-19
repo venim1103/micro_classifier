@@ -759,6 +759,24 @@ Docs only; no source suite rerun. Latest root remains6567/known QDQ1 xfail/
 77 warnings. Eight flags false, guard UNKNOWN. Next check the outer integration
 source and arithmetic owner hashes before and after the nested reads.
 
+## 445. Preflight Cached Integration Observation Before Owner Hashing (2026-11-19)
+
+From clean pushed891bc88, the outer native integration source and arithmetic
+readers could hash oversized cached observation history at both owner joins,
+despite the nested receipt reader's checks:4FAIL8.65s. For arithmetic, the
+closing control mutates only after the second nested source reader returns.
+Both owner helpers now validate and hash the same cached reference, preserving
+the arithmetic reader's legitimate missing-cache behavior.
+
+Finite4 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
+Focused4PASS0.62s and related77PASS1.15s. Ruff flagged two test wraps, fixed.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6571/known QDQ1 xfail/77 warnings182.60s, then Ruff
+and whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes
+and checkpoint link PASS. The6/12 observation and digest ceilings and all
+publication limits remain; eight flags false, guard UNKNOWN. Next check the
+owning intake's cached observation boundaries, including current-free startup.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

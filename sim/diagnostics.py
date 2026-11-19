@@ -23628,6 +23628,9 @@ class _SyntheticC1SourceRecorder:
             )
         ):
             raise ValueError("owned_request_receipt_metadata_or_frame_mismatch")
+        history = snapshot.get("history")
+        _check_simulator_receipt_history_extent(history)
+        _check_simulator_receipt_history_segments(history)
         return snapshot
 
     def probe_initial_startup_path(

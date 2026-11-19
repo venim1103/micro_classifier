@@ -469,6 +469,9 @@ when the cache is absent.
 The [nested history checkpoint][receipt-history-segment-extent-review] checks
 the same 128-segment receipt extent inside each retained history entry before
 owner hashing. Root limits and semantic receipt-chain checks still apply.
+The [detached receipt checkpoint][detached-receipt-history-review]
+applies both limits before returning the receipt snapshot to startup and
+the opted-in request readers. No receipt read is added to default requests.
 
 Receipt and integration source samplers also check both live observation
 envelopes against the producer profile before hashing dynamics. The integration
@@ -967,7 +970,8 @@ field-selection, combined and final-closure controls.
 [intake-receipt-segment-extent-review]: ../review/428-432.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19
 [full-dynamics-cache-preflight-review]: ../review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19
 [retained-integration-extent-review]: ../review/428-432.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
-[receipt-history-segment-extent-review]: ../../REVIEW.md#470-preflight-nested-receipt-history-before-owner-hashing-2026-11-19
+[receipt-history-segment-extent-review]: ../review/428-432.md#470-preflight-nested-receipt-history-before-owner-hashing-2026-11-19
+[detached-receipt-history-review]: ../../REVIEW.md#471-preflight-detached-owned-receipt-histories-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17

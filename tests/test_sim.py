@@ -25835,6 +25835,98 @@ def test_synthetic_c1_recorder_rechecks_current_owned_request(
     assert original_retained == held_request
 
 
+@pytest.mark.parametrize("mode", ("startup", "prepare", "recheck"))
+@pytest.mark.parametrize("read_count", (1, 2))
+def test_owned_consumers_preflight_detached_receipt_history(
+    c1_actual_request_fixture,
+    c1_owned_initial_startup_fixture,
+    monkeypatch,
+    mode,
+    read_count,
+):
+    from sim import diagnostics
+
+    if mode == "startup":
+        _, owner = deepcopy(c1_owned_initial_startup_fixture[0])
+    else:
+        _, owner, decision, errors, baseline = deepcopy(c1_actual_request_fixture)
+    history, current = owner._receipt_history, owner._current
+    reads = 0
+    mutated = None
+    original_snapshot = owner.snapshot_receipt_history
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def snapshot(**kwargs):
+        nonlocal reads, mutated
+        reads += 1
+        assert reads <= 2
+        result = original_snapshot(**kwargs)
+        assert result["snapshot_available"] is True
+        if reads == read_count:
+            if read_count == 1:
+                result["history"] = [result["history"][-1]] * 9
+            else:
+                receipt = result["history"][-1]["motion_receipt"]
+                receipt["segments"] = [receipt["segments"][0]] * 129
+            mutated = result
+        return result
+
+    def digest(record):
+        assert mutated is None or record is not mutated
+        return original_digest(record)
+
+    monkeypatch.setattr(owner, "snapshot_receipt_history", snapshot)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+
+    if mode == "startup":
+        result = owner.probe_initial_startup_path(
+            {
+                "history_assumptions": dict.fromkeys(
+                    (
+                        "starting_pose_exact",
+                        "nominal_tick_binding_exact",
+                        "stored_word_dt_exact",
+                        "interval_ending_twist_exact",
+                    ),
+                    True,
+                ),
+                "prefix_history_binding_exact": True,
+                "remaining_point_error_m": 1e-8,
+                "point_radius_m": 4.0,
+            },
+            error_evidence={
+                "position_error_m": 0.0,
+                "heading_error_rad": 0.0,
+                "profile_exact": True,
+            },
+            synthetic_test_only=True,
+        )
+        available = "fixture_owned_startup_path_excluded"
+    else:
+        options = {
+            "include_current_receipt": True,
+            "error_evidence": errors,
+            "synthetic_test_only": True,
+        }
+        if mode == "prepare":
+            result = owner.prepare_normal_request(
+                decision, request_id="d" * 32, **options
+            )
+            available = "fixture_owned_request_prepared"
+        else:
+            retained = baseline["prepared_request"]
+            result = owner.recheck_normal_request(
+                retained, deepcopy(retained["request"]), **options
+            )
+            available = "fixture_owned_request_rechecked"
+    assert reads == read_count and mutated is not None
+    assert result[available] is False and result["status"] == "unknown"
+    assert result["guard_status"] == "UNKNOWN"
+    assert "budget" in result["reason"]
+    assert not {"startup_path", "prepared_request", "current_receipt"} & result.keys()
+    assert owner._receipt_history is history and owner._current is current
+
+
 @pytest.fixture(scope="module")
 def c1_actual_request_fixture(c1_native_integration_snapshot_fixture):
     from interface.protocol import (

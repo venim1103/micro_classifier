@@ -779,17 +779,21 @@ repeated historical handoffs.
 
 ## 470. Preflight Nested Receipt History Before Owner Hashing (2026-11-19)
 
-From clean pushedacd95ef, a129-segment receipt inside a bounded history reached
-both intake/receipt/source/arithmetic owner hashes:8FAIL17.47s. Apply the
-existing segment limit before those hashes, after the unchanged history root
-limits. Normal chain validation and missing-history behavior are unchanged.
-Focused/related<=60s:192PASS2.93s. Root<=360s `python -m pytest -q
---durations=10 && ruff check . && git diff --check` PASS6666/known QDQ1
-xfail/77 warnings218.79s. Pylance syntax, changed format, Ruff, whitespace
-and tested hashes pass. Intact469 archived:13 lines, two inverse layouts,
+[Complete unchanged checkpoint][review-470-preserved] is preserved in the archive.
+
+## 471. Preflight Detached Owned Receipt Histories (2026-11-19)
+
+From clean pushed6f72b4e, a nine-entry first receipt history or129-segment
+closing receipt reached the startup, opt-in prepare and opt-in recheck
+hashes:6FAIL12.81s. Reuse root and nested extent checks in the shared
+detached receipt reader. Default-off behavior and work limits remain.
+Focused/related<=60s:138PASS8.40s. Root<=360s `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6672/known QDQ1
+xfail/77 warnings217.12s. Pylance syntax, changed format, Ruff, whitespace
+and tested hashes pass. Intact470 archived:14 lines, two inverse layouts,
 historical heading, one rebased link and unchanged old definitions. No new
-read/copy/digest; flags false, guard UNKNOWN. Next trace detached receipt
-history consumers for a concrete missing check.
+read/copy/digest; flags false, guard UNKNOWN. Next trace the detached native
+integration source at the arithmetic reader's first and closing hashes.
 
 ## Sources
 
@@ -1010,3 +1014,4 @@ history consumers for a concrete missing check.
 [review-466-467-preserved-1]: docs/review/428-432.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19
 [review-468-preserved]: docs/review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19
 [review-469-preserved]: docs/review/428-432.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
+[review-470-preserved]: docs/review/428-432.md#470-preflight-nested-receipt-history-before-owner-hashing-2026-11-19

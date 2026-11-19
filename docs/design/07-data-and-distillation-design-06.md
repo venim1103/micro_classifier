@@ -940,7 +940,7 @@ field-selection, combined and final-closure controls.
 [native-owner-preflight-review]: ../review/408-412.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
 [receipt-cached-observation-review]: ../review/428-432.md#443-preflight-cached-receipt-observation-before-owner-hashing-2026-11-19
 [integration-cached-observation-review]: ../review/428-432.md#445-preflight-cached-integration-observation-before-owner-hashing-2026-11-19
-[motion-pending-cache-review]: ../../REVIEW.md#461-preflight-motion-snapshot-pending-cache-before-hashing-2026-11-19
+[motion-pending-cache-review]: ../review/428-432.md#461-preflight-motion-snapshot-pending-cache-before-hashing-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17
@@ -952,7 +952,7 @@ field-selection, combined and final-closure controls.
 [initial-retention-cached-observation-review]: ../review/428-432.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
 [initial-detached-observation-review]: ../review/428-432.md#454-preflight-detached-initial-observation-before-source-verification-2026-11-19
 [startup-cached-observation-review]: ../review/428-432.md#450-preflight-startup-cached-observation-before-owner-hashing-2026-11-19
-[initial-pending-cache-review]: ../../REVIEW.md#462-preflight-initial-and-startup-pending-cache-before-hashing-2026-11-19
+[initial-pending-cache-review]: ../review/428-432.md#462-preflight-initial-and-startup-pending-cache-before-hashing-2026-11-19
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13

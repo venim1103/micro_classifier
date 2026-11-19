@@ -731,74 +731,33 @@ repeated historical handoffs.
 
 ## 458. Preflight Owning Intake Pending Cache Before Owner Hashing (2026-11-19)
 
-From clean pushede283a3f, a nine-entry pending queue from the previous recorder
-capture reached the original and closing owner hashes even when new pending
-capture was off:2FAIL6.85s. Apply the existing pending layout check to the
-old cache before hashing. First capture and valid absent queues are unchanged.
-Rejection leaves staged changes unpublished.
-
-Finite focused/related<=60s, root<=360s. Combined76PASS5.77s, including both
-prior observation controls; Ruff found one assertion wrap, fixed. Required
-root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6601/known QDQ1 xfail/77 warnings187.56s followed by Ruff/whitespace PASS.
-Pylance syntax, changed format, scoped diff, tested hashes and link PASS.
-No new read, live queue copy or digest. Eight flags false, guard UNKNOWN.
-Next trace the pending cache at goal ownership joins.
+[Complete unchanged checkpoint][review-458-462-preserved-0] is preserved in the archive.
 
 ## 459. Preflight Goal Pending Cache Before Owner Hashing (2026-11-19)
 
-From clean pushed9caddf7, a nine-entry cached ToF queue reached original and
-closing goal retention and delivery owner hashes:4FAIL8.51s. Reuse the
-existing queue layout check at both owners. Goal producer comparisons do not
-hash this queue; no changes there and no pending goal publication.
-
-Finite focused/related<=60s, root<=360s:12PASS0.94s,240PASS5.66s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6605/known QDQ1 xfail/77 warnings177.17s followed by Ruff/whitespace PASS.
-Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
-No new read, live queue copy or digest. Eight flags false, guard UNKNOWN.
-Archive whole453-457 before further growth; then trace motion-owner queue hashes.
+[Complete unchanged checkpoint][review-458-462-preserved-1] is preserved in the archive.
 
 ## 460. Intact Motion and ToF Cache Checkpoints (2026-11-19)
 
-From clean pushed09d39f4, one30s scoped transform archives whole453-457 at
-the adjacent archive's existing path. Exact73-line body, two inverse layouts,
-five historical headings/anchors, four rebased chapter01/06 targets and198 prior
-first-definition meanings pass. Root1016->968 lines before this note.
-Scoped references, whitespace and four459 tested hashes pass. Docs only; no
-code suite rerun. Latest root remains6605/known QDQ1 xfail/77 warnings, eight
-flags false and guard UNKNOWN. Next trace motion-owner pending cache hashes.
+[Complete unchanged checkpoint][review-458-462-preserved-2] is preserved in the archive.
 
 ## 461. Preflight Motion Snapshot Pending Cache Before Hashing (2026-11-19)
 
-From clean pushed622ce09, a nine-entry cached ToF queue reached original
-and closing receipt, integration source and arithmetic owner hashes, and
-the receipt reader's first producer comparison:7FAIL12.92s. Reuse the
-pending queue layout check at those hash boundaries; missing queues are
-still valid. No receipt content or publication change.
-
-Finite focused/related<=60s, root<=360s:68PASS1.44s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6612/known QDQ1 xfail/77 warnings176.50s, followed by Ruff and whitespace
-PASS. Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
-No new sample, live queue copy or digest. Eight flags false, guard UNKNOWN.
-Next check the tick-zero and retained-initial cache joins.
+[Complete unchanged checkpoint][review-458-462-preserved-3] is preserved in the archive.
 
 ## 462. Preflight Initial and Startup Pending Cache Before Hashing (2026-11-19)
 
-From clean pushed0196946, a nine-entry cached ToF queue reached tick-zero
-original/first/closing hashes, both initial retention joins, three retained
-reader owner joins, and both startup owner joins:10FAIL4.61s. Reuse the
-existing queue layout check at the five corresponding code sites, including
-after nested readers. Missing queues are unchanged; no pending output is added.
+[Complete unchanged checkpoint][review-458-462-preserved-4] is preserved in the archive.
 
-Finite focused/related<=60s, root<=360s:77PASS2.47s, including all ten prior
-observation controls. Required root `python -m pytest -q --durations=10 &&
-ruff check . && git diff --check` PASS6622/known QDQ1 xfail/77 warnings177.94s,
-followed by Ruff and whitespace PASS. Pylance syntax, changed format and
-tested hashes pass. No extra sample, queue copy or digest. Eight flags false,
-guard UNKNOWN; no command is admitted. Archive whole458-462 before tracing
-any remaining full-cache joins.
+## 463. Intact Pending Cache Checkpoints (2026-11-19)
+
+From clean e7854c4, one30s scoped transform archives whole458-462 at the
+adjacent archive's existing path. Exact71-line body, two inverse layouts,
+five historical headings, four rebased chapter01/03/06 targets and203 prior
+first-definition meanings pass. Root1009->963 lines before this note.
+Scoped links, whitespace and four462 tested hashes pass. Docs only; no
+code suite rerun. Latest root remains6622/known QDQ1 xfail/77 warnings, eight
+flags false and guard UNKNOWN. Next check for any remaining full-cache joins.
 
 ## Sources
 
@@ -1007,3 +966,8 @@ any remaining full-cache joins.
 [review-453-457-preserved-2]: docs/review/428-432.md#455-preflight-delivery-pending-cache-before-owner-hashing-2026-11-19
 [review-453-457-preserved-3]: docs/review/428-432.md#456-intact-initial-and-motion-reader-preflight-checkpoints-2026-11-19
 [review-453-457-preserved-4]: docs/review/428-432.md#457-preflight-tof-acquisition-pending-cache-before-owner-hashing-2026-11-19
+[review-458-462-preserved-0]: docs/review/428-432.md#458-preflight-owning-intake-pending-cache-before-owner-hashing-2026-11-19
+[review-458-462-preserved-1]: docs/review/428-432.md#459-preflight-goal-pending-cache-before-owner-hashing-2026-11-19
+[review-458-462-preserved-2]: docs/review/428-432.md#460-intact-motion-and-tof-cache-checkpoints-2026-11-19
+[review-458-462-preserved-3]: docs/review/428-432.md#461-preflight-motion-snapshot-pending-cache-before-hashing-2026-11-19
+[review-458-462-preserved-4]: docs/review/428-432.md#462-preflight-initial-and-startup-pending-cache-before-hashing-2026-11-19

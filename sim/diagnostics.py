@@ -23231,14 +23231,16 @@ class _SyntheticC1SourceRecorder:
 
         def owner_binding():
             current = self._current
-            if type(self._dynamics_sample) is not dict:
+            cached = self._dynamics_sample
+            if type(cached) is not dict:
                 raise ValueError("unsupported initial source recorder layout")
             _check_native_recorder_current_owner(current)
+            _check_recorded_simulator_dynamics_observation(cached, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
                     "current": (current[0], current[1], asdict(current[2]), current[3]),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": cached,
                     "config": asdict(self._config),
                     "scenario": asdict(self._scenario),
                     "identities": self._identities,
@@ -23259,6 +23261,8 @@ class _SyntheticC1SourceRecorder:
                 result["reason"] = "initial_source_epoch_tick_or_files_changed"
                 return result
             source = _sample_simulator_dynamics_source(producer)
+            cached = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(cached, self._config)
             source_binding = _c1_source_binding_digest(source)
             expected_profile = {
                 "epoch": self._epoch,
@@ -23266,7 +23270,7 @@ class _SyntheticC1SourceRecorder:
                 "scenario": asdict(self._scenario),
             }
             if (
-                source_binding != _c1_source_binding_digest(self._dynamics_sample)
+                source_binding != _c1_source_binding_digest(cached)
                 or source["config"] != expected_profile["config"]
                 or source["scenario"] != expected_profile["scenario"]
                 or tuple(value.hex() for value in source["pose_m_rad"])

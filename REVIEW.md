@@ -793,6 +793,22 @@ and checkpoint link PASS. Existing two observations and work limits remain;
 eight flags false, guard UNKNOWN. Next trace cached observation hashing in the
 named initial-source/startup/request consumers.
 
+## 447. Preflight Initial Source Cached Observation Before Owner Hashing (2026-11-19)
+
+From clean pushedfd3779b, the tick-zero snapshot hashed oversized cached
+observation history at original ownership, first observation and closing
+ownership:3FAIL8.12s. Validate and hash the same cached references. Unknown
+omits setup/source/frame/epoch and leaves the recorder unchanged.
+
+Finite3 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
+Focused3PASS0.68s, related120PASS2.26s. Required root `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6576/known QDQ1 xfail/
+77 warnings177.67s, then Ruff and whitespace PASS. Pylance syntax, changed
+format, scoped AST, tested hashes and checkpoint link PASS. The two
+observations and existing setup/digest/work limits remain. Eight flags false,
+guard UNKNOWN. Archive whole438-442 before further growth, then trace the
+outer initial retention, retained reader and startup joins.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

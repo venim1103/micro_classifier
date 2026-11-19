@@ -47,6 +47,9 @@ The outer retainer checks the cached observation before comparing the nested
 snapshot's source binding. The retained reader checks it at each owner join,
 including after both current observations. The [retention checkpoint][initial-retention-cached-observation-review]
 preserves the existing reads, digest ceilings and retention behavior.
+The [detached observation checkpoint][initial-detached-observation-review]
+also applies the same layout check to the tick-zero snapshot itself before
+its source verification hash, independently of the current dynamics cache.
 
 Conditional startup also preflights its cached observation at both owner joins,
 including after the final nested retained reader returns. The
@@ -940,6 +943,7 @@ field-selection, combined and final-closure controls.
 [initial-owner-preflight-review]: ../review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-cached-observation-review]: ../review/428-432.md#447-preflight-initial-source-cached-observation-before-owner-hashing-2026-11-19
 [initial-retention-cached-observation-review]: ../../REVIEW.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
+[initial-detached-observation-review]: ../../REVIEW.md#454-preflight-detached-initial-observation-before-source-verification-2026-11-19
 [startup-cached-observation-review]: ../../REVIEW.md#450-preflight-startup-cached-observation-before-owner-hashing-2026-11-19
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13

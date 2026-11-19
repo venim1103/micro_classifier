@@ -11078,6 +11078,67 @@ def test_initial_retention_preflights_cached_observation(
     assert owner._initial_setup_source is retained
 
 
+@pytest.mark.parametrize("mode", ("retain", "retained"))
+def test_initial_source_preflights_detached_observation(
+    c1_initial_setup_source_fixture,
+    c1_retained_initial_setup_source_fixture,
+    monkeypatch,
+    mode,
+):
+    from sim import diagnostics
+
+    fixture = (
+        c1_initial_setup_source_fixture
+        if mode == "retain"
+        else c1_retained_initial_setup_source_fixture[1]
+    )
+    environment, owner = deepcopy(fixture)
+    sample, current, retained = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._initial_setup_source,
+    )
+    count = environment.config.history_ticks
+    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    work = {"read": 0, "binding": 0}
+    original_read = owner.snapshot_initial_setup_source
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def read(**kwargs):
+        work["read"] += 1
+        assert work["read"] <= 2
+        result = original_read(**kwargs)
+        assert result["snapshot_available"] is True
+        result["source"]["observation"]["history_tof_m"] = oversized
+        return result
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= (84 if mode == "retain" else 64)
+        if type(record) is dict and "observation" in record:
+            assert record["observation"]["history_tof_m"] is not oversized
+        return original_binding(record)
+
+    if mode == "retain":
+        monkeypatch.setattr(owner, "snapshot_initial_setup_source", read)
+    else:
+        retained[2]["source"]["observation"]["history_tof_m"] = oversized
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    if mode == "retain":
+        result = owner.retain_initial_setup_source(synthetic_test_only=True)
+        available = "retention_available"
+    else:
+        result = owner.snapshot_retained_initial_setup_source(synthetic_test_only=True)
+        available = "snapshot_available"
+    assert result["status"] == "unknown" and result[available] is False
+    assert result["reason"] == "unsupported simulator dynamics observation arrays"
+    assert not {"source_epoch", "initial_frame", "initial_snapshot"} & result.keys()
+    assert work["read"] == (1 if mode == "retain" else 0)
+    assert owner._dynamics_sample is sample and owner._current is current
+    assert owner._initial_setup_source is retained
+    assert sample["observation"]["history_tof_m"].shape == (count, 8, 8)
+
+
 @pytest.mark.parametrize("phase", ("original", "closing"))
 def test_owned_startup_preflights_cached_observation(
     c1_owned_initial_startup_fixture, monkeypatch, phase

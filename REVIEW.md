@@ -766,6 +766,22 @@ format, scoped AST, tested hashes and link PASS. No additional read, copy or
 digest; all eight flags false, guard UNKNOWN. Next trace the detached retained
 initial snapshot's observation before its source verification hash.
 
+## 454. Preflight Detached Initial Observation Before Source Verification (2026-11-19)
+
+From clean pushed08c9333, an oversized observation in a detached tick-zero
+snapshot reached the shared source digest from retention and retained read:
+2FAIL6.67s. Validate against the same recorder profile after source layout and
+word checks, before verifying the source binding or reconstructing State/frame.
+The live cache is unchanged; malformed detached snapshots produce no output.
+
+Finite focused/related<=60s, root<=360s. Focused2PASS0.76s, related68PASS1.85s.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6593/known QDQ1 xfail/77 warnings179.49s, followed by
+Ruff and whitespace PASS. Pylance syntax, changed format, scoped AST, tested
+hashes and link PASS. No additional read, copy or digest. Eight flags false,
+guard UNKNOWN. Next trace direct uses of the same motion cache outside these
+validated samplers; qualification still requires independent Q0-Q4 evidence.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

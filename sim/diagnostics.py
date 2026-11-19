@@ -10153,7 +10153,11 @@ def _c1_initial_setup_snapshot_binding(snapshot, *, epoch, config, scenario):
             float(value).hex() for value in _c1_array(source["native_action"], (2,))
         )
         != ((0.0).hex(), (0.0).hex())
-        or snapshot["source_binding"] != _c1_source_binding_digest(source)
+    ):
+        raise ValueError("initial retention source profile or words mismatch")
+    _check_simulator_dynamics_observation(source["observation"], config)
+    if (
+        snapshot["source_binding"] != _c1_source_binding_digest(source)
         or snapshot["setup"]["binding"] != expected_profile
         or snapshot["setup"]["setup_sha256"]
         != _c1_source_binding_digest(expected_profile)

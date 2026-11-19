@@ -769,6 +769,21 @@ Scoped references, whitespace and four459 tested hashes pass. Docs only; no
 code suite rerun. Latest root remains6605/known QDQ1 xfail/77 warnings, eight
 flags false and guard UNKNOWN. Next trace motion-owner pending cache hashes.
 
+## 461. Preflight Motion Snapshot Pending Cache Before Hashing (2026-11-19)
+
+From clean pushed622ce09, a nine-entry cached ToF queue reached original
+and closing receipt, integration source and arithmetic owner hashes, and
+the receipt reader's first producer comparison:7FAIL12.92s. Reuse the
+pending queue layout check at those hash boundaries; missing queues are
+still valid. No receipt content or publication change.
+
+Finite focused/related<=60s, root<=360s:68PASS1.44s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6612/known QDQ1 xfail/77 warnings176.50s, followed by Ruff and whitespace
+PASS. Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
+No new sample, live queue copy or digest. Eight flags false, guard UNKNOWN.
+Next check the tick-zero and retained-initial cache joins.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

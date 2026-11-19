@@ -21272,6 +21272,88 @@ def test_receipt_snapshot_preflights_cached_observation(
     assert owner._current is current and owner._receipt_history is history
 
 
+@pytest.mark.parametrize(
+    ("mode", "phase"),
+    (
+        ("receipt", "original"),
+        ("receipt", "first"),
+        ("receipt", "closing"),
+        ("source", "original"),
+        ("source", "closing"),
+        ("arithmetic", "original"),
+        ("arithmetic", "closing"),
+    ),
+)
+def test_motion_snapshot_preflights_cached_pending(
+    monkeypatch, c1_native_integration_snapshot_fixture, mode, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    sample, current, history = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._receipt_history,
+    )
+    oversized = (diagnostics._copy_native_tof_pending_queue(environment)[0],) * 9
+    reads = {"receipt": 2, "source": 6, "arithmetic": 12}[mode]
+    target = {"original": 0, "first": 1, "closing": reads}[phase]
+    limit = {"receipt": 32, "source": 64, "arithmetic": 160}[mode]
+    work = {"observation": 0, "source": 0, "digest": 0}
+    original_observation = environment._observation
+    original_source = owner.snapshot_native_integration_source
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def observe():
+        work["observation"] += 1
+        assert work["observation"] <= reads
+        observation = original_observation()
+        if mode != "arithmetic" and work["observation"] == target:
+            sample["native_tof_pending_queue"] = oversized
+        return observation
+
+    def source(**kwargs):
+        work["source"] += 1
+        assert work["source"] <= 2
+        result = original_source(**kwargs)
+        if phase == "closing" and work["source"] == 2:
+            assert result["snapshot_available"] is True
+            sample["native_tof_pending_queue"] = oversized
+        return result
+
+    def digest(record):
+        work["digest"] += 1
+        assert work["digest"] <= limit
+        if type(record) is dict and record.get("dynamics_sample", record) is sample:
+            assert sample.get("native_tof_pending_queue") is not oversized
+        return original_digest(record)
+
+    if phase == "original":
+        sample["native_tof_pending_queue"] = oversized
+    monkeypatch.setattr(environment, "_observation", observe)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    if mode == "arithmetic":
+        monkeypatch.setattr(owner, "snapshot_native_integration_source", source)
+        read = owner.snapshot_native_integration_arithmetic
+        available = "discrepancies_available"
+    else:
+        read = owner.snapshot_receipt_history if mode == "receipt" else original_source
+        available = "snapshot_available"
+    result = read(synthetic_test_only=True)
+    assert result["status"] == "unknown" and result[available] is False
+    reason = {
+        "receipt": "unsupported_or_changed_receipt_history",
+        "source": "unsupported_or_changed_native_integration_source",
+        "arithmetic": "unsupported_or_changed_native_arithmetic_snapshot",
+    }
+    assert result["reason"] == reason[mode]
+    assert not {"source", "source_epoch", "current_frame", "history"} & result.keys()
+    assert work["observation"] == target
+    assert sample["native_tof_pending_queue"] is oversized
+    assert owner._dynamics_sample is sample
+    assert owner._current is current and owner._receipt_history is history
+
+
 @pytest.mark.parametrize("mode", ("source", "arithmetic"))
 @pytest.mark.parametrize("phase", ("original", "closing"))
 def test_integration_snapshot_preflights_cached_observation(

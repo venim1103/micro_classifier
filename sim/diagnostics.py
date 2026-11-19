@@ -22447,6 +22447,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("unsupported closing current receipt owner")
             _check_native_recorder_current_owner(self._current)
             _check_recorded_simulator_dynamics_observation(sample, self._config)
+            _check_recorded_native_tof_pending_queue(sample)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -22641,6 +22642,7 @@ class _SyntheticC1SourceRecorder:
             sampled = producer_sample()
             cached = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(cached, self._config)
+            _check_recorded_native_tof_pending_queue(cached)
             sampled_binding = _c1_source_binding_digest(sampled)
             if sampled_binding != _c1_source_binding_digest(cached):
                 result["reason"] = "producer_content_changed"
@@ -22792,6 +22794,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("unsupported current native integration owner")
             _check_native_recorder_current_owner(self._current)
             _check_recorded_simulator_dynamics_observation(cached, self._config)
+            _check_recorded_native_tof_pending_queue(cached)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,
@@ -23097,6 +23100,7 @@ class _SyntheticC1SourceRecorder:
                 _check_native_recorder_current_owner(self._current)
             if cached is not None:
                 _check_recorded_simulator_dynamics_observation(cached, self._config)
+                _check_recorded_native_tof_pending_queue(cached)
             return _c1_source_binding_digest(
                 {
                     "source_epoch": self._epoch,

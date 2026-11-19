@@ -442,6 +442,9 @@ preflight the cached observation before and after their nested reads. The
 [integration checkpoint][integration-cached-observation-review] covers closing
 cache mutation even after the arithmetic reader's final source snapshot has
 returned. Missing-cache behavior and the nested read limits are unchanged.
+These owner hashes and the first receipt producer comparison also preflight
+the pending ToF queue if present. The [pending cache checkpoint][motion-pending-cache-review]
+preserves the receipt, source and arithmetic read and publication limits.
 
 Receipt and integration source samplers also check both live observation
 envelopes against the producer profile before hashing dynamics. The integration
@@ -934,6 +937,7 @@ field-selection, combined and final-closure controls.
 [native-owner-preflight-review]: ../review/408-412.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
 [receipt-cached-observation-review]: ../review/428-432.md#443-preflight-cached-receipt-observation-before-owner-hashing-2026-11-19
 [integration-cached-observation-review]: ../review/428-432.md#445-preflight-cached-integration-observation-before-owner-hashing-2026-11-19
+[motion-pending-cache-review]: ../../REVIEW.md#461-preflight-motion-snapshot-pending-cache-before-hashing-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17

@@ -37782,6 +37782,8 @@ def test_native_goal_computation_history(
         "first_odometry",
         "closing_producer_action",
         "closing_intake_action",
+        "closing_refresh_fresh",
+        "closing_refresh_repeat",
     ),
 )
 def test_native_goal_recorder_retention(
@@ -37801,11 +37803,16 @@ def test_native_goal_recorder_retention(
         )
     environment.step([0.125, 0.0], capture_native_goal_computation=True)
     owner.record_environment_tick(environment, synthetic_test_only=True)
-    seeded = case.startswith("old_") or case in ("default", "repeat", "changed_repeat")
+    closing_refresh = case in ("closing_refresh_fresh", "closing_refresh_repeat")
+    existing_cases = ("default", "repeat", "changed_repeat")
+    seeded = closing_refresh or case.startswith("old_") or case in existing_cases
     if seeded:
         owner.record_native_goal_computation_source(
             environment, synthetic_test_only=True, include_goal_computation=True
         )
+    if case == "closing_refresh_fresh":
+        environment.step([0.125, 0.0], capture_native_goal_computation=True)
+        owner.record_environment_tick(environment, synthetic_test_only=True)
     if case == "unbound":
         owner._simulator = None
     elif case == "owner_tick":
@@ -37856,7 +37863,19 @@ def test_native_goal_recorder_retention(
     original_files = type(owner)._source_files
 
     original_observation = RoverEnv._observation
+    original_words = diagnostics._simulator_dynamics_source_words
     observations = 0
+    word_reads = 0
+
+    def words(*args, **kwargs):
+        nonlocal word_reads
+        actual = original_words(*args, **kwargs)
+        if work["inside"] and closing_refresh:
+            word_reads += 1
+            assert word_reads <= 3
+            if word_reads == 3:
+                before_history.extend([before_history[0]] * 8)
+        return actual
 
     def observation(self):
         nonlocal observations
@@ -37912,6 +37931,9 @@ def test_native_goal_recorder_retention(
         if work["inside"]:
             work["digests"] += 1
             assert work["digests"] <= 12
+            if closing_refresh and type(value) is dict and "goal_history" in value:
+                assert value["goal_history"] is before_history
+                assert len(before_history) <= 8
             if type(value) is dict and set(value) == {"live", "history"}:
                 candidate = value["history"]
         return original_digest(value)
@@ -37941,6 +37963,8 @@ def test_native_goal_recorder_retention(
     )
     monkeypatch.setattr(diagnostics, "_check_native_goal_computation_history", check)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    if closing_refresh:
+        monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
     monkeypatch.setattr(type(owner), "_source_files", staticmethod(files))
     monkeypatch.setattr(RoverEnv, "_observation", observation)
     monkeypatch.setattr(RoverEnv, "step", controlled(RoverEnv.step, "steps"))
@@ -37956,8 +37980,9 @@ def test_native_goal_recorder_retention(
         monkeypatch.setattr(rover.math, name, controlled(getattr(rover.math, name)))
 
     def retain(include=True, permission=True):
-        nonlocal observations
+        nonlocal observations, word_reads
         observations = 0
+        word_reads = 0
         work.update(intake=0, checks=0, digests=0, files=0)
         rng = deepcopy(environment.rng.bit_generator.state)
         odometry_rng = deepcopy(environment.odometry_rng.bit_generator.state)
@@ -37976,7 +38001,17 @@ def test_native_goal_recorder_retention(
         assert environment.odometry_rng.bit_generator.state == odometry_rng
 
     accepted = {"copy", "default", "detached", "repeat", "gap", "trim", "held"}
-    if case not in accepted:
+    if closing_refresh:
+        with pytest.raises(ValueError, match="native goal computation history budget"):
+            retain()
+        assert word_reads == 3 and observations == work["intake"] == 2
+        assert owner._goal_computation_history is before_history
+        assert len(before_history) == 9
+        assert all(entry is before_history[0] for entry in before_history)
+        assert diagnostics._native_tof_word_copy_matches(
+            (before_history[0],), before_contents
+        )
+    elif case not in accepted:
         with pytest.raises(ValueError):
             retain(1 if case == "flag" else True, case != "permission")
         if case != "closing_history":

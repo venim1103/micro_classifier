@@ -2382,6 +2382,10 @@ first observation. The shared owning sampler collects native words after observi
 and closing dynamics refresh after the last intake using that same observation.
 The [dynamics closure checkpoint][native-goal-dynamics-closing-review] preserves
 equal-state first-epoch and late native-action repros; work limits remain unchanged.
+The live-history check follows that refresh, before owner hashing;
+the detached staged-history check stays in place. The
+[retention history checkpoint][native-goal-retention-history-preflight-review]
+preserves fresh and repeat rejection without changing publication.
 Both retention and delivery prevalidate original/closing State with the existing
 codec predicate and require the fixed State-frame byte extent before owner copying/
 hashing. [Owner preflight controls][native-goal-owner-preflight-review] retain explicit
@@ -2521,6 +2525,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-delta-review]: ../review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
 [native-goal-delivery-history-preflight-review]: ../../REVIEW.md#428-preflight-native-goal-delivery-history-before-owner-hashes-2026-11-19
+[native-goal-retention-history-preflight-review]: ../../REVIEW.md#429-preflight-goal-retention-history-after-final-refresh-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

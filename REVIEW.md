@@ -718,6 +718,24 @@ AST, tested hashes and checkpoint link PASS. Local logs preserve spent positions
 Unknown omits source/frame/epoch/report fields. Eight flags false, guard UNKNOWN.
 Next trace the companion retainer across its final refresh before publication.
 
+## 429. Preflight Goal Retention History After Final Refresh (2026-11-19)
+
+From clean pushed0b25215, fresh and repeated goal retention could hash a
+nine-entry live history after the last dynamics refresh:2FAIL4.06s at the digest
+spy. Move the existing live layout check past that refresh. The staged-history
+check stays in place. The repaired cases reject without publication or rollback;
+two observations/intakes and existing check/digest limits remain.
+
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+The parallel format check found an overlong fixture expression; simplified
+its grouping. Repaired2PASS4.42s, prior475PASS6.32s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6531/known QDQ1 xfail/77 warnings175.14s, then Ruff/whitespace PASS.
+Pylance syntax, changed format, exact source AST move, original test matrix,
+all other test AST, tested hashes and checkpoint link PASS. Local logs preserve
+spent positions. Eight flags false, guard UNKNOWN. Next check whether goal
+delivery's original history fingerprint precedes its first producer work.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

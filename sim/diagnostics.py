@@ -18524,13 +18524,13 @@ class _SyntheticC1SourceRecorder:
         closing = _sample_simulator_native_goal_computation_source(
             environment, self._epoch
         )
-        _check_native_goal_computation_history(self._goal_computation_history, closing)
         _check_native_goal_computation_history(history, closing)
         closing_producer_binding = _c1_source_binding_digest(
             _simulator_dynamics_source_words(
                 environment, closing_observed["observation"]
             )
         )
+        _check_native_goal_computation_history(self._goal_computation_history, closing)
         if (
             not _native_tof_word_copy_matches(live, closing)
             or _c1_source_binding_digest({"live": live, "history": history})

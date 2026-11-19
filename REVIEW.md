@@ -771,6 +771,20 @@ and tested465 hashes pass; docs only, no code suite rerun. Latest root
 remains6633/known QDQ1 xfail/77 warnings; flags false and guard UNKNOWN.
 Next check the recorder's cached receipt and post-intake copy boundaries.
 
+## 467. Preflight Owning Intake Receipt Segment Extent (2026-11-19)
+
+From clean pushedf972411, a129-entry receipt reached both old-cache hashes
+with new receipt capture off and both live copies after native intake with
+capture on:4FAIL9.50s. Reuse the receipt extent predicate at the old-cache
+join and recheck after native intake. No staged state is published on rejection.
+
+Finite focused/related<=60s, root<=360s:83PASS5.44s; one Ruff format wrap
+failed and was corrected. Required root `python -m pytest -q --durations=10 &&
+ruff check . && git diff --check` PASS6637/known QDQ1 xfail/77 warnings189.75s,
+then Ruff/whitespace PASS. Pylance syntax, changed format and tested hashes
+pass. No added read, copy or digest. Eight flags false, guard UNKNOWN, no
+command admitted. Next trace the remaining full-cache consumers.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

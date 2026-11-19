@@ -18323,6 +18323,7 @@ class _SyntheticC1SourceRecorder:
                             environment, receipt, self._epoch
                         )
                     )
+                    _check_simulator_motion_receipt_extent(receipt)
                 snapshot["motion_receipt"] = deepcopy(receipt)
                 snapshot["receipt_source_epoch"] = self._epoch
             if capture_native_tof_pending_source:
@@ -18359,6 +18360,7 @@ class _SyntheticC1SourceRecorder:
             if cached is not None:
                 _check_recorded_simulator_dynamics_observation(cached, self._config)
                 _check_recorded_native_tof_pending_queue(cached)
+                _check_recorded_simulator_motion_receipt_extent(cached)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,

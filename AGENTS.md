@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §466 for intact463-465 archival;
+Read [REVIEW.md][review] §467 for owning intake receipt segment extent;
+§466 records intact463-465 archival;
 §465 records integration receipt segment extent;
 §464 records receipt segment extent before copying and hashing;
 §463 records intact458-462 archival;

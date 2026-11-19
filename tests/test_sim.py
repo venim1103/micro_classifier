@@ -11683,18 +11683,19 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
 
 
 @pytest.mark.parametrize("phase", ("original", "closing"))
-@pytest.mark.parametrize("case", ("observation", "pending"))
+@pytest.mark.parametrize("case", ("observation", "pending", "receipt"))
 def test_actual_source_intake_preflights_cached_layout(
     c1_motion_receipt_source_fixture, monkeypatch, phase, case
 ):
     from sim import diagnostics
 
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    if case == "pending":
+    if case != "observation":
         owner.record_environment_tick(
             environment,
             synthetic_test_only=True,
-            capture_native_tof_pending_source=True,
+            capture_native_tof_pending_source=case == "pending",
+            capture_motion_receipt_source=case == "receipt",
         )
         environment.step([0.125, 0.3])
     fields = (
@@ -11712,10 +11713,14 @@ def test_actual_source_intake_preflights_cached_layout(
         count = environment.config.history_ticks
         oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
         reason = "unsupported simulator dynamics observation arrays"
-    else:
+    elif case == "pending":
         cache, key = sample, "native_tof_pending_queue"
         oversized = (cache[key][0],) * 9
         reason = "native ToF pending original-read layout missing"
+    else:
+        cache, key = sample["motion_receipt"], "segments"
+        oversized = [cache[key][0]] * 129
+        reason = "unsupported or over-budget producer motion receipt"
     work = {"observation": 0, "binding": 0}
     original_observation = environment._observation
     original_binding = diagnostics._c1_source_binding_digest
@@ -11745,6 +11750,54 @@ def test_actual_source_intake_preflights_cached_layout(
         owner.record_environment_tick(environment, synthetic_test_only=True)
     assert work["observation"] == (2 if phase == "closing" else 0)
     assert cache[key] is oversized
+    assert all(
+        getattr(owner, name) is value
+        for name, value in zip(fields, retained, strict=True)
+    )
+
+
+@pytest.mark.parametrize("intake_count", (1, 2))
+def test_actual_source_intake_preflights_post_native_receipt_extent(
+    c1_motion_receipt_source_fixture, monkeypatch, intake_count
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    receipt = environment._motion_receipt_source["receipt"]
+    oversized = [receipt["segments"][0]] * 129
+    fields = ("_current", "_dynamics_sample", "_receipt_history", "_integration_sample")
+    retained = tuple(getattr(owner, name) for name in fields)
+    original_intake = diagnostics._sample_simulator_native_integration_source
+    calls = 0
+
+    def intake(*args):
+        nonlocal calls
+        calls += 1
+        assert calls <= intake_count
+        result = original_intake(*args)
+        if calls == intake_count:
+            receipt["segments"] = oversized
+        return result
+
+    def copy(record):
+        if record is receipt:
+            assert receipt["segments"] is not oversized
+        return deepcopy(record)
+
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_integration_source", intake
+    )
+    monkeypatch.setattr(diagnostics, "deepcopy", copy)
+    with pytest.raises(
+        ValueError, match="unsupported or over-budget producer motion receipt"
+    ):
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_motion_receipt_source=True,
+            capture_native_integration_source=True,
+        )
+    assert calls == intake_count and receipt["segments"] is oversized
     assert all(
         getattr(owner, name) is value
         for name, value in zip(fields, retained, strict=True)

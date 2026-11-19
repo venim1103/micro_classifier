@@ -455,6 +455,9 @@ read limits and does not change receipt-chain validation or timing authority.
 The [integration extent checkpoint][integration-receipt-segment-extent-review]
 applies that limit to both outer owners and to the live receipt copy after
 native intake, without changing native intake order or read limits.
+The [owning intake checkpoint][intake-receipt-segment-extent-review] also
+checks the old cached receipt with new capture off and rechecks the live
+receipt after native intake with capture on, before copying.
 
 Receipt and integration source samplers also check both live observation
 envelopes against the producer profile before hashing dynamics. The integration
@@ -950,6 +953,7 @@ field-selection, combined and final-closure controls.
 [motion-pending-cache-review]: ../review/428-432.md#461-preflight-motion-snapshot-pending-cache-before-hashing-2026-11-19
 [receipt-segment-extent-review]: ../review/428-432.md#464-preflight-receipt-segment-extent-before-copying-and-hashing-2026-11-19
 [integration-receipt-segment-extent-review]: ../review/428-432.md#465-preflight-integration-receipt-segment-extent-2026-11-19
+[intake-receipt-segment-extent-review]: ../../REVIEW.md#467-preflight-owning-intake-receipt-segment-extent-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17

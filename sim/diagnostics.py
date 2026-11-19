@@ -18459,18 +18459,7 @@ class _SyntheticC1SourceRecorder:
 
         def ownership():
             current = self._current
-            if (
-                type(current) is not tuple
-                or len(current) != 4
-                or type(current[2]) is not State
-                or type(current[3]) is not bytes
-                or len(current[3]) != HEADER.size + STATE.size + CRC.size
-            ):
-                raise ValueError(
-                    "native goal recorder ownership changed during retention"
-                )
-            validate_state(current[2])
-            _check_native_recorder_owner_pose(current[1])
+            _check_native_recorder_current_owner(current)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19198,16 +19187,7 @@ class _SyntheticC1SourceRecorder:
 
         def check_ownership(goal):
             state = self._current
-            if (
-                type(state) is not tuple
-                or len(state) != 4
-                or type(state[2]) is not State
-                or type(state[3]) is not bytes
-                or len(state[3]) != HEADER.size + STATE.size + CRC.size
-            ):
-                raise ValueError("native goal snapshot owner cleared")
-            validate_state(state[2])
-            _check_native_recorder_owner_pose(state[1])
+            _check_native_recorder_current_owner(state)
             _check_native_goal_computation_history(self._goal_computation_history, goal)
             return state
 

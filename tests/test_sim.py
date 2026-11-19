@@ -40439,10 +40439,18 @@ def test_native_goal_owner_layout(c1_motion_receipt_source_fixture, operation, c
 
 
 @pytest.mark.parametrize(
-    "mode", ("retain", "retain_closing", "snapshot", "snapshot_closing")
+    "mode,field,extent",
+    [
+        (mode, field, extent)
+        for mode in ("retain", "retain_closing", "snapshot", "snapshot_closing")
+        for field in ("frame", "ages_us", "velocity_m_s")
+        for extent in ("short", "long")
+    ]
+    + [
+        ("retain_closing", "tick", None),
+        ("snapshot_closing", "tick", None),
+    ],
 )
-@pytest.mark.parametrize("field", ("frame", "ages_us", "velocity_m_s"))
-@pytest.mark.parametrize("extent", ("short", "long"))
 def test_native_goal_owner_preflight(
     monkeypatch, c1_motion_receipt_source_fixture, mode, field, extent
 ):
@@ -40464,6 +40472,8 @@ def test_native_goal_owner_preflight(
     if field == "frame":
         bad_frame = current[3][:-1] if extent == "short" else current[3] + b"\x00"
         bad_current = (*current[:3], bad_frame)
+    elif field == "tick":
+        bad_current = (np.array([current[0], current[0]]), *current[1:])
     else:
         values = getattr(current[2], field)
         bad_values = values[:-1] if extent == "short" else (*values, 0)
@@ -40510,6 +40520,7 @@ def test_native_goal_owner_preflight(
         work["binding"] += 1
         assert work["binding"] <= 12
         if type(record) is dict and record.get("current") is not None:
+            assert type(record["current"][0]) is int
             assert len(record["current"][3]) == frame_size
         return original_binding(record)
 

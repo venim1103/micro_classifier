@@ -2393,6 +2393,9 @@ rejection/unknown without new encoding/intake/digests or frame-content qualifica
 The [shared owner-pose guard][native-recorder-owner-pose-review] likewise checks
 the native ndarray/three-coordinate C1 producer shape before original/closing
 owner serialization, without a new pose truth, geometry or native-error premise.
+Both owner serializers now reuse the full current-owner check, including the
+builtin integer tick. The [tick-layout checkpoint][native-goal-owner-tick-review]
+preserves bounded closing rejection without new sampling or hashes.
 
 #### Exact Retained Native Goal Matching (2026-11-12)
 
@@ -2530,6 +2533,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-delivery-history-preflight-review]: ../../REVIEW.md#428-preflight-native-goal-delivery-history-before-owner-hashes-2026-11-19
 [native-goal-retention-history-preflight-review]: ../../REVIEW.md#429-preflight-goal-retention-history-after-final-refresh-2026-11-19
 [native-goal-original-owner-review]: ../../REVIEW.md#430-bind-original-goal-delivery-ownership-before-producer-work-2026-11-19
+[native-goal-owner-tick-review]: ../../REVIEW.md#431-preflight-exact-goal-owner-tick-before-serialization-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

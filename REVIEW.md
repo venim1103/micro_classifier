@@ -757,6 +757,23 @@ Unknown omits source/frame/epoch/report fields. Eight flags false, guard UNKNOWN
 No new Q1 evidence or qualification. Next check the remaining named
 goal source/owner boundaries without duplicating reports.
 
+## 431. Preflight Exact Goal Owner Tick Before Serialization (2026-11-19)
+
+From clean pushed48d1706, both closing goal owner paths sent an ndarray tick
+to the binding digest, despite requiring a builtin integer at entry. Two
+closing-intake mutations hit the digest spy:2FAIL4.31s. Replace the two
+duplicated serialization preflights with the shared current-owner check;
+entry guards and existing State/frame/pose checks remain intact.
+
+Finite2 repro/26 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Focused26PASS1.13s, related455PASS6.05s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6535/known QDQ1 xfail/77 warnings204.12s, then Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
+
+No sample/intake/copy/digest or work-ceiling change. Eight flags false,
+guard UNKNOWN; no command is admitted. No new evidence or protected work.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

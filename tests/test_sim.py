@@ -11664,18 +11664,39 @@ def c1_motion_receipt_source_fixture(c1_simulator_source_fixture, request):
 
 
 @pytest.mark.parametrize("phase", ("original", "closing"))
-def test_actual_source_intake_preflights_cached_observation(
-    c1_motion_receipt_source_fixture, monkeypatch, phase
+@pytest.mark.parametrize("case", ("observation", "pending"))
+def test_actual_source_intake_preflights_cached_layout(
+    c1_motion_receipt_source_fixture, monkeypatch, phase, case
 ):
     from sim import diagnostics
 
     environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
-    fields = ("_current", "_dynamics_sample", "_receipt_history", "_history", "_latest")
+    if case == "pending":
+        owner.record_environment_tick(
+            environment,
+            synthetic_test_only=True,
+            capture_native_tof_pending_source=True,
+        )
+        environment.step([0.125, 0.3])
+    fields = (
+        "_current",
+        "_dynamics_sample",
+        "_receipt_history",
+        "_history",
+        "_latest",
+        "_simulator_pending",
+    )
     retained = tuple(getattr(owner, name) for name in fields)
     sample = owner._dynamics_sample
-    observation = sample["observation"]
-    count = environment.config.history_ticks
-    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    if case == "observation":
+        cache, key = sample["observation"], "history_tof_m"
+        count = environment.config.history_ticks
+        oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+        reason = "unsupported simulator dynamics observation arrays"
+    else:
+        cache, key = sample, "native_tof_pending_queue"
+        oversized = (cache[key][0],) * 9
+        reason = "native ToF pending original-read layout missing"
     work = {"observation": 0, "binding": 0}
     original_observation = environment._observation
     original_binding = diagnostics._c1_source_binding_digest
@@ -11685,26 +11706,26 @@ def test_actual_source_intake_preflights_cached_observation(
         assert work["observation"] <= 2
         actual = original_observation()
         if phase == "closing" and work["observation"] == 2:
-            observation["history_tof_m"] = oversized
+            cache[key] = oversized
         return actual
 
     def binding(record):
         work["binding"] += 1
         assert work["binding"] <= 32
         if type(record) is dict and record.get("dynamics_sample") is sample:
-            assert observation["history_tof_m"].shape == (count, 8, 8)
+            assert cache[key] is not oversized, (
+                "malformed cache reached the owner digest"
+            )
         return original_binding(record)
 
     if phase == "original":
-        observation["history_tof_m"] = oversized
+        cache[key] = oversized
     monkeypatch.setattr(environment, "_observation", observe)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
-    with pytest.raises(
-        ValueError, match="unsupported simulator dynamics observation arrays"
-    ):
+    with pytest.raises(ValueError, match=reason):
         owner.record_environment_tick(environment, synthetic_test_only=True)
     assert work["observation"] == (2 if phase == "closing" else 0)
-    assert observation["history_tof_m"] is oversized
+    assert cache[key] is oversized
     assert all(
         getattr(owner, name) is value
         for name, value in zip(fields, retained, strict=True)

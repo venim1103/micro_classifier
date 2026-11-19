@@ -18350,6 +18350,7 @@ class _SyntheticC1SourceRecorder:
             cached = self._dynamics_sample
             if cached is not None:
                 _check_recorded_simulator_dynamics_observation(cached, self._config)
+                _check_recorded_native_tof_pending_queue(cached)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,

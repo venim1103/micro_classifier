@@ -782,6 +782,22 @@ tested hashes and link PASS. No new sample, live queue copy or digest. Eight
 flags false, guard UNKNOWN. Next check the owning intake's old pending cache
 before its original and closing owner hashes.
 
+## 458. Preflight Owning Intake Pending Cache Before Owner Hashing (2026-11-19)
+
+From clean pushede283a3f, a nine-entry pending queue from the previous recorder
+capture reached the original and closing owner hashes even when new pending
+capture was off:2FAIL6.85s. Apply the existing pending layout check to the
+old cache before hashing. First capture and valid absent queues are unchanged.
+Rejection leaves staged changes unpublished.
+
+Finite focused/related<=60s, root<=360s. Combined76PASS5.77s, including both
+prior observation controls; Ruff found one assertion wrap, fixed. Required
+root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6601/known QDQ1 xfail/77 warnings187.56s followed by Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped diff, tested hashes and link PASS.
+No new read, live queue copy or digest. Eight flags false, guard UNKNOWN.
+Next trace the pending cache at goal ownership joins.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

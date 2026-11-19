@@ -638,6 +638,9 @@ explicit rejection precedes unsupported copies/hashes, not source acceptance.
 The [cached observation repair][owning-intake-cached-observation-review] also
 preflights the existing observation cache before both owner hashes, preserving
 first capture without a cache and the existing staging and observation limits.
+The [pending cache checkpoint][owning-intake-pending-cache-review] applies the
+same prehash ordering to a previously captured pending queue, including when
+the new capture does not request pending evidence.
 
 An owned dynamics sample retains the original native speed/yaw separately from
 the State derived by state_from_observation. That existing exporter has already
@@ -2166,6 +2169,7 @@ figure is not an established minimum.
 [owning-intake-copies-review]: ../review/391-394.md#394-closed-post-native-receipt-and-pending-copies-2026-11-17
 [owning-intake-owner-preflight-review]: ../review/403-407.md#407-owning-intake-owner-prevalidation-2026-11-17
 [owning-intake-cached-observation-review]: ../review/428-432.md#446-preflight-owning-intake-cached-observation-before-owner-hashing-2026-11-19
+[owning-intake-pending-cache-review]: ../../REVIEW.md#458-preflight-owning-intake-pending-cache-before-owner-hashing-2026-11-19
 [native-motion-source-review]: ../review/183-220.md#184-native-simulator-motion-words-and-emitted-frames-2026-11-09
 [native-goal-source-review]: ../review/183-220.md#185-native-goal-producer-words-and-source-pose-2026-11-09
 [receipt-clock-review]: ../review/183-220.md#186-diagnostic-monotonic-receipt-windows-2026-11-09

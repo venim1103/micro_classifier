@@ -19056,10 +19056,10 @@ class _SyntheticC1SourceRecorder:
                 }
             )
             != copied_binding
+            or ownership() != owner_binding
             or _c1_source_binding_digest(self._tof_history) != history_binding
             or _c1_source_binding_digest(self._tof_timing_history)
             != timing_history_binding
-            or ownership() != owner_binding
             or _c1_source_binding_digest(observed_after) != producer_binding
             or self._simulator is not simulator_before
             or self._tof_wall_history is not wall_history_before

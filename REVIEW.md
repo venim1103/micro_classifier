@@ -780,6 +780,28 @@ retain spent checks and are nonportable. The remaining queue still requires
 independently supported named evidence or another concrete compatible issue;
 no tool, hardware or study scope follows.
 
+## 425. Preflight Retention History After Final Refresh (2026-11-19)
+
+From clean pushed530000f, the closing ToF retainer validated both histories before
+its final dynamics word refresh and inside the compound owner check, but hashed
+the base and timing histories individually before that last check. Move the
+existing compound owner comparison ahead of those two hashes. Both reject
+unsupported refreshed roots before serialization; staged publication is unchanged.
+
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
+Nine-entry replacements after the final refresh reached the direct digest in
+both cases:2FAIL4.27s, then2PASS0.59s. Prior142PASS8.30s. Two observations,
+two native intakes and existing digest ceilings remain, without partial
+publication, rollback, replay, clock or RNG changes. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6526/known QDQ1 xfail/77 warnings180.84s, then Ruff/whitespace PASS.
+Pylance syntax, changed format, exact comparison move, unchanged existing
+test AST, tested hashes and scoped reference PASS.
+
+Eight flags false, guard UNKNOWN. No new bounds, samples, reports or qualification.
+Local logs retain all spent checks. Next trace the corresponding delivery
+base/timing hashes downstream of the final refresh.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

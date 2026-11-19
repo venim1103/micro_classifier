@@ -9946,6 +9946,15 @@ def _simulator_dynamics_source_words(environment, observation):
         or position.dtype.kind not in "iuf"
     ):
         raise ValueError("unsupported simulator dynamics position")
+    yaw, speed, turn_rate = environment.yaw, environment.speed, environment.turn_rate
+    if any(
+        type(value) not in (int, float)
+        and not (
+            isinstance(value, (np.integer, np.floating)) and value.dtype.kind in "iuf"
+        )
+        for value in (yaw, speed, turn_rate)
+    ):
+        raise ValueError("unsupported simulator dynamics scalars")
     native_goal = getattr(environment, "_native_goal_source", None)
     if native_goal is not None and not _native_tof_word_copy_matches(
         native_goal,
@@ -10004,8 +10013,8 @@ def _simulator_dynamics_source_words(environment, observation):
             raise ValueError("unsupported simulator dynamics observation arrays")
     return {
         "tick": environment.tick,
-        "pose_m_rad": (*map(float, position), float(environment.yaw)),
-        "native_action": (float(environment.speed), float(environment.turn_rate)),
+        "pose_m_rad": (*map(float, position), float(yaw)),
+        "native_action": (float(speed), float(turn_rate)),
         "native_goal_source": deepcopy(native_goal),
         "observation": observation,
         "config": asdict(environment.config),

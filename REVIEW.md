@@ -785,6 +785,23 @@ checkpoint link PASS. Local logs preserve spent positions.
 No sample/intake/copy/digest or work-ceiling change. Eight flags false,
 guard UNKNOWN. Metadata checks do not qualify clocks or source authority.
 
+## 438. Preflight Native Dynamics Scalars Before Conversion (2026-11-19)
+
+From clean pushed73ddd37, an ndarray speed or text yaw placed after the
+closing goal intake still reported available: `float()` erased the type
+change and produced identical binary64 words. Two controls failed in 4.12s.
+Check native yaw, speed and turn-rate scalar types before conversion; preserve
+the same conversions for Python and real NumPy numerics.
+
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Repaired2PASS4.55s, related597PASS7.00s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6547/known QDQ1 xfail/77 warnings179.71s, then Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
+
+No sample/intake/copy/digest or work-ceiling change. Eight flags false,
+guard UNKNOWN. Equal converted words do not validate native metadata.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

@@ -2394,6 +2394,9 @@ hashing, including when the final refresh reuses the observation. The
 The [metadata checkpoint][dynamics-observation-metadata-review] also checks
 the exact observation keys and scalar layouts, not the truth of the sampled
 time, ages or ticks.
+Native yaw and action must also be real numeric scalars before conversion;
+the [scalar checkpoint][dynamics-native-scalars-review] records equal-word
+non-scalar replacements that previously passed the closing comparison.
 The [dynamics closure checkpoint][native-goal-dynamics-closing-review] preserves
 equal-state first-epoch and late native-action repros; work limits remain unchanged.
 The live-history check follows that refresh, before owner hashing;
@@ -2553,6 +2556,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [dynamics-position-preflight-review]: ../../REVIEW.md#435-preflight-producer-position-before-dynamics-serialization-2026-11-19
 [dynamics-observation-preflight-review]: ../../REVIEW.md#436-preflight-observation-arrays-before-dynamics-hashing-2026-11-19
 [dynamics-observation-metadata-review]: ../../REVIEW.md#437-preflight-observation-metadata-before-dynamics-hashing-2026-11-19
+[dynamics-native-scalars-review]: ../../REVIEW.md#438-preflight-native-dynamics-scalars-before-conversion-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

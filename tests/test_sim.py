@@ -40685,6 +40685,45 @@ def test_native_goal_dynamics_preflights_before_copy(
     )
 
 
+@pytest.mark.parametrize("field", ("speed", "yaw"))
+def test_native_goal_delivery_rejects_nonscalar_dynamics(
+    monkeypatch, c1_motion_receipt_source_fixture, field
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    options = {"synthetic_test_only": True, "include_goal_computation": True}
+    owner.record_native_goal_computation_source(environment, **options)
+    history, current = owner._goal_computation_history, owner._current
+    before = getattr(environment, field)
+    malformed = np.array(before) if field == "speed" else str(before)
+    assert float(malformed).hex() == float(before).hex()
+    intakes = 0
+    original_intake = diagnostics._sample_simulator_native_goal_computation_source
+
+    def intake(*args, **kwargs):
+        nonlocal intakes
+        intakes += 1
+        assert intakes <= 2
+        actual = original_intake(*args, **kwargs)
+        if intakes == 2:
+            setattr(environment, field, malformed)
+        return actual
+
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_goal_computation_source", intake
+    )
+    result = owner.snapshot_native_goal_delivery(**options)
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"] == "unsupported simulator dynamics scalars"
+    assert not {"frame", "delivered_goal", "source_epoch", "tick"} & result.keys()
+    assert intakes == 2 and getattr(environment, field) is malformed
+    assert owner._goal_computation_history is history and owner._current is current
+
+
 @pytest.mark.parametrize(
     "phase,field",
     (

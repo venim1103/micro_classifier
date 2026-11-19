@@ -12327,6 +12327,78 @@ def test_native_tof_retention_preflights_history_after_final_refresh(
     ) == before_epochs
 
 
+@pytest.mark.parametrize("operation", ("retain", "current", "delivery"))
+@pytest.mark.parametrize("phase", ("original", "first_observation", "final_refresh"))
+def test_native_tof_preflights_cached_observation(
+    monkeypatch, c1_motion_receipt_source_fixture, operation, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    options = {"synthetic_test_only": True}
+    owner.record_environment_tick(environment, **options)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(environment, **options)
+    if operation != "retain":
+        owner.record_native_tof_source(environment, **options)
+    if operation == "delivery":
+        for _ in range(2):
+            environment.step([0.125, 0.3])
+            owner.record_environment_tick(environment, **options)
+        assert environment.sensor_tick == owner._tof_history[0]["tick"]
+    history, current = owner._tof_history, owner._current
+    observation = owner._dynamics_sample["observation"]
+    count = environment.config.history_ticks
+    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    work = {"words": 0, "binding": 0}
+    original_words = diagnostics._simulator_dynamics_source_words
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def words(*args, **kwargs):
+        work["words"] += 1
+        assert work["words"] <= 3
+        actual = original_words(*args, **kwargs)
+        target = {"first_observation": 1, "final_refresh": 3}.get(phase)
+        if work["words"] == target:
+            observation["history_tof_m"] = oversized
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if type(record) is dict:
+            sample = record.get("dynamics_sample", record)
+            if type(sample) is dict and sample.get("observation") is observation:
+                assert observation["history_tof_m"].shape == (count, 8, 8)
+        return original_binding(record)
+
+    if phase == "original":
+        observation["history_tof_m"] = oversized
+    monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    reason = "unsupported simulator dynamics observation arrays"
+    if operation == "retain":
+        with pytest.raises(ValueError, match=reason):
+            owner.record_native_tof_source(environment, **options)
+        assert owner._tof_sample is None
+    else:
+        reader = (
+            owner.snapshot_native_tof_source
+            if operation == "current"
+            else owner.snapshot_native_tof_delivery
+        )
+        result = reader(**options)
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert result["reason"] == reason
+        assert not {"frame", "source", "source_epoch", "tick"} & result.keys()
+    assert (
+        work["words"]
+        == {"original": 0, "first_observation": 1, "final_refresh": 3}[phase]
+    )
+    assert observation["history_tof_m"] is oversized
+    assert owner._tof_history is history and owner._current is current
+
+
 @pytest.mark.parametrize(
     "case",
     (

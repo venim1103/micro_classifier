@@ -18723,6 +18723,8 @@ class _SyntheticC1SourceRecorder:
             _check_native_tof_postprocessing_history(
                 self._tof_postprocessing_history, self._tof_history, self._epoch
             )
+            sample = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(sample, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -18734,7 +18736,7 @@ class _SyntheticC1SourceRecorder:
                     "current": None
                     if current is None
                     else (current[0], current[1], asdict(current[2]), current[3]),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": sample,
                     "tof_sample": self._tof_sample,
                     "tof_timing_history": self._tof_timing_history,
                     "tof_selection_history": self._tof_selection_history,
@@ -18777,9 +18779,11 @@ class _SyntheticC1SourceRecorder:
         timing_history_binding = _c1_source_binding_digest(self._tof_timing_history)
         history_binding = _c1_source_binding_digest(self._tof_history)
         observed = producer()
+        sample = self._dynamics_sample
+        _check_recorded_simulator_dynamics_observation(sample, self._config)
         producer_binding = _c1_source_binding_digest(observed)
         if producer_binding != _c1_source_binding_digest(
-            {key: self._dynamics_sample.get(key) for key in observed}
+            {key: sample.get(key) for key in observed}
         ):
             raise ValueError("native ToF producer changed after recorder read")
         if include_postprocessing:
@@ -19490,6 +19494,8 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("native ToF snapshot current owner changed")
             validate_state(current[2])
             _check_native_recorder_owner_pose(current[1])
+            sample = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(sample, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19499,7 +19505,7 @@ class _SyntheticC1SourceRecorder:
                     },
                     "identities": self._identities,
                     "current": (current[0], current[1], asdict(current[2]), current[3]),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": sample,
                     "tof_sample": self._tof_sample,
                     "binding": self._binding,
                 }
@@ -19539,6 +19545,9 @@ class _SyntheticC1SourceRecorder:
             live_before = _sample_simulator_native_tof_source(environment, self._epoch)
             if not _native_tof_word_copy_matches(retained, live_before):
                 raise ValueError("native ToF retained words differ from current source")
+            _check_recorded_simulator_dynamics_observation(
+                dynamics_before, self._config
+            )
             producer_binding = _c1_source_binding_digest(observed)
             if producer_binding != _c1_source_binding_digest(
                 {key: dynamics_before.get(key) for key in observed}
@@ -19930,6 +19939,8 @@ class _SyntheticC1SourceRecorder:
 
             if current is not None:
                 _check_native_recorder_owner_pose(current[1])
+            sample = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(sample, self._config)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19941,7 +19952,7 @@ class _SyntheticC1SourceRecorder:
                     "current": None
                     if current is None
                     else (current[0], current[1], asdict(current[2]), current[3]),
-                    "dynamics_sample": self._dynamics_sample,
+                    "dynamics_sample": sample,
                     "tof_history": self._tof_history,
                     **(
                         {"tof_timing_history": self._tof_timing_history}
@@ -21098,6 +21109,9 @@ class _SyntheticC1SourceRecorder:
                 )
             observed = producer()
             _check_native_tof_delivery_frame(observed, current_before)
+            _check_recorded_simulator_dynamics_observation(
+                dynamics_before, self._config
+            )
             producer_binding = _c1_source_binding_digest(observed)
             if producer_binding != _c1_source_binding_digest(
                 {key: dynamics_before.get(key) for key in observed}

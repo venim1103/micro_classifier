@@ -770,6 +770,26 @@ checkpoint link PASS. Cached checks inspect metadata only; no extra sample,
 copy or digest. Eight flags false, guard UNKNOWN. Next trace the same cached
 observation at the three native ToF retain/current/delivery consumers.
 
+## 442. Preflight Cached ToF Observation Before Owner Hashing (2026-11-19)
+
+From clean pushed4da5d2d, native ToF retention, current-source snapshots and
+delivery snapshots could serialize a cached observation with oversized history.
+Nine controls across original ownership, first-observation comparison and final
+refresh reached the digest:9FAIL4.53s. Reuse the cached-observation predicate
+inside each original/closing owner helper and before each producer comparison.
+The retention comparison validates and consumes the same local sample reference.
+
+Finite9 repro/repaired controls<=60s, related<=60s, one root<=360s.
+Focused9PASS0.74s; Ruff found three wraps, now formatted. Broad related selector
+timed out at60s (exit124, no completed summary; spent/unknown); narrower direct
+owner/history selector47PASS1.76s under the same deadline. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6564/known QDQ1 xfail/77 warnings185.47s; Ruff and whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link
+PASS. No added observation, copy or digest. Publication and existing retention
+and work limits are unchanged; eight flags false, guard UNKNOWN. Next trace
+the cached observation at the other named owning intake/receipt consumers.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

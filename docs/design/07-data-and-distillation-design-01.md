@@ -931,6 +931,11 @@ separate base/timing history fingerprints. The [checkpoint][native-tof-retention
 records both late-history controls; the existing validation and digest work
 is unchanged.
 
+ToF retention, current-source and delivery snapshots validate the cached
+observation layout against the recorder profile before original and closing
+owner hashes and the first producer comparison. The [checkpoint][native-tof-cached-observation-review]
+covers all three boundaries without more observations, copies or digests.
+
 An exact RoverEnv, four-field current tuple with builtin integer tick, State and
 bytes frame, and dict dynamics are prevalidated before producer access or sampling.
 Closing current tuple/State layout is checked before owner serialization. The
@@ -2182,6 +2187,7 @@ figure is not an established minimum.
 [native-tof-delivery-base-preflight-review]: ../review/423-427.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
 [native-tof-retention-staging-review]: ../review/423-427.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19
 [native-tof-retention-refresh-review]: ../review/423-427.md#425-preflight-retention-history-after-final-refresh-2026-11-19
+[native-tof-cached-observation-review]: ../../REVIEW.md#442-preflight-cached-tof-observation-before-owner-hashing-2026-11-19
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

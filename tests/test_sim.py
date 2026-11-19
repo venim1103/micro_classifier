@@ -20928,6 +20928,54 @@ def test_receipt_snapshot_history_extent(
     ) == epochs
 
 
+@pytest.mark.parametrize("mode", ("receipt", "integration"))
+@pytest.mark.parametrize("phase", ("first", "closing"))
+def test_motion_snapshot_preflights_live_observation(
+    monkeypatch, c1_native_integration_snapshot_fixture, mode, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_native_integration_snapshot_fixture)
+    sample, current = owner._dynamics_sample, owner._current
+    count = environment.config.history_ticks
+    oversized = np.zeros((count + 1, 8, 8), dtype=np.float32)
+    span = 1 if mode == "receipt" else 3
+    target = span if phase == "first" else 2 * span
+    work = {"observation": 0, "binding": 0}
+    original_observation = environment._observation
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observe():
+        work["observation"] += 1
+        assert work["observation"] <= 2 * span
+        actual = original_observation()
+        if work["observation"] == target:
+            actual["history_tof_m"] = oversized
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= (32 if mode == "receipt" else 64)
+        if type(record) is dict and "observation" in record:
+            assert record["observation"]["history_tof_m"] is not oversized
+        return original_binding(record)
+
+    monkeypatch.setattr(environment, "_observation", observe)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    if mode == "receipt":
+        result = owner.snapshot_receipt_history(synthetic_test_only=True)
+        reason = "unsupported_or_changed_receipt_history"
+    else:
+        result = owner.snapshot_native_integration_source(synthetic_test_only=True)
+        reason = "unsupported_or_changed_native_integration_source"
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"] == reason
+    assert not {"source", "source_epoch", "current_frame", "history"} & result.keys()
+    assert work["observation"] == target
+    assert owner._dynamics_sample is sample and owner._current is current
+    assert sample["observation"]["history_tof_m"].shape == (count, 8, 8)
+
+
 @pytest.mark.parametrize("phase", ("original", "first_observation", "closing"))
 def test_receipt_snapshot_preflights_cached_observation(
     monkeypatch, c1_native_integration_snapshot_fixture, phase

@@ -792,6 +792,15 @@ changed format, scoped AST, tested hashes and checkpoint link PASS. Existing
 observation/digest ceilings and conditional assumptions remain; eight flags
 false, guard UNKNOWN. Next trace the opted-in live request owner cache.
 
+## 451. Preflight Live Motion Snapshot Observations (2026-11-19)
+
+The opted-in request wrappers do not hash dynamics directly; their nested receipt reader checks the cache. The receipt and integration samplers themselves hashed oversized live observations on both reads:4FAIL9.16s. Reuse the live envelope predicate immediately before assembling those words, after native intake in the integration sampler.
+
+Finite focused/related<=60s, root<=360s:4PASS0.69s,147PASS2.14s; `python -m pytest -q --durations=10 && ruff check . && git diff --check` PASS6587/known QDQ1 xfail/77 warnings179.45s plus Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
+No new observation, copy or digest. Eight flags false, guard UNKNOWN.
+Archive whole443-447 before growth; then trace the same live samplers' native-word conversions.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

@@ -2178,10 +2178,10 @@ figure is not an established minimum.
 [native-tof-current-original-history-review]: ../review/418-422.md#420-closed-current-tof-original-history-joins-2026-11-18
 [native-tof-current-original-owner-review]: ../review/418-422.md#421-closed-current-tof-original-owner-contexts-2026-11-18
 [native-tof-current-closing-history-review]: ../review/418-422.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18
-[native-tof-delivery-trace-preflight-review]: ../../REVIEW.md#423-prehash-validation-for-closing-tof-delivery-traces-2026-11-19
-[native-tof-delivery-base-preflight-review]: ../../REVIEW.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
-[native-tof-retention-staging-review]: ../../REVIEW.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19
-[native-tof-retention-refresh-review]: ../../REVIEW.md#425-preflight-retention-history-after-final-refresh-2026-11-19
+[native-tof-delivery-trace-preflight-review]: ../review/423-427.md#423-prehash-validation-for-closing-tof-delivery-traces-2026-11-19
+[native-tof-delivery-base-preflight-review]: ../review/423-427.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
+[native-tof-retention-staging-review]: ../review/423-427.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19
+[native-tof-retention-refresh-review]: ../review/423-427.md#425-preflight-retention-history-after-final-refresh-2026-11-19
 [native-tof-retention-owner-review]: ../review/395-396.md#396-closed-native-tof-retention-owner-layouts-2026-11-17
 [native-tof-snapshot-owner-review]: ../review/397-398.md#398-closed-native-tof-snapshot-owner-layouts-2026-11-17
 [native-tof-owner-frame-extent-review]: ../review/399-400.md#400-fixed-native-tof-owner-frame-extents-2026-11-17

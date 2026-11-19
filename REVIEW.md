@@ -591,113 +591,23 @@ repeated historical handoffs.
 
 ## 423. Prehash Validation for Closing ToF Delivery Traces (2026-11-19)
 
-Fresh continuation from clean pushed512d909, main/upstream0:0, verified terminal
-Python3.12.3, Ruff0.17.0 and362GiB available. Final observation could expand a
-retained selection/wall/cylinder/direction/postprocessing list in place, reaching
-its individual closing fingerprint before bounded owner validation. Timing
-already preflights its live retained list and is unchanged. The final repair
-defers exactly those five comparisons until after the unchanged late compound
-preflight. Output/identity checks, default mode, sample/match/copy/digest sites
-and work ceilings stay intact.
-
-Finite focused controls/related selectors<=60s each, roots<=360s each. Five
-nine-entry observation repros FAIL4.95s; first repair5PASS0.82s, related366PASS
-44.60s and root6513/known QDQ1 xfail/77 warnings223.91s with Ruff/whitespace PASS.
-Inspection found that moving preflight earlier lost protection after the final
-dynamics refresh. Five new controls at that boundary FAIL4.35s on the first
-repair. Revised plan defers the hashes instead, preserves the late guard and
-requires fresh focused/related/root gates. Final10PASS0.94s, related366PASS36.21s;
-root `python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6518/known QDQ1 xfail/77 warnings187.75s, then Ruff/whitespace PASS.
-
-Pylance syntax, changed format, exact five comparison moves/unchanged original
-test AST, tested hashes and scoped reference PASS. Unknown has no partial
-payload, retains all eight false flags and leaves externally changed histories
-untouched. No replay, extra RNG, clocks, new report or independent acceptance.
-Guard UNKNOWN; Q0-Q4 and user-side ST boundaries remain as in422. Local logs
-retain spent checks and are nonportable. Continue only on a concrete compatible
-source issue or independently supported named evidence.
+[Complete unchanged checkpoint][review-423-427-preserved-0] is preserved in the archive.
 
 ## 424. Preflight Live ToF Histories Before Retention Staging (2026-11-19)
 
-From clean pushed555771c, the first observation could replace any of six
-optional histories after owner preflight but before the retainer copied entries.
-The staged-list check rejected too late. Move the six redundant entry checks
-to after the first live intake and base history layout check, before staging.
-Original and closing owner preflights remain. Capture-option defaults, gaps,
-deduplication and trimming stay unchanged.
-
-Finite6 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Nine-entry replacements reached forbidden deepcopy in all six families:
-6FAIL4.41s. The first focused chain stopped at formatting before pytest; only a
-blank line was missing. Repaired6PASS0.68s, prior144PASS8.34s. Invalid history
-exits after one observation/intake with no publication or mutation rollback.
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6524/known QDQ1 xfail/77 warnings183.54s, then
-Ruff/whitespace PASS. Pylance syntax, changed format, exact six validator moves,
-unchanged prior test AST, tested hashes and scoped reference PASS.
-
-No sample/intake/copy/digest/report or work cap added; no replay, extra RNG,
-clock or qualification. All eight flags false, guard UNKNOWN. Local logs
-retain spent checks and are nonportable. The remaining queue still requires
-independently supported named evidence or another concrete compatible issue;
-no tool, hardware or study scope follows.
+[Complete unchanged checkpoint][review-423-427-preserved-1] is preserved in the archive.
 
 ## 425. Preflight Retention History After Final Refresh (2026-11-19)
 
-From clean pushed530000f, the closing ToF retainer validated both histories before
-its final dynamics word refresh and inside the compound owner check, but hashed
-the base and timing histories individually before that last check. Move the
-existing compound owner comparison ahead of those two hashes. Both reject
-unsupported refreshed roots before serialization; staged publication is unchanged.
-
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
-Nine-entry replacements after the final refresh reached the direct digest in
-both cases:2FAIL4.27s, then2PASS0.59s. Prior142PASS8.30s. Two observations,
-two native intakes and existing digest ceilings remain, without partial
-publication, rollback, replay, clock or RNG changes. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6526/known QDQ1 xfail/77 warnings180.84s, then Ruff/whitespace PASS.
-Pylance syntax, changed format, exact comparison move, unchanged existing
-test AST, tested hashes and scoped reference PASS.
-
-Eight flags false, guard UNKNOWN. No new bounds, samples, reports or qualification.
-Local logs retain all spent checks. Next trace the corresponding delivery
-base/timing hashes downstream of the final refresh.
+[Complete unchanged checkpoint][review-423-427-preserved-2] is preserved in the archive.
 
 ## 426. Preflight Delivery Base History After Final Refresh (2026-11-19)
 
-From clean pushed70fdae1, default ToF delivery hashed acquisition history after
-the final dynamics refresh without a fresh layout check. A nine-entry in-place
-growth reached the digest spy; the parallel timing case already rejected that
-growth. First format check stopped before pytest; after wrapping,1FAIL/1PASS5.51s.
-Require the existing bounded base-layout check in the closing compound owner
-comparison for every mode, and compare the separate base digest only afterward.
-Timing, earlier observation preflight, and the five trace checks are unchanged.
-
-Finite2 repro/11 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Focused11PASS5.06s, related318PASS24.30s. One extra <=8-entry layout pass on
-default closing paths, no extra observation/match/digest/copy or changed ceiling.
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6527/known QDQ1 xfail/77 warnings196.60s, then Ruff and
-whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
-checkpoint link PASS. Local logs preserve the spent checks.
-
-Eight flags false, guard UNKNOWN. No new capture, numerical law or permission.
-Next archive whole418-422 before further review growth.
+[Complete unchanged checkpoint][review-423-427-preserved-3] is preserved in the archive.
 
 ## 427. Intact Original and Closing History Checkpoints (2026-11-19)
 
-From clean pushed8969748, one30s scoped transform archives whole418-422.
-Exact157-line body, five historical root headings/anchors, two inverse layouts,
-four rebased chapter01 targets and160 prior first-definition meanings pass.
-Root989->858 lines before this note. Failed attempts, spent ledgers and
-evidence limits are unchanged. Scoped links/targets, whitespace and four426
-tested hashes pass. Docs only; no code suite rerun. Latest root remains6527/
-known QDQ1 xfail/77 warnings, all eight flags false, guard UNKNOWN.
-
-Next trace the same original/final history preflight on the native goal
-delivery reader, without adding reports or accepting Q1 evidence.
+[Complete unchanged checkpoint][review-423-427-preserved-4] is preserved in the archive.
 
 ## 428. Preflight Native Goal Delivery History Before Owner Hashes (2026-11-19)
 
@@ -811,6 +721,16 @@ Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PA
 No sample/intake/copy/digest or work-ceiling change. Eight flags false,
 guard UNKNOWN. Archive whole423-427 before further review growth.
 
+## 434. Intact Closing ToF History Checkpoints (2026-11-19)
+
+From clean pushed64e67be, one30s scoped transform archives whole423-427.
+Exact110-line body, five historical root headings/anchors, two inverse layouts,
+four rebased chapter01 targets and166 prior first-definition meanings pass.
+Root983->899 lines before this note. Failed attempts, spent ledgers and evidence
+limits are unchanged. Scoped links/targets, whitespace and four433 tested hashes
+pass. Docs only; no code suite rerun. Latest root remains6539/known QDQ1 xfail/
+77 warnings, all eight flags false, guard UNKNOWN.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].
@@ -867,6 +787,7 @@ guard UNKNOWN. Archive whole423-427 before further review growth.
 [chapter-review-49]: docs/review/408-412.md
 [chapter-review-50]: docs/review/413-417.md
 [chapter-review-51]: docs/review/418-422.md
+[chapter-review-52]: docs/review/423-427.md
 [cloud-harness-handoff]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-0]: docs/review/311-315.md#311-cloud-harness-handoff-and-restart-prompt-2026-11-12
 [review-311-315-preserved-1]: docs/review/311-315.md#312-bounded-native-tof-postprocessing-recorder-retention-2026-11-12
@@ -981,3 +902,8 @@ guard UNKNOWN. Archive whole423-427 before further review growth.
 [review-418-422-preserved-2]: docs/review/418-422.md#420-closed-current-tof-original-history-joins-2026-11-18
 [review-418-422-preserved-3]: docs/review/418-422.md#421-closed-current-tof-original-owner-contexts-2026-11-18
 [review-418-422-preserved-4]: docs/review/418-422.md#422-closed-current-tof-history-prehash-and-intact-checkpoints-2026-11-18
+[review-423-427-preserved-0]: docs/review/423-427.md#423-prehash-validation-for-closing-tof-delivery-traces-2026-11-19
+[review-423-427-preserved-1]: docs/review/423-427.md#424-preflight-live-tof-histories-before-retention-staging-2026-11-19
+[review-423-427-preserved-2]: docs/review/423-427.md#425-preflight-retention-history-after-final-refresh-2026-11-19
+[review-423-427-preserved-3]: docs/review/423-427.md#426-preflight-delivery-base-history-after-final-refresh-2026-11-19
+[review-423-427-preserved-4]: docs/review/423-427.md#427-intact-original-and-closing-history-checkpoints-2026-11-19

@@ -2557,10 +2557,10 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-original-owner-review]: ../review/428-432.md#430-bind-original-goal-delivery-ownership-before-producer-work-2026-11-19
 [native-goal-owner-tick-review]: ../review/428-432.md#431-preflight-exact-goal-owner-tick-before-serialization-2026-11-19
 [native-goal-retention-owner-identity-review]: ../review/428-432.md#432-pin-original-goal-retention-owner-objects-2026-11-19
-[native-goal-dynamics-copy-preflight-review]: ../../REVIEW.md#433-preflight-raw-native-goal-words-before-dynamics-copy-2026-11-19
-[dynamics-position-preflight-review]: ../../REVIEW.md#435-preflight-producer-position-before-dynamics-serialization-2026-11-19
-[dynamics-observation-preflight-review]: ../../REVIEW.md#436-preflight-observation-arrays-before-dynamics-hashing-2026-11-19
-[dynamics-observation-metadata-review]: ../../REVIEW.md#437-preflight-observation-metadata-before-dynamics-hashing-2026-11-19
+[native-goal-dynamics-copy-preflight-review]: ../review/428-432.md#433-preflight-raw-native-goal-words-before-dynamics-copy-2026-11-19
+[dynamics-position-preflight-review]: ../review/428-432.md#435-preflight-producer-position-before-dynamics-serialization-2026-11-19
+[dynamics-observation-preflight-review]: ../review/428-432.md#436-preflight-observation-arrays-before-dynamics-hashing-2026-11-19
+[dynamics-observation-metadata-review]: ../review/428-432.md#437-preflight-observation-metadata-before-dynamics-hashing-2026-11-19
 [dynamics-native-scalars-review]: ../../REVIEW.md#438-preflight-native-dynamics-scalars-before-conversion-2026-11-19
 [dynamics-config-preflight-review]: ../../REVIEW.md#439-preflight-dynamics-config-before-observation-layout-access-2026-11-19
 [goal-cached-observation-review]: ../../REVIEW.md#441-preflight-cached-goal-observation-before-owner-hashing-2026-11-19

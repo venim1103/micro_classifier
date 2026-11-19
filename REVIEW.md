@@ -631,85 +631,23 @@ repeated historical handoffs.
 
 ## 433. Preflight Raw Native Goal Words Before Dynamics Copy (2026-11-19)
 
-From clean pushedb1f1083, a third raw goal word inserted during the first
-observation reached the shared dynamics copy in goal retention and delivery:
-2FAIL4.68s. Check the existing four-field layout, bounded integer tick and
-finite two-word vectors before the existing copy. Missing `None` handling and
-the independent native-intake and State/frame correspondence checks remain.
-
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
-The parallel format check flagged a test assertion; wrapped it.
-Repaired2PASS4.85s, related546PASS6.69s. Required root
-`python -m pytest -q --durations=10 && ruff check . && git diff --check`
-PASS6539/known QDQ1 xfail/77 warnings189.61s, then Ruff/whitespace PASS.
-Pylance syntax, changed format, scoped AST, tested hashes and checkpoint link PASS.
-
-No sample/intake/copy/digest or work-ceiling change. Eight flags false,
-guard UNKNOWN. Archive whole423-427 before further review growth.
+[Complete unchanged checkpoint][review-433-437-preserved-0] is preserved in the archive.
 
 ## 434. Intact Closing ToF History Checkpoints (2026-11-19)
 
-From clean pushed64e67be, one30s scoped transform archives whole423-427.
-Exact110-line body, five historical root headings/anchors, two inverse layouts,
-four rebased chapter01 targets and166 prior first-definition meanings pass.
-Root983->899 lines before this note. Failed attempts, spent ledgers and evidence
-limits are unchanged. Scoped links/targets, whitespace and four433 tested hashes
-pass. Docs only; no code suite rerun. Latest root remains6539/known QDQ1 xfail/
-77 warnings, all eight flags false, guard UNKNOWN.
+[Complete unchanged checkpoint][review-433-437-preserved-1] is preserved in the archive.
 
 ## 435. Preflight Producer Position Before Dynamics Serialization (2026-11-19)
 
-From clean pushed344958d, a three-coordinate producer position introduced
-during observation reached the dynamics digest in both goal paths:2FAIL4.41s.
-Require an exact numeric ndarray of shape `(2,)` before conversion. Reuse
-the original conversion and keep the raw-goal and native-intake checks.
-
-Finite2 repro/4 repaired controls<=60s, nearby selectors<=60s and one root<=360s.
-Focused4PASS0.63s including both raw-goal controls; related546PASS6.90s.
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6541/known QDQ1 xfail/77 warnings183.34s, then Ruff and
-whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
-checkpoint link PASS. Local logs preserve spent positions.
-
-No sample/intake/copy/digest or work-ceiling change. Eight flags false,
-guard UNKNOWN. Shape validation supplies no pose or error evidence.
+[Complete unchanged checkpoint][review-433-437-preserved-2] is preserved in the archive.
 
 ## 436. Preflight Observation Arrays Before Dynamics Hashing (2026-11-19)
 
-From clean pushed25ed2c6, both the first observation and the final refresh
-could pass a `(9, 8, 8)` ToF history array to the goal delivery digest:
-2FAIL4.23s. Check all eight known array fields for exact ndarray type,
-producer shape and dtype, using the configured history extent. The check
-reads metadata only and leaves the observation and its words unchanged.
-
-Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Repaired2PASS0.85s; the parallel format check found two line wraps, fixed
-before related593PASS13.68s. Required root `python -m pytest -q --durations=10 &&
-ruff check . && git diff --check` PASS6543/known QDQ1 xfail/77 warnings195.73s,
-then Ruff/whitespace PASS. Pylance syntax, changed format, scoped AST, tested
-hashes and checkpoint link PASS. Local logs preserve spent positions.
-
-No sample/intake/copy/digest or work-ceiling change. Eight flags false,
-guard UNKNOWN. Next check whether the same observation envelope can carry
-unsupported fields or scalar payloads into the digest.
+[Complete unchanged checkpoint][review-433-437-preserved-3] is preserved in the archive.
 
 ## 437. Preflight Observation Metadata Before Dynamics Hashing (2026-11-19)
 
-From clean pushedf2d3fd8, an unexpected observation field or a list-valued
-ToF age reached the final goal delivery digest despite valid array shapes:
-2FAIL4.58s. Check the exact producer keys/schema and scalar layouts before
-hashing, preserving the configured odometry pair and missing ToF sample tick.
-No new timing correspondence rule or array payload work.
-
-Finite2 repro/4 repaired controls<=60s, nearby selectors<=60s, one root<=360s.
-Focused4PASS0.65s including both prior array controls; related593PASS8.02s.
-Required root `python -m pytest -q --durations=10 && ruff check . &&
-git diff --check` PASS6545/known QDQ1 xfail/77 warnings185.68s, then Ruff and
-whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
-checkpoint link PASS. Local logs preserve spent positions.
-
-No sample/intake/copy/digest or work-ceiling change. Eight flags false,
-guard UNKNOWN. Metadata checks do not qualify clocks or source authority.
+[Complete unchanged checkpoint][review-433-437-preserved-4] is preserved in the archive.
 
 ## 438. Preflight Native Dynamics Scalars Before Conversion (2026-11-19)
 
@@ -808,6 +746,18 @@ Ruff and whitespace PASS. Changed format, scoped AST, tested hashes and link
 PASS. No added samples, copies or digests; eight flags false, guard UNKNOWN.
 Archive whole433-437 before further growth, then trace the integration owners
 whose own hashes bracket the nested receipt reads.
+
+## 444. Intact Dynamics Preflight Checkpoints (2026-11-19)
+
+From clean pushed5b7764f, one30s scoped transform archives whole433-437 in
+the adjacent archive at its existing path. The exact82-line body, two inverse
+layouts, five historical headings/anchors, four rebased chapter03 targets and
+178 prior first-definition meanings pass. First checker failed on script
+indentation; corrected without changing the archive. Root993->936 lines before
+this note. Scoped references, whitespace and four443 tested hashes pass.
+Docs only; no source suite rerun. Latest root remains6567/known QDQ1 xfail/
+77 warnings. Eight flags false, guard UNKNOWN. Next check the outer integration
+source and arithmetic owner hashes before and after the nested reads.
 
 ## Sources
 
@@ -991,3 +941,8 @@ whose own hashes bracket the nested receipt reads.
 [review-428-432-preserved-2]: docs/review/428-432.md#430-bind-original-goal-delivery-ownership-before-producer-work-2026-11-19
 [review-428-432-preserved-3]: docs/review/428-432.md#431-preflight-exact-goal-owner-tick-before-serialization-2026-11-19
 [review-428-432-preserved-4]: docs/review/428-432.md#432-pin-original-goal-retention-owner-objects-2026-11-19
+[review-433-437-preserved-0]: docs/review/428-432.md#433-preflight-raw-native-goal-words-before-dynamics-copy-2026-11-19
+[review-433-437-preserved-1]: docs/review/428-432.md#434-intact-closing-tof-history-checkpoints-2026-11-19
+[review-433-437-preserved-2]: docs/review/428-432.md#435-preflight-producer-position-before-dynamics-serialization-2026-11-19
+[review-433-437-preserved-3]: docs/review/428-432.md#436-preflight-observation-arrays-before-dynamics-hashing-2026-11-19
+[review-433-437-preserved-4]: docs/review/428-432.md#437-preflight-observation-metadata-before-dynamics-hashing-2026-11-19

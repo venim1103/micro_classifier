@@ -40685,6 +40685,69 @@ def test_native_goal_dynamics_preflights_before_copy(
     )
 
 
+@pytest.mark.parametrize("phase", ("first_observation", "final_refresh"))
+def test_native_goal_delivery_preflights_observation_arrays(
+    monkeypatch, c1_motion_receipt_source_fixture, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    options = {"synthetic_test_only": True, "include_goal_computation": True}
+    owner.record_native_goal_computation_source(environment, **options)
+    history, current = owner._goal_computation_history, owner._current
+    expected_shape = (environment.config.history_ticks, 8, 8)
+    oversized = np.zeros((expected_shape[0] + 1, 8, 8), dtype=np.float32)
+    work = {"observation": 0, "intake": 0, "digest": 0}
+    latest = None
+    original_observation = environment._observation
+    original_intake = diagnostics._sample_simulator_native_goal_computation_source
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def observation():
+        nonlocal latest
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        latest = original_observation()
+        if phase == "first_observation":
+            latest["history_tof_m"] = oversized
+        return latest
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 2
+        actual = original_intake(*args, **kwargs)
+        if phase == "final_refresh" and work["intake"] == 2:
+            assert latest is not None
+            latest["history_tof_m"] = oversized
+        return actual
+
+    def digest(record):
+        work["digest"] += 1
+        assert work["digest"] <= 12
+        if type(record) is dict and "observation" in record:
+            assert record["observation"]["history_tof_m"].shape == expected_shape
+        return original_digest(record)
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_goal_computation_source", intake
+    )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    result = owner.snapshot_native_goal_delivery(**options)
+    assert result["status"] == "unknown" and result["snapshot_available"] is False
+    assert result["reason"] == "unsupported simulator dynamics observation arrays"
+    assert not {"frame", "delivered_goal", "source_epoch", "tick"} & result.keys()
+    assert (
+        work["observation"]
+        == work["intake"]
+        == (1 if phase == "first_observation" else 2)
+    )
+    assert owner._goal_computation_history is history and owner._current is current
+
+
 @pytest.mark.parametrize(
     "phase",
     (

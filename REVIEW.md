@@ -748,6 +748,25 @@ checkpoint link PASS. Local logs preserve spent positions.
 No sample/intake/copy/digest or work-ceiling change. Eight flags false,
 guard UNKNOWN. Shape validation supplies no pose or error evidence.
 
+## 436. Preflight Observation Arrays Before Dynamics Hashing (2026-11-19)
+
+From clean pushed25ed2c6, both the first observation and the final refresh
+could pass a `(9, 8, 8)` ToF history array to the goal delivery digest:
+2FAIL4.23s. Check all eight known array fields for exact ndarray type,
+producer shape and dtype, using the configured history extent. The check
+reads metadata only and leaves the observation and its words unchanged.
+
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Repaired2PASS0.85s; the parallel format check found two line wraps, fixed
+before related593PASS13.68s. Required root `python -m pytest -q --durations=10 &&
+ruff check . && git diff --check` PASS6543/known QDQ1 xfail/77 warnings195.73s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, scoped AST, tested
+hashes and checkpoint link PASS. Local logs preserve spent positions.
+
+No sample/intake/copy/digest or work-ceiling change. Eight flags false,
+guard UNKNOWN. Next check whether the same observation envelope can carry
+unsupported fields or scalar payloads into the digest.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

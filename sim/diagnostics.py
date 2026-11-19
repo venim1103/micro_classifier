@@ -9953,6 +9953,26 @@ def _simulator_dynamics_source_words(environment, observation):
         shape_only=True,
     ):
         raise ValueError("unsupported native goal source")
+    if type(observation) is not dict:
+        raise ValueError("unsupported simulator dynamics observation arrays")
+    count = environment.config.history_ticks
+    for key, shape, dtype in (
+        ("ego", (4,), np.float32),
+        ("goal_body_m", (2,), np.float32),
+        ("tof_m", (8, 8), np.float32),
+        ("tof_valid", (8, 8), np.bool_),
+        ("history_ego", (count, 4), np.float32),
+        ("history_tof_m", (count, 8, 8), np.float32),
+        ("history_tof_valid", (count, 8, 8), np.bool_),
+        ("history_valid", (count,), np.bool_),
+    ):
+        array = observation.get(key)
+        if (
+            type(array) is not np.ndarray
+            or array.shape != shape
+            or array.dtype != dtype
+        ):
+            raise ValueError("unsupported simulator dynamics observation arrays")
     return {
         "tick": environment.tick,
         "pose_m_rad": (*map(float, position), float(environment.yaw)),

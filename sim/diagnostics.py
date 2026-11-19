@@ -14928,6 +14928,17 @@ def _check_native_tof_delivered_words(environment, selected):
         raise ValueError("native ToF delivered words or mask mismatch")
 
 
+def _check_recorded_native_tof_pending_queue(sample, *, required=False):
+    if not required and "native_tof_pending_queue" not in sample:
+        return
+    recorded = sample.get("native_tof_pending_queue")
+    if type(recorded) is not tuple or len(recorded) > 8:
+        raise ValueError("native ToF pending original-read layout missing")
+    template = ((0, 0, (0,) * 64, (False,) * 64),) * len(recorded)
+    if not _native_tof_word_copy_matches(recorded, template, shape_only=True):
+        raise ValueError("native ToF pending original-read word budget exhausted")
+
+
 def _copy_native_tof_pending_queue(environment):
     from collections import deque
 
@@ -18732,6 +18743,7 @@ class _SyntheticC1SourceRecorder:
             )
             sample = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(sample, self._config)
+            _check_recorded_native_tof_pending_queue(sample)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19503,6 +19515,7 @@ class _SyntheticC1SourceRecorder:
             _check_native_recorder_owner_pose(current[1])
             sample = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(sample, self._config)
+            _check_recorded_native_tof_pending_queue(sample)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -19948,19 +19961,9 @@ class _SyntheticC1SourceRecorder:
                 _check_native_recorder_owner_pose(current[1])
             sample = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(sample, self._config)
-            if include_pending_sources or "native_tof_pending_queue" in sample:
-                recorded_pending = sample.get("native_tof_pending_queue")
-                if type(recorded_pending) is not tuple or len(recorded_pending) > 8:
-                    raise ValueError("native ToF pending original-read layout missing")
-                pending_template = ((0, 0, (0,) * 64, (False,) * 64),) * len(
-                    recorded_pending
-                )
-                if not _native_tof_word_copy_matches(
-                    recorded_pending, pending_template, shape_only=True
-                ):
-                    raise ValueError(
-                        "native ToF pending original-read word budget exhausted"
-                    )
+            _check_recorded_native_tof_pending_queue(
+                sample, required=include_pending_sources
+            )
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,

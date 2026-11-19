@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §456 for intact448-452 archival;
+Read [REVIEW.md][review] §457 for ToF acquisition pending cache preflight;
+§456 records intact448-452 archival;
 §455 records delivered ToF pending cache preflight;
 §454 records detached initial observation preflight;
 §453 records shared live motion word preflight;

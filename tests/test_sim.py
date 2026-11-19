@@ -19064,6 +19064,67 @@ def test_native_tof_delivery_preflights_cached_pending(
     assert owner._current is current and owner._tof_history is history
 
 
+@pytest.mark.parametrize("mode", ("retain", "current"))
+@pytest.mark.parametrize("phase", ("original", "closing"))
+def test_native_tof_acquisition_preflights_cached_pending(
+    monkeypatch, c1_motion_receipt_source_fixture, mode, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    options = {"synthetic_test_only": True}
+    owner.record_environment_tick(environment, **options)
+    environment.step([0.125, 0.3], capture_native_tof_source=True)
+    owner.record_environment_tick(
+        environment, **options, capture_native_tof_pending_source=True
+    )
+    if mode == "current":
+        owner.record_native_tof_source(environment, **options)
+    sample, current, history, retained = (
+        owner._dynamics_sample,
+        owner._current,
+        owner._tof_history,
+        owner._tof_sample,
+    )
+    oversized = (sample["native_tof_pending_queue"][0],) * 9
+    work = {"words": 0, "binding": 0}
+    original_words = diagnostics._simulator_dynamics_source_words
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def words(*args, **kwargs):
+        work["words"] += 1
+        assert work["words"] <= 3
+        actual = original_words(*args, **kwargs)
+        if phase == "closing" and work["words"] == 3:
+            sample["native_tof_pending_queue"] = oversized
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 64
+        if type(record) is dict and record.get("dynamics_sample") is sample:
+            assert len(sample["native_tof_pending_queue"]) <= 8
+        return original_binding(record)
+
+    if phase == "original":
+        sample["native_tof_pending_queue"] = oversized
+    monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    reason = "native ToF pending original-read layout missing"
+    if mode == "retain":
+        with pytest.raises(ValueError, match=reason):
+            owner.record_native_tof_source(environment, **options)
+    else:
+        result = owner.snapshot_native_tof_source(**options)
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert result["reason"] == reason
+        assert not {"source", "source_epoch", "frame"} & result.keys()
+    assert work["words"] == (3 if phase == "closing" else 0)
+    assert sample["native_tof_pending_queue"] is oversized
+    assert owner._dynamics_sample is sample and owner._tof_sample is retained
+    assert owner._current is current and owner._tof_history is history
+
+
 def test_native_tof_delivery_closes_pending_after_storage(
     monkeypatch, c1_motion_receipt_source_fixture
 ):

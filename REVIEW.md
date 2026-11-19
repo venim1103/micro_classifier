@@ -766,6 +766,22 @@ references, whitespace and four455 tested hashes pass. Docs only; no code suite
 rerun. Latest root remains6595/known QDQ1 xfail/77 warnings, eight flags false
 and guard UNKNOWN. Next trace the pending queue through other ToF owner joins.
 
+## 457. Preflight ToF Acquisition Pending Cache Before Owner Hashing (2026-11-19)
+
+From clean pushed79060d7, a nine-entry cached pending queue reached the
+original and closing owner hashes in native ToF retention and current-source
+snapshots:4FAIL9.26s. Extract the existing delivery layout and word check
+and reuse it before both acquisitions' owner hashes. An absent queue remains
+valid unless delivery explicitly requests pending evidence.
+
+Finite focused/related<=60s, root<=360s:6PASS0.81s including both delivery
+controls,76PASS3.09s. Required root `python -m pytest -q --durations=10 &&
+ruff check . && git diff --check` PASS6599/known QDQ1 xfail/77 warnings175.06s
+followed by Ruff/whitespace PASS. Pylance syntax, changed format, scoped AST,
+tested hashes and link PASS. No new sample, live queue copy or digest. Eight
+flags false, guard UNKNOWN. Next check the owning intake's old pending cache
+before its original and closing owner hashes.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

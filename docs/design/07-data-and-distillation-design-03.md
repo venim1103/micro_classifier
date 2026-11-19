@@ -2399,6 +2399,9 @@ unknown if the producer config is missing before either layout check.
 Native yaw and action must also be real numeric scalars before conversion;
 the [scalar checkpoint][dynamics-native-scalars-review] records equal-word
 non-scalar replacements that previously passed the closing comparison.
+Goal retention and delivery also apply the same observation layout predicate
+to the recorder's cached sample before owner and producer-comparison hashes;
+see the [cached observation checkpoint][goal-cached-observation-review].
 The [dynamics closure checkpoint][native-goal-dynamics-closing-review] preserves
 equal-state first-epoch and late native-action repros; work limits remain unchanged.
 The live-history check follows that refresh, before owner hashing;
@@ -2560,6 +2563,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [dynamics-observation-metadata-review]: ../../REVIEW.md#437-preflight-observation-metadata-before-dynamics-hashing-2026-11-19
 [dynamics-native-scalars-review]: ../../REVIEW.md#438-preflight-native-dynamics-scalars-before-conversion-2026-11-19
 [dynamics-config-preflight-review]: ../../REVIEW.md#439-preflight-dynamics-config-before-observation-layout-access-2026-11-19
+[goal-cached-observation-review]: ../../REVIEW.md#441-preflight-cached-goal-observation-before-owner-hashing-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

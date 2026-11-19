@@ -9962,9 +9962,28 @@ def _simulator_dynamics_source_words(environment, observation):
         shape_only=True,
     ):
         raise ValueError("unsupported native goal source")
+    config = environment.config
+    _check_simulator_dynamics_observation(observation, config)
+    return {
+        "tick": environment.tick,
+        "pose_m_rad": (*map(float, position), float(yaw)),
+        "native_action": (float(speed), float(turn_rate)),
+        "native_goal_source": deepcopy(native_goal),
+        "observation": observation,
+        "config": asdict(config),
+        "scenario": asdict(environment.scenario),
+    }
+
+
+def _check_recorded_simulator_dynamics_observation(sample, config):
+    if type(sample) is not dict:
+        raise ValueError("unsupported recorded simulator dynamics sample")
+    _check_simulator_dynamics_observation(sample.get("observation"), config)
+
+
+def _check_simulator_dynamics_observation(observation, config):
     if type(observation) is not dict:
         raise ValueError("unsupported simulator dynamics observation arrays")
-    config = environment.config
     if type(config) is not Config:
         raise ValueError("unsupported simulator dynamics config")
     count = config.history_ticks
@@ -10013,15 +10032,6 @@ def _simulator_dynamics_source_words(environment, observation):
             or array.dtype != dtype
         ):
             raise ValueError("unsupported simulator dynamics observation arrays")
-    return {
-        "tick": environment.tick,
-        "pose_m_rad": (*map(float, position), float(yaw)),
-        "native_action": (float(speed), float(turn_rate)),
-        "native_goal_source": deepcopy(native_goal),
-        "observation": observation,
-        "config": asdict(config),
-        "scenario": asdict(environment.scenario),
-    }
 
 
 def _state_from_simulator_dynamics_source(snapshot):
@@ -18533,6 +18543,8 @@ class _SyntheticC1SourceRecorder:
         def ownership():
             current = self._current
             _check_native_recorder_current_owner(current)
+            dynamics = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(dynamics, self._config)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -18541,7 +18553,7 @@ class _SyntheticC1SourceRecorder:
                 },
                 "identities": self._identities,
                 "current": (current[0], current[1], asdict(current[2]), current[3]),
-                "dynamics_sample": self._dynamics_sample,
+                "dynamics_sample": dynamics,
                 "goal_history": self._goal_computation_history,
                 "binding": self._binding,
             }
@@ -18554,6 +18566,7 @@ class _SyntheticC1SourceRecorder:
             environment._native_goal_source,
         )
         observed = producer()
+        _check_recorded_simulator_dynamics_observation(dynamics_before, self._config)
         producer_binding = _c1_source_binding_digest(observed)
         if producer_binding != _c1_source_binding_digest(
             {key: dynamics_before.get(key) for key in observed}
@@ -19268,6 +19281,8 @@ class _SyntheticC1SourceRecorder:
 
         def ownership(goal):
             state = check_ownership(goal)
+            sample = self._dynamics_sample
+            _check_recorded_simulator_dynamics_observation(sample, self._config)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19276,7 +19291,7 @@ class _SyntheticC1SourceRecorder:
                 },
                 "identities": self._identities,
                 "current": (state[0], state[1], asdict(state[2]), state[3]),
-                "dynamics_sample": self._dynamics_sample,
+                "dynamics_sample": sample,
                 "goal_history": self._goal_computation_history,
                 "binding": self._binding,
             }
@@ -19330,6 +19345,7 @@ class _SyntheticC1SourceRecorder:
             )
             _check_native_goal_computation_history(history, live)
             observed = producer()
+            _check_recorded_simulator_dynamics_observation(dynamics, self._config)
             producer_binding = _c1_source_binding_digest(observed)
             if producer_binding != _c1_source_binding_digest(
                 {key: dynamics.get(key) for key in observed}

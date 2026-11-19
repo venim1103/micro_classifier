@@ -753,6 +753,23 @@ limits are unchanged. Scoped links/targets, whitespace and four439 tested hashes
 pass. Docs only; no code suite rerun. Latest root remains6549/known QDQ1 xfail/
 77 warnings, all eight flags false, guard UNKNOWN.
 
+## 441. Preflight Cached Goal Observation Before Owner Hashing (2026-11-19)
+
+From clean pushedd1e5590, live producer checks did not cover the cached
+observation in goal retention or delivery. Six oversized-array mutations
+reached the original owner, first-observation baseline or closing owner hash:
+6FAIL4.81s. Extract the unchanged observation predicate and reuse it against
+the recorder profile before all three cached uses.
+
+Finite6 repro/repaired controls<=60s, nearby selectors<=60s, one root<=360s.
+Focused6PASS0.57s; Ruff found two formatting edits, now wrapped; related601PASS10.99s.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6555/known QDQ1 xfail/77 warnings181.67s, then Ruff and
+whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
+checkpoint link PASS. Cached checks inspect metadata only; no extra sample,
+copy or digest. Eight flags false, guard UNKNOWN. Next trace the same cached
+observation at the three native ToF retain/current/delivery consumers.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

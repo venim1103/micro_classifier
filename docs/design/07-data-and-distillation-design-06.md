@@ -55,6 +55,9 @@ Conditional startup also preflights its cached observation at both owner joins,
 including after the final nested retained reader returns. The
 [startup checkpoint][startup-cached-observation-review] keeps the existing
 work limits and explicit assumptions; cache layout is not startup authority.
+The [pending cache checkpoint][initial-pending-cache-review] applies the
+existing ToF queue layout check at the initial-source, retention, retained
+reader and startup cache hashes. It adds no pending output or reads.
 
 The detached output explicitly labels its origin as an owned actual tick-zero
 sample, not a reset execution receipt. All eight qualification/permission flags
@@ -949,6 +952,7 @@ field-selection, combined and final-closure controls.
 [initial-retention-cached-observation-review]: ../review/428-432.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
 [initial-detached-observation-review]: ../review/428-432.md#454-preflight-detached-initial-observation-before-source-verification-2026-11-19
 [startup-cached-observation-review]: ../review/428-432.md#450-preflight-startup-cached-observation-before-owner-hashing-2026-11-19
+[initial-pending-cache-review]: ../../REVIEW.md#462-preflight-initial-and-startup-pending-cache-before-hashing-2026-11-19
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13

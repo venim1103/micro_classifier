@@ -23238,6 +23238,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("unsupported initial source recorder layout")
             _check_native_recorder_current_owner(current)
             _check_recorded_simulator_dynamics_observation(cached, self._config)
+            _check_recorded_native_tof_pending_queue(cached)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -23265,6 +23266,7 @@ class _SyntheticC1SourceRecorder:
             source = _sample_simulator_dynamics_source(producer)
             cached = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(cached, self._config)
+            _check_recorded_native_tof_pending_queue(cached)
             source_binding = _c1_source_binding_digest(source)
             expected_profile = {
                 "epoch": self._epoch,
@@ -23372,6 +23374,7 @@ class _SyntheticC1SourceRecorder:
             )
             cached = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(cached, self._config)
+            _check_recorded_native_tof_pending_queue(cached)
             if (
                 type(self._current) is not tuple
                 or len(self._current) != 4
@@ -23469,6 +23472,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("unsupported retained initial current owner")
             _check_native_recorder_current_owner(current)
             _check_recorded_simulator_dynamics_observation(cached, self._config)
+            _check_recorded_native_tof_pending_queue(cached)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,
@@ -23672,6 +23676,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("unsupported_owned_initial_startup_capture_ticks")
             cached = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(cached, self._config)
+            _check_recorded_native_tof_pending_queue(cached)
             return _c1_source_binding_digest(
                 {
                     "epoch": self._epoch,

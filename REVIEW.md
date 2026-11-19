@@ -784,6 +784,22 @@ PASS. Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
 No new sample, live queue copy or digest. Eight flags false, guard UNKNOWN.
 Next check the tick-zero and retained-initial cache joins.
 
+## 462. Preflight Initial and Startup Pending Cache Before Hashing (2026-11-19)
+
+From clean pushed0196946, a nine-entry cached ToF queue reached tick-zero
+original/first/closing hashes, both initial retention joins, three retained
+reader owner joins, and both startup owner joins:10FAIL4.61s. Reuse the
+existing queue layout check at the five corresponding code sites, including
+after nested readers. Missing queues are unchanged; no pending output is added.
+
+Finite focused/related<=60s, root<=360s:77PASS2.47s, including all ten prior
+observation controls. Required root `python -m pytest -q --durations=10 &&
+ruff check . && git diff --check` PASS6622/known QDQ1 xfail/77 warnings177.94s,
+followed by Ruff and whitespace PASS. Pylance syntax, changed format and
+tested hashes pass. No extra sample, queue copy or digest. Eight flags false,
+guard UNKNOWN; no command is admitted. Archive whole458-462 before tracing
+any remaining full-cache joins.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

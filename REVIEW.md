@@ -736,6 +736,27 @@ all other test AST, tested hashes and checkpoint link PASS. Local logs preserve
 spent positions. Eight flags false, guard UNKNOWN. Next check whether goal
 delivery's original history fingerprint precedes its first producer work.
 
+## 430. Bind Original Goal Delivery Ownership Before Producer Work (2026-11-19)
+
+From clean pushed3a3923c, deleting an older retained goal row at the first
+intake or first observation still yielded available delivery:2FAIL4.42s.
+Move the existing starting owner fingerprint before both boundaries, using the
+already bounded retained template. Reuse its preflight after observation and
+at closing, including §428's final refresh guard. No extra sample, match,
+copy, report or digest; the existing work ceilings remain.
+
+Finite2 repro/4 repaired controls<=60s, nearby selectors<=60s and one root<=360s.
+The parallel format check flagged the test parametrization; wrapped it.
+Focused4PASS4.67s including both prior prehash controls, related475PASS6.24s.
+Required root `python -m pytest -q --durations=10 && ruff check . &&
+git diff --check` PASS6533/known QDQ1 xfail/77 warnings185.63s, then Ruff and
+whitespace PASS. Pylance syntax, changed format, scoped AST, tested hashes and
+checkpoint link PASS. Local logs preserve spent positions.
+
+Unknown omits source/frame/epoch/report fields. Eight flags false, guard UNKNOWN.
+No new Q1 evidence or qualification. Next check the remaining named
+goal source/owner boundaries without duplicating reports.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

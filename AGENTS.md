@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §429 for final goal retention history prehash validation;
+Read [REVIEW.md][review] §430 for original goal delivery ownership;
+§429 records final goal retention history prehash validation;
 §428 records goal delivery history prehash validation;
 §427 records intact418-422 archival;
 §426 records final delivery base-history prehash validation;
@@ -507,6 +508,9 @@ fingerprints, including after the final refresh. Two regressions,473 prior
 controls and root6529/known QDQ1 xfail passed.
 Goal retention now checks live history after that refresh before owner hashing.
 Two fresh/repeat regressions,475 prior controls and root6531/known QDQ1 xfail passed.
+Goal delivery now fingerprints prevalidated ownership before its first native
+intake and observation, retaining the midpoint and closing guards.
+Four focused,475 prior controls and root6533/known QDQ1 xfail passed.
 No work cap or qualification change.
 Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or

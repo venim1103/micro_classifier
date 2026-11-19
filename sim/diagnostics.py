@@ -19196,7 +19196,7 @@ class _SyntheticC1SourceRecorder:
         def producer():
             return _sample_simulator_dynamics_source(environment)
 
-        def ownership(goal):
+        def check_ownership(goal):
             state = self._current
             if (
                 type(state) is not tuple
@@ -19209,6 +19209,10 @@ class _SyntheticC1SourceRecorder:
             validate_state(state[2])
             _check_native_recorder_owner_pose(state[1])
             _check_native_goal_computation_history(self._goal_computation_history, goal)
+            return state
+
+        def ownership(goal):
+            state = check_ownership(goal)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19249,9 +19253,7 @@ class _SyntheticC1SourceRecorder:
                 or "goal_computation" not in history[-1]
             ):
                 raise ValueError("missing or unsupported native goal snapshot history")
-            _check_native_goal_computation_history(
-                history, history[-1]["goal_computation"]
-            )
+            history_template = history[-1]["goal_computation"]
             if (
                 self._simulator_rng is not environment.rng
                 or self._simulator_odometry_rng is not environment.odometry_rng
@@ -19267,6 +19269,7 @@ class _SyntheticC1SourceRecorder:
                 environment._native_goal_computation_source,
                 environment._native_goal_source,
             )
+            owner_binding = _c1_source_binding_digest(ownership(history_template))
             live = _sample_simulator_native_goal_computation_source(
                 environment, self._epoch
             )
@@ -19277,7 +19280,7 @@ class _SyntheticC1SourceRecorder:
                 {key: dynamics.get(key) for key in observed}
             ):
                 raise ValueError("native goal snapshot producer changed after read")
-            owner_binding = _c1_source_binding_digest(ownership(live))
+            check_ownership(live)
             frame = bytes(current[3])
             if encode_state(current[2]) != frame:
                 raise ValueError("native goal snapshot frame binding mismatched")

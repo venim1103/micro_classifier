@@ -40585,7 +40585,15 @@ def test_native_goal_owner_preflight(
     ) == epochs
 
 
-@pytest.mark.parametrize("phase", ("first_observation", "final_refresh"))
+@pytest.mark.parametrize(
+    "phase",
+    (
+        "first_observation",
+        "final_refresh",
+        "first_intake_delete",
+        "first_observation_delete",
+    ),
+)
 def test_native_goal_delivery_history_preflight(
     monkeypatch, c1_motion_receipt_source_fixture, phase
 ):
@@ -40597,8 +40605,14 @@ def test_native_goal_delivery_history_preflight(
     owner.record_environment_tick(environment, synthetic_test_only=True)
     options = {"synthetic_test_only": True, "include_goal_computation": True}
     owner.record_native_goal_computation_source(environment, **options)
+    deletion = phase.endswith("_delete")
+    if deletion:
+        environment.step([0.125, 0.0], capture_native_goal_computation=True)
+        owner.record_environment_tick(environment, synthetic_test_only=True)
+        owner.record_native_goal_computation_source(environment, **options)
     history = owner._goal_computation_history
-    assert len(history) == 1
+    assert len(history) == (2 if deletion else 1)
+    latest = history[-1]
     current, dynamics = owner._current, owner._dynamics_sample
     epochs = deepcopy(
         (
@@ -40607,10 +40621,19 @@ def test_native_goal_delivery_history_preflight(
             environment.odometry_rng.bit_generator.state,
         )
     )
-    work = {"observation": 0, "words": 0, "binding": 0}
+    work = {"observation": 0, "words": 0, "binding": 0, "intake": 0}
     original_observation = environment._observation
     original_words = diagnostics._simulator_dynamics_source_words
     original_binding = diagnostics._c1_source_binding_digest
+    original_intake = diagnostics._sample_simulator_native_goal_computation_source
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 2
+        actual = original_intake(*args, **kwargs)
+        if phase == "first_intake_delete" and work["intake"] == 1:
+            del history[0]
+        return actual
 
     def observation():
         work["observation"] += 1
@@ -40618,6 +40641,8 @@ def test_native_goal_delivery_history_preflight(
         actual = original_observation()
         if phase == "first_observation" and work["observation"] == 1:
             history.extend([history[0]] * 8)
+        if phase == "first_observation_delete" and work["observation"] == 1:
+            del history[0]
         return actual
 
     def words(*args, **kwargs):
@@ -40636,11 +40661,18 @@ def test_native_goal_delivery_history_preflight(
         return original_binding(record)
 
     monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_goal_computation_source", intake
+    )
     monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
     result = owner.snapshot_native_goal_delivery(**options)
     assert result["status"] == "unknown"
-    assert result["reason"] == "native goal computation history budget exhausted"
+    assert result["reason"] == (
+        "native goal snapshot owner/source/output changed"
+        if deletion
+        else "native goal computation history budget exhausted"
+    )
     assert set(result) == {
         "schema",
         "allowed_use",
@@ -40665,7 +40697,8 @@ def test_native_goal_delivery_history_preflight(
         assert work["observation"] == work["words"] == 1
     else:
         assert work["observation"] == 2 and work["words"] == 3
-    assert owner._goal_computation_history is history and len(history) == 9
+    assert owner._goal_computation_history is history
+    assert len(history) == (1 if deletion else 9) and history[-1] is latest
     assert owner._current is current and owner._dynamics_sample is dynamics
     assert (
         environment.tick,

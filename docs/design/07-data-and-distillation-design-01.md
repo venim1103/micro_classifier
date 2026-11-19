@@ -2221,8 +2221,8 @@ figure is not an established minimum.
 [native-tof-pending-review]: ../review/183-220.md#210-retained-native-tof-pending-queue-correspondence-2026-11-09
 [native-tof-pending-snapshot-review]: ../review/183-220.md#211-opt-in-current-recorder-native-tof-pending-snapshot-2026-11-09
 [native-tof-pending-original-read-review]: ../review/183-220.md#212-original-recorder-read-native-tof-pending-correspondence-2026-11-09
-[native-tof-pending-cache-preflight-review]: ../../REVIEW.md#455-preflight-delivery-pending-cache-before-owner-hashing-2026-11-19
-[native-tof-pending-acquisition-cache-review]: ../../REVIEW.md#457-preflight-tof-acquisition-pending-cache-before-owner-hashing-2026-11-19
+[native-tof-pending-cache-preflight-review]: ../review/428-432.md#455-preflight-delivery-pending-cache-before-owner-hashing-2026-11-19
+[native-tof-pending-acquisition-cache-review]: ../review/428-432.md#457-preflight-tof-acquisition-pending-cache-before-owner-hashing-2026-11-19
 [native-tof-acquisition-clock-review]: ../review/183-220.md#213-opt-in-native-tof-acquisition-clock-windows-2026-11-09
 [native-tof-timing-intake-review]: ../review/183-220.md#214-bounded-native-tof-timing-source-intake-2026-11-09
 [native-tof-timing-retention-review]: ../review/183-220.md#215-opt-in-recorder-owned-native-tof-timing-retention-2026-11-09

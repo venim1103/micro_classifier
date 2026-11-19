@@ -787,18 +787,21 @@ repeated historical handoffs.
 
 ## 472. Close Detached Native Integration Source Before Publication (2026-11-19)
 
-From clean pushedbefdbbf,129 segments in either detached integration
-snapshot reached a digest; separately, a one-ULP edit to the first detached
-source during the closing read falsely published available:3FAIL9.53s.
-Check the source extent before binding and recheck the first snapshot just
-before copying it. One bounded digest is added within the existing ceiling;
-no extra observation, receipt, native intake, arithmetic or source copy.
-Focused/related<=60s:61PASS6.30s. Root<=360s `python -m pytest -q
---durations=10 && ruff check . && git diff --check` PASS6675/known QDQ1
-xfail/77 warnings238.13s. Pylance syntax, changed format, Ruff, whitespace
-and tested hashes pass. Intact471 archived with its heading and topic link.
-Flags false, guard UNKNOWN. Check remaining directly dependent bindings
-without duplicating reports or substituting fixtures for acceptance evidence.
+[Complete unchanged checkpoint][review-472-preserved] is preserved in the archive.
+
+## 473. Preflight Closing Native Arithmetic Report Extent (2026-11-19)
+
+From clean pushed0c4f86e, a129-segment report or an eleventh stage appended
+during the closing source read reached the report copy:2FAIL6.99s. Reuse
+the initial segment/stage extent check before the closing copy, using the
+previously validated source count. Content bindings and arithmetic checks
+are unchanged. No added read/copy/digest or arithmetic.
+Focused/related<=60s:63PASS1.78s. Root<=360s `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6677/known QDQ1
+xfail/77 warnings183.38s. Pylance syntax, changed format, Ruff, whitespace
+and tested hashes pass. Intact472 archived with its heading and topic link.
+Flags false, guard UNKNOWN. Recheck the ordered evidence queue without
+repeating completed reports or substituting fixtures for acceptance evidence.
 
 ## Sources
 
@@ -1021,3 +1024,4 @@ without duplicating reports or substituting fixtures for acceptance evidence.
 [review-469-preserved]: docs/review/428-432.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
 [review-470-preserved]: docs/review/428-432.md#470-preflight-nested-receipt-history-before-owner-hashing-2026-11-19
 [review-471-preserved]: docs/review/428-432.md#471-preflight-detached-owned-receipt-histories-2026-11-19
+[review-472-preserved]: docs/review/428-432.md#472-close-detached-native-integration-source-before-publication-2026-11-19

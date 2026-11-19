@@ -22182,6 +22182,8 @@ def test_native_arithmetic_record_relationships(
         "first_snapshot_extent",
         "closing_snapshot_extent",
         "detached_source_changed",
+        "closing_report_extent",
+        "closing_stage_extent",
         "probe_binding",
         "probe_flag",
         "bad_optin",
@@ -22225,7 +22227,12 @@ def test_synthetic_c1_current_native_arithmetic(
         expected = "native_integration_source_content_changed"
     elif case in ("owner_mutated", "recorder_replaced", "detached_source_changed"):
         expected = "native_source_or_owner_changed_during_arithmetic"
-    elif case in ("first_snapshot_extent", "closing_snapshot_extent"):
+    elif case in (
+        "first_snapshot_extent",
+        "closing_snapshot_extent",
+        "closing_report_extent",
+        "closing_stage_extent",
+    ):
         expected = "unsupported_or_changed_native_arithmetic_snapshot"
     elif case in ("probe_binding", "probe_flag"):
         expected = "native_arithmetic_result_binding_or_metadata_mismatch"
@@ -22241,9 +22248,10 @@ def test_synthetic_c1_current_native_arithmetic(
     work = dict.fromkeys(
         ("probe", "snapshot", "sample", "check", "binary", "digest", "forbidden"), 0
     )
-    first_source = oversized_source = None
+    first_source = oversized_source = report = None
 
     def probe(*args, **kwargs):
+        nonlocal report
         work["probe"] += 1
         assert work["probe"] <= 1
         result = original_probe(*args, **kwargs)
@@ -22271,6 +22279,7 @@ def test_synthetic_c1_current_native_arithmetic(
             owner._simulator = deepcopy(environment)
             owner._simulator_rng = owner._simulator.rng
             owner._simulator_odometry_rng = owner._simulator.odometry_rng
+        report = result
         return result
 
     def snapshot(*args, **kwargs):
@@ -22293,7 +22302,17 @@ def test_synthetic_c1_current_native_arithmetic(
                 values["midpoint_rad"] = math.nextafter(
                     values["midpoint_rad"], math.inf
                 )
+            if work["snapshot"] == 2 and case == "closing_report_extent":
+                report["segments"] = [report["segments"][0]] * 129
+            if work["snapshot"] == 2 and case == "closing_stage_extent":
+                report["segments"][0].append(report["segments"][0][0])
         return actual
+
+    def copy(record):
+        if record is report:
+            assert len(report["segments"]) == len(first_source["segments"])
+            assert all(len(stages) == 10 for stages in report["segments"])
+        return deepcopy(record)
 
     def sample(*args, **kwargs):
         work["sample"] += 1
@@ -22339,6 +22358,8 @@ def test_synthetic_c1_current_native_arithmetic(
     monkeypatch.setattr(diagnostics, "_check_simulator_receipt_history", check)
     monkeypatch.setattr(diagnostics._C1CommandArithmetic, "binary", binary)
     monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    if case in ("closing_report_extent", "closing_stage_extent"):
+        monkeypatch.setattr(diagnostics, "deepcopy", copy)
     monkeypatch.setattr("sim.rover.integrate", forbidden)
     for name in ("step", "reset"):
         monkeypatch.setattr(RoverEnv, name, forbidden)

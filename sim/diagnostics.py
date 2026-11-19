@@ -9590,6 +9590,17 @@ def _native_integration_arithmetic_stages(computed):
     )
 
 
+def _check_native_integration_arithmetic_extent(record, segment_count):
+    if (
+        type(record.get("segments")) is not list
+        or len(record["segments"]) != segment_count
+    ):
+        raise ValueError("unsupported native arithmetic record")
+    for stages in record["segments"]:
+        if type(stages) is not list or len(stages) != 10:
+            raise ValueError("native arithmetic stage count mismatch")
+
+
 def _check_native_integration_arithmetic(source, record, *, max_integer_bits=4096):
     if type(max_integer_bits) is not int or not 1 <= max_integer_bits <= 4096:
         raise ValueError("native record integer limit must be from one through 4096")
@@ -9628,8 +9639,6 @@ def _check_native_integration_arithmetic(source, record, *, max_integer_bits=409
         or record["reason"] != "supported_local_arithmetic_only"
         or record["discrepancies_available"] is not True
         or any(record[flag] is not False for flag in flags)
-        or type(record["segments"]) is not list
-        or len(record["segments"]) != len(source["segments"])
         or type(record["work"]) is not dict
         or set(record["work"]) != {"stages", "binary_operations"}
         or any(type(value) is not int for value in record["work"].values())
@@ -9650,6 +9659,7 @@ def _check_native_integration_arithmetic(source, record, *, max_integer_bits=409
         )
     ):
         raise ValueError("unsupported native arithmetic record")
+    _check_native_integration_arithmetic_extent(record, len(source["segments"]))
 
     def pair(value):
         if (
@@ -9694,8 +9704,6 @@ def _check_native_integration_arithmetic(source, record, *, max_integer_bits=409
         return left / right
 
     for stages in record["segments"]:
-        if type(stages) is not list or len(stages) != 10:
-            raise ValueError("native arithmetic stage count mismatch")
         for stage in stages:
             if type(stage) is not dict or set(stage) != {
                 "name",
@@ -23199,11 +23207,13 @@ class _SyntheticC1SourceRecorder:
             _check_native_integration_arithmetic(
                 before["source"], arithmetic, max_integer_bits=max_integer_bits
             )
+            segment_count = len(before["source"]["segments"])
             arithmetic_binding = _c1_source_binding_digest(arithmetic)
             after = self.snapshot_native_integration_source(synthetic_test_only=True)
             if not after["snapshot_available"]:
                 result["reason"] = after["reason"]
                 return result
+            _check_native_integration_arithmetic_extent(arithmetic, segment_count)
             copied_arithmetic = deepcopy(arithmetic)
             if (
                 snapshot_binding(after) != snapshot_before

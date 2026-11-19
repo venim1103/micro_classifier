@@ -699,6 +699,25 @@ known QDQ1 xfail/77 warnings, all eight flags false, guard UNKNOWN.
 Next trace the same original/final history preflight on the native goal
 delivery reader, without adding reports or accepting Q1 evidence.
 
+## 428. Preflight Native Goal Delivery History Before Owner Hashes (2026-11-19)
+
+From clean pushed6088e77, goal delivery could hash a nine-entry history after
+the first observation or after the final refresh. Both controls reached the
+digest spy:2FAIL4.11s, then2PASS0.54s. Reuse the existing history predicate in
+the owner helper against the corresponding native intake, retaining the early
+live check and moving the closing check past the refresh. One extra
+<=8-entry pass on original ownership paths; no observation/intake/match/digest/
+copy/report or ceiling changes.
+
+Finite2 repro/repaired controls<=60s, nearby selectors<=60s and one root<=360s.
+Prior473PASS6.01s. Required root `python -m pytest -q --durations=10 &&
+ruff check . && git diff --check` PASS6529/known QDQ1 xfail/77 warnings175.09s,
+then Ruff/whitespace PASS. Pylance syntax, changed format, scoped AST, old test
+AST, tested hashes and checkpoint link PASS. Local logs preserve spent positions.
+
+Unknown omits source/frame/epoch/report fields. Eight flags false, guard UNKNOWN.
+Next trace the companion retainer across its final refresh before publication.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

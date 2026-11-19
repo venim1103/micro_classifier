@@ -2420,6 +2420,10 @@ Retention uses the same final-observation-before-source-closure order.
 The same shared post-observation sampler and final dynamics-word refresh now
 reject native-action changes during the last observation or after closing intake
 across all eight report combinations, without another observation/intake/digest.
+Goal delivery also revalidates the live retained history before either owner
+fingerprint, including after the final word refresh. The
+[history preflight checkpoint][native-goal-delivery-history-preflight-review]
+preserves bounded rejection at both boundaries without changing publication.
 
 The frozen C1 profile has zero odometry latency; this delivered-only method
 does not create a positive-latency/pending domain. Pending publication remains
@@ -2516,6 +2520,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [native-goal-wip]: ../review/331-335.md#335-matched-native-goal-delta-reports-wip-and-pause-2026-11-12
 [native-goal-delta-review]: ../review/331-335.md#333-supplied-word-native-goal-delta-discrepancies-2026-11-12
 [native-goal-delivery-review]: ../review/331-335.md#332-closed-default-off-native-goal-delivery-2026-11-12
+[native-goal-delivery-history-preflight-review]: ../../REVIEW.md#428-preflight-native-goal-delivery-history-before-owner-hashes-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

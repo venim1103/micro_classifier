@@ -19196,7 +19196,7 @@ class _SyntheticC1SourceRecorder:
         def producer():
             return _sample_simulator_dynamics_source(environment)
 
-        def ownership():
+        def ownership(goal):
             state = self._current
             if (
                 type(state) is not tuple
@@ -19208,6 +19208,7 @@ class _SyntheticC1SourceRecorder:
                 raise ValueError("native goal snapshot owner cleared")
             validate_state(state[2])
             _check_native_recorder_owner_pose(state[1])
+            _check_native_goal_computation_history(self._goal_computation_history, goal)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19276,7 +19277,7 @@ class _SyntheticC1SourceRecorder:
                 {key: dynamics.get(key) for key in observed}
             ):
                 raise ValueError("native goal snapshot producer changed after read")
-            owner_binding = _c1_source_binding_digest(ownership())
+            owner_binding = _c1_source_binding_digest(ownership(live))
             frame = bytes(current[3])
             if encode_state(current[2]) != frame:
                 raise ValueError("native goal snapshot frame binding mismatched")
@@ -19314,9 +19315,6 @@ class _SyntheticC1SourceRecorder:
             closing = _sample_simulator_native_goal_computation_source(
                 environment, self._epoch
             )
-            _check_native_goal_computation_history(
-                self._goal_computation_history, closing
-            )
             closing_producer_binding = _c1_source_binding_digest(
                 _simulator_dynamics_source_words(
                     environment, closing_observed["observation"]
@@ -19341,7 +19339,7 @@ class _SyntheticC1SourceRecorder:
                     }
                 )
                 != copied_binding
-                or _c1_source_binding_digest(ownership()) != owner_binding
+                or _c1_source_binding_digest(ownership(closing)) != owner_binding
                 or closing_producer_binding != producer_binding
                 or self._simulator is not environment
                 or self._goal_computation_history is not history

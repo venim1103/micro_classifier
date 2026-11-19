@@ -40550,6 +40550,95 @@ def test_native_goal_owner_preflight(
     ) == epochs
 
 
+@pytest.mark.parametrize("phase", ("first_observation", "final_refresh"))
+def test_native_goal_delivery_history_preflight(
+    monkeypatch, c1_motion_receipt_source_fixture, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    options = {"synthetic_test_only": True, "include_goal_computation": True}
+    owner.record_native_goal_computation_source(environment, **options)
+    history = owner._goal_computation_history
+    assert len(history) == 1
+    current, dynamics = owner._current, owner._dynamics_sample
+    epochs = deepcopy(
+        (
+            environment.tick,
+            environment.rng.bit_generator.state,
+            environment.odometry_rng.bit_generator.state,
+        )
+    )
+    work = {"observation": 0, "words": 0, "binding": 0}
+    original_observation = environment._observation
+    original_words = diagnostics._simulator_dynamics_source_words
+    original_binding = diagnostics._c1_source_binding_digest
+
+    def observation():
+        work["observation"] += 1
+        assert work["observation"] <= 2
+        actual = original_observation()
+        if phase == "first_observation" and work["observation"] == 1:
+            history.extend([history[0]] * 8)
+        return actual
+
+    def words(*args, **kwargs):
+        work["words"] += 1
+        assert work["words"] <= 3
+        actual = original_words(*args, **kwargs)
+        if phase == "final_refresh" and work["words"] == 3:
+            history.extend([history[0]] * 8)
+        return actual
+
+    def binding(record):
+        work["binding"] += 1
+        assert work["binding"] <= 12
+        if type(record) is dict and "goal_history" in record:
+            assert record["goal_history"] is history and len(history) <= 8
+        return original_binding(record)
+
+    monkeypatch.setattr(environment, "_observation", observation)
+    monkeypatch.setattr(diagnostics, "_simulator_dynamics_source_words", words)
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", binding)
+    result = owner.snapshot_native_goal_delivery(**options)
+    assert result["status"] == "unknown"
+    assert result["reason"] == "native goal computation history budget exhausted"
+    assert set(result) == {
+        "schema",
+        "allowed_use",
+        "status",
+        "reason",
+        "snapshot_available",
+        "fixture_permission_granted",
+        "training_approved",
+        "real_input_qualified",
+        "free_space_qualified",
+        "numerically_certified",
+        "source_qualified",
+        "native_execution_qualified",
+        "command_admission_qualified",
+    }
+    assert all(
+        value is False
+        for key, value in result.items()
+        if key not in {"schema", "allowed_use", "status", "reason"}
+    )
+    if phase == "first_observation":
+        assert work["observation"] == work["words"] == 1
+    else:
+        assert work["observation"] == 2 and work["words"] == 3
+    assert owner._goal_computation_history is history and len(history) == 9
+    assert owner._current is current and owner._dynamics_sample is dynamics
+    assert (
+        environment.tick,
+        environment.rng.bit_generator.state,
+        environment.odometry_rng.bit_generator.state,
+    ) == epochs
+
+
 @pytest.mark.parametrize(
     "case", ("literal", "dependency", "closing_output", "closing_coefficients")
 )

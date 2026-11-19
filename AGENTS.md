@@ -31,7 +31,8 @@ The host's own controller keeps actuation, inner loops, interlocks, and fail-saf
 
 ## Current Work
 
-Read [REVIEW.md][review] §427 for intact418-422 archival;
+Read [REVIEW.md][review] §428 for goal delivery history prehash validation;
+§427 records intact418-422 archival;
 §426 records final delivery base-history prehash validation;
 §425 records final retention history prehash validation;
 §424 records prevalidation before retention staging;
@@ -500,6 +501,9 @@ refresh before hashing it. Timing already rejected the corresponding mutation.
 Eleven focused and318 related controls and root6527/known QDQ1 xfail passed.
 Whole418-422 is archived intact:157-line body, two inverse layouts, five
 historical root headings, four topic targets and160 prior first-definition meanings.
+Native goal delivery now checks its live retained history before both owner
+fingerprints, including after the final refresh. Two regressions,473 prior
+controls and root6529/known QDQ1 xfail passed.
 No work cap or qualification change.
 Actual independent Q0-Q4 inputs remain absent;
 ST tools are not on PATH and licence/board/protected studies stay user-side or

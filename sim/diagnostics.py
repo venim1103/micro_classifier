@@ -23155,6 +23155,7 @@ class _SyntheticC1SourceRecorder:
             )
 
         def snapshot_binding(snapshot):
+            _check_simulator_native_integration_extent(snapshot["source"])
             return _c1_source_binding_digest(
                 {
                     key: snapshot[key]
@@ -23173,8 +23174,8 @@ class _SyntheticC1SourceRecorder:
             if not before["snapshot_available"]:
                 result["reason"] = before["reason"]
                 return result
-            source_binding = _c1_source_binding_digest(before["source"])
             snapshot_before = snapshot_binding(before)
+            source_binding = _c1_source_binding_digest(before["source"])
             arithmetic = _probe_native_integration_arithmetic(
                 before["source"],
                 max_integer_bits=max_integer_bits,
@@ -23217,9 +23218,11 @@ class _SyntheticC1SourceRecorder:
                 or self._simulator_odometry_rng is not odometry_before
                 or _c1_source_binding_digest(arithmetic) != arithmetic_binding
                 or _c1_source_binding_digest(copied_arithmetic) != arithmetic_binding
+                or snapshot_binding(before) != snapshot_before
             ):
                 result["reason"] = "native_source_or_owner_changed_during_arithmetic"
                 return result
+            copied_source = deepcopy(before["source"])
         except (KeyError, TypeError, ValueError, ArithmeticError):
             result["reason"] = "unsupported_or_changed_native_arithmetic_snapshot"
             return result
@@ -23231,7 +23234,7 @@ class _SyntheticC1SourceRecorder:
             current_tick=before["current_tick"],
             current_frame=before["current_frame"],
             source_binding=source_binding,
-            source=deepcopy(before["source"]),
+            source=copied_source,
             arithmetic=copied_arithmetic,
         )
         return result

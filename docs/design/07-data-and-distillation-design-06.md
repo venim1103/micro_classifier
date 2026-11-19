@@ -472,6 +472,10 @@ owner hashing. Root limits and semantic receipt-chain checks still apply.
 The [detached receipt checkpoint][detached-receipt-history-review]
 applies both limits before returning the receipt snapshot to startup and
 the opted-in request readers. No receipt read is added to default requests.
+The [detached integration checkpoint][detached-integration-source-review]
+checks segment extent on both snapshots consumed by the arithmetic wrapper
+and rechecks the first detached source after the closing read before copying
+it for output. One additional digest stays within the existing ceiling.
 
 Receipt and integration source samplers also check both live observation
 envelopes against the producer profile before hashing dynamics. The integration
@@ -971,7 +975,8 @@ field-selection, combined and final-closure controls.
 [full-dynamics-cache-preflight-review]: ../review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19
 [retained-integration-extent-review]: ../review/428-432.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
 [receipt-history-segment-extent-review]: ../review/428-432.md#470-preflight-nested-receipt-history-before-owner-hashing-2026-11-19
-[detached-receipt-history-review]: ../../REVIEW.md#471-preflight-detached-owned-receipt-histories-2026-11-19
+[detached-receipt-history-review]: ../review/428-432.md#471-preflight-detached-owned-receipt-histories-2026-11-19
+[detached-integration-source-review]: ../../REVIEW.md#472-close-detached-native-integration-source-before-publication-2026-11-19
 [motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../review/428-432.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17

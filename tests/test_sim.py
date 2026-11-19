@@ -22179,6 +22179,9 @@ def test_native_arithmetic_record_relationships(
         "producer_mutated",
         "source_mutated",
         "owner_mutated",
+        "first_snapshot_extent",
+        "closing_snapshot_extent",
+        "detached_source_changed",
         "probe_binding",
         "probe_flag",
         "bad_optin",
@@ -22220,8 +22223,10 @@ def test_synthetic_c1_current_native_arithmetic(
         expected = "producer_content_changed"
     elif case == "source_mutated":
         expected = "native_integration_source_content_changed"
-    elif case in ("owner_mutated", "recorder_replaced"):
+    elif case in ("owner_mutated", "recorder_replaced", "detached_source_changed"):
         expected = "native_source_or_owner_changed_during_arithmetic"
+    elif case in ("first_snapshot_extent", "closing_snapshot_extent"):
+        expected = "unsupported_or_changed_native_arithmetic_snapshot"
     elif case in ("probe_binding", "probe_flag"):
         expected = "native_arithmetic_result_binding_or_metadata_mismatch"
     elif case == "bad_optin":
@@ -22236,6 +22241,7 @@ def test_synthetic_c1_current_native_arithmetic(
     work = dict.fromkeys(
         ("probe", "snapshot", "sample", "check", "binary", "digest", "forbidden"), 0
     )
+    first_source = oversized_source = None
 
     def probe(*args, **kwargs):
         work["probe"] += 1
@@ -22268,9 +22274,26 @@ def test_synthetic_c1_current_native_arithmetic(
         return result
 
     def snapshot(*args, **kwargs):
+        nonlocal first_source, oversized_source
         work["snapshot"] += 1
         assert work["snapshot"] <= 2
-        return original_snapshot(*args, **kwargs)
+        actual = original_snapshot(*args, **kwargs)
+        if actual["snapshot_available"]:
+            if work["snapshot"] == 1:
+                first_source = actual["source"]
+            if (case, work["snapshot"]) in (
+                ("first_snapshot_extent", 1),
+                ("closing_snapshot_extent", 2),
+            ):
+                oversized_source = actual["source"]
+                segments = oversized_source["segments"]
+                oversized_source["segments"] = [segments[0]] * 129
+            if case == "detached_source_changed" and work["snapshot"] == 2:
+                values = first_source["segments"][0]["values"]
+                values["midpoint_rad"] = math.nextafter(
+                    values["midpoint_rad"], math.inf
+                )
+        return actual
 
     def sample(*args, **kwargs):
         work["sample"] += 1
@@ -22290,6 +22313,12 @@ def test_synthetic_c1_current_native_arithmetic(
     def digest(*args, **kwargs):
         work["digest"] += 1
         assert work["digest"] <= 160
+        if oversized_source is not None:
+            record = args[0]
+            assert record is not oversized_source
+            assert (
+                type(record) is not dict or record.get("source") is not oversized_source
+            )
         return original_digest(*args, **kwargs)
 
     def forbidden(*args, **kwargs):

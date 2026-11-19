@@ -783,17 +783,22 @@ repeated historical handoffs.
 
 ## 471. Preflight Detached Owned Receipt Histories (2026-11-19)
 
-From clean pushed6f72b4e, a nine-entry first receipt history or129-segment
-closing receipt reached the startup, opt-in prepare and opt-in recheck
-hashes:6FAIL12.81s. Reuse root and nested extent checks in the shared
-detached receipt reader. Default-off behavior and work limits remain.
-Focused/related<=60s:138PASS8.40s. Root<=360s `python -m pytest -q
---durations=10 && ruff check . && git diff --check` PASS6672/known QDQ1
-xfail/77 warnings217.12s. Pylance syntax, changed format, Ruff, whitespace
-and tested hashes pass. Intact470 archived:14 lines, two inverse layouts,
-historical heading, one rebased link and unchanged old definitions. No new
-read/copy/digest; flags false, guard UNKNOWN. Next trace the detached native
-integration source at the arithmetic reader's first and closing hashes.
+[Complete unchanged checkpoint][review-471-preserved] is preserved in the archive.
+
+## 472. Close Detached Native Integration Source Before Publication (2026-11-19)
+
+From clean pushedbefdbbf,129 segments in either detached integration
+snapshot reached a digest; separately, a one-ULP edit to the first detached
+source during the closing read falsely published available:3FAIL9.53s.
+Check the source extent before binding and recheck the first snapshot just
+before copying it. One bounded digest is added within the existing ceiling;
+no extra observation, receipt, native intake, arithmetic or source copy.
+Focused/related<=60s:61PASS6.30s. Root<=360s `python -m pytest -q
+--durations=10 && ruff check . && git diff --check` PASS6675/known QDQ1
+xfail/77 warnings238.13s. Pylance syntax, changed format, Ruff, whitespace
+and tested hashes pass. Intact471 archived with its heading and topic link.
+Flags false, guard UNKNOWN. Check remaining directly dependent bindings
+without duplicating reports or substituting fixtures for acceptance evidence.
 
 ## Sources
 
@@ -1015,3 +1020,4 @@ integration source at the arithmetic reader's first and closing hashes.
 [review-468-preserved]: docs/review/428-432.md#468-share-full-dynamics-cache-preflight-2026-11-19
 [review-469-preserved]: docs/review/428-432.md#469-preflight-retained-native-integration-segment-extent-2026-11-19
 [review-470-preserved]: docs/review/428-432.md#470-preflight-nested-receipt-history-before-owner-hashing-2026-11-19
+[review-471-preserved]: docs/review/428-432.md#471-preflight-detached-owned-receipt-histories-2026-11-19

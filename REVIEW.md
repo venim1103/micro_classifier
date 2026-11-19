@@ -798,6 +798,20 @@ Pylance syntax, changed format, scoped diff, tested hashes and link PASS.
 No new read, live queue copy or digest. Eight flags false, guard UNKNOWN.
 Next trace the pending cache at goal ownership joins.
 
+## 459. Preflight Goal Pending Cache Before Owner Hashing (2026-11-19)
+
+From clean pushed9caddf7, a nine-entry cached ToF queue reached original and
+closing goal retention and delivery owner hashes:4FAIL8.51s. Reuse the
+existing queue layout check at both owners. Goal producer comparisons do not
+hash this queue; no changes there and no pending goal publication.
+
+Finite focused/related<=60s, root<=360s:12PASS0.94s,240PASS5.66s. Required root
+`python -m pytest -q --durations=10 && ruff check . && git diff --check`
+PASS6605/known QDQ1 xfail/77 warnings177.17s followed by Ruff/whitespace PASS.
+Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
+No new read, live queue copy or digest. Eight flags false, guard UNKNOWN.
+Archive whole453-457 before further growth; then trace motion-owner queue hashes.
+
 ## Sources
 
 [Complete original bibliography and reference definitions][original-review-sources].

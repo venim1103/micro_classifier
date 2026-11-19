@@ -41539,6 +41539,65 @@ def test_native_goal_preflights_cached_observation(
     assert owner._goal_computation_history is history and owner._current is current
 
 
+@pytest.mark.parametrize("operation", ("retain", "deliver"))
+@pytest.mark.parametrize("phase", ("original", "final_intake"))
+def test_native_goal_preflights_cached_pending(
+    monkeypatch, c1_motion_receipt_source_fixture, operation, phase
+):
+    from sim import diagnostics
+
+    environment, owner = deepcopy(c1_motion_receipt_source_fixture[:2])
+    options = {"synthetic_test_only": True, "include_goal_computation": True}
+    owner.record_environment_tick(environment, synthetic_test_only=True)
+    environment.step([0.125, 0.0], capture_native_goal_computation=True)
+    owner.record_environment_tick(
+        environment, synthetic_test_only=True, capture_native_tof_pending_source=True
+    )
+    if operation == "deliver":
+        owner.record_native_goal_computation_source(environment, **options)
+    history, current = owner._goal_computation_history, owner._current
+    sample = owner._dynamics_sample
+    oversized = (sample["native_tof_pending_queue"][0],) * 9
+    work = {"intake": 0, "digest": 0}
+    original_intake = diagnostics._sample_simulator_native_goal_computation_source
+    original_digest = diagnostics._c1_source_binding_digest
+
+    def intake(*args, **kwargs):
+        work["intake"] += 1
+        assert work["intake"] <= 2
+        actual = original_intake(*args, **kwargs)
+        if phase == "final_intake" and work["intake"] == 2:
+            sample["native_tof_pending_queue"] = oversized
+        return actual
+
+    def digest(record):
+        work["digest"] += 1
+        assert work["digest"] <= 12
+        if type(record) is dict and record.get("dynamics_sample") is sample:
+            assert len(sample["native_tof_pending_queue"]) <= 8
+        return original_digest(record)
+
+    if phase == "original":
+        sample["native_tof_pending_queue"] = oversized
+    monkeypatch.setattr(
+        diagnostics, "_sample_simulator_native_goal_computation_source", intake
+    )
+    monkeypatch.setattr(diagnostics, "_c1_source_binding_digest", digest)
+    reason = "native ToF pending original-read layout missing"
+    if operation == "retain":
+        with pytest.raises(ValueError, match=reason):
+            owner.record_native_goal_computation_source(environment, **options)
+    else:
+        result = owner.snapshot_native_goal_delivery(**options)
+        assert result["status"] == "unknown" and result["snapshot_available"] is False
+        assert result["reason"] == reason
+        assert not {"frame", "delivered_goal", "source_epoch", "tick"} & result.keys()
+    assert work["intake"] == (2 if phase == "final_intake" else 0)
+    assert sample["native_tof_pending_queue"] is oversized
+    assert owner._dynamics_sample is sample
+    assert owner._goal_computation_history is history and owner._current is current
+
+
 @pytest.mark.parametrize(
     "phase,field",
     (

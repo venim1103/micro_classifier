@@ -2402,6 +2402,9 @@ non-scalar replacements that previously passed the closing comparison.
 Goal retention and delivery also apply the same observation layout predicate
 to the recorder's cached sample before owner and producer-comparison hashes;
 see the [cached observation checkpoint][goal-cached-observation-review].
+Both goal owners also check a pending ToF queue when present before hashing
+the full cache. The [pending cache checkpoint][goal-pending-cache-review]
+does not add pending goal output, reads or digests.
 The [dynamics closure checkpoint][native-goal-dynamics-closing-review] preserves
 equal-state first-epoch and late native-action repros; work limits remain unchanged.
 The live-history check follows that refresh, before owner hashing;
@@ -2564,6 +2567,7 @@ caps. No casting/error/geometry/qualification adoption, all eight flags false.
 [dynamics-native-scalars-review]: ../review/428-432.md#438-preflight-native-dynamics-scalars-before-conversion-2026-11-19
 [dynamics-config-preflight-review]: ../review/428-432.md#439-preflight-dynamics-config-before-observation-layout-access-2026-11-19
 [goal-cached-observation-review]: ../review/428-432.md#441-preflight-cached-goal-observation-before-owner-hashing-2026-11-19
+[goal-pending-cache-review]: ../../REVIEW.md#459-preflight-goal-pending-cache-before-owner-hashing-2026-11-19
 [native-goal-dynamics-closing-review]: ../review/386-390.md#387-closed-native-goal-dynamics-sampling-2026-11-17
 [native-goal-owner-preflight-review]: ../review/403-407.md#404-closed-native-goal-owner-prevalidation-2026-11-17
 [native-recorder-owner-pose-review]: ../review/403-407.md#406-bounded-native-recorder-owner-poses-2026-11-17

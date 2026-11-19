@@ -18564,6 +18564,7 @@ class _SyntheticC1SourceRecorder:
             _check_native_recorder_current_owner(current)
             dynamics = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(dynamics, self._config)
+            _check_recorded_native_tof_pending_queue(dynamics)
             return {
                 "epoch": self._epoch,
                 "profile": {
@@ -19307,6 +19308,7 @@ class _SyntheticC1SourceRecorder:
             state = check_ownership(goal)
             sample = self._dynamics_sample
             _check_recorded_simulator_dynamics_observation(sample, self._config)
+            _check_recorded_native_tof_pending_queue(sample)
             return {
                 "epoch": self._epoch,
                 "profile": {

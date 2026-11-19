@@ -691,64 +691,23 @@ repeated historical handoffs.
 
 ## 448. Intact Observation Preflight Checkpoints (2026-11-19)
 
-From clean pushed7296744, one30s scoped transform archives whole438-442 in
-the adjacent archive at its existing path. The exact79-line body, two inverse
-layouts, five historical headings/anchors, four rebased chapter01/03 targets
-and183 prior first-definition meanings pass. Root998->944 lines before this
-note. Scoped references, whitespace and four447 tested hashes pass. Docs only;
-no source suite rerun. Latest root remains6576/known QDQ1 xfail/77 warnings.
-Eight flags false, guard UNKNOWN. Next check the outer initial retention,
-retained-initial and startup cache digests.
+[Complete unchanged checkpoint][review-448-452-preserved-0] is preserved in the archive.
 
 ## 449. Preflight Initial Retention Cached Observation Before Owner Hashing (2026-11-19)
 
-From clean pushedb48d5ff, oversized cached observation history reached the
-retainer's comparison after either nested tick-zero snapshot returned. The
-retained reader also hashed it at original, first-observation and closing
-owner joins:5FAIL10.29s. Both helpers now validate and hash the same cached
-reference. Rejection leaves retention unchanged and omits partial output.
-
-Finite5 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
-Focused5PASS5.00s, related87PASS2.07s. Required root `python -m pytest -q
---durations=10 && ruff check . && git diff --check` PASS6581/known QDQ1 xfail/
-77 warnings180.03s, then Ruff and whitespace PASS. Pylance syntax, changed
-format, scoped AST, tested hashes and checkpoint link PASS. No added read,
-copy or digest. Eight flags false, guard UNKNOWN. Next check the conditional
-startup owner's cached observation before and after its nested reads.
+[Complete unchanged checkpoint][review-448-452-preserved-1] is preserved in the archive.
 
 ## 450. Preflight Startup Cached Observation Before Owner Hashing (2026-11-19)
 
-From clean pusheda826ea5, conditional startup's own digest could hash an
-oversized cached observation before nested reads or after the final retained
-reader returned:2FAIL6.62s. Validate and hash the same cached reference at
-both joins. Unsupported cache returns unknown without a startup path.
-
-Finite2 repro/repaired controls<=60s, nearby<=60s, one root<=360s.
-Focused2PASS0.80s, related52PASS1.73s. Required root `python -m pytest -q
---durations=10 && ruff check . && git diff --check` PASS6583/known QDQ1 xfail/
-77 warnings176.16s, followed by Ruff and whitespace PASS. Pylance syntax,
-changed format, scoped AST, tested hashes and checkpoint link PASS. Existing
-observation/digest ceilings and conditional assumptions remain; eight flags
-false, guard UNKNOWN. Next trace the opted-in live request owner cache.
+[Complete unchanged checkpoint][review-448-452-preserved-2] is preserved in the archive.
 
 ## 451. Preflight Live Motion Snapshot Observations (2026-11-19)
 
-The opted-in request wrappers do not hash dynamics directly; their nested receipt reader checks the cache. The receipt and integration samplers themselves hashed oversized live observations on both reads:4FAIL9.16s. Reuse the live envelope predicate immediately before assembling those words, after native intake in the integration sampler.
-
-Finite focused/related<=60s, root<=360s:4PASS0.69s,147PASS2.14s; `python -m pytest -q --durations=10 && ruff check . && git diff --check` PASS6587/known QDQ1 xfail/77 warnings179.45s plus Ruff/whitespace PASS.
-Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
-No new observation, copy or digest. Eight flags false, guard UNKNOWN.
-Archive whole443-447 before growth; then trace the same live samplers' native-word conversions.
+[Complete unchanged checkpoint][review-448-452-preserved-3] is preserved in the archive.
 
 ## 452. Intact Recorder and Reader Preflight Checkpoints (2026-11-19)
 
-From clean pushedbf4fe78, one30s scoped transform archives whole443-447 at
-the adjacent archive's existing path. Exact81-line body, two inverse layouts,
-five historical headings/anchors, four rebased chapter01/06 targets and188 prior
-first-definition meanings pass. Root995->939 lines before this note. Scoped
-references, whitespace and four451 tested hashes pass. Docs only; no code suite
-rerun. Latest root remains6587/known QDQ1 xfail/77 warnings, eight flags false
-and guard UNKNOWN. Next trace native-word conversions in both live motion samplers.
+[Complete unchanged checkpoint][review-448-452-preserved-4] is preserved in the archive.
 
 ## 453. Preflight Live Motion Snapshot Native Words (2026-11-19)
 
@@ -796,6 +755,16 @@ PASS6595/known QDQ1 xfail/77 warnings175.46s followed by Ruff/whitespace PASS.
 Pylance syntax, changed format, scoped AST, tested hashes and link PASS.
 No new sample, live queue copy or digest. Eight flags false, guard UNKNOWN.
 Archive whole448-452 before further growth; then trace other ToF owner joins.
+
+## 456. Intact Initial and Motion Reader Preflight Checkpoints (2026-11-19)
+
+From clean pushedf89a48b, one30s scoped transform archives whole448-452 at
+the adjacent archive's existing path. Exact61-line body, two inverse layouts,
+five historical headings/anchors, three rebased chapter06 targets and193 prior
+first-definition meanings pass. Root996->960 lines before this note. Scoped
+references, whitespace and four455 tested hashes pass. Docs only; no code suite
+rerun. Latest root remains6595/known QDQ1 xfail/77 warnings, eight flags false
+and guard UNKNOWN. Next trace the pending queue through other ToF owner joins.
 
 ## Sources
 
@@ -994,3 +963,8 @@ Archive whole448-452 before further growth; then trace other ToF owner joins.
 [review-443-447-preserved-2]: docs/review/428-432.md#445-preflight-cached-integration-observation-before-owner-hashing-2026-11-19
 [review-443-447-preserved-3]: docs/review/428-432.md#446-preflight-owning-intake-cached-observation-before-owner-hashing-2026-11-19
 [review-443-447-preserved-4]: docs/review/428-432.md#447-preflight-initial-source-cached-observation-before-owner-hashing-2026-11-19
+[review-448-452-preserved-0]: docs/review/428-432.md#448-intact-observation-preflight-checkpoints-2026-11-19
+[review-448-452-preserved-1]: docs/review/428-432.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
+[review-448-452-preserved-2]: docs/review/428-432.md#450-preflight-startup-cached-observation-before-owner-hashing-2026-11-19
+[review-448-452-preserved-3]: docs/review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
+[review-448-452-preserved-4]: docs/review/428-432.md#452-intact-recorder-and-reader-preflight-checkpoints-2026-11-19

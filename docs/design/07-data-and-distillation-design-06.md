@@ -934,7 +934,7 @@ field-selection, combined and final-closure controls.
 [native-owner-preflight-review]: ../review/408-412.md#409-closed-receipt-and-integration-snapshot-owner-preflight-2026-11-17
 [receipt-cached-observation-review]: ../review/428-432.md#443-preflight-cached-receipt-observation-before-owner-hashing-2026-11-19
 [integration-cached-observation-review]: ../review/428-432.md#445-preflight-cached-integration-observation-before-owner-hashing-2026-11-19
-[motion-live-observation-review]: ../../REVIEW.md#451-preflight-live-motion-snapshot-observations-2026-11-19
+[motion-live-observation-review]: ../review/428-432.md#451-preflight-live-motion-snapshot-observations-2026-11-19
 [motion-live-words-review]: ../../REVIEW.md#453-preflight-live-motion-snapshot-native-words-2026-11-19
 [receipt-history-extent-review]: ../review/413-417.md#415-bounded-receipt-history-prehash-validation-2026-11-17
 [intake-history-extent-review]: ../review/413-417.md#416-closed-owning-intake-history-root-hashes-2026-11-17
@@ -942,9 +942,9 @@ field-selection, combined and final-closure controls.
 [initial-retention-owner-review]: ../review/413-417.md#413-closed-initial-retention-owner-word-joins-2026-11-17
 [initial-owner-preflight-review]: ../review/408-412.md#410-closed-initial-source-and-startup-owner-preflight-2026-11-17
 [initial-cached-observation-review]: ../review/428-432.md#447-preflight-initial-source-cached-observation-before-owner-hashing-2026-11-19
-[initial-retention-cached-observation-review]: ../../REVIEW.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
+[initial-retention-cached-observation-review]: ../review/428-432.md#449-preflight-initial-retention-cached-observation-before-owner-hashing-2026-11-19
 [initial-detached-observation-review]: ../../REVIEW.md#454-preflight-detached-initial-observation-before-source-verification-2026-11-19
-[startup-cached-observation-review]: ../../REVIEW.md#450-preflight-startup-cached-observation-before-owner-hashing-2026-11-19
+[startup-cached-observation-review]: ../review/428-432.md#450-preflight-startup-cached-observation-before-owner-hashing-2026-11-19
 [initial-setup-report-review]: ../review/356-360.md#359-closed-initial-setup-report-consumer-metadata-2026-11-13
 [initial-setup-source-review]: ../review/356-360.md#358-closed-actual-initial-tick-setup-correspondence-2026-11-13
 [initial-source-retention-review]: ../review/361-365.md#361-bounded-initial-source-retention-2026-11-13
